@@ -1,0 +1,12 @@
+{
+	"globals" : {
+		"JSM" : true,
+		"ImporterApp" :true,
+		"ImporterMenu" : true,
+		"ImporterViewer" : true,
+		"ImporterButtons" : true,
+		"ImporterProgressBar" : true,
+		"InfoTable" : true,
+		"THREE" : false
+	}
+}

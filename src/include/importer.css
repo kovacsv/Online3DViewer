@@ -1,0 +1,167 @@
+html, body
+{
+	color : #222222;
+	background : #dddddd;
+	font-size : 12px;
+	font-family : Arial, cursive;
+	margin : 0px;
+	padding : 0px;
+	width : 100%;
+	height : 100%;
+}
+
+#top
+{
+	color : #dddddd;
+	background : linear-gradient(#333333, #111111) #222222;
+	overflow : auto;
+}
+
+#logo
+{
+	color : #ffffff;
+	background : linear-gradient(#0095c6, #006d91)  #008ab8;
+	font-size : 14px;
+	text-align : center;
+	text-decoration : none;
+	width : 240px;
+	padding : 5px 0px;
+	margin : 8px;
+	border-radius : 5px;
+	box-shadow: 0px 0px 5px #000000;
+	cursor : pointer;
+	float : left;
+}
+
+span.version
+{
+	margin-left : 5px;
+	font-size : 10px;
+}
+
+img.topbutton
+{
+	width : 25px;
+	height : 25px;
+	margin : 9px 5px 0px 5px;
+	border : 0px;
+	cursor : pointer;
+}
+
+#left
+{
+	color : #222222;
+	background : #cccccc;
+	width : 250px;
+	float : left;
+	overflow : auto;
+}
+
+#menu
+{
+	margin : 5px;
+}
+
+div.menuitem
+{
+	padding : 2px;
+	overflow : auto;
+}
+
+div.menugroup
+{
+	margin-left : 15px;
+}
+
+div.menutext
+{
+	padding : 2px;
+	margin-left : 3px;
+	float : left;
+}
+
+img.menubutton
+{
+	padding : 2px;
+	float : left;
+	cursor : pointer;
+	border : 0px;
+	display : block;
+}
+
+div.colorbutton
+{
+	width : 14px;
+	height : 14px;
+	border : 1px solid #222222;
+	float : left;
+}
+
+div.progressbarborder
+{
+	height : 20px;
+	border : 1px solid #222222;
+}
+
+div.progressbarcontent
+{
+	color : #ffffff;
+	background : #279b61;
+	height : 20px;
+}
+
+table.infotable td
+{
+	padding : 1px 5px;
+}
+
+div.importerdialog
+{
+	width : 450px;
+}
+
+div.welcometitle
+{
+	font-size : 19px;
+	text-align : center;
+	margin : 20px 0px;
+}
+
+div.welcometext
+{
+	text-align : center;
+	margin : 20px 0px;
+}
+
+div.welcometextformats
+{
+	text-align : center;
+	margin : 30px 0px;
+}
+
+span.welcomeformat
+{
+	color : #222222;
+	background : #eeeeee;
+	margin : 3px;
+	padding : 5px 15px;
+	border : 1px solid #dddddd;
+	border-radius : 5px;
+}
+
+canvas
+{
+	display : block;
+}
+
+a
+{
+	color : #225588;
+	background : transparent;
+	text-decoration : none;
+}
+
+a:hover
+{
+	text-decoration : underline;
+}
