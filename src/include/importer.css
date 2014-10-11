@@ -10,6 +10,17 @@ html, body
 	height : 100%;
 }
 
+#nosupport
+{
+	padding : 10px;
+}
+
+#nosupport div.title
+{
+	font-size : 17px;
+	margin-bottom : 10px;
+}
+
 #top
 {
 	color : #dddddd;

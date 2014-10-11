@@ -8,6 +8,49 @@ ImporterApp = function ()
 
 ImporterApp.prototype.Init = function ()
 {
+	function CheckSupport ()
+	{
+		if (!window.WebGLRenderingContext) {
+			return false;
+		}
+	
+		if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {	
+			return false;
+		}
+	
+		try {
+			var canvas = document.createElement ('canvas');
+			if (!canvas.getContext ('experimental-webgl') && !canvas.getContext ('webgl')) {
+				return false;
+			}
+		} catch (exception) {
+			return false;
+		}
+
+		return true;
+	}
+
+	if (!CheckSupport ()) {
+		var i, child;
+		
+		var children = [];
+		for (i = 0; i < document.body.children.length; i++) {
+			child = document.body.children[i];
+			children.push (child);
+		}
+
+		for (i = 0; i < children.length; i++) {
+			child = children[i];
+			if (child.id == 'nosupport') {
+				child.style.display = '';
+			} else {
+				document.body.removeChild (child);
+			}
+		}
+		
+		return;		
+	}
+	
 	var myThis = this;
 	var top = document.getElementById ('top');
 	var importerButtons = new ImporterButtons (top);
