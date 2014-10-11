@@ -6,7 +6,7 @@ currentPath = os.path.dirname (os.path.abspath (__file__))
 os.chdir (currentPath)
 
 configFilePath = 'jshintconfig.json'
-sourcesFolderName = '../src/include'
+sourcesFolderName = '../website/include'
 
 def PrintInfo (message):
 	print ('Info: ' + message)
