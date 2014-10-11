@@ -1,8 +1,6 @@
 Online 3D Model Viewer
 ======================
 
-http://3dviewer.net
-
 With this online viewer you can view 3D models in your browser:
 - Supported file formats:
   - 3ds
