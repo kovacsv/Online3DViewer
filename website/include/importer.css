@@ -147,17 +147,8 @@ div.welcometext
 div.welcometextformats
 {
 	text-align : center;
-	margin : 30px 0px;
-}
-
-span.welcomeformat
-{
-	color : #222222;
-	background : #eeeeee;
-	margin : 3px;
-	padding : 5px 15px;
-	border : 1px solid #dddddd;
-	border-radius : 5px;
+	font-size : 17px;
+	margin : 25px 0px;
 }
 
 canvas

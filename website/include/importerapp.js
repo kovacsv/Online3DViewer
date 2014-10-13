@@ -88,7 +88,7 @@ ImporterApp.prototype.WelcomeDialog = function ()
 		'<div class="importerdialog">',
 		'<div class="welcometitle">Welcome to Online 3D Viewer!</div>',
 		'<div class="welcometext">Here you can view 3D models online. Just simply drag and drop 3D files to this browser window or use the open button above. The supported file formats are:</div>',
-		'<div class="welcometextformats"><span class="welcomeformat">3ds</span><span class="welcomeformat">obj</span><span class="welcomeformat">stl</span></div>',
+		'<div class="welcometextformats">3ds, obj, stl</div>',
 		'<div class="welcometext">Powered by <a target="_blank" href="https://github.com/mrdoob/three.js/">Three.js</a> and <a target="_blank" href="https://github.com/kovacsv/JSModeler">JSModeler</a>.</div>',
 		'<div class="welcometext"><a target="_blank" href="https://github.com/kovacsv/Online3DViewer"><img src="images/githublogo.png"/></a></div>',
 		'</div>',
