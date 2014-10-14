@@ -13,7 +13,8 @@ ImporterViewer.prototype.Init = function (canvasName)
 	};
 
 	this.viewer = new JSM.ThreeViewer ();
-	if (!this.viewer.Start (canvasName, viewerSettings)) {
+	var canvas = document.getElementById (canvasName);
+	if (!this.viewer.Start (canvas, viewerSettings)) {
 		return false;
 	}
 	this.viewer.SetClearColor (0xdddddd);

@@ -22,12 +22,19 @@ def ReplaceInFile (filePath, source, dest):
 	file.close ()
 	
 def BuildWebSite (rootFolder, resultFolder):
-	websiteFolder = os.path.join (resultFolder, 'website')
-	shutil.copytree (os.path.join (rootFolder, 'website'), websiteFolder)
-	shutil.copytree (os.path.join (rootFolder, 'frameworks'), os.path.join (websiteFolder, 'frameworks'))
-	indexFilePath = os.path.join (websiteFolder, 'index.html')
-	ReplaceInFile (indexFilePath, '../frameworks/', 'frameworks/')
+	targetFolder = os.path.join (resultFolder, 'website')
+	shutil.copytree (os.path.join (rootFolder, 'website'), targetFolder)
+	shutil.copytree (os.path.join (rootFolder, 'jsmodeler'), os.path.join (targetFolder, 'jsmodeler'))
+	indexFilePath = os.path.join (targetFolder, 'index.html')
+	ReplaceInFile (indexFilePath, '../jsmodeler/', 'jsmodeler/')
 	
+def BuildEmbeddable (rootFolder, resultFolder):
+	targetFolder = os.path.join (resultFolder, 'embeddable')
+	shutil.copytree (os.path.join (rootFolder, 'embeddable'), targetFolder)
+	shutil.copytree (os.path.join (rootFolder, 'jsmodeler'), os.path.join (targetFolder, 'jsmodeler'))
+	indexFilePath = os.path.join (targetFolder, 'index.html')
+	ReplaceInFile (indexFilePath, '../jsmodeler/', 'jsmodeler/')
+
 def Main ():
 	rootFolder = os.path.abspath ('..')
 	resultFolder = os.path.join (rootFolder, 'build')
@@ -37,6 +44,9 @@ def Main ():
 	
 	PrintInfo ('Building website to folder <' + resultFolder + '>.')
 	BuildWebSite (rootFolder, resultFolder)
+
+	PrintInfo ('Building embeddable example to folder <' + resultFolder + '>.')
+	BuildEmbeddable (rootFolder, resultFolder)
 	return 0
 		
 sys.exit (Main ())
