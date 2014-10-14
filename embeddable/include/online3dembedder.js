@@ -7,24 +7,27 @@ function Online3DViewerLoad ()
 			return;
 		}
 
-		var viewerSettings = {
-			cameraEyePosition : [6.0, -5.5, 4.0],
-			cameraCenterPosition : [0.0, 0.0, 0.0],
-			cameraUpVector : [0.0, 0.0, 1.0]
-		};
-
-		var viewer = new JSM.ThreeViewer ();
-		if (!viewer.Start (viewerElement, viewerSettings)) {
-			return;
-		}
-
 		var myThis = this;
 		var urlList = urls.split ('|');
 		JSM.ConvertURLListToJsonData (urlList, {
 			onError : function () {
+				var context = viewerElement.getContext ('2d');
+				context.font = '12px Arial';
+				context.fillText ('Error!', 0, 12);
 				return;
 			},
 			onReady : function (fileNames, jsonData) {
+				var viewerSettings = {
+					cameraEyePosition : [6.0, -5.5, 4.0],
+					cameraCenterPosition : [0.0, 0.0, 0.0],
+					cameraUpVector : [0.0, 0.0, 1.0]
+				};
+
+				var viewer = new JSM.ThreeViewer ();
+				if (!viewer.Start (viewerElement, viewerSettings)) {
+					return;
+				}
+
 				var currentMeshIndex = 0;
 				var environment = new JSM.AsyncEnvironment ({
 					onStart : function (taskCount/*, meshes*/) {
