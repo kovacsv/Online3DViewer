@@ -2,6 +2,13 @@ function Online3DViewerLoad ()
 {
 	function LoadViewer (viewerElement)
 	{
+		function Error (viewerElement)
+		{
+			var context = viewerElement.getContext ('2d');
+			context.font = '12px Arial';
+			context.fillText ('Error!', 0, 12);
+		}
+		
 		var urls = viewerElement.getAttribute ('sourcefiles');
 		if (urls === undefined || urls === null) {
 			return;
@@ -11,9 +18,7 @@ function Online3DViewerLoad ()
 		var urlList = urls.split ('|');
 		JSM.ConvertURLListToJsonData (urlList, {
 			onError : function () {
-				var context = viewerElement.getContext ('2d');
-				context.font = '12px Arial';
-				context.fillText ('Error!', 0, 12);
+				Error (viewerElement);
 				return;
 			},
 			onReady : function (fileNames, jsonData) {
@@ -25,6 +30,7 @@ function Online3DViewerLoad ()
 
 				var viewer = new JSM.ThreeViewer ();
 				if (!viewer.Start (viewerElement, viewerSettings)) {
+					Error (viewerElement);
 					return;
 				}
 
