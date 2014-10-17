@@ -1,16 +1,17 @@
 function Online3DViewerLoad ()
 {
+	function Error (viewerElement, message)
+	{
+		var context = viewerElement.getContext ('2d');
+		context.font = '12px Arial';
+		context.fillText (message, 0, 12);
+	}
+	
 	function LoadViewer (viewerElement)
 	{
-		function Error (viewerElement)
-		{
-			var context = viewerElement.getContext ('2d');
-			context.font = '12px Arial';
-			context.fillText ('Error!', 0, 12);
-		}
-		
 		var urls = viewerElement.getAttribute ('sourcefiles');
 		if (urls === undefined || urls === null) {
+			Error (viewerElement, 'Invalid source files.');
 			return;
 		}
 
@@ -18,7 +19,7 @@ function Online3DViewerLoad ()
 		var urlList = urls.split ('|');
 		JSM.ConvertURLListToJsonData (urlList, {
 			onError : function () {
-				Error (viewerElement);
+				Error (viewerElement, 'Conversion failed.');
 				return;
 			},
 			onReady : function (fileNames, jsonData) {
@@ -30,7 +31,7 @@ function Online3DViewerLoad ()
 
 				var viewer = new JSM.ThreeViewer ();
 				if (!viewer.Start (viewerElement, viewerSettings)) {
-					Error (viewerElement);
+					Error (viewerElement, 'Internal error.');
 					return;
 				}
 
@@ -59,10 +60,16 @@ function Online3DViewerLoad ()
 		});
 	}
 
+	var supported = JSM.IsWebGLEnabled () && JSM.IsFileApiEnabled ();
 	var viewers = document.getElementsByClassName ('3dviewer');
-	var i;
+	var i, viewer;
 	for (i = 0; i < viewers.length; i++) {
-		LoadViewer (viewers[i]);
+		viewer = viewers[i];
+		if (supported) {
+			LoadViewer (viewer);
+		} else {
+			Error (viewer, 'No browser support.');
+		}
 	}
 }
 

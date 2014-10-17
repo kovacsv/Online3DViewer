@@ -8,29 +8,7 @@ ImporterApp = function ()
 
 ImporterApp.prototype.Init = function ()
 {
-	function CheckSupport ()
-	{
-		if (!window.WebGLRenderingContext) {
-			return false;
-		}
-	
-		if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {	
-			return false;
-		}
-	
-		try {
-			var canvas = document.createElement ('canvas');
-			if (!canvas.getContext ('experimental-webgl') && !canvas.getContext ('webgl')) {
-				return false;
-			}
-		} catch (exception) {
-			return false;
-		}
-
-		return true;
-	}
-
-	if (!CheckSupport ()) {
+	if (!JSM.IsWebGLEnabled () || !JSM.IsFileApiEnabled ()) {
 		var i, child;
 		
 		var children = [];
@@ -48,7 +26,7 @@ ImporterApp.prototype.Init = function ()
 			}
 		}
 		
-		return;		
+		return;
 	}
 	
 	var myThis = this;
