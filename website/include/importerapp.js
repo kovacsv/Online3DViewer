@@ -32,7 +32,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var top = document.getElementById ('top');
 	var importerButtons = new ImporterButtons (top);
-	importerButtons.AddLogo ('Online 3D Viewer <span class="version">0.1</span>', function () { myThis.WelcomeDialog (); });
+	importerButtons.AddLogo ('Online 3D Viewer <span class="version">0.2</span>', function () { myThis.WelcomeDialog (); });
 	importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
 	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	importerButtons.AddButton ('images/fixup.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
@@ -154,6 +154,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 					table.AddColorRow ('Ambient', material.ambient);
 					table.AddColorRow ('Diffuse', material.diffuse);
 					table.AddColorRow ('Specular', material.specular);
+					table.AddRow ('Shininess', material.shininess);
 					table.AddRow ('Opacity', material.opacity.toFixed (2));
 				},
 				title : 'Show/Hide Information',

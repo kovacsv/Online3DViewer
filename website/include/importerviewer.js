@@ -65,7 +65,7 @@ ImporterViewer.prototype.ShowAllMeshes = function (inEnvironment)
 		}
 	});
 	
-	JSM.ConvertJSONDataToThreeMeshes (this.jsonData, null, environment);
+	JSM.ConvertJSONDataToThreeMeshes (this.jsonData, this.Draw.bind (this), environment);
 };
 
 ImporterViewer.prototype.ShowMesh = function (index)
@@ -77,7 +77,7 @@ ImporterViewer.prototype.ShowMesh = function (index)
 		meshes : [this.jsonData.meshes[index]]
 	};
 	
-	var meshes = JSM.ConvertJSONDataToThreeMeshes (workJsonData);
+	var meshes = JSM.ConvertJSONDataToThreeMeshes (workJsonData, this.Draw.bind (this));
 	for (i = 0; i < meshes.length; i++) {
 		mesh = meshes[i];
 		mesh.originalJsonIndex = index;
@@ -161,4 +161,9 @@ ImporterViewer.prototype.SetNamedView = function (viewName)
 
 	this.viewer.cameraMove.Set (eye, center, up);
 	this.viewer.FitInWindow ();
+};
+
+ImporterViewer.prototype.Draw = function ()
+{
+	this.viewer.Draw ();
 };

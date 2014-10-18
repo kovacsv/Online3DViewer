@@ -55,7 +55,11 @@ function Online3DViewerLoad ()
 						viewer.Draw ();
 					}
 				});
-				JSM.ConvertJSONDataToThreeMeshes (jsonData, null, environment);	
+				
+				var textureLoaded = function () {
+					viewer.Draw ();
+				};
+				JSM.ConvertJSONDataToThreeMeshes (jsonData, textureLoaded, environment);	
 			}				
 		});
 	}
