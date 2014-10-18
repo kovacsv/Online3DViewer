@@ -1,4 +1,4 @@
-function Online3DViewerLoad ()
+function LoadOnline3DModels ()
 {
 	function Error (viewerElement, message)
 	{
@@ -76,5 +76,3 @@ function Online3DViewerLoad ()
 		}
 	}
 }
-
-window.addEventListener ('load', Online3DViewerLoad, true);
