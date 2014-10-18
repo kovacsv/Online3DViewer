@@ -154,7 +154,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 					table.AddColorRow ('Ambient', material.ambient);
 					table.AddColorRow ('Diffuse', material.diffuse);
 					table.AddColorRow ('Specular', material.specular);
-					table.AddRow ('Shininess', material.shininess);
+					table.AddRow ('Shininess', material.shininess.toFixed (2));
 					table.AddRow ('Opacity', material.opacity.toFixed (2));
 				},
 				title : 'Show/Hide Information',
