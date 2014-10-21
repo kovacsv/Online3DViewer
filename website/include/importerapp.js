@@ -17,8 +17,8 @@ ImporterApp.prototype.Init = function ()
 		div.className = 'nosupport';
 		div.innerHTML = [
 			'<div id="nosupport">',
-			'<div class="title">Unfortunately your browser does not support this site.</div>',
-			'You need a browser which supports the following technologies: WebGL, WebGLRenderingContext, File, FileReader, FileList, Blob, URL.',
+			this.GetWelcomeText (),
+			'<div class="nosupporterror">You need a browser which supports the following technologies: WebGL, WebGLRenderingContext, File, FileReader, FileList, Blob, URL.</div>',
 			'</div>'
 		].join ('');
 		document.body.appendChild (div);
@@ -61,11 +61,7 @@ ImporterApp.prototype.WelcomeDialog = function ()
 {
 	var dialogText = [
 		'<div class="importerdialog">',
-		'<div class="welcometitle">Welcome to Online 3D Viewer!</div>',
-		'<div class="welcometext">Here you can view your local 3D models online. Just simply drag and drop 3D files and textures to this browser window or use the open button above.</div>',
-		'<div class="welcometextformats">Supported formats: 3ds, obj, stl.</div>',
-		'<div class="welcometext">Powered by <a target="_blank" href="https://github.com/mrdoob/three.js/">Three.js</a> and <a target="_blank" href="https://github.com/kovacsv/JSModeler">JSModeler</a>.</div>',
-		'<div class="welcometext"><a target="_blank" href="https://github.com/kovacsv/Online3DViewer"><img src="images/githublogo.png"/></a></div>',
+		this.GetWelcomeText (),
 		'</div>',
 	].join ('');
 	this.dialog.Open ({
@@ -80,6 +76,18 @@ ImporterApp.prototype.WelcomeDialog = function ()
 			}
 		]
 	});
+};
+
+ImporterApp.prototype.GetWelcomeText = function ()
+{
+	var welcomeText = [
+		'<div class="welcometitle">Welcome to Online 3D Viewer!</div>',
+		'<div class="welcometext">Here you can view your local 3D models online. Just simply drag and drop 3D files and textures to this browser window or use the open button above.</div>',
+		'<div class="welcometextformats">Supported formats: 3ds, obj, stl.</div>',
+		'<div class="welcometext">Powered by <a target="_blank" href="https://github.com/mrdoob/three.js/">Three.js</a> and <a target="_blank" href="https://github.com/kovacsv/JSModeler">JSModeler</a>.</div>',
+		'<div class="welcometext"><a target="_blank" href="https://github.com/kovacsv/Online3DViewer"><img src="images/githublogo.png"/></a></div>',
+	].join ('');
+	return welcomeText;
 };
 
 ImporterApp.prototype.Resize = function ()

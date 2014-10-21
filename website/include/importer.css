@@ -12,12 +12,17 @@ html, body
 
 #nosupport
 {
+	width : 450px;
+	margin : 0px auto;
 	padding : 10px;
+	text-align : center;
 }
 
-#nosupport div.title
+#nosupport div.nosupporterror
 {
-	font-size : 17px;
+	color : #aa0000;
+	background : transparent;
+	font-size : 14px;
 	margin-bottom : 10px;
 }
 
