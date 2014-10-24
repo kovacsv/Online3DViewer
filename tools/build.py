@@ -32,7 +32,8 @@ def BuildEmbeddable (rootFolder, resultFolder):
 	targetFolder = os.path.join (resultFolder, 'embeddable')
 	shutil.copytree (os.path.join (rootFolder, 'embeddable'), targetFolder)
 	shutil.copytree (os.path.join (rootFolder, 'jsmodeler'), os.path.join (targetFolder, 'jsmodeler'))
-	indexFilePath = os.path.join (targetFolder, 'index.html')
+	indexFilePath = os.path.join (targetFolder, 'multiple.html')
+	indexFilePath = os.path.join (targetFolder, 'fullscreen.html')
 	ReplaceInFile (indexFilePath, '../jsmodeler/', 'jsmodeler/')
 
 def BuildWikiExtension (rootFolder, resultFolder):
