@@ -1,12 +1,18 @@
 {
+	"maxerr" : 50,
+	"curly" : true,
+	"forin" : true,
+	"latedef" : true,
+	"nonew" : true,
+	"quotmark" : true,
+	"unused" : true,
+	"funcscope" : true,
+	"lastsemic" : true,
+	"loopfunc" : true,
+	"shadow" : true,
 	"globals" : {
-		"JSM" : true,
-		"ImporterApp" :true,
-		"ImporterMenu" : true,
-		"ImporterViewer" : true,
-		"ImporterButtons" : true,
-		"ImporterProgressBar" : true,
-		"InfoTable" : true,
-		"THREE" : false
+		"JSM" : false,
+		"THREE" : false,
+		"requestAnimationFrame" : false
 	}
 }

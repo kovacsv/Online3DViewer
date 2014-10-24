@@ -1,4 +1,4 @@
-function LoadOnline3DModels ()
+LoadOnline3DModels = function ()
 {
 	function Error (viewerElement, message)
 	{
@@ -15,7 +15,6 @@ function LoadOnline3DModels ()
 			return;
 		}
 
-		var myThis = this;
 		var urlList = urls.split ('|');
 		JSM.ConvertURLListToJsonData (urlList, {
 			onError : function () {
@@ -37,7 +36,7 @@ function LoadOnline3DModels ()
 
 				var currentMeshIndex = 0;
 				var environment = new JSM.AsyncEnvironment ({
-					onStart : function (taskCount/*, meshes*/) {
+					onStart : function (/*taskCount, meshes*/) {
 						viewer.EnableDraw (false);
 					},
 					onProcess : function (currentTask, meshes) {
@@ -75,4 +74,4 @@ function LoadOnline3DModels ()
 			Error (viewer, 'No browser support.');
 		}
 	}
-}
+};
