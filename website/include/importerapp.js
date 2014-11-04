@@ -147,6 +147,29 @@ ImporterApp.prototype.GenerateMenu = function ()
 		return group;
 	}
 
+	function AddInformation (infoGroup, jsonData)
+	{
+		var infoTable = new InfoTable (infoGroup);
+
+		var materialCount = jsonData.materials.length;
+		var vertexCount = 0;
+		var triangleCount = 0;
+		
+		var i, j, mesh, triangles;
+		for (i = 0; i < jsonData.meshes.length; i++) {
+			mesh = jsonData.meshes[i];
+			vertexCount += mesh.vertices.length / 3;
+			for (j = 0; j < mesh.triangles.length; j++) {
+				triangles = mesh.triangles[j];
+				triangleCount += triangles.parameters.length / 9;
+			}
+		}
+	
+		infoTable.AddRow ('Material count', materialCount);	
+		infoTable.AddRow ('Vertex count', vertexCount);	
+		infoTable.AddRow ('Triangle count', triangleCount);	
+	}
+	
 	function AddMaterial (importerMenu, material)
 	{
 		importerMenu.AddSubItem (materialsGroup, material.name, {
@@ -239,6 +262,9 @@ ImporterApp.prototype.GenerateMenu = function ()
 			importerMenu.AddSubItem (missingFilesGroup, this.fileNames.missing[i]);
 		}
 	}
+	
+	var infoGroup = AddDefaultGroup (importerMenu, 'Information');
+	AddInformation (infoGroup, jsonData);
 	
 	var materialsGroup = AddDefaultGroup (importerMenu, 'Materials');
 	var material;
