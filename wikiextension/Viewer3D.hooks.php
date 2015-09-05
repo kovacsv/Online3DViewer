@@ -11,7 +11,6 @@ class Viewer3DHooks {
 
 	public static function OnSampleTag ($data, $attribs, $parser, $frame)
 	{
-		$parser->getOutput ()->addJsConfigVars ('myConfigVar', 'anna');
 		$parser->getOutput ()->addModules ('ext.Viewer3D');
 		
 		global $viewerCounter;
