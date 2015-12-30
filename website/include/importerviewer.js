@@ -17,6 +17,8 @@ ImporterViewer.prototype.Init = function (canvasName)
 	if (!this.viewer.Start (canvas, viewerSettings)) {
 		return false;
 	}
+	this.viewer.navigation.SetNearDistanceLimit (0.1);
+	this.viewer.navigation.SetFarDistanceLimit (100000.0);
 	this.viewer.SetClearColor (0xdddddd);
 	this.viewer.Draw ();
 	
