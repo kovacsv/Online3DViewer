@@ -14,7 +14,7 @@ FloatingDialog.prototype.Open = function (parameters)
 		buttonDiv.onclick = function () {
 			button.callback (dialog);
 		};
-		buttonsDiv.appendChild (buttonDiv);	
+		parent.appendChild (buttonDiv);	
 	}
 
 	if (this.dialogDiv !== null) {

@@ -42,7 +42,7 @@ def BuildWikiExtension (rootFolder, resultFolder):
 	shutil.copytree (os.path.join (rootFolder, 'wikiextension'), targetFolder)
 	shutil.copy (os.path.join (rootFolder, 'jsmodeler', 'three.min.js'), os.path.join (targetFolder, 'three.min.js'))
 	shutil.copy (os.path.join (rootFolder, 'jsmodeler', 'jsmodeler.js'), os.path.join (targetFolder, 'jsmodeler.js'))
-	shutil.copy (os.path.join (rootFolder, 'jsmodeler', 'jsmodeler.viewer.js'), os.path.join (targetFolder, 'jsmodeler.viewer.js'))
+	shutil.copy (os.path.join (rootFolder, 'jsmodeler', 'jsmodeler.ext.three.js'), os.path.join (targetFolder, 'jsmodeler.ext.three.js'))
 	shutil.copy (os.path.join (rootFolder, 'embeddable', 'include', 'online3dembedder.js'), os.path.join (targetFolder, 'online3dembedder.js'))
 	
 def Main ():

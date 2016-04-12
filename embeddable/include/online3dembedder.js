@@ -35,11 +35,11 @@ LoadOnline3DModels = function ()
 				}
 
 				var currentMeshIndex = 0;
-				var environment = new JSM.AsyncEnvironment ({
+				var environment = {
 					onStart : function (/*taskCount, meshes*/) {
 						viewer.EnableDraw (false);
 					},
-					onProcess : function (currentTask, meshes) {
+					onProgress : function (currentTask, meshes) {
 						while (currentMeshIndex < meshes.length) {
 							viewer.AddMesh (meshes[currentMeshIndex]);
 							currentMeshIndex = currentMeshIndex + 1;
@@ -53,7 +53,7 @@ LoadOnline3DModels = function ()
 						viewer.EnableDraw (true);
 						viewer.Draw ();
 					}
-				});
+				};
 				
 				var textureLoaded = function () {
 					viewer.Draw ();

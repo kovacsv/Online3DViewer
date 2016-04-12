@@ -46,26 +46,26 @@ ImporterViewer.prototype.ShowAllMeshes = function (inEnvironment)
 	
 	var myThis = this;
 	var currentMeshIndex = 0;
-	var environment = new JSM.AsyncEnvironment ({
+	var environment = {
 		onStart : function (taskCount/*, meshes*/) {
-			inEnvironment.OnStart (taskCount);
+			inEnvironment.onStart (taskCount);
 			myThis.viewer.EnableDraw (false);
 		},
-		onProcess : function (currentTask, meshes) {
+		onProgress : function (currentTask, meshes) {
 			while (currentMeshIndex < meshes.length) {
 				myThis.viewer.AddMesh (meshes[currentMeshIndex]);
 				currentMeshIndex = currentMeshIndex + 1;
 			}
-			inEnvironment.OnProcess (currentTask);
+			inEnvironment.onProgress (currentTask);
 		},
 		onFinish : function (meshes) {
 			myThis.AdjustClippingPlanes (50.0);
 			myThis.FitInWindow ();
 			myThis.viewer.EnableDraw (true);
 			myThis.viewer.Draw ();
-			inEnvironment.OnFinish (meshes);
+			inEnvironment.onFinish (meshes);
 		}
-	});
+	};
 	
 	JSM.ConvertJSONDataToThreeMeshes (this.jsonData, this.Draw.bind (this), environment);
 };

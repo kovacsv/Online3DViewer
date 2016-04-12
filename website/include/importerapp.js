@@ -29,7 +29,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var top = document.getElementById ('top');
 	var importerButtons = new ImporterButtons (top);
-	importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.3</span>', function () { myThis.WelcomeDialog (); });
+	importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.4</span>', function () { myThis.WelcomeDialog (); });
 	importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
 	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	importerButtons.AddButton ('images/fixup.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
@@ -171,7 +171,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 		infoTable.AddRow ('Triangle count', triangleCount);	
 	}
 	
-	function AddMaterial (importerMenu, material)
+	function AddMaterial (importerMenu, materialsGroup, material)
 	{
 		importerMenu.AddSubItem (materialsGroup, material.name, {
 			openCloseButton : {
@@ -192,7 +192,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 		});
 	}
 
-	function AddMesh (importerApp, importerMenu, mesh, meshIndex)
+	function AddMesh (importerApp, importerMenu, meshesGroup, mesh, meshIndex)
 	{
 		importerMenu.AddSubItem (meshesGroup, mesh.name, {
 			openCloseButton : {
@@ -271,14 +271,14 @@ ImporterApp.prototype.GenerateMenu = function ()
 	var material;
 	for (i = 0; i < jsonData.materials.length; i++) {
 		material = jsonData.materials[i];
-		AddMaterial (importerMenu, material);
+		AddMaterial (importerMenu, materialsGroup, material);
 	}
 	
 	var meshesGroup = AddDefaultGroup (importerMenu, 'Meshes');
 	var mesh;
 	for (i = 0; i < jsonData.meshes.length; i++) {
 		mesh = jsonData.meshes[i];
-		AddMesh (this, importerMenu, mesh, i);
+		AddMesh (this, importerMenu, meshesGroup, mesh, i);
 	}
 };
 
@@ -309,18 +309,18 @@ ImporterApp.prototype.Generate = function (progressBar)
 	function ShowMeshes (importerApp, progressBar, merge)
 	{
 		importerApp.inGenerate = true;
-		var environment = new JSM.AsyncEnvironment ({
+		var environment = {
 			onStart : function (taskCount) {
 				progressBar.Init (taskCount);
 			},
-			onProcess : function (currentTask) {
+			onProgress : function (currentTask) {
 				progressBar.Step (currentTask + 1);
 			},
 			onFinish : function () {
 				importerApp.GenerateMenu ();
 				importerApp.inGenerate = false;
 			}
-		});
+		};
 		
 		if (merge) {
 			var jsonData = importerApp.viewer.GetJsonData ();
