@@ -55,6 +55,7 @@ ImporterApp.prototype.Init = function ()
 	fileInput.addEventListener ('change', this.FileSelected.bind (this), false);
 	
 	this.WelcomeDialog ();
+	this.InitTestMode ();	
 };
 
 ImporterApp.prototype.WelcomeDialog = function ()
@@ -454,4 +455,53 @@ window.onload = function ()
 {
 	var importerApp = new ImporterApp ();
 	importerApp.Init ();
+};
+
+// TODO: Use from JSModeler
+var LoadJsonFile = function (fileName, onReady)
+{
+	var request = new XMLHttpRequest ();
+	request.overrideMimeType ('application/json');
+	request.open ('GET', fileName, true);
+	request.onreadystatechange = function () {
+		if (request.readyState == 4) {
+			var jsonData = JSON.parse (request.responseText);
+			onReady (jsonData);
+		}
+	};
+	request.send (null);
+};
+
+ImporterApp.prototype.InitTestMode = function ()
+{
+	if (window.location.hash != '#test') {
+		return;
+	}
+	
+	var currentTestFile = 0;
+	var myThis = this;
+	LoadJsonFile ('testfiles/testfiles.json', function (jsonContent) {
+		window.addEventListener ('keydown', function (event) {
+			var keyCode = event.which;
+			if (keyCode == 84 && currentTestFile < jsonContent.files.length) {
+				myThis.dialog.Close ();
+				event.preventDefault ();
+				JSM.ConvertURLListToJsonData (jsonContent.files[currentTestFile], {
+					onError : function () {
+						myThis.GenerateError ('No readable file found. You can open 3ds, obj and stl files.');
+						return;
+					},
+					onReady : function (fileNames, jsonData) {
+						myThis.fileNames = fileNames;
+						myThis.viewer.SetJsonData (jsonData);
+						var menu = document.getElementById ('menu');
+						var progressBar = new ImporterProgressBar (menu);
+						myThis.JsonLoaded (progressBar);
+					}
+				});	
+				currentTestFile++;
+			}
+		}, false);
+
+	});
 };
