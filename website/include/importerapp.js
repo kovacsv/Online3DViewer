@@ -54,8 +54,15 @@ ImporterApp.prototype.Init = function ()
 	var fileInput = document.getElementById ('file');
 	fileInput.addEventListener ('change', this.FileSelected.bind (this), false);
 	
-	this.WelcomeDialog ();
-	this.InitTestMode ();	
+	var testMode = this.InitTestMode ();
+	var hasHashModel = false;
+	if (!testMode) {
+		window.onhashchange = this.LoadFilesFromHash.bind (this);
+		hasHashModel = this.LoadFilesFromHash ()
+	}
+	if (!hasHashModel) {
+		this.WelcomeDialog ();
+	}
 };
 
 ImporterApp.prototype.WelcomeDialog = function ()
@@ -393,13 +400,13 @@ ImporterApp.prototype.ShowHideMesh = function (meshIndex)
 	return this.meshVisibility[meshIndex];
 };
 
-ImporterApp.prototype.ProcessFiles = function (fileList)
+ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 {
 	this.dialog.Close ();
 	if (this.inGenerate) {
 		return;
 	}
-	
+
 	var userFiles = fileList;
 	if (userFiles.length === 0) {
 		return;
@@ -408,7 +415,12 @@ ImporterApp.prototype.ProcessFiles = function (fileList)
 	this.fileNames = null;
 	
 	var myThis = this;
-	JSM.ConvertFileListToJsonData (userFiles, {
+	var processorFunc = JSM.ConvertFileListToJsonData;
+	if (isUrl) {
+		processorFunc = JSM.ConvertURLListToJsonData;
+	}
+
+	processorFunc (userFiles, {
 		onError : function () {
 			myThis.GenerateError ('No readable file found. You can open 3ds, obj and stl files.');
 			return;
@@ -435,14 +447,14 @@ ImporterApp.prototype.Drop = function (event)
 {
 	event.stopPropagation ();
 	event.preventDefault ();
-	this.ProcessFiles (event.dataTransfer.files);
+	this.ProcessFiles (event.dataTransfer.files, false);
 };
 
 ImporterApp.prototype.FileSelected = function (event)
 {
 	event.stopPropagation ();
 	event.preventDefault ();
-	this.ProcessFiles (event.target.files);
+	this.ProcessFiles (event.target.files, false);
 };
 
 ImporterApp.prototype.OpenFile = function ()
@@ -451,36 +463,29 @@ ImporterApp.prototype.OpenFile = function ()
 	fileInput.click ();
 };
 
-window.onload = function ()
+ImporterApp.prototype.LoadFilesFromHash = function ()
 {
-	var importerApp = new ImporterApp ();
-	importerApp.Init ();
-};
-
-// TODO: Use from JSModeler
-var LoadJsonFile = function (fileName, onReady)
-{
-	var request = new XMLHttpRequest ();
-	request.overrideMimeType ('application/json');
-	request.open ('GET', fileName, true);
-	request.onreadystatechange = function () {
-		if (request.readyState == 4) {
-			var jsonData = JSON.parse (request.responseText);
-			onReady (jsonData);
-		}
-	};
-	request.send (null);
+	if (window.location.hash.length == 0) {
+		return false;
+	}
+	
+	var hash = window.location.hash;
+	var hash = hash.substr (1, hash.length - 1);
+	var fileList = hash.split (',');
+	
+	this.ProcessFiles (fileList, true);
+	return true;
 };
 
 ImporterApp.prototype.InitTestMode = function ()
 {
 	if (window.location.hash != '#test') {
-		return;
+		return false;
 	}
 	
 	var currentTestFile = 0;
 	var myThis = this;
-	LoadJsonFile ('testfiles/testfiles.json', function (jsonContent) {
+	JSM.LoadJsonFile ('testfiles/testfiles.json', function (jsonContent) {
 		window.addEventListener ('keydown', function (event) {
 			var keyCode = event.which;
 			if (keyCode == 84 && currentTestFile < jsonContent.files.length) {
@@ -502,6 +507,12 @@ ImporterApp.prototype.InitTestMode = function ()
 				currentTestFile++;
 			}
 		}, false);
-
 	});
+	return true;
+};
+
+window.onload = function ()
+{
+	var importerApp = new ImporterApp ();
+	importerApp.Init ();
 };
