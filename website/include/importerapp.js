@@ -58,7 +58,7 @@ ImporterApp.prototype.Init = function ()
 	var hasHashModel = false;
 	if (!testMode) {
 		window.onhashchange = this.LoadFilesFromHash.bind (this);
-		hasHashModel = this.LoadFilesFromHash ()
+		hasHashModel = this.LoadFilesFromHash ();
 	}
 	if (!hasHashModel) {
 		this.WelcomeDialog ();
@@ -465,7 +465,7 @@ ImporterApp.prototype.OpenFile = function ()
 
 ImporterApp.prototype.LoadFilesFromHash = function ()
 {
-	if (window.location.hash.length == 0) {
+	if (window.location.hash.length === 0) {
 		return false;
 	}
 	
