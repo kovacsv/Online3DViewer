@@ -508,21 +508,9 @@ ImporterApp.prototype.InitTestMode = function ()
 		window.addEventListener ('keydown', function (event) {
 			var keyCode = event.which;
 			if (keyCode == 84 && currentTestFile < jsonContent.files.length) {
-				myThis.dialog.Close ();
 				event.preventDefault ();
-				JSM.ConvertURLListToJsonData (jsonContent.files[currentTestFile], {
-					onError : function () {
-						myThis.GenerateError ('No readable file found. You can open 3ds, obj and stl files.');
-						return;
-					},
-					onReady : function (fileNames, jsonData) {
-						myThis.fileNames = fileNames;
-						myThis.viewer.SetJsonData (jsonData);
-						var menu = document.getElementById ('menu');
-						var progressBar = new ImporterProgressBar (menu);
-						myThis.JsonLoaded (progressBar);
-					}
-				});	
+				myThis.dialog.Close ();
+				myThis.ProcessFiles (jsonContent.files[currentTestFile], true);
 				currentTestFile++;
 			}
 		}, false);
