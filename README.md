@@ -12,7 +12,10 @@ Website
 -------
 
 This is the source code for http://3dviewer.net:
-- You can drag&drop files to your browser, or use the open button.
+- You can open 3D files in three ways:
+  - Use the open button from the top menu.
+  - Drag&Drop files to your browser.
+  - Define file urls as location hash.
 - You should open the main file, and all of its requested files.
   - For example open the requested mtl file with an obj file,
   - or open textures with 3ds file.
