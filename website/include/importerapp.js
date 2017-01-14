@@ -494,7 +494,7 @@ ImporterApp.prototype.InitTestMode = function ()
 	
 	var currentTestFile = 0;
 	var myThis = this;
-	JSM.LoadJsonFile ('testfiles/testfiles.json', function (jsonContent) {
+	JSM.LoadJsonFile ('testfiles_for_test/testfiles.json', function (jsonContent) {
 		window.addEventListener ('keydown', function (event) {
 			var keyCode = event.which;
 			if (keyCode == 84 && currentTestFile < jsonContent.files.length) {
