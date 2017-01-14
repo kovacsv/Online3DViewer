@@ -420,6 +420,8 @@ ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 		processorFunc = JSM.ConvertURLListToJsonData;
 	}
 
+	var menu = document.getElementById ('menu');
+	menu.innerHTML = 'Downloading files...';
 	processorFunc (userFiles, {
 		onError : function () {
 			myThis.GenerateError ('No readable file found. You can open 3ds, obj and stl files.');
