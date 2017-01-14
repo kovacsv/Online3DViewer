@@ -424,7 +424,11 @@ ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 	while (menu.lastChild) {
 		menu.removeChild (menu.lastChild);
 	}
-	menu.innerHTML = 'Downloading files...';
+	if (isUrl) {
+		menu.innerHTML = 'Downloading files...';
+	} else {
+		menu.innerHTML = 'Loading files...';
+	}
 	
 	processorFunc (userFiles, {
 		onError : function () {
