@@ -474,7 +474,7 @@ ImporterApp.prototype.OpenFile = function ()
 ImporterApp.prototype.ResetHash = function ()
 {
 	if (window.location.hash.length > 1) {
-		window.loadation.hash = '';
+		window.location.hash = '';
 	}
 };
 
