@@ -421,7 +421,11 @@ ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 	}
 
 	var menu = document.getElementById ('menu');
+	while (menu.lastChild) {
+		menu.removeChild (menu.lastChild);
+	}
 	menu.innerHTML = 'Downloading files...';
+	
 	processorFunc (userFiles, {
 		onError : function () {
 			myThis.GenerateError ('No readable file found. You can open 3ds, obj and stl files.');
