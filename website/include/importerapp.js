@@ -447,6 +447,7 @@ ImporterApp.prototype.Drop = function (event)
 {
 	event.stopPropagation ();
 	event.preventDefault ();
+	this.ResetHash ();
 	this.ProcessFiles (event.dataTransfer.files, false);
 };
 
@@ -454,6 +455,7 @@ ImporterApp.prototype.FileSelected = function (event)
 {
 	event.stopPropagation ();
 	event.preventDefault ();
+	this.ResetHash ();
 	this.ProcessFiles (event.target.files, false);
 };
 
@@ -463,16 +465,23 @@ ImporterApp.prototype.OpenFile = function ()
 	fileInput.click ();
 };
 
+ImporterApp.prototype.ResetHash = function ()
+{
+	if (window.location.hash.length > 1) {
+		window.loadation.hash = '';
+	}
+};
+
+
 ImporterApp.prototype.LoadFilesFromHash = function ()
 {
-	if (window.location.hash.length === 0) {
+	if (window.location.hash.length < 2) {
 		return false;
 	}
 	
 	var hash = window.location.hash;
 	var hash = hash.substr (1, hash.length - 1);
 	var fileList = hash.split (',');
-	
 	this.ProcessFiles (fileList, true);
 	return true;
 };
