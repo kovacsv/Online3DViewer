@@ -463,7 +463,7 @@ ImporterApp.prototype.FileSelected = function (event)
 
 ImporterApp.prototype.OpenFile = function ()
 {
-	var fileInput = document.getElementById('file');
+	var fileInput = document.getElementById ('file');
 	fileInput.click ();
 };
 
