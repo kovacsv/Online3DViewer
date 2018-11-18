@@ -1,8 +1,26 @@
+ExtensionInterface = function (app)
+{
+	this.app = app;
+};
+
+ExtensionInterface.prototype.GetButtonsDiv = function ()
+{
+	return this.app.extensionButtons.GetButtonsDiv ();
+};
+
+ExtensionInterface.prototype.GetModelJson = function ()
+{
+	return this.app.viewer.GetJsonData ();
+};
+
 ImporterApp = function ()
 {
 	this.viewer = null;
 	this.fileNames = null;
 	this.inGenerate = false;
+	this.extensions = [];
+	this.importerButtons = null;
+	this.extensionButtons = null;
 	this.dialog = null;
 };
 
@@ -28,18 +46,19 @@ ImporterApp.prototype.Init = function ()
 	
 	var myThis = this;
 	var top = document.getElementById ('top');
-	var importerButtons = new ImporterButtons (top);
-	importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.5.1</span>', function () { myThis.WelcomeDialog (); });
-	importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
-	importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
-	importerButtons.AddToggleButton ('images/fixup.png', 'images/fixupgray.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
-	importerButtons.AddButton ('images/top.png', 'Set Up Vector (Z)', function () { myThis.SetNamedView ('z'); });
-	importerButtons.AddButton ('images/bottom.png', 'Set Up Vector (-Z)', function () { myThis.SetNamedView ('-z'); });
-	importerButtons.AddButton ('images/front.png', 'Set Up Vector (Y)', function () { myThis.SetNamedView ('y'); });
-	importerButtons.AddButton ('images/back.png', 'Set Up Vector (-Y)', function () { myThis.SetNamedView ('-y'); });
-	importerButtons.AddButton ('images/left.png', 'Set Up Vector (X)', function () { myThis.SetNamedView ('x'); });
-	importerButtons.AddButton ('images/right.png', 'Set Up Vector (-X)', function () { myThis.SetNamedView ('-x'); });
+	this.importerButtons = new ImporterButtons (top);
+	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.5.1</span>', function () { myThis.WelcomeDialog (); });
+	this.importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
+	this.importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
+	this.importerButtons.AddToggleButton ('images/fixup.png', 'images/fixupgray.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
+	this.importerButtons.AddButton ('images/top.png', 'Set Up Vector (Z)', function () { myThis.SetNamedView ('z'); });
+	this.importerButtons.AddButton ('images/bottom.png', 'Set Up Vector (-Z)', function () { myThis.SetNamedView ('-z'); });
+	this.importerButtons.AddButton ('images/front.png', 'Set Up Vector (Y)', function () { myThis.SetNamedView ('y'); });
+	this.importerButtons.AddButton ('images/back.png', 'Set Up Vector (-Y)', function () { myThis.SetNamedView ('-y'); });
+	this.importerButtons.AddButton ('images/left.png', 'Set Up Vector (X)', function () { myThis.SetNamedView ('x'); });
+	this.importerButtons.AddButton ('images/right.png', 'Set Up Vector (-X)', function () { myThis.SetNamedView ('-x'); });
 	
+	this.extensionButtons = new ExtensionButtons (top);
 	this.dialog = new FloatingDialog ();
 
 	window.addEventListener ('resize', this.Resize.bind (this), false);
@@ -63,6 +82,16 @@ ImporterApp.prototype.Init = function ()
 	if (!hasHashModel) {
 		this.WelcomeDialog ();
 	}
+};
+
+ImporterApp.prototype.AddExtension = function (extension)
+{
+	if (!extension.IsEnabled ()) {
+		return;
+	}
+	
+	var extInterface = new ExtensionInterface (this);
+	extension.Init (extInterface);
 };
 
 ImporterApp.prototype.WelcomeDialog = function ()
@@ -482,7 +511,6 @@ ImporterApp.prototype.ResetHash = function ()
 	}
 };
 
-
 ImporterApp.prototype.LoadFilesFromHash = function ()
 {
 	if (window.location.hash.length < 2) {
@@ -522,4 +550,5 @@ window.onload = function ()
 {
 	var importerApp = new ImporterApp ();
 	importerApp.Init ();
+	importerApp.AddExtension (new ExampleExtension ());
 };

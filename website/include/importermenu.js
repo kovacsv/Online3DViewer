@@ -149,7 +149,9 @@ ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 
 ImporterButtons = function (parent)
 {
-	this.parent = parent;
+	this.buttonsDiv = document.createElement ('div');
+	this.buttonsDiv.className = 'buttons';
+	parent.appendChild (this.buttonsDiv);
 };
 
 ImporterButtons.prototype.AddLogo = function (title, onClick)
@@ -158,7 +160,7 @@ ImporterButtons.prototype.AddLogo = function (title, onClick)
 	logoDiv.id = 'logo';
 	logoDiv.innerHTML = title;
 	logoDiv.onclick = onClick;
-	this.parent.appendChild (logoDiv);
+	this.buttonsDiv.appendChild (logoDiv);
 };
 
 ImporterButtons.prototype.AddButton = function (image, title, onClick)
@@ -168,7 +170,7 @@ ImporterButtons.prototype.AddButton = function (image, title, onClick)
 	buttonImage.src = image;
 	buttonImage.title = title;
 	buttonImage.onclick = onClick;
-	this.parent.appendChild (buttonImage);
+	this.buttonsDiv.appendChild (buttonImage);
 };
 
 ImporterButtons.prototype.AddToggleButton = function (image, toggleImage, title, onClick)
@@ -187,7 +189,19 @@ ImporterButtons.prototype.AddToggleButton = function (image, toggleImage, title,
 		}
 		onClick ();
 	};
-	this.parent.appendChild (buttonImage);
+	this.buttonsDiv.appendChild (buttonImage);
+};
+
+ExtensionButtons = function (parent)
+{
+	this.buttonsDiv = document.createElement ('div');
+	this.buttonsDiv.className = 'rightbuttons';
+	parent.appendChild (this.buttonsDiv);
+};
+
+ExtensionButtons.prototype.GetButtonsDiv = function ()
+{
+	return this.buttonsDiv;
 };
 
 ImporterProgressBar = function (parent)
