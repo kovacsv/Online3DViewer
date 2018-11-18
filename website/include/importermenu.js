@@ -143,9 +143,6 @@ ExtensionButtons.prototype.GetButtonsDiv = function ()
 ImporterProgressBar = function (parent)
 {
 	this.parent = parent;
-	while (this.parent.lastChild) {
-		this.parent.removeChild (this.parent.lastChild);
-	}
 	this.borderDiv = null;
 	this.contentDiv = null;
 	this.maxCount = null;
@@ -154,17 +151,11 @@ ImporterProgressBar = function (parent)
 
 ImporterProgressBar.prototype.Init = function (maxCount)
 {
-	this.borderDiv = document.createElement ('div');
-	this.borderDiv.className = 'progressbarborder';
+	this.borderDiv = $('<div>').addClass ('progressbarborder').appendTo (this.parent);
+	this.contentDiv = $('<div>').addClass ('progressbarcontent').appendTo (this.borderDiv);
 
-	this.contentDiv = document.createElement ('div');
-	this.contentDiv.className = 'progressbarcontent';
-
-	this.borderDiv.appendChild (this.contentDiv);
-	this.parent.appendChild (this.borderDiv);
-	
 	this.maxCount = maxCount;
-	this.maxWidth = this.borderDiv.offsetWidth;
+	this.maxWidth = this.borderDiv.width ();
 	this.Step (0);
 };
 
@@ -175,5 +166,5 @@ ImporterProgressBar.prototype.Step = function (count)
 	if (count == this.maxCount) {
 		width = this.maxWidth - 2;
 	}
-	this.contentDiv.style.width = width + 'px';
+	this.contentDiv.width (width);
 };

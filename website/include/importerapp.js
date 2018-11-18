@@ -318,10 +318,8 @@ ImporterApp.prototype.GenerateMenu = function ()
 ImporterApp.prototype.GenerateError = function (errorMessage)
 {
 	this.viewer.RemoveMeshes ();
-	var menu = document.getElementById ('menu');
-	while (menu.lastChild) {
-		menu.removeChild (menu.lastChild);
-	}
+	var menu = $('#menu');
+	menu.empty ();
 	
 	this.dialog.Open ({
 		title : 'Error',
@@ -446,14 +444,12 @@ ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 		processorFunc = JSM.ConvertURLListToJsonData;
 	}
 
-	var menu = document.getElementById ('menu');
-	while (menu.lastChild) {
-		menu.removeChild (menu.lastChild);
-	}
+	var menu = $('#menu');
+	menu.empty ();
 	if (isUrl) {
-		menu.innerHTML = 'Downloading files...';
+		menu.html ('Downloading files...');
 	} else {
-		menu.innerHTML = 'Loading files...';
+		menu.html ('Loading files...');
 	}
 	
 	processorFunc (userFiles, {
@@ -464,8 +460,7 @@ ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 		onReady : function (fileNames, jsonData) {
 			myThis.fileNames = fileNames;
 			myThis.viewer.SetJsonData (jsonData);
-
-			var menu = document.getElementById ('menu');
+			menu.empty ();
 			var progressBar = new ImporterProgressBar (menu);
 			myThis.JsonLoaded (progressBar);
 		}
