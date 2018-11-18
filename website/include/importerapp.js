@@ -31,16 +31,13 @@ ImporterApp.prototype.Init = function ()
 			document.body.removeChild (document.body.lastChild);
 		}
 
-		var div = document.createElement ('div');
-		div.className = 'nosupport';
-		div.innerHTML = [
+		var div = $('<div>').addClass ('nosupport').appendTo ($('body'));
+		div.html ([
 			'<div id="nosupport">',
 			this.GetWelcomeText (),
 			'<div class="nosupporterror">You need a browser which supports the following technologies: WebGL, WebGLRenderingContext, File, FileReader, FileList, Blob, URL.</div>',
 			'</div>'
-		].join ('');
-		document.body.appendChild (div);
-		
+		].join (''));
 		return;
 	}
 	
@@ -175,7 +172,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 	{
 		var group = menu.AddGroup (name, {
 			openCloseButton : {
-				visible : false,
+				isOpen : false,
 				open : 'images/opened.png',
 				close : 'images/closed.png',
 				title : 'Show/Hide ' + name
@@ -211,7 +208,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 	{
 		importerMenu.AddSubItem (materialsGroup, material.name, {
 			openCloseButton : {
-				visible : false,
+				isOpen : false,
 				open : 'images/info.png',
 				close : 'images/info.png',
 				onOpen : function (content, material) {
@@ -232,7 +229,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 	{
 		importerMenu.AddSubItem (meshesGroup, mesh.name, {
 			openCloseButton : {
-				visible : false,
+				isOpen : false,
 				open : 'images/info.png',
 				close : 'images/info.png',
 				onOpen : function (content, mesh) {
@@ -268,13 +265,13 @@ ImporterApp.prototype.GenerateMenu = function ()
 				userData : mesh
 			},
 			userButton : {
-				visible : true,
+				isOpen : true,
 				onCreate : function (image) {
-					image.src = 'images/visible.png';
+					image.attr ('src', 'images/visible.png');
 				},
 				onClick : function (image, meshIndex) {
 					var visible = importerApp.ShowHideMesh (meshIndex);
-					image.src = visible ? 'images/visible.png' : 'images/hidden.png';
+					image.attr ('src', visible ? 'images/visible.png' : 'images/hidden.png');
 				},
 				title : 'Show/Hide Mesh',
 				userData : meshIndex
@@ -283,7 +280,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 	}
 	
 	var jsonData = this.viewer.GetJsonData ();
-	var menu = document.getElementById ('menu');
+	var menu = $('#menu');
 	var importerMenu = new ImporterMenu (menu);
 
 	var filesGroup = AddDefaultGroup (importerMenu, 'Files');

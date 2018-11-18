@@ -1,60 +1,37 @@
 InfoTable = function (parent)
 {
-	this.table = document.createElement ('table');
-	this.table.className = 'infotable';
-
-	while (parent.lastChild) {
-		parent.removeChild (parent.lastChild);
-	}
-	parent.appendChild (this.table);
+	this.table = $('<table>').addClass ('infotable').appendTo (parent);
 };
 
 InfoTable.prototype.AddRow = function (name, value)
 {
-	var tableRow = document.createElement ('tr');
-	
-	var nameColumn = document.createElement ('td');
-	nameColumn.innerHTML = name;
-	tableRow.appendChild (nameColumn);
-
-	var valueColumn = document.createElement ('td');
-	valueColumn.innerHTML = value;
-	tableRow.appendChild (valueColumn);
-
-	this.table.appendChild (tableRow);
+	var tableRow = $('<tr>').appendTo (this.table);
+	$('<td>').html (name).appendTo (tableRow);
+	$('<td>').html (value).appendTo (tableRow);
 };
 
 InfoTable.prototype.AddColorRow = function (name, color)
 {
-	var tableRow = document.createElement ('tr');
-	
-	var nameColumn = document.createElement ('td');
-	nameColumn.innerHTML = name;
-	tableRow.appendChild (nameColumn);
+	var tableRow = $('<tr>').appendTo (this.table);
+	$('<td>').html (name).appendTo (tableRow);
 
 	var valueColumn = document.createElement ('td');
-	tableRow.appendChild (valueColumn);
+	var valueColumn = $('<td>').appendTo (tableRow);
 	
-	var colorDiv = document.createElement ('div');
-	colorDiv.className = 'colorbutton';
-	colorDiv.title = '(' + color[0] + ', ' + color[1] + ', ' + color[2] + ')';
+	var colorDiv = $('<div>').addClass ('colorbutton').appendTo (valueColumn);
+	colorDiv.attr ('title', '(' + color[0] + ', ' + color[1] + ', ' + color[2] + ')');
 	var hexColor = JSM.RGBComponentsToHexColor (color[0] * 255.0, color[1] * 255.0, color[2] * 255.0);
 	var colorString = hexColor.toString (16);
 	while (colorString.length < 6) {
 		colorString = '0' + colorString;
 	}
-	colorDiv.style.background = '#' + colorString;
-	valueColumn.appendChild (colorDiv);
-	
-	this.table.appendChild (tableRow);
+	colorDiv.css ('background', '#' + colorString);
 };
 
 ImporterMenu = function (parent)
 {
 	this.parent = parent;
-	while (this.parent.lastChild) {
-		this.parent.removeChild (this.parent.lastChild);
-	}
+	this.parent.empty ();
 };
 
 ImporterMenu.prototype.AddGroup = function (name, parameters)
@@ -73,130 +50,89 @@ ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 		return name;
 	}
 
-	var menuItem = document.createElement ('div');
-	menuItem.className = 'menuitem';
+	var menuItem = $('<div>').addClass ('menuitem').appendTo (parent);
 
-	var menuText = null;
-	menuText = document.createElement ('div');
-	menuText.className = 'menuitem';
-	menuText.innerHTML = GetTruncatedName (name);
-	menuText.title = name;
-
-	var menuContent = null;
-	var openCloseImage = null;
-	var userImage = null;
-		
+	var menuContent = null;		
 	if (parameters !== undefined && parameters !== null) {
 		if (parameters.openCloseButton !== undefined && parameters.openCloseButton !== null) {
-			menuContent = document.createElement ('div');
-			menuContent.className = 'menugroup';
-			menuContent.style.display = parameters.openCloseButton.visible ? 'block' : 'none';
+			menuContent = $('<div>').addClass ('menugroup').appendTo (parent);
+			var isOpen = parameters.openCloseButton.isOpen;
+			if (!isOpen) {
+				menuContent.hide ();
+			}
 			
-			openCloseImage = document.createElement ('img');
-			openCloseImage.className = 'menubutton';
-			openCloseImage.title = parameters.openCloseButton.title;
-			openCloseImage.src = parameters.openCloseButton.visible ? parameters.openCloseButton.open : parameters.openCloseButton.close;
-			openCloseImage.onclick = function () {
-				if (menuContent.style.display == 'none') {
-					menuContent.style.display = 'block';
-					openCloseImage.src = parameters.openCloseButton.open;
+			var openCloseImage = $('<img>').addClass ('menubutton').attr ('title', parameters.openCloseButton.title).appendTo (menuItem);
+			openCloseImage.attr ('src', isOpen ? parameters.openCloseButton.open : parameters.openCloseButton.close);
+			openCloseImage.click (function () {
+				isOpen = !isOpen;
+				if (isOpen) {
 					if (parameters.openCloseButton.onOpen !== undefined && parameters.openCloseButton.onOpen !== null) {
 						parameters.openCloseButton.onOpen (menuContent, parameters.openCloseButton.userData);
 					}
 				} else {
-					menuContent.style.display = 'none';
-					openCloseImage.src = parameters.openCloseButton.close;
 					if (parameters.openCloseButton.onClose !== undefined && parameters.openCloseButton.onClose !== null) {
 						parameters.openCloseButton.onClose (menuContent, parameters.openCloseButton.userData);
 					}
 				}
-			};
-			
-			menuText.onclick = openCloseImage.onclick;
-			menuText.style.cursor = 'pointer';
+				menuContent.toggle ();
+				openCloseImage.attr ('src', isOpen ? parameters.openCloseButton.open : parameters.openCloseButton.close);
+			});
 		}
 
 		if (parameters.userButton !== undefined && parameters.userButton !== null) {
-			userImage = document.createElement ('img');
-			userImage.className = 'menubutton';
-			userImage.title = parameters.userButton.title;
+			var userImage = $('<img>').addClass ('menubutton').attr ('title', parameters.userButton.title).appendTo (menuItem);
 			if (parameters.userButton.onCreate !== undefined && parameters.userButton.onCreate !== null) {
 				parameters.userButton.onCreate (userImage, parameters.userButton.userData);
 			}
-			userImage.onclick = function () {
+			userImage.click (function () {
 				if (parameters.userButton.onClick !== undefined && parameters.userButton.onClick !== null) {
 					parameters.userButton.onClick (userImage, parameters.userButton.userData);
 				}
-			};
+			});
 		}
 	}
 
-	if (openCloseImage !== null) {
-		menuItem.appendChild (openCloseImage);
-	}
-	if (userImage !== null) {
-		menuItem.appendChild (userImage);
-	}
-	menuItem.appendChild (menuText);
-
-	parent.appendChild (menuItem);
-	if (menuContent !== null) {
-		parent.appendChild (menuContent);
-	}
-
+	$('<div>').addClass ('menuitem').html (GetTruncatedName (name)).attr ('title', name).appendTo (menuItem);
 	return menuContent;
 };
 
 ImporterButtons = function (parent)
 {
-	this.buttonsDiv = document.createElement ('div');
-	this.buttonsDiv.className = 'buttons';
-	parent.appendChild (this.buttonsDiv);
+	this.buttonsDiv = $('<div>').addClass ('buttons').appendTo (parent);
 };
 
 ImporterButtons.prototype.AddLogo = function (title, onClick)
 {
-	var logoDiv = document.createElement ('div');
-	logoDiv.className = 'logo';
-	logoDiv.innerHTML = title;
-	logoDiv.onclick = onClick;
-	this.buttonsDiv.appendChild (logoDiv);
+	var logoDiv = $('<div>').addClass ('logo').html (title).appendTo (this.buttonsDiv);
+	logoDiv.click (onClick);
 };
 
 ImporterButtons.prototype.AddButton = function (image, title, onClick)
 {
-	var buttonImage = document.createElement ('img');
-	buttonImage.className = 'topbutton';
-	buttonImage.src = image;
-	buttonImage.title = title;
-	buttonImage.onclick = onClick;
-	this.buttonsDiv.appendChild (buttonImage);
+	var buttonImage = $('<img>').addClass ('topbutton').attr ('src', image).attr ('title', 'title').appendTo (this.buttonsDiv);
+	buttonImage.click (function () {
+		onClick ();
+	});
 };
 
 ImporterButtons.prototype.AddToggleButton = function (image, toggleImage, title, onClick)
 {
-	var buttonImage = document.createElement ('img');
+	var buttonImage = $('<img>').addClass ('topbutton').attr ('src', image).attr ('title', 'title').appendTo (this.buttonsDiv);
 	var isOn = true;
-	buttonImage.className = 'topbutton';
-	buttonImage.src = image;
-	buttonImage.title = title;
-	buttonImage.onclick = function () {
+	buttonImage.click (function () {
 		isOn = !isOn;
 		if (isOn) {
-			buttonImage.src = image;
+			buttonImage.attr ('src', image);
 		} else {
-			buttonImage.src = toggleImage;
+			buttonImage.attr ('src', toggleImage);
 		}
 		onClick ();
-	};
-	this.buttonsDiv.appendChild (buttonImage);
+	});
 };
 
 ExtensionButtons = function (parent)
 {
-	this.buttonsDiv = document.createElement ('div');
-	this.buttonsDiv.className = 'rightbuttons';
-	parent.appendChild (this.buttonsDiv);
+	this.buttonsDiv = $('<div>').addClass ('rightbuttons').appendTo (parent);
 };
 
 ExtensionButtons.prototype.GetButtonsDiv = function ()

@@ -1,51 +1,38 @@
 FloatingDialog = function ()
 {
 	this.dialogDiv = null;
-	this.mouseClick = this.MouseClick.bind (this);
 };
 
 FloatingDialog.prototype.Open = function (parameters)
 {
 	function AddButton (dialog, parent, button)
 	{
-		var buttonDiv = document.createElement ('div');
-		buttonDiv.className = 'dialogbutton';
-		buttonDiv.innerHTML = button.text;
-		buttonDiv.onclick = function () {
+		var buttonDiv = $('<div>').addClass ('dialogbutton').html (button.text).appendTo (parent);
+		buttonDiv.click (function () {
 			button.callback (dialog);
-		};
-		parent.appendChild (buttonDiv);	
+		});
 	}
 
 	if (this.dialogDiv !== null) {
-		this.dialogDiv.Close ();
+		this.Close ();
 	}
 
-	this.dialogDiv = document.createElement ('div');
-	this.dialogDiv.className = 'dialog';
-	
-	var titleDiv = document.createElement ('div');
-	titleDiv.className = 'dialogtitle';
-	titleDiv.innerHTML = parameters.title;
-	this.dialogDiv.appendChild (titleDiv);
-	
-	var contentDiv = document.createElement ('div');
-	contentDiv.className = 'dialogcontent';
-	contentDiv.innerHTML = parameters.text;
-	this.dialogDiv.appendChild (contentDiv);
-
-	var buttonsDiv = document.createElement ('div');
-	buttonsDiv.className = 'dialogbuttons';
-	this.dialogDiv.appendChild (buttonsDiv);
+	this.dialogDiv = $('<div>').addClass ('dialog');
+	$('<div>').addClass ('dialogtitle').html (parameters.title).appendTo (this.dialogDiv);
+	$('<div>').addClass ('dialogcontent').html (parameters.text).appendTo (this.dialogDiv);
+	var buttonsDiv = $('<div>').addClass ('dialogbuttons').appendTo (this.dialogDiv);
 
 	var i, button;
 	for (i = 0; i < parameters.buttons.length; i++) {
 		button = parameters.buttons[i];
 		AddButton (this, buttonsDiv, button);
 	}
-	document.body.appendChild (this.dialogDiv);
+	this.dialogDiv.appendTo ($('body'));
 
-	document.addEventListener ('click', this.mouseClick, true);
+	var myThis = this;
+	$('body').click (function (event) {
+		myThis.MouseClick (event);
+	});
 	this.Resize ();
 };
 
@@ -55,9 +42,9 @@ FloatingDialog.prototype.Close = function ()
 		return;
 	}
 	
-	document.body.removeChild (this.dialogDiv);
-	document.removeEventListener ('click', this.mouseClick, true);
+	this.dialogDiv.remove ();
 	this.dialogDiv = null;
+	$('body').unbind ('click');
 };
 
 FloatingDialog.prototype.Resize = function ()
@@ -66,8 +53,8 @@ FloatingDialog.prototype.Resize = function ()
 		return;
 	}
 	
-	this.dialogDiv.style.left = ((document.body.clientWidth - this.dialogDiv.clientWidth) / 2.0) + 'px';
-	this.dialogDiv.style.top = ((document.body.clientHeight - this.dialogDiv.clientHeight) / 3.0) + 'px';
+	this.dialogDiv.css ('left', ((document.body.clientWidth - this.dialogDiv.width ()) / 2.0) + 'px');
+	this.dialogDiv.css ('top', ((document.body.clientHeight - this.dialogDiv.height ()) / 3.0) + 'px');
 };
 
 FloatingDialog.prototype.MouseClick = function (clickEvent)
@@ -79,7 +66,7 @@ FloatingDialog.prototype.MouseClick = function (clickEvent)
 	var dialogClicked = false;
 	var target = clickEvent.target;
 	while (target !== null) {
-		if (target === this.dialogDiv) {
+		if (target === this.dialogDiv.get ()[0]) {
 			dialogClicked = true;
 		}
 		target = target.parentElement;
