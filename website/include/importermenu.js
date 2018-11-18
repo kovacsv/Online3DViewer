@@ -164,7 +164,7 @@ ImporterProgressBar.prototype.Step = function (count)
 	var step = this.maxWidth / this.maxCount;
 	var width = count * step;
 	if (count == this.maxCount) {
-		width = this.maxWidth - 2;
+		width = this.maxWidth;
 	}
 	this.contentDiv.width (width);
 };
