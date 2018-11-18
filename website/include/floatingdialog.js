@@ -1,6 +1,7 @@
 FloatingDialog = function ()
 {
 	this.dialogDiv = null;
+	this.contentDiv = null;
 };
 
 FloatingDialog.prototype.Open = function (parameters)
@@ -17,9 +18,9 @@ FloatingDialog.prototype.Open = function (parameters)
 		this.Close ();
 	}
 
-	this.dialogDiv = $('<div>').addClass ('dialog');
+	this.dialogDiv = $('<div>').addClass ('dialog').appendTo ($('body'));
 	$('<div>').addClass ('dialogtitle').html (parameters.title).appendTo (this.dialogDiv);
-	$('<div>').addClass ('dialogcontent').html (parameters.text).appendTo (this.dialogDiv);
+	this.contentDiv = $('<div>').addClass ('dialogcontent').html (parameters.text).appendTo (this.dialogDiv);
 	var buttonsDiv = $('<div>').addClass ('dialogbuttons').appendTo (this.dialogDiv);
 
 	var i, button;
@@ -27,13 +28,14 @@ FloatingDialog.prototype.Open = function (parameters)
 		button = parameters.buttons[i];
 		AddButton (this, buttonsDiv, button);
 	}
-	this.dialogDiv.appendTo ($('body'));
 
-	var myThis = this;
-	$('body').click (function (event) {
-		myThis.MouseClick (event);
-	});
+	document.addEventListener ('click', this.MouseClick.bind (this), true);
 	this.Resize ();
+};
+
+FloatingDialog.prototype.SetText = function (text)
+{
+	this.contentDiv.html (text);
 };
 
 FloatingDialog.prototype.Close = function ()

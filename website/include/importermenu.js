@@ -51,7 +51,8 @@ ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 	}
 
 	var menuItem = $('<div>').addClass ('menuitem').appendTo (parent);
-
+	var menuItemClickHandler = null;
+	
 	var menuContent = null;		
 	if (parameters !== undefined && parameters !== null) {
 		if (parameters.openCloseButton !== undefined && parameters.openCloseButton !== null) {
@@ -63,7 +64,7 @@ ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 			
 			var openCloseImage = $('<img>').addClass ('menubutton').attr ('title', parameters.openCloseButton.title).appendTo (menuItem);
 			openCloseImage.attr ('src', isOpen ? parameters.openCloseButton.open : parameters.openCloseButton.close);
-			openCloseImage.click (function () {
+			menuItemClickHandler = function () {
 				isOpen = !isOpen;
 				if (isOpen) {
 					if (parameters.openCloseButton.onOpen !== undefined && parameters.openCloseButton.onOpen !== null) {
@@ -76,7 +77,8 @@ ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 				}
 				menuContent.toggle ();
 				openCloseImage.attr ('src', isOpen ? parameters.openCloseButton.open : parameters.openCloseButton.close);
-			});
+			};
+			openCloseImage.click (menuItemClickHandler);
 		}
 
 		if (parameters.userButton !== undefined && parameters.userButton !== null) {
@@ -92,7 +94,11 @@ ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 		}
 	}
 
-	$('<div>').addClass ('menuitem').html (GetTruncatedName (name)).attr ('title', name).appendTo (menuItem);
+	var menuItemText = $('<div>').addClass ('menuitem').html (GetTruncatedName (name)).attr ('title', name).appendTo (menuItem);
+	if (menuItemClickHandler != null) {
+		menuItemText.css ('cursor', 'pointer');
+		menuItemText.click (menuItemClickHandler);
+	}
 	return menuContent;
 };
 
