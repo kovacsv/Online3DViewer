@@ -26,8 +26,3 @@ Embeddable
 This is the embeddable version of the viewer:
 - In this case you should host the 3D models.
 - See examples for more information.
-
-Wiki Extension
---------------
-
-This is a WikiMedia extension for viewing 3D models. It is in experimental phase currently.

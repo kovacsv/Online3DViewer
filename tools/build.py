@@ -36,14 +36,6 @@ def BuildEmbeddable (rootFolder, resultFolder):
 	ReplaceInFile (indexFilePath, '../jsmodeler/', 'jsmodeler/')
 	indexFilePath = os.path.join (targetFolder, 'fullscreen.html')
 	ReplaceInFile (indexFilePath, '../jsmodeler/', 'jsmodeler/')
-
-def BuildWikiExtension (rootFolder, resultFolder):
-	targetFolder = os.path.join (resultFolder, 'wikiextension')
-	shutil.copytree (os.path.join (rootFolder, 'wikiextension'), targetFolder)
-	shutil.copy (os.path.join (rootFolder, 'jsmodeler', 'three.min.js'), os.path.join (targetFolder, 'three.min.js'))
-	shutil.copy (os.path.join (rootFolder, 'jsmodeler', 'jsmodeler.js'), os.path.join (targetFolder, 'jsmodeler.js'))
-	shutil.copy (os.path.join (rootFolder, 'jsmodeler', 'jsmodeler.ext.three.js'), os.path.join (targetFolder, 'jsmodeler.ext.three.js'))
-	shutil.copy (os.path.join (rootFolder, 'embeddable', 'include', 'online3dembedder.js'), os.path.join (targetFolder, 'online3dembedder.js'))
 	
 def Main ():
 	rootFolder = os.path.abspath ('..')
@@ -57,9 +49,7 @@ def Main ():
 
 	PrintInfo ('Building embeddable example to folder <' + resultFolder + '>.')
 	BuildEmbeddable (rootFolder, resultFolder)
-
-	PrintInfo ('Building wiki extension to folder <' + resultFolder + '>.')
-	BuildWikiExtension (rootFolder, resultFolder)
+	
 	return 0
 		
 sys.exit (Main ())
