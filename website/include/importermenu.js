@@ -171,6 +171,25 @@ ImporterButtons.prototype.AddButton = function (image, title, onClick)
 	this.parent.appendChild (buttonImage);
 };
 
+ImporterButtons.prototype.AddToggleButton = function (image, toggleImage, title, onClick)
+{
+	var buttonImage = document.createElement ('img');
+	var isOn = true;
+	buttonImage.className = 'topbutton';
+	buttonImage.src = image;
+	buttonImage.title = title;
+	buttonImage.onclick = function () {
+		isOn = !isOn;
+		if (isOn) {
+			buttonImage.src = image;
+		} else {
+			buttonImage.src = toggleImage;
+		}
+		onClick ();
+	};
+	this.parent.appendChild (buttonImage);
+};
+
 ImporterProgressBar = function (parent)
 {
 	this.parent = parent;
