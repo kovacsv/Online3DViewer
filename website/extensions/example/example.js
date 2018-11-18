@@ -5,7 +5,7 @@ ExampleExtension = function ()
 
 ExampleExtension.prototype.IsEnabled = function ()
 {
-	return false;
+	return true;
 };
 
 ExampleExtension.prototype.Init = function (extensionInterface)

@@ -550,5 +550,7 @@ window.onload = function ()
 {
 	var importerApp = new ImporterApp ();
 	importerApp.Init ();
+	// ExtensionIncludes
 	importerApp.AddExtension (new ExampleExtension ());
+	// ExtensionIncludesEnd
 };
