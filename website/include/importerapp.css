@@ -45,16 +45,16 @@ div.rightbuttons
 	float : right;
 }
 
-#logo
+div.logo
 {
 	color : #ffffff;
-	background : linear-gradient(#0095c6, #006d91)  #008ab8;
+	background : linear-gradient(#0095c6, #006d91) #008ab8;
 	font-size : 14px;
 	text-align : center;
 	text-decoration : none;
 	width : 240px;
 	padding : 5px 0px;
-	margin : 8px;
+	margin : 6px;
 	border-radius : 5px;
 	box-shadow: 0px 0px 5px #000000;
 	cursor : pointer;
@@ -67,12 +67,38 @@ span.version
 	font-size : 10px;
 }
 
+div.topbutton
+{
+	cursor : pointer;
+	display : block;
+	float : left;
+}
+
 img.topbutton
 {
 	width : 25px;
 	height : 25px;
-	padding : 8px 4px;
+	padding : 7px 4px;
 	cursor : pointer;
+	display : block;
+	float : left;
+}
+
+div.extbutton
+{
+	color : #000000;
+	background : linear-gradient(#dddddd, #bbbbbb) #cccccc;
+	border-radius : 5px;
+	padding : 5px 10px;
+	margin : 6px;
+	cursor : pointer;
+	display : block;
+	float : left;
+}
+
+div.extbutton img
+{
+	margin-right : 5px;
 	display : block;
 	float : left;
 }
