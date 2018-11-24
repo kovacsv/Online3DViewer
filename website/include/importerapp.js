@@ -22,6 +22,7 @@ ImporterApp = function ()
 	this.importerButtons = null;
 	this.extensionButtons = null;
 	this.dialog = null;
+	this.readyForTest = null;
 };
 
 ImporterApp.prototype.Init = function ()
@@ -79,6 +80,19 @@ ImporterApp.prototype.Init = function ()
 	if (!hasHashModel) {
 		this.WelcomeDialog ();
 	}
+};
+
+ImporterApp.prototype.ClearReadyForTest = function ()
+{
+	if (this.readyForTest !== null) {
+		this.readyForTest.remove ();
+		this.readyForTest = null;
+	}
+};
+
+ImporterApp.prototype.SetReadyForTest = function ()
+{
+	this.readyForTest = $('<div>').attr ('id', 'readyfortest').hide ().appendTo ($('body'));
 };
 
 ImporterApp.prototype.AddExtension = function (extension)
@@ -168,9 +182,10 @@ ImporterApp.prototype.JsonLoaded = function (progressBar)
 
 ImporterApp.prototype.GenerateMenu = function ()
 {
-	function AddDefaultGroup (menu, name)
+	function AddDefaultGroup (menu, name, id)
 	{
 		var group = menu.AddGroup (name, {
+			id : id,
 			openCloseButton : {
 				isOpen : false,
 				open : 'images/opened.png',
@@ -265,6 +280,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 				userData : mesh
 			},
 			userButton : {
+				id : 'showhidemesh-' + meshIndex,
 				isOpen : true,
 				onCreate : function (image) {
 					image.attr ('src', 'images/visible.png');
@@ -283,7 +299,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 	var menu = $('#menu');
 	var importerMenu = new ImporterMenu (menu);
 
-	var filesGroup = AddDefaultGroup (importerMenu, 'Files');
+	var filesGroup = AddDefaultGroup (importerMenu, 'Files', 'filesmenuitem');
 	importerMenu.AddSubItem (filesGroup, this.fileNames.main);
 	var i;
 	for (i = 0; i < this.fileNames.requested.length; i++) {
@@ -291,23 +307,23 @@ ImporterApp.prototype.GenerateMenu = function ()
 	}
 	
 	if (this.fileNames.missing.length > 0) {
-		var missingFilesGroup = AddDefaultGroup (importerMenu, 'Missing Files');
+		var missingFilesGroup = AddDefaultGroup (importerMenu, 'Missing Files', 'missingfilesmenuitem');
 		for (i = 0; i < this.fileNames.missing.length; i++) {
 			importerMenu.AddSubItem (missingFilesGroup, this.fileNames.missing[i]);
 		}
 	}
 	
-	var infoGroup = AddDefaultGroup (importerMenu, 'Information');
+	var infoGroup = AddDefaultGroup (importerMenu, 'Information', 'informationmenuitem');
 	AddInformation (infoGroup, jsonData);
 	
-	var materialsGroup = AddDefaultGroup (importerMenu, 'Materials');
+	var materialsGroup = AddDefaultGroup (importerMenu, 'Materials', 'materialsmenuitem');
 	var material;
 	for (i = 0; i < jsonData.materials.length; i++) {
 		material = jsonData.materials[i];
 		AddMaterial (importerMenu, materialsGroup, material);
 	}
 	
-	var meshesGroup = AddDefaultGroup (importerMenu, 'Meshes');
+	var meshesGroup = AddDefaultGroup (importerMenu, 'Meshes', 'meshesmenuitem');
 	var mesh;
 	for (i = 0; i < jsonData.meshes.length; i++) {
 		mesh = jsonData.meshes[i];
@@ -350,6 +366,7 @@ ImporterApp.prototype.Generate = function (progressBar)
 			onFinish : function () {
 				importerApp.GenerateMenu ();
 				importerApp.inGenerate = false;
+				importerApp.SetReadyForTest ();
 			}
 		};
 		
@@ -357,12 +374,13 @@ ImporterApp.prototype.Generate = function (progressBar)
 			var jsonData = importerApp.viewer.GetJsonData ();
 			importerApp.viewer.SetJsonData (JSM.MergeJsonDataMeshes (jsonData));
 		}
-		importerApp.viewer.ShowAllMeshes (environment);	
+		importerApp.viewer.ShowAllMeshes (environment);
 	}
 
 	var jsonData = this.viewer.GetJsonData ();
 	if (jsonData.materials.length === 0 || jsonData.meshes.length === 0) {
 		this.GenerateError ('Failed to open file. Maybe something is wrong with your file.');
+		this.SetReadyForTest ();
 		return;
 	}
 	
@@ -426,6 +444,7 @@ ImporterApp.prototype.ShowHideMesh = function (meshIndex)
 
 ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 {
+	this.ClearReadyForTest ();
 	this.dialog.Close ();
 	if (this.inGenerate) {
 		return;
@@ -455,6 +474,7 @@ ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 	processorFunc (userFiles, {
 		onError : function () {
 			myThis.GenerateError ('No readable file found. You can open 3ds, obj and stl files.');
+			myThis.SetReadyForTest ();
 			return;
 		},
 		onReady : function (fileNames, jsonData) {

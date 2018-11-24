@@ -55,6 +55,9 @@ ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 	
 	var menuContent = null;		
 	if (parameters !== undefined && parameters !== null) {
+		if (parameters.id !== undefined && parameters.id !== null) {
+			menuItem.attr ('id', parameters.id);
+		}
 		if (parameters.openCloseButton !== undefined && parameters.openCloseButton !== null) {
 			menuContent = $('<div>').addClass ('menugroup').appendTo (parent);
 			var isOpen = parameters.openCloseButton.isOpen;
@@ -83,6 +86,9 @@ ImporterMenu.prototype.AddSubItem = function (parent, name, parameters)
 
 		if (parameters.userButton !== undefined && parameters.userButton !== null) {
 			var userImage = $('<img>').addClass ('menubutton').attr ('title', parameters.userButton.title).appendTo (menuItem);
+			if (parameters.userButton.id !== undefined && parameters.userButton.id !== null) {
+				userImage.attr ('id', parameters.userButton.id);
+			}
 			if (parameters.userButton.onCreate !== undefined && parameters.userButton.onCreate !== null) {
 				parameters.userButton.onCreate (userImage, parameters.userButton.userData);
 			}
