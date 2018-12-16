@@ -247,8 +247,9 @@ ImporterApp.prototype.GenerateMenu = function ()
 				isOpen : false,
 				open : 'images/info.png',
 				close : 'images/info.png',
-				onOpen : function (content, mesh) {
-					var table = new InfoTable (content);
+				onOpen : function (contentDiv, mesh) {
+					contentDiv.empty ();
+					var table = new InfoTable (contentDiv);
 					
 					var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
 					var max = new JSM.Coord (-JSM.Inf, -JSM.Inf, -JSM.Inf);
@@ -281,7 +282,6 @@ ImporterApp.prototype.GenerateMenu = function ()
 			},
 			userButton : {
 				id : 'showhidemesh-' + meshIndex,
-				isOpen : true,
 				onCreate : function (image) {
 					image.attr ('src', 'images/visible.png');
 				},
