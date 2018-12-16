@@ -226,8 +226,9 @@ ImporterApp.prototype.GenerateMenu = function ()
 				isOpen : false,
 				open : 'images/info.png',
 				close : 'images/info.png',
-				onOpen : function (content, material) {
-					var table = new InfoTable (content);
+				onOpen : function (contentDiv, material) {
+					contentDiv.empty ();
+					var table = new InfoTable (contentDiv);
 					table.AddColorRow ('Ambient', material.ambient);
 					table.AddColorRow ('Diffuse', material.diffuse);
 					table.AddColorRow ('Specular', material.specular);
