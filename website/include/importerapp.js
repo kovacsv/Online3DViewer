@@ -198,7 +198,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 
 	function AddInformation (infoGroup, jsonData)
 	{
-		var infoTable = new InfoTable (infoGroup);
+		var infoTable = new InfoTable (infoGroup.GetContentDiv ());
 
 		var materialCount = jsonData.materials.length;
 		var vertexCount = 0;
@@ -221,7 +221,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 	
 	function AddMaterial (importerMenu, materialsGroup, material)
 	{
-		importerMenu.AddSubItem (materialsGroup, material.name, {
+		materialsGroup.AddSubItem (material.name, {
 			openCloseButton : {
 				isOpen : false,
 				open : 'images/info.png',
@@ -243,7 +243,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 
 	function AddMesh (importerApp, importerMenu, meshesGroup, mesh, meshIndex)
 	{
-		importerMenu.AddSubItem (meshesGroup, mesh.name, {
+		meshesGroup.AddSubItem (mesh.name, {
 			openCloseButton : {
 				isOpen : false,
 				open : 'images/info.png',
@@ -301,16 +301,16 @@ ImporterApp.prototype.GenerateMenu = function ()
 	var importerMenu = new ImporterMenu (menu);
 
 	var filesGroup = AddDefaultGroup (importerMenu, 'Files', 'filesmenuitem');
-	importerMenu.AddSubItem (filesGroup, this.fileNames.main);
+	filesGroup.AddSubItem (this.fileNames.main);
 	var i;
 	for (i = 0; i < this.fileNames.requested.length; i++) {
-		importerMenu.AddSubItem (filesGroup, this.fileNames.requested[i]);
+		filesGroup.AddSubItem (this.fileNames.requested[i]);
 	}
 	
 	if (this.fileNames.missing.length > 0) {
 		var missingFilesGroup = AddDefaultGroup (importerMenu, 'Missing Files', 'missingfilesmenuitem');
 		for (i = 0; i < this.fileNames.missing.length; i++) {
-			importerMenu.AddSubItem (missingFilesGroup, this.fileNames.missing[i]);
+			missingFilesGroup.AddSubItem (this.fileNames.missing[i]);
 		}
 	}
 	
