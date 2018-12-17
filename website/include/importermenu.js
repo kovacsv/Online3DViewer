@@ -52,14 +52,10 @@ ImporterMenuItem.prototype.Initialize = function (name)
 			menuItemDiv.attr ('id', this.parameters.id);
 		}
 		if (this.parameters.openCloseButton !== undefined && this.parameters.openCloseButton !== null) {
-			this.contentDiv = $('<div>').addClass ('menugroup').appendTo (this.parentDiv);
-			this.isOpen = this.parameters.openCloseButton.isOpen;
-			if (!this.isOpen) {
-				this.contentDiv.hide ();
-			}
-			
+			this.contentDiv = $('<div>').addClass ('menugroup').hide ().appendTo (this.parentDiv);
+			this.isOpen = false;
 			this.openCloseImage = $('<img>').addClass ('menubutton').attr ('title', this.parameters.openCloseButton.title).appendTo (menuItemDiv);
-			this.openCloseImage.attr ('src', this.isOpen ? this.parameters.openCloseButton.open : this.parameters.openCloseButton.close);
+			this.openCloseImage.attr ('src', 'images/closed.png');
 			menuItemClickHandler = this.OnOpenCloseClick.bind (this);
 			this.openCloseImage.click (menuItemClickHandler);
 		}
@@ -110,7 +106,7 @@ ImporterMenuItem.prototype.OnOpenCloseClick = function ()
 		}
 	}
 	this.contentDiv.toggle ();
-	this.openCloseImage.attr ('src', this.isOpen ? this.parameters.openCloseButton.open : this.parameters.openCloseButton.close);
+	this.openCloseImage.attr ('src', this.isOpen ? 'images/opened.png' : 'images/closed.png');
 };
 
 ImporterMenuItem.prototype.GetTruncatedName = function (name)

@@ -187,9 +187,6 @@ ImporterApp.prototype.GenerateMenu = function ()
 		var group = menu.AddGroup (name, {
 			id : id,
 			openCloseButton : {
-				isOpen : false,
-				open : 'images/opened.png',
-				close : 'images/closed.png',
 				title : 'Show/Hide ' + name
 			}
 		});
@@ -223,9 +220,6 @@ ImporterApp.prototype.GenerateMenu = function ()
 	{
 		materialsGroup.AddSubItem (material.name, {
 			openCloseButton : {
-				isOpen : false,
-				open : 'images/opened.png',
-				close : 'images/closed.png',
 				onOpen : function (contentDiv, material) {
 					contentDiv.empty ();
 					var table = new InfoTable (contentDiv);
@@ -245,9 +239,6 @@ ImporterApp.prototype.GenerateMenu = function ()
 	{
 		meshesGroup.AddSubItem (mesh.name, {
 			openCloseButton : {
-				isOpen : false,
-				open : 'images/opened.png',
-				close : 'images/closed.png',
 				onOpen : function (contentDiv, mesh) {
 					contentDiv.empty ();
 					var table = new InfoTable (contentDiv);
