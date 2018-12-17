@@ -224,8 +224,8 @@ ImporterApp.prototype.GenerateMenu = function ()
 		materialsGroup.AddSubItem (material.name, {
 			openCloseButton : {
 				isOpen : false,
-				open : 'images/info.png',
-				close : 'images/info.png',
+				open : 'images/opened.png',
+				close : 'images/closed.png',
 				onOpen : function (contentDiv, material) {
 					contentDiv.empty ();
 					var table = new InfoTable (contentDiv);
@@ -246,8 +246,8 @@ ImporterApp.prototype.GenerateMenu = function ()
 		meshesGroup.AddSubItem (mesh.name, {
 			openCloseButton : {
 				isOpen : false,
-				open : 'images/info.png',
-				close : 'images/info.png',
+				open : 'images/opened.png',
+				close : 'images/closed.png',
 				onOpen : function (contentDiv, mesh) {
 					contentDiv.empty ();
 					var table = new InfoTable (contentDiv);
