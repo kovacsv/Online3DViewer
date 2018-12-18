@@ -21,7 +21,7 @@ ImporterApp = function ()
 	this.extensions = [];
 	this.importerButtons = null;
 	this.extensionButtons = null;
-	this.dialog = null;
+	this.aboutDialog = null;
 	this.readyForTest = null;
 };
 
@@ -45,7 +45,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var top = document.getElementById ('top');
 	this.importerButtons = new ImporterButtons (top);
-	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.5.2</span>', function () { myThis.WelcomeDialog (); });
+	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.5.2</span>', function () { myThis.ShowAboutDialog (); });
 	this.importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
 	this.importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	this.importerButtons.AddToggleButton ('images/fixup.png', 'images/fixupgray.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
@@ -57,7 +57,7 @@ ImporterApp.prototype.Init = function ()
 	this.importerButtons.AddButton ('images/right.png', 'Set Up Vector (-X)', function () { myThis.SetNamedView ('-x'); });
 	
 	this.extensionButtons = new ExtensionButtons (top);
-	this.dialog = new FloatingDialog ();
+	this.aboutDialog = new FloatingDialog ();
 
 	window.addEventListener ('resize', this.Resize.bind (this), false);
 	this.Resize ();
@@ -71,14 +71,10 @@ ImporterApp.prototype.Init = function ()
 	var fileInput = document.getElementById ('file');
 	fileInput.addEventListener ('change', this.FileSelected.bind (this), false);
 	
-	var testMode = this.InitTestMode ();
-	var hasHashModel = false;
-	if (!testMode) {
-		window.onhashchange = this.LoadFilesFromHash.bind (this);
-		hasHashModel = this.LoadFilesFromHash ();
-	}
+	window.onhashchange = this.LoadFilesFromHash.bind (this);
+	var hasHashModel = this.LoadFilesFromHash ();
 	if (!hasHashModel) {
-		this.WelcomeDialog ();
+		this.ShowAboutDialog ();
 	}
 };
 
@@ -105,14 +101,14 @@ ImporterApp.prototype.AddExtension = function (extension)
 	extension.Init (extInterface);
 };
 
-ImporterApp.prototype.WelcomeDialog = function ()
+ImporterApp.prototype.ShowAboutDialog = function ()
 {
 	var dialogText = [
 		'<div class="importerdialog">',
 		this.GetWelcomeText (),
 		'</div>',
 	].join ('');
-	this.dialog.Open ({
+	this.aboutDialog.Open ({
 		title : 'Welcome',
 		text : dialogText,
 		buttons : [
@@ -165,7 +161,7 @@ ImporterApp.prototype.Resize = function ()
 	SetHeight (canvas, height);
 	SetWidth (canvas, document.body.clientWidth - left.offsetWidth);
 	
-	this.dialog.Resize ();
+	this.aboutDialog.Resize ();
 };
 
 ImporterApp.prototype.JsonLoaded = function (progressBar)
@@ -329,7 +325,7 @@ ImporterApp.prototype.GenerateError = function (errorMessage)
 	var menu = $('#menu');
 	menu.empty ();
 	
-	this.dialog.Open ({
+	this.aboutDialog.Open ({
 		title : 'Error',
 		text : '<div class="importerdialog">' + errorMessage + '</div>',
 		buttons : [
@@ -378,7 +374,7 @@ ImporterApp.prototype.Generate = function (progressBar)
 	
 	var myThis = this;
 	if (jsonData.meshes.length > 250) {
-		this.dialog.Open ({
+		this.aboutDialog.Open ({
 			title : 'Information',
 			text : '<div class="importerdialog">The model contains a large number of meshes. It can cause performance problems. Would you like to merge meshes?</div>',
 			buttons : [
@@ -437,7 +433,7 @@ ImporterApp.prototype.ShowHideMesh = function (meshIndex)
 ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 {
 	this.ClearReadyForTest ();
-	this.dialog.Close ();
+	this.aboutDialog.Close ();
 	if (this.inGenerate) {
 		return;
 	}
@@ -525,28 +521,6 @@ ImporterApp.prototype.LoadFilesFromHash = function ()
 	var hash = hash.substr (1, hash.length - 1);
 	var fileList = hash.split (',');
 	this.ProcessFiles (fileList, true);
-	return true;
-};
-
-ImporterApp.prototype.InitTestMode = function ()
-{
-	if (window.location.hash != '#test') {
-		return false;
-	}
-	
-	var currentTestFile = 0;
-	var myThis = this;
-	JSM.LoadJsonFile ('testfiles_for_test/testfiles.json', function (jsonContent) {
-		window.addEventListener ('keydown', function (event) {
-			var keyCode = event.which;
-			if (keyCode == 84 && currentTestFile < jsonContent.files.length) {
-				event.preventDefault ();
-				myThis.dialog.Close ();
-				myThis.ProcessFiles (jsonContent.files[currentTestFile], true);
-				currentTestFile++;
-			}
-		}, false);
-	});
 	return true;
 };
 
