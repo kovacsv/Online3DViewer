@@ -48,10 +48,7 @@ ImporterMenuItem = function (parentDiv, name, parameters)
 
 ImporterMenuItem.prototype.Initialize = function (name)
 {
-	var myThis = this;
 	this.menuItemDiv = $('<div>').addClass ('menuitem').appendTo (this.parentDiv);
-	
-	var menuContent = null;		
 	if (IsSet (this.parameters)) {
 		if (IsSet (this.parameters.id)) {
 			this.menuItemDiv.attr ('id', this.parameters.id);
@@ -92,7 +89,7 @@ ImporterMenuItem.prototype.AddOpenCloseButton = function ()
 	this.contentDiv = $('<div>').addClass ('menugroup').hide ().appendTo (this.parentDiv);
 	this.openCloseImage = $('<img>').addClass ('menubutton').attr ('title', this.parameters.openCloseButton.title).appendTo (this.menuItemDiv);
 	this.openCloseImage.attr ('src', 'images/closed.png');
-	this.menuItemDiv.click (function (event) {
+	this.menuItemDiv.click (function () {
 		myThis.isOpen = !myThis.isOpen;
 		if (myThis.isOpen) {
 			if (IsSet (myThis.parameters.openCloseButton.onOpen)) {
@@ -110,7 +107,6 @@ ImporterMenuItem.prototype.AddOpenCloseButton = function ()
 
 ImporterMenuItem.prototype.AddUserButton = function (userButton)
 {
-	var myThis = this;
 	var userImage = $('<img>').addClass ('menubutton').attr ('title', userButton.title).appendTo (this.menuItemDiv);
 	if (IsSet (userButton.id)) {
 		userImage.attr ('id', userButton.id);
