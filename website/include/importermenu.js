@@ -1,3 +1,8 @@
+function IsSet (val)
+{
+	return val !== undefined && val !== null;
+}
+
 InfoTable = function (parent)
 {
 	this.table = $('<table>').addClass ('infotable').appendTo (parent);
@@ -47,11 +52,11 @@ ImporterMenuItem.prototype.Initialize = function (name)
 	var menuItemClickHandler = null;
 	
 	var menuContent = null;		
-	if (this.parameters !== undefined && this.parameters !== null) {
-		if (this.parameters.id !== undefined && this.parameters.id !== null) {
+	if (IsSet (this.parameters)) {
+		if (IsSet (this.parameters.id)) {
 			menuItemDiv.attr ('id', this.parameters.id);
 		}
-		if (this.parameters.openCloseButton !== undefined && this.parameters.openCloseButton !== null) {
+		if (IsSet (this.parameters.openCloseButton)) {
 			this.contentDiv = $('<div>').addClass ('menugroup').hide ().appendTo (this.parentDiv);
 			this.isOpen = false;
 			this.openCloseImage = $('<img>').addClass ('menubutton').attr ('title', this.parameters.openCloseButton.title).appendTo (menuItemDiv);
@@ -60,19 +65,19 @@ ImporterMenuItem.prototype.Initialize = function (name)
 			this.openCloseImage.click (menuItemClickHandler);
 		}
 
-		if (this.parameters.userButton !== undefined && this.parameters.userButton !== null) {
+		if (IsSet (this.parameters.userButton)) {
 			var userImage = $('<img>').addClass ('menubutton').attr ('title', this.parameters.userButton.title).appendTo (menuItemDiv);
-			if (this.parameters.userButton.id !== undefined && this.parameters.userButton.id !== null) {
+			if (IsSet (this.parameters.userButton.id)) {
 				userImage.attr ('id', this.parameters.userButton.id);
 			}
-			if (this.parameters.userButton.onCreate !== undefined && this.parameters.userButton.onCreate !== null) {
+			if (IsSet (this.parameters.userButton.onCreate)) {
 				this.parameters.userButton.onCreate (userImage, this.parameters.userButton.userData);
 			}
-			userImage.click (function () {
-				if (myThis.parameters.userButton.onClick !== undefined && myThis.parameters.userButton.onClick !== null) {
+			if (IsSet (myThis.parameters.userButton.onClick)) {
+				userImage.click (function () {
 					myThis.parameters.userButton.onClick (userImage, myThis.parameters.userButton.userData);
-				}
-			});
+				});
+			}
 		}
 	}
 
@@ -97,11 +102,11 @@ ImporterMenuItem.prototype.OnOpenCloseClick = function ()
 {
 	this.isOpen = !this.isOpen;
 	if (this.isOpen) {
-		if (this.parameters.openCloseButton.onOpen !== undefined && this.parameters.openCloseButton.onOpen !== null) {
+		if (IsSet (this.parameters.openCloseButton.onOpen)) {
 			this.parameters.openCloseButton.onOpen (this.contentDiv, this.parameters.openCloseButton.userData);
 		}
 	} else {
-		if (this.parameters.openCloseButton.onClose !== undefined && this.parameters.openCloseButton.onClose !== null) {
+		if (IsSet (this.parameters.openCloseButton.onClose)) {
 			this.parameters.openCloseButton.onClose (this.contentDiv, this.parameters.openCloseButton.userData);
 		}
 	}
