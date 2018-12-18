@@ -93,7 +93,7 @@ ImporterMenuItem.prototype.AddOpenCloseButton = function ()
 	this.openCloseImage = $('<img>').addClass ('menubutton').attr ('title', this.parameters.openCloseButton.title).appendTo (this.menuItemDiv);
 	this.openCloseImage.attr ('src', 'images/closed.png');
 	this.menuItemDiv.click (function (event) {
-		myThis.isOpen = !this.isOpen;
+		myThis.isOpen = !myThis.isOpen;
 		if (myThis.isOpen) {
 			if (IsSet (myThis.parameters.openCloseButton.onOpen)) {
 				myThis.parameters.openCloseButton.onOpen (myThis.contentDiv, myThis.parameters.openCloseButton.userData);
