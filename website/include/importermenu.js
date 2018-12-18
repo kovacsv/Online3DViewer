@@ -150,7 +150,7 @@ ImporterButtons.prototype.AddLogo = function (title, onClick)
 
 ImporterButtons.prototype.AddButton = function (image, title, onClick)
 {
-	var buttonImage = $('<img>').addClass ('topbutton').attr ('src', image).attr ('title', 'title').appendTo (this.buttonsDiv);
+	var buttonImage = $('<img>').addClass ('topbutton').attr ('src', image).attr ('title', title).appendTo (this.buttonsDiv);
 	buttonImage.click (function () {
 		onClick ();
 	});
@@ -158,7 +158,7 @@ ImporterButtons.prototype.AddButton = function (image, title, onClick)
 
 ImporterButtons.prototype.AddToggleButton = function (image, toggleImage, title, onClick)
 {
-	var buttonImage = $('<img>').addClass ('topbutton').attr ('src', image).attr ('title', 'title').appendTo (this.buttonsDiv);
+	var buttonImage = $('<img>').addClass ('topbutton').attr ('src', image).attr ('title', title).appendTo (this.buttonsDiv);
 	var isOn = true;
 	buttonImage.click (function () {
 		isOn = !isOn;
