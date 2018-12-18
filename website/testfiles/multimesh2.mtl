@@ -1,0 +1,6 @@
+newmtl Material0
+Kd 0.784314 0 0
+newmtl Material1
+Kd 0 0.784314 0
+newmtl Material2
+Kd 0 0 0.784314
