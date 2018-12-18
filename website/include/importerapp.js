@@ -280,6 +280,17 @@ ImporterApp.prototype.GenerateMenu = function ()
 					},
 					title : 'Show/Hide Mesh',
 					userData : meshIndex
+				},
+				{
+					id : 'fitinwindow-' + meshIndex,
+					onCreate : function (image) {
+						image.attr ('src', 'images/fitinwindowsmall.png');
+					},
+					onClick : function (image, meshIndex) {
+						importerApp.FitMeshInWindow (meshIndex);
+					},
+					title : 'Show/Hide Mesh',
+					userData : meshIndex
 				}
 			]
 		});
@@ -404,6 +415,11 @@ ImporterApp.prototype.Generate = function (progressBar)
 ImporterApp.prototype.FitInWindow = function ()
 {
 	this.viewer.FitInWindow ();
+};
+
+ImporterApp.prototype.FitMeshInWindow = function (meshIndex)
+{
+	this.viewer.FitMeshInWindow (meshIndex);
 };
 
 ImporterApp.prototype.SetFixUp = function ()

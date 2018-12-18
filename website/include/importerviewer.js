@@ -72,50 +72,46 @@ ImporterViewer.prototype.ShowAllMeshes = function (inEnvironment)
 
 ImporterViewer.prototype.ShowMesh = function (index)
 {
-	var i, mesh;
-	var workJsonData = {
-		version : this.jsonData.version,
-		materials : this.jsonData.materials,
-		meshes : [this.jsonData.meshes[index]]
-	};
-	
-	var meshes = JSM.ConvertJSONDataToThreeMeshes (workJsonData, this.Draw.bind (this));
-	for (i = 0; i < meshes.length; i++) {
-		mesh = meshes[i];
-		mesh.originalJsonIndex = index;
-		this.viewer.AddMesh (mesh);
-	}
-	
+	var myThis = this;
+	this.viewer.scene.traverse (function (current) {
+		if (current instanceof THREE.Mesh) {
+			if (current.originalJsonIndex == index) {
+				myThis.viewer.ShowMesh (current);
+			}
+		}
+	});
 	this.viewer.Draw ();
 };
 
 ImporterViewer.prototype.HideMesh = function (index)
 {
-	var meshesToRemove = [];
-	var currentIndex = 0;
+	var myThis = this;
 	this.viewer.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
 			if (current.originalJsonIndex == index) {
-				meshesToRemove.push (current);
+				myThis.viewer.HideMesh (current);
 			}
-			currentIndex = currentIndex + 1;
 		}
 	});
-	
-	var i, mesh;
-	for (i = 0; i < meshesToRemove.length; i++) {
-		mesh = meshesToRemove[i];
-		this.viewer.scene.remove (mesh);
-	}
-
 	this.viewer.Draw ();
 };
 
 ImporterViewer.prototype.FitInWindow = function ()
 {
-	if (this.viewer.MeshCount () > 0) {
-		this.viewer.FitInWindow ();
-	}
+	this.viewer.FitInWindow ();
+};
+
+ImporterViewer.prototype.FitMeshInWindow = function (index)
+{
+	var meshes = [];
+	this.viewer.scene.traverse (function (current) {
+		if (current instanceof THREE.Mesh) {
+			if (current.originalJsonIndex == index) {
+				meshes.push (current);
+			}
+		}
+	});
+	this.viewer.FitMeshesInWindow (meshes);
 };
 
 ImporterViewer.prototype.AdjustClippingPlanes = function ()
