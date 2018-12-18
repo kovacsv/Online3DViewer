@@ -76,7 +76,7 @@ ImporterMenuItem.prototype.Initialize = function (name)
 		}
 	}
 
-	var menuItemTextDiv = $('<div>').addClass ('menuitem').html (this.GetTruncatedName (name)).attr ('title', name).appendTo (menuItemDiv);
+	var menuItemTextDiv = $('<div>').addClass ('menuitem').html (name).attr ('title', name).appendTo (menuItemDiv);
 	if (menuItemClickHandler != null) {
 		menuItemTextDiv.css ('cursor', 'pointer');
 		menuItemTextDiv.click (menuItemClickHandler);
@@ -107,15 +107,6 @@ ImporterMenuItem.prototype.OnOpenCloseClick = function ()
 	}
 	this.contentDiv.toggle ();
 	this.openCloseImage.attr ('src', this.isOpen ? 'images/opened.png' : 'images/closed.png');
-};
-
-ImporterMenuItem.prototype.GetTruncatedName = function (name)
-{
-	var maxLength = 20;
-	if (name.length > maxLength) {
-		return name.substr (0, maxLength) + '...';
-	}
-	return name;
 };
 
 ImporterMenu = function (parentDiv)

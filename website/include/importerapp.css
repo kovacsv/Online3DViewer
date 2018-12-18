@@ -120,7 +120,8 @@ div.extbutton img
 div.menuitem
 {
 	padding : 2px;
-	overflow : auto;
+	text-overflow: ellipsis;
+	overflow : hidden;
 }
 
 div.menugroup
