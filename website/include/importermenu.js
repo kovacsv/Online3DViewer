@@ -38,6 +38,7 @@ ImporterMenuItem = function (parentDiv, name, parameters)
 	this.parentDiv = parentDiv;
 	this.parameters = parameters;
 
+	this.menuItemDiv = null;
 	this.isOpen = null;
 	this.openCloseImage = null;
 	this.contentDiv = null;
@@ -48,43 +49,28 @@ ImporterMenuItem = function (parentDiv, name, parameters)
 ImporterMenuItem.prototype.Initialize = function (name)
 {
 	var myThis = this;
-	var menuItemDiv = $('<div>').addClass ('menuitem').appendTo (this.parentDiv);
-	var menuItemClickHandler = null;
+	this.menuItemDiv = $('<div>').addClass ('menuitem').appendTo (this.parentDiv);
 	
 	var menuContent = null;		
 	if (IsSet (this.parameters)) {
 		if (IsSet (this.parameters.id)) {
-			menuItemDiv.attr ('id', this.parameters.id);
+			this.menuItemDiv.attr ('id', this.parameters.id);
 		}
 		if (IsSet (this.parameters.openCloseButton)) {
-			this.contentDiv = $('<div>').addClass ('menugroup').hide ().appendTo (this.parentDiv);
-			this.isOpen = false;
-			this.openCloseImage = $('<img>').addClass ('menubutton').attr ('title', this.parameters.openCloseButton.title).appendTo (menuItemDiv);
-			this.openCloseImage.attr ('src', 'images/closed.png');
-			menuItemClickHandler = this.OnOpenCloseClick.bind (this);
-			this.openCloseImage.click (menuItemClickHandler);
+			this.AddOpenCloseButton ();
 		}
-
-		if (IsSet (this.parameters.userButton)) {
-			var userImage = $('<img>').addClass ('menubutton').attr ('title', this.parameters.userButton.title).appendTo (menuItemDiv);
-			if (IsSet (this.parameters.userButton.id)) {
-				userImage.attr ('id', this.parameters.userButton.id);
-			}
-			if (IsSet (this.parameters.userButton.onCreate)) {
-				this.parameters.userButton.onCreate (userImage, this.parameters.userButton.userData);
-			}
-			if (IsSet (myThis.parameters.userButton.onClick)) {
-				userImage.click (function () {
-					myThis.parameters.userButton.onClick (userImage, myThis.parameters.userButton.userData);
-				});
+		if (IsSet (this.parameters.userButtons)) {
+			var i, userButton;
+			for (i = 0; i < this.parameters.userButtons.length; i++) {
+				userButton = this.parameters.userButtons[i];
+				this.AddUserButton (userButton);
 			}
 		}
 	}
 
-	var menuItemTextDiv = $('<div>').addClass ('menuitem').html (name).attr ('title', name).appendTo (menuItemDiv);
-	if (menuItemClickHandler != null) {
+	var menuItemTextDiv = $('<div>').addClass ('menuitem').html (name).attr ('title', name).appendTo (this.menuItemDiv);
+	if (IsSet (this.parameters) && IsSet (this.parameters.openCloseButton)) {
 		menuItemTextDiv.css ('cursor', 'pointer');
-		menuItemTextDiv.click (menuItemClickHandler);
 	}
 };
 
@@ -93,25 +79,51 @@ ImporterMenuItem.prototype.AddSubItem = function (name, parameters)
 	return new ImporterMenuItem (this.contentDiv, name, parameters);
 };
 
+
 ImporterMenuItem.prototype.GetContentDiv = function ()
 {
 	return this.contentDiv;
 };
 
-ImporterMenuItem.prototype.OnOpenCloseClick = function ()
+ImporterMenuItem.prototype.AddOpenCloseButton = function ()
 {
-	this.isOpen = !this.isOpen;
-	if (this.isOpen) {
-		if (IsSet (this.parameters.openCloseButton.onOpen)) {
-			this.parameters.openCloseButton.onOpen (this.contentDiv, this.parameters.openCloseButton.userData);
+	var myThis = this;
+	this.isOpen = false;
+	this.contentDiv = $('<div>').addClass ('menugroup').hide ().appendTo (this.parentDiv);
+	this.openCloseImage = $('<img>').addClass ('menubutton').attr ('title', this.parameters.openCloseButton.title).appendTo (this.menuItemDiv);
+	this.openCloseImage.attr ('src', 'images/closed.png');
+	this.menuItemDiv.click (function (event) {
+		myThis.isOpen = !this.isOpen;
+		if (myThis.isOpen) {
+			if (IsSet (myThis.parameters.openCloseButton.onOpen)) {
+				myThis.parameters.openCloseButton.onOpen (myThis.contentDiv, myThis.parameters.openCloseButton.userData);
+			}
+		} else {
+			if (IsSet (myThis.parameters.openCloseButton.onClose)) {
+				myThis.parameters.openCloseButton.onClose (myThis.contentDiv, myThis.parameters.openCloseButton.userData);
+			}
 		}
-	} else {
-		if (IsSet (this.parameters.openCloseButton.onClose)) {
-			this.parameters.openCloseButton.onClose (this.contentDiv, this.parameters.openCloseButton.userData);
-		}
+		myThis.contentDiv.toggle ();
+		myThis.openCloseImage.attr ('src', myThis.isOpen ? 'images/opened.png' : 'images/closed.png');
+	});
+};
+
+ImporterMenuItem.prototype.AddUserButton = function (userButton)
+{
+	var myThis = this;
+	var userImage = $('<img>').addClass ('menubutton').attr ('title', userButton.title).appendTo (this.menuItemDiv);
+	if (IsSet (userButton.id)) {
+		userImage.attr ('id', userButton.id);
 	}
-	this.contentDiv.toggle ();
-	this.openCloseImage.attr ('src', this.isOpen ? 'images/opened.png' : 'images/closed.png');
+	if (IsSet (userButton.onCreate)) {
+		userButton.onCreate (userImage, userButton.userData);
+	}
+	if (IsSet (userButton.onClick)) {
+		userImage.click (function (event) {
+			event.stopPropagation ();
+			userButton.onClick (userImage, userButton.userData);
+		});
+	}
 };
 
 ImporterMenu = function (parentDiv)

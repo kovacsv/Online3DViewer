@@ -268,18 +268,20 @@ ImporterApp.prototype.GenerateMenu = function ()
 				title : 'Show/Hide Information',
 				userData : mesh
 			},
-			userButton : {
-				id : 'showhidemesh-' + meshIndex,
-				onCreate : function (image) {
-					image.attr ('src', 'images/visible.png');
-				},
-				onClick : function (image, meshIndex) {
-					var visible = importerApp.ShowHideMesh (meshIndex);
-					image.attr ('src', visible ? 'images/visible.png' : 'images/hidden.png');
-				},
-				title : 'Show/Hide Mesh',
-				userData : meshIndex
-			}
+			userButtons : [
+				{
+					id : 'showhidemesh-' + meshIndex,
+					onCreate : function (image) {
+						image.attr ('src', 'images/visible.png');
+					},
+					onClick : function (image, meshIndex) {
+						var visible = importerApp.ShowHideMesh (meshIndex);
+						image.attr ('src', visible ? 'images/visible.png' : 'images/hidden.png');
+					},
+					title : 'Show/Hide Mesh',
+					userData : meshIndex
+				}
+			]
 		});
 	}
 	
