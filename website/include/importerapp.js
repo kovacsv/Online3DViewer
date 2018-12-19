@@ -216,6 +216,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 	{
 		materialsGroup.AddSubItem (material.name, {
 			openCloseButton : {
+				title : 'Show/Hide Information',
 				onOpen : function (contentDiv, material) {
 					contentDiv.empty ();
 					var table = new InfoTable (contentDiv);
@@ -225,7 +226,6 @@ ImporterApp.prototype.GenerateMenu = function ()
 					table.AddRow ('Shininess', material.shininess.toFixed (2));
 					table.AddRow ('Opacity', material.opacity.toFixed (2));
 				},
-				title : 'Show/Hide Information',
 				userData : material
 			}
 		});
@@ -233,8 +233,29 @@ ImporterApp.prototype.GenerateMenu = function ()
 
 	function AddMesh (importerApp, importerMenu, meshesGroup, mesh, meshIndex)
 	{
-		meshesGroup.AddSubItem (mesh.name, {
+		var meshItem = meshesGroup.AddSubItem (mesh.name, {
 			openCloseButton : {
+				title : 'Show/Hide Details',
+			},
+			userButtons : [
+				{
+					id : 'showhidemesh-' + meshIndex,
+					title : 'Show/Hide Mesh',
+					onCreate : function (image) {
+						image.attr ('src', 'images/visible.png');
+					},
+					onClick : function (image, meshIndex) {
+						var visible = importerApp.ShowHideMesh (meshIndex);
+						image.attr ('src', visible ? 'images/visible.png' : 'images/hidden.png');
+					},
+					userData : meshIndex
+				}
+			]
+		});
+		
+		meshItem.AddSubItem ('Information', {
+			openCloseButton : {
+				title : 'Show/Hide Information',
 				onOpen : function (contentDiv, mesh) {
 					contentDiv.empty ();
 					var table = new InfoTable (contentDiv);
@@ -265,36 +286,27 @@ ImporterApp.prototype.GenerateMenu = function ()
 					table.AddRow ('Vertex count', mesh.vertices.length / 3);
 					table.AddRow ('Triangle count', triangleCount);
 				},
-				title : 'Show/Hide Information',
 				userData : mesh
-			},
+			}
+		});
+
+		meshItem.AddSubItem ('Fit In Window', {
+			title : 'Fit In Window',
 			userButtons : [
 				{
-					id : 'showhidemesh-' + meshIndex,
-					onCreate : function (image) {
-						image.attr ('src', 'images/visible.png');
-					},
-					onClick : function (image, meshIndex) {
-						var visible = importerApp.ShowHideMesh (meshIndex);
-						image.attr ('src', visible ? 'images/visible.png' : 'images/hidden.png');
-					},
-					title : 'Show/Hide Mesh',
-					userData : meshIndex
-				},
-				{
 					id : 'fitinwindow-' + meshIndex,
+					title : 'Fit In Window',
 					onCreate : function (image) {
 						image.attr ('src', 'images/fitinwindowsmall.png');
 					},
 					onClick : function (image, meshIndex) {
 						importerApp.FitMeshInWindow (meshIndex);
 					},
-					title : 'Show/Hide Mesh',
 					userData : meshIndex
 				}
 			]
 		});
-	}
+	}		
 	
 	var jsonData = this.viewer.GetJsonData ();
 	var menu = $('#menu');

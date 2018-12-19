@@ -167,9 +167,16 @@ div.progressbarcontent
 	height : 20px;
 }
 
+table.infotable
+{
+	border-collapse : collapse;
+}
+
 table.infotable td
 {
-	padding : 1px 5px;
+	background : #d2d2d2;
+	padding : 4px 5px;
+	border : 1px solid #aaaaaa;
 }
 
 div.importerdialog
