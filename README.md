@@ -7,6 +7,7 @@ Supported file formats:
   - 3ds (with textures)
   - obj, mtl (with textures)
   - stl (ascii and binary)
+  - off
 
 Website
 -------
