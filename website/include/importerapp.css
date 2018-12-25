@@ -186,10 +186,7 @@ div.meshbuttons
 
 div.meshbuttons img.meshimgbutton
 {
-	background : #dadada;
 	padding : 3px;
-	border : 1px solid #aaaaaa;
-	border-radius : 3px;
 	margin-right : 3px;
 	cursor : pointer;
 }
