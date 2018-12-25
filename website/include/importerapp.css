@@ -174,9 +174,24 @@ table.infotable
 
 table.infotable td
 {
-	background : #d2d2d2;
+	background : #d0d0d0;
 	padding : 4px 5px;
 	border : 1px solid #aaaaaa;
+}
+
+div.meshbuttons
+{
+
+}
+
+div.meshbuttons img.meshimgbutton
+{
+	background : #dddddd;
+	padding : 3px;
+	border : 1px solid #aaaaaa;
+	border-radius : 3px;
+	margin-right : 3px;
+	cursor : pointer;
 }
 
 div.importerdialog

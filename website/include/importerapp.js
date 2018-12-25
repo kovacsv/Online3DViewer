@@ -233,31 +233,38 @@ ImporterApp.prototype.GenerateMenu = function ()
 
 	function AddMesh (importerApp, importerMenu, meshesGroup, mesh, meshIndex)
 	{
+		function AddMeshButtons (contentDiv, mesh)
+		{
+			function CopyToClipboard (text) {
+				var input = document.createElement ('input');
+				input.style.position = 'absolute';
+				input.style.left = '0';
+				input.style.top = '0';
+				input.setAttribute ('value', text);
+				document.body.appendChild (input);
+				input.select ();
+				document.execCommand ('copy');
+				document.body.removeChild(input)
+			}
+			
+			var meshButtons = $('<div>').addClass ('meshbuttons').appendTo (contentDiv);
+			var fitInWindowButton = $('<img>').addClass ('meshimgbutton').attr ('src', 'images/fitinwindowsmall.png').attr ('title', 'Fit Mesh In Window').appendTo (meshButtons);
+			fitInWindowButton.click (function () {
+				importerApp.FitMeshInWindow (meshIndex);
+			});
+			var copyNameToClipboardButton = $('<img>').addClass ('meshimgbutton').attr ('src', 'images/copytoclipboard.png').attr ('title', 'Copy Mesh Name To Clipboard').appendTo (meshButtons);
+			copyNameToClipboardButton.click (function () {
+				CopyToClipboard (mesh.name);
+			});
+		}
+		
 		var meshItem = meshesGroup.AddSubItem (mesh.name, {
 			openCloseButton : {
 				title : 'Show/Hide Details',
-			},
-			userButtons : [
-				{
-					id : 'showhidemesh-' + meshIndex,
-					title : 'Show/Hide Mesh',
-					onCreate : function (image) {
-						image.attr ('src', 'images/visible.png');
-					},
-					onClick : function (image, meshIndex) {
-						var visible = importerApp.ShowHideMesh (meshIndex);
-						image.attr ('src', visible ? 'images/visible.png' : 'images/hidden.png');
-					},
-					userData : meshIndex
-				}
-			]
-		});
-		
-		meshItem.AddSubItem ('Information', {
-			openCloseButton : {
-				title : 'Show/Hide Information',
 				onOpen : function (contentDiv, mesh) {
 					contentDiv.empty ();
+
+					AddMeshButtons (contentDiv, mesh);
 					var table = new InfoTable (contentDiv);
 					
 					var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
@@ -287,20 +294,17 @@ ImporterApp.prototype.GenerateMenu = function ()
 					table.AddRow ('Triangle count', triangleCount);
 				},
 				userData : mesh
-			}
-		});
-
-		meshItem.AddSubItem ('Fit In Window', {
-			title : 'Fit In Window',
+			},
 			userButtons : [
 				{
-					id : 'fitinwindow-' + meshIndex,
-					title : 'Fit In Window',
+					id : 'showhidemesh-' + meshIndex,
+					title : 'Show/Hide Mesh',
 					onCreate : function (image) {
-						image.attr ('src', 'images/fitinwindowsmall.png');
+						image.attr ('src', 'images/visible.png');
 					},
 					onClick : function (image, meshIndex) {
-						importerApp.FitMeshInWindow (meshIndex);
+						var visible = importerApp.ShowHideMesh (meshIndex);
+						image.attr ('src', visible ? 'images/visible.png' : 'images/hidden.png');
 					},
 					userData : meshIndex
 				}
