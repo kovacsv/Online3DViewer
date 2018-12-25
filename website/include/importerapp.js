@@ -244,7 +244,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 				document.body.appendChild (input);
 				input.select ();
 				document.execCommand ('copy');
-				document.body.removeChild(input)
+				document.body.removeChild(input);
 			}
 			
 			var meshButtons = $('<div>').addClass ('meshbuttons').appendTo (contentDiv);
@@ -258,7 +258,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 			});
 		}
 		
-		var meshItem = meshesGroup.AddSubItem (mesh.name, {
+		meshesGroup.AddSubItem (mesh.name, {
 			openCloseButton : {
 				title : 'Show/Hide Details',
 				onOpen : function (contentDiv, mesh) {
