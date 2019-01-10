@@ -125,9 +125,17 @@ div.menuitem
 	overflow : hidden;
 }
 
-div.menugroup
+div.menuitem.highlighted
+{
+	background : #95cae4;
+	padding : 1px;
+	border : 1px solid #008ab8;
+}
+
+div.menuitemcontent
 {
 	margin-left : 15px;
+	margin-bottom : 5px;
 }
 
 div.menutext

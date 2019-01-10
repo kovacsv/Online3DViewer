@@ -76,7 +76,6 @@ ImporterMenuItem.prototype.AddSubItem = function (name, parameters)
 	return new ImporterMenuItem (this.contentDiv, name, parameters);
 };
 
-
 ImporterMenuItem.prototype.GetContentDiv = function ()
 {
 	return this.contentDiv;
@@ -86,22 +85,11 @@ ImporterMenuItem.prototype.AddOpenCloseButton = function ()
 {
 	var myThis = this;
 	this.isOpen = false;
-	this.contentDiv = $('<div>').addClass ('menugroup').hide ().appendTo (this.parentDiv);
+	this.contentDiv = $('<div>').addClass ('menuitemcontent').hide ().appendTo (this.parentDiv);
 	this.openCloseImage = $('<img>').addClass ('menubutton').attr ('title', this.parameters.openCloseButton.title).appendTo (this.menuItemDiv);
 	this.openCloseImage.attr ('src', 'images/closed.png');
 	this.menuItemDiv.click (function () {
-		myThis.isOpen = !myThis.isOpen;
-		if (myThis.isOpen) {
-			if (IsSet (myThis.parameters.openCloseButton.onOpen)) {
-				myThis.parameters.openCloseButton.onOpen (myThis.contentDiv, myThis.parameters.openCloseButton.userData);
-			}
-		} else {
-			if (IsSet (myThis.parameters.openCloseButton.onClose)) {
-				myThis.parameters.openCloseButton.onClose (myThis.contentDiv, myThis.parameters.openCloseButton.userData);
-			}
-		}
-		myThis.contentDiv.toggle ();
-		myThis.openCloseImage.attr ('src', myThis.isOpen ? 'images/opened.png' : 'images/closed.png');
+		myThis.SetOpen (!myThis.isOpen);
 	});
 };
 
@@ -119,6 +107,33 @@ ImporterMenuItem.prototype.AddUserButton = function (userButton)
 			event.stopPropagation ();
 			userButton.onClick (userImage, userButton.userData);
 		});
+	}
+};
+
+ImporterMenuItem.prototype.SetOpen = function (isOpen)
+{
+	this.isOpen = isOpen;
+	if (this.isOpen) {
+		if (IsSet (this.parameters.openCloseButton.onOpen)) {
+			this.parameters.openCloseButton.onOpen (this.contentDiv, this.parameters.openCloseButton.userData);
+		}
+		this.contentDiv.show ();
+		this.openCloseImage.attr ('src', 'images/opened.png');
+	} else {
+		if (IsSet (this.parameters.openCloseButton.onClose)) {
+			this.parameters.openCloseButton.onClose (this.contentDiv, this.parameters.openCloseButton.userData);
+		}
+		this.contentDiv.hide ();
+		this.openCloseImage.attr ('src', 'images/closed.png');
+	}
+};
+
+ImporterMenuItem.prototype.Highlight = function (highlight)
+{
+	if (highlight) {
+		this.menuItemDiv.addClass ('highlighted');
+	} else {
+		this.menuItemDiv.removeClass ('highlighted');
 	}
 };
 

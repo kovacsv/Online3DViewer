@@ -70,6 +70,19 @@ ImporterViewer.prototype.ShowAllMeshes = function (inEnvironment)
 	JSM.ConvertJSONDataToThreeMeshes (this.jsonData, this.Draw.bind (this), environment);
 };
 
+ImporterViewer.prototype.GetMeshesUnderPosition = function (x, y)
+{
+	var objects = this.viewer.GetObjectsUnderPosition (x, y);
+	var meshes = [];
+	var i;
+	for (i = 0; i < objects.length; i++) {
+		if (objects[i].object instanceof THREE.Mesh) {
+			meshes.push (objects[i].object);
+		}
+	}
+	return meshes;
+};
+
 ImporterViewer.prototype.ShowMesh = function (index)
 {
 	var myThis = this;

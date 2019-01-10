@@ -18,6 +18,8 @@ ImporterApp = function ()
 	this.viewer = null;
 	this.fileNames = null;
 	this.inGenerate = false;
+	this.meshesGroup = null;
+	this.meshMenuItems = null;
 	this.extensions = [];
 	this.importerButtons = null;
 	this.extensionButtons = null;
@@ -45,7 +47,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var top = document.getElementById ('top');
 	this.importerButtons = new ImporterButtons (top);
-	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.6.0</span>', function () { myThis.ShowAboutDialog (); });
+	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.6.1</span>', function () { myThis.ShowAboutDialog (); });
 	this.importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
 	this.importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	this.importerButtons.AddToggleButton ('images/fixup.png', 'images/fixupgray.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
@@ -62,8 +64,10 @@ ImporterApp.prototype.Init = function ()
 	window.addEventListener ('resize', this.Resize.bind (this), false);
 	this.Resize ();
 
+	var canvasName = 'example';
+	this.RegisterCanvasClick (canvasName);
 	this.viewer = new ImporterViewer ();
-	this.viewer.Init ('example');
+	this.viewer.Init (canvasName);
 
 	window.addEventListener ('dragover', this.DragOver.bind (this), false);
 	window.addEventListener ('drop', this.Drop.bind (this), false);
@@ -258,7 +262,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 			});
 		}
 		
-		meshesGroup.AddSubItem (mesh.name, {
+		var meshMenuItem = meshesGroup.AddSubItem (mesh.name, {
 			openCloseButton : {
 				title : 'Show/Hide Details',
 				onOpen : function (contentDiv, mesh) {
@@ -310,6 +314,8 @@ ImporterApp.prototype.GenerateMenu = function ()
 				}
 			]
 		});
+		
+		return meshMenuItem;
 	}		
 	
 	var jsonData = this.viewer.GetJsonData ();
@@ -340,11 +346,13 @@ ImporterApp.prototype.GenerateMenu = function ()
 		AddMaterial (importerMenu, materialsGroup, material);
 	}
 	
-	var meshesGroup = AddDefaultGroup (importerMenu, 'Meshes', 'meshesmenuitem');
-	var mesh;
+	this.meshesGroup = AddDefaultGroup (importerMenu, 'Meshes', 'meshesmenuitem');
+	this.meshMenuItems = [];
+	var mesh, meshMenuItem;
 	for (i = 0; i < jsonData.meshes.length; i++) {
 		mesh = jsonData.meshes[i];
-		AddMesh (this, importerMenu, meshesGroup, mesh, i);
+		meshMenuItem = AddMesh (this, importerMenu, this.meshesGroup, mesh, i);
+		this.meshMenuItems.push (meshMenuItem);
 	}
 };
 
@@ -507,6 +515,47 @@ ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 			myThis.JsonLoaded (progressBar);
 		}
 	});
+};
+
+ImporterApp.prototype.RegisterCanvasClick = function (canvasName)
+{
+	var myThis = this;
+	var canvas = $('#' + canvasName);
+	var mouseMoved = false;
+	canvas.mousedown (function () {
+		mouseMoved = false;
+	});
+	canvas.mouseup (function (event) {
+		if (!mouseMoved) {
+			var x = event.pageX - $(this).offset ().left;
+			var y = event.pageY - $(this).offset ().top;
+			myThis.OnCanvasClick (x, y);
+		}
+		mouseMoved = false;
+	});
+	canvas.mousemove (function () {
+		mouseMoved = true;
+	});
+};
+
+ImporterApp.prototype.OnCanvasClick = function (x, y)
+{
+	var objects = this.viewer.GetMeshesUnderPosition (x, y);
+	var meshIndex = -1;
+	if (objects.length > 0) {
+		meshIndex = objects[0].originalJsonIndex;
+		this.meshesGroup.SetOpen (true);
+	}
+	
+	var i;
+	for (i = 0; i < this.meshMenuItems.length; i++) {
+		if (i == meshIndex) {
+			this.meshMenuItems[i].Highlight (true);
+			this.meshMenuItems[i].menuItemDiv.get (0).scrollIntoView ();
+		} else {
+			this.meshMenuItems[i].Highlight (false);
+		}
+	}
 };
 
 ImporterApp.prototype.DragOver = function (event)
