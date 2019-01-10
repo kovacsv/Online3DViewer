@@ -27,6 +27,7 @@ def BuildWebSite (rootFolder, resultFolder, extensions):
 	shutil.copytree (os.path.join (rootFolder, 'jsmodeler'), os.path.join (targetFolder, 'jsmodeler'))
 	indexFilePath = os.path.join (targetFolder, 'index.html')
 	importerAppFilePath = os.path.join (targetFolder, 'include', 'importerapp.js')
+	ReplaceInFile (indexFilePath, 'var useAnalytics = false;', 'var useAnalytics = true;')
 	ReplaceInFile (indexFilePath, '../jsmodeler/', 'jsmodeler/')
 	extensionIncludes = ''
 	for extension in extensions:
