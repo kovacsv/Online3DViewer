@@ -267,6 +267,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 		}
 		
 		var meshMenuItem = meshesGroup.AddSubItem (mesh.name, {
+			id : 'meshmenuitem-' + meshIndex.toString (),
 			openCloseButton : {
 				title : 'Show/Hide Details',
 				onOpen : function (contentDiv, mesh) {
@@ -626,7 +627,17 @@ ImporterApp.prototype.LoadFilesFromHash = function ()
 		return false;
 	}
 	
+	var fileInput = $('#file');
 	var hash = window.location.hash;
+	if (hash == '#testmode') {
+		fileInput.css ('display', '');
+		fileInput.css ('position', 'absolute');
+		fileInput.css ('right', '10px');
+		fileInput.css ('bottom', '10px');
+		return false;	
+	}
+	
+	fileInput.css ('display', 'none');
 	var hash = hash.substr (1, hash.length - 1);
 	var fileList = hash.split (',');
 	this.ProcessFiles (fileList, true);
