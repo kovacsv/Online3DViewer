@@ -546,21 +546,28 @@ ImporterApp.prototype.HighlightMesh = function (meshIndex)
 	}
 	
 	var i, menuItem, highlight;
-	for (i = 0; i < this.meshMenuItems.length; i++) {
-		menuItem = this.meshMenuItems[i];
-		highlight = false;
-		if (i == meshIndex) {
-			if (!menuItem.IsHighlighted ()) {
-				menuItem.Highlight (true);
-				menuItem.menuItemDiv.get (0).scrollIntoView ();
-				HighlightMeshInModel (this.viewer, i, true);
-			} else {
+	if (meshIndex != -1) {
+		for (i = 0; i < this.meshMenuItems.length; i++) {
+			menuItem = this.meshMenuItems[i];
+			highlight = false;
+			if (i == meshIndex) {
+				if (!menuItem.IsHighlighted ()) {
+					menuItem.Highlight (true);
+					menuItem.menuItemDiv.get (0).scrollIntoView ();
+					HighlightMeshInModel (this.viewer, i, true);
+				} else {
+					menuItem.Highlight (false);
+					HighlightMeshInModel (this.viewer, i, false);
+				}
+			}
+		}
+	} else {
+		for (i = 0; i < this.meshMenuItems.length; i++) {
+			menuItem = this.meshMenuItems[i];
+			if (menuItem.IsHighlighted ()) {
 				menuItem.Highlight (false);
 				HighlightMeshInModel (this.viewer, i, false);
 			}
-		} else if (menuItem.IsHighlighted ()) {
-			menuItem.Highlight (false);
-			HighlightMeshInModel (this.viewer, i, false);
 		}
 	}
 };
