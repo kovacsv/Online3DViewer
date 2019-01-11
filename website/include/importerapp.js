@@ -237,7 +237,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 
 	function AddMesh (importerApp, importerMenu, meshesGroup, mesh, meshIndex)
 	{
-		function AddMeshButtons (contentDiv, mesh)
+		function AddMeshButtons (importerApp, contentDiv, meshName, meshIndex)
 		{
 			function CopyToClipboard (text) {
 				var input = document.createElement ('input');
@@ -256,9 +256,13 @@ ImporterApp.prototype.GenerateMenu = function ()
 			fitInWindowButton.click (function () {
 				importerApp.FitMeshInWindow (meshIndex);
 			});
+			var highlightButton = $('<img>').addClass ('meshimgbutton').attr ('src', 'images/highlightmesh.png').attr ('title', 'Highlight Mesh').appendTo (meshButtons);
+			highlightButton.click (function () {
+				importerApp.HighlightMesh (meshIndex);
+			});
 			var copyNameToClipboardButton = $('<img>').addClass ('meshimgbutton').attr ('src', 'images/copytoclipboard.png').attr ('title', 'Copy Mesh Name To Clipboard').appendTo (meshButtons);
 			copyNameToClipboardButton.click (function () {
-				CopyToClipboard (mesh.name);
+				CopyToClipboard (meshName);
 			});
 		}
 		
@@ -268,7 +272,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 				onOpen : function (contentDiv, mesh) {
 					contentDiv.empty ();
 
-					AddMeshButtons (contentDiv, mesh);
+					AddMeshButtons (importerApp, contentDiv, mesh.name, meshIndex);
 					var table = new InfoTable (contentDiv);
 					
 					var min = new JSM.Coord (JSM.Inf, JSM.Inf, JSM.Inf);
@@ -538,6 +542,24 @@ ImporterApp.prototype.RegisterCanvasClick = function (canvasName)
 	});
 };
 
+ImporterApp.prototype.HighlightMesh = function (meshIndex)
+{
+	var i, menuItem;
+	for (i = 0; i < this.meshMenuItems.length; i++) {
+		menuItem = this.meshMenuItems[i];
+		if (i == meshIndex) {
+			if (!menuItem.IsHighlighted ()) {
+				menuItem.Highlight (true);
+				menuItem.menuItemDiv.get (0).scrollIntoView ();
+			} else {
+				menuItem.Highlight (false);
+			}
+		} else {
+			menuItem.Highlight (false);
+		}
+	}
+};
+
 ImporterApp.prototype.OnCanvasClick = function (x, y)
 {
 	var objects = this.viewer.GetMeshesUnderPosition (x, y);
@@ -547,15 +569,7 @@ ImporterApp.prototype.OnCanvasClick = function (x, y)
 		this.meshesGroup.SetOpen (true);
 	}
 	
-	var i;
-	for (i = 0; i < this.meshMenuItems.length; i++) {
-		if (i == meshIndex) {
-			this.meshMenuItems[i].Highlight (true);
-			this.meshMenuItems[i].menuItemDiv.get (0).scrollIntoView ();
-		} else {
-			this.meshMenuItems[i].Highlight (false);
-		}
-	}
+	this.HighlightMesh (meshIndex);
 };
 
 ImporterApp.prototype.DragOver = function (event)

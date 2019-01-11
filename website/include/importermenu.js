@@ -137,6 +137,11 @@ ImporterMenuItem.prototype.Highlight = function (highlight)
 	}
 };
 
+ImporterMenuItem.prototype.IsHighlighted = function ()
+{
+	return this.menuItemDiv.hasClass ('highlighted');
+};
+
 ImporterMenu = function (parentDiv)
 {
 	this.parentDiv = parentDiv;
