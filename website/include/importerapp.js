@@ -468,11 +468,7 @@ ImporterApp.prototype.SetView = function (viewType)
 ImporterApp.prototype.ShowHideMesh = function (meshIndex)
 {
 	this.meshVisibility[meshIndex] = !this.meshVisibility[meshIndex];
-	if (this.meshVisibility[meshIndex]) {
-		this.viewer.ShowMesh (meshIndex);
-	} else {
-		this.viewer.HideMesh (meshIndex);
-	}
+	this.viewer.ShowMesh (meshIndex, this.meshVisibility[meshIndex]);
 	return this.meshVisibility[meshIndex];
 };
 
@@ -544,18 +540,27 @@ ImporterApp.prototype.RegisterCanvasClick = function (canvasName)
 
 ImporterApp.prototype.HighlightMesh = function (meshIndex)
 {
-	var i, menuItem;
+	function HighlightMeshInModel (viewer, meshIndex, highlight)
+	{
+		viewer.HighlightMesh (meshIndex, highlight);
+	}
+	
+	var i, menuItem, highlight;
 	for (i = 0; i < this.meshMenuItems.length; i++) {
 		menuItem = this.meshMenuItems[i];
+		highlight = false;
 		if (i == meshIndex) {
 			if (!menuItem.IsHighlighted ()) {
 				menuItem.Highlight (true);
 				menuItem.menuItemDiv.get (0).scrollIntoView ();
+				HighlightMeshInModel (this.viewer, i, true);
 			} else {
 				menuItem.Highlight (false);
+				HighlightMeshInModel (this.viewer, i, false);
 			}
-		} else {
+		} else if (menuItem.IsHighlighted ()) {
 			menuItem.Highlight (false);
+			HighlightMeshInModel (this.viewer, i, false);
 		}
 	}
 };

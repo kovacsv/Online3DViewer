@@ -83,26 +83,34 @@ ImporterViewer.prototype.GetMeshesUnderPosition = function (x, y)
 	return meshes;
 };
 
-ImporterViewer.prototype.ShowMesh = function (index)
+ImporterViewer.prototype.ShowMesh = function (index, show)
 {
 	var myThis = this;
 	this.viewer.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
 			if (current.originalJsonIndex == index) {
-				myThis.viewer.ShowMesh (current);
+				if (show) {
+					myThis.viewer.ShowMesh (current);
+				} else {
+					myThis.viewer.HideMesh (current);
+				}
 			}
 		}
 	});
 	this.viewer.Draw ();
 };
 
-ImporterViewer.prototype.HideMesh = function (index)
+ImporterViewer.prototype.HighlightMesh = function (index, highlight)
 {
 	var myThis = this;
 	this.viewer.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
 			if (current.originalJsonIndex == index) {
-				myThis.viewer.HideMesh (current);
+				if (highlight) {
+					current.material.emissive.setHex (0x555555);
+				} else {
+					current.material.emissive.setHex (0);
+				}
 			}
 		}
 	});
