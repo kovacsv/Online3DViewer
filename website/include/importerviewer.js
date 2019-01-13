@@ -85,24 +85,21 @@ ImporterViewer.prototype.GetMeshesUnderPosition = function (x, y)
 
 ImporterViewer.prototype.ShowMesh = function (index, show)
 {
-	var myThis = this;
 	this.viewer.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
 			if (current.originalJsonIndex == index) {
 				if (show) {
-					myThis.viewer.ShowMesh (current);
+					current.visible = true;
 				} else {
-					myThis.viewer.HideMesh (current);
+					current.visible = false;
 				}
 			}
 		}
 	});
-	this.viewer.Draw ();
 };
 
 ImporterViewer.prototype.HighlightMesh = function (index, highlight)
 {
-	var myThis = this;
 	this.viewer.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
 			if (current.originalJsonIndex == index) {
@@ -114,7 +111,6 @@ ImporterViewer.prototype.HighlightMesh = function (index, highlight)
 			}
 		}
 	});
-	this.viewer.Draw ();
 };
 
 ImporterViewer.prototype.FitInWindow = function ()

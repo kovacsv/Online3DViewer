@@ -102,10 +102,14 @@ ImporterMenuItem.prototype.AddUserButton = function (userButton)
 	if (IsSet (userButton.onCreate)) {
 		userButton.onCreate (userImage, userButton.userData);
 	}
-	if (IsSet (userButton.onClick)) {
+	if (IsSet (userButton.onClick) || IsSet (userButton.onCtrlClick)) {
 		userImage.click (function (event) {
 			event.stopPropagation ();
-			userButton.onClick (userImage, userButton.userData);
+			if (event.ctrlKey && IsSet (userButton.onCtrlClick)) {
+				userButton.onCtrlClick (userImage, userButton.userData);
+			} else if (IsSet (userButton.onClick)) {
+				userButton.onClick (userImage, userButton.userData);
+			}
 		});
 	}
 };

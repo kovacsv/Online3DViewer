@@ -47,7 +47,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var top = document.getElementById ('top');
 	this.importerButtons = new ImporterButtons (top);
-	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.6.1</span>', function () { myThis.ShowAboutDialog (); });
+	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.6.2</span>', function () { myThis.ShowAboutDialog (); });
 	this.importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
 	this.importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	this.importerButtons.AddToggleButton ('images/fixup.png', 'images/fixupgray.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
@@ -170,13 +170,6 @@ ImporterApp.prototype.Resize = function ()
 
 ImporterApp.prototype.JsonLoaded = function (progressBar)
 {
-	var jsonData = this.viewer.GetJsonData ();
-	this.meshVisibility = {};
-	var i;
-	for (i = 0; i < jsonData.meshes.length; i++) {
-		this.meshVisibility[i] = true;
-	}
-
 	this.Generate (progressBar);
 };
 
@@ -266,6 +259,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 			});
 		}
 		
+		var visibleImage = null;
 		var meshMenuItem = meshesGroup.AddSubItem (mesh.name, {
 			id : 'meshmenuitem-' + meshIndex.toString (),
 			openCloseButton : {
@@ -310,16 +304,21 @@ ImporterApp.prototype.GenerateMenu = function ()
 					title : 'Show/Hide Mesh',
 					onCreate : function (image) {
 						image.attr ('src', 'images/visible.png');
+						visibleImage = image;
 					},
 					onClick : function (image, meshIndex) {
-						var visible = importerApp.ShowHideMesh (meshIndex);
-						image.attr ('src', visible ? 'images/visible.png' : 'images/hidden.png');
+						importerApp.ShowHideMesh (meshIndex);
+					},
+					onCtrlClick : function (image, meshIndex) {
+						importerApp.IsolateMesh (meshIndex);
 					},
 					userData : meshIndex
 				}
 			]
 		});
 		
+		meshMenuItem.isVisible = true;
+		meshMenuItem.visibleImage = visibleImage;
 		return meshMenuItem;
 	}		
 	
@@ -468,9 +467,50 @@ ImporterApp.prototype.SetView = function (viewType)
 
 ImporterApp.prototype.ShowHideMesh = function (meshIndex)
 {
-	this.meshVisibility[meshIndex] = !this.meshVisibility[meshIndex];
-	this.viewer.ShowMesh (meshIndex, this.meshVisibility[meshIndex]);
-	return this.meshVisibility[meshIndex];
+	var meshMenuItem = this.meshMenuItems[meshIndex];
+	this.ShowHideMeshInternal (meshIndex, !meshMenuItem.isVisible);
+	this.viewer.Draw ();
+};
+
+ImporterApp.prototype.IsolateMesh = function (meshIndex)
+{
+	var i, meshMenuItem;
+	
+	var onlyThisVisible = true;
+	if (!this.meshMenuItems[meshIndex].isVisible) {
+		onlyThisVisible = false;
+	} else {
+		for (i = 0; i < this.meshMenuItems.length; i++) {
+			meshMenuItem = this.meshMenuItems[i];
+			if (meshMenuItem.isVisible && i !== meshIndex) {
+				onlyThisVisible = false;
+				break;
+			}
+		}
+	}
+	
+	var i;
+	for (i = 0; i < this.meshMenuItems.length; i++) {
+		if (onlyThisVisible) {
+			this.ShowHideMeshInternal (i, true);
+		} else {
+			if (i == meshIndex) {
+				this.ShowHideMeshInternal (i, true);
+			} else {
+				this.ShowHideMeshInternal (i, false);
+			}
+		}
+	}
+	
+	this.viewer.Draw ();
+};
+
+ImporterApp.prototype.ShowHideMeshInternal = function (meshIndex, isVisible)
+{
+	var meshMenuItem = this.meshMenuItems[meshIndex];
+	meshMenuItem.isVisible = isVisible;
+	meshMenuItem.visibleImage.attr ('src', meshMenuItem.isVisible ? 'images/visible.png' : 'images/hidden.png');
+	this.viewer.ShowMesh (meshIndex, meshMenuItem.isVisible);
 };
 
 ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
@@ -571,6 +611,8 @@ ImporterApp.prototype.HighlightMesh = function (meshIndex)
 			}
 		}
 	}
+	
+	this.viewer.Draw ();
 };
 
 ImporterApp.prototype.OnCanvasClick = function (x, y)
