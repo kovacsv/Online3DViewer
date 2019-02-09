@@ -19,6 +19,7 @@ ImporterApp = function ()
 	this.fileNames = null;
 	this.inGenerate = false;
 	this.meshesGroup = null;
+	this.materialMenuItems = null;
 	this.meshMenuItems = null;
 	this.extensions = [];
 	this.importerButtons = null;
@@ -211,7 +212,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 	
 	function AddMaterial (importerApp, importerMenu, materialsGroup, materialIndex, material)
 	{
-		materialsGroup.AddSubItem (material.name, {
+		var materialMenuItem = materialsGroup.AddSubItem (material.name, {
 			openCloseButton : {
 				title : 'Show/Hide Information',
 				onOpen : function (contentDiv, material) {
@@ -231,6 +232,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 				userData : material
 			}
 		});
+		return materialMenuItem;
 	}
 
 	function AddMesh (importerApp, importerMenu, meshesGroup, mesh, meshIndex)
@@ -348,11 +350,13 @@ ImporterApp.prototype.GenerateMenu = function ()
 	var infoGroup = AddDefaultGroup (importerMenu, 'Information', 'informationmenuitem');
 	AddInformation (infoGroup, jsonData);
 	
+	this.materialMenuItems = [];
 	var materialsGroup = AddDefaultGroup (importerMenu, 'Materials', 'materialsmenuitem');
-	var material;
+	var material, materialMenuItem;
 	for (i = 0; i < jsonData.materials.length; i++) {
 		material = jsonData.materials[i];
-		AddMaterial (this, importerMenu, materialsGroup, i, material);
+		materialMenuItem = AddMaterial (this, importerMenu, materialsGroup, i, material);
+		this.materialMenuItems.push (materialMenuItem);
 	}
 	
 	this.meshesGroup = AddDefaultGroup (importerMenu, 'Meshes', 'meshesmenuitem');
@@ -622,20 +626,14 @@ ImporterApp.prototype.HighlightMesh = function (meshIndex)
 ImporterApp.prototype.HighlightMeshesByMaterial = function (materialIndex)
 {
 	var meshIndices = this.viewer.GetMeshesByMaterial (materialIndex);
-	var i, meshIndex, menuItem;
-	
-	for (i = 0; i < this.meshMenuItems.length; i++) {
-		menuItem = this.meshMenuItems[i];
-		if (menuItem.IsHighlighted ()) {
-			this.HighlightMeshInternal (i, false);
-		}
-	}
-	
+	var i, meshIndex, meshMenuItem;
+		
+	this.HighlightMesh (-1);
 	for (i = 0; i < meshIndices.length; i++) {
 		meshIndex = meshIndices[i];
-		menuItem = this.meshMenuItems[meshIndex];
+		meshMenuItem = this.meshMenuItems[meshIndex];
 		this.HighlightMeshInternal (meshIndex, true);
-	}	
+	}
 
 	this.meshesGroup.SetOpen (true);
 	this.viewer.Draw ();
