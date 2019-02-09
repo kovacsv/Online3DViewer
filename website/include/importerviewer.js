@@ -87,7 +87,7 @@ ImporterViewer.prototype.ShowMesh = function (index, show)
 {
 	this.viewer.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
-			if (current.originalJsonIndex == index) {
+			if (current.originalJsonMeshIndex == index) {
 				if (show) {
 					current.visible = true;
 				} else {
@@ -98,11 +98,26 @@ ImporterViewer.prototype.ShowMesh = function (index, show)
 	});
 };
 
+ImporterViewer.prototype.GetMeshesByMaterial = function (materialIndex)
+{
+	var meshIndices = [];
+	this.viewer.scene.traverse (function (current) {
+		if (current instanceof THREE.Mesh) {
+			if (current.originalJsonMaterialIndex == materialIndex) {
+				if (meshIndices.length === 0 || meshIndices[meshIndices.length - 1] != current.originalJsonMeshIndex) {
+					meshIndices.push (current.originalJsonMeshIndex);
+				}
+			}
+		}
+	});
+	return meshIndices;
+};
+
 ImporterViewer.prototype.HighlightMesh = function (index, highlight)
 {
 	this.viewer.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
-			if (current.originalJsonIndex == index) {
+			if (current.originalJsonMeshIndex == index) {
 				if (highlight) {
 					current.material.emissive.setHex (0x555555);
 				} else {
@@ -123,7 +138,7 @@ ImporterViewer.prototype.FitMeshInWindow = function (index)
 	var meshes = [];
 	this.viewer.scene.traverse (function (current) {
 		if (current instanceof THREE.Mesh) {
-			if (current.originalJsonIndex == index) {
+			if (current.originalJsonMeshIndex == index) {
 				meshes.push (current);
 			}
 		}

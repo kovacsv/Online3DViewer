@@ -188,12 +188,12 @@ table.infotable td
 	border : 1px solid #aaaaaa;
 }
 
-div.meshbuttons
+div.submenubuttons
 {
 
 }
 
-div.meshbuttons img.meshimgbutton
+div.submenubuttons img.submenubutton
 {
 	padding : 3px;
 	margin-right : 3px;

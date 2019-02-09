@@ -47,7 +47,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var top = document.getElementById ('top');
 	this.importerButtons = new ImporterButtons (top);
-	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.6.2</span>', function () { myThis.ShowAboutDialog (); });
+	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.6.3</span>', function () { myThis.ShowAboutDialog (); });
 	this.importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
 	this.importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	this.importerButtons.AddToggleButton ('images/fixup.png', 'images/fixupgray.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
@@ -209,13 +209,18 @@ ImporterApp.prototype.GenerateMenu = function ()
 		infoTable.AddRow ('Triangle count', triangleCount);	
 	}
 	
-	function AddMaterial (importerMenu, materialsGroup, material)
+	function AddMaterial (importerApp, importerMenu, materialsGroup, materialIndex, material)
 	{
 		materialsGroup.AddSubItem (material.name, {
 			openCloseButton : {
 				title : 'Show/Hide Information',
 				onOpen : function (contentDiv, material) {
 					contentDiv.empty ();
+					var materialbuttons = $('<div>').addClass ('submenubuttons').appendTo (contentDiv);
+					var highlightButton = $('<img>').addClass ('submenubutton').attr ('src', 'images/highlightmesh.png').attr ('title', 'Highlight Meshes With Material').appendTo (materialbuttons);
+					highlightButton.click (function () {
+						importerApp.HighlightMeshesByMaterial (materialIndex);
+					});
 					var table = new InfoTable (contentDiv);
 					table.AddColorRow ('Ambient', material.ambient);
 					table.AddColorRow ('Diffuse', material.diffuse);
@@ -244,16 +249,16 @@ ImporterApp.prototype.GenerateMenu = function ()
 				document.body.removeChild(input);
 			}
 			
-			var meshButtons = $('<div>').addClass ('meshbuttons').appendTo (contentDiv);
-			var fitInWindowButton = $('<img>').addClass ('meshimgbutton').attr ('src', 'images/fitinwindowsmall.png').attr ('title', 'Fit Mesh In Window').appendTo (meshButtons);
+			var meshButtons = $('<div>').addClass ('submenubuttons').appendTo (contentDiv);
+			var fitInWindowButton = $('<img>').addClass ('submenubutton').attr ('src', 'images/fitinwindowsmall.png').attr ('title', 'Fit Mesh In Window').appendTo (meshButtons);
 			fitInWindowButton.click (function () {
 				importerApp.FitMeshInWindow (meshIndex);
 			});
-			var highlightButton = $('<img>').addClass ('meshimgbutton').attr ('src', 'images/highlightmesh.png').attr ('title', 'Highlight Mesh').appendTo (meshButtons);
+			var highlightButton = $('<img>').addClass ('submenubutton').attr ('src', 'images/highlightmesh.png').attr ('title', 'Highlight Mesh').appendTo (meshButtons);
 			highlightButton.click (function () {
 				importerApp.HighlightMesh (meshIndex);
 			});
-			var copyNameToClipboardButton = $('<img>').addClass ('meshimgbutton').attr ('src', 'images/copytoclipboard.png').attr ('title', 'Copy Mesh Name To Clipboard').appendTo (meshButtons);
+			var copyNameToClipboardButton = $('<img>').addClass ('submenubutton').attr ('src', 'images/copytoclipboard.png').attr ('title', 'Copy Mesh Name To Clipboard').appendTo (meshButtons);
 			copyNameToClipboardButton.click (function () {
 				CopyToClipboard (meshName);
 			});
@@ -347,7 +352,7 @@ ImporterApp.prototype.GenerateMenu = function ()
 	var material;
 	for (i = 0; i < jsonData.materials.length; i++) {
 		material = jsonData.materials[i];
-		AddMaterial (importerMenu, materialsGroup, material);
+		AddMaterial (this, importerMenu, materialsGroup, i, material);
 	}
 	
 	this.meshesGroup = AddDefaultGroup (importerMenu, 'Meshes', 'meshesmenuitem');
@@ -513,6 +518,13 @@ ImporterApp.prototype.ShowHideMeshInternal = function (meshIndex, isVisible)
 	this.viewer.ShowMesh (meshIndex, meshMenuItem.isVisible);
 };
 
+ImporterApp.prototype.HighlightMeshInternal = function (meshIndex, highlight)
+{
+	var meshMenuItem = this.meshMenuItems[meshIndex];
+	meshMenuItem.Highlight (highlight);
+	this.viewer.HighlightMesh (meshIndex, highlight);
+};
+
 ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 {
 	this.ClearReadyForTest ();
@@ -581,11 +593,6 @@ ImporterApp.prototype.RegisterCanvasClick = function (canvasName)
 
 ImporterApp.prototype.HighlightMesh = function (meshIndex)
 {
-	function HighlightMeshInModel (viewer, meshIndex, highlight)
-	{
-		viewer.HighlightMesh (meshIndex, highlight);
-	}
-	
 	var i, menuItem, highlight;
 	if (meshIndex != -1) {
 		for (i = 0; i < this.meshMenuItems.length; i++) {
@@ -593,12 +600,10 @@ ImporterApp.prototype.HighlightMesh = function (meshIndex)
 			highlight = false;
 			if (i == meshIndex) {
 				if (!menuItem.IsHighlighted ()) {
-					menuItem.Highlight (true);
 					menuItem.menuItemDiv.get (0).scrollIntoView ();
-					HighlightMeshInModel (this.viewer, i, true);
+					this.HighlightMeshInternal (i, true);
 				} else {
-					menuItem.Highlight (false);
-					HighlightMeshInModel (this.viewer, i, false);
+					this.HighlightMeshInternal (i, false);
 				}
 			}
 		}
@@ -606,12 +611,33 @@ ImporterApp.prototype.HighlightMesh = function (meshIndex)
 		for (i = 0; i < this.meshMenuItems.length; i++) {
 			menuItem = this.meshMenuItems[i];
 			if (menuItem.IsHighlighted ()) {
-				menuItem.Highlight (false);
-				HighlightMeshInModel (this.viewer, i, false);
+				this.HighlightMeshInternal (i, false);
 			}
 		}
 	}
 	
+	this.viewer.Draw ();
+};
+
+ImporterApp.prototype.HighlightMeshesByMaterial = function (materialIndex)
+{
+	var meshIndices = this.viewer.GetMeshesByMaterial (materialIndex);
+	var i, meshIndex, menuItem;
+	
+	for (i = 0; i < this.meshMenuItems.length; i++) {
+		menuItem = this.meshMenuItems[i];
+		if (menuItem.IsHighlighted ()) {
+			this.HighlightMeshInternal (i, false);
+		}
+	}
+	
+	for (i = 0; i < meshIndices.length; i++) {
+		meshIndex = meshIndices[i];
+		menuItem = this.meshMenuItems[meshIndex];
+		this.HighlightMeshInternal (meshIndex, true);
+	}	
+
+	this.meshesGroup.SetOpen (true);
 	this.viewer.Draw ();
 };
 
@@ -620,7 +646,7 @@ ImporterApp.prototype.OnCanvasClick = function (x, y)
 	var objects = this.viewer.GetMeshesUnderPosition (x, y);
 	var meshIndex = -1;
 	if (objects.length > 0) {
-		meshIndex = objects[0].originalJsonIndex;
+		meshIndex = objects[0].originalJsonMeshIndex;
 		this.meshesGroup.SetOpen (true);
 	}
 	
