@@ -63,7 +63,7 @@ ImporterApp.prototype.Init = function ()
 	this.extensionButtons = new ExtensionButtons (top);
 	this.aboutDialog = new FloatingDialog ();
 	
-	var match = window.matchMedia ("(max-device-width : 600px)");
+	var match = window.matchMedia ('(max-device-width : 600px)');
 	this.isMobile = match.matches;
 
 	window.addEventListener ('resize', this.Resize.bind (this), false);
