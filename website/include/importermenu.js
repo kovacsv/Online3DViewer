@@ -159,12 +159,12 @@ ImporterMenu.prototype.AddGroup = function (name, parameters)
 
 ImporterButtons = function (parent)
 {
-	this.buttonsDiv = $('<div>').addClass ('buttons').appendTo (parent);
+	this.buttonsDiv = $('<div>').attr ('id', 'buttons').appendTo (parent);
 };
 
 ImporterButtons.prototype.AddLogo = function (title, onClick)
 {
-	var logoDiv = $('<div>').addClass ('logo').html (title).appendTo (this.buttonsDiv);
+	var logoDiv = $('<div>').attr ('id', 'logo').html (title).appendTo (this.buttonsDiv);
 	logoDiv.click (onClick);
 };
 
@@ -193,7 +193,7 @@ ImporterButtons.prototype.AddToggleButton = function (image, toggleImage, title,
 
 ExtensionButtons = function (parent)
 {
-	this.buttonsDiv = $('<div>').addClass ('rightbuttons').appendTo (parent);
+	this.buttonsDiv = $('<div>').attr ('id', 'extbuttons').appendTo (parent);
 };
 
 ExtensionButtons.prototype.GetButtonsDiv = function ()

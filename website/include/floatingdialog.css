@@ -37,3 +37,11 @@ div.dialogbutton
 	border-radius : 3px;
 	float : right;
 }
+
+@media only screen and (max-device-width : 600px)
+{
+	div.dialog
+	{
+		width : 80%;
+	}
+}

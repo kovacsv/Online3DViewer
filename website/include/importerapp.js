@@ -25,6 +25,7 @@ ImporterApp = function ()
 	this.importerButtons = null;
 	this.extensionButtons = null;
 	this.aboutDialog = null;
+	this.isMobile = null;
 	this.readyForTest = null;
 };
 
@@ -61,6 +62,9 @@ ImporterApp.prototype.Init = function ()
 	
 	this.extensionButtons = new ExtensionButtons (top);
 	this.aboutDialog = new FloatingDialog ();
+	
+	var match = window.matchMedia ("(max-device-width : 600px)");
+	this.isMobile = match.matches;
 
 	window.addEventListener ('resize', this.Resize.bind (this), false);
 	this.Resize ();
@@ -78,7 +82,7 @@ ImporterApp.prototype.Init = function ()
 	
 	window.onhashchange = this.LoadFilesFromHash.bind (this);
 	var hasHashModel = this.LoadFilesFromHash ();
-	if (!hasHashModel) {
+	if (!hasHashModel && !this.isMobile) {
 		this.ShowAboutDialog ();
 	}
 };

@@ -33,19 +33,19 @@ html, body
 	overflow : auto;
 }
 
-div.buttons
+#buttons
 {
 	overflow : auto;
 	float : left;
 }
 
-div.rightbuttons
+#extbuttons
 {
 	overflow : auto;
 	float : right;
 }
 
-div.logo
+#logo
 {
 	color : #ffffff;
 	background : linear-gradient(#0095c6, #006d91) #008ab8;
@@ -202,7 +202,7 @@ div.submenubuttons img.submenubutton
 
 div.importerdialog
 {
-	width : 450px;
+	width : 400px;
 }
 
 div.welcometitle
@@ -240,4 +240,27 @@ a
 a:hover
 {
 	text-decoration : underline;
+}
+
+@media only screen and (max-device-width : 600px)
+{
+	#logo
+	{
+		display : none;
+	}
+	
+	#left
+	{
+		display : none;
+	}
+
+	#extbuttons
+	{
+		display : none;
+	}
+
+	div.importerdialog
+	{
+		width : 80%;
+	}
 }
