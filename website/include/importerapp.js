@@ -601,7 +601,10 @@ ImporterApp.prototype.RegisterCanvasClick = function (canvasName)
 
 ImporterApp.prototype.ScrollMeshIntoView = function (meshIndex)
 {
-	menuItem = this.meshMenuItems[meshIndex];
+	if (meshIndex == -1) {
+		return;
+	}
+	var menuItem = this.meshMenuItems[meshIndex];
 	menuItem.menuItemDiv.get (0).scrollIntoView ();
 };
 
