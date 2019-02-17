@@ -595,6 +595,12 @@ ImporterApp.prototype.RegisterCanvasClick = function (canvasName)
 	});
 };
 
+ImporterApp.prototype.ScrollMeshIntoView = function (meshIndex)
+{
+	menuItem = this.meshMenuItems[meshIndex];
+	menuItem.menuItemDiv.get (0).scrollIntoView ();
+};
+
 ImporterApp.prototype.HighlightMesh = function (meshIndex)
 {
 	var i, menuItem, highlight;
@@ -604,7 +610,6 @@ ImporterApp.prototype.HighlightMesh = function (meshIndex)
 			highlight = false;
 			if (i == meshIndex) {
 				if (!menuItem.IsHighlighted ()) {
-					menuItem.menuItemDiv.get (0).scrollIntoView ();
 					this.HighlightMeshInternal (i, true);
 				} else {
 					this.HighlightMeshInternal (i, false);
@@ -626,8 +631,11 @@ ImporterApp.prototype.HighlightMesh = function (meshIndex)
 ImporterApp.prototype.HighlightMeshesByMaterial = function (materialIndex)
 {
 	var meshIndices = this.viewer.GetMeshesByMaterial (materialIndex);
+	if (meshIndices.length === 0) {
+		return;
+	}
+	
 	var i, meshIndex, meshMenuItem;
-		
 	this.HighlightMesh (-1);
 	for (i = 0; i < meshIndices.length; i++) {
 		meshIndex = meshIndices[i];
@@ -636,6 +644,7 @@ ImporterApp.prototype.HighlightMeshesByMaterial = function (materialIndex)
 	}
 
 	this.meshesGroup.SetOpen (true);
+	this.ScrollMeshIntoView (meshIndices[0]);
 	this.viewer.Draw ();
 };
 
@@ -649,6 +658,7 @@ ImporterApp.prototype.OnCanvasClick = function (x, y)
 	}
 	
 	this.HighlightMesh (meshIndex);
+	this.ScrollMeshIntoView (meshIndex);
 };
 
 ImporterApp.prototype.DragOver = function (event)
