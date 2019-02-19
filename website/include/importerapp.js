@@ -49,7 +49,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var top = document.getElementById ('top');
 	this.importerButtons = new ImporterButtons (top);
-	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.6.3</span>', function () { myThis.ShowAboutDialog (); });
+	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.6.4</span>', function () { myThis.ShowAboutDialog (); });
 	this.importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
 	this.importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	this.importerButtons.AddToggleButton ('images/fixup.png', 'images/fixupgray.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
@@ -221,10 +221,14 @@ ImporterApp.prototype.GenerateMenu = function ()
 				title : 'Show/Hide Information',
 				onOpen : function (contentDiv, material) {
 					contentDiv.empty ();
-					var materialbuttons = $('<div>').addClass ('submenubuttons').appendTo (contentDiv);
-					var highlightButton = $('<img>').addClass ('submenubutton').attr ('src', 'images/highlightmesh.png').attr ('title', 'Highlight Meshes With Material').appendTo (materialbuttons);
+					var materialButtons = $('<div>').addClass ('submenubuttons').appendTo (contentDiv);
+					var highlightButton = $('<img>').addClass ('submenubutton').attr ('src', 'images/highlightmesh.png').attr ('title', 'Highlight Meshes By Material').appendTo (materialButtons);
 					highlightButton.click (function () {
 						importerApp.HighlightMeshesByMaterial (materialIndex);
+					});
+					var fitInWindowButton = $('<img>').addClass ('submenubutton').attr ('src', 'images/fitinwindowsmall.png').attr ('title', 'Fit Meshes In Window By Material').appendTo (materialButtons);
+					fitInWindowButton.click (function () {
+						importerApp.FitMeshesByMaterialInWindow (materialIndex);
 					});
 					var table = new InfoTable (contentDiv);
 					table.AddColorRow ('Ambient', material.ambient);
@@ -461,6 +465,15 @@ ImporterApp.prototype.FitInWindow = function ()
 ImporterApp.prototype.FitMeshInWindow = function (meshIndex)
 {
 	this.viewer.FitMeshInWindow (meshIndex);
+};
+
+ImporterApp.prototype.FitMeshesByMaterialInWindow = function (materialIndex)
+{
+	var meshIndices = this.viewer.GetMeshesByMaterial (materialIndex);
+	if (meshIndices.length === 0) {
+		return;
+	}
+	this.viewer.FitMeshesInWindow (meshIndices);
 };
 
 ImporterApp.prototype.SetFixUp = function ()

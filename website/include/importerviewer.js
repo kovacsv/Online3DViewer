@@ -146,6 +146,19 @@ ImporterViewer.prototype.FitMeshInWindow = function (index)
 	this.viewer.FitMeshesInWindow (meshes);
 };
 
+ImporterViewer.prototype.FitMeshesInWindow = function (meshIndices)
+{
+	var meshes = [];
+	this.viewer.scene.traverse (function (current) {
+		if (current instanceof THREE.Mesh) {
+			if (meshIndices.indexOf (current.originalJsonMeshIndex) != -1) {
+				meshes.push (current);
+			}
+		}
+	});
+	this.viewer.FitMeshesInWindow (meshes);
+};
+
 ImporterViewer.prototype.AdjustClippingPlanes = function ()
 {
 	if (this.viewer.MeshCount () > 0) {
