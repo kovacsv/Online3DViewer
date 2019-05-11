@@ -51,7 +51,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var top = document.getElementById ('top');
 	this.importerButtons = new ImporterButtons (top);
-	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.6.4</span>');
+	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.6.5</span>');
 	this.importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
 	this.importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	this.importerButtons.AddToggleButton ('images/fixup.png', 'images/fixupgray.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
