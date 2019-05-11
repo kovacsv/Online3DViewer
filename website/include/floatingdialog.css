@@ -38,6 +38,17 @@ div.dialogbutton
 	float : right;
 }
 
+div.control
+{
+	position : absolute;
+	top : 0px;
+	left : 0px;
+}
+
+div.content
+{
+}
+
 @media only screen and (max-device-width : 600px)
 {
 	div.dialog

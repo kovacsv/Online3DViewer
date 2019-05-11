@@ -162,10 +162,13 @@ ImporterButtons = function (parent)
 	this.buttonsDiv = $('<div>').attr ('id', 'buttons').appendTo (parent);
 };
 
-ImporterButtons.prototype.AddLogo = function (title, onClick)
+ImporterButtons.prototype.AddLogo = function (title)
 {
 	var logoDiv = $('<div>').attr ('id', 'logo').html (title).appendTo (this.buttonsDiv);
-	logoDiv.click (onClick);
+	logoDiv.click (function () {
+		location.hash = '';
+		location.reload ();
+	});
 };
 
 ImporterButtons.prototype.AddButton = function (image, title, onClick)

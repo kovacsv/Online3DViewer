@@ -15,6 +15,7 @@ ExtensionInterface.prototype.GetModelJson = function ()
 
 ImporterApp = function ()
 {
+	this.canvas = null;
 	this.viewer = null;
 	this.fileNames = null;
 	this.inGenerate = false;
@@ -24,7 +25,8 @@ ImporterApp = function ()
 	this.extensions = [];
 	this.importerButtons = null;
 	this.extensionButtons = null;
-	this.aboutDialog = null;
+	this.introControl = null;
+	this.floatingDialog = null;
 	this.isMobile = null;
 	this.readyForTest = null;
 };
@@ -49,7 +51,7 @@ ImporterApp.prototype.Init = function ()
 	var myThis = this;
 	var top = document.getElementById ('top');
 	this.importerButtons = new ImporterButtons (top);
-	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.6.4</span>', function () { myThis.ShowAboutDialog (); });
+	this.importerButtons.AddLogo ('Online 3D Viewer <span class="version">v 0.6.4</span>');
 	this.importerButtons.AddButton ('images/openfile.png', 'Open File', function () { myThis.OpenFile (); });
 	this.importerButtons.AddButton ('images/fitinwindow.png', 'Fit In Window', function () { myThis.FitInWindow (); });
 	this.importerButtons.AddToggleButton ('images/fixup.png', 'images/fixupgray.png', 'Enable/Disable Fixed Up Vector', function () { myThis.SetFixUp (); });
@@ -61,7 +63,8 @@ ImporterApp.prototype.Init = function ()
 	this.importerButtons.AddButton ('images/right.png', 'Set Up Vector (-X)', function () { myThis.SetNamedView ('-x'); });
 	
 	this.extensionButtons = new ExtensionButtons (top);
-	this.aboutDialog = new FloatingDialog ();
+	this.introControl = new FloatingControl ();
+	this.floatingDialog = new FloatingDialog ();
 	
 	var match = window.matchMedia ('(max-device-width : 600px)');
 	this.isMobile = match.matches;
@@ -69,8 +72,9 @@ ImporterApp.prototype.Init = function ()
 	window.addEventListener ('resize', this.Resize.bind (this), false);
 	this.Resize ();
 
-	var canvasName = 'example';
-	this.RegisterCanvasClick (canvasName);
+	var canvasName = 'modelcanvas';
+	this.canvas = $('#' + canvasName);
+	this.RegisterCanvasClick ();
 	this.viewer = new ImporterViewer ();
 	this.viewer.Init (canvasName);
 
@@ -83,7 +87,7 @@ ImporterApp.prototype.Init = function ()
 	window.onhashchange = this.LoadFilesFromHash.bind (this);
 	var hasHashModel = this.LoadFilesFromHash ();
 	if (!hasHashModel && !this.isMobile) {
-		this.ShowAboutDialog ();
+		this.ShowIntroControl ();
 	}
 };
 
@@ -110,25 +114,24 @@ ImporterApp.prototype.AddExtension = function (extension)
 	extension.Init (extInterface);
 };
 
-ImporterApp.prototype.ShowAboutDialog = function ()
+ImporterApp.prototype.ShowIntroControl = function ()
 {
 	var dialogText = [
 		'<div class="importerdialog">',
 		this.GetWelcomeText (),
 		'</div>',
 	].join ('');
-	this.aboutDialog.Open ({
-		title : 'Welcome',
-		text : dialogText,
-		buttons : [
-			{
-				text : 'ok',
-				callback : function (dialog) {
-					dialog.Close ();
-				}
-			}
-		]
+	this.introControl.Open ({
+		parent : this.canvas,
+		text : dialogText
 	});
+	this.Resize ();
+};
+
+ImporterApp.prototype.HideIntroControl = function ()
+{
+	this.introControl.Close ();
+	this.Resize ();
 };
 
 ImporterApp.prototype.GetWelcomeText = function ()
@@ -159,7 +162,7 @@ ImporterApp.prototype.Resize = function ()
 
 	var top = document.getElementById ('top');
 	var left = document.getElementById ('left');
-	var canvas = document.getElementById ('example');
+	var canvas = document.getElementById ('modelcanvas');
 	var height = document.body.clientHeight - top.offsetHeight;
 
 	SetHeight (canvas, 0);
@@ -170,7 +173,8 @@ ImporterApp.prototype.Resize = function ()
 	SetHeight (canvas, height);
 	SetWidth (canvas, document.body.clientWidth - left.offsetWidth);
 	
-	this.aboutDialog.Resize ();
+	this.introControl.Resize ();
+	this.floatingDialog.Resize ();
 };
 
 ImporterApp.prototype.JsonLoaded = function (progressBar)
@@ -383,7 +387,7 @@ ImporterApp.prototype.GenerateError = function (errorMessage)
 	var menu = $('#menu');
 	menu.empty ();
 	
-	this.aboutDialog.Open ({
+	this.floatingDialog.Open ({
 		title : 'Error',
 		text : '<div class="importerdialog">' + errorMessage + '</div>',
 		buttons : [
@@ -432,7 +436,7 @@ ImporterApp.prototype.Generate = function (progressBar)
 	
 	var myThis = this;
 	if (jsonData.meshes.length > 250) {
-		this.aboutDialog.Open ({
+		this.floatingDialog.Open ({
 			title : 'Information',
 			text : '<div class="importerdialog">The model contains a large number of meshes. It can cause performance problems. Would you like to merge meshes?</div>',
 			buttons : [
@@ -549,7 +553,8 @@ ImporterApp.prototype.HighlightMeshInternal = function (meshIndex, highlight)
 ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 {
 	this.ClearReadyForTest ();
-	this.aboutDialog.Close ();
+	this.HideIntroControl ();
+	this.floatingDialog.Close ();
 	if (this.inGenerate) {
 		return;
 	}
@@ -591,15 +596,14 @@ ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 	});
 };
 
-ImporterApp.prototype.RegisterCanvasClick = function (canvasName)
+ImporterApp.prototype.RegisterCanvasClick = function ()
 {
 	var myThis = this;
-	var canvas = $('#' + canvasName);
 	var mouseMoved = false;
-	canvas.mousedown (function () {
+	this.canvas.mousedown (function () {
 		mouseMoved = false;
 	});
-	canvas.mouseup (function (event) {
+	this.canvas.mouseup (function (event) {
 		if (!mouseMoved) {
 			var x = event.pageX - $(this).offset ().left;
 			var y = event.pageY - $(this).offset ().top;
@@ -607,7 +611,7 @@ ImporterApp.prototype.RegisterCanvasClick = function (canvasName)
 		}
 		mouseMoved = false;
 	});
-	canvas.mousemove (function () {
+	this.canvas.mousemove (function () {
 		mouseMoved = true;
 	});
 };
@@ -670,6 +674,9 @@ ImporterApp.prototype.HighlightMeshesByMaterial = function (materialIndex)
 
 ImporterApp.prototype.OnCanvasClick = function (x, y)
 {
+	if (this.meshMenuItems == null) {
+		return;
+	}
 	var objects = this.viewer.GetMeshesUnderPosition (x, y);
 	var meshIndex = -1;
 	if (objects.length > 0) {
