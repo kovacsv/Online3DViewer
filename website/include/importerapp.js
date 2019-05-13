@@ -69,9 +69,6 @@ ImporterApp.prototype.Init = function ()
 	var match = window.matchMedia ('(max-device-width : 600px)');
 	this.isMobile = match.matches;
 
-	window.addEventListener ('resize', this.Resize.bind (this), false);
-	this.Resize ();
-
 	var canvasName = 'modelcanvas';
 	this.canvas = $('#' + canvasName);
 	this.RegisterCanvasClick ();
@@ -84,6 +81,9 @@ ImporterApp.prototype.Init = function ()
 	var fileInput = document.getElementById ('file');
 	fileInput.addEventListener ('change', this.FileSelected.bind (this), false);
 	
+	window.addEventListener ('resize', this.Resize.bind (this), false);
+	this.Resize ();
+
 	window.onhashchange = this.LoadFilesFromHash.bind (this);
 	var hasHashModel = this.LoadFilesFromHash ();
 	if (!hasHashModel && !this.isMobile) {
@@ -175,6 +175,7 @@ ImporterApp.prototype.Resize = function ()
 	
 	this.introControl.Resize ();
 	this.floatingDialog.Resize ();
+	this.viewer.Draw ();
 };
 
 ImporterApp.prototype.JsonLoaded = function (progressBar)
