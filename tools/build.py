@@ -6,6 +6,13 @@ import re
 currentPath = os.path.dirname (os.path.abspath (__file__))
 os.chdir (currentPath)
 
+extensions = [
+	#{
+	#	'name' : 'ExampleExtension',
+	#	'path' : 'extensions/example/example.js'
+	#}
+]
+
 def PrintInfo (message):
 	print ('Info: ' + message)
 
@@ -48,15 +55,6 @@ def BuildEmbeddable (rootFolder, resultFolder):
 	ReplaceInFile (indexFilePath, '../jsmodeler/', 'jsmodeler/')
 	
 def Main ():
-	extensions = []
-	i = 1
-	while i < len (sys.argv):
-		extensions.append ({
-			'name' : sys.argv[i],
-			'path' : sys.argv[i + 1]
-		});
-		i += 2
-		
 	rootFolder = os.path.abspath ('..')
 	resultFolder = os.path.join (rootFolder, 'build')
 	if os.path.exists (resultFolder):
