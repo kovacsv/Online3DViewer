@@ -20,7 +20,10 @@ FloatingDialog.prototype.Open = function (parameters)
 
 	this.dialogDiv = $('<div>').addClass ('dialog').appendTo ($('body'));
 	$('<div>').addClass ('dialogtitle').html (parameters.title).appendTo (this.dialogDiv);
-	this.contentDiv = $('<div>').addClass ('dialogcontent').html (parameters.text).appendTo (this.dialogDiv);
+	this.contentDiv = $('<div>').addClass ('dialogcontent').appendTo (this.dialogDiv);
+	if (parameters.text !== null && parameters.text !== undefined) {
+		this.contentDiv.html (parameters.text);
+	}
 	var buttonsDiv = $('<div>').addClass ('dialogbuttons').appendTo (this.dialogDiv);
 
 	var i, button;
@@ -42,6 +45,11 @@ FloatingDialog.prototype.Close = function ()
 	this.dialogDiv.remove ();
 	this.dialogDiv = null;
 	$('body').unbind ('click');
+};
+
+FloatingDialog.prototype.GetContentDiv = function ()
+{
+	return this.contentDiv;
 };
 
 FloatingDialog.prototype.Resize = function ()
