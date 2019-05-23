@@ -375,6 +375,8 @@ ImporterApp.prototype.GenerateMenu = function ()
 		meshMenuItem = AddMesh (this, importerMenu, this.meshesGroup, mesh, i);
 		this.meshMenuItems.push (meshMenuItem);
 	}
+	
+	this.Resize ();
 };
 
 ImporterApp.prototype.GenerateError = function (errorMessage)
@@ -595,20 +597,18 @@ ImporterApp.prototype.ProcessFiles = function (fileList, isUrl)
 ImporterApp.prototype.RegisterCanvasClick = function ()
 {
 	var myThis = this;
-	var mouseMoved = false;
+	var mousePosition = null;
 	this.canvas.mousedown (function () {
-		mouseMoved = false;
+		mousePosition = [event.pageX, event.pageY];
 	});
 	this.canvas.mouseup (function (event) {
+		var mouseMoved = (mousePosition == null || event.pageX != mousePosition[0] || event.pageY != mousePosition[1]);
 		if (!mouseMoved) {
 			var x = event.pageX - $(this).offset ().left;
 			var y = event.pageY - $(this).offset ().top;
 			myThis.OnCanvasClick (x, y);
 		}
-		mouseMoved = false;
-	});
-	this.canvas.mousemove (function () {
-		mouseMoved = true;
+		mousePosition = null;
 	});
 };
 
