@@ -75,8 +75,6 @@ ImporterApp.prototype.Init = function ()
 	var canvasName = 'modelcanvas';
 	this.canvas = $('#' + canvasName);
 	this.RegisterCanvasClick ();
-	this.viewer = new ImporterViewer ();
-	this.viewer.Init (canvasName);
 
 	window.addEventListener ('dragover', this.DragOver.bind (this), false);
 	window.addEventListener ('drop', this.Drop.bind (this), false);
@@ -89,6 +87,9 @@ ImporterApp.prototype.Init = function ()
 	if (!hasHashModel && !this.isMobile) {
 		this.ShowIntroControl ();
 	}
+	
+	this.viewer = new ImporterViewer ();
+	this.viewer.Init (canvasName);
 };
 
 ImporterApp.prototype.ClearReadyForTest = function ()
