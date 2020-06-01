@@ -416,6 +416,7 @@ ImporterApp.prototype.Generate = function (progressBar)
 				importerApp.GenerateMenu ();
 				importerApp.inGenerate = false;
 				importerApp.SetReadyForTest ();
+				importerApp.viewer.Draw ();
 			}
 		};
 		
