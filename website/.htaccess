@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule (.*) https://3dviewer.net/$1 [R=301,L]
