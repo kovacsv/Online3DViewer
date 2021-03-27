@@ -141,6 +141,8 @@ div.code
 	font-size: 14px;
 	margin: 10px 0px;
 	padding : 5px;
+	overflow: auto;
+	white-space: nowrap;
 }
 
 @media only screen and (max-width: 1000px)
