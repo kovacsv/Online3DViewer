@@ -1,5 +1,8 @@
 language: node_js
 
+env:
+  - python
+
 node_js:
   - "15"
   
@@ -10,6 +13,4 @@ install:
   - npm install
 
 script:
-  - python -V
-  - npm run build
   - npm run test

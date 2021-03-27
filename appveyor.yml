@@ -1,8 +1,8 @@
 version: "{build}"
 
 environment:
-  PYTHON: "C:\\Python38-x64"
-  nodejs_version: "12"
+  - PYTHON: "C:\\Python38-x64"
+  - nodejs_version: "14"
 
 install:
   - npm install
