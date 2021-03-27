@@ -8,7 +8,7 @@ install:
   - npm install
 
 build_script:
-  - npm run build
+  - python -V
 
 test_script:
   - npm run test

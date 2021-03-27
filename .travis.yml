@@ -7,5 +7,5 @@ install:
   - npm install
 
 script:
-  - npm run build
+  - python -V
   - npm run test
