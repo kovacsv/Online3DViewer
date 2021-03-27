@@ -1,0 +1,12 @@
+environment:
+  PYTHON: "3.6"
+  nodejs_version: "6"
+
+install:
+  - npm install
+
+test_script:
+  - npm run test
+
+artifacts:
+  - path: build\package\*
