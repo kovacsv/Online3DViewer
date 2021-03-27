@@ -6,7 +6,7 @@ environment:
 
 install:
   - ps: Install-Product node $env:nodejs_version
-  - set PATH=%python_path%;%python_path%\\Scripts;%python_path%
+  - set PATH=%python_path%;%python_path%\\Scripts;%PATH%
   - npm install
 
 build_script:
