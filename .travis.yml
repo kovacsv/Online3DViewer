@@ -5,12 +5,12 @@ env:
 
 node_js:
   - "15"
-  
-python:
-  - "3.9"
 
 install:
+  - alias python=python3
   - npm install
 
 script:
   - npm run test
+  - python -V
+  - npm run build
