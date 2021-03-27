@@ -1,9 +1,10 @@
 version: "{build}"
 
 environment:
-  nodejs_version: "12"
+  nodejs_version: "15"
 
 install:
+  - ps: Install-Product node $env:nodejs_version
   - npm install
 
 build_script:
