@@ -118,12 +118,14 @@ table td.center
 
 table td.green
 {
-	background: #eeffee;
+	color: #21C23C;
+	font-weight: bold;
 }
 
 table td.red
 {
-	background: #ffeeee;
+	color: #BF233D;
+	font-weight: bold;
 }
 
 div.main
@@ -149,5 +151,5 @@ div.main
 	width: auto;
 	margin: 0px 20px;
 }
-	
+
 }
