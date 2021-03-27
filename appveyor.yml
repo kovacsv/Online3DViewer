@@ -1,15 +1,17 @@
+version: "{build}"
+
 environment:
-  PYTHON: "3.6"
-  nodejs_version: "6"
+  PYTHON: "C:\\Python38-x64"
+  nodejs_version: "12"
 
 install:
   - npm install
 
-test_script:
-  - npm run test
-  
 build_script:
   - npm run build
 
+test_script:
+  - npm run test
+  
 artifacts:
   - path: build\package\*
