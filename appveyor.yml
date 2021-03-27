@@ -2,6 +2,7 @@ version: "{build}"
 
 environment:
   nodejs_version: "15"
+  PYTHON: "C:\\Python38-x64"
 
 install:
   - ps: Install-Product node $env:nodejs_version
