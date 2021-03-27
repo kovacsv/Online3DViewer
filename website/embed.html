@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+	<link rel="icon" type="image/png" href="assets/images/3dviewer_net_favicon.png">
+	
+	<title>Online 3D Viewer</title>
+
+	<!-- meta start -->
+	<!-- meta end -->
+
+	<!-- libs start -->
+	<script type="text/javascript" src="../libs/jquery-3.5.1.min.js"></script>
+	<script type="text/javascript" src="../libs/three.min-126.js"></script>
+	<!-- libs end -->
+	
+	<!-- importer start -->
+	<script type="text/javascript" src="../source/core/core.js"></script>
+	<script type="text/javascript" src="../source/core/taskrunner.js"></script>
+	<script type="text/javascript" src="../source/geometry/geometry.js"></script>
+	<script type="text/javascript" src="../source/geometry/coord2d.js"></script>
+	<script type="text/javascript" src="../source/geometry/coord3d.js"></script>
+	<script type="text/javascript" src="../source/geometry/matrix.js"></script>
+	<script type="text/javascript" src="../source/geometry/transformation.js"></script>
+	<script type="text/javascript" src="../source/geometry/tween.js"></script>
+	<script type="text/javascript" src="../source/io/binaryreader.js"></script>
+	<script type="text/javascript" src="../source/io/binarywriter.js"></script>
+	<script type="text/javascript" src="../source/io/textwriter.js"></script>
+	<script type="text/javascript" src="../source/io/bufferutils.js"></script>
+	<script type="text/javascript" src="../source/io/fileutils.js"></script>
+	<script type="text/javascript" src="../source/model/modelentities.js"></script>
+	<script type="text/javascript" src="../source/model/mesh.js"></script>
+	<script type="text/javascript" src="../source/model/meshbuffer.js"></script>
+	<script type="text/javascript" src="../source/model/model.js"></script>
+	<script type="text/javascript" src="../source/model/modelutils.js"></script>
+	<script type="text/javascript" src="../source/model/modelfinalization.js"></script>
+	<script type="text/javascript" src="../source/import/importerutils.js"></script>
+	<script type="text/javascript" src="../source/import/importerbase.js"></script>
+	<script type="text/javascript" src="../source/import/importerobj.js"></script>
+	<script type="text/javascript" src="../source/import/importerstl.js"></script>
+	<script type="text/javascript" src="../source/import/importeroff.js"></script>
+	<script type="text/javascript" src="../source/import/importerply.js"></script>
+	<script type="text/javascript" src="../source/import/importer3ds.js"></script>
+	<script type="text/javascript" src="../source/import/importergltf.js"></script>
+	<script type="text/javascript" src="../source/import/importer.js"></script>
+	<script type="text/javascript" src="../source/export/exporterutils.js"></script>
+	<script type="text/javascript" src="../source/export/exporterbase.js"></script>
+	<script type="text/javascript" src="../source/export/exporterobj.js"></script>
+	<script type="text/javascript" src="../source/export/exporterstl.js"></script>
+	<script type="text/javascript" src="../source/export/exporterply.js"></script>
+	<script type="text/javascript" src="../source/export/exporteroff.js"></script>
+	<script type="text/javascript" src="../source/export/exportergltf.js"></script>
+	<script type="text/javascript" src="../source/export/exporter.js"></script>
+	<script type="text/javascript" src="../source/external/three.converter.js"></script>
+	<script type="text/javascript" src="../source/external/three.model.loader.js"></script>
+	<script type="text/javascript" src="../source/viewer/domutils.js"></script>
+	<script type="text/javascript" src="../source/viewer/navigation.js"></script>
+	<script type="text/javascript" src="../source/viewer/viewer.js"></script>
+	<script type="text/javascript" src="../source/viewer/domviewer.js"></script>
+	<!-- importer end -->
+	
+	<!-- website start -->
+	<script type="text/javascript" src="o3dv/utils.js"></script>
+	<script type="text/javascript" src="o3dv/toolbar.js"></script>
+	<script type="text/javascript" src="o3dv/treeview.js"></script>
+	<script type="text/javascript" src="o3dv/modal.js"></script>
+	<script type="text/javascript" src="o3dv/dialogs.js"></script>
+	<script type="text/javascript" src="o3dv/modeldata.js"></script>
+	<script type="text/javascript" src="o3dv/info.js"></script>
+	<script type="text/javascript" src="o3dv/menu.js"></script>
+	<script type="text/javascript" src="o3dv/hashhandler.js"></script>
+	<link rel="stylesheet" type="text/css" href="o3dv/website.css">
+	<script type="text/javascript" src="o3dv/loader.js"></script>
+	<script type="text/javascript" src="o3dv/website.js"></script>
+	<script type="text/javascript" src="o3dv/embed.js"></script>
+	<!-- website end -->
+
+	<!-- analytics start -->
+	<!-- analytics end -->
+
+	<script type='text/javascript'>
+		var embed = null;
+		
+		$(window).on ('load', function () {
+			embed = new OV.Embed ({
+				viewerDiv : $('#embed_viewer'),
+				websiteLinkDiv : $('#website_link')
+			});
+			embed.Load ();
+		});
+		
+		$(window).on ('resize', function () {
+			if (embed !== null) {
+				embed.Resize ();
+			}
+		});
+	</script>
+</head>
+
+<body>
+	<div class="embed_viewer" id="embed_viewer">
+		<a id="website_link" href="https://3dviewer.net" target="_blank" title="Open in 3dviewer.net"><img class="embed_logo" src="assets/images/3dviewer_net_logo.svg"></a>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,19 @@
+# comment
+solid MeshName # comment
+ # comment
+  # comment
+   # comment
+facet normal 0.0 0.0 1.0 # comment
+ # comment
+  outer loop # comment
+   # comment
+    vertex 0.0 0.0 0.0 # comment
+    vertex 1.0 0.0 0.0 # comment
+    vertex 1.0 1.0 0.0 # comment
+  endloop # comment
+   # comment
+endfacet # comment
+ # comment
+endsolid MeshName # comment
+ # comment
+ 

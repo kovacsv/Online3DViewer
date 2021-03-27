@@ -1,0 +1,8 @@
+{
+	"dependencies": {
+		"mocha": "*"
+	},
+	"scripts": {
+		"test": "mocha"
+	}
+}

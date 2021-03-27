@@ -1,0 +1,364 @@
+var assert = require ('assert');
+
+function CreateTestModel ()
+{
+    let model = new OV.Model ();
+
+    let material1 = new OV.Material ();
+    material1.name = 'TestMaterial1';
+    material1.ambient = new OV.Color (0, 0, 0);
+    material1.diffuse = new OV.Color (255, 0, 0);
+    material1.specular = new OV.Color (51, 51, 51);
+    material1.diffuseMap = new OV.TextureMap ();
+    material1.diffuseMap.name = 'textures/texture1.png';
+    material1.diffuseMap.url = 'texture1_url';
+    material1.specularMap = new OV.TextureMap ();
+    material1.specularMap.name = 'textures/texture2.png';
+    material1.specularMap.url = 'texture2_url';
+    material1.bumpMap = new OV.TextureMap ();
+    material1.bumpMap.name = 'textures/texture3.png';
+    material1.bumpMap.url = 'texture3_url';
+    model.AddMaterial (material1);
+
+    let material2 = new OV.Material ();
+    material2.name = 'TestMaterial2';
+    material2.ambient = new OV.Color (0, 0, 0);
+    material2.diffuse = new OV.Color (0, 255, 0);
+    material2.specular = new OV.Color (51, 51, 51);
+    model.AddMaterial (material2);
+
+    let mesh1 = new OV.Mesh ();
+    mesh1.SetName ('TestMesh1');
+    mesh1.AddVertex (new OV.Coord3D (0.0, 0.0, 1.0));
+    mesh1.AddVertex (new OV.Coord3D (1.0, 0.0, 1.0));
+    mesh1.AddVertex (new OV.Coord3D (0.0, 1.0, 1.0));
+    let triangle1 = new OV.Triangle (0, 1, 2);
+    triangle1.mat = 0;
+    mesh1.AddTriangle (triangle1);
+    model.AddMesh (mesh1);
+
+    let mesh2 = new OV.Mesh ();
+    mesh2.SetName ('TestMesh2');
+    mesh2.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
+    mesh2.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
+    mesh2.AddVertex (new OV.Coord3D (0.0, 1.0, 0.0));
+    mesh2.AddVertex (new OV.Coord3D (-1.0, 0.0, 0.0));
+    mesh2.AddVertex (new OV.Coord3D (0.0, 0.0, 1.0));
+    let triangle2 = new OV.Triangle (0, 1, 2);
+    let triangle3 = new OV.Triangle (0, 2, 3);
+    let triangle4 = new OV.Triangle (0, 4, 2);
+    triangle2.mat = 0;
+    triangle3.mat = 1;
+    triangle4.mat = 1;
+    mesh2.AddTriangle (triangle2);
+    mesh2.AddTriangle (triangle3);
+    mesh2.AddTriangle (triangle4);
+    model.AddMesh (mesh2);
+    
+    OV.FinalizeModel (model, null);
+    return model;
+}
+
+describe ('Exporter', function () {
+    it ('Obj Export', function () {
+        let model = CreateTestModel ();
+        let exporter = new OV.Exporter ();
+
+        let result = exporter.Export (model, OV.FileFormat.Text, 'obj', null);
+        assert.strictEqual (result.length, 5);
+
+        let mtlFile = result[0];
+        assert.strictEqual (mtlFile.GetName (), 'model.mtl');
+        assert.strictEqual (mtlFile.GetContent (),
+`newmtl TestMaterial1
+Ka 0 0 0
+Kd 1 0 0
+Ks 0.2 0.2 0.2
+Ns 0
+d 1
+map_Kd texture1.png
+map_Ks texture2.png
+bump texture3.png
+newmtl TestMaterial2
+Ka 0 0 0
+Kd 0 1 0
+Ks 0.2 0.2 0.2
+Ns 0
+d 1
+`
+        );
+        let objFile = result[1];
+        assert.strictEqual (objFile.GetName (), 'model.obj');
+        assert.strictEqual (objFile.GetContent (),
+`mtllib model.mtl
+g TestMesh1
+v 0 0 1
+v 1 0 1
+v 0 1 1
+vn 0 0 1
+usemtl TestMaterial1
+f 1//1 2//1 3//1
+g TestMesh2
+v 0 0 0
+v 1 0 0
+v 0 1 0
+v -1 0 0
+v 0 0 1
+vn 0 0 1
+vn 0 0 1
+vn -1 0 0
+f 4//2 5//2 6//2
+usemtl TestMaterial2
+f 4//3 6//3 7//3
+f 4//4 8//4 6//4
+`
+        );
+
+        let textureFile1 = result[2];
+        assert.strictEqual (textureFile1.GetName (), 'texture1.png');
+        assert.strictEqual (textureFile1.GetUrl (), 'texture1_url');
+        assert.strictEqual (textureFile1.GetContent (), null);
+
+        let textureFile2 = result[3];
+        assert.strictEqual (textureFile2.GetName (), 'texture2.png');
+        assert.strictEqual (textureFile2.GetUrl (), 'texture2_url');
+        assert.strictEqual (textureFile2.GetContent (), null);
+
+        let textureFile3 = result[4];
+        assert.strictEqual (textureFile3.GetName (), 'texture3.png');
+        assert.strictEqual (textureFile3.GetUrl (), 'texture3_url');
+        assert.strictEqual (textureFile3.GetContent (), null);
+    });
+
+    it ('Stl Export', function () {
+        let model = CreateTestModel ();
+        let exporter = new OV.Exporter ();
+
+        let result = exporter.Export (model, OV.FileFormat.Text, 'stl', null);
+        assert.strictEqual (result.length, 1);
+
+        let stlFile = result[0];
+        assert.strictEqual (stlFile.GetName (), 'model.stl');
+        assert.strictEqual (stlFile.GetContent (),
+`solid Model
+facet normal 0 0 1
+  outer loop
+    vertex 0 0 1
+    vertex 1 0 1
+    vertex 0 1 1
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0 0 0
+    vertex 1 0 0
+    vertex 0 1 0
+  endloop
+endfacet
+facet normal 0 0 1
+  outer loop
+    vertex 0 0 0
+    vertex 0 1 0
+    vertex -1 0 0
+  endloop
+endfacet
+facet normal -1 0 0
+  outer loop
+    vertex 0 0 0
+    vertex 0 0 1
+    vertex 0 1 0
+  endloop
+endfacet
+endsolid Model
+`
+        );
+	  });
+
+    it ('Stl Binary Export', function () {
+        let model = CreateTestModel ();
+        let exporter = new OV.Exporter ();
+
+        let result = exporter.Export (model, OV.FileFormat.Binary, 'stl', null);
+        assert.strictEqual (result.length, 1);
+
+        let stlFile = result[0];
+        assert.strictEqual (stlFile.GetName (), 'model.stl');
+        assert.strictEqual (stlFile.GetContent ().byteLength, 284);
+        
+        let contentBuffer = stlFile.GetContent ();
+        let importer = new OV.ImporterStl ();
+        importer.Import (contentBuffer, 'stl', {
+            getDefaultMaterial () {
+                return new OV.Material ();
+            }
+        });
+        let importedModel = importer.GetModel ();
+        assert.strictEqual (importedModel.VertexCount (), 12);
+        assert.strictEqual (importedModel.TriangleCount (), 4);
+	  });
+
+    it ('Off Export', function () {
+    let model = CreateTestModel ();
+    let exporter = new OV.Exporter ();
+
+    let result = exporter.Export (model, OV.FileFormat.Text, 'off', null);
+    assert.strictEqual (result.length, 1);
+
+    let offFile = result[0];
+    assert.strictEqual (offFile.GetName (), 'model.off');
+    assert.strictEqual (offFile.GetContent (),
+`OFF
+8 4 0
+0 0 1
+1 0 1
+0 1 1
+0 0 0
+1 0 0
+0 1 0
+-1 0 0
+0 0 1
+3 0 1 2
+3 3 4 5
+3 3 5 6
+3 3 7 5
+`
+        );
+    });
+
+    it ('Ply Export', function () {
+      let model = CreateTestModel ();
+      let exporter = new OV.Exporter ();
+
+      let result = exporter.Export (model, OV.FileFormat.Text, 'ply', null);
+      assert.strictEqual (result.length, 1);
+
+      let plyFile = result[0];
+      assert.strictEqual (plyFile.GetName (), 'model.ply');
+      assert.strictEqual (plyFile.GetContent (),
+`ply
+format ascii 1.0
+element vertex 8
+property float x
+property float y
+property float z
+element face 4
+property list uchar int vertex_index
+end_header
+0 0 1
+1 0 1
+0 1 1
+0 0 0
+1 0 0
+0 1 0
+-1 0 0
+0 0 1
+3 0 1 2
+3 3 4 5
+3 3 5 6
+3 3 7 5
+`
+        );
+    });
+
+    it ('Ply Binary Export', function () {
+        let model = CreateTestModel ();
+        let exporter = new OV.Exporter ();
+
+        let result = exporter.Export (model, OV.FileFormat.Binary, 'ply', null);
+        assert.strictEqual (result.length, 1);
+
+        let plyFile = result[0];
+        assert.strictEqual (plyFile.GetName (), 'model.ply');
+        assert.strictEqual (plyFile.GetContent ().byteLength, 315);
+        
+        let contentBuffer = plyFile.GetContent ();
+        let importer = new OV.ImporterPly ();
+        importer.Import (contentBuffer, 'ply', {
+            getDefaultMaterial () {
+                return new OV.Material ();
+            }
+        });
+        let importedModel = importer.GetModel ();
+        assert.strictEqual (importedModel.VertexCount (), 8);
+        assert.strictEqual (importedModel.TriangleCount (), 4);        
+    });
+
+    it ('Gltf Ascii Export', function () {
+      let model = CreateTestModel ();
+      let exporter = new OV.Exporter ();
+
+      let result = exporter.Export (model, OV.FileFormat.Text, 'gltf', null);
+      assert.strictEqual (result.length, 3);
+
+      let gltfFile = result[0];
+      let binFile = result[1];
+      let textureFile = result[2];
+      assert.strictEqual (gltfFile.GetName (), 'model.gltf');
+      assert.strictEqual (binFile.GetName (), 'model.bin');
+
+      assert.strictEqual (textureFile.GetName (), 'texture1.png');
+      assert.strictEqual (textureFile.GetUrl (), 'texture1_url');
+      assert.strictEqual (textureFile.GetContent (), null);
+
+      let contentBuffer = gltfFile.GetContent ();
+      let importer = new OV.ImporterGltf ();
+      importer.Import (contentBuffer, 'gltf', {
+          getDefaultMaterial () {
+              return new OV.Material ();
+          },
+          getFileContent (filePath) {
+              return binFile.GetContent ();
+          },
+          getTextureObjectUrl (filePath) {
+              return null;
+          }
+      });
+
+      let importedModel = importer.GetModel ();
+      assert (OV.CheckModel (importedModel));
+      assert.strictEqual (importedModel.MaterialCount (), 2);
+      assert.strictEqual (importedModel.MeshCount (), 2);
+      assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
+      assert.strictEqual (importedModel.GetMesh (1).GetName (), 'TestMesh2');
+      assert.strictEqual (importedModel.VertexCount (), 12);
+      assert.strictEqual (importedModel.TriangleCount (), 4);         
+  });
+
+  it ('Gltf Binary Export', function () {
+    let model = CreateTestModel ();
+    let exporter = new OV.Exporter ();
+
+    let result = exporter.Export (model, OV.FileFormat.Binary, 'glb', {
+      getTextureBuffer : function (name) {
+        return new ArrayBuffer (4);
+      }
+    });
+    assert.strictEqual (result.length, 1);
+
+    let glbFile = result[0];
+    assert.strictEqual (glbFile.GetName (), 'model.glb');
+
+    let contentBuffer = glbFile.GetContent ();
+    let importer = new OV.ImporterGltf ();
+    importer.Import (contentBuffer, 'glb', {
+        getDefaultMaterial () {
+            return new OV.Material ();
+        },
+        getFileContent (filePath) {
+            return binFile.GetContent ();
+        },
+        getTextureObjectUrl (filePath) {
+            return null;
+        }
+    });
+
+    let importedModel = importer.GetModel ();
+    assert (OV.CheckModel (importedModel));
+    assert.strictEqual (importedModel.MaterialCount (), 2);
+    assert.strictEqual (importedModel.MeshCount (), 2);
+    assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
+    assert.strictEqual (importedModel.GetMesh (1).GetName (), 'TestMesh2');
+    assert.strictEqual (importedModel.VertexCount (), 12);
+    assert.strictEqual (importedModel.TriangleCount (), 4);         
+  });   
+});

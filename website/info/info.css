@@ -1,0 +1,153 @@
+@font-face
+{
+	font-family: Quicksand;
+	src: url('../assets/fonts/Quicksand/Quicksand-Regular.ttf');
+}
+
+html, body
+{
+	color: #000000;
+	background: #ffffff;
+	font-size: 16px;
+	font-family: Quicksand, Helvetica, sans-serif;
+	scroll-behavior: smooth
+}
+
+a
+{
+	color: #3393bd;
+	text-decoration: none;
+}
+
+a:hover
+{
+	text-decoration: underline;
+}
+
+img.inline
+{
+	width: 18px;
+	height: 18px;
+	display: inline-block;
+	margin-left: 3px;
+	margin-right: 3px;
+	margin-bottom: -4px;
+}
+
+h1
+{
+	font-size: 27px;
+	font-weight: normal;
+	margin-top: 30px;
+	margin-bottom: 20px;
+	padding: 10px 0px;
+	border-bottom: 1px solid #dddddd;
+}
+
+h1 a
+{
+	color: inherit;
+}
+
+h1 a:hover
+{
+	text-decoration: none;
+}
+
+h2
+{
+	font-size: 25px;
+	font-weight: normal;
+	margin-top: 30px;
+	margin-bottom: 20px;
+	padding: 10px 0px;
+	border-bottom: 1px solid #dddddd;
+}
+
+h3
+{
+	font-size: 21px;
+	font-weight: normal;
+	margin-top: 30px;
+	margin-bottom: 20px;
+}
+
+p
+{
+	margin: 10px 0px;
+	line-height: 25px;
+}
+
+p.info
+{
+	background: #e4f4ff;
+	padding: 10px;
+	border-left: 3px solid #3393bd;
+}
+
+ol, ul
+{
+	padding: 0px 25px;
+}
+
+li
+{
+	margin: 10px 0px;
+}
+
+table
+{
+	border-collapse: collapse;
+}
+
+table td, th
+{
+	padding: 10px;
+	border: 1px solid #dddddd;
+}
+
+table th
+{
+	background: #fafafa;
+}
+
+table td.center
+{
+	text-align: center;
+}
+
+table td.green
+{
+	background: #eeffee;
+}
+
+table td.red
+{
+	background: #ffeeee;
+}
+
+div.main
+{
+	width: 920px;
+	margin: 30px auto;
+}
+
+div.code
+{
+	background: #f0f0f0;
+	font-family: monospace;
+	font-size: 14px;
+	margin: 10px 0px;
+	padding : 5px;
+}
+
+@media only screen and (max-width: 1000px)
+{
+
+div.main
+{
+	width: auto;
+	margin: 0px 20px;
+}
+	
+}

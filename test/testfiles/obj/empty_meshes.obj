@@ -1,0 +1,16 @@
+v 0.0 0.0 0.0
+v 1.0 0.0 0.0
+v 1.0 1.0 0.0
+v 0.0 0.0 1.0
+v 1.0 0.0 1.0
+v 1.0 1.0 1.0
+
+g EmptyMesh1
+g MeshName1
+f 1 2 3
+
+g EmptyMesh2
+g MeshName2
+f 4 5 6
+
+g EmptyMesh3

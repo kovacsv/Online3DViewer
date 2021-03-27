@@ -1,0 +1,20 @@
+# this is a comment
+OFF
+# this is another comment
+3 1 12 # comment
+
+# more comments
+
+0.0 0.0 0.0 # comment at the end of line
+    # indented comment
+
+1.0 0.0 0.0     # another end of line comment
+# comment
+1.0 1.0 0.0 # comment
+
+# comment
+3 0 1 2
+
+# comment
+# comment a the end of the file
+# last comment

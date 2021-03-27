@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+	<link rel="icon" type="image/png" href="../assets/images/3dviewer_net_favicon.png">
+
+	<title>Online 3D Viewer Manual</title>
+
+	<link rel="stylesheet" type="text/css" href="info.css">
+
+	<!-- meta start -->
+	<!-- meta end -->
+
+	<!-- analytics start -->
+	<!-- analytics end -->
+
+</head>
+
+<body>
+	<div class="main">
+		<h1><a href=".">Online 3D Viewer Manual</a></h1>
+		<p>
+			This is the user manual for the <a href="https://3dviewer.net">3dviewer.net</a> website.
+			The website can open several 3D file formats and visualize the model in your browser.
+			Supported file formats: obj, 3ds, stl, ply, gltf, glb, and off.
+		</p>
+		<p>
+			<ol>
+				<li><a href="#supported_file_formats">Supported file formats</a></li>
+				<li><a href="#loading_models">Loading models</a></li>
+				<ol>
+					<li><a href="#loading_models_computer">Loading models from your computer</a></li>
+					<li><a href="#loading_models_server">Loading models hosted on a web server</a></li>
+					<li><a href="#loading_models_missing_files">Missing files</a></li>
+				</ol>
+				<li><a href="#embedding_viewer">Embedding the viewer</a></li>
+				<ol>
+					<li><a href="#embed_github">Embedding models hosted on GitHub</a></li>
+					<li><a href="#embed_dropbox">Embedding models hosted on DropBox</a></li>
+					<li><a href="#embed_selfhost">Self-hosted viewer</a></li>
+				</ol>
+				<li><a href="#exporting_models">Exporting models</a></li>
+			</ol>
+		</p>
+
+		<h2 id="supported_file_formats">Supported file formats</h2>
+		<p>
+			The website supports several file formats for import and export. If a file format has an ascii and binary version,
+			usually it's recommended to use the binary version. During export an ascii file is created.
+		</p>
+		<p>
+			<table>
+				<tr>
+					<th colspan="2">Format</th>
+					<th>Import</th>
+					<th>Export</th>
+					<th>Comment</th>
+				</tr>
+				<tr>
+					<td>obj</td>
+					<td>ascii</td>
+					<td class="center green">&#x2713</td>
+					<td class="center green">&#x2713</td>
+					<td>with mtl and texture support</td>
+				</tr>
+				<tr>
+					<td>3ds</td>
+					<td>binary</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td>with texture support</td>
+				</tr>
+				<tr>
+					<td rowspan="2">stl</td>
+					<td>ascii</td>
+					<td class="center green">&#x2713</td>
+					<td class="center green">&#x2713</td>
+					<td>binary version is preferred</td>
+				</tr>
+				<tr>
+					<td>binary</td>
+					<td class="center green">&#x2713</td>
+					<td class="center green">&#x2713</td>
+					<td>-</td>
+				</tr>
+				<tr>
+					<td rowspan="2">ply</td>
+					<td>ascii</td>
+					<td class="center green">&#x2713</td>
+					<td class="center green">&#x2713</td>
+					<td>binary version is preferred</td>
+				</tr>
+				<tr>
+					<td>binary</td>
+					<td class="center green">&#x2713</td>
+					<td class="center green">&#x2713</td>
+					<td>with vertex and face color support</td>
+				</tr>
+				<tr>
+					<td rowspan="2">gltf</td>
+					<td>ascii (.gltf)</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td>version 2.0</td>
+				</tr>
+				<tr>
+					<td>binary (.glb)</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td>version 2.0</td>
+				</tr>				
+				<tr>
+					<td rowspan="2">off</td>
+					<td>ascii</td>
+					<td class="center green">&#x2713</td>
+					<td class="center green">&#x2713</td>
+					<td>-</td>
+				</tr>
+				<tr>
+					<td>binary</td>
+					<td class="center red">&#x2717</td>
+					<td class="center red">&#x2717</td>
+					<td>-</td>
+				</tr>
+			</table>
+		</p>
+		
+		<h2 id="loading_models">Loading models</h2>
+		<p>
+			There are several ways to load models. You can use files from your computer or load files hosted on an external web server.
+		</p>
+		<p class="info">
+			Please note, that some 3D models are built up from multiple files (for example an obj file usually comes with an mtl file,
+			and some texture files). For the correct visualization you have to import all of the required files. See the <a href="#loading_models_missing_files">Missing files</a>
+			section for more details.
+		</p>
+
+		<h3 id="loading_models_computer">Loading models from your computer</h3>
+		<p>
+			You can load models from your computer. In this case the model won't be uploaded to any web server,
+			the whole visualization happens in your browser.
+		</p>
+		<p>
+			There are two ways to load models from your computer:
+			<ol>
+				<li>
+					Use the open button on the toolbar (<img class="inline" src="../assets/images/toolbar/open.svg"/>). Here you can select all the
+					relevant files.
+				</li>
+				<li>Drag and drop all the relevant files into the browser window.</li>
+			</ol>
+		</p>
+	
+		<h3 id="loading_models_server">Loading models hosted on a web server</h3>
+		<p>
+			You can load models by url with the open url button on the toolbar (<img class="inline" src="../assets/images/toolbar/open_url.svg"/>).
+			Here you can list all of the model files. You should place every file in a separate line.
+		</p>
+		<p class="info">
+			To make this work, CORS (Cross-Origin Resource Sharing) must be enabled on the server.
+		</p>
+
+		<h3 id="loading_models_missing_files">Missing files</h3>
+		<p>
+			Sometimes you see missing files in the tree (<img class="inline" src="../assets/images/tree/missing_files.svg"/>). It means that your model
+			refers to another files, but they are not selected to import. To solve the issue you have to import the model again together with the referenced
+			files, or just import the missing files on their own.
+		</p>
+
+		<h2 id="embedding_viewer">Embedding the viewer</h2>
+		<p>
+			The website allows you to embed a 3D model in your page. It works only if your models are <a href="#loading_models_server">hosted on a web server</a>.
+			To get the embedding code, click on the embedding button (<img class="inline" src="../assets/images/toolbar/embed.svg"/>) in the toolbar.
+		</p>
+
+		<h3 id="embed_github">Embedding models hosted on GitHub</h3>
+		<p>
+			To host your models on GitHub follow the steps below:
+		</p>
+		<p>
+			<ol>
+				<li>Commit models to GitHub with all the required files.</li>
+				<li>Go to <a href="https://3dviewer.net">3dviewer.net</a>, and click on the open url button in the toolbar (<img class="inline" src="../assets/images/toolbar/open_url.svg"/>).</li>
+				<li>
+					Open the files on GitHub, copy the link of the file from the address bar, and paste it in the dialog. See the example below.
+					<div class="code">
+						https://github.com/kovacsv/Online3DViewer/blob/master/embeddable/testfiles/textured%20cube.obj<br>
+						https://github.com/kovacsv/Online3DViewer/blob/master/embeddable/testfiles/textured%20cube.mtl<br>
+						https://github.com/kovacsv/Online3DViewer/blob/master/embeddable/testfiles/texture%20with%20space.png
+					</div>
+				</li>
+				<li>Click on OK, and if the model is loaded, click on the embed button in the toolbar (<img class="inline" src="../assets/images/toolbar/embed.svg"/>).</li>
+			</ol>
+		</p>
+
+		<h3 id="embed_dropbox">Embedding models hosted on DropBox</h3>
+		<p>
+			To host your models on DropBox follow the steps below:
+		</p>
+		<p>
+			<ol>
+				<li>Upload models to DropBox with all the required files.</li>
+				<li>Go to <a href="https://3dviewer.net">3dviewer.net</a>, and click on the open url button in the toolbar (<img class="inline" src="../assets/images/toolbar/open_url.svg"/>).</li>
+				<li>
+					Get the sharing link from DropBox for all of the files, and paste it in the dialog. See the example below.
+					<div class="code">
+						https://www.dropbox.com/s/wd6lt7h4xa8fuv0/cube_four_instances.3ds?dl=0<br>
+						https://www.dropbox.com/s/6dfk1jveevbofxm/texture.png?dl=0
+					</div>
+				</li>
+				<li>Click on OK, and if the model is loaded, click on the embed button in the toolbar (<img class="inline" src="../assets/images/toolbar/embed.svg"/>).</li>
+			</ol>
+		</p>		
+
+		<h3 id="embed_selfhost">Self-hosted viewer</h3>
+		<p>
+			You can host the viewer and the models on your website.
+			See the <a href="https://github.com/kovacsv/Online3DViewer/wiki">developer documentation</a> for details.
+		</p>
+		
+		<h2 id="exporting_models">Exporting models</h2>
+		<p>
+			You can export your model in several file formats. To achieve this, click on the export button in the toolbar (<img class="inline" src="../assets/images/toolbar/export.svg"/>).
+			After that select the format you would like to export to, and download the resulting files one by one.
+		</p>
+
+	</div>
+</body>
+
+</html>

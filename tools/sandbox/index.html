@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+
+	<title>Online 3D Viewer</title>
+
+	<script type="text/javascript" src="../../libs/three.min-126.js"></script>
+	<script type='text/javascript'>
+		function Sandbox3D ()
+		{
+			let canvas = document.getElementById ('canvas')
+
+			let parameters = {
+				canvas : canvas,
+				antialias : true
+			};
+		
+			let width = 800;
+			let height = 600;
+			let renderer = new THREE.WebGLRenderer (parameters);
+			renderer.setClearColor ('#ffffff', 1);
+			renderer.setSize (width, height);
+		
+			let scene = new THREE.Scene ();
+
+			let ambientLight = new THREE.AmbientLight (0x888888);
+			scene.add (ambientLight);
+		
+			let light = new THREE.DirectionalLight (0x888888);
+			light.position.set (3.0, -1.5, 2.0);	
+			scene.add (light);
+
+			let camera = new THREE.PerspectiveCamera (45.0, width / height, 0.1, 1000.0);
+			camera.position.set (3.0, -1.5, 2.0);
+			camera.up.set (0.0, 0.0, 1.0);
+			camera.lookAt (new THREE.Vector3 (0.0, 0.0, 0.0));
+			scene.add (camera);
+
+			let box = new THREE.BoxGeometry (1.0, 1.0, 1.0);
+			let material = new THREE.MeshPhongMaterial ({
+				color : 0xcc0000
+			});
+
+			let mesh = new THREE.Mesh (box, material);
+
+			scene.add (mesh);
+			renderer.render (scene, camera);
+		}
+	
+		window.onload = function () {
+			Sandbox3D ();
+		};
+	</script>
+</head>
+
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+
+</html>
