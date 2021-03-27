@@ -1,11 +1,15 @@
 language: node_js
 
 node_js:
-  - 15
+  - "15"
+  
+python:
+  - "3.9"
 
 install:
   - npm install
 
 script:
   - python -V
+  - npm run build
   - npm run test
