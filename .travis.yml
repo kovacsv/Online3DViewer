@@ -11,6 +11,3 @@ install:
 
 script:
   - npm run test
-  - alias python=python3
-  - python -V
-  - npm run build
