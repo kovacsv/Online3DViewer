@@ -36,11 +36,6 @@ OV.ImporterBase = class
 
     }
 
-    ImportContent (content)
-    {
-
-    }
-
 	CanImportExtension (extension)
 	{
 		return false;
@@ -54,6 +49,11 @@ OV.ImporterBase = class
     GetUpDirection ()
     {
         return OV.Direction.Z;
+    }
+
+    ImportContent (content)
+    {
+
     }
 
     GetModel ()
