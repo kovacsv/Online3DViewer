@@ -185,25 +185,30 @@ OV.Menu = class
             }           
         }
 
+        function SetCurrentSelection (obj, selection)
+        {
+            obj.selection = selection;
+            obj.UpdateInfoPanel ();
+        }
+
         let oldSelection = this.selection;
         if (oldSelection !== null) {
             SetEntitySelection (this, oldSelection, false);
         }
 
-        this.selection = selection;
+        SetCurrentSelection (this, selection);
         this.tempSelectedMeshIndex = null;
 
         if (this.selection !== null) {
             if (oldSelection !== null && this.selection.type === oldSelection.type && this.selection.index === oldSelection.index) {
                 SetEntitySelection (this, this.selection, false);
-                this.selection = null;
+                SetCurrentSelection (this, null);
             } else {
                 SetEntitySelection (this, this.selection, true);
             }
         }
-        
+
         this.callbacks.updateMeshesSelection ();
-        this.UpdateInfoPanel ();
     }
 
     FitMeshToWindow (meshIndex)
