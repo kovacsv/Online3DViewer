@@ -2,11 +2,11 @@ version: "{build}"
 
 environment:
   nodejs_version: "15"
-  PYTHON: "C:\\Python38-x64"
+  python_path: "C:\\Python38-x64"
 
 install:
   - ps: Install-Product node $env:nodejs_version
-  - set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%
+  - set PATH=%python_path%;%python_path%\\Scripts;%python_path%
   - npm install
 
 build_script:
