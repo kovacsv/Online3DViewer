@@ -1,0 +1,11 @@
+language: node_js
+
+node_js:
+  - 15
+
+install:
+  - npm install
+
+script:
+  - npm run build
+  - npm run test
