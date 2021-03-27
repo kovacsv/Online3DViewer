@@ -1,15 +1,29 @@
+version: "{build}"
+
 environment:
-  PYTHON: "3.6"
-  nodejs_version: "6"
+  nodejs_version: "15"
+  python_path: "C:\\Python38-x64"
 
 install:
+  - ps: Install-Product node $env:nodejs_version
+  - set PATH=%python_path%;%python_path%\\Scripts;%PATH%
   - npm install
+
+build_script:
+  - npm run build
 
 test_script:
   - npm run test
   
-build_script:
-  - npm run build
-
 artifacts:
   - path: build\package\*
+
+deploy:
+  description: 'News:\n- ...'
+  provider: GitHub
+  auth_token:
+    secure: oN14X2NG9+1O6cVQ7m2pIUkMxJ4mbZC1oht03WtJPS4E03MfPH8wZYAw9vmkSL9H
+  draft: true
+  on:
+    branch: master
+    APPVEYOR_REPO_TAG: true
