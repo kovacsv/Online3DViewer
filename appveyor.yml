@@ -7,6 +7,9 @@ install:
 
 test_script:
   - npm run test
+  
+build_script:
+  - npm run build
 
 artifacts:
   - path: build\package\*
