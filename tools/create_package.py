@@ -1,10 +1,8 @@
 import os
 import sys
 import shutil
-import subprocess
 import zipfile
 import json
-import re
 
 from lib import tools_lib as Tools
 
@@ -62,7 +60,6 @@ def CreateDestinationDir (config, rootDir, websiteDir, version):
 		'o3dv/o3dv.website.min.js'
 	]
 	
-	linePrefix = '\t'
 	for htmlFileName in ['index.html', 'embed.html', os.path.join ('info', 'index.html')]:
 		htmlFilePath = os.path.join (websiteDir, htmlFileName)
 		replacer = Tools.TokenReplacer (htmlFilePath, False)

@@ -1,7 +1,5 @@
 import os
 import sys
-import subprocess
-import json
 import math
 
 from lib import tools_lib as Tools

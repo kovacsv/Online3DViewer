@@ -1,6 +1,5 @@
 import os
 import sys
-import subprocess
 import json
 
 from lib import tools_lib as Tools
@@ -30,5 +29,7 @@ def Main (argv):
 		replacer.ReplaceTokenFileLinks ('<!-- importer start -->', '<!-- importer end -->', importerFiles, None)
 		replacer.ReplaceTokenFileLinks ('<!-- website start -->', '<!-- website end -->', websiteFiles, None)
 		replacer.WriteToFile (htmlFilePath)
+	
+	return 0
 
 sys.exit (Main (sys.argv))
