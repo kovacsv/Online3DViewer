@@ -22,7 +22,7 @@ OV.MeshPrimitiveBuffer = class
         return {
             min : min,
             max : max
-        }
+        };
     }
 
     GetByteLength (indexTypeSize, numberTypeSize)

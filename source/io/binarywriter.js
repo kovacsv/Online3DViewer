@@ -17,7 +17,7 @@ OV.BinaryWriter = class
     {
         this.position = position;
     }
-    
+
     End ()
     {
         return this.position >= this.arrayBuffer.byteLength;

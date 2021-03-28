@@ -72,6 +72,22 @@ OV.ExporterGltf = class extends OV.ExporterBase
 
     ExportBinaryContent (model, files)
     {
+        function AlignToBoundary (size)
+        {
+            let remainder = size % 4;
+            if (remainder === 0) {
+                return size;
+            }
+            return size + (4 - remainder);
+        }
+
+        function WriteCharacters (writer, char, count)
+        {
+            for (let i = 0; i < count; i++) {
+                writer.WriteUnsignedCharacter8 (char);
+            }
+        }
+        
         let glbFile = new OV.ExportedFile ('model.glb');
         files.push (glbFile);
 
@@ -80,7 +96,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
         let mainJson = this.GetMainJson (meshDataArr);
 
         let textureBuffers = [];
-        let mainBufferSize = mainBuffer.byteLength;
+        let textureOffset = mainBuffer.byteLength;
 
         let fileNameToIndex = [];
         this.ExportMaterials (model, mainJson, function (texture) {
@@ -95,10 +111,10 @@ OV.ExporterGltf = class extends OV.ExporterBase
                 textureBuffers.push (textureBuffer);
                 mainJson.bufferViews.push ({
                     buffer : 0,
-                    byteOffset : mainBufferSize,
+                    byteOffset : textureOffset,
                     byteLength : textureBuffer.byteLength
                 });
-                mainBufferSize += textureBuffer.byteLength;
+                textureOffset += textureBuffer.byteLength;
                 mainJson.images.push ({
                     bufferView : bufferViewIndex,
                     mimeType : 'image/' + extension
@@ -110,32 +126,35 @@ OV.ExporterGltf = class extends OV.ExporterBase
             return textureIndex;
         });
 
-        mainJson.buffers.push ({
-            byteLength : mainBufferSize
-        });
-
-        let mainJsonString = JSON.stringify (mainJson, null, 4);
-        let mainJsonBufferLength = mainJsonString.length;
         let mainBinaryBufferLength = mainBuffer.byteLength;
         for (let i = 0; i < textureBuffers.length; i++) {
             let textureBuffer = textureBuffers[i];
             mainBinaryBufferLength += textureBuffer.byteLength;
         }
+        let mainBinaryBufferAlignedLength = AlignToBoundary (mainBinaryBufferLength);
+        mainJson.buffers.push ({
+            byteLength : mainBinaryBufferAlignedLength
+        });
 
-        let glbSize = 12 + 8 + mainJsonBufferLength + 8 + mainBinaryBufferLength;
+        let mainJsonString = JSON.stringify (mainJson, null, 4);
+        let mainJsonBufferLength = mainJsonString.length;
+        let mainJsonBufferAlignedLength = AlignToBoundary (mainJsonString.length);
+
+        let glbSize = 12 + 8 + mainJsonBufferAlignedLength + 8 + mainBinaryBufferAlignedLength;
         let glbWriter = new OV.BinaryWriter (glbSize, true);
         
         glbWriter.WriteUnsignedInteger32 (0x46546C67);
         glbWriter.WriteUnsignedInteger32 (2);
         glbWriter.WriteUnsignedInteger32 (glbSize);
 
-        glbWriter.WriteUnsignedInteger32 (mainJsonString.length);
+        glbWriter.WriteUnsignedInteger32 (mainJsonBufferAlignedLength);
         glbWriter.WriteUnsignedInteger32 (0x4E4F534A);
-		for (let i = 0; i < mainJsonString.length; i++) {
+		for (let i = 0; i < mainJsonBufferLength; i++) {
             glbWriter.WriteUnsignedCharacter8 (mainJsonString.charCodeAt (i));
 		}
+        WriteCharacters (glbWriter, 32, mainJsonBufferAlignedLength - mainJsonBufferLength);
 
-        glbWriter.WriteUnsignedInteger32 (mainBufferSize);
+        glbWriter.WriteUnsignedInteger32 (mainBinaryBufferAlignedLength);
         glbWriter.WriteUnsignedInteger32 (0x004E4942);
         glbWriter.WriteArrayBuffer (mainBuffer);
 
@@ -143,6 +162,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
             let textureBuffer = textureBuffers[i];
             glbWriter.WriteArrayBuffer (textureBuffer);
         }
+        WriteCharacters (glbWriter, 0, mainBinaryBufferAlignedLength - mainBinaryBufferLength);
 
         glbFile.SetContent (glbWriter.GetBuffer ());
     }
