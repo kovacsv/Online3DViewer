@@ -78,12 +78,9 @@ OV.ExporterGltf = class extends OV.ExporterBase
         let meshDataArr = this.GetMeshData (model);
         let mainBuffer = this.GetMainBuffer (meshDataArr);
         let mainJson = this.GetMainJson (meshDataArr);
-        mainJson.buffers.push ({
-            byteLength : mainBuffer.byteLength
-        });
 
         let textureBuffers = [];
-        let obj = this;
+        let mainBufferSize = mainBuffer.byteLength;
 
         let fileNameToIndex = [];
         this.ExportMaterials (model, mainJson, function (texture) {
@@ -91,20 +88,17 @@ OV.ExporterGltf = class extends OV.ExporterBase
             let extension = OV.GetFileExtension (texture.name);
             let textureIndex = fileNameToIndex[fileName];
             if (textureIndex === undefined) {
-                let bufferIndex = mainJson.buffers.length;
                 let bufferViewIndex = mainJson.bufferViews.length;
                 textureIndex = mainJson.textures.length;
                 fileNameToIndex[fileName] = textureIndex;
                 let textureBuffer = texture.buffer;
                 textureBuffers.push (textureBuffer);
-                mainJson.buffers.push ({
-                    byteLength : textureBuffer.byteLength
-                });
                 mainJson.bufferViews.push ({
-                    buffer : bufferIndex,
-                    byteOffset : 0,
+                    buffer : 0,
+                    byteOffset : mainBufferSize,
                     byteLength : textureBuffer.byteLength
                 });
+                mainBufferSize += textureBuffer.byteLength;
                 mainJson.images.push ({
                     bufferView : bufferViewIndex,
                     mimeType : 'image/' + extension
@@ -116,10 +110,15 @@ OV.ExporterGltf = class extends OV.ExporterBase
             return textureIndex;
         });
 
+        mainJson.buffers.push ({
+            byteLength : mainBufferSize
+        });
+
         let mainJsonString = JSON.stringify (mainJson, null, 4);
-        let glbSize = 12 + 8 + mainJsonString.length;
-        for (let i = 0; i < mainJson.buffers.length; i++) {
-            glbSize += 8 + mainJson.buffers[i].byteLength;
+        let glbSize = 12 + 8 + mainJsonString.length + 8 + mainBuffer.byteLength;
+        for (let i = 0; i < textureBuffers.length; i++) {
+            let textureBuffer = textureBuffers[i];
+            glbSize += textureBuffer.byteLength;
         }
 
         let glbWriter = new OV.BinaryWriter (glbSize, true);
@@ -134,14 +133,12 @@ OV.ExporterGltf = class extends OV.ExporterBase
 			glbWriter.WriteUnsignedCharacter8 (mainJsonString.charCodeAt (i));
 		}
 
-        glbWriter.WriteUnsignedInteger32 (mainBuffer.byteLength);
+        glbWriter.WriteUnsignedInteger32 (mainBufferSize);
         glbWriter.WriteUnsignedInteger32 (0x004E4942);
         glbWriter.WriteArrayBuffer (mainBuffer);
 
         for (let i = 0; i < textureBuffers.length; i++) {
             let textureBuffer = textureBuffers[i];
-            glbWriter.WriteUnsignedInteger32 (textureBuffer.byteLength);
-            glbWriter.WriteUnsignedInteger32 (0x004E4942);
             glbWriter.WriteArrayBuffer (textureBuffer);
         }
 
@@ -343,11 +340,18 @@ OV.ExporterGltf = class extends OV.ExporterBase
                 }
 
                 let textureIndex = addTexture (texture);
-                let textureParams = {
+                   let textureParams = {
                     index : textureIndex
                 };
 
                 if (texture.HasTransformation ()) {
+                    let extensionName = 'KHR_texture_transform';
+                    if (mainJson.extensionsUsed === undefined) {
+                        mainJson.extensionsUsed = [];
+                    }
+                    if (mainJson.extensionsUsed.indexOf (extensionName) === -1) {
+                        mainJson.extensionsUsed.push (extensionName);
+                    }
                     textureParams.extensions = {
                         KHR_texture_transform : {
                             offset : [texture.offset.x, -texture.offset.y],
@@ -368,12 +372,11 @@ OV.ExporterGltf = class extends OV.ExporterBase
                     roughnessFactor : 1.0
                 },
                 emissiveFactor : ColorToRGB (material.emissive),
-                alphaMode : 'OPAQUE',
-                alphaCutoff : material.alphaTest
+                alphaMode : 'OPAQUE'
             };
 
             if (material.transparent) {
-                // TODO: mask?
+                // TODO: mask, alphaCutoff?
                 jsonMaterial.alphaMode = 'BLEND';
             }
 
