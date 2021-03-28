@@ -12,12 +12,15 @@ function CreateTestModel ()
     material1.diffuseMap = new OV.TextureMap ();
     material1.diffuseMap.name = 'textures/texture1.png';
     material1.diffuseMap.url = 'texture1_url';
+    material1.diffuseMap.buffer = new ArrayBuffer (4);
     material1.specularMap = new OV.TextureMap ();
     material1.specularMap.name = 'textures/texture2.png';
     material1.specularMap.url = 'texture2_url';
+    material1.specularMap.buffer = new ArrayBuffer (4);
     material1.bumpMap = new OV.TextureMap ();
     material1.bumpMap.name = 'textures/texture3.png';
     material1.bumpMap.url = 'texture3_url';
+    material1.bumpMap.buffer = new ArrayBuffer (4);
     model.AddMaterial (material1);
 
     let material2 = new OV.Material ();
@@ -306,10 +309,13 @@ end_header
           getDefaultMaterial () {
               return new OV.Material ();
           },
-          getFileContent (filePath) {
-              return binFile.GetContent ();
-          },
-          getTextureObjectUrl (filePath) {
+          getFileBuffer (filePath) {
+              if (filePath == 'model.bin') {
+                return {
+                  url : null,
+                  buffer : binFile.GetContent ()
+                };
+              }
               return null;
           }
       });
@@ -344,10 +350,7 @@ end_header
         getDefaultMaterial () {
             return new OV.Material ();
         },
-        getFileContent (filePath) {
-            return binFile.GetContent ();
-        },
-        getTextureObjectUrl (filePath) {
+        getFileBuffer (filePath) {
             return null;
         }
     });

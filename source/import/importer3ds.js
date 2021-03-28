@@ -177,9 +177,12 @@ OV.Importer3ds = class extends OV.ImporterBase
 		this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 			if (chunkId === OV.CHUNK3DS.MAT_TEXMAP_NAME) {
 				let textureName = obj.ReadName (reader);
-				let textureObjectUrl = obj.callbacks.getTextureObjectUrl (textureName);
+				let textureBuffer = obj.callbacks.getFileBuffer (textureName);
 				texture.name = textureName;
-				texture.url = textureObjectUrl;
+				if (textureBuffer !== null) {
+					texture.url = textureBuffer.url;
+					texture.buffer = textureBuffer.buffer;
+				}
 			} else if (chunkId === OV.CHUNK3DS.MAT_TEXMAP_UOFFSET) {
 				texture.offset.x = reader.ReadFloat32 ();
 			} else if (chunkId === OV.CHUNK3DS.MAT_TEXMAP_VOFFSET) {

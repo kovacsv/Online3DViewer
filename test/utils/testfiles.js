@@ -79,7 +79,7 @@ module.exports =
 				var material = new OV.Material ();
 				return material;
 			},
-			getFileContent : function (requestedFileName) {
+			getFileBuffer : function (requestedFileName) {
 				let extension = OV.GetFileExtension (requestedFileName);
 				let knownFormats = importer.GetKnownFileFormats ();
 				let format = OV.FileFormat.Binary;
@@ -92,10 +92,10 @@ module.exports =
 				} else if (format == OV.FileFormat.Binary) {
 					fileContent = myThis.GetArrayBufferFileContent (folder, requestedFileName);
 				}
-				return fileContent;
-			},
-			getTextureObjectUrl : function (requestedFileName) {
-				return requestedFileName;
+				return {
+					url : null,
+					buffer : fileContent
+				};
 			}
 		});
 		let model = importer.GetModel ();

@@ -245,52 +245,36 @@ OV.Importer = class
 		result.mainFile = mainFile.file.name;
 		result.usedFiles.push (mainFile.file.name);
 
-		let fileNameToContent = {};
-		let textureNameToUrl = {};
-
 		let obj = this;
 		let importer = mainFile.importer;
+		let fileNameToBuffer = {};
 		importer.Import (mainFile.file.content, mainFile.file.extension, {
 			getDefaultMaterial : function () {
 				let material = new OV.Material ();
 				material.diffuse = new OV.Color (200, 200, 200);
 				return material;
 			},
-			getFileContent : function (filePath) {
+			getFileBuffer : function (filePath) {
 				let fileName = OV.GetFileName (filePath);
-				let fileContent = fileNameToContent[fileName];
-				if (fileContent === undefined) {
+				let fileBuffer = fileNameToBuffer[fileName];
+				if (fileBuffer === undefined) {
 					let file = obj.fileList.FindFileByPath (filePath);
 					if (file === null || file.content === null) {
 						result.missingFiles.push (fileName);
 						obj.missingFiles.push (fileName);
-						fileContent = null;
-					} else {
-						result.usedFiles.push (fileName);
-						fileContent = file.content;
-					}
-					fileNameToContent[fileName] = fileContent;
-				}
-				return fileContent;
-			},
-			getTextureObjectUrl : function (filePath) {
-				let fileName = OV.GetFileName (filePath);
-				let textureUrl = textureNameToUrl[fileName];
-				if (textureUrl === undefined) {
-					let file = obj.fileList.FindFileByPath (filePath);
-					if (file === null || file.content === null) {
-						result.missingFiles.push (fileName);
-						obj.missingFiles.push (fileName);
-						textureUrl = null;
+						fileBuffer = null;
 					} else {
 						result.usedFiles.push (fileName);
 						let blob = new Blob ([file.content]);
 						let blobURL = URL.createObjectURL (blob);
-						textureUrl = blobURL;
+						fileBuffer = {
+							url : blobURL,
+							buffer : file.content
+						};
 					}
-					textureNameToUrl[fileName] = textureUrl;
+					fileNameToBuffer[fileName] = fileBuffer;
 				}
-				return textureUrl;
+				return fileBuffer;
 			}
 		});
 

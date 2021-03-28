@@ -331,7 +331,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
 
             function GetTextureParams (mainJson, texture, addTexture)
             {
-                if (texture === null || texture.name === null || texture.url === null) {
+                if (texture === null || !texture.IsValid ()) {
                     return null;
                 }
 

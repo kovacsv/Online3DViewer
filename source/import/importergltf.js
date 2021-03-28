@@ -401,7 +401,10 @@ OV.ImporterGltf = class extends OV.ImporterBase
             let gltfBuffer = gltf.buffers[i];
             let base64Buffer = OV.Base64DataURIToArrayBuffer (gltfBuffer.uri);
             if (base64Buffer === null) {
-                buffer = this.callbacks.getFileContent (gltfBuffer.uri);
+                let fileBuffer = this.callbacks.getFileBuffer (gltfBuffer.uri);
+                if (fileBuffer !== null) {
+                    buffer = fileBuffer.buffer;
+                }
             } else {
                 buffer = base64Buffer.buffer;
             }
@@ -622,10 +625,14 @@ OV.ImporterGltf = class extends OV.ImporterBase
                 let blob = new Blob ([base64Buffer.buffer], { type : base64Buffer.mimeType });
                 texture.name = 'Embedded_' + textureIndexString + GetTextureFileExtension (base64Buffer.mimeType);
                 texture.url = URL.createObjectURL (blob);
+                texture.buffer = base64Buffer.buffer;
             } else {
-                let textureObjectUrl = this.callbacks.getTextureObjectUrl (gltfImage.uri);
+                let textureBuffer = this.callbacks.getFileBuffer (gltfImage.uri);
                 texture.name = gltfImage.uri;
-                texture.url = textureObjectUrl;
+                if (textureBuffer !== null) {
+                    texture.url = textureBuffer.url;
+                    texture.buffer = textureBuffer.buffer;
+                }
             }
         } else if (gltfImage.bufferView !== undefined) {
             let bufferView = gltf.bufferViews[gltfImage.bufferView];
@@ -635,6 +642,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
                 let blob = new Blob ([buffer], { type: gltfImage.mimeType });
                 texture.name = 'Binary_' + textureIndexString + GetTextureFileExtension (gltfImage.mimeType);
                 texture.url = URL.createObjectURL (blob);
+                texture.buffer = buffer;
             }
         }
 

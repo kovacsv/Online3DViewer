@@ -14,18 +14,19 @@ OV.ExporterObj = class extends OV.ExporterBase
 	{
 		function WriteTexture (mtlWriter, keyword, texture, files)
 		{
-			if (texture !== null && texture.name !== null && texture.url !== null) {
-				let fileName = OV.GetFileName (texture.name);
-				mtlWriter.WriteArrayLine ([keyword, fileName]);
+			if (texture === null || !texture.IsValid ()) {
+				return;
+			}
+			let fileName = OV.GetFileName (texture.name);
+			mtlWriter.WriteArrayLine ([keyword, fileName]);
 
-				let fileIndex = files.findIndex (function (file) {
-					return file.GetName () === fileName;
-				});
-				if (fileIndex === -1) {
-					let textureFile = new OV.ExportedFile (fileName);
-					textureFile.SetUrl (texture.url);
-					files.push (textureFile);
-				}
+			let fileIndex = files.findIndex (function (file) {
+				return file.GetName () === fileName;
+			});
+			if (fileIndex === -1) {
+				let textureFile = new OV.ExportedFile (fileName);
+				textureFile.SetUrl (texture.url);
+				files.push (textureFile);
 			}
 		}
 

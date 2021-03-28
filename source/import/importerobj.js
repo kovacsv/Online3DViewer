@@ -169,10 +169,12 @@ OV.ImporterObj = class extends OV.ImporterBase
 		function CreateTexture (keyword, line, callbacks)
 		{
 			let texture = new OV.TextureMap ();
-			texture.name = OV.NameFromLine (line, keyword.length, '#');
-			let textureObjectUrl = callbacks.getTextureObjectUrl (texture.name);
-			if (textureObjectUrl !== null) {
-				texture.url = textureObjectUrl;
+			let textureName = OV.NameFromLine (line, keyword.length, '#');
+			let textureBuffer = callbacks.getFileBuffer (textureName);
+			texture.name = textureName;
+			if (textureBuffer !== null) {
+				texture.url = textureBuffer.url;
+				texture.buffer = textureBuffer.buffer;
 			}
 			return texture;
 		}
@@ -206,9 +208,9 @@ OV.ImporterObj = class extends OV.ImporterBase
 				return true;
 			}
 			let fileName = OV.NameFromLine (line, keyword.length, '#');
-			let fileContent = this.callbacks.getFileContent (fileName);
-			if (fileContent !== null) {
-				OV.ReadLines (fileContent, function (line) {
+			let fileBuffer = this.callbacks.getFileBuffer (fileName);
+			if (fileBuffer !== null && fileBuffer.buffer !== null) {
+				OV.ReadLines (fileBuffer.buffer, function (line) {
 					if (!obj.IsError ()) {
 						obj.ProcessLine (line);
 					}
