@@ -86,8 +86,8 @@ def CreatePackage (websiteDir, packageDir, version):
 
 	zipPath = os.path.join (packageDir, 'o3dv_' + version + '.zip')
 	zip = zipfile.ZipFile (zipPath, mode = 'w', compression = zipfile.ZIP_DEFLATED)
-	zip.write (os.path.join (websiteDir, 'libs', 'three.min-126.js'), 'three.min.js')
-	zip.write (os.path.join (websiteDir, 'o3dv', 'o3dv.min.js'), 'o3dv.min.js')
+	zip.write (os.path.join (websiteDir, 'libs', 'three.min-126.js'), 'three.min-126.js')
+	zip.write (os.path.join (websiteDir, 'o3dv', 'o3dv.min.js'), 'o3dv.min-' + version + '.js')
 	zip.close ()
 	return True
 
