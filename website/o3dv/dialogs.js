@@ -252,7 +252,7 @@ OV.ShowExportDialog = function (model)
 		taskRunner.Run (1, {
 			runTask : function (index, ready) {
                 let exporter = new OV.Exporter ();
-                let files = exporter.Export (model, selectedFormat.format, selectedFormat.extension, null);
+                let files = exporter.Export (model, selectedFormat.format, selectedFormat.extension);
                 fileList.empty ();
                 for (let i = 0; i < files.length; i++) {
                     let file = files[i];

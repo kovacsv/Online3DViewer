@@ -67,7 +67,7 @@ describe ('Exporter', function () {
         let model = CreateTestModel ();
         let exporter = new OV.Exporter ();
 
-        let result = exporter.Export (model, OV.FileFormat.Text, 'obj', null);
+        let result = exporter.Export (model, OV.FileFormat.Text, 'obj');
         assert.strictEqual (result.length, 5);
 
         let mtlFile = result[0];
@@ -137,7 +137,7 @@ f 4//4 8//4 6//4
         let model = CreateTestModel ();
         let exporter = new OV.Exporter ();
 
-        let result = exporter.Export (model, OV.FileFormat.Text, 'stl', null);
+        let result = exporter.Export (model, OV.FileFormat.Text, 'stl');
         assert.strictEqual (result.length, 1);
 
         let stlFile = result[0];
@@ -181,7 +181,7 @@ endsolid Model
         let model = CreateTestModel ();
         let exporter = new OV.Exporter ();
 
-        let result = exporter.Export (model, OV.FileFormat.Binary, 'stl', null);
+        let result = exporter.Export (model, OV.FileFormat.Binary, 'stl');
         assert.strictEqual (result.length, 1);
 
         let stlFile = result[0];
@@ -204,7 +204,7 @@ endsolid Model
     let model = CreateTestModel ();
     let exporter = new OV.Exporter ();
 
-    let result = exporter.Export (model, OV.FileFormat.Text, 'off', null);
+    let result = exporter.Export (model, OV.FileFormat.Text, 'off');
     assert.strictEqual (result.length, 1);
 
     let offFile = result[0];
@@ -232,7 +232,7 @@ endsolid Model
       let model = CreateTestModel ();
       let exporter = new OV.Exporter ();
 
-      let result = exporter.Export (model, OV.FileFormat.Text, 'ply', null);
+      let result = exporter.Export (model, OV.FileFormat.Text, 'ply');
       assert.strictEqual (result.length, 1);
 
       let plyFile = result[0];
@@ -267,7 +267,7 @@ end_header
         let model = CreateTestModel ();
         let exporter = new OV.Exporter ();
 
-        let result = exporter.Export (model, OV.FileFormat.Binary, 'ply', null);
+        let result = exporter.Export (model, OV.FileFormat.Binary, 'ply');
         assert.strictEqual (result.length, 1);
 
         let plyFile = result[0];
@@ -290,7 +290,7 @@ end_header
       let model = CreateTestModel ();
       let exporter = new OV.Exporter ();
 
-      let result = exporter.Export (model, OV.FileFormat.Text, 'gltf', null);
+      let result = exporter.Export (model, OV.FileFormat.Text, 'gltf');
       assert.strictEqual (result.length, 3);
 
       let gltfFile = result[0];
@@ -334,11 +334,7 @@ end_header
     let model = CreateTestModel ();
     let exporter = new OV.Exporter ();
 
-    let result = exporter.Export (model, OV.FileFormat.Binary, 'glb', {
-      getTextureBuffer : function (name) {
-        return new ArrayBuffer (4);
-      }
-    });
+    let result = exporter.Export (model, OV.FileFormat.Binary, 'glb');
     assert.strictEqual (result.length, 1);
 
     let glbFile = result[0];

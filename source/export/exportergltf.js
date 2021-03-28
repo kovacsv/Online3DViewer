@@ -95,7 +95,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
                 let bufferViewIndex = mainJson.bufferViews.length;
                 textureIndex = mainJson.textures.length;
                 fileNameToIndex[fileName] = textureIndex;
-                let textureBuffer = obj.callbacks.getTextureBuffer (texture.name);
+                let textureBuffer = texture.buffer;
                 textureBuffers.push (textureBuffer);
                 mainJson.buffers.push ({
                     byteLength : textureBuffer.byteLength
