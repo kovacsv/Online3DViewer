@@ -16,7 +16,7 @@ test_script:
   - npm run test
   
 artifacts:
-  - path: build\package\*
+  - path: build\final\package\*
 
 deploy:
   description: 'News:\n- ...'
