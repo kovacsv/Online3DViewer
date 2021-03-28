@@ -201,7 +201,7 @@ OV.ShowOpenUrlDialog = function (onOk)
     return dialog;
 };
 
-OV.ShowExportDialog = function (model, importer)
+OV.ShowExportDialog = function (model)
 {
     if (model === null) {
         return OV.ShowMessageDialog ('Export Failed', 'Please load a model to export', null);

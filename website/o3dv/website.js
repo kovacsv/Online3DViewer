@@ -265,7 +265,7 @@ OV.Website = class
 		});
 		AddSeparator (this.toolbar, true);
 		AddButton (this.toolbar, 'export', 'Export model', true, function () {
-			obj.dialog = OV.ShowExportDialog (obj.model, obj.modelLoader.GetImporter ());
+			obj.dialog = OV.ShowExportDialog (obj.model);
 		});		
 		AddButton (this.toolbar, 'embed', 'Get embedding code', true, function () {
 			obj.dialog = OV.ShowEmbeddingDialog (obj.modelLoader.GetImporter (), obj.viewer.GetCamera ());
