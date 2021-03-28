@@ -267,6 +267,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
                     material : primitive.material
                 };
                 
+                let bounds = primitive.GetBounds ();
                 mainJson.accessors.push ({
                     bufferView : bufferViewIndex,
                     byteOffset : 0,
@@ -279,6 +280,8 @@ OV.ExporterGltf = class extends OV.ExporterBase
                     byteOffset : 0,
                     componentType : this.components.number.type,
                     count : primitive.vertices.length / 3,
+                    min : bounds.min,
+                    max : bounds.max,
                     type : 'VEC3'
                 });
                 mainJson.accessors.push ({

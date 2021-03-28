@@ -9,6 +9,22 @@ OV.MeshPrimitiveBuffer = class
         this.material = null;
     }
 
+    GetBounds ()
+    {
+        let min = [Infinity, Infinity, Infinity];
+        let max = [-Infinity, -Infinity, -Infinity];
+        for (let i = 0; i < this.vertices.length / 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                min[j] = Math.min (min[j], this.vertices[i * 3 + j]);
+                max[j] = Math.max (max[j], this.vertices[i * 3 + j]);
+            }
+        }
+        return {
+            min : min,
+            max : max
+        }
+    }
+
     GetByteLength (indexTypeSize, numberTypeSize)
     {
         let indexCount = this.indices.length;
