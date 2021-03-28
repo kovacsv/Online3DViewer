@@ -54,7 +54,7 @@ OV.ButtonDialog = class
         let contentDiv = this.modal.GetContentDiv ();
         contentDiv.addClass ('ov_dialog');
 
-        let titleDiv = $('<div>').addClass ('ov_dialog_title').html (title).appendTo (contentDiv);
+        $('<div>').addClass ('ov_dialog_title').html (title).appendTo (contentDiv);
         let dialogContentDiv = $('<div>').addClass ('ov_dialog_content').appendTo (contentDiv);
         let buttonsDiv = $('<div>').addClass ('ov_dialog_buttons').appendTo (contentDiv);
         let buttonsInnerDiv = $('<div>').addClass ('ov_dialog_buttons_inner').appendTo (buttonsDiv);
@@ -152,14 +152,14 @@ OV.ShowOpenUrlDialog = function (onOk)
     {
         for (let i = 0; i < urls.length; i++) {
             let url = urls[i];
-            if (url.search ('www.dropbox.com') !== -1) {
+            if (url.search (/www\.dropbox\.com/u) !== -1) {
                 url = url.replace ('www.dropbox.com', 'dl.dropbox.com');
                 let separatorPos = url.indexOf ('?');
                 if (separatorPos !== -1) {
                     url = url.substr (0, separatorPos);
                 }
                 urls[i] = url;
-            } else if (url.search ('github.com') !== -1) {
+            } else if (url.search (/github\.com/u) !== -1) {
                 url = url.replace ('github.com', 'raw.githubusercontent.com');
                 url = url.replace ('/blob', '');
                 let separatorPos = url.indexOf ('?');

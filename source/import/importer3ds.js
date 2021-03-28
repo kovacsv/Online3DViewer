@@ -336,7 +336,7 @@ OV.Importer3ds = class extends OV.ImporterBase
 			let v0 = reader.ReadUnsignedInteger16 ();
 			let v1 = reader.ReadUnsignedInteger16 ();
 			let v2 = reader.ReadUnsignedInteger16 ();
-			let flags = reader.ReadUnsignedInteger16 ();
+			reader.ReadUnsignedInteger16 (); // flags
 			mesh.AddTriangle (new OV.Triangle (v0, v1, v2));
 		}
 

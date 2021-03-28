@@ -27,7 +27,7 @@ OV.IsHoverEnabled = function ()
 
 OV.IsSmallWidth = function ()
 {
-    if (window.matchMedia ('(max-width : 600px)').matches) {
+    if (window.matchMedia ('(max-width : 700px)').matches) {
         return true;
     } else {
         return false;
@@ -36,7 +36,7 @@ OV.IsSmallWidth = function ()
 
 OV.IsSmallHeight = function ()
 {
-    if (window.matchMedia ('(max-height : 600px)').matches) {
+    if (window.matchMedia ('(max-height : 700px)').matches) {
         return true;
     } else {
         return false;
@@ -103,8 +103,9 @@ OV.CopyToClipboard = function (text)
 OV.CreateIconButton = function (iconName, hoverIconName, title, link)
 {
 	let buttonLink = $('<a>');
-	buttonLink.attr ('target', '_blank');
 	buttonLink.attr ('href', link);
+	buttonLink.attr ('target', '_blank');
+    buttonLink.attr ('rel', 'noopener noreferrer');
     OV.InstallTooltip (buttonLink, title);
 	let imgElem = $('<img>').attr ('src', iconName).appendTo (buttonLink);
     if (hoverIconName !== null && OV.IsHoverEnabled ()) {

@@ -741,9 +741,6 @@ OV.ImporterGltf = class extends OV.ImporterBase
         let hasNormals = (primitive.attributes.NORMAL !== undefined);
         let hasUVs = (primitive.attributes.TEXCOORD_0 !== undefined);
         let hasIndices = (primitive.indices !== undefined);
-        if (!hasVertices) {
-            return;
-        }
 
         let mode = OV.GltfRenderMode.TRIANGLES;
         if (primitive.mode !== undefined) {
@@ -766,6 +763,8 @@ OV.ImporterGltf = class extends OV.ImporterBase
             reader.EnumerateData (function (data) {
                 mesh.AddVertex (data);
             });
+        } else {
+            return;
         }
 
         if (hasNormals) {
