@@ -115,12 +115,14 @@ OV.ExporterGltf = class extends OV.ExporterBase
         });
 
         let mainJsonString = JSON.stringify (mainJson, null, 4);
-        let glbSize = 12 + 8 + mainJsonString.length + 8 + mainBuffer.byteLength;
+        let mainJsonBufferLength = mainJsonString.length;
+        let mainBinaryBufferLength = mainBuffer.byteLength;
         for (let i = 0; i < textureBuffers.length; i++) {
             let textureBuffer = textureBuffers[i];
-            glbSize += textureBuffer.byteLength;
+            mainBinaryBufferLength += textureBuffer.byteLength;
         }
 
+        let glbSize = 12 + 8 + mainJsonBufferLength + 8 + mainBinaryBufferLength;
         let glbWriter = new OV.BinaryWriter (glbSize, true);
         
         glbWriter.WriteUnsignedInteger32 (0x46546C67);
@@ -130,7 +132,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
         glbWriter.WriteUnsignedInteger32 (mainJsonString.length);
         glbWriter.WriteUnsignedInteger32 (0x4E4F534A);
 		for (let i = 0; i < mainJsonString.length; i++) {
-			glbWriter.WriteUnsignedCharacter8 (mainJsonString.charCodeAt (i));
+            glbWriter.WriteUnsignedCharacter8 (mainJsonString.charCodeAt (i));
 		}
 
         glbWriter.WriteUnsignedInteger32 (mainBufferSize);
@@ -204,6 +206,16 @@ OV.ExporterGltf = class extends OV.ExporterBase
 
     GetMainJson (meshDataArr)
     {
+        function AddBufferView (mainJson, offset, length)
+        {
+            mainJson.bufferViews.push ({
+                buffer : 0,
+                byteOffset : offset,
+                byteLength : length,
+            });
+            return offset + length;
+        }
+
         let mainJson = {
             asset : {
                 version : '2.0'
@@ -236,10 +248,15 @@ OV.ExporterGltf = class extends OV.ExporterBase
             let primitives = meshData.buffer.primitives;
             for (let primitiveIndex = 0; primitiveIndex < primitives.length; primitiveIndex++) {
                 let primitive = primitives[primitiveIndex];
-                let bufferViewIndex = mainJson.bufferViews.length;
-                let accessorIndex = mainJson.accessors.length;
-                let accessorOffset = 0;
 
+                let bufferViewIndex = mainJson.bufferViews.length;
+                let bufferViewOffset = meshData.offsets[primitiveIndex];
+                bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.indices.length * this.components.index.size);
+                bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.vertices.length * this.components.number.size);
+                bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.normals.length * this.components.number.size);
+                bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.uvs.length * this.components.number.size);
+
+                let accessorIndex = mainJson.accessors.length;
                 let jsonPrimitive = {
                     attributes : {
                         POSITION : accessorIndex + 1,
@@ -250,48 +267,35 @@ OV.ExporterGltf = class extends OV.ExporterBase
                     material : primitive.material
                 };
                 
-                mainJson.bufferViews.push ({
-                    buffer : 0,
-                    byteOffset : meshData.offsets[primitiveIndex],
-                    byteLength : meshData.sizes[primitiveIndex]
-                });
-
                 mainJson.accessors.push ({
                     bufferView : bufferViewIndex,
-                    byteOffset : accessorOffset,
+                    byteOffset : 0,
                     componentType : this.components.index.type,
                     count : primitive.indices.length,
                     type : 'SCALAR'
                 });
-                accessorOffset += primitive.indices.length * this.components.index.size;
-
                 mainJson.accessors.push ({
-                    bufferView : bufferViewIndex,
-                    byteOffset : accessorOffset,
+                    bufferView : bufferViewIndex + 1,
+                    byteOffset : 0,
                     componentType : this.components.number.type,
                     count : primitive.vertices.length / 3,
                     type : 'VEC3'
                 });
-                accessorOffset += primitive.vertices.length * this.components.number.size;
-
                 mainJson.accessors.push ({
-                    bufferView : bufferViewIndex,
-                    byteOffset : accessorOffset,
+                    bufferView : bufferViewIndex + 2,
+                    byteOffset : 0,
                     componentType : this.components.number.type,
                     count : primitive.normals.length / 3,
                     type : 'VEC3'
                 });
-                accessorOffset += primitive.normals.length * this.components.number.size;
-
                 if (primitive.uvs.length > 0) {
                     mainJson.accessors.push ({
-                        bufferView : bufferViewIndex,
-                        byteOffset : accessorOffset,
+                        bufferView : bufferViewIndex + 3,
+                        byteOffset : 0,
                         componentType : this.components.number.type,
                         count : primitive.uvs.length / 2,
                         type : 'VEC2'
                     });
-                    accessorOffset += primitive.uvs.length * this.components.number.size;
                     jsonPrimitive.attributes.TEXCOORD_0 = accessorIndex + 3;
                 }
 
