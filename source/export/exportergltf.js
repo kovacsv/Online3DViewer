@@ -136,7 +136,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
             byteLength : mainBinaryBufferAlignedLength
         });
 
-        let mainJsonString = JSON.stringify (mainJson, null, 4);
+        let mainJsonString = JSON.stringify (mainJson);
         let mainJsonBufferLength = mainJsonString.length;
         let mainJsonBufferAlignedLength = AlignToBoundary (mainJsonString.length);
 
