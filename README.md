@@ -21,6 +21,7 @@ This repository contains the source code of the https://3dviewer.net website. Th
 - obj (with mtl)
 - stl (ascii and binary)
 - ply (ascii and binary)
+- gltf (ascii and binary)
 - off (ascii only)
 
 ## Features
