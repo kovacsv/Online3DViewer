@@ -274,7 +274,6 @@ OV.ExporterGltf = class extends OV.ExporterBase
                 bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.indices.length * this.components.index.size);
                 bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.vertices.length * this.components.number.size);
                 bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.normals.length * this.components.number.size);
-                bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.uvs.length * this.components.number.size);
 
                 let accessorIndex = mainJson.accessors.length;
                 let jsonPrimitive = {
@@ -312,6 +311,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
                     type : 'VEC3'
                 });
                 if (primitive.uvs.length > 0) {
+                    bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.uvs.length * this.components.number.size);
                     mainJson.accessors.push ({
                         bufferView : bufferViewIndex + 3,
                         byteOffset : 0,
