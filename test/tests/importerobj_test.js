@@ -374,6 +374,36 @@ describe ('Obj Importer', function() {
 		});
 	});
 
+	it ('rectangle_with_texture.obj', function () {
+		var model = testFiles.ImportObjFile ('rectangle_with_texture.obj');
+		assert (OV.CheckModel (model));
+		assert.deepStrictEqual (testUtils.ModelToObject (model), {
+			name : '',
+			materials : [
+				{ name : 'Material' }
+			],
+			meshes : [
+				{
+					name : 'Mesh',
+					triangles : [
+						{
+							vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
+							normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+							uvs : [0, 0, 1, 0, 1, 1],
+							mat : 0
+						},
+						{
+							vertices : [0, 0, 0, 1, 1, 0, 0, 1, 0],
+							normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+							uvs : [0, 0, 1, 1, 0, 1],
+							mat : 0
+						}
+					]
+				}				
+			]
+		});
+	});	
+
 	it ('cube_with_materials.obj', function () {
 		var model = testFiles.ImportObjFile ('cube_with_materials.obj');
 		assert (OV.CheckModel (model));
