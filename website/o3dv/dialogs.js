@@ -226,9 +226,9 @@ OV.ShowExportDialog = function (model)
         { name : 'stl (binary)', format : OV.FileFormat.Binary, extension : 'stl' },
         { name : 'ply (text)', format : OV.FileFormat.Text, extension : 'ply' },
         { name : 'ply (binary)', format : OV.FileFormat.Binary, extension : 'ply' },
-        { name : 'off (text)', format : OV.FileFormat.Text, extension : 'off' },
-        { name : 'gltf (text) - experimental', format : OV.FileFormat.Text, extension : 'gltf' },
-        { name : 'gltf (binary) - experimental', format : OV.FileFormat.Binary, extension : 'glb' }
+        { name : 'gltf (text)', format : OV.FileFormat.Text, extension : 'gltf' },
+        { name : 'gltf (binary)', format : OV.FileFormat.Binary, extension : 'glb' },
+        { name : 'off (text)', format : OV.FileFormat.Text, extension : 'off' }
     ];
 
     let formatSelect = $('<select>').addClass ('ov_dialog_select').appendTo (contentDiv);
