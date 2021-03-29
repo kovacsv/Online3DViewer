@@ -2,7 +2,7 @@ var fs = require ('fs');
 process.chdir (__dirname);
 
 global.atob = function (base64String) {
-    return Buffer.from (base64String, 'base64').toString('binary')
+    return Buffer.from (base64String, 'base64').toString('binary');
 };
 
 global.Blob = function () {
