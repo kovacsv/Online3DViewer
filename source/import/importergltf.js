@@ -636,7 +636,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
                     textureParams.url = OV.CreateObjectUrlWithMimeType (base64Buffer.buffer, base64Buffer.mimeType);
                     textureParams.buffer = base64Buffer.buffer;
                 } else {
-                    let textureBuffer = this.callbacks.getFileBuffer (gltfImage.uri);
+                    let textureBuffer = this.callbacks.getTextureBuffer (gltfImage.uri);
                     textureParams.name = gltfImage.uri;
                     if (textureBuffer !== null) {
                         textureParams.url = textureBuffer.url;

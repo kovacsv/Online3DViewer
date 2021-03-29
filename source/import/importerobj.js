@@ -170,7 +170,7 @@ OV.ImporterObj = class extends OV.ImporterBase
 		{
 			let texture = new OV.TextureMap ();
 			let textureName = OV.NameFromLine (line, keyword.length, '#');
-			let textureBuffer = callbacks.getFileBuffer (textureName);
+			let textureBuffer = callbacks.getTextureBuffer (textureName);
 			texture.name = textureName;
 			if (textureBuffer !== null) {
 				texture.url = textureBuffer.url;

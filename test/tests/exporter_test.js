@@ -292,47 +292,50 @@ describe ('Exporter', function () {
     });
 
     it ('Gltf Ascii Export', function () {
-      let model = CreateTestModel ();
-      let exporter = new OV.Exporter ();
-
-      let result = exporter.Export (model, OV.FileFormat.Text, 'gltf');
-      assert.strictEqual (result.length, 3);
-
-      let gltfFile = result[0];
-      let binFile = result[1];
-      let textureFile = result[2];
-      assert.strictEqual (gltfFile.GetName (), 'model.gltf');
-      assert.strictEqual (binFile.GetName (), 'model.bin');
-
-      assert.strictEqual (textureFile.GetName (), 'texture1.png');
-      assert.strictEqual (textureFile.GetUrl (), 'texture1_url');
-      assert.strictEqual (textureFile.GetContent (), null);
-
-      let contentBuffer = gltfFile.GetContent ();
-      let importer = new OV.ImporterGltf ();
-      importer.Import (contentBuffer, 'gltf', {
-          getDefaultMaterial () {
-              return new OV.Material ();
-          },
-          getFileBuffer (filePath) {
+        let model = CreateTestModel ();
+        let exporter = new OV.Exporter ();
+  
+        let result = exporter.Export (model, OV.FileFormat.Text, 'gltf');
+        assert.strictEqual (result.length, 3);
+  
+        let gltfFile = result[0];
+        let binFile = result[1];
+        let textureFile = result[2];
+        assert.strictEqual (gltfFile.GetName (), 'model.gltf');
+        assert.strictEqual (binFile.GetName (), 'model.bin');
+  
+        assert.strictEqual (textureFile.GetName (), 'texture1.png');
+        assert.strictEqual (textureFile.GetUrl (), 'texture1_url');
+        assert.strictEqual (textureFile.GetContent (), null);
+  
+        let contentBuffer = gltfFile.GetContent ();
+        let importer = new OV.ImporterGltf ();
+        importer.Import (contentBuffer, 'gltf', {
+            getDefaultMaterial () {
+                return new OV.Material ();
+            },
+            getFileBuffer (filePath) {
               if (filePath == 'model.bin') {
-                return {
-                  url : null,
-                  buffer : binFile.GetContent ()
-                };
+                    return {
+                        url : null,
+                        buffer : binFile.GetContent ()
+                    };
               }
               return null;
-          }
-      });
-
-      let importedModel = importer.GetModel ();
-      assert (OV.CheckModel (importedModel));
-      assert.strictEqual (importedModel.MaterialCount (), 2);
-      assert.strictEqual (importedModel.MeshCount (), 2);
-      assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
-      assert.strictEqual (importedModel.GetMesh (1).GetName (), 'TestMesh2');
-      assert.strictEqual (importedModel.VertexCount (), 12);
-      assert.strictEqual (importedModel.TriangleCount (), 4);         
+            },
+            getTextureBuffer (filePath) {
+                return null;
+            }
+        });
+  
+        let importedModel = importer.GetModel ();
+        assert (OV.CheckModel (importedModel));
+        assert.strictEqual (importedModel.MaterialCount (), 2);
+        assert.strictEqual (importedModel.MeshCount (), 2);
+        assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
+        assert.strictEqual (importedModel.GetMesh (1).GetName (), 'TestMesh2');
+        assert.strictEqual (importedModel.VertexCount (), 12);
+        assert.strictEqual (importedModel.TriangleCount (), 4);         
   });
 
   it ('Gltf Binary Export', function () {

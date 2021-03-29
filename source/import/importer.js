@@ -14,21 +14,6 @@ OV.File = class
 			this.name = OV.GetFileName (file.name);
 			this.extension = OV.GetFileExtension (file.name);
 		}
-		this.url = null;
-		this.content = null;
-	}
-
-	HasContent ()
-	{
-		return this.url !== null && this.content !== null;
-	}
-
-	Dispose ()
-	{
-		if (this.url !== null) {
-			OV.RevokeObjectUrl (this.url);
-		}
-		this.url = null;
 		this.content = null;
 	}
 };
@@ -148,7 +133,6 @@ OV.FileList = class
 	{
 		let callbacks = {
 			success : function (content) {
-				file.url = OV.CreateObjectUrl (content);
 				file.content = content;
 			},
 			error : function () {
@@ -158,7 +142,7 @@ OV.FileList = class
 				complete ();
 			}
 		};
-		if (file.HasContent ()) {
+		if (file.content !== null) {
 			complete ();
 			return;
 		}
@@ -193,14 +177,6 @@ OV.FileList = class
 		}
 		return null;
 	}
-
-	Dispose ()
-	{
-		for (let i = 0; i < this.files.length; i++) {
-			let file = this.files[i];
-			file.Dispose ();
-		}
-	}
 };
 
 OV.ImporterErrorCode =
@@ -229,6 +205,58 @@ OV.ImportResult = class
 		this.usedFiles = [];
 		this.missingFiles = [];
 	}
+};
+
+
+OV.FileBufferCache = class
+{
+	constructor (fileList, missingFiles, importResult)
+	{
+		this.fileList = fileList;
+		this.missingFiles = missingFiles;
+		this.importResult = importResult;
+		this.fileNameToBuffer = {};
+		this.textureNameToBuffer = {};
+	}
+
+	GetFileBuffer (filePath)
+	{
+		return this.GetCommonBuffer (filePath, this.fileNameToBuffer, false);
+	}
+
+	GetTextureBuffer (filePath)
+	{
+		return this.GetCommonBuffer (filePath, this.textureNameToBuffer, true);
+	}
+
+	GetCommonBuffer (filePath, nameToBuffer, withUrl)
+	{
+		let fileName = OV.GetFileName (filePath);
+		let fileBuffer = nameToBuffer[fileName];
+		if (fileBuffer === undefined) {
+			let file = this.fileList.FindFileByPath (filePath);
+			if (file === null || file.content === null) {
+				this.importResult.missingFiles.push (fileName);
+				this.missingFiles.push (fileName);
+				fileBuffer = null;
+			} else {
+				this.importResult.usedFiles.push (fileName);
+				if (withUrl) {
+					fileBuffer = {
+						url : OV.CreateObjectUrl (file.content),
+						buffer : file.content
+					};
+				} else {
+					fileBuffer = {
+						url : null,
+						buffer : file.content
+					};
+				}
+			}
+			nameToBuffer[fileName] = fileBuffer;
+		}
+		return fileBuffer;
+	}	
 };
 
 OV.Importer = class
@@ -260,7 +288,7 @@ OV.Importer = class
 	Import (callbacks)
 	{
 		let mainFile = this.fileList.GetMainFile ();
-		if (mainFile === null || mainFile.file === null || !mainFile.file.HasContent ()) {
+		if (mainFile === null || mainFile.file === null || mainFile.file.content === null) {
 			callbacks.error (new OV.ImporterError (OV.ImporterErrorCode.NoImportableFile, null));
 			return;
 		}
@@ -269,9 +297,8 @@ OV.Importer = class
 		result.mainFile = mainFile.file.name;
 		result.usedFiles.push (mainFile.file.name);
 
-		let obj = this;
 		let importer = mainFile.importer;
-		let fileNameToBuffer = {};
+		let fileBufferCache = new OV.FileBufferCache (this.fileList, this.missingFiles, result);
 		importer.Import (mainFile.file.content, mainFile.file.extension, {
 			getDefaultMaterial : function () {
 				let material = new OV.Material ();
@@ -279,24 +306,10 @@ OV.Importer = class
 				return material;
 			},
 			getFileBuffer : function (filePath) {
-				let fileName = OV.GetFileName (filePath);
-				let fileBuffer = fileNameToBuffer[fileName];
-				if (fileBuffer === undefined) {
-					let file = obj.fileList.FindFileByPath (filePath);
-					if (file === null || file.content === null) {
-						result.missingFiles.push (fileName);
-						obj.missingFiles.push (fileName);
-						fileBuffer = null;
-					} else {
-						result.usedFiles.push (fileName);
-						fileBuffer = {
-							url : file.url,
-							buffer : file.content
-						};
-					}
-					fileNameToBuffer[fileName] = fileBuffer;
-				}
-				return fileBuffer;
+				return fileBufferCache.GetFileBuffer (filePath);
+			},
+			getTextureBuffer : function (filePath) {
+				return fileBufferCache.GetTextureBuffer (filePath);
 			}
 		});
 
@@ -340,7 +353,6 @@ OV.Importer = class
 			}
 		}
 		if (reset) {
-			this.fileList.Dispose ();
 			this.fileList = newFileList;
 		}
 		this.missingFiles = [];

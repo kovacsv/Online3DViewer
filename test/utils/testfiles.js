@@ -65,8 +65,28 @@ module.exports =
 	},
 
 	ImportFile : function (importer, format, folder, fileName)
-	{	
-		var myThis = this;
+	{
+		function GetFileBuffer (filePath, importer, obj)
+		{
+			let extension = OV.GetFileExtension (filePath);
+			let knownFormats = importer.GetKnownFileFormats ();
+			let format = OV.FileFormat.Binary;
+			if (knownFormats[extension] !== undefined) {
+				format = knownFormats[extension];
+			}
+			let fileContent = null;
+			if (format == OV.FileFormat.Text) {
+				fileContent = obj.GetTextFileContent (folder, filePath);
+			} else if (format == OV.FileFormat.Binary) {
+				fileContent = obj.GetArrayBufferFileContent (folder, filePath);
+			}
+			return {
+				url : null,
+				buffer : fileContent
+			};
+		}
+
+		var obj = this;
 		var content = null;
 		if (format == OV.FileFormat.Text) {
 			content = this.GetTextFileContent (folder, fileName);
@@ -79,23 +99,11 @@ module.exports =
 				var material = new OV.Material ();
 				return material;
 			},
-			getFileBuffer : function (requestedFileName) {
-				let extension = OV.GetFileExtension (requestedFileName);
-				let knownFormats = importer.GetKnownFileFormats ();
-				let format = OV.FileFormat.Binary;
-				if (knownFormats[extension] !== undefined) {
-					format = knownFormats[extension];
-				}
-				let fileContent = null;
-				if (format == OV.FileFormat.Text) {
-					fileContent = myThis.GetTextFileContent (folder, requestedFileName);
-				} else if (format == OV.FileFormat.Binary) {
-					fileContent = myThis.GetArrayBufferFileContent (folder, requestedFileName);
-				}
-				return {
-					url : null,
-					buffer : fileContent
-				};
+			getFileBuffer : function (filePath) {
+				return GetFileBuffer (filePath, importer, obj);
+			},
+			getTextureBuffer : function (filePath) {
+				return GetFileBuffer (filePath, importer, obj);
 			}
 		});
 		let model = importer.GetModel ();
