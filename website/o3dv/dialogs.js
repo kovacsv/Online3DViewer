@@ -221,13 +221,13 @@ OV.ShowExportDialog = function (model)
     $('<div>').html (text).addClass ('ov_dialog_section').appendTo (contentDiv);
 
     let formats = [
-        { name : 'obj (ascii)', format : OV.FileFormat.Text, extension : 'obj' },
-        { name : 'stl (ascii)', format : OV.FileFormat.Text, extension : 'stl' },
+        { name : 'obj (text)', format : OV.FileFormat.Text, extension : 'obj' },
+        { name : 'stl (text)', format : OV.FileFormat.Text, extension : 'stl' },
         { name : 'stl (binary)', format : OV.FileFormat.Binary, extension : 'stl' },
-        { name : 'ply (ascii)', format : OV.FileFormat.Text, extension : 'ply' },
+        { name : 'ply (text)', format : OV.FileFormat.Text, extension : 'ply' },
         { name : 'ply (binary)', format : OV.FileFormat.Binary, extension : 'ply' },
-        { name : 'off (ascii)', format : OV.FileFormat.Text, extension : 'off' },
-        { name : 'gltf (ascii) - experimental', format : OV.FileFormat.Text, extension : 'gltf' },
+        { name : 'off (text)', format : OV.FileFormat.Text, extension : 'off' },
+        { name : 'gltf (text) - experimental', format : OV.FileFormat.Text, extension : 'gltf' },
         { name : 'gltf (binary) - experimental', format : OV.FileFormat.Binary, extension : 'glb' }
     ];
 
