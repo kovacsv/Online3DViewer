@@ -260,8 +260,8 @@ OV.ShowExportDialog = function (model)
                     let file = files[i];
                     let url = file.GetUrl ();
                     if (url === null) {
-                        let fileBlob = new Blob ([file.GetContent ()]);
-                        url = URL.createObjectURL (fileBlob);
+                        // TODO: revoke on close
+                        url = OV.CreateObjectUrl (file.GetContent ());
                     }
                     let fileLink = $('<a>').addClass ('ov_dialog_file_link').appendTo (fileList);
                     fileLink.attr ('href', url);

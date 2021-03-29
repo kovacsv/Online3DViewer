@@ -117,6 +117,25 @@ OV.Material = class
 		this.multiplyDiffuseMap = false;
 	}
 
+	EnumerateTextureMaps (enumerator)
+	{
+		if (this.diffuseMap !== null) {
+			enumerator (this.diffuseMap);
+		}
+		if (this.specularMap !== null) {
+			enumerator (this.specularMap);
+		}
+		if (this.bumpMap !== null) {
+			enumerator (this.bumpMap);
+		}
+		if (this.normalMap !== null) {
+			enumerator (this.normalMap);
+		}
+		if (this.emissiveMap !== null) {
+			enumerator (this.emissiveMap);
+		}
+	}
+
 	Clone ()
 	{
 		let cloned = new OV.Material ();

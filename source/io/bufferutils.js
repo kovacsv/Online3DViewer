@@ -60,3 +60,22 @@ OV.Base64DataURIToArrayBuffer = function (uri)
 		buffer : buffer
 	};
 };
+
+OV.CreateObjectUrl = function (content)
+{
+	let blob = new Blob ([content]);
+	let url = URL.createObjectURL (blob);
+	return url;
+};
+
+OV.CreateObjectUrlWithMimeType = function (content, mimeType)
+{
+	let blob = new Blob ([content], { type : mimeType });
+	let url = URL.createObjectURL (blob);
+	return url;
+};
+
+OV.RevokeObjectUrl = function (url)
+{
+	URL.revokeObjectURL (url);
+};

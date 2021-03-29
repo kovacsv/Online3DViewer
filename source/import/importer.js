@@ -14,6 +14,21 @@ OV.File = class
 			this.name = OV.GetFileName (file.name);
 			this.extension = OV.GetFileExtension (file.name);
 		}
+		this.url = null;
+		this.content = null;
+	}
+
+	HasContent ()
+	{
+		return this.url !== null && this.content !== null;
+	}
+
+	Dispose ()
+	{
+		if (this.url !== null) {
+			OV.RevokeObjectUrl (this.url);
+		}
+		this.url = null;
 		this.content = null;
 	}
 };
@@ -133,6 +148,7 @@ OV.FileList = class
 	{
 		let callbacks = {
 			success : function (content) {
+				file.url = OV.CreateObjectUrl (content);
 				file.content = content;
 			},
 			error : function () {
@@ -142,7 +158,7 @@ OV.FileList = class
 				complete ();
 			}
 		};
-		if (file.content !== null) {
+		if (file.HasContent ()) {
 			complete ();
 			return;
 		}
@@ -176,6 +192,14 @@ OV.FileList = class
 			}
 		}
 		return null;
+	}
+
+	Dispose ()
+	{
+		for (let i = 0; i < this.files.length; i++) {
+			let file = this.files[i];
+			file.Dispose ();
+		}
 	}
 };
 
@@ -236,7 +260,7 @@ OV.Importer = class
 	Import (callbacks)
 	{
 		let mainFile = this.fileList.GetMainFile ();
-		if (mainFile === null || mainFile.file.content === null) {
+		if (mainFile === null || mainFile.file === null || !mainFile.file.HasContent ()) {
 			callbacks.error (new OV.ImporterError (OV.ImporterErrorCode.NoImportableFile, null));
 			return;
 		}
@@ -265,10 +289,8 @@ OV.Importer = class
 						fileBuffer = null;
 					} else {
 						result.usedFiles.push (fileName);
-						let blob = new Blob ([file.content]);
-						let blobURL = URL.createObjectURL (blob);
 						fileBuffer = {
-							url : blobURL,
+							url : file.url,
 							buffer : file.content
 						};
 					}
@@ -318,6 +340,7 @@ OV.Importer = class
 			}
 		}
 		if (reset) {
+			this.fileList.Dispose ();
 			this.fileList = newFileList;
 		}
 		this.missingFiles = [];
@@ -334,5 +357,20 @@ OV.Importer = class
 	IsOnlyFileSource (source)
 	{
 		return this.fileList.IsOnlySource (source);
+	}
+
+	DisposeModel (model)
+	{
+		if (model === null) {
+			return;
+		}
+		for (let i = 0; i < model.MaterialCount (); i++) {
+			let material = model.GetMaterial (i);
+			material.EnumerateTextureMaps (function (texture) {
+				if (texture.url !== null) {
+					OV.RevokeObjectUrl (texture.url);
+				}
+			});
+		}
 	}	
 };

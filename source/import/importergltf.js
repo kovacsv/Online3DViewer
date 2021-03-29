@@ -351,12 +351,14 @@ OV.ImporterGltf = class extends OV.ImporterBase
         
         this.bufferContents = null;
         this.gltfExtensions = null;
+        this.imageIndexToTextureParams = null;
 	}
 	
 	ResetState ()
 	{
         this.bufferContents = [];
         this.gltfExtensions = new OV.GltfExtensions ();
+        this.imageIndexToTextureParams = {};
 	}
 
 	CanImportExtension (extension)
@@ -616,36 +618,48 @@ OV.ImporterGltf = class extends OV.ImporterBase
 
         let texture = new OV.TextureMap ();
         let gltfTexture = gltf.textures[gltfTextureRef.index];
-        let gltfImage = gltf.images[gltfTexture.source];
+        let gltfImageIndex = gltfTexture.source;
+        let gltfImage = gltf.images[gltfImageIndex];
 
-        let textureIndexString = gltfTexture.source.toString ();
-        if (gltfImage.uri !== undefined) {
-            let base64Buffer = OV.Base64DataURIToArrayBuffer (gltfImage.uri);
-            if (base64Buffer !== null) {
-                let blob = new Blob ([base64Buffer.buffer], { type : base64Buffer.mimeType });
-                texture.name = 'Embedded_' + textureIndexString + GetTextureFileExtension (base64Buffer.mimeType);
-                texture.url = URL.createObjectURL (blob);
-                texture.buffer = base64Buffer.buffer;
-            } else {
-                let textureBuffer = this.callbacks.getFileBuffer (gltfImage.uri);
-                texture.name = gltfImage.uri;
-                if (textureBuffer !== null) {
-                    texture.url = textureBuffer.url;
-                    texture.buffer = textureBuffer.buffer;
+        let textureParams = this.imageIndexToTextureParams[gltfImageIndex];
+        if (textureParams === undefined) {
+            textureParams = {
+                name : null,
+                url : null,
+                buffer : null
+            };
+            let textureIndexString = gltfImageIndex.toString ();
+            if (gltfImage.uri !== undefined) {
+                let base64Buffer = OV.Base64DataURIToArrayBuffer (gltfImage.uri);
+                if (base64Buffer !== null) {
+                    textureParams.name = 'Embedded_' + textureIndexString + GetTextureFileExtension (base64Buffer.mimeType);
+                    textureParams.url = OV.CreateObjectUrlWithMimeType (base64Buffer.buffer, base64Buffer.mimeType);
+                    textureParams.buffer = base64Buffer.buffer;
+                } else {
+                    let textureBuffer = this.callbacks.getFileBuffer (gltfImage.uri);
+                    textureParams.name = gltfImage.uri;
+                    if (textureBuffer !== null) {
+                        textureParams.url = textureBuffer.url;
+                        textureParams.buffer = textureBuffer.buffer;
+                    }
+                }
+            } else if (gltfImage.bufferView !== undefined) {
+                let bufferView = gltf.bufferViews[gltfImage.bufferView];
+                let reader = this.GetReaderFromBufferView (bufferView);
+                if (reader !== null) {
+                    let buffer = reader.ReadArrayBuffer (bufferView.byteLength);
+                    textureParams.name = 'Binary_' + textureIndexString + GetTextureFileExtension (gltfImage.mimeType);
+                    textureParams.url = OV.CreateObjectUrlWithMimeType (buffer, gltfImage.mimeType);
+                    textureParams.buffer = buffer;
                 }
             }
-        } else if (gltfImage.bufferView !== undefined) {
-            let bufferView = gltf.bufferViews[gltfImage.bufferView];
-            let reader = this.GetReaderFromBufferView (bufferView);
-            if (reader !== null) {
-                let buffer = reader.ReadArrayBuffer (bufferView.byteLength);
-                let blob = new Blob ([buffer], { type: gltfImage.mimeType });
-                texture.name = 'Binary_' + textureIndexString + GetTextureFileExtension (gltfImage.mimeType);
-                texture.url = URL.createObjectURL (blob);
-                texture.buffer = buffer;
-            }
+            this.imageIndexToTextureParams[gltfImageIndex] = textureParams;
         }
 
+        texture.name = textureParams.name;
+        texture.url = textureParams.url;
+        texture.buffer = textureParams.buffer;
+    
         this.gltfExtensions.ProcessTexture (gltfTextureRef, texture);
         return texture;
     }
