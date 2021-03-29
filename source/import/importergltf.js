@@ -400,13 +400,13 @@ OV.ImporterGltf = class extends OV.ImporterBase
             let buffer = null;
             let gltfBuffer = gltf.buffers[i];
             let base64Buffer = OV.Base64DataURIToArrayBuffer (gltfBuffer.uri);
-            if (base64Buffer === null) {
+            if (base64Buffer !== null) {
+                buffer = base64Buffer.buffer;
+            } else {
                 let fileBuffer = this.callbacks.getFileBuffer (gltfBuffer.uri);
                 if (fileBuffer !== null) {
                     buffer = fileBuffer.buffer;
                 }
-            } else {
-                buffer = base64Buffer.buffer;
             }
             if (buffer === null) {
                 this.SetError ();
