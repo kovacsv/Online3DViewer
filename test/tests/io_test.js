@@ -89,4 +89,13 @@ describe ('IO Test', function () {
         assert.strictEqual (reader.ReadFloat32 (), 7.5);
         assert.strictEqual (reader.ReadDouble64 (), 8.5);
     });
+
+    it ('Utf8 Conversion', function () {
+        let str = 'example-\u2764-example';
+        let buffer = OV.Utf8StringToArrayBuffer (str);
+        assert.strictEqual (buffer.byteLength, 19);
+        let str2 = OV.ArrayBufferToUtf8String (buffer);
+        assert.strictEqual (str, str2);
+        assert.strictEqual (str.length, str2.length);
+    });    
 });

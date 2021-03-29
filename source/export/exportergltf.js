@@ -137,8 +137,9 @@ OV.ExporterGltf = class extends OV.ExporterBase
         });
 
         let mainJsonString = JSON.stringify (mainJson);
-        let mainJsonBufferLength = mainJsonString.length;
-        let mainJsonBufferAlignedLength = AlignToBoundary (mainJsonString.length);
+        let mainJsonBuffer = OV.Utf8StringToArrayBuffer (mainJsonString);
+        let mainJsonBufferLength = mainJsonBuffer.byteLength;
+        let mainJsonBufferAlignedLength = AlignToBoundary (mainJsonBufferLength);
 
         let glbSize = 12 + 8 + mainJsonBufferAlignedLength + 8 + mainBinaryBufferAlignedLength;
         let glbWriter = new OV.BinaryWriter (glbSize, true);
@@ -149,9 +150,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
 
         glbWriter.WriteUnsignedInteger32 (mainJsonBufferAlignedLength);
         glbWriter.WriteUnsignedInteger32 (0x4E4F534A);
-		for (let i = 0; i < mainJsonBufferLength; i++) {
-            glbWriter.WriteUnsignedCharacter8 (mainJsonString.charCodeAt (i));
-		}
+        glbWriter.WriteArrayBuffer (mainJsonBuffer);
         WriteCharacters (glbWriter, 32, mainJsonBufferAlignedLength - mainJsonBufferLength);
 
         glbWriter.WriteUnsignedInteger32 (mainBinaryBufferAlignedLength);

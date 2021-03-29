@@ -24,6 +24,12 @@ OV.AsciiStringToArrayBuffer = function (str)
 	return buffer;
 };
 
+OV.Utf8StringToArrayBuffer = function (str)
+{
+	let encoder = new TextEncoder ();
+	return encoder.encode (str);
+};
+
 OV.Base64DataURIToArrayBuffer = function (uri)
 {
 	let dataPrefix = 'data:';
