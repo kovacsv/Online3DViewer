@@ -11,18 +11,18 @@ This repository contains the source code of the https://3dviewer.net website. Th
 
 - obj (with mtl and texture)
 - 3ds (with texture)
-- stl (ascii and binary)
-- ply (ascii and binary)
-- gltf (ascii and binary)
-- off (ascii only)
+- stl (text and binary)
+- ply (text and binary)
+- gltf (text and binary)
+- off (text only)
 
 ### Export
 
 - obj (with mtl)
-- stl (ascii and binary)
-- ply (ascii and binary)
-- gltf (ascii and binary)
-- off (ascii only)
+- stl (text and binary)
+- ply (text and binary)
+- gltf (text and binary)
+- off (text only)
 
 ## Features
 
