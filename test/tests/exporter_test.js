@@ -319,6 +319,9 @@ describe ('Exporter', function () {
                     return binFile.GetContent ();
                 }
                 return null;
+            },
+            getTextureBuffer (filePath) {
+                return null;
             }
         });
   
@@ -349,6 +352,9 @@ describe ('Exporter', function () {
             return new OV.Material ();
         },
         getFileBuffer (filePath) {
+            return null;
+        },
+        getTextureBuffer (filePath) {
             return null;
         }
     });

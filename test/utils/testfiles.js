@@ -45,8 +45,14 @@ module.exports =
 
 	ImportFile : function (importer, format, folder, fileName)
 	{
-		function GetFileBuffer (filePath, importer)
-		{
+		var content = null;
+		if (format == OV.FileFormat.Text) {
+			content = testUtils.GetTextFileContent (folder, fileName);
+		} else if (format == OV.FileFormat.Binary) {
+			content = testUtils.GetArrayBufferFileContent (folder, fileName);
+		}
+		var extension = OV.GetFileExtension (fileName);
+		let buffers = new OV.ImporterBuffers (function (filePath) {
 			let extension = OV.GetFileExtension (filePath);
 			let knownFormats = importer.GetKnownFileFormats ();
 			let format = OV.FileFormat.Binary;
@@ -60,23 +66,17 @@ module.exports =
 				fileContent = testUtils.GetArrayBufferFileContent (folder, filePath);
 			}
 			return fileContent;
-		}
-
-		var obj = this;
-		var content = null;
-		if (format == OV.FileFormat.Text) {
-			content = testUtils.GetTextFileContent (folder, fileName);
-		} else if (format == OV.FileFormat.Binary) {
-			content = testUtils.GetArrayBufferFileContent (folder, fileName);
-		}
-		var extension = OV.GetFileExtension (fileName);
+		});
 		importer.Import (content, extension, {
 			getDefaultMaterial : function () {
 				var material = new OV.Material ();
 				return material;
 			},
 			getFileBuffer : function (filePath) {
-				return GetFileBuffer (filePath, importer);
+				return buffers.GetFileBuffer (filePath);
+			},
+			getTextureBuffer : function (filePath) {
+				return buffers.GetTextureBuffer (filePath);
 			}
 		});
 		let model = importer.GetModel ();

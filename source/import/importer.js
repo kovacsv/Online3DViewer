@@ -222,6 +222,46 @@ OV.ImportResult = class
 	}
 };
 
+OV.ImporterBuffers = class
+{
+    constructor (getBufferCallback)
+    {
+        this.getBufferCallback = getBufferCallback;
+        this.fileBuffers = {};
+        this.textureBuffers = {};
+    }
+
+    GetFileBuffer (filePath)
+    {
+        let fileName = OV.GetFileName (filePath);
+        let buffer = this.fileBuffers[fileName];
+        if (buffer === undefined) {
+            buffer = this.getBufferCallback (fileName);
+            this.fileBuffers[fileName] = buffer;
+        }
+        return buffer;
+    }
+
+    GetTextureBuffer (filePath)
+    {
+        let fileName = OV.GetFileName (filePath);
+        let buffer = this.textureBuffers[fileName];
+        if (buffer === undefined) {
+            let texBuffer = this.getBufferCallback (fileName);
+            if (texBuffer !== null) {
+                buffer = {
+                    url : OV.CreateObjectUrl (texBuffer),
+                    buffer : texBuffer
+                };
+            } else {
+                buffer = null;
+            }
+            this.textureBuffers[fileName] = buffer;
+        }
+        return buffer;
+    }    
+};
+
 OV.Importer = class
 {
 	constructor ()
@@ -262,24 +302,31 @@ OV.Importer = class
 
 		let obj = this;
 		let importer = mainFile.importer;
+		let buffers = new OV.ImporterBuffers (function (fileName) {
+			let fileBuffer = null;
+			let file = obj.fileList.FindFileByPath (fileName);
+			if (file === null || file.content === null) {
+				result.missingFiles.push (fileName);
+				obj.missingFiles.push (fileName);
+				fileBuffer = null;
+			} else {
+				result.usedFiles.push (fileName);
+				fileBuffer = file.content;
+			}
+			return fileBuffer;
+		});
+
 		importer.Import (mainFile.file.content, mainFile.file.extension, {
 			getDefaultMaterial : function () {
 				let material = new OV.Material ();
 				material.diffuse = new OV.Color (200, 200, 200);
 				return material;
 			},
-			getFileBuffer : function (fileName) {
-				let fileBuffer = null;
-				let file = obj.fileList.FindFileByPath (fileName);
-				if (file === null || file.content === null) {
-					result.missingFiles.push (fileName);
-					obj.missingFiles.push (fileName);
-					fileBuffer = null;
-				} else {
-					result.usedFiles.push (fileName);
-					fileBuffer = file.content;
-				}
-				return fileBuffer;
+			getFileBuffer : function (filePath) {
+				return buffers.GetFileBuffer (filePath);
+			},
+			getTextureBuffer : function (filePath) {
+				return buffers.GetTextureBuffer (filePath);
 			}
 		});
 
