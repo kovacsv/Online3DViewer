@@ -8,10 +8,13 @@
 		"google-closure-compiler": "^20210302.0.0",
 		"jshint": "^2.12.0",
 		"mocha": "^8.3.2",
-		"svgo": "^2.2.2"
+		"rewire": "^5.0.0",
+		"svgo": "^2.2.2",
+		"nyc": "^15.1.0"
 	},
 	"scripts": {
 		"test": "mocha test",
+		"coverage": "nyc mocha test",
 		"build": "python tools/create_package.py",
 		"update": "python tools/update_includes.py",
 		"svg": "python tools/optimize_svg_files.py"
