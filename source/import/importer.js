@@ -192,7 +192,7 @@ OV.RevokeModelUrls = function (model)
 			}
 		});
 	}
-}
+};
 
 OV.ImportErrorCode =
 {
