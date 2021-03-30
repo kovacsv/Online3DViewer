@@ -179,6 +179,21 @@ OV.FileList = class
 	}
 };
 
+OV.RevokeModelUrls = function (model)
+{
+	if (model === null) {
+		return;
+	}
+	for (let i = 0; i < model.MaterialCount (); i++) {
+		let material = model.GetMaterial (i);
+		material.EnumerateTextureMaps (function (texture) {
+			if (texture.url !== null) {
+				OV.RevokeObjectUrl (texture.url);
+			}
+		});
+	}
+}
+
 OV.ImportErrorCode =
 {
 	NoImportableFile : 1,
@@ -279,21 +294,6 @@ OV.Importer = class
 		result.upVector = importer.GetUpDirection ();
 		callbacks.success (result);
 	}
-
-	RevokeReferences (model)
-	{
-		if (model === null) {
-			return;
-		}
-		for (let i = 0; i < model.MaterialCount (); i++) {
-			let material = model.GetMaterial (i);
-			material.EnumerateTextureMaps (function (texture) {
-				if (texture.url !== null) {
-					OV.RevokeObjectUrl (texture.url);
-				}
-			});
-		}
-	}		
 
 	LoadFiles (fileList, fileSource, onReady)
 	{

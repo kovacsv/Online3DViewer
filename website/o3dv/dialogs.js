@@ -65,6 +65,11 @@ OV.ButtonDialog = class
         return dialogContentDiv;
     }
 
+    SetCloseHandler (closeHandler)
+    {
+        this.modal.SetCloseHandler (closeHandler);
+    }
+
     Show ()
     {
         this.modal.Open ();
@@ -241,6 +246,7 @@ OV.ShowExportDialog = function (model)
     let fileListSection = $('<div>').addClass ('ov_dialog_section').appendTo (contentDiv);
     let fileList = $('<div>').addClass ('ov_dialog_file_list').addClass ('ov_thin_scrollbar').appendTo (fileListSection);
 
+    let createdUrls = [];
     formatSelect.change (function () {
         fileList.empty ();
         let selectedIndex = formatSelect.prop ('selectedIndex');
@@ -260,8 +266,8 @@ OV.ShowExportDialog = function (model)
                     let file = files[i];
                     let url = file.GetUrl ();
                     if (url === null) {
-                        // TODO: revoke on close
                         url = OV.CreateObjectUrl (file.GetContent ());
+                        createdUrls.push (url);
                     }
                     let fileLink = $('<a>').addClass ('ov_dialog_file_link').appendTo (fileList);
                     fileLink.attr ('href', url);
@@ -274,6 +280,11 @@ OV.ShowExportDialog = function (model)
 		});
     });
 
+    dialog.SetCloseHandler (function () {
+        for (let i = 0; i < createdUrls.length; i++) {
+            OV.RevokeObjectUrl (createdUrls[i]);
+        }
+    });
     dialog.Show ();
     return dialog;
 };

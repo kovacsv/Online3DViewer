@@ -72,8 +72,7 @@ OV.Website = class
             this.dialog = null;
 		}
 		if (this.model !== null) {
-			let importer = this.modelLoader.GetImporter ();
-			importer.RevokeReferences (this.model);
+			OV.RevokeModelUrls (this.model);
 		}
 		this.model = null;
 		this.parameters.introDiv.hide ();
