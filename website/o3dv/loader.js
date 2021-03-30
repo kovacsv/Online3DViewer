@@ -1,24 +1,24 @@
 OV.InitModelLoader = function (modelLoader, callbacks)
 {
-    function OpenErrorDialog (importerError)
+    function OpenErrorDialog (importError)
     {
-        if (importerError.code === OV.ImporterErrorCode.NoImportableFile) {
+        if (importError.code === OV.ImportErrorCode.NoImportableFile) {
             return OV.ShowMessageDialog (
                 'Something went wrong',
                 'No importable file found. You can open obj, 3ds, stl, ply, gltf, glb and off files.',
-                importerError.message
+                importError.message
             );
-        } else if (importerError.code === OV.ImporterErrorCode.ImportFailed) {
+        } else if (importError.code === OV.ImportErrorCode.ImportFailed) {
             return OV.ShowMessageDialog (
                 'Something went wrong',
                 'Failed to import model.',
-                importerError.message
+                importError.message
             );
         } else {
             return OV.ShowMessageDialog (
                 'Something went wrong',
                 'Unknown error.',
-                importerError.message
+                importError.message
             );
         }
     }
@@ -53,9 +53,9 @@ OV.InitModelLoader = function (modelLoader, callbacks)
         onTextureLoaded : function () {
             callbacks.onRender ();
         },
-        onLoadError : function (importerError) {
+        onLoadError : function (importError) {
             progressDialog.Hide ();
-            errorDialog = OpenErrorDialog (importerError);
+            errorDialog = OpenErrorDialog (importError);
         },
     });
 };

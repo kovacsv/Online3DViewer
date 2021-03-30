@@ -374,6 +374,69 @@ describe ('Obj Importer', function() {
 		});
 	});
 
+	it ('rectangle_with_texture.obj', function () {
+		var model = testFiles.ImportObjFile ('rectangle_with_texture.obj');
+		assert (OV.CheckModel (model));
+		assert.deepStrictEqual (testUtils.ModelToObject (model), {
+			name : '',
+			materials : [
+				{ name : 'Material' }
+			],
+			meshes : [
+				{
+					name : 'Mesh',
+					triangles : [
+						{
+							vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
+							normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+							uvs : [0, 0, 1, 0, 1, 1],
+							mat : 0
+						},
+						{
+							vertices : [0, 0, 0, 1, 1, 0, 0, 1, 0],
+							normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+							uvs : [0, 0, 1, 1, 0, 1],
+							mat : 0
+						}
+					]
+				}				
+			]
+		});
+	});
+
+	it ('two_materials_same_texture.obj', function () {
+		var model = testFiles.ImportObjFile ('two_materials_same_texture.obj');
+		assert.strictEqual (model.GetMaterial (0).diffuseMap.url, model.GetMaterial (1).diffuseMap.url);
+		assert.strictEqual (model.GetMaterial (0).diffuseMap.buffer.byteLength, model.GetMaterial (1).diffuseMap.buffer.byteLength);
+		assert (OV.CheckModel (model));
+		assert.deepStrictEqual (testUtils.ModelToObject (model), {
+			name : '',
+			materials : [
+				{ name : 'Material1' },
+				{ name : 'Material2' }
+			],
+			meshes : [
+				{
+					name : 'Mesh',
+					triangles : [
+						{
+							vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
+							normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+							uvs : [0, 0, 1, 0, 1, 1],
+							mat : 0
+						},
+						{
+							vertices : [0, 0, 0, 1, 1, 0, 0, 1, 0],
+							normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+							uvs : [0, 0, 1, 1, 0, 1],
+							mat : 1
+						}
+					]
+				}				
+			]
+		});
+	});		
+
 	it ('cube_with_materials.obj', function () {
 		var model = testFiles.ImportObjFile ('cube_with_materials.obj');
 		assert (OV.CheckModel (model));

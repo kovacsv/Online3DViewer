@@ -179,14 +179,29 @@ OV.FileList = class
 	}
 };
 
-OV.ImporterErrorCode =
+OV.RevokeModelUrls = function (model)
+{
+	if (model === null) {
+		return;
+	}
+	for (let i = 0; i < model.MaterialCount (); i++) {
+		let material = model.GetMaterial (i);
+		material.EnumerateTextureMaps (function (texture) {
+			if (texture.url !== null) {
+				OV.RevokeObjectUrl (texture.url);
+			}
+		});
+	}
+};
+
+OV.ImportErrorCode =
 {
 	NoImportableFile : 1,
 	ImportFailed : 2,
 	UnknownError : 3
 };
 
-OV.ImporterError = class
+OV.ImportError = class
 {
 	constructor (code, message)
 	{
@@ -236,17 +251,14 @@ OV.Importer = class
 	Import (callbacks)
 	{
 		let mainFile = this.fileList.GetMainFile ();
-		if (mainFile === null || mainFile.file.content === null) {
-			callbacks.error (new OV.ImporterError (OV.ImporterErrorCode.NoImportableFile, null));
+		if (mainFile === null || mainFile.file === null || mainFile.file.content === null) {
+			callbacks.error (new OV.ImportError (OV.ImportErrorCode.NoImportableFile, null));
 			return;
 		}
 
 		let result = new OV.ImportResult ();
 		result.mainFile = mainFile.file.name;
 		result.usedFiles.push (mainFile.file.name);
-
-		let fileNameToContent = {};
-		let textureNameToUrl = {};
 
 		let obj = this;
 		let importer = mainFile.importer;
@@ -256,47 +268,24 @@ OV.Importer = class
 				material.diffuse = new OV.Color (200, 200, 200);
 				return material;
 			},
-			getFileContent : function (filePath) {
-				let fileName = OV.GetFileName (filePath);
-				let fileContent = fileNameToContent[fileName];
-				if (fileContent === undefined) {
-					let file = obj.fileList.FindFileByPath (filePath);
-					if (file === null || file.content === null) {
-						result.missingFiles.push (fileName);
-						obj.missingFiles.push (fileName);
-						fileContent = null;
-					} else {
-						result.usedFiles.push (fileName);
-						fileContent = file.content;
-					}
-					fileNameToContent[fileName] = fileContent;
+			getFileBuffer : function (fileName) {
+				let fileBuffer = null;
+				let file = obj.fileList.FindFileByPath (fileName);
+				if (file === null || file.content === null) {
+					result.missingFiles.push (fileName);
+					obj.missingFiles.push (fileName);
+					fileBuffer = null;
+				} else {
+					result.usedFiles.push (fileName);
+					fileBuffer = file.content;
 				}
-				return fileContent;
-			},
-			getTextureObjectUrl : function (filePath) {
-				let fileName = OV.GetFileName (filePath);
-				let textureUrl = textureNameToUrl[fileName];
-				if (textureUrl === undefined) {
-					let file = obj.fileList.FindFileByPath (filePath);
-					if (file === null || file.content === null) {
-						result.missingFiles.push (fileName);
-						obj.missingFiles.push (fileName);
-						textureUrl = null;
-					} else {
-						result.usedFiles.push (fileName);
-						let blob = new Blob ([file.content]);
-						let blobURL = URL.createObjectURL (blob);
-						textureUrl = blobURL;
-					}
-					textureNameToUrl[fileName] = textureUrl;
-				}
-				return textureUrl;
+				return fileBuffer;
 			}
 		});
 
 		if (importer.IsError ()) {
 			let message = importer.GetMessage ();
-			callbacks.error (new OV.ImporterError (OV.ImporterErrorCode.ImportFailed, message));
+			callbacks.error (new OV.ImportError (OV.ImportErrorCode.ImportFailed, message));
 			return;
 		}
 
@@ -350,5 +339,5 @@ OV.Importer = class
 	IsOnlyFileSource (source)
 	{
 		return this.fileList.IsOnlySource (source);
-	}	
+	}
 };

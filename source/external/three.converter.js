@@ -15,7 +15,7 @@ OV.ConvertModelToThreeMeshes = function (model, callbacks)
 
 		function LoadTexture (threeMaterial, texture, onLoad)
 		{
-			if (texture === null || texture.url === null) {
+			if (texture === null || !texture.IsValid ()) {
 				return;
 			}
 			let loader = new THREE.TextureLoader ();

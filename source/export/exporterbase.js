@@ -42,7 +42,7 @@ OV.ExporterBase = class
 {
     constructor ()
     {
-		this.callbacks = null;
+
     }
 
     CanExport (format, extension)
@@ -50,9 +50,8 @@ OV.ExporterBase = class
         return false;
     }
     
-	Export (model, format, files, callbacks)
+	Export (model, format, files)
 	{
-		this.callbacks = callbacks;
 		this.ExportContent (model, format, files);
 	}
 

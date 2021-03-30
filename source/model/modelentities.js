@@ -54,9 +54,15 @@ OV.TextureMap = class
 	{
 		this.name = null;
 		this.url = null;
+		this.buffer = null;
 		this.offset = new OV.Coord2D (0.0, 0.0);
 		this.scale = new OV.Coord2D (1.0, 1.0);
 		this.rotation = 0.0; // radians
+	}
+
+	IsValid ()
+	{
+		return this.name !== null && this.url !== null && this.buffer !== null;
 	}
 
 	HasTransformation ()
@@ -78,6 +84,7 @@ OV.TextureMap = class
 		let cloned = new OV.TextureMap ();
 		cloned.name = this.name;
 		cloned.url = this.url;
+		cloned.buffer = this.buffer;
 		cloned.offset = this.offset.Clone ();
 		cloned.scale = this.scale.Clone ();
 		cloned.rotation = this.rotation;
@@ -108,6 +115,25 @@ OV.Material = class
 		this.alphaTest = 0.0; // 0.0 .. 1.0
 		this.transparent = false;
 		this.multiplyDiffuseMap = false;
+	}
+
+	EnumerateTextureMaps (enumerator)
+	{
+		if (this.diffuseMap !== null) {
+			enumerator (this.diffuseMap);
+		}
+		if (this.specularMap !== null) {
+			enumerator (this.specularMap);
+		}
+		if (this.bumpMap !== null) {
+			enumerator (this.bumpMap);
+		}
+		if (this.normalMap !== null) {
+			enumerator (this.normalMap);
+		}
+		if (this.emissiveMap !== null) {
+			enumerator (this.emissiveMap);
+		}
 	}
 
 	Clone ()

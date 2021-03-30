@@ -5,23 +5,29 @@ This repository contains the source code of the https://3dviewer.net website. Th
 [![Build status](https://ci.appveyor.com/api/projects/status/exypq43a8kjby5n0?svg=true)](https://ci.appveyor.com/project/kovacsv/online3dviewer)
 [![Build Status](https://travis-ci.com/kovacsv/Online3DViewer.svg?branch=master)](https://travis-ci.com/kovacsv/Online3DViewer)
 
+## Documentation
+
+- [User Documentation](https://3dviewer.net/info)
+- [Developer Documentation](https://github.com/kovacsv/Online3DViewer/wiki)
+
 ## Supported file formats
 
 ### Import
 
 - obj (with mtl and texture)
 - 3ds (with texture)
-- stl (ascii and binary)
-- ply (ascii and binary)
-- gltf (ascii and binary)
-- off (ascii only)
+- stl (text and binary)
+- ply (text and binary)
+- gltf (text and binary)
+- off (text only)
 
 ### Export
 
 - obj (with mtl)
-- stl (ascii and binary)
-- ply (ascii and binary)
-- off (ascii only)
+- stl (text and binary)
+- ply (text and binary)
+- gltf (text and binary)
+- off (text only)
 
 ## Features
 

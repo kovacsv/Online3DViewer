@@ -118,13 +118,13 @@ table td.center
 
 table td.green
 {
-	color: #21C23C;
+	color: #21c23c;
 	font-weight: bold;
 }
 
 table td.red
 {
-	color: #BF233D;
+	color: #bf233d;
 	font-weight: bold;
 }
 
@@ -141,6 +141,8 @@ div.code
 	font-size: 14px;
 	margin: 10px 0px;
 	padding : 5px;
+	overflow: auto;
+	white-space: nowrap;
 }
 
 @media only screen and (max-width: 1000px)

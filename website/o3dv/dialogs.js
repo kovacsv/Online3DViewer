@@ -54,7 +54,7 @@ OV.ButtonDialog = class
         let contentDiv = this.modal.GetContentDiv ();
         contentDiv.addClass ('ov_dialog');
 
-        let titleDiv = $('<div>').addClass ('ov_dialog_title').html (title).appendTo (contentDiv);
+        $('<div>').addClass ('ov_dialog_title').html (title).appendTo (contentDiv);
         let dialogContentDiv = $('<div>').addClass ('ov_dialog_content').appendTo (contentDiv);
         let buttonsDiv = $('<div>').addClass ('ov_dialog_buttons').appendTo (contentDiv);
         let buttonsInnerDiv = $('<div>').addClass ('ov_dialog_buttons_inner').appendTo (buttonsDiv);
@@ -63,6 +63,11 @@ OV.ButtonDialog = class
         }
         
         return dialogContentDiv;
+    }
+
+    SetCloseHandler (closeHandler)
+    {
+        this.modal.SetCloseHandler (closeHandler);
     }
 
     Show ()
@@ -152,14 +157,14 @@ OV.ShowOpenUrlDialog = function (onOk)
     {
         for (let i = 0; i < urls.length; i++) {
             let url = urls[i];
-            if (url.search ('www.dropbox.com') !== -1) {
+            if (url.search (/www\.dropbox\.com/u) !== -1) {
                 url = url.replace ('www.dropbox.com', 'dl.dropbox.com');
                 let separatorPos = url.indexOf ('?');
                 if (separatorPos !== -1) {
                     url = url.substr (0, separatorPos);
                 }
                 urls[i] = url;
-            } else if (url.search ('github.com') !== -1) {
+            } else if (url.search (/github\.com/u) !== -1) {
                 url = url.replace ('github.com', 'raw.githubusercontent.com');
                 url = url.replace ('/blob', '');
                 let separatorPos = url.indexOf ('?');
@@ -201,7 +206,7 @@ OV.ShowOpenUrlDialog = function (onOk)
     return dialog;
 };
 
-OV.ShowExportDialog = function (model, importer)
+OV.ShowExportDialog = function (model)
 {
     if (model === null) {
         return OV.ShowMessageDialog ('Export Failed', 'Please load a model to export', null);
@@ -221,12 +226,14 @@ OV.ShowExportDialog = function (model, importer)
     $('<div>').html (text).addClass ('ov_dialog_section').appendTo (contentDiv);
 
     let formats = [
-        { name : 'obj (ascii)', format : OV.FileFormat.Text, extension : 'obj' },
-        { name : 'stl (ascii)', format : OV.FileFormat.Text, extension : 'stl' },
+        { name : 'obj (text)', format : OV.FileFormat.Text, extension : 'obj' },
+        { name : 'stl (text)', format : OV.FileFormat.Text, extension : 'stl' },
         { name : 'stl (binary)', format : OV.FileFormat.Binary, extension : 'stl' },
-        { name : 'ply (ascii)', format : OV.FileFormat.Text, extension : 'ply' },
+        { name : 'ply (text)', format : OV.FileFormat.Text, extension : 'ply' },
         { name : 'ply (binary)', format : OV.FileFormat.Binary, extension : 'ply' },
-        { name : 'off (ascii)', format : OV.FileFormat.Text, extension : 'off' }
+        { name : 'gltf (text)', format : OV.FileFormat.Text, extension : 'gltf' },
+        { name : 'gltf (binary)', format : OV.FileFormat.Binary, extension : 'glb' },
+        { name : 'off (text)', format : OV.FileFormat.Text, extension : 'off' }
     ];
 
     let formatSelect = $('<select>').addClass ('ov_dialog_select').appendTo (contentDiv);
@@ -239,6 +246,7 @@ OV.ShowExportDialog = function (model, importer)
     let fileListSection = $('<div>').addClass ('ov_dialog_section').appendTo (contentDiv);
     let fileList = $('<div>').addClass ('ov_dialog_file_list').addClass ('ov_thin_scrollbar').appendTo (fileListSection);
 
+    let createdUrls = [];
     formatSelect.change (function () {
         fileList.empty ();
         let selectedIndex = formatSelect.prop ('selectedIndex');
@@ -252,14 +260,14 @@ OV.ShowExportDialog = function (model, importer)
 		taskRunner.Run (1, {
 			runTask : function (index, ready) {
                 let exporter = new OV.Exporter ();
-                let files = exporter.Export (model, selectedFormat.format, selectedFormat.extension, null);
+                let files = exporter.Export (model, selectedFormat.format, selectedFormat.extension);
                 fileList.empty ();
                 for (let i = 0; i < files.length; i++) {
                     let file = files[i];
                     let url = file.GetUrl ();
                     if (url === null) {
-                        let fileBlob = new Blob ([file.GetContent ()]);
-                        url = URL.createObjectURL (fileBlob);
+                        url = OV.CreateObjectUrl (file.GetContent ());
+                        createdUrls.push (url);
                     }
                     let fileLink = $('<a>').addClass ('ov_dialog_file_link').appendTo (fileList);
                     fileLink.attr ('href', url);
@@ -272,6 +280,11 @@ OV.ShowExportDialog = function (model, importer)
 		});
     });
 
+    dialog.SetCloseHandler (function () {
+        for (let i = 0; i < createdUrls.length; i++) {
+            OV.RevokeObjectUrl (createdUrls[i]);
+        }
+    });
     dialog.Show ();
     return dialog;
 };

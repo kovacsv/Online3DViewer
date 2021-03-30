@@ -166,13 +166,15 @@ OV.ImporterObj = class extends OV.ImporterBase
 			);
 		}
 
-		function CreateTexture (keyword, line, callbacks)
+		function CreateTexture (importer, keyword, line)
 		{
 			let texture = new OV.TextureMap ();
-			texture.name = OV.NameFromLine (line, keyword.length, '#');
-			let textureObjectUrl = callbacks.getTextureObjectUrl (texture.name);
-			if (textureObjectUrl !== null) {
-				texture.url = textureObjectUrl;
+			let textureName = OV.NameFromLine (line, keyword.length, '#');
+			let textureBuffer = importer.GetTextureBuffer (textureName);
+			texture.name = textureName;
+			if (textureBuffer !== null) {
+				texture.url = textureBuffer.url;
+				texture.buffer = textureBuffer.buffer;
 			}
 			return texture;
 		}
@@ -206,9 +208,9 @@ OV.ImporterObj = class extends OV.ImporterBase
 				return true;
 			}
 			let fileName = OV.NameFromLine (line, keyword.length, '#');
-			let fileContent = this.callbacks.getFileContent (fileName);
-			if (fileContent !== null) {
-				OV.ReadLines (fileContent, function (line) {
+			let fileBuffer = this.GetFileBuffer (fileName);
+			if (fileBuffer !== null) {
+				OV.ReadLines (fileBuffer, function (line) {
 					if (!obj.IsError ()) {
 						obj.ProcessLine (line);
 					}
@@ -219,19 +221,19 @@ OV.ImporterObj = class extends OV.ImporterBase
 			if (this.currentMaterial === null || parameters.length === 0) {
 				return true;
 			}
-			this.currentMaterial.diffuseMap = CreateTexture (keyword, line, this.callbacks);
+			this.currentMaterial.diffuseMap = CreateTexture (this, keyword, line);
 			return true;
 		} else if (keyword === 'map_ks') {
 			if (this.currentMaterial === null || parameters.length === 0) {
 				return true;
 			}
-			this.currentMaterial.specularMap = CreateTexture (keyword, line, this.callbacks);
+			this.currentMaterial.specularMap = CreateTexture (this, keyword, line);
 			return true;
 		} else if (keyword === 'map_bump' || keyword === 'bump') {
 			if (this.currentMaterial === null || parameters.length === 0) {
 				return true;
 			}
-			this.currentMaterial.bumpMap = CreateTexture (keyword, line, this.callbacks);
+			this.currentMaterial.bumpMap = CreateTexture (this, keyword, line);
 			return true;
 		} else if (keyword === 'ka') {
 			if (this.currentMaterial === null || parameters.length < 3) {

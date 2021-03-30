@@ -37,7 +37,7 @@ def CompressFiles (inputFiles, outputFile):
 		return False
 	return True
 
-def CreateDestinationDir (config, rootDir, websiteDir, version):
+def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 	if not os.path.exists (websiteDir):
 		os.makedirs (websiteDir)
 
@@ -71,7 +71,7 @@ def CreateDestinationDir (config, rootDir, websiteDir, version):
 			metaContent = Tools.GetFileContent (metaFile)
 			replacer.ReplaceTokenContent ('<!-- meta start -->', '<!-- meta end -->', metaContent)
 		analyticsFile = os.path.join (rootDir, 'tools', 'website_analytics_data.txt')
-		if os.path.exists (analyticsFile):
+		if os.path.exists (analyticsFile) and not testBuild:
 			analyticsContent = Tools.GetFileContent (analyticsFile)
 			replacer.ReplaceTokenContent ('<!-- analytics start -->', '<!-- analytics end -->', analyticsContent)
 		scriptFile = os.path.join (rootDir, 'tools', 'website_script_data.txt')
@@ -86,8 +86,8 @@ def CreatePackage (websiteDir, packageDir, version):
 
 	zipPath = os.path.join (packageDir, 'o3dv_' + version + '.zip')
 	zip = zipfile.ZipFile (zipPath, mode = 'w', compression = zipfile.ZIP_DEFLATED)
-	zip.write (os.path.join (websiteDir, 'libs', 'three.min-126.js'), 'three.min.js')
-	zip.write (os.path.join (websiteDir, 'o3dv', 'o3dv.min.js'), 'o3dv.min.js')
+	zip.write (os.path.join (websiteDir, 'libs', 'three.min-126.js'), 'three.min-126.js')
+	zip.write (os.path.join (websiteDir, 'o3dv', 'o3dv.min.js'), 'o3dv.min-' + version + '.js')
 	zip.close ()
 	return True
 
@@ -96,12 +96,19 @@ def Main (argv):
 	os.chdir (currentDir)
 	
 	rootDir = os.path.abspath ('..')
-	buildDir = os.path.join (rootDir, 'build')
+
+	testBuild = False
+	buildDir = os.path.join (rootDir, 'build', 'final')
+	if len (argv) >= 2 and argv[1] == 'test':
+		testBuild = True
+		buildDir = os.path.join (rootDir, 'build', 'test')
+		PrintInfo ('Creating test build.')
+
 	websiteDir = os.path.join (buildDir, 'website')
 	packageDir = os.path.join (buildDir, 'package')
 	if os.path.exists (buildDir):
 		shutil.rmtree (buildDir)
-	
+
 	config = None
 	with open ('config.json') as configJson:
 		config = json.load (configJson)
@@ -120,7 +127,7 @@ def Main (argv):
 
 	version = GetVersion (rootDir)
 	PrintInfo ('Create build directory')
-	CreateDestinationDir (config, rootDir, websiteDir, version)
+	CreateDestinationDir (config, rootDir, websiteDir, version, testBuild)
 
 	PrintInfo ('Compress importer sources.')
 	compressResult = CompressFiles (config['importer_files'], os.path.join (websiteDir, 'o3dv', 'o3dv.min.js'))

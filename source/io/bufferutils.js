@@ -24,6 +24,12 @@ OV.AsciiStringToArrayBuffer = function (str)
 	return buffer;
 };
 
+OV.Utf8StringToArrayBuffer = function (str)
+{
+	let encoder = new TextEncoder ();
+	return encoder.encode (str);
+};
+
 OV.Base64DataURIToArrayBuffer = function (uri)
 {
 	let dataPrefix = 'data:';
@@ -53,4 +59,23 @@ OV.Base64DataURIToArrayBuffer = function (uri)
 		mimeType : mimeType,
 		buffer : buffer
 	};
+};
+
+OV.CreateObjectUrl = function (content)
+{
+	let blob = new Blob ([content]);
+	let url = URL.createObjectURL (blob);
+	return url;
+};
+
+OV.CreateObjectUrlWithMimeType = function (content, mimeType)
+{
+	let blob = new Blob ([content], { type : mimeType });
+	let url = URL.createObjectURL (blob);
+	return url;
+};
+
+OV.RevokeObjectUrl = function (url)
+{
+	URL.revokeObjectURL (url);
 };

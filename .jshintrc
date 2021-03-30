@@ -21,6 +21,7 @@
 	"globals" : {
 		"OV" : true,
 		"THREE" : false,
+		"TextEncoder" : false,
 		"TextDecoder" : false,
 		"XMLHttpRequest" : false,
 		"FileReader"  : false,

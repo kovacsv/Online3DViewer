@@ -177,9 +177,12 @@ OV.Importer3ds = class extends OV.ImporterBase
 		this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 			if (chunkId === OV.CHUNK3DS.MAT_TEXMAP_NAME) {
 				let textureName = obj.ReadName (reader);
-				let textureObjectUrl = obj.callbacks.getTextureObjectUrl (textureName);
+				let textureBuffer = obj.GetTextureBuffer (textureName);
 				texture.name = textureName;
-				texture.url = textureObjectUrl;
+				if (textureBuffer !== null) {
+					texture.url = textureBuffer.url;
+					texture.buffer = textureBuffer.buffer;
+				}
 			} else if (chunkId === OV.CHUNK3DS.MAT_TEXMAP_UOFFSET) {
 				texture.offset.x = reader.ReadFloat32 ();
 			} else if (chunkId === OV.CHUNK3DS.MAT_TEXMAP_VOFFSET) {
@@ -336,7 +339,7 @@ OV.Importer3ds = class extends OV.ImporterBase
 			let v0 = reader.ReadUnsignedInteger16 ();
 			let v1 = reader.ReadUnsignedInteger16 ();
 			let v2 = reader.ReadUnsignedInteger16 ();
-			let flags = reader.ReadUnsignedInteger16 ();
+			reader.ReadUnsignedInteger16 (); // flags
 			mesh.AddTriangle (new OV.Triangle (v0, v1, v2));
 		}
 

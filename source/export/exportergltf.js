@@ -72,18 +72,31 @@ OV.ExporterGltf = class extends OV.ExporterBase
 
     ExportBinaryContent (model, files)
     {
+        function AlignToBoundary (size)
+        {
+            let remainder = size % 4;
+            if (remainder === 0) {
+                return size;
+            }
+            return size + (4 - remainder);
+        }
+
+        function WriteCharacters (writer, char, count)
+        {
+            for (let i = 0; i < count; i++) {
+                writer.WriteUnsignedCharacter8 (char);
+            }
+        }
+        
         let glbFile = new OV.ExportedFile ('model.glb');
         files.push (glbFile);
 
         let meshDataArr = this.GetMeshData (model);
         let mainBuffer = this.GetMainBuffer (meshDataArr);
         let mainJson = this.GetMainJson (meshDataArr);
-        mainJson.buffers.push ({
-            byteLength : mainBuffer.byteLength
-        });
 
         let textureBuffers = [];
-        let obj = this;
+        let textureOffset = mainBuffer.byteLength;
 
         let fileNameToIndex = [];
         this.ExportMaterials (model, mainJson, function (texture) {
@@ -91,20 +104,17 @@ OV.ExporterGltf = class extends OV.ExporterBase
             let extension = OV.GetFileExtension (texture.name);
             let textureIndex = fileNameToIndex[fileName];
             if (textureIndex === undefined) {
-                let bufferIndex = mainJson.buffers.length;
                 let bufferViewIndex = mainJson.bufferViews.length;
                 textureIndex = mainJson.textures.length;
                 fileNameToIndex[fileName] = textureIndex;
-                let textureBuffer = obj.callbacks.getTextureBuffer (texture.name);
+                let textureBuffer = texture.buffer;
                 textureBuffers.push (textureBuffer);
-                mainJson.buffers.push ({
-                    byteLength : textureBuffer.byteLength
-                });
                 mainJson.bufferViews.push ({
-                    buffer : bufferIndex,
-                    byteOffset : 0,
+                    buffer : 0,
+                    byteOffset : textureOffset,
                     byteLength : textureBuffer.byteLength
                 });
+                textureOffset += textureBuffer.byteLength;
                 mainJson.images.push ({
                     bufferView : bufferViewIndex,
                     mimeType : 'image/' + extension
@@ -116,34 +126,42 @@ OV.ExporterGltf = class extends OV.ExporterBase
             return textureIndex;
         });
 
-        let mainJsonString = JSON.stringify (mainJson, null, 4);
-        let glbSize = 12 + 8 + mainJsonString.length;
-        for (let i = 0; i < mainJson.buffers.length; i++) {
-            glbSize += 8 + mainJson.buffers[i].byteLength;
+        let mainBinaryBufferLength = mainBuffer.byteLength;
+        for (let i = 0; i < textureBuffers.length; i++) {
+            let textureBuffer = textureBuffers[i];
+            mainBinaryBufferLength += textureBuffer.byteLength;
         }
+        let mainBinaryBufferAlignedLength = AlignToBoundary (mainBinaryBufferLength);
+        mainJson.buffers.push ({
+            byteLength : mainBinaryBufferAlignedLength
+        });
 
+        let mainJsonString = JSON.stringify (mainJson);
+        let mainJsonBuffer = OV.Utf8StringToArrayBuffer (mainJsonString);
+        let mainJsonBufferLength = mainJsonBuffer.byteLength;
+        let mainJsonBufferAlignedLength = AlignToBoundary (mainJsonBufferLength);
+
+        let glbSize = 12 + 8 + mainJsonBufferAlignedLength + 8 + mainBinaryBufferAlignedLength;
         let glbWriter = new OV.BinaryWriter (glbSize, true);
         
         glbWriter.WriteUnsignedInteger32 (0x46546C67);
         glbWriter.WriteUnsignedInteger32 (2);
         glbWriter.WriteUnsignedInteger32 (glbSize);
 
-        glbWriter.WriteUnsignedInteger32 (mainJsonString.length);
+        glbWriter.WriteUnsignedInteger32 (mainJsonBufferAlignedLength);
         glbWriter.WriteUnsignedInteger32 (0x4E4F534A);
-		for (let i = 0; i < mainJsonString.length; i++) {
-			glbWriter.WriteUnsignedCharacter8 (mainJsonString.charCodeAt (i));
-		}
+        glbWriter.WriteArrayBuffer (mainJsonBuffer);
+        WriteCharacters (glbWriter, 32, mainJsonBufferAlignedLength - mainJsonBufferLength);
 
-        glbWriter.WriteUnsignedInteger32 (mainBuffer.byteLength);
+        glbWriter.WriteUnsignedInteger32 (mainBinaryBufferAlignedLength);
         glbWriter.WriteUnsignedInteger32 (0x004E4942);
         glbWriter.WriteArrayBuffer (mainBuffer);
 
         for (let i = 0; i < textureBuffers.length; i++) {
             let textureBuffer = textureBuffers[i];
-            glbWriter.WriteUnsignedInteger32 (textureBuffer.byteLength);
-            glbWriter.WriteUnsignedInteger32 (0x004E4942);
             glbWriter.WriteArrayBuffer (textureBuffer);
         }
+        WriteCharacters (glbWriter, 0, mainBinaryBufferAlignedLength - mainBinaryBufferLength);
 
         glbFile.SetContent (glbWriter.GetBuffer ());
     }
@@ -207,6 +225,16 @@ OV.ExporterGltf = class extends OV.ExporterBase
 
     GetMainJson (meshDataArr)
     {
+        function AddBufferView (mainJson, offset, length)
+        {
+            mainJson.bufferViews.push ({
+                buffer : 0,
+                byteOffset : offset,
+                byteLength : length,
+            });
+            return offset + length;
+        }
+
         let mainJson = {
             asset : {
                 version : '2.0'
@@ -239,10 +267,14 @@ OV.ExporterGltf = class extends OV.ExporterBase
             let primitives = meshData.buffer.primitives;
             for (let primitiveIndex = 0; primitiveIndex < primitives.length; primitiveIndex++) {
                 let primitive = primitives[primitiveIndex];
-                let bufferViewIndex = mainJson.bufferViews.length;
-                let accessorIndex = mainJson.accessors.length;
-                let accessorOffset = 0;
 
+                let bufferViewIndex = mainJson.bufferViews.length;
+                let bufferViewOffset = meshData.offsets[primitiveIndex];
+                bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.indices.length * this.components.index.size);
+                bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.vertices.length * this.components.number.size);
+                bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.normals.length * this.components.number.size);
+
+                let accessorIndex = mainJson.accessors.length;
                 let jsonPrimitive = {
                     attributes : {
                         POSITION : accessorIndex + 1,
@@ -253,48 +285,39 @@ OV.ExporterGltf = class extends OV.ExporterBase
                     material : primitive.material
                 };
                 
-                mainJson.bufferViews.push ({
-                    buffer : 0,
-                    byteOffset : meshData.offsets[primitiveIndex],
-                    byteLength : meshData.sizes[primitiveIndex]
-                });
-
+                let bounds = primitive.GetBounds ();
                 mainJson.accessors.push ({
                     bufferView : bufferViewIndex,
-                    byteOffset : accessorOffset,
+                    byteOffset : 0,
                     componentType : this.components.index.type,
                     count : primitive.indices.length,
                     type : 'SCALAR'
                 });
-                accessorOffset += primitive.indices.length * this.components.index.size;
-
                 mainJson.accessors.push ({
-                    bufferView : bufferViewIndex,
-                    byteOffset : accessorOffset,
+                    bufferView : bufferViewIndex + 1,
+                    byteOffset : 0,
                     componentType : this.components.number.type,
                     count : primitive.vertices.length / 3,
+                    min : bounds.min,
+                    max : bounds.max,
                     type : 'VEC3'
                 });
-                accessorOffset += primitive.vertices.length * this.components.number.size;
-
                 mainJson.accessors.push ({
-                    bufferView : bufferViewIndex,
-                    byteOffset : accessorOffset,
+                    bufferView : bufferViewIndex + 2,
+                    byteOffset : 0,
                     componentType : this.components.number.type,
                     count : primitive.normals.length / 3,
                     type : 'VEC3'
                 });
-                accessorOffset += primitive.normals.length * this.components.number.size;
-
                 if (primitive.uvs.length > 0) {
+                    bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.uvs.length * this.components.number.size);
                     mainJson.accessors.push ({
-                        bufferView : bufferViewIndex,
-                        byteOffset : accessorOffset,
+                        bufferView : bufferViewIndex + 3,
+                        byteOffset : 0,
                         componentType : this.components.number.type,
                         count : primitive.uvs.length / 2,
                         type : 'VEC2'
                     });
-                    accessorOffset += primitive.uvs.length * this.components.number.size;
                     jsonPrimitive.attributes.TEXCOORD_0 = accessorIndex + 3;
                 }
 
@@ -331,7 +354,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
 
             function GetTextureParams (mainJson, texture, addTexture)
             {
-                if (texture === null || texture.name === null || texture.url === null) {
+                if (texture === null || !texture.IsValid ()) {
                     return null;
                 }
 
@@ -343,11 +366,18 @@ OV.ExporterGltf = class extends OV.ExporterBase
                 }
 
                 let textureIndex = addTexture (texture);
-                let textureParams = {
+                   let textureParams = {
                     index : textureIndex
                 };
 
                 if (texture.HasTransformation ()) {
+                    let extensionName = 'KHR_texture_transform';
+                    if (mainJson.extensionsUsed === undefined) {
+                        mainJson.extensionsUsed = [];
+                    }
+                    if (mainJson.extensionsUsed.indexOf (extensionName) === -1) {
+                        mainJson.extensionsUsed.push (extensionName);
+                    }
                     textureParams.extensions = {
                         KHR_texture_transform : {
                             offset : [texture.offset.x, -texture.offset.y],
@@ -368,12 +398,11 @@ OV.ExporterGltf = class extends OV.ExporterBase
                     roughnessFactor : 1.0
                 },
                 emissiveFactor : ColorToRGB (material.emissive),
-                alphaMode : 'OPAQUE',
-                alphaCutoff : material.alphaTest
+                alphaMode : 'OPAQUE'
             };
 
             if (material.transparent) {
-                // TODO: mask?
+                // TODO: mask, alphaCutoff?
                 jsonMaterial.alphaMode = 'BLEND';
             }
 

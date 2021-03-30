@@ -351,12 +351,14 @@ OV.ImporterGltf = class extends OV.ImporterBase
         
         this.bufferContents = null;
         this.gltfExtensions = null;
+        this.imageIndexToTextureParams = null;
 	}
 	
 	ResetState ()
 	{
         this.bufferContents = [];
         this.gltfExtensions = new OV.GltfExtensions ();
+        this.imageIndexToTextureParams = {};
 	}
 
 	CanImportExtension (extension)
@@ -400,10 +402,13 @@ OV.ImporterGltf = class extends OV.ImporterBase
             let buffer = null;
             let gltfBuffer = gltf.buffers[i];
             let base64Buffer = OV.Base64DataURIToArrayBuffer (gltfBuffer.uri);
-            if (base64Buffer === null) {
-                buffer = this.callbacks.getFileContent (gltfBuffer.uri);
-            } else {
+            if (base64Buffer !== null) {
                 buffer = base64Buffer.buffer;
+            } else {
+                let fileBuffer = this.GetFileBuffer (gltfBuffer.uri);
+                if (fileBuffer !== null) {
+                    buffer = fileBuffer;
+                }
             }
             if (buffer === null) {
                 this.SetError ();
@@ -613,31 +618,48 @@ OV.ImporterGltf = class extends OV.ImporterBase
 
         let texture = new OV.TextureMap ();
         let gltfTexture = gltf.textures[gltfTextureRef.index];
-        let gltfImage = gltf.images[gltfTexture.source];
+        let gltfImageIndex = gltfTexture.source;
+        let gltfImage = gltf.images[gltfImageIndex];
 
-        let textureIndexString = gltfTexture.source.toString ();
-        if (gltfImage.uri !== undefined) {
-            let base64Buffer = OV.Base64DataURIToArrayBuffer (gltfImage.uri);
-            if (base64Buffer !== null) {
-                let blob = new Blob ([base64Buffer.buffer], { type : base64Buffer.mimeType });
-                texture.name = 'Embedded_' + textureIndexString + GetTextureFileExtension (base64Buffer.mimeType);
-                texture.url = URL.createObjectURL (blob);
-            } else {
-                let textureObjectUrl = this.callbacks.getTextureObjectUrl (gltfImage.uri);
-                texture.name = gltfImage.uri;
-                texture.url = textureObjectUrl;
+        let textureParams = this.imageIndexToTextureParams[gltfImageIndex];
+        if (textureParams === undefined) {
+            textureParams = {
+                name : null,
+                url : null,
+                buffer : null
+            };
+            let textureIndexString = gltfImageIndex.toString ();
+            if (gltfImage.uri !== undefined) {
+                let base64Buffer = OV.Base64DataURIToArrayBuffer (gltfImage.uri);
+                if (base64Buffer !== null) {
+                    textureParams.name = 'Embedded_' + textureIndexString + GetTextureFileExtension (base64Buffer.mimeType);
+                    textureParams.url = OV.CreateObjectUrlWithMimeType (base64Buffer.buffer, base64Buffer.mimeType);
+                    textureParams.buffer = base64Buffer.buffer;
+                } else {
+                    let textureBuffer = this.GetTextureBuffer (gltfImage.uri);
+                    textureParams.name = gltfImage.uri;
+                    if (textureBuffer !== null) {
+                        textureParams.url = textureBuffer.url;
+                        textureParams.buffer = textureBuffer.buffer;
+                    }
+                }
+            } else if (gltfImage.bufferView !== undefined) {
+                let bufferView = gltf.bufferViews[gltfImage.bufferView];
+                let reader = this.GetReaderFromBufferView (bufferView);
+                if (reader !== null) {
+                    let buffer = reader.ReadArrayBuffer (bufferView.byteLength);
+                    textureParams.name = 'Binary_' + textureIndexString + GetTextureFileExtension (gltfImage.mimeType);
+                    textureParams.url = OV.CreateObjectUrlWithMimeType (buffer, gltfImage.mimeType);
+                    textureParams.buffer = buffer;
+                }
             }
-        } else if (gltfImage.bufferView !== undefined) {
-            let bufferView = gltf.bufferViews[gltfImage.bufferView];
-            let reader = this.GetReaderFromBufferView (bufferView);
-            if (reader !== null) {
-                let buffer = reader.ReadArrayBuffer (bufferView.byteLength);
-                let blob = new Blob ([buffer], { type: gltfImage.mimeType });
-                texture.name = 'Binary_' + textureIndexString + GetTextureFileExtension (gltfImage.mimeType);
-                texture.url = URL.createObjectURL (blob);
-            }
+            this.imageIndexToTextureParams[gltfImageIndex] = textureParams;
         }
 
+        texture.name = textureParams.name;
+        texture.url = textureParams.url;
+        texture.buffer = textureParams.buffer;
+    
         this.gltfExtensions.ProcessTexture (gltfTextureRef, texture);
         return texture;
     }
@@ -741,9 +763,6 @@ OV.ImporterGltf = class extends OV.ImporterBase
         let hasNormals = (primitive.attributes.NORMAL !== undefined);
         let hasUVs = (primitive.attributes.TEXCOORD_0 !== undefined);
         let hasIndices = (primitive.indices !== undefined);
-        if (!hasVertices) {
-            return;
-        }
 
         let mode = OV.GltfRenderMode.TRIANGLES;
         if (primitive.mode !== undefined) {
@@ -766,6 +785,8 @@ OV.ImporterGltf = class extends OV.ImporterBase
             reader.EnumerateData (function (data) {
                 mesh.AddVertex (data);
             });
+        } else {
+            return;
         }
 
         if (hasNormals) {

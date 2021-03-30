@@ -6,6 +6,7 @@ OV.Modal = class
         this.overlayDiv = null;
         this.resizeHandler = null;
         this.customResizeHandler = null;
+        this.closeHandler = null;
         this.isOpen = false;
         this.closeable = true;
     }
@@ -23,6 +24,11 @@ OV.Modal = class
     SetCustomResizeHandler (customResizeHandler)
     {
         this.customResizeHandler = customResizeHandler;
+    }
+
+    SetCloseHandler (closeHandler)
+    {
+        this.closeHandler = closeHandler;
     }
 
     Open ()
@@ -54,6 +60,9 @@ OV.Modal = class
 
         let windowObj = $(window);
         windowObj.unbind ('resize', this.resizeHandler);
+        if (this.closeHandler !== null) {
+            this.closeHandler ();
+        }
 
         this.modalDiv.remove ();
         this.overlayDiv.remove ();

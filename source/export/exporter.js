@@ -11,13 +11,13 @@ OV.Exporter = class
 		];
 	}
 
-	Export (model, format, extension, callbacks)
+	Export (model, format, extension)
 	{
 		let files = [];
 		for (let i = 0; i < this.exporters.length; i++) {
 			let exporter = this.exporters[i];
 			if (exporter.CanExport (format, extension)) {
-				exporter.Export (model, format, files, callbacks);
+				exporter.Export (model, format, files);
 				break;
 			}
 		}
