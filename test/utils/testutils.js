@@ -1,5 +1,30 @@
+var fs = require ('fs');
+var path = require ('path');
+
 module.exports =
 {
+	GetTextFileContent : function (folder, fileName)
+	{
+		var testFilePath = path.join ('testfiles', folder, fileName);
+		if (!fs.existsSync (testFilePath)) {
+			return null;
+		}
+		return fs.readFileSync (testFilePath).toString ();
+	},
+
+	GetArrayBufferFileContent : function (folder, fileName)
+	{
+		var testFilePath = path.join ('testfiles', folder, fileName);
+		var buffer = fs.readFileSync (testFilePath);
+		var arrayBuffer = new ArrayBuffer (buffer.length);
+		var uint8Array = new Uint8Array (arrayBuffer);
+		var i;
+		for (i = 0; i < buffer.length; ++i) {
+			uint8Array[i] = buffer[i];
+		}
+		return arrayBuffer		
+	},
+
 	ModelToObject : function (model)
 	{
 		var obj = {

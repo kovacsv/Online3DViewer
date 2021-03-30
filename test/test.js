@@ -1,20 +1,7 @@
 var fs = require ('fs');
 process.chdir (__dirname);
 
-global.atob = function (base64String) {
-    return Buffer.from (base64String, 'base64').toString('binary');
-};
-
-global.Blob = function () {
-
-};
-
-global.URL = {
-	createObjectURL : function () {
-		return 'ObjectUrl';
-	}
-}
-
+require ('./utils/globals.js');
 require ('./utils/importall.js');
 var testDirName = './tests/';
 var files = fs.readdirSync (testDirName, { withFileTypes: true });

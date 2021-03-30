@@ -1,28 +1,7 @@
-var path = require ('path');
-var fs = require ('fs');
-var testUtils = require ('./testutils.js')
+var testUtils = require ('./testutils.js');
 
 module.exports =
 {
-	GetTextFileContent : function (folder, fileName)
-	{
-		var testFilePath = path.join ('testfiles', folder, fileName);
-		return fs.readFileSync (testFilePath).toString ();
-	},
-
-	GetArrayBufferFileContent : function (folder, fileName)
-	{
-		var testFilePath = path.join ('testfiles', folder, fileName);
-		var buffer = fs.readFileSync (testFilePath);
-		var arrayBuffer = new ArrayBuffer (buffer.length);
-		var uint8Array = new Uint8Array (arrayBuffer);
-		var i;
-		for (i = 0; i < buffer.length; ++i) {
-			uint8Array[i] = buffer[i];
-		}
-		return arrayBuffer		
-	},
-
 	ImportObjFile : function (fileName)
 	{	
 		var importer = new OV.ImporterObj ();
@@ -66,7 +45,7 @@ module.exports =
 
 	ImportFile : function (importer, format, folder, fileName)
 	{
-		function GetFileBuffer (filePath, importer, obj)
+		function GetFileBuffer (filePath, importer)
 		{
 			let extension = OV.GetFileExtension (filePath);
 			let knownFormats = importer.GetKnownFileFormats ();
@@ -76,22 +55,19 @@ module.exports =
 			}
 			let fileContent = null;
 			if (format == OV.FileFormat.Text) {
-				fileContent = obj.GetTextFileContent (folder, filePath);
+				fileContent = testUtils.GetTextFileContent (folder, filePath);
 			} else if (format == OV.FileFormat.Binary) {
-				fileContent = obj.GetArrayBufferFileContent (folder, filePath);
+				fileContent = testUtils.GetArrayBufferFileContent (folder, filePath);
 			}
-			return {
-				url : null,
-				buffer : fileContent
-			};
+			return fileContent;
 		}
 
 		var obj = this;
 		var content = null;
 		if (format == OV.FileFormat.Text) {
-			content = this.GetTextFileContent (folder, fileName);
+			content = testUtils.GetTextFileContent (folder, fileName);
 		} else if (format == OV.FileFormat.Binary) {
-			content = this.GetArrayBufferFileContent (folder, fileName);
+			content = testUtils.GetArrayBufferFileContent (folder, fileName);
 		}
 		var extension = OV.GetFileExtension (fileName);
 		importer.Import (content, extension, {
@@ -100,10 +76,7 @@ module.exports =
 				return material;
 			},
 			getFileBuffer : function (filePath) {
-				return GetFileBuffer (filePath, importer, obj);
-			},
-			getTextureBuffer : function (filePath) {
-				return GetFileBuffer (filePath, importer, obj);
+				return GetFileBuffer (filePath, importer);
 			}
 		});
 		let model = importer.GetModel ();

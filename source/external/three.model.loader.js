@@ -53,8 +53,8 @@ OV.ThreeModelLoader = class
 						obj.OnModelImported (importResult);
 						ready ();
 					},
-					error : function (importerError) {
-						obj.callbacks.onLoadError (importerError);
+					error : function (importError) {
+						obj.callbacks.onLoadError (importError);
 						obj.inProgress = false;
 						ready ();
 					}

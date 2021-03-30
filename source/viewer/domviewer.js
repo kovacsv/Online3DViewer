@@ -42,7 +42,7 @@ OV.Init3DViewerElements = function ()
             onTextureLoaded : function () {
                 viewer.Render ();
             },
-            onLoadError : function (importerError) {
+            onLoadError : function (importError) {
                 progressDiv.innerHTML = 'Unknown error.';
             },
         });

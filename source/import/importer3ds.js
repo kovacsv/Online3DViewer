@@ -177,7 +177,7 @@ OV.Importer3ds = class extends OV.ImporterBase
 		this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
 			if (chunkId === OV.CHUNK3DS.MAT_TEXMAP_NAME) {
 				let textureName = obj.ReadName (reader);
-				let textureBuffer = obj.callbacks.getTextureBuffer (textureName);
+				let textureBuffer = obj.GetTextureBuffer (textureName);
 				texture.name = textureName;
 				if (textureBuffer !== null) {
 					texture.url = textureBuffer.url;

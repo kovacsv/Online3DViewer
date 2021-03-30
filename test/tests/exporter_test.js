@@ -315,15 +315,9 @@ describe ('Exporter', function () {
                 return new OV.Material ();
             },
             getFileBuffer (filePath) {
-              if (filePath == 'model.bin') {
-                    return {
-                        url : null,
-                        buffer : binFile.GetContent ()
-                    };
-              }
-              return null;
-            },
-            getTextureBuffer (filePath) {
+                if (filePath == 'model.bin') {
+                    return binFile.GetContent ();
+                }
                 return null;
             }
         });

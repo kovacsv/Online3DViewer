@@ -1,9 +1,9 @@
 var assert = require ('assert');
-var testFiles = require ('../utils/testfiles.js');
+var testUtils = require ('../utils/testutils.js');
 
 describe ('IO Test', function () {
 	it ('Binary Reader', function () {
-        let buffer = testFiles.GetArrayBufferFileContent ('bin', 'binary_content.bin');
+        let buffer = testUtils.GetArrayBufferFileContent ('bin', 'binary_content.bin');
         let reader = new OV.BinaryReader (buffer, true);
         
         assert.strictEqual (reader.GetByteLength (), 166);
