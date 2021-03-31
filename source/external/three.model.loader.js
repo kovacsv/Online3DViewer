@@ -44,22 +44,16 @@ OV.ThreeModelLoader = class
 	{
 		let obj = this;
 		this.callbacks.onFilesLoaded ();
-		
-		let taskRunner = new OV.TaskRunner ();
-		taskRunner.Run (1, {
-			runTask : function (index, ready) {
-				obj.importer.Import ({
-					success : function (importResult) {
-						obj.OnModelImported (importResult);
-						ready ();
-					},
-					error : function (importError) {
-						obj.callbacks.onLoadError (importError);
-						obj.inProgress = false;
-						ready ();
-					}
-				});
-			}
+		OV.RunTaskAsync (function () {
+			obj.importer.Import ({
+				success : function (importResult) {
+					obj.OnModelImported (importResult);
+				},
+				error : function (importError) {
+					obj.callbacks.onLoadError (importError);
+					obj.inProgress = false;
+				}
+			});
 		});
 	}
 
