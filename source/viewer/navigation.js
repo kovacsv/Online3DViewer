@@ -390,7 +390,7 @@ OV.Navigation = class
 		if (mouseButton === 1) {
 			let orbitRatio = 0.5;
 			this.Orbit (moveDiff.x * orbitRatio, moveDiff.y * orbitRatio);
-		} else if (mouseButton === 3) {
+		} else if (mouseButton === 2 || mouseButton === 3) {
 			let eyeCenterDistance = OV.CoordDistance3D (this.camera.eye, this.camera.center);
 			let panRatio = 0.001 * eyeCenterDistance;
 			this.Pan (moveDiff.x * panRatio, moveDiff.y * panRatio);
