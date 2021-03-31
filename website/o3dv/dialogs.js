@@ -273,7 +273,7 @@ OV.ShowExportDialog = function (model)
                 $('<img>').addClass ('ov_dialog_file_link_icon').attr ('src', 'assets/images/dialog/file_download.svg').appendTo (fileLink);
                 $('<div>').addClass ('ov_dialog_file_link_text').html (file.GetName ()).appendTo (fileLink);
             }
-		});
+        });
     });
 
     dialog.SetCloseHandler (function () {

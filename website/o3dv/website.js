@@ -1,448 +1,448 @@
 OV.Website = class
 {
-	constructor (parameters)
-	{
-		this.parameters = parameters;
-		this.viewer = new OV.Viewer ();
-		this.hashHandler = new OV.HashHandler ();
-		this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
-		this.menu = new OV.Menu (this.parameters.menuDiv);
-		this.modelLoader = new OV.ThreeModelLoader ();
-		this.highlightMaterial = new THREE.MeshPhongMaterial ({
-			color : 0x8ec9f0,
-			side : THREE.DoubleSide
-		});
-		this.model = null;
-		this.dialog = null;
-	}
+    constructor (parameters)
+    {
+        this.parameters = parameters;
+        this.viewer = new OV.Viewer ();
+        this.hashHandler = new OV.HashHandler ();
+        this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
+        this.menu = new OV.Menu (this.parameters.menuDiv);
+        this.modelLoader = new OV.ThreeModelLoader ();
+        this.highlightMaterial = new THREE.MeshPhongMaterial ({
+            color : 0x8ec9f0,
+            side : THREE.DoubleSide
+        });
+        this.model = null;
+        this.dialog = null;
+    }
 
-	Load ()
-	{
-		let canvas = $('<canvas>').appendTo (this.parameters.viewerDiv);
-		this.viewer.Init (canvas.get (0));
-		this.ShowViewer (false);
-		this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
+    Load ()
+    {
+        let canvas = $('<canvas>').appendTo (this.parameters.viewerDiv);
+        this.viewer.Init (canvas.get (0));
+        this.ShowViewer (false);
+        this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
 
-		this.InitToolbar ();
-		this.InitDragAndDrop ();
-		this.InitModelLoader ();
-		this.InitMenu ();
+        this.InitToolbar ();
+        this.InitDragAndDrop ();
+        this.InitModelLoader ();
+        this.InitMenu ();
 
-		this.viewer.SetClickHandler (this.OnModelClicked.bind (this));
-		this.Resize ();
+        this.viewer.SetClickHandler (this.OnModelClicked.bind (this));
+        this.Resize ();
 
-		this.OnHashChange ();
-	}
+        this.OnHashChange ();
+    }
 
-	Resize ()
-	{
-		let windowWidth = $(window).outerWidth ();
-		let windowHeight = $(window).outerHeight ();
-		let headerHeight = parseInt (this.parameters.headerDiv.outerHeight (true), 10);
+    Resize ()
+    {
+        let windowWidth = $(window).outerWidth ();
+        let windowHeight = $(window).outerHeight ();
+        let headerHeight = parseInt (this.parameters.headerDiv.outerHeight (true), 10);
 
-		let menuWidth = 0;
-		let safetyMargin = 0;
-		if (!OV.IsSmallWidth ()) {
-			menuWidth = parseInt (this.parameters.menuDiv.outerWidth (true), 10);
-			safetyMargin = 1;
-		}
-		
-		let contentWidth = windowWidth - menuWidth - safetyMargin;
-		let contentHeight = windowHeight - headerHeight - safetyMargin;
-		this.parameters.menuDiv.outerHeight (contentHeight, true);
-		this.parameters.introDiv.outerHeight (contentHeight, true);
+        let menuWidth = 0;
+        let safetyMargin = 0;
+        if (!OV.IsSmallWidth ()) {
+            menuWidth = parseInt (this.parameters.menuDiv.outerWidth (true), 10);
+            safetyMargin = 1;
+        }
+        
+        let contentWidth = windowWidth - menuWidth - safetyMargin;
+        let contentHeight = windowHeight - headerHeight - safetyMargin;
+        this.parameters.menuDiv.outerHeight (contentHeight, true);
+        this.parameters.introDiv.outerHeight (contentHeight, true);
 
-		this.menu.Resize ();
-		this.viewer.Resize (contentWidth, contentHeight);
-	}
+        this.menu.Resize ();
+        this.viewer.Resize (contentWidth, contentHeight);
+    }
 
-	ShowViewer (show)
-	{
-		if (show) {
-			this.parameters.mainDiv.show ();
-		} else {
-			this.parameters.mainDiv.hide ();
-		}
-	}
+    ShowViewer (show)
+    {
+        if (show) {
+            this.parameters.mainDiv.show ();
+        } else {
+            this.parameters.mainDiv.hide ();
+        }
+    }
 
-	ClearModel ()
-	{
-		if (this.dialog !== null) {
+    ClearModel ()
+    {
+        if (this.dialog !== null) {
             this.dialog.Hide ();
             this.dialog = null;
-		}
-		this.model = null;
-		this.parameters.introDiv.hide ();
-		this.ShowViewer (false);
-		this.viewer.Clear ();
-		this.menu.Clear ();
-	}
-	
-	OnModelFinished (importResult, threeMeshes)
-	{
-		this.model = importResult.model;
-		this.ShowViewer (true);
-		this.viewer.AddMeshes (threeMeshes);
-		this.viewer.SetUpVector (importResult.upVector, false);
-		this.menu.FillTree (importResult);
-		this.FitModelToWindow (true);
-	}
+        }
+        this.model = null;
+        this.parameters.introDiv.hide ();
+        this.ShowViewer (false);
+        this.viewer.Clear ();
+        this.menu.Clear ();
+    }
+    
+    OnModelFinished (importResult, threeMeshes)
+    {
+        this.model = importResult.model;
+        this.ShowViewer (true);
+        this.viewer.AddMeshes (threeMeshes);
+        this.viewer.SetUpVector (importResult.upVector, false);
+        this.menu.FillTree (importResult);
+        this.FitModelToWindow (true);
+    }
 
-	OnModelClicked (button, isCtrlPressed, mouseCoordinates)
-	{
-		if (button === 1) {
-			let meshUserData = this.viewer.GetMeshUnderMouse (mouseCoordinates);
-			if (meshUserData === null) {
-				this.menu.SetSelection (null);
-			} else {
-				if (isCtrlPressed) {
-					this.menu.IsolateMesh (meshUserData.originalMeshIndex);
-				} else {
-					this.menu.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshUserData.originalMeshIndex));
-				}
-			}
-		}
-	}
+    OnModelClicked (button, isCtrlPressed, mouseCoordinates)
+    {
+        if (button === 1) {
+            let meshUserData = this.viewer.GetMeshUnderMouse (mouseCoordinates);
+            if (meshUserData === null) {
+                this.menu.SetSelection (null);
+            } else {
+                if (isCtrlPressed) {
+                    this.menu.IsolateMesh (meshUserData.originalMeshIndex);
+                } else {
+                    this.menu.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshUserData.originalMeshIndex));
+                }
+            }
+        }
+    }
 
-	OpenFileBrowserDialog ()
-	{
-		this.parameters.fileInput.trigger ('click');
-	}
+    OpenFileBrowserDialog ()
+    {
+        this.parameters.fileInput.trigger ('click');
+    }
 
-	FitModelToWindow (onLoad)
-	{
-		let obj = this;
-		let animation = !onLoad;
-		let boundingSphere = this.viewer.GetBoundingSphere (function (meshUserData) {
-			return obj.menu.IsMeshVisible (meshUserData.originalMeshIndex);
-		});
-		if (onLoad) {
-			this.viewer.AdjustClippingPlanes (boundingSphere);
-		}
-		this.viewer.FitToWindow (boundingSphere, animation);
-	}
+    FitModelToWindow (onLoad)
+    {
+        let obj = this;
+        let animation = !onLoad;
+        let boundingSphere = this.viewer.GetBoundingSphere (function (meshUserData) {
+            return obj.menu.IsMeshVisible (meshUserData.originalMeshIndex);
+        });
+        if (onLoad) {
+            this.viewer.AdjustClippingPlanes (boundingSphere);
+        }
+        this.viewer.FitToWindow (boundingSphere, animation);
+    }
 
-	FitMeshToWindow (meshIndex)
-	{
-		let boundingSphere = this.viewer.GetBoundingSphere (function (meshUserData) {
-			return meshUserData.originalMeshIndex === meshIndex;
-		});		
-		this.viewer.FitToWindow (boundingSphere, true);
-	}
+    FitMeshToWindow (meshIndex)
+    {
+        let boundingSphere = this.viewer.GetBoundingSphere (function (meshUserData) {
+            return meshUserData.originalMeshIndex === meshIndex;
+        });        
+        this.viewer.FitToWindow (boundingSphere, true);
+    }
 
-	UpdateMeshesVisibility ()
-	{
-		let obj = this;
-		this.viewer.SetMeshesVisibility (function (meshUserData) {
-			return obj.menu.IsMeshVisible (meshUserData.originalMeshIndex);
-		});
-	}
+    UpdateMeshesVisibility ()
+    {
+        let obj = this;
+        this.viewer.SetMeshesVisibility (function (meshUserData) {
+            return obj.menu.IsMeshVisible (meshUserData.originalMeshIndex);
+        });
+    }
 
-	UpdateMeshesSelection ()
-	{
-		let selectedMeshIndex = this.menu.GetSelectedMeshIndex ();
-		this.viewer.SetMeshesHighlight (this.highlightMaterial, function (meshUserData) {
-			if (meshUserData.originalMeshIndex === selectedMeshIndex) {
-				return true;
-			}
-			return false;
-		});
-	}	
+    UpdateMeshesSelection ()
+    {
+        let selectedMeshIndex = this.menu.GetSelectedMeshIndex ();
+        this.viewer.SetMeshesHighlight (this.highlightMaterial, function (meshUserData) {
+            if (meshUserData.originalMeshIndex === selectedMeshIndex) {
+                return true;
+            }
+            return false;
+        });
+    }    
 
-	LoadModelFromUrlList (urls)
-	{
-		this.modelLoader.LoadFromUrlList (urls);
-		this.ClearHashIfNotOnlyUrlList ();
-	}
+    LoadModelFromUrlList (urls)
+    {
+        this.modelLoader.LoadFromUrlList (urls);
+        this.ClearHashIfNotOnlyUrlList ();
+    }
 
-	LoadModelFromFileList (files)
-	{
-		if (files.length === 0) {
-			return;
-		}
-		this.modelLoader.LoadFromFileList (files);
-		this.ClearHashIfNotOnlyUrlList ();
-	}
+    LoadModelFromFileList (files)
+    {
+        if (files.length === 0) {
+            return;
+        }
+        this.modelLoader.LoadFromFileList (files);
+        this.ClearHashIfNotOnlyUrlList ();
+    }
 
-	ClearHashIfNotOnlyUrlList ()
-	{
-		let importer = this.modelLoader.GetImporter ();
-		let isOnlyUrl = importer.IsOnlyFileSource (OV.FileSource.Url);
-		if (!isOnlyUrl && this.hashHandler.HasHash ()) {
-			this.hashHandler.SkipNextEventHandler ();
-			this.hashHandler.ClearHash ();
-		}
-	}
+    ClearHashIfNotOnlyUrlList ()
+    {
+        let importer = this.modelLoader.GetImporter ();
+        let isOnlyUrl = importer.IsOnlyFileSource (OV.FileSource.Url);
+        if (!isOnlyUrl && this.hashHandler.HasHash ()) {
+            this.hashHandler.SkipNextEventHandler ();
+            this.hashHandler.ClearHash ();
+        }
+    }
 
-	OnHashChange ()
-	{
-		if (this.hashHandler.HasHash ()) {
-			let urls = this.hashHandler.GetModelFilesFromHash ();
-			if (urls === null) {
-				return;
-			}
-			let camera = this.hashHandler.GetCameraFromHash ();
-			if (camera !== null) {
-				this.viewer.SetCamera (camera);
-			}
-			this.LoadModelFromUrlList (urls);
-		} else {
-			this.ClearModel ();
-			this.parameters.introDiv.show ();
-		}
-	}
+    OnHashChange ()
+    {
+        if (this.hashHandler.HasHash ()) {
+            let urls = this.hashHandler.GetModelFilesFromHash ();
+            if (urls === null) {
+                return;
+            }
+            let camera = this.hashHandler.GetCameraFromHash ();
+            if (camera !== null) {
+                this.viewer.SetCamera (camera);
+            }
+            this.LoadModelFromUrlList (urls);
+        } else {
+            this.ClearModel ();
+            this.parameters.introDiv.show ();
+        }
+    }
 
-	InitToolbar ()
-	{
-		function AddButton (toolbar, imageName, imageTitle, onlyFullWidth, onClick)
-		{
-			let image = 'assets/images/toolbar/' + imageName + '.svg';
-			let button = toolbar.AddImageButton (image, imageTitle, onClick);
-			if (onlyFullWidth) {
-				button.AddClass ('only_full_width');
-			}
-		}
+    InitToolbar ()
+    {
+        function AddButton (toolbar, imageName, imageTitle, onlyFullWidth, onClick)
+        {
+            let image = 'assets/images/toolbar/' + imageName + '.svg';
+            let button = toolbar.AddImageButton (image, imageTitle, onClick);
+            if (onlyFullWidth) {
+                button.AddClass ('only_full_width');
+            }
+        }
 
-		function AddRadioButton (toolbar, imageNames, imageTitles, selectedIndex, onlyFullWidth, onClick)
-		{
-			let imageData = [];
-			for (let i = 0; i < imageNames.length; i++) {
-				let imageName = imageNames[i];
-				let imageTitle = imageTitles[i];
-				imageData.push ({
-					image : 'assets/images/toolbar/' + imageName + '.svg',
-					title : imageTitle
-				});
-			}
-			let buttons = toolbar.AddImageRadioButton (imageData, selectedIndex, onClick);
-			if (onlyFullWidth) {
-				for (let i = 0; i < buttons.length; i++) {
-					let button = buttons[i];
-					button.AddClass ('only_full_width');
-				}
-			}
-		}
+        function AddRadioButton (toolbar, imageNames, imageTitles, selectedIndex, onlyFullWidth, onClick)
+        {
+            let imageData = [];
+            for (let i = 0; i < imageNames.length; i++) {
+                let imageName = imageNames[i];
+                let imageTitle = imageTitles[i];
+                imageData.push ({
+                    image : 'assets/images/toolbar/' + imageName + '.svg',
+                    title : imageTitle
+                });
+            }
+            let buttons = toolbar.AddImageRadioButton (imageData, selectedIndex, onClick);
+            if (onlyFullWidth) {
+                for (let i = 0; i < buttons.length; i++) {
+                    let button = buttons[i];
+                    button.AddClass ('only_full_width');
+                }
+            }
+        }
 
-		function AddSeparator (toolbar, onlyFullWidth)
-		{
-			let separator = toolbar.AddSeparator ();
-			if (onlyFullWidth) {
-				separator.addClass ('only_full_width');
-			}
-		}
+        function AddSeparator (toolbar, onlyFullWidth)
+        {
+            let separator = toolbar.AddSeparator ();
+            if (onlyFullWidth) {
+                separator.addClass ('only_full_width');
+            }
+        }
 
-		let obj = this;
-		AddButton (this.toolbar, 'open', 'Open model from your device', false, function () {
-			obj.OpenFileBrowserDialog ();
-		});
-		AddButton (this.toolbar, 'open_url', 'Open model from a url', false, function () {
-			obj.dialog = OV.ShowOpenUrlDialog (function (urls) {
-				if (urls.length > 0) {
-					obj.hashHandler.SetModelFilesToHash (urls);
-				}
-			});
-		});
-		AddSeparator (this.toolbar);
-		AddButton (this.toolbar, 'fit', 'Fit model to Window', false, function () {
-			obj.FitModelToWindow (false);
-		});
-		AddButton (this.toolbar, 'up_y', 'Set Y axis as up vector', false, function () {
-			obj.viewer.SetUpVector (OV.Direction.Y, true);
-		});
-		AddButton (this.toolbar, 'up_z', 'Set Z axis as up vector', false, function () {
-			obj.viewer.SetUpVector (OV.Direction.Z, true);
-		});
-		AddButton (this.toolbar, 'flip', 'Flip up vector', false, function () {
-			obj.viewer.FlipUpVector ();
-		});
-		AddSeparator (this.toolbar);
-		AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, false, function (buttonIndex) {
-			if (buttonIndex === 0) {
-				obj.viewer.SetFixUpVector (true);
-			} else if (buttonIndex === 1) {
-				obj.viewer.SetFixUpVector (false);
-			}
-		});
-		AddSeparator (this.toolbar, true);
-		AddButton (this.toolbar, 'export', 'Export model', true, function () {
-			obj.dialog = OV.ShowExportDialog (obj.model);
-		});		
-		AddButton (this.toolbar, 'embed', 'Get embedding code', true, function () {
-			obj.dialog = OV.ShowEmbeddingDialog (obj.modelLoader.GetImporter (), obj.viewer.GetCamera ());
-		});
+        let obj = this;
+        AddButton (this.toolbar, 'open', 'Open model from your device', false, function () {
+            obj.OpenFileBrowserDialog ();
+        });
+        AddButton (this.toolbar, 'open_url', 'Open model from a url', false, function () {
+            obj.dialog = OV.ShowOpenUrlDialog (function (urls) {
+                if (urls.length > 0) {
+                    obj.hashHandler.SetModelFilesToHash (urls);
+                }
+            });
+        });
+        AddSeparator (this.toolbar);
+        AddButton (this.toolbar, 'fit', 'Fit model to Window', false, function () {
+            obj.FitModelToWindow (false);
+        });
+        AddButton (this.toolbar, 'up_y', 'Set Y axis as up vector', false, function () {
+            obj.viewer.SetUpVector (OV.Direction.Y, true);
+        });
+        AddButton (this.toolbar, 'up_z', 'Set Z axis as up vector', false, function () {
+            obj.viewer.SetUpVector (OV.Direction.Z, true);
+        });
+        AddButton (this.toolbar, 'flip', 'Flip up vector', false, function () {
+            obj.viewer.FlipUpVector ();
+        });
+        AddSeparator (this.toolbar);
+        AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, false, function (buttonIndex) {
+            if (buttonIndex === 0) {
+                obj.viewer.SetFixUpVector (true);
+            } else if (buttonIndex === 1) {
+                obj.viewer.SetFixUpVector (false);
+            }
+        });
+        AddSeparator (this.toolbar, true);
+        AddButton (this.toolbar, 'export', 'Export model', true, function () {
+            obj.dialog = OV.ShowExportDialog (obj.model);
+        });        
+        AddButton (this.toolbar, 'embed', 'Get embedding code', true, function () {
+            obj.dialog = OV.ShowEmbeddingDialog (obj.modelLoader.GetImporter (), obj.viewer.GetCamera ());
+        });
 
-		this.parameters.fileInput.on ('change', function (ev) {
-			obj.LoadModelFromFileList (ev.target.files);
-		});
-	}
+        this.parameters.fileInput.on ('change', function (ev) {
+            obj.LoadModelFromFileList (ev.target.files);
+        });
+    }
 
-	InitDragAndDrop ()
-	{
-		window.addEventListener ('dragstart', function (ev) {
-			ev.preventDefault ();
-		}, false);
+    InitDragAndDrop ()
+    {
+        window.addEventListener ('dragstart', function (ev) {
+            ev.preventDefault ();
+        }, false);
 
-		window.addEventListener ('dragover', function (ev) {
-			ev.stopPropagation ();
-			ev.preventDefault ();
-			ev.dataTransfer.dropEffect = 'copy';
-		}, false);
+        window.addEventListener ('dragover', function (ev) {
+            ev.stopPropagation ();
+            ev.preventDefault ();
+            ev.dataTransfer.dropEffect = 'copy';
+        }, false);
 
-		let obj = this;
-		window.addEventListener ('drop', function (ev) {
-			ev.stopPropagation ();
-			ev.preventDefault ();
-			obj.LoadModelFromFileList (ev.dataTransfer.files);
-		}, false);
-	}
+        let obj = this;
+        window.addEventListener ('drop', function (ev) {
+            ev.stopPropagation ();
+            ev.preventDefault ();
+            obj.LoadModelFromFileList (ev.dataTransfer.files);
+        }, false);
+    }
 
-	InitModelLoader ()
-	{
-		let obj = this;
-		OV.InitModelLoader (this.modelLoader, {
-			onStart : function ()
-			{
-				obj.ClearModel ();
-			},
-			onFinish : function (importResult, threeMeshes)
-			{
-				obj.OnModelFinished (importResult, threeMeshes);
-			},
-			onRender : function ()
-			{
-				obj.viewer.Render ();
-			}
-		});
-	}
+    InitModelLoader ()
+    {
+        let obj = this;
+        OV.InitModelLoader (this.modelLoader, {
+            onStart : function ()
+            {
+                obj.ClearModel ();
+            },
+            onFinish : function (importResult, threeMeshes)
+            {
+                obj.OnModelFinished (importResult, threeMeshes);
+            },
+            onRender : function ()
+            {
+                obj.viewer.Render ();
+            }
+        });
+    }
 
-	InitMenu ()
-	{
-		function GetMeshUserData (viewer, meshIndex)
-		{
-			let userData = null;
-			viewer.EnumerateMeshesUserData (function (meshUserData) {
-				if (meshUserData.originalMeshIndex === meshIndex) {
-					userData = meshUserData;
-				}
-			});
-			return userData;
-		}
+    InitMenu ()
+    {
+        function GetMeshUserData (viewer, meshIndex)
+        {
+            let userData = null;
+            viewer.EnumerateMeshesUserData (function (meshUserData) {
+                if (meshUserData.originalMeshIndex === meshIndex) {
+                    userData = meshUserData;
+                }
+            });
+            return userData;
+        }
 
-		function GetBoundingBoxInfo (boundingBox)
-		{
-			if (boundingBox === null) {
-				return null;
-			}
-			return {
-				min : new OV.Coord3D (boundingBox.min.x, boundingBox.min.y, boundingBox.min.z),
-				max : new OV.Coord3D (boundingBox.max.x, boundingBox.max.y, boundingBox.max.z)
-			};
-		}
+        function GetBoundingBoxInfo (boundingBox)
+        {
+            if (boundingBox === null) {
+                return null;
+            }
+            return {
+                min : new OV.Coord3D (boundingBox.min.x, boundingBox.min.y, boundingBox.min.z),
+                max : new OV.Coord3D (boundingBox.max.x, boundingBox.max.y, boundingBox.max.z)
+            };
+        }
 
-		function GetMaterialInfo (viewer, model, materialIndex)
-		{
-			function AddTexture (textureNames, type, texture)
-			{
-				if (texture === null) {
-					return;
-				}
-				textureNames.push ({
-					type : type,
-					name : OV.GetFileName (texture.name),
-					path : texture.name
-				});
-			}
+        function GetMaterialInfo (viewer, model, materialIndex)
+        {
+            function AddTexture (textureNames, type, texture)
+            {
+                if (texture === null) {
+                    return;
+                }
+                textureNames.push ({
+                    type : type,
+                    name : OV.GetFileName (texture.name),
+                    path : texture.name
+                });
+            }
 
-			let material = model.GetMaterial (materialIndex);
+            let material = model.GetMaterial (materialIndex);
             let materialInfo = {
                 name : material.name,
                 ambient : material.ambient.Clone (),
                 diffuse : material.diffuse.Clone (),
                 specular : material.specular.Clone (),
                 opacity : material.opacity,
-				textureNames : [],
-				usedByMeshes : []
+                textureNames : [],
+                usedByMeshes : []
             };
 
-			AddTexture (materialInfo.textureNames, 'Base', material.diffuseMap);
-			AddTexture (materialInfo.textureNames, 'Specular', material.specularMap);
-			AddTexture (materialInfo.textureNames, 'Bump', material.bumpMap);
-			AddTexture (materialInfo.textureNames, 'Normal', material.normalMap);
-			AddTexture (materialInfo.textureNames, 'Emissive', material.emissiveMap);
+            AddTexture (materialInfo.textureNames, 'Base', material.diffuseMap);
+            AddTexture (materialInfo.textureNames, 'Specular', material.specularMap);
+            AddTexture (materialInfo.textureNames, 'Bump', material.bumpMap);
+            AddTexture (materialInfo.textureNames, 'Normal', material.normalMap);
+            AddTexture (materialInfo.textureNames, 'Emissive', material.emissiveMap);
 
-			viewer.EnumerateMeshesUserData (function (meshUserData) {
-				if (meshUserData.originalMaterials.indexOf (materialIndex) !== -1) {
-					materialInfo.usedByMeshes.push (meshUserData.originalMeshIndex);
-				}
-			});
-			return materialInfo;
-		}
+            viewer.EnumerateMeshesUserData (function (meshUserData) {
+                if (meshUserData.originalMaterials.indexOf (materialIndex) !== -1) {
+                    materialInfo.usedByMeshes.push (meshUserData.originalMeshIndex);
+                }
+            });
+            return materialInfo;
+        }
 
-		function GetMeshInfo (viewer, model, meshIndex)
-		{
-			let result = {
-				name : null,
-				vertexCount : null,
-				triangleCount : null,
-				usedMaterials : null,
-				boundingBox : null
-			};
-			
-			let mesh = model.GetMesh (meshIndex);
-			result.name = mesh.GetName ();
-			result.vertexCount = mesh.VertexCount ();
-			result.triangleCount = mesh.TriangleCount ();
+        function GetMeshInfo (viewer, model, meshIndex)
+        {
+            let result = {
+                name : null,
+                vertexCount : null,
+                triangleCount : null,
+                usedMaterials : null,
+                boundingBox : null
+            };
+            
+            let mesh = model.GetMesh (meshIndex);
+            result.name = mesh.GetName ();
+            result.vertexCount = mesh.VertexCount ();
+            result.triangleCount = mesh.TriangleCount ();
 
-			let userData = GetMeshUserData (viewer, meshIndex);
-			result.usedMaterials = userData.originalMaterials;
-			result.usedMaterials.sort ();
+            let userData = GetMeshUserData (viewer, meshIndex);
+            result.usedMaterials = userData.originalMaterials;
+            result.usedMaterials.sort ();
 
-			let boundingBox = viewer.GetBoundingBox (function (meshUserData) {
-				return meshUserData.originalMeshIndex === meshIndex;
-			});
-			result.boundingBox = GetBoundingBoxInfo (boundingBox);
-			return result;
-		}
-	
-		function GetModelInfo (model, viewer)
-		{
-			let result = {
-				name : null,
-				vertexCount : model.VertexCount (),
-				triangleCount : model.TriangleCount (),
-				usedMaterials : null,
-				boundingBox : null
-			};
-			let boundingBox = viewer.GetBoundingBox (function (meshUserData) {
-				return true;
-			});
-			result.boundingBox = GetBoundingBoxInfo (boundingBox);
-			return result;
-		}
+            let boundingBox = viewer.GetBoundingBox (function (meshUserData) {
+                return meshUserData.originalMeshIndex === meshIndex;
+            });
+            result.boundingBox = GetBoundingBoxInfo (boundingBox);
+            return result;
+        }
+    
+        function GetModelInfo (model, viewer)
+        {
+            let result = {
+                name : null,
+                vertexCount : model.VertexCount (),
+                triangleCount : model.TriangleCount (),
+                usedMaterials : null,
+                boundingBox : null
+            };
+            let boundingBox = viewer.GetBoundingBox (function (meshUserData) {
+                return true;
+            });
+            result.boundingBox = GetBoundingBoxInfo (boundingBox);
+            return result;
+        }
 
-		let obj = this;
-		this.menu.Init ({
-			openFileBrowserDialog : function () {
-				obj.OpenFileBrowserDialog ();
-			},
-			updateMeshesVisibility : function () {
-				obj.UpdateMeshesVisibility ();
-			},
-			updateMeshesSelection : function () {
-				obj.UpdateMeshesSelection ();
-			},
-			fitMeshToWindow : function (meshIndex) {
-				obj.FitMeshToWindow (meshIndex);
-			},
-			getMaterialInformation : function (materialIndex) {
-				return GetMaterialInfo (obj.viewer, obj.model, materialIndex);
-			},
-			getMeshInformation : function (meshIndex) {
-				return GetMeshInfo (obj.viewer, obj.model, meshIndex);
-			},
-			getModelInformation : function () {
-				return GetModelInfo (obj.model, obj.viewer);
-			}
-		});
-	}	
+        let obj = this;
+        this.menu.Init ({
+            openFileBrowserDialog : function () {
+                obj.OpenFileBrowserDialog ();
+            },
+            updateMeshesVisibility : function () {
+                obj.UpdateMeshesVisibility ();
+            },
+            updateMeshesSelection : function () {
+                obj.UpdateMeshesSelection ();
+            },
+            fitMeshToWindow : function (meshIndex) {
+                obj.FitMeshToWindow (meshIndex);
+            },
+            getMaterialInformation : function (materialIndex) {
+                return GetMaterialInfo (obj.viewer, obj.model, materialIndex);
+            },
+            getMeshInformation : function (meshIndex) {
+                return GetMeshInfo (obj.viewer, obj.model, meshIndex);
+            },
+            getModelInformation : function () {
+                return GetModelInfo (obj.model, obj.viewer);
+            }
+        });
+    }    
 };

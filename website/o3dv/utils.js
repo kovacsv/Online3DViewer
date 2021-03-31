@@ -102,12 +102,12 @@ OV.CopyToClipboard = function (text)
 
 OV.CreateIconButton = function (iconName, hoverIconName, title, link)
 {
-	let buttonLink = $('<a>');
-	buttonLink.attr ('href', link);
-	buttonLink.attr ('target', '_blank');
+    let buttonLink = $('<a>');
+    buttonLink.attr ('href', link);
+    buttonLink.attr ('target', '_blank');
     buttonLink.attr ('rel', 'noopener noreferrer');
     OV.InstallTooltip (buttonLink, title);
-	let imgElem = $('<img>').attr ('src', iconName).appendTo (buttonLink);
+    let imgElem = $('<img>').attr ('src', iconName).appendTo (buttonLink);
     if (hoverIconName !== null && OV.IsHoverEnabled ()) {
         buttonLink.hover (
             function () {
@@ -118,7 +118,7 @@ OV.CreateIconButton = function (iconName, hoverIconName, title, link)
             }
         );
     }
-	return buttonLink;
+    return buttonLink;
 };
 
 OV.CreateHashParameters = function (urls, camera)

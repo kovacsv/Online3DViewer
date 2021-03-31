@@ -47,22 +47,22 @@ OV.Menu = class
     }
 
     FillTree (importResult)
-	{
+    {
         let obj = this;
 
         this.titleDiv.html (importResult.mainFile).attr ('title', importResult.mainFile);
 
-		let model = importResult.model;
-		let usedFiles = importResult.usedFiles;
-		let missingFiles = importResult.missingFiles;
+        let model = importResult.model;
+        let usedFiles = importResult.usedFiles;
+        let missingFiles = importResult.missingFiles;
 
-		let filesItem = new OV.TreeViewGroupItem ('Files', 'assets/images/tree/files.svg');
-		this.treeView.AddItem (filesItem);
+        let filesItem = new OV.TreeViewGroupItem ('Files', 'assets/images/tree/files.svg');
+        this.treeView.AddItem (filesItem);
         for (let i = 0; i < usedFiles.length; i++) {
-			let file = usedFiles[i];
-			let item = new OV.TreeViewSingleItem (file);
-			filesItem.AddChild (item);
-		}
+            let file = usedFiles[i];
+            let item = new OV.TreeViewSingleItem (file);
+            filesItem.AddChild (item);
+        }
 
         if (missingFiles.length > 0) {
             let missingFilesItem = new OV.TreeViewGroupItem ('Missing Files', 'assets/images/tree/missing_files.svg');
@@ -79,29 +79,29 @@ OV.Menu = class
             }
         }
 
-		let materialsItem = new OV.TreeViewGroupItem ('Materials', 'assets/images/tree/materials.svg');
-		this.treeView.AddItem (materialsItem);
+        let materialsItem = new OV.TreeViewGroupItem ('Materials', 'assets/images/tree/materials.svg');
+        this.treeView.AddItem (materialsItem);
         for (let i = 0; i < model.MaterialCount (); i++) {
-			let material = model.GetMaterial (i);
+            let material = model.GetMaterial (i);
             let materialName = OV.GetMaterialName (material.name);
             let materialData = new OV.MaterialData (i);
-			let materialItem = materialData.CreateMenuItem (materialName, {
+            let materialItem = materialData.CreateMenuItem (materialName, {
                 onSelected : function (materialIndex) {
                     obj.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                 }
             });
             this.modelData.AddMaterialData (materialData);
-			materialsItem.AddChild (materialItem);
-		}
+            materialsItem.AddChild (materialItem);
+        }
 
         let meshesItem = new OV.TreeViewGroupItem ('Meshes', 'assets/images/tree/meshes.svg');
-		this.treeView.AddItem (meshesItem);
+        this.treeView.AddItem (meshesItem);
         meshesItem.ShowChildren (true, null);
-		for (let i = 0; i < model.MeshCount (); i++) {
-			let mesh = model.GetMesh (i);
-			let meshData = new OV.MeshData (i);
+        for (let i = 0; i < model.MeshCount (); i++) {
+            let mesh = model.GetMesh (i);
+            let meshData = new OV.MeshData (i);
             let meshName = OV.GetMeshName (mesh.GetName ());
-			let meshItem = meshData.CreateMenuItem (meshName, {
+            let meshItem = meshData.CreateMenuItem (meshName, {
                 onShowHide : function (meshIndex) {
                     obj.ToggleMeshVisibility (meshIndex);
                 },
@@ -115,13 +115,13 @@ OV.Menu = class
                     obj.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshIndex));
                 }
             });
-			this.modelData.AddMeshData (meshData);
-			meshesItem.AddChild (meshItem);
-		}
+            this.modelData.AddMeshData (meshData);
+            meshesItem.AddChild (meshItem);
+        }
 
         this.UpdateInfoPanel ();
         this.Resize ();
-	}
+    }
     
     IsMeshVisible (meshIndex)
     {
@@ -129,8 +129,8 @@ OV.Menu = class
         return meshData.IsVisible ();
     }
 
-	IsolateMesh (meshIndex)
-	{
+    IsolateMesh (meshIndex)
+    {
         let isIsolated = true;
         for (let i = 0; i < this.modelData.MeshCount (); i++) {
             let meshData = this.modelData.GetMeshData (i);
@@ -147,17 +147,17 @@ OV.Menu = class
                 meshData.SetVisible (false);
             }
         }
-		this.callbacks.updateMeshesVisibility ();
-	}
+        this.callbacks.updateMeshesVisibility ();
+    }
 
-	ToggleMeshVisibility (meshIndex)
-	{
-		let meshData = this.modelData.GetMeshData (meshIndex);
-		meshData.SetVisible (!meshData.IsVisible ());
-		this.callbacks.updateMeshesVisibility ();
-	}
+    ToggleMeshVisibility (meshIndex)
+    {
+        let meshData = this.modelData.GetMeshData (meshIndex);
+        meshData.SetVisible (!meshData.IsVisible ());
+        this.callbacks.updateMeshesVisibility ();
+    }
 
-	GetSelectedMeshIndex ()
+    GetSelectedMeshIndex ()
     {
         if (this.tempSelectedMeshIndex !== null) {
             return this.tempSelectedMeshIndex;
@@ -212,9 +212,9 @@ OV.Menu = class
     }
 
     FitMeshToWindow (meshIndex)
-	{
-		this.callbacks.fitMeshToWindow (meshIndex);
-	}
+    {
+        this.callbacks.fitMeshToWindow (meshIndex);
+    }
 
     UpdateInfoPanel ()
     {

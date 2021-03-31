@@ -4,9 +4,9 @@ OV.InfoPanel = class
     {
         this.mainDiv = $('<div>').addClass ('ov_info_panel_main').appendTo (parentDiv);
         this.treeView = new OV.TreeView (this.mainDiv);
-		this.detailsItem = new OV.TreeViewGroupItem ('Details', 'assets/images/tree/details.svg');
+        this.detailsItem = new OV.TreeViewGroupItem ('Details', 'assets/images/tree/details.svg');
         this.detailsItem.ShowChildren (!OV.IsSmallHeight (), null);
-		this.treeView.AddItem (this.detailsItem);
+        this.treeView.AddItem (this.detailsItem);
         let childrenDiv = this.detailsItem.CreateChildrenDiv ();
         childrenDiv.addClass ('ov_info_panel_content');
         this.popup = null;
@@ -146,10 +146,10 @@ OV.InfoPanel = class
 
     Clear ()
     {
-		if (this.popup !== null) {
+        if (this.popup !== null) {
             this.popup.Hide ();
             this.popup = null;
-		}        
+        }        
         let contentDiv = this.detailsItem.GetChildrenDiv ();
         contentDiv.empty ();
     }

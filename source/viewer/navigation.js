@@ -1,56 +1,56 @@
 OV.GetClientCoordinates = function (canvas, clientX, clientY)
 {
-	if (canvas.getBoundingClientRect) {
-		let clientRect = canvas.getBoundingClientRect ();
-		clientX -= clientRect.left;
-		clientY -= clientRect.top;
-	}
-	if (window.pageXOffset && window.pageYOffset) {
-		clientX += window.pageXOffset;
-		clientY += window.pageYOffset;
-	}
-	return (new OV.Coord2D (clientX, clientY));
+    if (canvas.getBoundingClientRect) {
+        let clientRect = canvas.getBoundingClientRect ();
+        clientX -= clientRect.left;
+        clientY -= clientRect.top;
+    }
+    if (window.pageXOffset && window.pageYOffset) {
+        clientX += window.pageXOffset;
+        clientY += window.pageYOffset;
+    }
+    return (new OV.Coord2D (clientX, clientY));
 };
 
 OV.Camera = class
 {
-	constructor (eye, center, up)
-	{
-		this.eye = eye;
-		this.center = center;
-		this.up = up;
-	}
+    constructor (eye, center, up)
+    {
+        this.eye = eye;
+        this.center = center;
+        this.up = up;
+    }
 
-	Clone ()
-	{
-		return new OV.Camera (
-			this.eye.Clone (),
-			this.center.Clone (),
-			this.up.Clone ()
-		);
-	}
+    Clone ()
+    {
+        return new OV.Camera (
+            this.eye.Clone (),
+            this.center.Clone (),
+            this.up.Clone ()
+        );
+    }
 };
 
 OV.MouseInteraction = class
 {
-	constructor ()
-	{
-		this.prev = new OV.Coord2D (0.0, 0.0);
-		this.curr = new OV.Coord2D (0.0, 0,0);
-		this.diff = new OV.Coord2D (0.0, 0.0);
-		this.buttons = [];
-	}
+    constructor ()
+    {
+        this.prev = new OV.Coord2D (0.0, 0.0);
+        this.curr = new OV.Coord2D (0.0, 0,0);
+        this.diff = new OV.Coord2D (0.0, 0.0);
+        this.buttons = [];
+    }
 
-	Down (canvas, ev)
-	{
-		this.buttons.push (ev.which);
-		this.curr = this.GetCurrent (canvas, ev);
-		this.prev = this.curr.Clone ();
-	}
+    Down (canvas, ev)
+    {
+        this.buttons.push (ev.which);
+        this.curr = this.GetCurrent (canvas, ev);
+        this.prev = this.curr.Clone ();
+    }
 
-	Move (canvas, ev)
-	{
-		this.curr = this.GetCurrent (canvas, ev);
+    Move (canvas, ev)
+    {
+        this.curr = this.GetCurrent (canvas, ev);
 		this.diff = OV.SubCoord2D (this.curr, this.prev);
 		this.prev = this.curr.Clone ();
 	}

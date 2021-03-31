@@ -22,7 +22,7 @@ function ImportFiles (files, callbacks)
 }
 
 describe ('Importer Test', function () {
-	it ('Empty File List', function () {
+    it ('Empty File List', function () {
         let files = [];
         ImportFiles (files, {
             success : function (importer, importResult) {
@@ -32,9 +32,9 @@ describe ('Importer Test', function () {
                 assert.strictEqual (importError.code, OV.ImportErrorCode.NoImportableFile);
             }
         });
-	});
+    });
 
-	it ('Not existing file', function () {
+    it ('Not existing file', function () {
         let files = [
             new FileObject ('obj', 'missing.obj')
         ];
@@ -46,9 +46,9 @@ describe ('Importer Test', function () {
                 assert.strictEqual (importError.code, OV.ImportErrorCode.NoImportableFile);
             }
         });
-	});
+    });
 
-	it ('Not imprtable file', function () {
+    it ('Not imprtable file', function () {
         let files = [
             new FileObject ('', 'wrong.ext')
         ];
@@ -60,9 +60,9 @@ describe ('Importer Test', function () {
                 assert.strictEqual (importError.code, OV.ImportErrorCode.NoImportableFile);
             }
         });
-	});
+    });
 
-	it ('Wrong file', function () {
+    it ('Wrong file', function () {
         let files = [
             new FileObject ('3ds', 'wrong.3ds')
         ];
@@ -74,7 +74,7 @@ describe ('Importer Test', function () {
                 assert.strictEqual (importError.code, OV.ImportErrorCode.ImportFailed);
             }
         });
-	});
+    });
 
     it ('Single file', function () {
         let files = [
@@ -90,7 +90,7 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });
-	});
+    });
 
     it ('Multiple files', function () {
         let files = [
@@ -110,7 +110,7 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });
-	});    
+    });    
 
     it ('Missing files', function () {
         let files = [];
@@ -147,7 +147,7 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });
-	});
+    });
 
     it ('Missing texture multiple times', function () {
         let files = [
@@ -164,7 +164,7 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });
-	});
+    });
 
     it ('Append Missing files', function () {
         let theImporter = new OV.Importer ();
@@ -198,7 +198,7 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });
-	});
+    });
 
     it ('Reuse importer', function () {
         let files1 = [
@@ -232,5 +232,5 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });      
-	});
+    });
 });

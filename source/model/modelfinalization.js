@@ -1,7 +1,7 @@
 OV.FinalizeModel = function (model, getDefaultMaterial)
 {
-	function FinalizeMesh (mesh, getDefaultMaterialIndex)
-	{
+    function FinalizeMesh (mesh, getDefaultMaterialIndex)
+    {
         function CalculateCurveNormals (mesh)
         {
             function AddAverageNormal (mesh, triangle, vertexIndex, triangleNormals, vertexToTriangles)
@@ -54,9 +54,9 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
             }            
         }
 
-		function FinalizeTriangle (mesh, triangle, status)
-		{
-			if (!triangle.HasNormals ()) {
+        function FinalizeTriangle (mesh, triangle, status)
+        {
+            if (!triangle.HasNormals ()) {
                 if (triangle.curve === null || triangle.curve === 0) {
                     let v0 = mesh.GetVertex (triangle.v0);
                     let v1 = mesh.GetVertex (triangle.v1);
@@ -67,29 +67,29 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
                 } else {
                     status.calculateCurveNormals = true;
                 }
-			}
+            }
             if (triangle.mat === null) {
                 triangle.mat = status.getDefaultMaterialIndex ();
             }
             if (triangle.curve === null) {
                 triangle.curve = 0;
             }
-		}
-		
+        }
+        
         let status = {
             getDefaultMaterialIndex : getDefaultMaterialIndex,
             calculateCurveNormals : false
         };
 
-		for (let i = 0; i < mesh.TriangleCount (); i++) {
-			let triangle = mesh.GetTriangle (i);
-			FinalizeTriangle (mesh, triangle, status);
-		}
+        for (let i = 0; i < mesh.TriangleCount (); i++) {
+            let triangle = mesh.GetTriangle (i);
+            FinalizeTriangle (mesh, triangle, status);
+        }
 
         if (status.calculateCurveNormals) {
             CalculateCurveNormals (mesh);
         }
-	}
+    }
 
     let defaultMaterialIndex = null;
     let getDefaultMaterialIndex = function () {
@@ -143,9 +143,9 @@ OV.CheckModel = function (model)
     }    
     
     function CheckMesh (model, mesh)
-	{
+    {
         function CheckTriangle (model, mesh, triangle)
-		{
+        {
             if (!IsCorrectIndex (triangle.v0, mesh.VertexCount ())) {
                 return false;
             }
@@ -183,53 +183,53 @@ OV.CheckModel = function (model)
             }
 
             return true;
-		}
-		
-		for (let i = 0; i < mesh.VertexCount (); i++) {
-			let vertex = mesh.GetVertex (i);
-			if (!IsCorrectNumber (vertex.x)) {
+        }
+        
+        for (let i = 0; i < mesh.VertexCount (); i++) {
+            let vertex = mesh.GetVertex (i);
+            if (!IsCorrectNumber (vertex.x)) {
                 return false;
             }
-			if (!IsCorrectNumber (vertex.y)) {
+            if (!IsCorrectNumber (vertex.y)) {
                 return false;
             }
-			if (!IsCorrectNumber (vertex.z)) {
+            if (!IsCorrectNumber (vertex.z)) {
                 return false;
             }
-		}
+        }
 
-		for (let i = 0; i < mesh.NormalCount (); i++) {
-			let normal = mesh.GetNormal (i);
-			if (!IsCorrectNumber (normal.x)) {
+        for (let i = 0; i < mesh.NormalCount (); i++) {
+            let normal = mesh.GetNormal (i);
+            if (!IsCorrectNumber (normal.x)) {
                 return false;
             }
-			if (!IsCorrectNumber (normal.y)) {
+            if (!IsCorrectNumber (normal.y)) {
                 return false;
             }
-			if (!IsCorrectNumber (normal.z)) {
+            if (!IsCorrectNumber (normal.z)) {
                 return false;
             }
-		}
+        }
 
-		for (let i = 0; i < mesh.TextureUVCount (); i++) {
-			let uv = mesh.GetTextureUV (i);
-			if (!IsCorrectNumber (uv.x)) {
+        for (let i = 0; i < mesh.TextureUVCount (); i++) {
+            let uv = mesh.GetTextureUV (i);
+            if (!IsCorrectNumber (uv.x)) {
                 return false;
             }
-			if (!IsCorrectNumber (uv.y)) {
+            if (!IsCorrectNumber (uv.y)) {
                 return false;
             }
-		}        
+        }        
 
         for (let i = 0; i < mesh.TriangleCount (); i++) {
-			let triangle = mesh.GetTriangle (i);
-			if (!CheckTriangle (model, mesh, triangle)) {
+            let triangle = mesh.GetTriangle (i);
+            if (!CheckTriangle (model, mesh, triangle)) {
                 return false;
             }
-		}
+        }
 
         return true;
-	}
+    }
 
     for (let i = 0; i < model.MeshCount (); i++) {
         let mesh = model.GetMesh (i);

@@ -1,7 +1,7 @@
 var assert = require ('assert');
 
 describe ('Power of Two', function () {
-	it ('IsPowerOfTwo', function () {
+    it ('IsPowerOfTwo', function () {
         assert (OV.IsPowerOfTwo (1));
         assert (OV.IsPowerOfTwo (2));
         assert (!OV.IsPowerOfTwo (3));
@@ -13,5 +13,5 @@ describe ('Power of Two', function () {
             assert.strictEqual (OV.NextPowerOfTwo (i - 1), i);
             assert.strictEqual (OV.NextPowerOfTwo (i + 1), i * 2);
         }
-	});
+    });
 });

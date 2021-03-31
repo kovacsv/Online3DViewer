@@ -37,7 +37,7 @@ OV.Init3DViewerElements = function ()
                     return true;
                 });
                 viewer.AdjustClippingPlanes (boundingSphere);
-                viewer.FitToWindow (boundingSphere, false);        						
+                viewer.FitToWindow (boundingSphere, false);                                
             },
             onTextureLoaded : function () {
                 viewer.Render ();

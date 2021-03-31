@@ -11,10 +11,10 @@ global.Blob = function () {
 
 var objectUrlCounter = 0;
 global.URL = {
-	createObjectURL : function () {
-		objectUrlCounter += 1;
-		return 'ObjectUrl:' + objectUrlCounter.toString ();
-	},
+    createObjectURL : function () {
+        objectUrlCounter += 1;
+        return 'ObjectUrl:' + objectUrlCounter.toString ();
+    },
     revokeObjectURL : function () {
         
     }
