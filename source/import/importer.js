@@ -247,11 +247,11 @@ OV.ImporterBuffers = class
         let fileName = OV.GetFileName (filePath);
         let buffer = this.textureBuffers[fileName];
         if (buffer === undefined) {
-            let texBuffer = this.getBufferCallback (fileName);
-            if (texBuffer !== null) {
+            let textureBuffer = this.getBufferCallback (fileName);
+            if (textureBuffer !== null) {
                 buffer = {
-                    url : OV.CreateObjectUrl (texBuffer),
-                    buffer : texBuffer
+                    url : OV.CreateObjectUrl (textureBuffer),
+                    buffer : textureBuffer
                 };
             } else {
                 buffer = null;
@@ -259,7 +259,7 @@ OV.ImporterBuffers = class
             this.textureBuffers[fileName] = buffer;
         }
         return buffer;
-    }    
+    }
 };
 
 OV.Importer = class
@@ -306,12 +306,12 @@ OV.Importer = class
 			let fileBuffer = null;
 			let file = obj.fileList.FindFileByPath (fileName);
 			if (file === null || file.content === null) {
-				result.missingFiles.push (fileName);
 				obj.missingFiles.push (fileName);
+				result.missingFiles.push (fileName);
 				fileBuffer = null;
 			} else {
-				result.usedFiles.push (fileName);
 				fileBuffer = file.content;
+				result.usedFiles.push (fileName);
 			}
 			return fileBuffer;
 		});
