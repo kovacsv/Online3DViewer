@@ -101,7 +101,7 @@ OV.Viewer = class
 		};
 		
 		this.renderer = new THREE.WebGLRenderer (parameters);
-		this.renderer.setClearColor ('#ffffff', 1);
+		this.renderer.setClearColor ('#ffffff', 1.0);
 		this.renderer.setSize (this.canvas.width, this.canvas.height);
 		
 		this.scene = new THREE.Scene ();
@@ -131,9 +131,14 @@ OV.Viewer = class
 	Resize (width, height)
 	{
 		let innerSize = OV.GetInnerDimensions (this.canvas, width, height);
-		this.camera.aspect = innerSize.width / innerSize.height;
+		this.ResizeRenderer (innerSize.width, innerSize.height);
+	}
+
+	ResizeRenderer (width, height)
+	{
+		this.camera.aspect = width / height;
 		this.camera.updateProjectionMatrix ();
-		this.renderer.setSize (innerSize.width, innerSize.height);	
+		this.renderer.setSize (width, height);	
 		this.Render ();
 	}
 
@@ -371,5 +376,24 @@ OV.Viewer = class
 	
 		this.light = new THREE.DirectionalLight (0x888888);
 		this.scene.add (this.light);
+	}
+
+	GetImageAsDataUrl (width, height)
+	{
+		let originalSize = null;
+		if (width && height) {
+			originalSize = new THREE.Vector2 ();
+			this.renderer.getSize (originalSize);
+			this.ResizeRenderer (width, height);
+		}
+		this.Render ();
+		let url = this.renderer.domElement.toDataURL();
+		if (originalSize !== null) {
+			this.ResizeRenderer (
+				parseInt (originalSize.x, 10),
+				parseInt (originalSize.y, 10)
+			);
+		}
+		return url;
 	}
 };
