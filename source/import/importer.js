@@ -179,21 +179,6 @@ OV.FileList = class
 	}
 };
 
-OV.RevokeModelUrls = function (model)
-{
-	if (model === null) {
-		return;
-	}
-	for (let i = 0; i < model.MaterialCount (); i++) {
-		let material = model.GetMaterial (i);
-		material.EnumerateTextureMaps (function (texture) {
-			if (texture.url !== null) {
-				OV.RevokeObjectUrl (texture.url);
-			}
-		});
-	}
-};
-
 OV.ImportErrorCode =
 {
 	NoImportableFile : 1,
@@ -217,8 +202,8 @@ OV.ImportResult = class
 		this.model = null;
 		this.mainFile = null;
 		this.upVector = null;
-		this.usedFiles = [];
-		this.missingFiles = [];
+		this.usedFiles = null;
+		this.missingFiles = null;
 	}
 };
 
@@ -275,6 +260,8 @@ OV.Importer = class
 			new OV.ImporterGltf ()
 		];
 		this.fileList = new OV.FileList (this.importers);
+		this.model = null;
+		this.usedFiles = [];
 		this.missingFiles = [];
 	}
 	
@@ -296,9 +283,14 @@ OV.Importer = class
 			return;
 		}
 
+		this.RevokeModelUrls ();
+		this.model = null;
+		this.usedFiles = [];
+		this.missingFiles = [];
+		this.usedFiles.push (mainFile.file.name);
+
 		let result = new OV.ImportResult ();
 		result.mainFile = mainFile.file.name;
-		result.usedFiles.push (mainFile.file.name);
 
 		let obj = this;
 		let importer = mainFile.importer;
@@ -307,11 +299,10 @@ OV.Importer = class
 			let file = obj.fileList.FindFileByPath (fileName);
 			if (file === null || file.content === null) {
 				obj.missingFiles.push (fileName);
-				result.missingFiles.push (fileName);
 				fileBuffer = null;
 			} else {
 				fileBuffer = file.content;
-				result.usedFiles.push (fileName);
+				obj.usedFiles.push (fileName);
 			}
 			return fileBuffer;
 		});
@@ -336,8 +327,12 @@ OV.Importer = class
 			return;
 		}
 
-		result.model = importer.GetModel ();
-		result.model.SetName (mainFile.file.name);
+		this.model = importer.GetModel ();
+		this.model.SetName (mainFile.file.name);
+
+		result.model = this.model;
+		result.usedFiles = this.usedFiles;
+		result.missingFiles = this.missingFiles;
 		result.upVector = importer.GetUpDirection ();
 		callbacks.success (result);
 	}
@@ -372,7 +367,6 @@ OV.Importer = class
 		if (reset) {
 			this.fileList = newFileList;
 		}
-		this.missingFiles = [];
 		this.fileList.GetContent (function () {
 			onReady ();
 		});
@@ -386,5 +380,20 @@ OV.Importer = class
 	IsOnlyFileSource (source)
 	{
 		return this.fileList.IsOnlySource (source);
+	}
+
+	RevokeModelUrls ()
+	{
+		if (this.model === null) {
+			return;
+		}
+		for (let i = 0; i < this.model.MaterialCount (); i++) {
+			let material = this.model.GetMaterial (i);
+			material.EnumerateTextureMaps (function (texture) {
+				if (texture.url !== null) {
+					OV.RevokeObjectUrl (texture.url);
+				}
+			});
+		}
 	}
 };

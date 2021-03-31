@@ -14,7 +14,10 @@ global.URL = {
 	createObjectURL : function () {
 		objectUrlCounter += 1;
 		return 'ObjectUrl:' + objectUrlCounter.toString ();
-	}
+	},
+    revokeObjectURL : function () {
+        
+    }
 };
 
 global.FileObject = function (folderName, fileName)

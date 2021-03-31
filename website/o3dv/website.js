@@ -71,9 +71,6 @@ OV.Website = class
             this.dialog.Hide ();
             this.dialog = null;
 		}
-		if (this.model !== null) {
-			OV.RevokeModelUrls (this.model);
-		}
 		this.model = null;
 		this.parameters.introDiv.hide ();
 		this.ShowViewer (false);
