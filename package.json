@@ -15,8 +15,8 @@
 	},
 	"scripts": {
 		"test": "mocha test",
-		"coverage": "nyc --reporter=lcov mocha test",
-		"codecov": "codecov",
+		"coverage": "nyc mocha test",
+		"codecov": "nyc --reporter=lcov mocha test && codecov",
 		"build": "python tools/create_package.py",
 		"update": "python tools/update_includes.py",
 		"svg": "python tools/optimize_svg_files.py"
