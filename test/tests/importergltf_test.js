@@ -6,7 +6,7 @@ let testUtils = require ('../utils/testutils.js');
 //console.log (util.inspect(testUtils.ModelToObjectSimple (model), {showHidden: false, depth: null}))
 
 describe ('Gltf Importer', function () {
-	it ('Triangle', function () {
+    it ('Triangle', function () {
         let testFileList = [
             ['Triangle/glTF', 'Triangle.gltf'],
             ['Triangle/glTF-Embedded', 'Triangle.gltf'],
@@ -37,9 +37,9 @@ describe ('Gltf Importer', function () {
                 ]
             });        
         }
-	});
+    });
 
-	it ('Box', function () {
+    it ('Box', function () {
         let testFileList = [
             ['Box/glTF', 'Box.gltf'],
             ['Box/glTF-Embedded', 'Box.gltf'],
@@ -69,9 +69,9 @@ describe ('Gltf Importer', function () {
                 ]
             });        
         }
-	});
+    });
     
-	it ('BoxInterleaved', function () {
+    it ('BoxInterleaved', function () {
         let testFileList = [
             ['BoxInterleaved/glTF', 'BoxInterleaved.gltf'],
             ['BoxInterleaved/glTF-Embedded', 'BoxInterleaved.gltf'],
@@ -101,9 +101,9 @@ describe ('Gltf Importer', function () {
                 ]
             });        
         }
-	});
+    });
 
-	it ('BoxTextured', function () {
+    it ('BoxTextured', function () {
         let testFileList = [
             ['BoxTextured/glTF', 'BoxTextured.gltf'],
             ['BoxTextured/glTF-Embedded', 'BoxTextured.gltf'],
@@ -133,7 +133,7 @@ describe ('Gltf Importer', function () {
                 ]
             });        
         }
-	});
+    });
 
     it ('SimpleMeshes', function () {
         let testFileList = [
@@ -175,7 +175,7 @@ describe ('Gltf Importer', function () {
                 ]
             });        
         }
-	});
+    });
     
     it ('OrientationTest', function () {
         let testFileList = [
@@ -345,9 +345,9 @@ describe ('Gltf Importer', function () {
                 ]
             });    
         }
-	});
+    });
 
-	it ('MeshPrimitives_4Vertex', function () {
+    it ('MeshPrimitives_4Vertex', function () {
         let testFileList = [
             ['Mesh_PrimitiveMode', 'Mesh_PrimitiveMode_04.gltf'],
             ['Mesh_PrimitiveMode', 'Mesh_PrimitiveMode_05.gltf'],
@@ -379,9 +379,9 @@ describe ('Gltf Importer', function () {
                 ]
             });        
         }
-	});
+    });
 
-	it ('MeshPrimitives_6Vertex', function () {
+    it ('MeshPrimitives_6Vertex', function () {
         let testFileList = [
             ['Mesh_PrimitiveMode', 'Mesh_PrimitiveMode_06.gltf']
         ];
@@ -409,9 +409,9 @@ describe ('Gltf Importer', function () {
                 ]
             });        
         }
-	});
+    });
 
-	it ('SimpleSparseAccessor', function () {
+    it ('SimpleSparseAccessor', function () {
         let testFileList = [
             ['SimpleSparseAccessor/glTF', 'SimpleSparseAccessor.gltf'],
             ['SimpleSparseAccessor/glTF-Embedded', 'SimpleSparseAccessor.gltf']
@@ -440,5 +440,5 @@ describe ('Gltf Importer', function () {
                 ]
             });        
         }
-	});    
+    });    
 });

@@ -20,62 +20,62 @@ describe ('Model Utils', function () {
         model.AddMesh (mesh2);
 
         OV.FinalizeModel (model, function () { return new OV.Material (); });
-		assert.deepStrictEqual (testUtils.ModelToObject (model), {
-			name : '',
-			materials : [
-				{ name : '' }
-			],
-			meshes : [
-				{
-					name : '',
-					triangles : [
-						{
-							vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
-							normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
-							uvs : [],
-							mat : 0
-						}
-					]
-				},
+        assert.deepStrictEqual (testUtils.ModelToObject (model), {
+            name : '',
+            materials : [
+                { name : '' }
+            ],
+            meshes : [
                 {
-					name : '',
-					triangles : [
-						{
-							vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1],
-							normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
-							uvs : [],
-							mat : 0
-						}
-					]
-				}
-			]
-		});
+                    name : '',
+                    triangles : [
+                        {
+                            vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
+                            normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                            uvs : [],
+                            mat : 0
+                        }
+                    ]
+                },
+                {
+                    name : '',
+                    triangles : [
+                        {
+                            vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1],
+                            normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                            uvs : [],
+                            mat : 0
+                        }
+                    ]
+                }
+            ]
+        });
 
         var mergedModel = OV.CreateMergedModel (model);
-		assert.deepStrictEqual (testUtils.ModelToObject (mergedModel), {
-			name : '',
-			materials : [
-				{ name : '' }
-			],
-			meshes : [
-				{
-					name : '',
-					triangles : [
-						{
-							vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
-							normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
-							uvs : [],
-							mat : 0
-						},
+        assert.deepStrictEqual (testUtils.ModelToObject (mergedModel), {
+            name : '',
+            materials : [
+                { name : '' }
+            ],
+            meshes : [
+                {
+                    name : '',
+                    triangles : [
                         {
-							vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1],
-							normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
-							uvs : [],
-							mat : 0
-						}                        
-					]
+                            vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
+                            normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                            uvs : [],
+                            mat : 0
+                        },
+                        {
+                            vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1],
+                            normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                            uvs : [],
+                            mat : 0
+                        }                        
+                    ]
                 }
-			]
-		});        
-	});
+            ]
+        });        
+    });
 });

@@ -166,11 +166,11 @@ OV.ImporterObj = class extends OV.ImporterBase
 			);
 		}
 
-		function CreateTexture (importer, keyword, line)
+		function CreateTexture (keyword, line, callbacks)
 		{
 			let texture = new OV.TextureMap ();
 			let textureName = OV.NameFromLine (line, keyword.length, '#');
-			let textureBuffer = importer.GetTextureBuffer (textureName);
+			let textureBuffer = callbacks.getTextureBuffer (textureName);
 			texture.name = textureName;
 			if (textureBuffer !== null) {
 				texture.url = textureBuffer.url;
@@ -208,7 +208,7 @@ OV.ImporterObj = class extends OV.ImporterBase
 				return true;
 			}
 			let fileName = OV.NameFromLine (line, keyword.length, '#');
-			let fileBuffer = this.GetFileBuffer (fileName);
+			let fileBuffer = this.callbacks.getFileBuffer (fileName);
 			if (fileBuffer !== null) {
 				OV.ReadLines (fileBuffer, function (line) {
 					if (!obj.IsError ()) {
@@ -221,19 +221,19 @@ OV.ImporterObj = class extends OV.ImporterBase
 			if (this.currentMaterial === null || parameters.length === 0) {
 				return true;
 			}
-			this.currentMaterial.diffuseMap = CreateTexture (this, keyword, line);
+			this.currentMaterial.diffuseMap = CreateTexture (keyword, line, this.callbacks);
 			return true;
 		} else if (keyword === 'map_ks') {
 			if (this.currentMaterial === null || parameters.length === 0) {
 				return true;
 			}
-			this.currentMaterial.specularMap = CreateTexture (this, keyword, line);
+			this.currentMaterial.specularMap = CreateTexture (keyword, line, this.callbacks);
 			return true;
 		} else if (keyword === 'map_bump' || keyword === 'bump') {
 			if (this.currentMaterial === null || parameters.length === 0) {
 				return true;
 			}
-			this.currentMaterial.bumpMap = CreateTexture (this, keyword, line);
+			this.currentMaterial.bumpMap = CreateTexture (keyword, line, this.callbacks);
 			return true;
 		} else if (keyword === 'ka') {
 			if (this.currentMaterial === null || parameters.length < 3) {

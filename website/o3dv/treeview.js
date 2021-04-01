@@ -45,15 +45,15 @@ OV.TreeViewItem = class
         this.nameElement = null;
     }
 
-	GetName ()
-	{
-		return this.name;
-	}
-	
-	SetName (name)
-	{
-		this.name = name;
-	}
+    GetName ()
+    {
+        return this.name;
+    }
+    
+    SetName (name)
+    {
+        this.name = name;
+    }
 
     CreateMainElement (parentDiv)
     {
@@ -155,15 +155,15 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
         this.openCloseHandler = null;
     }
 
-	GetName ()
-	{
-		return this.name;
-	}
-	
-	SetName (name)
-	{
-		this.name = name;
-	}
+    GetName ()
+    {
+        return this.name;
+    }
+    
+    SetName (name)
+    {
+        this.name = name;
+    }
 
     SetAnimated (animated)
     {

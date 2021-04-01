@@ -37,7 +37,7 @@ OV.Init3DViewerElements = function ()
                     return true;
                 });
                 viewer.AdjustClippingPlanes (boundingSphere);
-                viewer.FitToWindow (boundingSphere, false);        						
+                viewer.FitToWindow (boundingSphere, false);                                
             },
             onTextureLoaded : function () {
                 viewer.Render ();
@@ -47,25 +47,20 @@ OV.Init3DViewerElements = function ()
             },
         });
 
-        let model = element.getAttribute ('model');
-        if (!model) {
+        let modelParams = element.getAttribute ('model');
+        if (!modelParams) {
             return;
         }
 
-        let modelUrls = model.split (',');
-        if (modelUrls.length === 0) {
+        let modelUrls = OV.UrlParamConverter.UrlParameterToModelUrls (modelParams);
+        if (modelUrls === null || modelUrls.length === 0) {
             return;
         }
 
-        let camera = element.getAttribute ('camera');
-        if (camera) {
-            let cameraParams = camera.split (',');
-            if (cameraParams.length === 9) {
-                let camera = new OV.Camera (
-                    new OV.Coord3D (parseFloat (cameraParams[0]), parseFloat (cameraParams[1]), parseFloat (cameraParams[2])),
-                    new OV.Coord3D (parseFloat (cameraParams[3]), parseFloat (cameraParams[4]), parseFloat (cameraParams[5])),
-                    new OV.Coord3D (parseFloat (cameraParams[6]), parseFloat (cameraParams[7]), parseFloat (cameraParams[8]))
-                );
+        let cameraParams = element.getAttribute ('camera');
+        if (cameraParams) {
+            let camera = OV.UrlParamConverter.UrlParameterToCamera (cameraParams);
+            if (camera !== null) {
                 viewer.SetCamera (camera);
             }
         }

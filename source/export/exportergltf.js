@@ -225,6 +225,25 @@ OV.ExporterGltf = class extends OV.ExporterBase
 
     GetMainJson (meshDataArr)
     {
+        class BufferViewCreator
+        {
+            constructor (mainJson, byteOffset)
+            {
+                this.mainJson = mainJson;
+                this.byteOffset = byteOffset;
+            }
+
+            AddBufferView (byteLength)
+            {
+                this.mainJson.bufferViews.push ({
+                    buffer : 0,
+                    byteOffset : this.byteOffset,
+                    byteLength : byteLength,
+                });
+                this.byteOffset += byteLength;
+            }
+        }
+
         function AddBufferView (mainJson, offset, length)
         {
             mainJson.bufferViews.push ({
@@ -269,10 +288,10 @@ OV.ExporterGltf = class extends OV.ExporterBase
                 let primitive = primitives[primitiveIndex];
 
                 let bufferViewIndex = mainJson.bufferViews.length;
-                let bufferViewOffset = meshData.offsets[primitiveIndex];
-                bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.indices.length * this.components.index.size);
-                bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.vertices.length * this.components.number.size);
-                bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.normals.length * this.components.number.size);
+                let bufferViewCreator = new BufferViewCreator (mainJson, meshData.offsets[primitiveIndex]);
+                bufferViewCreator.AddBufferView (primitive.indices.length * this.components.index.size);
+                bufferViewCreator.AddBufferView (primitive.vertices.length * this.components.number.size);
+                bufferViewCreator.AddBufferView (primitive.normals.length * this.components.number.size);
 
                 let accessorIndex = mainJson.accessors.length;
                 let jsonPrimitive = {
@@ -310,7 +329,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
                     type : 'VEC3'
                 });
                 if (primitive.uvs.length > 0) {
-                    bufferViewOffset = AddBufferView (mainJson, bufferViewOffset, primitive.uvs.length * this.components.number.size);
+                    bufferViewCreator.AddBufferView (primitive.uvs.length * this.components.number.size);
                     mainJson.accessors.push ({
                         bufferView : bufferViewIndex + 3,
                         byteOffset : 0,

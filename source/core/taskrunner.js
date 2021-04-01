@@ -39,3 +39,10 @@ OV.TaskRunner = class
         }
     }
 };
+
+OV.RunTaskAsync = function (task)
+{
+    setTimeout (function () {
+        task ();
+    }, 0);
+};

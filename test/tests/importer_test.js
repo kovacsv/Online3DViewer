@@ -22,7 +22,7 @@ function ImportFiles (files, callbacks)
 }
 
 describe ('Importer Test', function () {
-	it ('Empty File List', function () {
+    it ('Empty File List', function () {
         let files = [];
         ImportFiles (files, {
             success : function (importer, importResult) {
@@ -32,9 +32,9 @@ describe ('Importer Test', function () {
                 assert.strictEqual (importError.code, OV.ImportErrorCode.NoImportableFile);
             }
         });
-	});
+    });
 
-	it ('Not existing file', function () {
+    it ('Not existing file', function () {
         let files = [
             new FileObject ('obj', 'missing.obj')
         ];
@@ -46,9 +46,9 @@ describe ('Importer Test', function () {
                 assert.strictEqual (importError.code, OV.ImportErrorCode.NoImportableFile);
             }
         });
-	});
+    });
 
-	it ('Not imprtable file', function () {
+    it ('Not imprtable file', function () {
         let files = [
             new FileObject ('', 'wrong.ext')
         ];
@@ -60,9 +60,9 @@ describe ('Importer Test', function () {
                 assert.strictEqual (importError.code, OV.ImportErrorCode.NoImportableFile);
             }
         });
-	});
+    });
 
-	it ('Wrong file', function () {
+    it ('Wrong file', function () {
         let files = [
             new FileObject ('3ds', 'wrong.3ds')
         ];
@@ -74,7 +74,7 @@ describe ('Importer Test', function () {
                 assert.strictEqual (importError.code, OV.ImportErrorCode.ImportFailed);
             }
         });
-	});
+    });
 
     it ('Single file', function () {
         let files = [
@@ -90,7 +90,27 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });
-	});
+    });
+
+    it ('Multiple files', function () {
+        let files = [
+            new FileObject ('obj', 'cube_with_materials.obj'),
+            new FileObject ('obj', 'cube_with_materials.mtl'),
+            new FileObject ('obj', 'cube_texture.png')
+        ]
+
+        let theImporter = new OV.Importer ();
+        ImportFilesWithImporter (theImporter, files, {
+            success : function (importer, importResult) {
+                assert (!OV.IsModelEmpty (importResult.model));
+                assert.deepStrictEqual (importResult.usedFiles, ['cube_with_materials.obj', 'cube_with_materials.mtl', 'cube_texture.png']);
+                assert.deepStrictEqual (importResult.missingFiles, []);            
+            },
+            error : function (importer, importError) {
+                assert.fail ();
+            }
+        });
+    });    
 
     it ('Missing files', function () {
         let files = [];
@@ -127,7 +147,7 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });
-	});
+    });
 
     it ('Missing texture multiple times', function () {
         let files = [
@@ -144,7 +164,7 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });
-	});
+    });
 
     it ('Append Missing files', function () {
         let theImporter = new OV.Importer ();
@@ -178,5 +198,39 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });
-	});    
+    });
+
+    it ('Reuse importer', function () {
+        let files1 = [
+            new FileObject ('obj', 'cube_with_materials.obj'),
+            new FileObject ('obj', 'cube_with_materials.mtl'),
+            new FileObject ('obj', 'cube_texture.png')
+        ]
+        let files2 = [
+            new FileObject ('obj', 'single_triangle.obj')
+        ];        
+
+        let theImporter = new OV.Importer ();
+        ImportFilesWithImporter (theImporter, files1, {
+            success : function (importer, importResult) {
+                assert (!OV.IsModelEmpty (importResult.model));
+                assert.deepStrictEqual (importResult.usedFiles, ['cube_with_materials.obj', 'cube_with_materials.mtl', 'cube_texture.png']);
+                assert.deepStrictEqual (importResult.missingFiles, []);       
+                
+                ImportFilesWithImporter (theImporter, files2, {
+                    success : function (importer, importResult) {
+                        assert (!OV.IsModelEmpty (importResult.model));
+                        assert.deepStrictEqual (importResult.usedFiles, ['single_triangle.obj']);
+                        assert.deepStrictEqual (importResult.missingFiles, []);
+                    },
+                    error : function (importer, importError) {
+                        assert.fail ();
+                    }
+                });                
+            },
+            error : function (importer, importError) {
+                assert.fail ();
+            }
+        });      
+    });
 });

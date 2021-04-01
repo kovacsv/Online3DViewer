@@ -1,0 +1,7 @@
+{
+	"exclude": [
+		"*/external/*",
+		"*/viewer/*",
+		"test/*"
+	]
+}

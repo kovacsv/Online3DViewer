@@ -45,7 +45,8 @@
 		"source/viewer/domutils.js",
 		"source/viewer/navigation.js",
 		"source/viewer/viewer.js",
-		"source/viewer/domviewer.js"
+		"source/viewer/domviewer.js",
+		"source/viewer/urlutils.js"
 	],
 	"website_files" : [
 		"website/o3dv/utils.js",

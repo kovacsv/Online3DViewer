@@ -178,7 +178,7 @@ describe ('Exporter', function () {
             'endsolid Model',
             ''
         ].join ('\n'));
-	});
+    });
 
     it ('Stl Binary Export', function () {
         let model = CreateTestModel ();
@@ -201,7 +201,7 @@ describe ('Exporter', function () {
         let importedModel = importer.GetModel ();
         assert.strictEqual (importedModel.VertexCount (), 12);
         assert.strictEqual (importedModel.TriangleCount (), 4);
-	});
+    });
 
     it ('Off Export', function () {
         let model = CreateTestModel ();
@@ -319,6 +319,9 @@ describe ('Exporter', function () {
                     return binFile.GetContent ();
                 }
                 return null;
+            },
+            getTextureBuffer (filePath) {
+                return null;
             }
         });
   
@@ -349,6 +352,9 @@ describe ('Exporter', function () {
             return new OV.Material ();
         },
         getFileBuffer (filePath) {
+            return null;
+        },
+        getTextureBuffer (filePath) {
             return null;
         }
     });

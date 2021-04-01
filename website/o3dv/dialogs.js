@@ -256,28 +256,24 @@ OV.ShowExportDialog = function (model)
 
         let selectedFormat = formats[selectedIndex - 1];
         fileList.html ('Please wait...');
-        let taskRunner = new OV.TaskRunner ();
-		taskRunner.Run (1, {
-			runTask : function (index, ready) {
-                let exporter = new OV.Exporter ();
-                let files = exporter.Export (model, selectedFormat.format, selectedFormat.extension);
-                fileList.empty ();
-                for (let i = 0; i < files.length; i++) {
-                    let file = files[i];
-                    let url = file.GetUrl ();
-                    if (url === null) {
-                        url = OV.CreateObjectUrl (file.GetContent ());
-                        createdUrls.push (url);
-                    }
-                    let fileLink = $('<a>').addClass ('ov_dialog_file_link').appendTo (fileList);
-                    fileLink.attr ('href', url);
-                    fileLink.attr ('download', file.GetName ());
-                    $('<img>').addClass ('ov_dialog_file_link_icon').attr ('src', 'assets/images/dialog/file_download.svg').appendTo (fileLink);
-                    $('<div>').addClass ('ov_dialog_file_link_text').html (file.GetName ()).appendTo (fileLink);
+        OV.RunTaskAsync (function () {
+            let exporter = new OV.Exporter ();
+            let files = exporter.Export (model, selectedFormat.format, selectedFormat.extension);
+            fileList.empty ();
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i];
+                let url = file.GetUrl ();
+                if (url === null) {
+                    url = OV.CreateObjectUrl (file.GetContent ());
+                    createdUrls.push (url);
                 }
-                ready ();
+                let fileLink = $('<a>').addClass ('ov_dialog_file_link').appendTo (fileList);
+                fileLink.attr ('href', url);
+                fileLink.attr ('download', file.GetName ());
+                $('<img>').addClass ('ov_dialog_file_link_icon').attr ('src', 'assets/images/dialog/file_download.svg').appendTo (fileLink);
+                $('<div>').addClass ('ov_dialog_file_link_text').html (file.GetName ()).appendTo (fileLink);
             }
-		});
+        });
     });
 
     dialog.SetCloseHandler (function () {
@@ -323,7 +319,7 @@ OV.ShowEmbeddingDialog = function (importer, camera)
     embeddingCode += '<iframe';
     embeddingCode += ' width="640" height="480"';
     embeddingCode += ' style="border:1px solid #eeeeee;"';
-    let hashParameters = OV.CreateHashParameters (modelFiles, camera);
+    let hashParameters = OV.CreateUrlParameters (modelFiles, camera);
     embeddingCode += ' src="https://3dviewer.net/embed.html#' + hashParameters + '">';
     embeddingCode += '</iframe>';
 

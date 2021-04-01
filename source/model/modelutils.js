@@ -1,16 +1,16 @@
 OV.CalculateTriangleNormal = function (v0, v1, v2)
 {
-	let v = OV.SubCoord3D (v1, v0);
-	let w = OV.SubCoord3D (v2, v0);
-	
-	let normal = new OV.Coord3D (
-		v.y * w.z - v.z * w.y,
-		v.z * w.x - v.x * w.z,
-		v.x * w.y - v.y * w.x
-	);
+    let v = OV.SubCoord3D (v1, v0);
+    let w = OV.SubCoord3D (v2, v0);
+    
+    let normal = new OV.Coord3D (
+        v.y * w.z - v.z * w.y,
+        v.z * w.x - v.x * w.z,
+        v.x * w.y - v.y * w.x
+    );
 
-	normal.Normalize ();
-	return normal;
+    normal.Normalize ();
+    return normal;
 };
 
 OV.TransformMesh = function (mesh, transformation)
@@ -43,20 +43,20 @@ OV.TransformMesh = function (mesh, transformation)
 
 OV.GetMeshBoundingBox = function (mesh)
 {
-	let min = new OV.Coord3D (Infinity, Infinity, Infinity);
-	let max = new OV.Coord3D (-Infinity, -Infinity, -Infinity);
+    let min = new OV.Coord3D (Infinity, Infinity, Infinity);
+    let max = new OV.Coord3D (-Infinity, -Infinity, -Infinity);
 
     for (let i = 0; i < mesh.VertexCount (); i++) {
         let vertex = mesh.GetVertex (i);
-		min.x = Math.min (min.x, vertex.x);
-		min.y = Math.min (min.y, vertex.y);
-		min.z = Math.min (min.z, vertex.z);
-		max.x = Math.max (max.x, vertex.x);
-		max.y = Math.max (max.y, vertex.y);
-		max.z = Math.max (max.z, vertex.z);
-	}
-	
-	return [min, max];
+        min.x = Math.min (min.x, vertex.x);
+        min.y = Math.min (min.y, vertex.y);
+        min.z = Math.min (min.z, vertex.z);
+        max.x = Math.max (max.x, vertex.x);
+        max.y = Math.max (max.y, vertex.y);
+        max.z = Math.max (max.z, vertex.z);
+    }
+    
+    return [min, max];
 };
 
 OV.IsModelEmpty = function (model)
