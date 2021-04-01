@@ -30,46 +30,21 @@ OV.HashHandler = class
 
     GetCameraFromHash ()
     {
-        let parameters = this.GetFromHash ('camera');
-        if (parameters === null) {
-            return null;
-        }
-        let splitted = parameters.split (',');
-        if (splitted.length !== 9) {
-            return null;
-        }
-        let camera = new OV.Camera (
-            new OV.Coord3D (parseFloat (splitted[0]), parseFloat (splitted[1]), parseFloat (splitted[2])),
-            new OV.Coord3D (parseFloat (splitted[3]), parseFloat (splitted[4]), parseFloat (splitted[5])),
-            new OV.Coord3D (parseFloat (splitted[6]), parseFloat (splitted[7]), parseFloat (splitted[8]))
-        );
-        return camera;
+        let parser = new OV.UrlParamParser (this.GetHash ());
+        return parser.GetCamera ();
     }
 
     GetModelFilesFromHash ()
     {
-        let hash = this.GetHash ();
-        if (hash.length === 0) {
-            return null;
-        }
-
-        // detect legacy links
-        let modelKeyword = 'model';
-        let keywordToken = modelKeyword + '=';
-        if (hash.indexOf (keywordToken) === -1) {
-            return hash.split (',');
-        }
-
-        let fileList = this.GetFromHash (modelKeyword);
-        if (fileList === null) {
-            return null;
-        }
-        return fileList.split (',');
+        let parser = new OV.UrlParamParser (this.GetHash ());
+        return parser.GetModelUrls ();
     }
 
     SetModelFilesToHash (files)
     {
-        this.SetHash ('model=' + files.join (','));
+        let builder = new OV.UrlParamBuilder ();
+        builder.AddModelUrls (files);
+        this.SetHash (builder.GetUrlParams ());
     }
 
     GetFromHash (keyword)

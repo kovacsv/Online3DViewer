@@ -19,7 +19,7 @@ def Main (argv):
 		config = json.load (configJson)
 
 	rootDir = os.path.abspath ('..')
-	for htmlFileName in ['index.html', 'embed.html', 'embed_selfhost.html']:
+	for htmlFileName in ['index.html', 'embed.html']:
 		htmlFilePath = os.path.join (rootDir, 'website', htmlFileName)
 		replacer = Tools.TokenReplacer (htmlFilePath, True)
 		libFiles = Tools.CreateFileList (config['lib_files'], 'libs/', '../libs/')

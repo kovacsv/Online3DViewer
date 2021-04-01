@@ -25,7 +25,7 @@ OV.Embed = class
                 this.viewer.SetCamera (camera);
             }
             this.modelLoader.LoadFromUrlList (urls);
-            let hashParameters = OV.CreateHashParameters (urls, camera);
+            let hashParameters = OV.CreateUrlParameters (urls, null);
             let websiteUrl = this.parameters.websiteLinkDiv.attr ('href') + '#' + hashParameters;
             this.parameters.websiteLinkDiv.attr ('href', websiteUrl);
         }

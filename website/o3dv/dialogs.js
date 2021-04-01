@@ -319,7 +319,7 @@ OV.ShowEmbeddingDialog = function (importer, camera)
     embeddingCode += '<iframe';
     embeddingCode += ' width="640" height="480"';
     embeddingCode += ' style="border:1px solid #eeeeee;"';
-    let hashParameters = OV.CreateHashParameters (modelFiles, camera);
+    let hashParameters = OV.CreateUrlParameters (modelFiles, camera);
     embeddingCode += ' src="https://3dviewer.net/embed.html#' + hashParameters + '">';
     embeddingCode += '</iframe>';
 

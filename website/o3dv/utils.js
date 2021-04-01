@@ -120,20 +120,3 @@ OV.CreateIconButton = function (iconName, hoverIconName, title, link)
     }
     return buttonLink;
 };
-
-OV.CreateHashParameters = function (urls, camera)
-{
-    let hashParameters = '';
-    let urlsHash = urls.join (',');
-    hashParameters += 'model=' + urlsHash;
-    if (camera !== null) {
-        let precision = 5;
-        let cameraHash = [
-            camera.eye.x.toPrecision (precision), camera.eye.y.toPrecision (precision), camera.eye.z.toPrecision (precision),
-            camera.center.x.toPrecision (precision), camera.center.y.toPrecision (precision), camera.center.z.toPrecision (precision),
-            camera.up.x.toPrecision (precision), camera.up.y.toPrecision (precision), camera.up.z.toPrecision (precision)
-        ].join (',');
-        hashParameters += '$camera=' + cameraHash;
-    }
-    return hashParameters;
-};

@@ -181,10 +181,6 @@ OV.Website = class
             if (urls === null) {
                 return;
             }
-            let camera = this.hashHandler.GetCameraFromHash ();
-            if (camera !== null) {
-                this.viewer.SetCamera (camera);
-            }
             this.LoadModelFromUrlList (urls);
         } else {
             this.ClearModel ();
