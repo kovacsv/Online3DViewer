@@ -1,5 +1,19 @@
 OV.Init3DViewerElements = function ()
 {
+    function SetCamera (element, viewer, importResult)
+    {
+        let camera = null;
+        let cameraParams = element.getAttribute ('camera');
+        if (cameraParams) {
+            camera = OV.UrlParamConverter.UrlParameterToCamera (cameraParams);
+        }
+        if (camera !== null) {
+            viewer.SetCamera (camera);
+        } else {
+            viewer.SetUpVector (importResult.upVector, false);
+        }
+    }
+
     function LoadElement (element)
     {
         let canvas = document.createElement ('canvas');
@@ -37,6 +51,7 @@ OV.Init3DViewerElements = function ()
                     return true;
                 });
                 viewer.AdjustClippingPlanes (boundingSphere);
+                SetCamera (element, viewer, importResult);
                 viewer.FitToWindow (boundingSphere, false);                                
             },
             onTextureLoaded : function () {
@@ -55,14 +70,6 @@ OV.Init3DViewerElements = function ()
         let modelUrls = OV.UrlParamConverter.UrlParameterToModelUrls (modelParams);
         if (modelUrls === null || modelUrls.length === 0) {
             return;
-        }
-
-        let cameraParams = element.getAttribute ('camera');
-        if (cameraParams) {
-            let camera = OV.UrlParamConverter.UrlParameterToCamera (cameraParams);
-            if (camera !== null) {
-                viewer.SetCamera (camera);
-            }
         }
 
         loader.LoadFromUrlList (modelUrls);

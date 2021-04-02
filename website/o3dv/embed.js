@@ -20,10 +20,6 @@ OV.Embed = class
             if (urls === null) {
                 return;
             }
-            let camera = this.hashHandler.GetCameraFromHash ();
-            if (camera !== null) {
-                this.viewer.SetCamera (camera);
-            }
             this.modelLoader.LoadFromUrlList (urls);
             let hashParameters = OV.CreateUrlParameters (urls, null);
             let websiteUrl = this.parameters.websiteLinkDiv.attr ('href') + '#' + hashParameters;
@@ -45,6 +41,12 @@ OV.Embed = class
             return true;
         });
         this.viewer.AdjustClippingPlanes (boundingSphere);
+        let camera = this.hashHandler.GetCameraFromHash ();
+        if (camera !== null) {
+            this.viewer.SetCamera (camera);
+        } else {
+            this.viewer.SetUpVector (importResult.upVector, false);
+        }
         this.viewer.FitToWindow (boundingSphere, false);        
     }    
 
