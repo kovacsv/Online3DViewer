@@ -1,6 +1,6 @@
 # Online 3D Viewer
 
-This repository contains the source code of the https://3dviewer.net website and the library behind it:
+This repository contains the source code of the https://3dviewer.net website and the library behind it.
 - The website can open several 3D file formats and visualize the model in your browser.
 - The library allows you to visualize 3D models easily on your own website.
 
