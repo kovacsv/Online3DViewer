@@ -19,8 +19,12 @@ def Main (argv):
 		config = json.load (configJson)
 
 	rootDir = os.path.abspath ('..')
-	for htmlFileName in ['index.html', 'embed.html']:
-		htmlFilePath = os.path.join (rootDir, 'website', htmlFileName)
+	websiteFiles = [
+		os.path.join ('website', 'index.html'),
+		os.path.join ('website', 'embed.html')
+	]
+	for htmlFileName in websiteFiles:
+		htmlFilePath = os.path.join (rootDir, htmlFileName)
 		replacer = Tools.TokenReplacer (htmlFilePath, True)
 		libFiles = Tools.CreateFileList (config['lib_files'], 'libs/', '../libs/')
 		importerFiles = Tools.CreateFileList (config['importer_files'], 'source/', '../source/')
@@ -28,6 +32,18 @@ def Main (argv):
 		replacer.ReplaceTokenFileLinks ('<!-- libs start -->', '<!-- libs end -->', libFiles, None)
 		replacer.ReplaceTokenFileLinks ('<!-- importer start -->', '<!-- importer end -->', importerFiles, None)
 		replacer.ReplaceTokenFileLinks ('<!-- website start -->', '<!-- website end -->', websiteFiles, None)
+		replacer.WriteToFile (htmlFilePath)
+
+	sandboxFiles = [
+		os.path.join ('tools', 'sandbox', 'embed_selfhost_single.html'),
+		os.path.join ('tools', 'sandbox', 'embed_selfhost_multiple.html'),
+		os.path.join ('tools', 'sandbox', 'embed_selfhost_fullscreen.html')
+	]
+	for htmlFileName in sandboxFiles:
+		htmlFilePath = os.path.join (rootDir, htmlFileName)
+		replacer = Tools.TokenReplacer (htmlFilePath, True)
+		importerFiles = Tools.CreateFileList (config['importer_files'], 'source/', '../../source/')
+		replacer.ReplaceTokenFileLinks ('<!-- importer start -->', '<!-- importer end -->', importerFiles, None)
 		replacer.WriteToFile (htmlFilePath)
 	
 	return 0
