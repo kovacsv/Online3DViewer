@@ -82,20 +82,12 @@
 	<!-- analytics end -->
 
 	<script type='text/javascript'>
-		var embed = null;
-		
 		$(window).on ('load', function () {
-			embed = new OV.Embed ({
+			let embed = new OV.Embed ({
 				viewerDiv : $('#embed_viewer'),
 				websiteLinkDiv : $('#website_link')
 			});
 			embed.Load ();
-		});
-		
-		$(window).on ('resize', function () {
-			if (embed !== null) {
-				embed.Resize ();
-			}
 		});
 	</script>
 </head>

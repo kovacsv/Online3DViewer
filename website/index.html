@@ -79,10 +79,8 @@
 	<!-- website end -->
 
 	<script type='text/javascript'>
-		var website = null;
-
 		$(window).on ('load', function () {
-			website = new OV.Website ({
+			let website = new OV.Website ({
 				headerDiv : $('#header'),
 				toolbarDiv : $('#toolbar'),
 				mainDiv : $('#main'),
@@ -92,12 +90,6 @@
 				fileInput : $('#open_file')
 			});
 			website.Load ();
-		});
-
-		$(window).on ('resize', function () {
-			if (website !== null) {
-				website.Resize ();
-			}
 		});
 	</script>
 

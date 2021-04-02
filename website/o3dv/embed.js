@@ -25,6 +25,11 @@ OV.Embed = class
             let websiteUrl = this.parameters.websiteLinkDiv.attr ('href') + '#' + hashParameters;
             this.parameters.websiteLinkDiv.attr ('href', websiteUrl);
         }
+
+        let obj = this;
+		$(window).on ('resize', function () {
+			obj.Resize ();
+		});        
     }
 
     Resize ()
