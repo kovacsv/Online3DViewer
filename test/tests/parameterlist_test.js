@@ -1,6 +1,6 @@
 var assert = require ('assert');
 
-describe ('Parameter list', function () {
+describe ('Parameter List', function () {
     it ('Parameter list builder', function () {
         let modelUrls = ['a.txt', 'b.txt'];
         let camera = new OV.Camera (
@@ -8,9 +8,9 @@ describe ('Parameter list', function () {
             new OV.Coord3D (0.0, 0.0, 0.0),
             new OV.Coord3D (0.0, 0.0, 1.0)
         );
-        let urlParams1 = new OV.ParameterListBuilder ().AddModelUrls (modelUrls).GetUrlParams ();
-        let urlParams2 = new OV.ParameterListBuilder ().AddCamera (camera).GetUrlParams ();
-        let urlParams3 = new OV.ParameterListBuilder ().AddModelUrls (modelUrls).AddCamera (camera).GetUrlParams ();
+        let urlParams1 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).GetUrlParams ();
+        let urlParams2 = OV.CreateUrlBuilder ().AddCamera (camera).GetUrlParams ();
+        let urlParams3 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).GetUrlParams ();
         assert.strictEqual (urlParams1, 'model=a.txt,b.txt');
         assert.strictEqual (urlParams2, 'camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000');
         assert.strictEqual (urlParams3, 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000');
@@ -27,16 +27,16 @@ describe ('Parameter list', function () {
         let urlParams1 = 'model=a.txt,b.txt';
         let urlParams2 = 'camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000';
         let urlParams3 = 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000';
-        let parserLegacy = new OV.ParameterListParser (urlParamsLegacy);
+        let parserLegacy = OV.CreateUrlParser (urlParamsLegacy);
         assert.deepStrictEqual (parserLegacy.GetModelUrls (), modelUrls);
         assert.deepStrictEqual (parserLegacy.GetCamera (), null);
-        let parser1 = new OV.ParameterListParser (urlParams1);
+        let parser1 = OV.CreateUrlParser (urlParams1);
         assert.deepStrictEqual (parser1.GetModelUrls (), modelUrls);
         assert.deepStrictEqual (parser1.GetCamera (), null);
-        let parser2 = new OV.ParameterListParser (urlParams2);
+        let parser2 = OV.CreateUrlParser (urlParams2);
         assert.deepStrictEqual (parser2.GetModelUrls (), null);
         assert.deepStrictEqual (parser2.GetCamera (), camera);
-        let parser3 = new OV.ParameterListParser (urlParams3);
+        let parser3 = OV.CreateUrlParser (urlParams3);
         assert.deepStrictEqual (parser3.GetModelUrls (), modelUrls);
         assert.deepStrictEqual (parser3.GetCamera (), camera);
     });

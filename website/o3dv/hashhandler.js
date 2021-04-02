@@ -30,13 +30,13 @@ OV.HashHandler = class
 
     GetCameraFromHash ()
     {
-        let parser = new OV.ParameterListParser (this.GetHash ());
+        let parser = OV.CreateUrlParser (this.GetHash ());
         return parser.GetCamera ();
     }
 
     GetModelFilesFromHash ()
     {
-        let parser = new OV.ParameterListParser (this.GetHash ());
+        let parser = OV.CreateUrlParser (this.GetHash ());
         return parser.GetModelUrls ();
     }
 
