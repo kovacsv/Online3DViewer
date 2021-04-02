@@ -5,7 +5,7 @@ OV.Init3DViewerElements = function ()
         let camera = null;
         let cameraParams = element.getAttribute ('camera');
         if (cameraParams) {
-            camera = OV.UrlParamConverter.UrlParameterToCamera (cameraParams);
+            camera = OV.ParameterConverter.StringToCamera (cameraParams);
         }
         if (camera !== null) {
             viewer.SetCamera (camera);
@@ -67,7 +67,7 @@ OV.Init3DViewerElements = function ()
             return;
         }
 
-        let modelUrls = OV.UrlParamConverter.UrlParameterToModelUrls (modelParams);
+        let modelUrls = OV.ParameterConverter.StringToModelUrls (modelParams);
         if (modelUrls === null || modelUrls.length === 0) {
             return;
         }

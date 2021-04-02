@@ -42,7 +42,7 @@
 		"source/export/exporter.js",
 		"source/external/three.converter.js",
 		"source/external/three.model.loader.js",
-		"source/parameters/paramutils.js",
+		"source/parameters/parameterlist.js",
 		"source/viewer/domutils.js",
 		"source/viewer/navigation.js",
 		"source/viewer/viewer.js",

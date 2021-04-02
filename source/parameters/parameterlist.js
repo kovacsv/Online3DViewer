@@ -1,6 +1,6 @@
-OV.UrlParamConverter =
+OV.ParameterConverter =
 {
-    CameraToUrlParameter : function (camera)
+    CameraToString : function (camera)
     {
         if (camera === null) {
             return null;
@@ -14,7 +14,7 @@ OV.UrlParamConverter =
         return cameraParameters;
     },
 
-    UrlParameterToCamera : function (urlParam)
+    StringToCamera : function (urlParam)
     {
         if (urlParam === null || urlParam.length === 0) {
             return null;
@@ -31,7 +31,7 @@ OV.UrlParamConverter =
         return camera;
     },
 
-    ModelUrlsToUrlParameter : function (urls)
+    ModelUrlsToString : function (urls)
     {
         if (urls === null) {
             return null;
@@ -39,7 +39,7 @@ OV.UrlParamConverter =
         return urls.join (',');
     },
 
-    UrlParameterToModelUrls : function (urlParam)
+    StringToModelUrls : function (urlParam)
     {
         if (urlParam === null || urlParam.length === 0) {
             return null;
@@ -48,7 +48,7 @@ OV.UrlParamConverter =
     }
 };
 
-OV.UrlParamBuilder = class
+OV.ParameterListBuilder = class
 {
     constructor ()
     {
@@ -57,13 +57,13 @@ OV.UrlParamBuilder = class
 
     AddModelUrls (urls)
     {
-        this.AddUrlPart ('model', OV.UrlParamConverter.ModelUrlsToUrlParameter (urls));
+        this.AddUrlPart ('model', OV.ParameterConverter.ModelUrlsToString (urls));
         return this;
     }
 
     AddCamera (camera)
     {
-        this.AddUrlPart ('camera', OV.UrlParamConverter.CameraToUrlParameter (camera));
+        this.AddUrlPart ('camera', OV.ParameterConverter.CameraToString (camera));
         return this;
     }
 
@@ -84,7 +84,7 @@ OV.UrlParamBuilder = class
     } 
 };
 
-OV.UrlParamParser = class
+OV.ParameterListParser = class
 {
     constructor (urlParams)
     {
@@ -99,13 +99,13 @@ OV.UrlParamParser = class
         }
 
         let keywordParams = this.GetKeywordParams ('model');
-        return OV.UrlParamConverter.UrlParameterToModelUrls (keywordParams);
+        return OV.ParameterConverter.StringToModelUrls (keywordParams);
     }
 
     GetCamera ()
     {
         let keywordParams = this.GetKeywordParams ('camera');
-        return OV.UrlParamConverter.UrlParameterToCamera (keywordParams);
+        return OV.ParameterConverter.StringToCamera (keywordParams);
     }
     
     GetKeywordParams (keyword)
@@ -127,7 +127,7 @@ OV.UrlParamParser = class
 
 OV.CreateUrlParameters = function (urls, camera)
 {
-    let builder = new OV.UrlParamBuilder ();
+    let builder = new OV.ParameterListBuilder ();
     builder.AddModelUrls (urls);
     builder.AddCamera (camera);
     return builder.GetUrlParams ();
