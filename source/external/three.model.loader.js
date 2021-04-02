@@ -12,6 +12,11 @@ OV.ThreeModelLoader = class
         this.callbacks = callbacks;
     }
 
+	SetDefaultColor (defaultColor)
+	{
+		this.importer.SetDefaultColor (defaultColor);
+	}
+
 	LoadFromUrlList (urls)
 	{
 		if (this.inProgress) {
