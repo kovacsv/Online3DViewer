@@ -40,10 +40,10 @@ OV.InitModelLoader = function (modelLoader, callbacks)
             progressDialog = new OV.ProgressDialog ();
             progressDialog.Show ('Loading Model');
         },
-        onFilesLoaded : function () {
+        onImportStart : function () {
             progressDialog.SetText ('Importing Model');
         },
-        onModelImported : function () {
+        onVisualizationStart : function () {
             progressDialog.SetText ('Visualizing Model');
         },
         onModelFinished : function (importResult, threeMeshes) {

@@ -23,10 +23,10 @@ OV.Init3DViewerElements = function ()
                 element.appendChild (progressDiv);
                 progressDiv.innerHTML = 'Loading model...';
             },
-            onFilesLoaded : function () {
+            onImportStart : function () {
                 progressDiv.innerHTML = 'Importing model...';
             },
-            onModelImported : function () {
+            onVisualizationStart : function () {
                 progressDiv.innerHTML = 'Visualizing model...';
             },
             onModelFinished : function (importResult, threeMeshes) {
