@@ -1,7 +1,7 @@
 var assert = require ('assert');
 
-describe ('Url Utils', function () {
-    it ('Url builder', function () {
+describe ('Parameter list', function () {
+    it ('Parameter list builder', function () {
         let modelUrls = ['a.txt', 'b.txt'];
         let camera = new OV.Camera (
             new OV.Coord3D (1.0, 1.0, 1.0),
@@ -16,7 +16,7 @@ describe ('Url Utils', function () {
         assert.strictEqual (urlParams3, 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000');
     });
 
-    it ('Url parser', function () {
+    it ('Parameter list parser', function () {
         let modelUrls = ['a.txt', 'b.txt'];
         let camera = new OV.Camera (
             new OV.Coord3D (1.0, 1.0, 1.0),
