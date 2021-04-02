@@ -42,9 +42,8 @@ OV.HashHandler = class
 
     SetModelFilesToHash (files)
     {
-        let builder = new OV.UrlParamBuilder ();
-        builder.AddModelUrls (files);
-        this.SetHash (builder.GetUrlParams ());
+        let params = OV.CreateUrlParameters (files, null);
+        this.SetHash (params);
     }
 
     GetFromHash (keyword)
