@@ -46,23 +46,6 @@ OV.HashHandler = class
         this.SetHash (params);
     }
 
-    GetFromHash (keyword)
-    {
-        let hash = this.GetHash ();
-        if (hash.length === 0) {
-            return null;
-        }
-        let keywordToken = keyword + '=';
-        let hashParts = hash.split ('$');
-        for (let i = 0; i < hashParts.length; i++) {
-            let hashPart = hashParts[i];
-            if (hashPart.startsWith (keywordToken)) {
-                return hashPart.substr (keywordToken.length);
-            }
-        }
-        return null;
-    }
-
     GetHash ()
     {
         return window.location.hash.substr (1);
