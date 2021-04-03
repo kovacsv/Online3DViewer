@@ -1,6 +1,6 @@
 # Online 3D Viewer
 
-Online 3D Viewer is a free and open source web solution to visualize and explore 3D models right in your browser.  This repository contains the source code of the https://3dviewer.net website and the library behind it.
+Online 3D Viewer (https://3dviewer.net) is a free and open source web solution to visualize and explore 3D models right in your browser. This repository contains the source code of the website and the library behind it.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/exypq43a8kjby5n0?svg=true)](https://ci.appveyor.com/project/kovacsv/online3dviewer)
 [![Build Status](https://travis-ci.com/kovacsv/Online3DViewer.svg?branch=master)](https://travis-ci.com/kovacsv/Online3DViewer)
