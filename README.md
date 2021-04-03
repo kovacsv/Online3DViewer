@@ -2,9 +2,6 @@
 
 This repository contains the source code of the https://3dviewer.net website and the library behind it. Online 3D Viewer is a free and open source web solution to visualize and explore 3D models right in your browser. 
 
-* **Online 3D Viewer Website**: Source code of the web solution with all of the pages and functions. It uses the engine under the hood.
-* **Online 3D Viewer Engine**: Sorce code of the library to visualize models easily on your own website. See more information in the developer documentation.
-
 [![Build status](https://ci.appveyor.com/api/projects/status/exypq43a8kjby5n0?svg=true)](https://ci.appveyor.com/project/kovacsv/online3dviewer)
 [![Build Status](https://travis-ci.com/kovacsv/Online3DViewer.svg?branch=master)](https://travis-ci.com/kovacsv/Online3DViewer)
 [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/kovacsv/Online3DViewer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/kovacsv/Online3DViewer/context:javascript)
@@ -12,8 +9,10 @@ This repository contains the source code of the https://3dviewer.net website and
 
 ## Documentation
 
-- [User Documentation](https://3dviewer.net/info)
-- [Developer Documentation](https://github.com/kovacsv/Online3DViewer/wiki)
+The repository is separated into two parts. See more information in the [Developer Documentation](https://github.com/kovacsv/Online3DViewer/wiki).
+
+* **Online 3D Viewer Website**: Source code of the web solution with all of the pages and functions.
+* **Online 3D Viewer Engine**: Source code of the library to visualize models easily.
 
 ## Supported file formats
 
