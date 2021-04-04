@@ -244,16 +244,6 @@ OV.ExporterGltf = class extends OV.ExporterBase
             }
         }
 
-        function AddBufferView (mainJson, offset, length)
-        {
-            mainJson.bufferViews.push ({
-                buffer : 0,
-                byteOffset : offset,
-                byteLength : length,
-            });
-            return offset + length;
-        }
-
         let mainJson = {
             asset : {
                 version : '2.0'
