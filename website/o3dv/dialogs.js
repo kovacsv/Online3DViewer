@@ -287,6 +287,18 @@ OV.ShowExportDialog = function (model)
 
 OV.ShowEmbeddingDialog = function (importer, camera)
 {
+    function GetEmbeddingCode (files, camera, useCameraCheck)
+    {
+        let embeddingCode = '';
+        embeddingCode += '<iframe';
+        embeddingCode += ' width="640" height="480"';
+        embeddingCode += ' style="border:1px solid #eeeeee;"';
+        let hashParameters = OV.CreateUrlParameters (files, useCameraCheck.get (0).checked ? camera : null);
+        embeddingCode += ' src="https://3dviewer.net/embed.html#' + hashParameters + '">';
+        embeddingCode += '</iframe>';
+        return embeddingCode;
+    }
+
     if (!importer.IsOnlyFileSource (OV.FileSource.Url)) {
         return OV.ShowMessageDialog (
             'Embedding Failed',
@@ -312,25 +324,27 @@ OV.ShowEmbeddingDialog = function (importer, camera)
             }
         }
     ]);
-    let text = 'Here is the code for embedding.';
+    let text = 'Embedding options:';
     $('<div>').html (text).addClass ('ov_dialog_section').appendTo (contentDiv);
+    let optionsSection = $('<div>').addClass ('ov_dialog_section').appendTo (contentDiv);
+    let useCameraLine = $('<div>').appendTo (optionsSection);
+    let useCamera = $('<input>').attr ('type', 'checkbox').attr ('checked', 'true').appendTo (useCameraLine);
+    $('<span>').html ('Use current camera position').appendTo (useCameraLine);
+    useCamera.change (function () {
+        let newEmbeddingCode = GetEmbeddingCode (modelFiles, camera, useCamera);
+        urlsTextArea.val (newEmbeddingCode);
+    });
 
-    let embeddingCode = '';
-    embeddingCode += '<iframe';
-    embeddingCode += ' width="640" height="480"';
-    embeddingCode += ' style="border:1px solid #eeeeee;"';
-    let hashParameters = OV.CreateUrlParameters (modelFiles, camera);
-    embeddingCode += ' src="https://3dviewer.net/embed.html#' + hashParameters + '">';
-    embeddingCode += '</iframe>';
-
+    let embeddingCode = GetEmbeddingCode (modelFiles, camera, useCamera);
     urlsTextArea.val (embeddingCode);
+
     urlsTextArea.appendTo (contentDiv);
     let copyToClipboardText = 'copy to clipboard';
     let copiedToClipboardText = 'successfully copied';
     let innerButtonContainer = $('<div>').addClass ('ov_dialog_inner_buttons').appendTo (contentDiv);
     let copyButton = $('<div>').addClass ('ov_dialog_inner_button').html (copyToClipboardText).appendTo (innerButtonContainer);
     copyButton.click (function () {
-        OV.CopyToClipboard (embeddingCode);
+        OV.CopyToClipboard (urlsTextArea.val ());
         copyButton.fadeOut (200, function () {
             copyButton.html (copiedToClipboardText).fadeIn (200);
             setTimeout (function () {
