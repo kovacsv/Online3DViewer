@@ -260,6 +260,7 @@ OV.Importer = class
 			new OV.ImporterGltf ()
 		];
 		this.fileList = new OV.FileList (this.importers);
+		this.defaultColor = new OV.Color (200, 200, 200);
 		this.model = null;
 		this.usedFiles = [];
 		this.missingFiles = [];
@@ -273,6 +274,11 @@ OV.Importer = class
 	LoadFilesFromFileObjects (fileList, onReady)
 	{
 		this.LoadFiles (fileList, OV.FileSource.File, onReady);
+	}
+
+	SetDefaultColor (defaultColor)
+	{
+		this.defaultColor = defaultColor;
 	}
 
 	Import (callbacks)
@@ -310,7 +316,7 @@ OV.Importer = class
 		importer.Import (mainFile.file.content, mainFile.file.extension, {
 			getDefaultMaterial : function () {
 				let material = new OV.Material ();
-				material.diffuse = new OV.Color (200, 200, 200);
+				material.diffuse = obj.defaultColor;
 				return material;
 			},
 			getFileBuffer : function (filePath) {

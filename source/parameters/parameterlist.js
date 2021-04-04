@@ -1,20 +1,30 @@
-OV.UrlParamConverter =
+OV.ParameterConverter =
 {
-    CameraToUrlParameter : function (camera)
+    NumberToString (number)
+    {
+        let precision = 5;
+        return number.toPrecision (precision);
+    },
+
+    StringToNumber (str)
+    {
+        return parseFloat (str);
+    },
+
+    CameraToString : function (camera)
     {
         if (camera === null) {
             return null;
         }
-        let precision = 5;
         let cameraParameters = [
-            camera.eye.x.toPrecision (precision), camera.eye.y.toPrecision (precision), camera.eye.z.toPrecision (precision),
-            camera.center.x.toPrecision (precision), camera.center.y.toPrecision (precision), camera.center.z.toPrecision (precision),
-            camera.up.x.toPrecision (precision), camera.up.y.toPrecision (precision), camera.up.z.toPrecision (precision)
+            this.NumberToString (camera.eye.x), this.NumberToString (camera.eye.y), this.NumberToString (camera.eye.z),
+            this.NumberToString (camera.center.x), this.NumberToString (camera.center.y), this.NumberToString (camera.center.z),
+            this.NumberToString (camera.up.x), this.NumberToString (camera.up.y), this.NumberToString (camera.up.z)
         ].join (',');
         return cameraParameters;
     },
 
-    UrlParameterToCamera : function (urlParam)
+    StringToCamera : function (urlParam)
     {
         if (urlParam === null || urlParam.length === 0) {
             return null;
@@ -24,14 +34,14 @@ OV.UrlParamConverter =
             return null;
         }
         let camera = new OV.Camera (
-            new OV.Coord3D (parseFloat (paramParts[0]), parseFloat (paramParts[1]), parseFloat (paramParts[2])),
-            new OV.Coord3D (parseFloat (paramParts[3]), parseFloat (paramParts[4]), parseFloat (paramParts[5])),
-            new OV.Coord3D (parseFloat (paramParts[6]), parseFloat (paramParts[7]), parseFloat (paramParts[8]))
+            new OV.Coord3D (this.StringToNumber (paramParts[0]), this.StringToNumber (paramParts[1]), this.StringToNumber (paramParts[2])),
+            new OV.Coord3D (this.StringToNumber (paramParts[3]), this.StringToNumber (paramParts[4]), this.StringToNumber (paramParts[5])),
+            new OV.Coord3D (this.StringToNumber (paramParts[6]), this.StringToNumber (paramParts[7]), this.StringToNumber (paramParts[8]))
         );
         return camera;
     },
 
-    ModelUrlsToUrlParameter : function (urls)
+    ModelUrlsToString : function (urls)
     {
         if (urls === null) {
             return null;
@@ -39,7 +49,7 @@ OV.UrlParamConverter =
         return urls.join (',');
     },
 
-    UrlParameterToModelUrls : function (urlParam)
+    StringToModelUrls : function (urlParam)
     {
         if (urlParam === null || urlParam.length === 0) {
             return null;
@@ -48,22 +58,23 @@ OV.UrlParamConverter =
     }
 };
 
-OV.UrlParamBuilder = class
+OV.ParameterListBuilder = class
 {
-    constructor ()
+    constructor (separator)
     {
+        this.separator = separator;
         this.urlParams = '';
     }
 
     AddModelUrls (urls)
     {
-        this.AddUrlPart ('model', OV.UrlParamConverter.ModelUrlsToUrlParameter (urls));
+        this.AddUrlPart ('model', OV.ParameterConverter.ModelUrlsToString (urls));
         return this;
     }
 
     AddCamera (camera)
     {
-        this.AddUrlPart ('camera', OV.UrlParamConverter.CameraToUrlParameter (camera));
+        this.AddUrlPart ('camera', OV.ParameterConverter.CameraToString (camera));
         return this;
     }
 
@@ -73,7 +84,7 @@ OV.UrlParamBuilder = class
             return;
         }
         if (this.urlParams.length > 0) {
-            this.urlParams += '$';
+            this.urlParams += this.separator;
         }
         this.urlParams += keyword + '=' + urlPart;
     }
@@ -84,10 +95,11 @@ OV.UrlParamBuilder = class
     } 
 };
 
-OV.UrlParamParser = class
+OV.ParameterListParser = class
 {
-    constructor (urlParams)
+    constructor (urlParams, separator)
     {
+        this.separator = separator;
         this.urlParams = urlParams;
     }
 
@@ -99,13 +111,13 @@ OV.UrlParamParser = class
         }
 
         let keywordParams = this.GetKeywordParams ('model');
-        return OV.UrlParamConverter.UrlParameterToModelUrls (keywordParams);
+        return OV.ParameterConverter.StringToModelUrls (keywordParams);
     }
 
     GetCamera ()
     {
         let keywordParams = this.GetKeywordParams ('camera');
-        return OV.UrlParamConverter.UrlParameterToCamera (keywordParams);
+        return OV.ParameterConverter.StringToCamera (keywordParams);
     }
     
     GetKeywordParams (keyword)
@@ -114,7 +126,7 @@ OV.UrlParamParser = class
             return null;
         }
         let keywordToken = keyword + '=';
-        let urlParts = this.urlParams.split ('$');
+        let urlParts = this.urlParams.split (this.separator);
         for (let i = 0; i < urlParts.length; i++) {
             let urlPart = urlParts[i];
             if (urlPart.startsWith (keywordToken)) {
@@ -125,9 +137,19 @@ OV.UrlParamParser = class
     }
 };
 
+OV.CreateUrlBuilder = function ()
+{
+    return new OV.ParameterListBuilder ('$');
+};
+
+OV.CreateUrlParser = function (urlParams)
+{
+    return new OV.ParameterListParser (urlParams, '$');
+};
+
 OV.CreateUrlParameters = function (urls, camera)
 {
-    let builder = new OV.UrlParamBuilder ();
+    let builder = OV.CreateUrlBuilder ();
     builder.AddModelUrls (urls);
     builder.AddCamera (camera);
     return builder.GetUrlParams ();

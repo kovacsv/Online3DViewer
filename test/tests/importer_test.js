@@ -233,4 +233,24 @@ describe ('Importer Test', function () {
             }
         });      
     });
+
+    it ('Default color', function () {
+        let files = [
+            new FileObject ('stl', 'single_triangle.stl')
+        ];
+        let theImporter = new OV.Importer ();
+        theImporter.SetDefaultColor (new OV.Color (200, 0, 0));
+        ImportFilesWithImporter (theImporter, files, {
+            success : function (importer, importResult) {
+                assert (!OV.IsModelEmpty (importResult.model));
+                assert.deepStrictEqual (importResult.usedFiles, ['single_triangle.stl']);
+                assert.deepStrictEqual (importResult.missingFiles, []);
+                let material = importResult.model.GetMaterial (0);
+                assert.deepStrictEqual (material.diffuse, new OV.Color (200, 0, 0));
+            },
+            error : function (importer, importError) {
+                assert.fail ();
+            }
+        });
+    });    
 });

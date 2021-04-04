@@ -32,6 +32,11 @@ OV.Website = class
         this.Resize ();
 
         this.OnHashChange ();
+
+        let obj = this;
+        $(window).on ('resize', function () {
+			obj.Resize ();
+		});
     }
 
     Resize ()

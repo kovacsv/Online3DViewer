@@ -30,38 +30,20 @@ OV.HashHandler = class
 
     GetCameraFromHash ()
     {
-        let parser = new OV.UrlParamParser (this.GetHash ());
+        let parser = OV.CreateUrlParser (this.GetHash ());
         return parser.GetCamera ();
     }
 
     GetModelFilesFromHash ()
     {
-        let parser = new OV.UrlParamParser (this.GetHash ());
+        let parser = OV.CreateUrlParser (this.GetHash ());
         return parser.GetModelUrls ();
     }
 
     SetModelFilesToHash (files)
     {
-        let builder = new OV.UrlParamBuilder ();
-        builder.AddModelUrls (files);
-        this.SetHash (builder.GetUrlParams ());
-    }
-
-    GetFromHash (keyword)
-    {
-        let hash = this.GetHash ();
-        if (hash.length === 0) {
-            return null;
-        }
-        let keywordToken = keyword + '=';
-        let hashParts = hash.split ('$');
-        for (let i = 0; i < hashParts.length; i++) {
-            let hashPart = hashParts[i];
-            if (hashPart.startsWith (keywordToken)) {
-                return hashPart.substr (keywordToken.length);
-            }
-        }
-        return null;
+        let params = OV.CreateUrlParameters (files, null);
+        this.SetHash (params);
     }
 
     GetHash ()

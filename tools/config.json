@@ -42,11 +42,11 @@
 		"source/export/exporter.js",
 		"source/external/three.converter.js",
 		"source/external/three.model.loader.js",
+		"source/parameters/parameterlist.js",
 		"source/viewer/domutils.js",
 		"source/viewer/navigation.js",
 		"source/viewer/viewer.js",
-		"source/viewer/domviewer.js",
-		"source/viewer/urlutils.js"
+		"source/viewer/domviewer.js"
 	],
 	"website_files" : [
 		"website/o3dv/utils.js",

@@ -1,5 +1,19 @@
 OV.Init3DViewerElements = function ()
 {
+    function SetCamera (element, viewer, importResult)
+    {
+        let camera = null;
+        let cameraParams = element.getAttribute ('camera');
+        if (cameraParams) {
+            camera = OV.ParameterConverter.StringToCamera (cameraParams);
+        }
+        if (camera !== null) {
+            viewer.SetCamera (camera);
+        } else {
+            viewer.SetUpVector (importResult.upVector, false);
+        }
+    }
+
     function LoadElement (element)
     {
         let canvas = document.createElement ('canvas');
@@ -8,10 +22,9 @@ OV.Init3DViewerElements = function ()
         let viewer = new OV.Viewer ();
         viewer.Init (canvas);
 
-        let width = parseInt (element.getAttribute ('width'));
-        let height = parseInt (element.getAttribute ('height'));
-        element.style.width = width + 'px';
-        element.style.height = height + 'px';
+        let width = element.clientWidth;
+        let height = element.clientHeight;
+        console.log (element.clientHeight);
         viewer.Resize (width, height);
 
         let loader = new OV.ThreeModelLoader ();
@@ -23,20 +36,21 @@ OV.Init3DViewerElements = function ()
                 element.appendChild (progressDiv);
                 progressDiv.innerHTML = 'Loading model...';
             },
-            onFilesLoaded : function () {
+            onImportStart : function () {
                 progressDiv.innerHTML = 'Importing model...';
             },
-            onModelImported : function () {
+            onVisualizationStart : function () {
                 progressDiv.innerHTML = 'Visualizing model...';
             },
             onModelFinished : function (importResult, threeMeshes) {
                 element.removeChild (progressDiv);
-                canvas.style.display = 'initial';
+                canvas.style.display = 'inherit';
                 viewer.AddMeshes (threeMeshes);
                 let boundingSphere = viewer.GetBoundingSphere (function (meshUserData) {
                     return true;
                 });
                 viewer.AdjustClippingPlanes (boundingSphere);
+                SetCamera (element, viewer, importResult);
                 viewer.FitToWindow (boundingSphere, false);                                
             },
             onTextureLoaded : function () {
@@ -52,27 +66,34 @@ OV.Init3DViewerElements = function ()
             return;
         }
 
-        let modelUrls = OV.UrlParamConverter.UrlParameterToModelUrls (modelParams);
+        let modelUrls = OV.ParameterConverter.StringToModelUrls (modelParams);
         if (modelUrls === null || modelUrls.length === 0) {
             return;
         }
 
-        let cameraParams = element.getAttribute ('camera');
-        if (cameraParams) {
-            let camera = OV.UrlParamConverter.UrlParameterToCamera (cameraParams);
-            if (camera !== null) {
-                viewer.SetCamera (camera);
-            }
-        }
-
         loader.LoadFromUrlList (modelUrls);
+        return {
+            element: element,
+            viewer: viewer
+        };
     }
 
+    let viewerElements = [];
     window.addEventListener ('load', function () {
         let elements = document.getElementsByClassName ('online_3d_viewer');
         for (let i = 0; i < elements.length; i++) {
             let element = elements[i];
-            LoadElement (element);
+            let viewerElement = LoadElement (element);
+            viewerElements.push (viewerElement);
+        }
+    }); 
+
+    window.addEventListener ('resize', function () {
+        for (let i = 0; i < viewerElements.length; i++) {
+            let viewerElement = viewerElements[i];
+            let width = viewerElement.element.clientWidth;
+            let height = viewerElement.element.clientHeight;
+            viewerElement.viewer.Resize (width, height);    
         }
     });
 };

@@ -60,7 +60,13 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 		'o3dv/o3dv.website.min.js'
 	]
 	
-	for htmlFileName in ['index.html', 'embed.html', os.path.join ('info', 'index.html')]:
+	htmlFileNames = [
+		'index.html',
+		'embed.html',
+		os.path.join ('info', 'index.html'),
+		os.path.join ('info', 'cookies.html')
+	]
+	for htmlFileName in htmlFileNames:
 		htmlFilePath = os.path.join (websiteDir, htmlFileName)
 		replacer = Tools.TokenReplacer (htmlFilePath, False)
 		replacer.ReplaceTokenFileLinks ('<!-- libs start -->', '<!-- libs end -->', libFiles, None)
