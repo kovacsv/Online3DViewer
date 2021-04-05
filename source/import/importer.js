@@ -276,6 +276,11 @@ OV.Importer = class
 		this.LoadFiles (fileList, OV.FileSource.File, onReady);
 	}
 
+	GetDefaultColor ()
+	{
+		return this.defaultColor;
+	}
+
 	SetDefaultColor (defaultColor)
 	{
 		this.defaultColor = defaultColor;

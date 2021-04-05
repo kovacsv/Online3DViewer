@@ -12,6 +12,11 @@ OV.ThreeModelLoader = class
         this.callbacks = callbacks;
     }
 
+	GetDefaultColor ()
+	{
+		return this.importer.GetDefaultColor ();
+	}
+
 	SetDefaultColor (defaultColor)
 	{
 		this.importer.SetDefaultColor (defaultColor);
