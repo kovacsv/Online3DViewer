@@ -468,6 +468,12 @@ div.ov_dialog select.ov_dialog_select
 	appearance: none;
 }
 
+div.ov_dialog input.ov_dialog_color
+{
+	width: 36px;
+	height: 18px;
+}
+
 div.ov_dialog div.ov_dialog_file_list
 {
 	max-height: 105px;
@@ -506,6 +512,23 @@ div.ov_dialog div.ov_dialog_inner_button
 	color: #3393bd;
 	float: right;
 	cursor: pointer;
+}
+
+div.ov_dialog div.ov_dialog_table_row
+{
+	padding: 2px 0px;
+	overflow: auto;
+}
+
+div.ov_dialog div.ov_dialog_table_row_name
+{
+	width: 120px;
+	float: left;
+}
+
+div.ov_dialog div.ov_dialog_table_row_value
+{
+	float: left;
 }
 
 div.ov_popup

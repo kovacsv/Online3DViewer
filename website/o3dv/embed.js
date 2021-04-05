@@ -21,7 +21,7 @@ OV.Embed = class
                 return;
             }
             this.modelLoader.LoadFromUrlList (urls);
-            let hashParameters = OV.CreateUrlParameters (urls, null);
+            let hashParameters = OV.CreateModelUrlParameters (urls);
             let websiteUrl = this.parameters.websiteLinkDiv.attr ('href') + '#' + hashParameters;
             this.parameters.websiteLinkDiv.attr ('href', websiteUrl);
         }
@@ -74,7 +74,8 @@ OV.Embed = class
         });
         let color = this.hashHandler.GetColorFromHash ();
         if (color !== null) {
-            this.modelLoader.SetDefaultColor (color);
+            let importer = this.modelLoader.GetImporter ();
+            importer.SetDefaultColor (color);
         }
     } 
 };

@@ -169,6 +169,11 @@ OV.Website = class
         this.ClearHashIfNotOnlyUrlList ();
     }
 
+    ReloadFiles ()
+    {
+        this.modelLoader.ReloadFiles ();
+    }
+
     ClearHashIfNotOnlyUrlList ()
     {
         let importer = this.modelLoader.GetImporter ();
@@ -233,6 +238,8 @@ OV.Website = class
         }
 
         let obj = this;
+        let importer = this.modelLoader.GetImporter ();
+
         AddButton (this.toolbar, 'open', 'Open model from your device', false, function () {
             obj.OpenFileBrowserDialog ();
         });
@@ -269,8 +276,23 @@ OV.Website = class
             obj.dialog = OV.ShowExportDialog (obj.model);
         });        
         AddButton (this.toolbar, 'embed', 'Get embedding code', true, function () {
-            obj.dialog = OV.ShowEmbeddingDialog (obj.modelLoader.GetImporter (), obj.viewer.GetCamera ());
+            obj.dialog = OV.ShowEmbeddingDialog (importer, obj.viewer.GetCamera ());
         });
+        if (OV.FeatureSet.SetDefaultColor) {
+            AddSeparator (this.toolbar, true);
+            AddButton (this.toolbar, 'export', 'Settings', true, function () {
+                obj.dialog = OV.ShowSettingsDialog (importer, function (settings) {
+                    let reload = false;
+                    if (!OV.ColorIsEqual (importer.GetDefaultColor (), settings.defaultColor)) {
+                        importer.SetDefaultColor (settings.defaultColor);
+                        reload = true;
+                    }
+                    if (reload) {
+                        obj.ReloadFiles ();
+                    }
+                });
+            });
+        }
 
         this.parameters.fileInput.on ('change', function (ev) {
             obj.LoadModelFromFileList (ev.target.files);

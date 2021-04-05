@@ -1,3 +1,8 @@
+OV.FeatureSet =
+{
+    SetDefaultColor : false
+};
+
 OV.ProgressDialog = class
 {
     constructor ()
@@ -287,13 +292,28 @@ OV.ShowExportDialog = function (model)
 
 OV.ShowEmbeddingDialog = function (importer, camera)
 {
-    function GetEmbeddingCode (files, camera, useCameraCheck)
+    function AddCheckboxLine (parentDiv, text, onChange)
     {
+        let line = $('<div>').addClass ('ov_dialog_table_row').appendTo (parentDiv);
+        let check = $('<input>').attr ('type', 'checkbox').attr ('checked', 'true').appendTo (line);
+        $('<span>').html (text).appendTo (line);
+        check.change (function () {
+            onChange (check.prop ('checked'));
+        });
+    }
+
+    function GetEmbeddingCode (params)
+    {
+        let builder = OV.CreateUrlBuilder ();
+        builder.AddModelUrls (params.files);
+        builder.AddCamera (params.camera);
+        builder.AddColor (params.color);
+        let hashParameters = builder.GetParameterList ();
+
         let embeddingCode = '';
         embeddingCode += '<iframe';
         embeddingCode += ' width="640" height="480"';
         embeddingCode += ' style="border:1px solid #eeeeee;"';
-        let hashParameters = OV.CreateUrlParameters (files, useCameraCheck.get (0).checked ? camera : null);
         embeddingCode += ' src="https://3dviewer.net/embed.html#' + hashParameters + '">';
         embeddingCode += '</iframe>';
         return embeddingCode;
@@ -314,6 +334,12 @@ OV.ShowEmbeddingDialog = function (importer, camera)
         modelFiles.push (file.fileUrl);
     }
 
+    let embeddingParams = {
+        files : modelFiles,
+        camera : camera,
+        color : null
+    };
+
     let dialog = new OV.ButtonDialog ();
     let urlsTextArea = $('<textarea>').attr ('readonly', 'true').addClass ('ov_dialog_textarea');
     let contentDiv = dialog.Init ('Embedding', [
@@ -324,19 +350,25 @@ OV.ShowEmbeddingDialog = function (importer, camera)
             }
         }
     ]);
+
     let text = 'Embedding options:';
     $('<div>').html (text).addClass ('ov_dialog_section').appendTo (contentDiv);
     let optionsSection = $('<div>').addClass ('ov_dialog_section').appendTo (contentDiv);
-    let useCameraLine = $('<div>').appendTo (optionsSection);
-    let useCamera = $('<input>').attr ('type', 'checkbox').attr ('checked', 'true').appendTo (useCameraLine);
-    $('<span>').html ('Use current camera position').appendTo (useCameraLine);
-    useCamera.change (function () {
-        let newEmbeddingCode = GetEmbeddingCode (modelFiles, camera, useCamera);
-        urlsTextArea.val (newEmbeddingCode);
+
+    AddCheckboxLine (optionsSection, 'Use current camera position', function (checked) {
+        embeddingParams.camera = checked ? camera : null;
+        urlsTextArea.val (GetEmbeddingCode (embeddingParams));
     });
 
-    let embeddingCode = GetEmbeddingCode (modelFiles, camera, useCamera);
-    urlsTextArea.val (embeddingCode);
+    if (OV.FeatureSet.SetDefaultColor) {
+        AddCheckboxLine (optionsSection, 'Use overridden default color', function (checked) {
+            embeddingParams.color = checked ? importer.GetDefaultColor () : null;
+            urlsTextArea.val (GetEmbeddingCode (embeddingParams));
+        });
+        embeddingParams.color = importer.GetDefaultColor ();
+    }
+
+    urlsTextArea.val (GetEmbeddingCode (embeddingParams));
 
     urlsTextArea.appendTo (contentDiv);
     let copyToClipboardText = 'copy to clipboard';
@@ -355,6 +387,42 @@ OV.ShowEmbeddingDialog = function (importer, camera)
         });
     });
 
+    dialog.Show ();
+    return dialog;
+};
+
+OV.ShowSettingsDialog = function (importer, onOk)
+{
+    let settings = {
+        defaultColor : importer.GetDefaultColor ()
+    };
+    let dialog = new OV.ButtonDialog ();
+    let contentDiv = dialog.Init ('Settings', [
+        {
+            name : 'Cancel',
+            subClass : 'outline',
+            onClick () {
+                dialog.Hide ();
+            }
+        },
+        {
+            name : 'OK',
+            onClick () {
+                dialog.Hide ();                
+                onOk (settings);
+            }
+        }
+    ]);
+    
+    let colorRow = $('<div>').addClass ('ov_dialog_table_row').appendTo (contentDiv);
+    $('<div>').html ('Default Color').addClass ('ov_dialog_table_row_name').appendTo (colorRow);
+    let valueColumn = $('<div>').addClass ('ov_dialog_table_row_value').appendTo (colorRow);
+    let colorInput = $('<input>').attr ('type', 'color').addClass ('ov_dialog_color').appendTo (valueColumn);
+    colorInput.val ('#' + OV.ColorToHexString (settings.defaultColor));
+    colorInput.change (function () {
+        let colorStr = colorInput.val ().substr (1);
+        settings.defaultColor = OV.HexStringToColor (colorStr);
+    });
     dialog.Show ();
     return dialog;
 };

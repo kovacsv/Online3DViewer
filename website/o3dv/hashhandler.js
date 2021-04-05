@@ -36,7 +36,7 @@ OV.HashHandler = class
 
     SetModelFilesToHash (files)
     {
-        let params = OV.CreateUrlParameters (files, null);
+        let params = OV.CreateModelUrlParameters (files);
         this.SetHash (params);
     }
 

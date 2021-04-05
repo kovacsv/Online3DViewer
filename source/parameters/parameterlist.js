@@ -199,10 +199,9 @@ OV.CreateUrlParser = function (urlParams)
     return new OV.ParameterListParser (urlParams, '$');
 };
 
-OV.CreateUrlParameters = function (urls, camera)
+OV.CreateModelUrlParameters = function (urls)
 {
     let builder = OV.CreateUrlBuilder ();
     builder.AddModelUrls (urls);
-    builder.AddCamera (camera);
     return builder.GetParameterList ();
 };

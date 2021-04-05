@@ -70,7 +70,8 @@ OV.Init3DViewerElements = function ()
         if (colorParams) {
             let color = OV.ParameterConverter.StringToColor (colorParams);
             if (color !== null) {
-                loader.SetDefaultColor (color);
+                let importer = loader.GetImporter ();
+                importer.SetDefaultColor (color);
             }
         }        
 
