@@ -72,5 +72,9 @@ OV.Embed = class
                 obj.viewer.Render ();
             }
         });
+        let color = this.hashHandler.GetColorFromHash ();
+        if (color !== null) {
+            this.modelLoader.SetDefaultColor (color);
+        }
     } 
 };

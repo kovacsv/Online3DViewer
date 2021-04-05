@@ -1,5 +1,15 @@
 OV.ParameterConverter =
 {
+    IntegerToString (integer)
+    {
+        return integer.toString ();
+    },
+
+    StringToInteger (str)
+    {
+        return parseInt (str, 10);
+    },
+
     NumberToString (number)
     {
         let precision = 5;
@@ -9,6 +19,22 @@ OV.ParameterConverter =
     StringToNumber (str)
     {
         return parseFloat (str);
+    },
+
+    ModelUrlsToString : function (urls)
+    {
+        if (urls === null) {
+            return null;
+        }
+        return urls.join (',');
+    },
+
+    StringToModelUrls : function (str)
+    {
+        if (str === null || str.length === 0) {
+            return null;
+        }
+        return str.split (',');
     },
 
     CameraToString : function (camera)
@@ -24,12 +50,12 @@ OV.ParameterConverter =
         return cameraParameters;
     },
 
-    StringToCamera : function (urlParam)
+    StringToCamera : function (str)
     {
-        if (urlParam === null || urlParam.length === 0) {
+        if (str === null || str.length === 0) {
             return null;
         }
-        let paramParts = urlParam.split (',');
+        let paramParts = str.split (',');
         if (paramParts.length !== 9) {
             return null;
         }
@@ -41,20 +67,34 @@ OV.ParameterConverter =
         return camera;
     },
 
-    ModelUrlsToString : function (urls)
+    ColorToString : function (color)
     {
-        if (urls === null) {
+        if (color === null) {
             return null;
         }
-        return urls.join (',');
+        let colorParameters = [
+            this.IntegerToString (color.r),
+            this.IntegerToString (color.g),
+            this.IntegerToString (color.b)
+        ].join (',');
+        return colorParameters;
     },
 
-    StringToModelUrls : function (urlParam)
+    StringToColor : function (str)
     {
-        if (urlParam === null || urlParam.length === 0) {
+        if (str === null || str.length === 0) {
             return null;
         }
-        return urlParam.split (',');
+        let paramParts = str.split (',');
+        if (paramParts.length !== 3) {
+            return null;
+        }
+        let color = new OV.Color (
+            this.StringToInteger (paramParts[0]),
+            this.StringToInteger (paramParts[1]),
+            this.StringToInteger (paramParts[2])
+        );
+        return color;
     }
 };
 
@@ -63,7 +103,7 @@ OV.ParameterListBuilder = class
     constructor (separator)
     {
         this.separator = separator;
-        this.urlParams = '';
+        this.paramList = '';
     }
 
     AddModelUrls (urls)
@@ -78,36 +118,42 @@ OV.ParameterListBuilder = class
         return this;
     }
 
+    AddColor (color)
+    {
+        this.AddUrlPart ('color', OV.ParameterConverter.ColorToString (color));
+        return this;
+    }    
+
     AddUrlPart (keyword, urlPart)
     {
         if (keyword === null || urlPart === null) {
             return;
         }
-        if (this.urlParams.length > 0) {
-            this.urlParams += this.separator;
+        if (this.paramList.length > 0) {
+            this.paramList += this.separator;
         }
-        this.urlParams += keyword + '=' + urlPart;
+        this.paramList += keyword + '=' + urlPart;
     }
 
-    GetUrlParams ()
+    GetParameterList ()
     {
-        return this.urlParams;
+        return this.paramList;
     } 
 };
 
 OV.ParameterListParser = class
 {
-    constructor (urlParams, separator)
+    constructor (paramList, separator)
     {
         this.separator = separator;
-        this.urlParams = urlParams;
+        this.paramList = paramList;
     }
 
     GetModelUrls ()
     {
         // detect legacy links
-        if (this.urlParams.indexOf ('=') === -1) {
-            return this.urlParams.split (',');
+        if (this.paramList.indexOf ('=') === -1) {
+            return this.paramList.split (',');
         }
 
         let keywordParams = this.GetKeywordParams ('model');
@@ -119,14 +165,20 @@ OV.ParameterListParser = class
         let keywordParams = this.GetKeywordParams ('camera');
         return OV.ParameterConverter.StringToCamera (keywordParams);
     }
+
+    GetColor ()
+    {
+        let colorParams = this.GetKeywordParams ('color');
+        return OV.ParameterConverter.StringToColor (colorParams);
+    }
     
     GetKeywordParams (keyword)
     {
-        if (this.urlParams === null || this.urlParams.length === 0) {
+        if (this.paramList === null || this.paramList.length === 0) {
             return null;
         }
         let keywordToken = keyword + '=';
-        let urlParts = this.urlParams.split (this.separator);
+        let urlParts = this.paramList.split (this.separator);
         for (let i = 0; i < urlParts.length; i++) {
             let urlPart = urlParts[i];
             if (urlPart.startsWith (keywordToken)) {
@@ -152,5 +204,5 @@ OV.CreateUrlParameters = function (urls, camera)
     let builder = OV.CreateUrlBuilder ();
     builder.AddModelUrls (urls);
     builder.AddCamera (camera);
-    return builder.GetUrlParams ();
+    return builder.GetParameterList ();
 };

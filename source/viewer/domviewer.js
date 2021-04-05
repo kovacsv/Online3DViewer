@@ -1,19 +1,5 @@
 OV.Init3DViewerElements = function ()
 {
-    function SetCamera (element, viewer, importResult)
-    {
-        let camera = null;
-        let cameraParams = element.getAttribute ('camera');
-        if (cameraParams) {
-            camera = OV.ParameterConverter.StringToCamera (cameraParams);
-        }
-        if (camera !== null) {
-            viewer.SetCamera (camera);
-        } else {
-            viewer.SetUpVector (importResult.upVector, false);
-        }
-    }
-
     function LoadElement (element)
     {
         let canvas = document.createElement ('canvas');
@@ -50,7 +36,16 @@ OV.Init3DViewerElements = function ()
                     return true;
                 });
                 viewer.AdjustClippingPlanes (boundingSphere);
-                SetCamera (element, viewer, importResult);
+                let camera = null;
+                let cameraParams = element.getAttribute ('camera');
+                if (cameraParams) {
+                    camera = OV.ParameterConverter.StringToCamera (cameraParams);
+                }
+                if (camera !== null) {
+                    viewer.SetCamera (camera);
+                } else {
+                    viewer.SetUpVector (importResult.upVector, false);
+                }
                 viewer.FitToWindow (boundingSphere, false);                                
             },
             onTextureLoaded : function () {
@@ -70,6 +65,14 @@ OV.Init3DViewerElements = function ()
         if (modelUrls === null || modelUrls.length === 0) {
             return;
         }
+
+        let colorParams = element.getAttribute ('color');
+        if (colorParams) {
+            let color = OV.ParameterConverter.StringToColor (colorParams);
+            if (color !== null) {
+                loader.SetDefaultColor (color);
+            }
+        }        
 
         loader.LoadFromUrlList (modelUrls);
         return {
