@@ -246,7 +246,8 @@ OV.ExporterGltf = class extends OV.ExporterBase
 
         let mainJson = {
             asset : {
-                version : '2.0'
+                version : '2.0',
+                generator : 'https://3dviewer.net'
             },
             scene : 0,
             scenes : [
