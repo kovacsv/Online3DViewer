@@ -287,7 +287,7 @@ OV.Website = class
         });
         if (OV.FeatureSet.SetDefaultColor) {
             AddSeparator (this.toolbar, true);
-            AddButton (this.toolbar, 'export', 'Settings', true, function () {
+            AddButton (this.toolbar, 'settings', 'Settings', true, function () {
                 obj.dialog = OV.ShowSettingsDialog (obj.importSettings, function (dialogSettings) {
                     let reload = false;
                     if (!OV.ColorIsEqual (obj.importSettings.defaultColor, dialogSettings.defaultColor)) {
