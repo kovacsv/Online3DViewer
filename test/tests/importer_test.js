@@ -4,7 +4,8 @@ var path = require ('path');
 function ImportFilesWithImporter (importer, files, callbacks)
 {
     importer.LoadFilesFromFileObjects (files, function () {
-        importer.Import ({
+        let settings = new OV.ImportSettings ();
+        importer.Import (settings, {
             success : function (importResult) {
                 callbacks.success (importer, importResult);
             },
@@ -239,20 +240,21 @@ describe ('Importer Test', function () {
             new FileObject ('stl', 'single_triangle.stl')
         ];
         let theImporter = new OV.Importer ();
-        assert.deepStrictEqual (theImporter.GetDefaultColor (), new OV.Color (200, 200, 200));
-        theImporter.SetDefaultColor (new OV.Color (200, 0, 0));
-        assert.deepStrictEqual (theImporter.GetDefaultColor (), new OV.Color (200, 0, 0));
-        ImportFilesWithImporter (theImporter, files, {
-            success : function (importer, importResult) {
-                assert (!OV.IsModelEmpty (importResult.model));
-                assert.deepStrictEqual (importResult.usedFiles, ['single_triangle.stl']);
-                assert.deepStrictEqual (importResult.missingFiles, []);
-                let material = importResult.model.GetMaterial (0);
-                assert.deepStrictEqual (material.diffuse, new OV.Color (200, 0, 0));
-            },
-            error : function (importer, importError) {
-                assert.fail ();
-            }
+        theImporter.LoadFilesFromFileObjects (files, function () {
+            let settings = new OV.ImportSettings ();
+            settings.defaultColor = new OV.Color (200, 0, 0);
+            theImporter.Import (settings, {
+                success : function (importResult) {
+                    assert (!OV.IsModelEmpty (importResult.model));
+                    assert.deepStrictEqual (importResult.usedFiles, ['single_triangle.stl']);
+                    assert.deepStrictEqual (importResult.missingFiles, []);
+                    let material = importResult.model.GetMaterial (0);
+                    assert.deepStrictEqual (material.diffuse, new OV.Color (200, 0, 0));
+                },
+                error : function (importError) {
+                    assert.fail ();
+                }
+            });
         });
     });    
 });

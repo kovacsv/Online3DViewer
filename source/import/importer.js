@@ -179,6 +179,14 @@ OV.FileList = class
 	}
 };
 
+OV.ImportSettings = class
+{
+	constructor ()
+	{
+		this.defaultColor = new OV.Color (200, 200, 200);
+	}
+};
+
 OV.ImportErrorCode =
 {
 	NoImportableFile : 1,
@@ -207,7 +215,7 @@ OV.ImportResult = class
 	}
 };
 
-OV.ImporterBuffers = class
+OV.ImportBuffers = class
 {
     constructor (getBufferCallback)
     {
@@ -260,7 +268,6 @@ OV.Importer = class
 			new OV.ImporterGltf ()
 		];
 		this.fileList = new OV.FileList (this.importers);
-		this.defaultColor = new OV.Color (200, 200, 200);
 		this.model = null;
 		this.usedFiles = [];
 		this.missingFiles = [];
@@ -276,17 +283,7 @@ OV.Importer = class
 		this.LoadFiles (fileList, OV.FileSource.File, onReady);
 	}
 
-	GetDefaultColor ()
-	{
-		return this.defaultColor;
-	}
-
-	SetDefaultColor (defaultColor)
-	{
-		this.defaultColor = defaultColor;
-	}
-
-	Import (callbacks)
+	Import (settings, callbacks)
 	{
 		let mainFile = this.fileList.GetMainFile ();
 		if (mainFile === null || mainFile.file === null || mainFile.file.content === null) {
@@ -305,7 +302,7 @@ OV.Importer = class
 
 		let obj = this;
 		let importer = mainFile.importer;
-		let buffers = new OV.ImporterBuffers (function (fileName) {
+		let buffers = new OV.ImportBuffers (function (fileName) {
 			let fileBuffer = null;
 			let file = obj.fileList.FindFileByPath (fileName);
 			if (file === null || file.content === null) {
@@ -321,7 +318,7 @@ OV.Importer = class
 		importer.Import (mainFile.file.content, mainFile.file.extension, {
 			getDefaultMaterial : function () {
 				let material = new OV.Material ();
-				material.diffuse = obj.defaultColor;
+				material.diffuse = settings.defaultColor;
 				return material;
 			},
 			getFileBuffer : function (filePath) {

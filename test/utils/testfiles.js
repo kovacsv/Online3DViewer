@@ -52,7 +52,7 @@ module.exports =
             content = testUtils.GetArrayBufferFileContent (folder, fileName);
         }
         var extension = OV.GetFileExtension (fileName);
-        let buffers = new OV.ImporterBuffers (function (filePath) {
+        let buffers = new OV.ImportBuffers (function (filePath) {
             let extension = OV.GetFileExtension (filePath);
             let knownFormats = importer.GetKnownFileFormats ();
             let format = OV.FileFormat.Binary;

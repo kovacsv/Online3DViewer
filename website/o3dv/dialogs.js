@@ -156,7 +156,7 @@ OV.ShowExportDialog = function (model)
     return dialog;
 };
 
-OV.ShowEmbeddingDialog = function (importer, camera)
+OV.ShowEmbeddingDialog = function (importer, importSettings, camera)
 {
     function AddCheckboxLine (parentDiv, text, onChange)
     {
@@ -228,10 +228,10 @@ OV.ShowEmbeddingDialog = function (importer, camera)
 
     if (OV.FeatureSet.SetDefaultColor) {
         AddCheckboxLine (optionsSection, 'Use overridden default color', function (checked) {
-            embeddingParams.color = checked ? importer.GetDefaultColor () : null;
+            embeddingParams.color = checked ? importSettings.defaultColor : null;
             urlsTextArea.val (GetEmbeddingCode (embeddingParams));
         });
-        embeddingParams.color = importer.GetDefaultColor ();
+        embeddingParams.color = importSettings.defaultColor;
     }
 
     urlsTextArea.val (GetEmbeddingCode (embeddingParams));
@@ -257,10 +257,10 @@ OV.ShowEmbeddingDialog = function (importer, camera)
     return dialog;
 };
 
-OV.ShowSettingsDialog = function (importer, onOk)
+OV.ShowSettingsDialog = function (importSettings, onOk)
 {
-    let settings = {
-        defaultColor : importer.GetDefaultColor ()
+    let dialogSettings = {
+        defaultColor : importSettings.defaultColor
     };
     let dialog = new OV.ButtonDialog ();
     let contentDiv = dialog.Init ('Settings', [
@@ -275,7 +275,7 @@ OV.ShowSettingsDialog = function (importer, onOk)
             name : 'OK',
             onClick () {
                 dialog.Hide ();                
-                onOk (settings);
+                onOk (dialogSettings);
             }
         }
     ]);
@@ -284,10 +284,10 @@ OV.ShowSettingsDialog = function (importer, onOk)
     $('<div>').html ('Default Color').addClass ('ov_dialog_table_row_name').appendTo (colorRow);
     let valueColumn = $('<div>').addClass ('ov_dialog_table_row_value').appendTo (colorRow);
     let colorInput = $('<input>').attr ('type', 'color').addClass ('ov_dialog_color').appendTo (valueColumn);
-    colorInput.val ('#' + OV.ColorToHexString (settings.defaultColor));
+    colorInput.val ('#' + OV.ColorToHexString (dialogSettings.defaultColor));
     colorInput.change (function () {
         let colorStr = colorInput.val ().substr (1);
-        settings.defaultColor = OV.HexStringToColor (colorStr);
+        dialogSettings.defaultColor = OV.HexStringToColor (colorStr);
     });
     dialog.Show ();
     return dialog;

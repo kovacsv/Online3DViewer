@@ -66,16 +66,16 @@ OV.Init3DViewerElements = function ()
             return;
         }
 
+        let settings = new OV.ImportSettings ();
         let colorParams = element.getAttribute ('color');
         if (colorParams) {
             let color = OV.ParameterConverter.StringToColor (colorParams);
             if (color !== null) {
-                let importer = loader.GetImporter ();
-                importer.SetDefaultColor (color);
+                settings.defaultColor = color;
             }
-        }        
+        }
 
-        loader.LoadFromUrlList (modelUrls);
+        loader.LoadFromUrlList (modelUrls, settings);
         return {
             element: element,
             viewer: viewer
