@@ -25,7 +25,7 @@ OV.ExporterObj = class extends OV.ExporterBase
 			});
 			if (fileIndex === -1) {
 				let textureFile = new OV.ExportedFile (fileName);
-				textureFile.SetUrl (texture.url);
+				textureFile.SetContent (texture.buffer);
 				files.push (textureFile);
 			}
 		}

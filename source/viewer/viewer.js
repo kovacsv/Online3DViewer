@@ -387,7 +387,7 @@ OV.Viewer = class
             this.ResizeRenderer (width, height);
         }
         this.Render ();
-        let url = this.renderer.domElement.toDataURL();
+        let url = this.renderer.domElement.toDataURL ();
         if (originalSize !== null) {
             this.ResizeRenderer (
                 parseInt (originalSize.x, 10),

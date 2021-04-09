@@ -133,11 +133,7 @@ OV.ShowExportDialog = function (model)
             fileList.empty ();
             for (let i = 0; i < files.length; i++) {
                 let file = files[i];
-                let url = file.GetUrl ();
-                if (url === null) {
-                    url = OV.CreateObjectUrl (file.GetContent ());
-                    createdUrls.push (url);
-                }
+                let url = OV.CreateObjectUrl (file.GetContent ());
                 let fileLink = $('<a>').addClass ('ov_dialog_file_link').appendTo (fileList);
                 fileLink.attr ('href', url);
                 fileLink.attr ('download', file.GetName ());

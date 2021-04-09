@@ -50,7 +50,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
             let textureIndex = fileNameToIndex[fileName];
             if (textureIndex === undefined) {
                 let textureFile = new OV.ExportedFile (fileName);
-                textureFile.SetUrl (texture.url);
+                textureFile.SetContent (texture.buffer);
                 files.push (textureFile);
 
                 textureIndex = mainJson.textures.length;

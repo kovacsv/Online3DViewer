@@ -3,7 +3,6 @@ OV.ExportedFile = class
 	constructor (name)
 	{
 		this.name = name;
-		this.url = null;
 		this.content = null;
 	}
 
@@ -16,16 +15,6 @@ OV.ExportedFile = class
 	{
 		this.name = name;
 	}
-
-	GetUrl ()
-	{
-		return this.url;
-	}
-
-	SetUrl (url)
-	{
-		this.url = url;
-	}	
 
 	GetContent ()
 	{
