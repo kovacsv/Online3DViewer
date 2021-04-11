@@ -378,22 +378,23 @@ OV.Viewer = class
         this.scene.add (this.light);
     }
 
+    GetImageSize ()
+    {
+        let originalSize = new THREE.Vector2 ();
+        this.renderer.getSize (originalSize);
+        return {
+            width : parseInt (originalSize.x, 10),
+            height : parseInt (originalSize.y, 10)
+        };
+    }
+
     GetImageAsDataUrl (width, height)
     {
-        let originalSize = null;
-        if (width && height) {
-            originalSize = new THREE.Vector2 ();
-            this.renderer.getSize (originalSize);
-            this.ResizeRenderer (width, height);
-        }
+        let originalSize = this.GetImageSize ();
+        this.ResizeRenderer (width, height);
         this.Render ();
         let url = this.renderer.domElement.toDataURL ();
-        if (originalSize !== null) {
-            this.ResizeRenderer (
-                parseInt (originalSize.x, 10),
-                parseInt (originalSize.y, 10)
-            );
-        }
+        this.ResizeRenderer (originalSize.width, originalSize.height);
         return url;
     }
 };

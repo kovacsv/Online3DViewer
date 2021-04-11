@@ -1,3 +1,9 @@
+OV.ExportType = 
+{
+    Model : 1,
+    Image : 2
+};
+
 OV.ExportDialog = class
 {
     constructor (callbacks)
@@ -8,34 +14,41 @@ OV.ExportDialog = class
             {
                 name : 'obj',
                 formats : [
-                    { name : 'text', format : OV.FileFormat.Text, extension : 'obj' }
+                    { name : 'text', type: OV.ExportType.Model, format : OV.FileFormat.Text, extension : 'obj' }
                 ]
             },
             {
                 name : 'stl',
                 formats : [
-                    { name : 'text', format : OV.FileFormat.Text, extension : 'stl' },
-                    { name : 'binary', format : OV.FileFormat.Binary, extension : 'stl' }
+                    { name : 'text', type: OV.ExportType.Model, format : OV.FileFormat.Text, extension : 'stl' },
+                    { name : 'binary', type: OV.ExportType.Model, format : OV.FileFormat.Binary, extension : 'stl' }
                 ]
             },
             {
                 name : 'ply',
                 formats : [
-                    { name : 'text', format : OV.FileFormat.Text, extension : 'ply' },
-                    { name : 'binary', format : OV.FileFormat.Binary, extension : 'ply' }
+                    { name : 'text', type: OV.ExportType.Model, format : OV.FileFormat.Text, extension : 'ply' },
+                    { name : 'binary', type: OV.ExportType.Model, format : OV.FileFormat.Binary, extension : 'ply' }
                 ]
             },
             {
                 name : 'gltf',
                 formats : [
-                    { name : 'text', format : OV.FileFormat.Text, extension : 'gltf' },
-                    { name : 'binary', format : OV.FileFormat.Binary, extension : 'glb' }
+                    { name : 'text', type: OV.ExportType.Model, format : OV.FileFormat.Text, extension : 'gltf' },
+                    { name : 'binary', type: OV.ExportType.Model, format : OV.FileFormat.Binary, extension : 'glb' }
                 ]
             },
             {
                 name : 'off',
                 formats : [
-                    { name : 'text', format : OV.FileFormat.Text, extension : 'off' }
+                    { name : 'text', type: OV.ExportType.Model, format : OV.FileFormat.Text, extension : 'off' }
+                ]
+            },
+            {
+                name : 'png',
+                formats : [
+                    { name : 'current size', type: OV.ExportType.Image, width : null, height : null, extension : 'png' },
+                    { name : 'fixed size (1920x1080)', type: OV.ExportType.Image, width : 1920, height : 1080, extension : 'png' }
                 ]
             }
         ];
@@ -46,7 +59,7 @@ OV.ExportDialog = class
         };        
     }
 
-    Show (model)
+    Show (model, viewer)
     {
         if (model === null) {
             let messageDialog = OV.ShowMessageDialog (
@@ -76,7 +89,7 @@ OV.ExportDialog = class
                         return;
                     }
                     mainDialog.Hide ();
-                    obj.ExportFormat (model);
+                    obj.ExportFormat (model, viewer);
                 }
             }
         ]);
@@ -131,30 +144,41 @@ OV.ExportDialog = class
         }        
     }
 
-    ExportFormat (model)
+    ExportFormat (model, viewer)
     {
-        let format = this.formatParameters.selectedFormat;
-        if (format === null) {
+        let selectedFormat = this.formatParameters.selectedFormat;
+        if (selectedFormat === null) {
             return;
         }
 
-        let obj = this;
-        let progressDialog = new OV.ProgressDialog ();
-        progressDialog.Show ('Exporting Model');
-        OV.RunTaskAsync (function () {
-            let exporter = new OV.Exporter ();
-            let files = exporter.Export (model, format.format, format.extension);
-            if (files.length === 0) {
-                progressDialog.Hide ();
-            } else if (files.length === 1) {
-                progressDialog.Hide ();
-                let file = files[0];
-                OV.DownloadArrayBufferAsFile (file.GetContent (), file.GetName ());
-            } else if (files.length > 1) {
-                progressDialog.Hide ();
-                obj.ShowExportedFiles (files);
+        if (selectedFormat.type === OV.ExportType.Model) {
+            let obj = this;
+            let progressDialog = new OV.ProgressDialog ();
+            progressDialog.Show ('Exporting Model');
+            OV.RunTaskAsync (function () {
+                let exporter = new OV.Exporter ();
+                let files = exporter.Export (model, selectedFormat.format, selectedFormat.extension);
+                if (files.length === 0) {
+                    progressDialog.Hide ();
+                } else if (files.length === 1) {
+                    progressDialog.Hide ();
+                    let file = files[0];
+                    OV.DownloadArrayBufferAsFile (file.GetContent (), file.GetName ());
+                } else if (files.length > 1) {
+                    progressDialog.Hide ();
+                    obj.ShowExportedFiles (files);
+                }
+            });
+        } else if (selectedFormat.type === OV.ExportType.Image) {
+            let url = null;
+            if (selectedFormat.width === null || selectedFormat.height === null) {
+                let size = viewer.GetImageSize ();
+                url = viewer.GetImageAsDataUrl (size.width, size.height);
+            } else {
+                url = viewer.GetImageAsDataUrl (selectedFormat.width, selectedFormat.height);
             }
-        });
+            OV.DownloadUrlAsFile (url, 'model.' + selectedFormat.extension);
+        }
     }
 
     ShowExportedFiles (files)

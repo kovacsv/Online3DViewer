@@ -100,14 +100,20 @@ OV.CopyToClipboard = function (text)
     document.body.removeChild (input);
 };
 
-OV.DownloadArrayBufferAsFile = function (arrayBuffer, fileName)
+OV.DownloadUrlAsFile = function (url, fileName)
 {
     let link = document.createElement ('a');
-    link.href = OV.CreateObjectUrl (arrayBuffer);
+    link.href = url;
     link.download = fileName;
     document.body.appendChild (link);
     link.click ();
     document.body.removeChild (link);
+};
+
+OV.DownloadArrayBufferAsFile = function (arrayBuffer, fileName)
+{
+    let url = OV.CreateObjectUrl (arrayBuffer);
+    OV.DownloadUrlAsFile (url, fileName);
 };
 
 OV.CreateIconButton = function (iconName, hoverIconName, title, link)
