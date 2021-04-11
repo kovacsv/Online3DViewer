@@ -280,8 +280,13 @@ OV.Website = class
         });
         AddSeparator (this.toolbar, true);
         AddButton (this.toolbar, 'export', 'Export model', true, function () {
-            obj.dialog = OV.ShowExportDialog (obj.model);
-        });        
+            let exportDialog = new OV.ExportDialog ({
+                onDialog : function (dialog) {
+                    obj.dialog = dialog;
+                }
+            });
+            exportDialog.Show (obj.model);
+        });
         AddButton (this.toolbar, 'embed', 'Get embedding code', true, function () {
             obj.dialog = OV.ShowEmbeddingDialog (importer, obj.importSettings, obj.viewer.GetCamera ());
         });

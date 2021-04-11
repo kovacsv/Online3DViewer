@@ -449,23 +449,28 @@ div.ov_dialog textarea.ov_dialog_textarea
 	box-sizing: border-box;
 }
 
-div.ov_dialog select.ov_dialog_select
+div.ov_dialog div.ov_dialog_select
 {
-	background-image: url('../assets/images/dialog/arrow_down.svg');
-	background-repeat: no-repeat;
-	background-size: 18px 18px;
-	background-position: right 10px center;
-	font-size: 14px;
-	margin: 10px 0px;
-	width: 100%;
-	padding: 10px;
-	border: 1px solid #cccccc;
+	margin: 20px 0px;
+	overflow: auto;
+}
+
+div.ov_dialog div.ov_dialog_select_option
+{
+	color: #3393bd;
+	text-align: center;
+	padding: 3px;
+	margin-right: 5px;
+	border: 1px solid #3393bd;
 	border-radius: 5px;
-	outline: none;
-	box-sizing: border-box;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
+	cursor: pointer;
+	float: left;
+}
+
+div.ov_dialog div.ov_dialog_select_option.selected
+{
+	color: #ffffff;
+	background: #3393bd;
 }
 
 div.ov_dialog input.ov_dialog_color
@@ -529,6 +534,11 @@ div.ov_dialog div.ov_dialog_table_row_name
 div.ov_dialog div.ov_dialog_table_row_value
 {
 	float: left;
+}
+
+div.ov_dialog input.ov_dialog_table_radio
+{
+	margin-right: 10px;
 }
 
 div.ov_popup
