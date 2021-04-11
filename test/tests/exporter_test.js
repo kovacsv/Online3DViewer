@@ -74,6 +74,7 @@ describe ('Exporter', function () {
         assert.strictEqual (mtlFile.GetName (), 'model.mtl');
         assert.strictEqual (mtlFile.GetContent (),
         [
+            '# exported by https://3dviewer.net',
             'newmtl TestMaterial1',
             'Ka 0 0 0',
             'Kd 1 0 0',
@@ -95,6 +96,7 @@ describe ('Exporter', function () {
         assert.strictEqual (objFile.GetName (), 'model.obj');
         assert.strictEqual (objFile.GetContent (),
         [
+            '# exported by https://3dviewer.net',
             'mtllib model.mtl',
             'g TestMesh1',
             'v 0 0 1',
