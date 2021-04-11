@@ -12,15 +12,15 @@ function CreateTestModel ()
     material1.diffuseMap = new OV.TextureMap ();
     material1.diffuseMap.name = 'textures/texture1.png';
     material1.diffuseMap.url = 'texture1_url';
-    material1.diffuseMap.buffer = new ArrayBuffer (4);
+    material1.diffuseMap.buffer = new ArrayBuffer (1);
     material1.specularMap = new OV.TextureMap ();
     material1.specularMap.name = 'textures/texture2.png';
     material1.specularMap.url = 'texture2_url';
-    material1.specularMap.buffer = new ArrayBuffer (4);
+    material1.specularMap.buffer = new ArrayBuffer (2);
     material1.bumpMap = new OV.TextureMap ();
     material1.bumpMap.name = 'textures/texture3.png';
     material1.bumpMap.url = 'texture3_url';
-    material1.bumpMap.buffer = new ArrayBuffer (4);
+    material1.bumpMap.buffer = new ArrayBuffer (3);
     model.AddMaterial (material1);
 
     let material2 = new OV.Material ();
@@ -74,6 +74,7 @@ describe ('Exporter', function () {
         assert.strictEqual (mtlFile.GetName (), 'model.mtl');
         assert.strictEqual (mtlFile.GetContent (),
         [
+            '# exported by https://3dviewer.net',
             'newmtl TestMaterial1',
             'Ka 0 0 0',
             'Kd 1 0 0',
@@ -95,6 +96,7 @@ describe ('Exporter', function () {
         assert.strictEqual (objFile.GetName (), 'model.obj');
         assert.strictEqual (objFile.GetContent (),
         [
+            '# exported by https://3dviewer.net',
             'mtllib model.mtl',
             'g TestMesh1',
             'v 0 0 1',
@@ -121,18 +123,15 @@ describe ('Exporter', function () {
 
         let textureFile1 = result[2];
         assert.strictEqual (textureFile1.GetName (), 'texture1.png');
-        assert.strictEqual (textureFile1.GetUrl (), 'texture1_url');
-        assert.strictEqual (textureFile1.GetContent (), null);
+        assert.strictEqual (textureFile1.GetContent ().byteLength, 1);
 
         let textureFile2 = result[3];
         assert.strictEqual (textureFile2.GetName (), 'texture2.png');
-        assert.strictEqual (textureFile2.GetUrl (), 'texture2_url');
-        assert.strictEqual (textureFile2.GetContent (), null);
+        assert.strictEqual (textureFile2.GetContent ().byteLength, 2);
 
         let textureFile3 = result[4];
         assert.strictEqual (textureFile3.GetName (), 'texture3.png');
-        assert.strictEqual (textureFile3.GetUrl (), 'texture3_url');
-        assert.strictEqual (textureFile3.GetContent (), null);
+        assert.strictEqual (textureFile3.GetContent ().byteLength, 3);
     });
 
     it ('Stl Export', function () {
@@ -305,8 +304,7 @@ describe ('Exporter', function () {
         assert.strictEqual (binFile.GetName (), 'model.bin');
   
         assert.strictEqual (textureFile.GetName (), 'texture1.png');
-        assert.strictEqual (textureFile.GetUrl (), 'texture1_url');
-        assert.strictEqual (textureFile.GetContent (), null);
+        assert.strictEqual (textureFile.GetContent ().byteLength, 1);
   
         let contentBuffer = gltfFile.GetContent ();
         let importer = new OV.ImporterGltf ();

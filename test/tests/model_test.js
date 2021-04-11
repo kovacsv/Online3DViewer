@@ -150,3 +150,19 @@ describe ('Model Finalization', function() {
         assert.strictEqual (normal.z, 0.7071067811865475);
     });
 });
+
+describe ('Color Conversion', function() {
+    it ('Color equality check', function () {
+        assert (OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (10, 20, 30)));
+        assert (!OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (11, 20, 30)));
+        assert (!OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (10, 21, 30)));
+        assert (!OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (10, 20, 31)));
+    });
+
+    it ('Color hex string conversion', function () {
+        let color = new OV.Color (10, 20, 30);
+        let hexString = '0a141e';
+        assert.strictEqual (OV.ColorToHexString (color), hexString);
+        assert.deepStrictEqual (OV.HexStringToColor (hexString), color);
+    });
+});

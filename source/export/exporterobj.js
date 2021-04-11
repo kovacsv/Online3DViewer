@@ -25,7 +25,7 @@ OV.ExporterObj = class extends OV.ExporterBase
 			});
 			if (fileIndex === -1) {
 				let textureFile = new OV.ExportedFile (fileName);
-				textureFile.SetUrl (texture.url);
+				textureFile.SetContent (texture.buffer);
 				files.push (textureFile);
 			}
 		}
@@ -37,6 +37,7 @@ OV.ExporterObj = class extends OV.ExporterBase
 		files.push (objFile);
 
 		let mtlWriter = new OV.TextWriter ();
+		mtlWriter.WriteLine (this.GetHeaderText ());
 		for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
 			let material = model.GetMaterial (materialIndex);
 			mtlWriter.WriteArrayLine (['newmtl', this.GetExportedMaterialName (material.name)]);
@@ -52,6 +53,7 @@ OV.ExporterObj = class extends OV.ExporterBase
 		mtlFile.SetContent (mtlWriter.GetText ());
 
 		let objWriter = new OV.TextWriter ();
+		objWriter.WriteLine (this.GetHeaderText ());
 		objWriter.WriteArrayLine (['mtllib', mtlFile.GetName ()]);
 		let vertexOffset = 0;
 		let normalOffset = 0;
@@ -105,4 +107,9 @@ OV.ExporterObj = class extends OV.ExporterBase
 
 		objFile.SetContent (objWriter.GetText ());        
 	}
+
+	GetHeaderText ()
+	{
+		return '# exported by https://3dviewer.net';
+	}	
 };

@@ -25,23 +25,6 @@ OV.Color = class
         this.b = b; // 0 .. 255
     }
 
-    ToHexString ()
-    {
-        function IntegerToHex (intVal)
-        {
-            let result = parseInt (intVal, 10).toString (16);
-            while (result.length < 2) {
-                result = '0' + result;
-            }
-            return result;
-        }
-
-        let r = IntegerToHex (this.r);
-        let g = IntegerToHex (this.g);
-        let b = IntegerToHex (this.b);
-        return r + g + b;
-    }
-
     Clone ()
     {
         return new OV.Color (this.r, this.g, this.b);
@@ -252,4 +235,38 @@ OV.Triangle = class
         cloned.SetCurve (this.curve);
         return cloned;
     }
+};
+
+OV.ColorToHexString = function (color)
+{
+    function IntegerToHex (intVal)
+    {
+        let result = parseInt (intVal, 10).toString (16);
+        while (result.length < 2) {
+            result = '0' + result;
+        }
+        return result;
+    }
+
+    let r = IntegerToHex (color.r);
+    let g = IntegerToHex (color.g);
+    let b = IntegerToHex (color.b);
+    return r + g + b;
+};
+
+OV.HexStringToColor = function (hexString)
+{
+    if (hexString.length !== 6) {
+        return null;
+    }
+
+    let r = parseInt (hexString.substr (0, 2), 16);
+    let g = parseInt (hexString.substr (2, 2), 16);
+    let b = parseInt (hexString.substr (4, 2), 16);
+    return new OV.Color (r, g, b);
+};
+
+OV.ColorIsEqual = function (a, b)
+{
+	return a.r === b.r && a.g === b.g && a.b === b.b;
 };

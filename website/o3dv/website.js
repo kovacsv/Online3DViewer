@@ -7,6 +7,7 @@ OV.Website = class
         this.hashHandler = new OV.HashHandler ();
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
         this.menu = new OV.Menu (this.parameters.menuDiv);
+        this.importSettings = new OV.ImportSettings ();
         this.modelLoader = new OV.ThreeModelLoader ();
         this.highlightMaterial = new THREE.MeshPhongMaterial ({
             color : 0x8ec9f0,
@@ -154,19 +155,24 @@ OV.Website = class
         });
     }    
 
-    LoadModelFromUrlList (urls)
+    LoadModelFromUrlList (urls, settings)
     {
-        this.modelLoader.LoadFromUrlList (urls);
+        this.modelLoader.LoadFromUrlList (urls, settings);
         this.ClearHashIfNotOnlyUrlList ();
     }
 
     LoadModelFromFileList (files)
     {
-        if (files.length === 0) {
+        this.modelLoader.LoadFromFileList (files, this.importSettings);
+        this.ClearHashIfNotOnlyUrlList ();
+    }
+
+    ReloadFiles ()
+    {
+        if (this.model === null) {
             return;
         }
-        this.modelLoader.LoadFromFileList (files);
-        this.ClearHashIfNotOnlyUrlList ();
+        this.modelLoader.ReloadFiles (this.importSettings);
     }
 
     ClearHashIfNotOnlyUrlList ()
@@ -186,7 +192,13 @@ OV.Website = class
             if (urls === null) {
                 return;
             }
-            this.LoadModelFromUrlList (urls);
+            let settings = new OV.ImportSettings ();
+            settings.defaultColor = this.importSettings.defaultColor;
+            let color = this.hashHandler.GetColorFromHash ();
+            if (color !== null) {
+                settings.defaultColor = color;
+            }
+            this.LoadModelFromUrlList (urls, settings);
         } else {
             this.ClearModel ();
             this.parameters.introDiv.show ();
@@ -233,6 +245,8 @@ OV.Website = class
         }
 
         let obj = this;
+        let importer = this.modelLoader.GetImporter ();
+
         AddButton (this.toolbar, 'open', 'Open model from your device', false, function () {
             obj.OpenFileBrowserDialog ();
         });
@@ -266,14 +280,36 @@ OV.Website = class
         });
         AddSeparator (this.toolbar, true);
         AddButton (this.toolbar, 'export', 'Export model', true, function () {
-            obj.dialog = OV.ShowExportDialog (obj.model);
-        });        
-        AddButton (this.toolbar, 'embed', 'Get embedding code', true, function () {
-            obj.dialog = OV.ShowEmbeddingDialog (obj.modelLoader.GetImporter (), obj.viewer.GetCamera ());
+            let exportDialog = new OV.ExportDialog ({
+                onDialog : function (dialog) {
+                    obj.dialog = dialog;
+                }
+            });
+            exportDialog.Show (obj.model);
         });
+        AddButton (this.toolbar, 'embed', 'Get embedding code', true, function () {
+            obj.dialog = OV.ShowEmbeddingDialog (importer, obj.importSettings, obj.viewer.GetCamera ());
+        });
+        if (OV.FeatureSet.SetDefaultColor) {
+            AddSeparator (this.toolbar, true);
+            AddButton (this.toolbar, 'settings', 'Settings', true, function () {
+                obj.dialog = OV.ShowSettingsDialog (obj.importSettings, function (dialogSettings) {
+                    let reload = false;
+                    if (!OV.ColorIsEqual (obj.importSettings.defaultColor, dialogSettings.defaultColor)) {
+                        obj.importSettings.defaultColor = dialogSettings.defaultColor;
+                        reload = true;
+                    }
+                    if (reload) {
+                        obj.ReloadFiles ();
+                    }
+                });
+            });
+        }
 
         this.parameters.fileInput.on ('change', function (ev) {
-            obj.LoadModelFromFileList (ev.target.files);
+            if (ev.target.files.length > 0) {
+                obj.LoadModelFromFileList (ev.target.files);
+            }
         });
     }
 
@@ -293,7 +329,9 @@ OV.Website = class
         window.addEventListener ('drop', function (ev) {
             ev.stopPropagation ();
             ev.preventDefault ();
-            obj.LoadModelFromFileList (ev.dataTransfer.files);
+            if (ev.dataTransfer.files.length > 0) {
+                obj.LoadModelFromFileList (ev.dataTransfer.files);
+            }
         }, false);
     }
 

@@ -51,7 +51,7 @@ OV.InfoPanel = class
 
         let infoContainer = $('<div>').addClass ('ov_info_box').appendTo (contentDiv);
         AddRow (infoContainer, 'Color', function (valueDiv) {
-            let colorString = '#' + info.diffuse.ToHexString ();
+            let colorString = '#' + OV.ColorToHexString (info.diffuse);
             $('<div>').addClass ('ov_info_box_rgbbox').css ('background', colorString).attr ('title', colorString).appendTo (valueDiv);
             $('<div>').addClass ('ov_info_box_rgbtext').html (colorString).attr ('title', colorString).appendTo (valueDiv);
         });
@@ -128,7 +128,7 @@ OV.InfoPanel = class
             let materialInfo = getMaterialInfo (info.usedMaterials[i]);
             materialItems.push ({
                 name : OV.GetMaterialName (materialInfo.name),
-                color : materialInfo.diffuse.ToHexString ()
+                color : OV.ColorToHexString (materialInfo.diffuse)
             });
         }
 

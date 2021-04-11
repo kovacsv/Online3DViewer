@@ -20,8 +20,13 @@ OV.Embed = class
             if (urls === null) {
                 return;
             }
-            this.modelLoader.LoadFromUrlList (urls);
-            let hashParameters = OV.CreateUrlParameters (urls, null);
+            let settings = new OV.ImportSettings ();
+            let color = this.hashHandler.GetColorFromHash ();
+            if (color !== null) {
+                settings.defaultColor = color;
+            }            
+            this.modelLoader.LoadFromUrlList (urls, settings);
+            let hashParameters = OV.CreateModelUrlParameters (urls);
             let websiteUrl = this.parameters.websiteLinkDiv.attr ('href') + '#' + hashParameters;
             this.parameters.websiteLinkDiv.attr ('href', websiteUrl);
         }

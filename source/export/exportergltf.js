@@ -50,7 +50,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
             let textureIndex = fileNameToIndex[fileName];
             if (textureIndex === undefined) {
                 let textureFile = new OV.ExportedFile (fileName);
-                textureFile.SetUrl (texture.url);
+                textureFile.SetContent (texture.buffer);
                 files.push (textureFile);
 
                 textureIndex = mainJson.textures.length;
@@ -244,19 +244,10 @@ OV.ExporterGltf = class extends OV.ExporterBase
             }
         }
 
-        function AddBufferView (mainJson, offset, length)
-        {
-            mainJson.bufferViews.push ({
-                buffer : 0,
-                byteOffset : offset,
-                byteLength : length,
-            });
-            return offset + length;
-        }
-
         let mainJson = {
             asset : {
-                version : '2.0'
+                version : '2.0',
+                generator : 'https://3dviewer.net'
             },
             scene : 0,
             scenes : [

@@ -12,12 +12,7 @@ OV.ThreeModelLoader = class
         this.callbacks = callbacks;
     }
 
-	SetDefaultColor (defaultColor)
-	{
-		this.importer.SetDefaultColor (defaultColor);
-	}
-
-	LoadFromUrlList (urls)
+	LoadFromUrlList (urls, settings)
 	{
 		if (this.inProgress) {
 			return;
@@ -27,11 +22,11 @@ OV.ThreeModelLoader = class
 		this.inProgress = true;
         this.callbacks.onLoadStart ();
 		this.importer.LoadFilesFromUrls (urls, function () {
-			obj.OnFilesLoaded ();
+			obj.OnFilesLoaded (settings);
 		});
 	}
 	
-	LoadFromFileList (files)
+	LoadFromFileList (files, settings)
 	{
 		if (this.inProgress) {
 			return;
@@ -41,11 +36,11 @@ OV.ThreeModelLoader = class
 		this.inProgress = true;
         this.callbacks.onLoadStart ();
 		this.importer.LoadFilesFromFileObjects (files, function () {
-			obj.OnFilesLoaded ();
+			obj.OnFilesLoaded (settings);
 		});
 	}
 
-	ReloadFiles ()
+	ReloadFiles (settings)
 	{
 		if (this.inProgress) {
 			return;
@@ -53,15 +48,15 @@ OV.ThreeModelLoader = class
 
 		this.inProgress = true;
         this.callbacks.onLoadStart ();
-		this.OnFilesLoaded ();		
+		this.OnFilesLoaded (settings);		
 	}
     
-	OnFilesLoaded ()
+	OnFilesLoaded (settings)
 	{
 		let obj = this;
 		this.callbacks.onImportStart ();
 		OV.RunTaskAsync (function () {
-			obj.importer.Import ({
+			obj.importer.Import (settings, {
 				success : function (importResult) {
 					obj.OnModelImported (importResult);
 				},
