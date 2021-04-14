@@ -287,8 +287,8 @@ OV.Website = class
             });
             exportDialog.Show (obj.model, obj.viewer);
         });
-        AddButton (this.toolbar, 'embed', 'Get embedding code', true, function () {
-            obj.dialog = OV.ShowEmbeddingDialog (importer, obj.importSettings, obj.viewer.GetCamera ());
+        AddButton (this.toolbar, 'share', 'Share model', true, function () {
+            obj.dialog = OV.ShowSharingDialog (importer, obj.importSettings, obj.viewer.GetCamera ());
         });
         if (OV.FeatureSet.SetDefaultColor) {
             AddSeparator (this.toolbar, true);

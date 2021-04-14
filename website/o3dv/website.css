@@ -385,6 +385,12 @@ div.ov_dialog div.ov_dialog_title
 	font-weight: bold;
 }
 
+div.ov_dialog div.ov_dialog_inner_title
+{
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
 div.ov_dialog div.ov_dialog_content
 {
 	padding: 20px 0px;
@@ -477,6 +483,7 @@ div.ov_dialog input.ov_dialog_color
 {
 	width: 36px;
 	height: 18px;
+	margin-right: 10px;
 }
 
 div.ov_dialog div.ov_dialog_file_list
@@ -504,6 +511,39 @@ div.ov_dialog img.ov_dialog_file_link_icon
 div.ov_dialog div.ov_dialog_file_link_text
 {
 	float: left;
+}
+
+div.ov_dialog div.ov_dialog_copyable_input
+{
+	padding: 3px;
+	border: 1px solid #dddddd;
+	border-radius: 5px;
+	overflow: auto;
+}
+
+div.ov_dialog div.ov_dialog_copyable_input input
+{
+	color: #666666;
+	width: 70%;
+	margin-top: 6px;
+	box-sizing: border-box;
+	outline: none;
+	float: left;
+	border: 0px;
+	box-sizing: border-box;
+}
+
+div.ov_dialog div.ov_dialog_copyable_input div.button
+{
+	color: #3393bd;
+	width: 28%;
+	text-align: center;
+	padding: 3px;
+	border: 1px solid #3393bd;
+	border-radius: 5px;
+	box-sizing: border-box;
+	cursor: pointer;
+	float: right;
 }
 
 div.ov_dialog div.ov_dialog_inner_buttons
@@ -536,7 +576,13 @@ div.ov_dialog div.ov_dialog_table_row_value
 	float: left;
 }
 
-div.ov_dialog input.ov_dialog_table_radio
+div.ov_dialog span.ov_dialog_table_row_comment
+{
+	color: #444444;
+	font-size: 15px;
+}
+
+div.ov_dialog input.ov_dialog_checkradio
 {
 	margin-right: 10px;
 }
