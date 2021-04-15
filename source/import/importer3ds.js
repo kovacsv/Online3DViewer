@@ -83,9 +83,10 @@ OV.Importer3ds = class extends OV.ImporterBase
         return OV.Direction.Z;
     }
 
-	ImportContent (fileContent)
+	ImportContent (fileContent, onFinish)
 	{
         this.ProcessBinary (fileContent);
+		onFinish ();
 	}
 
     ProcessBinary (fileContent)

@@ -2,37 +2,37 @@ var testUtils = require ('./testutils.js');
 
 module.exports =
 {
-    ImportObjFile : function (fileName)
+    ImportObjFile : function (fileName, onReady)
     {    
         var importer = new OV.ImporterObj ();
-        return this.ImportFile (importer, OV.FileFormat.Text, 'obj', fileName);
+        this.ImportFile (importer, OV.FileFormat.Text, 'obj', fileName, onReady);
     },
 
-    ImportStlFile : function (fileName)
+    ImportStlFile : function (fileName, onReady)
     {    
         var importer = new OV.ImporterStl ();
-        return this.ImportFile (importer, OV.FileFormat.Binary, 'stl', fileName);
+        this.ImportFile (importer, OV.FileFormat.Binary, 'stl', fileName, onReady);
     },
 
-    ImportOffFile : function (fileName)
+    ImportOffFile : function (fileName, onReady)
     {    
         var importer = new OV.ImporterOff ();
-        return this.ImportFile (importer, OV.FileFormat.Text, 'off', fileName);
+        this.ImportFile (importer, OV.FileFormat.Text, 'off', fileName, onReady);
     },
 
-    ImportPlyFile : function (fileName)
+    ImportPlyFile : function (fileName, onReady)
     {    
         var importer = new OV.ImporterPly ();
-        return this.ImportFile (importer, OV.FileFormat.Binary, 'ply', fileName);
+        this.ImportFile (importer, OV.FileFormat.Binary, 'ply', fileName, onReady);
     },
 
-    Import3dsFile : function (fileName)
+    Import3dsFile : function (fileName, onReady)
     {    
         var importer = new OV.Importer3ds ();
-        return this.ImportFile (importer, OV.FileFormat.Binary, '3ds', fileName);
+        this.ImportFile (importer, OV.FileFormat.Binary, '3ds', fileName, onReady);
     },
 
-    ImportGltfFile : function (folderName, fileName)
+    ImportGltfFile : function (folderName, fileName, onReady)
     {    
         let extension = OV.GetFileExtension (fileName);
         let format = OV.FileFormat.Text;
@@ -40,10 +40,10 @@ module.exports =
             format = OV.FileFormat.Binary;
         }
         var importer = new OV.ImporterGltf ();
-        return this.ImportFile (importer, format, 'gltf/' + folderName, fileName);
+        this.ImportFile (importer, format, 'gltf/' + folderName, fileName, onReady);
     },
 
-    ImportFile : function (importer, format, folder, fileName)
+    ImportFile : function (importer, format, folder, fileName, onReady)
     {
         var content = null;
         if (format == OV.FileFormat.Text) {
@@ -77,9 +77,14 @@ module.exports =
             },
             getTextureBuffer : function (filePath) {
                 return buffers.GetTextureBuffer (filePath);
+            },
+            onSuccess : function () {
+                let model = importer.GetModel ();
+                onReady (model);
+            },
+            onError : function () {
+                onReady (model);
             }
         });
-        let model = importer.GetModel ();
-        return model;
     }
 }

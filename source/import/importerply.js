@@ -116,23 +116,23 @@ OV.ImporterPly = class extends OV.ImporterBase
         return OV.Direction.Y;
     }
 
-	ImportContent (fileContent)
+	ImportContent (fileContent, onFinish)
 	{
         let headerString = this.GetHeaderContent (fileContent);
         let header = this.ReadHeader (headerString);
-        if (!header.Check ()) {
+        if (header.Check ()) {
+            if (header.format === 'ascii') {
+                let contentString = OV.ArrayBufferToUtf8String (fileContent);
+                contentString = contentString.substr (headerString.length);
+                this.ReadAsciiContent (header, contentString);
+            } else if (header.format === 'binary_little_endian' || header.format === 'binary_big_endian') {
+                this.ReadBinaryContent (header, fileContent, headerString.length);
+            }
+        } else {
             this.SetError ();
             this.SetMessage ('Invalid header information.');
-            return;
         }
-
-        if (header.format === 'ascii') {
-            let contentString = OV.ArrayBufferToUtf8String (fileContent);
-            contentString = contentString.substr (headerString.length);
-            this.ReadAsciiContent (header, contentString);
-        } else if (header.format === 'binary_little_endian' || header.format === 'binary_big_endian') {
-            this.ReadBinaryContent (header, fileContent, headerString.length);
-        }
+        onFinish ();
 	}
 
     GetHeaderContent (fileContent)

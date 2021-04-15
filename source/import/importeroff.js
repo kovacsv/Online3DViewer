@@ -37,7 +37,7 @@ OV.ImporterOff = class extends OV.ImporterBase
         return OV.Direction.Y;
     }
 
-	ImportContent (fileContent)
+	ImportContent (fileContent, onFinish)
 	{
         let obj = this;
 		OV.ReadLines (fileContent, function (line) {
@@ -45,6 +45,7 @@ OV.ImporterOff = class extends OV.ImporterBase
 				obj.ProcessLine (line);
 			}
 		});
+        onFinish ();
 	}
 	
 	ProcessLine (line)

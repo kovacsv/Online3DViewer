@@ -17,19 +17,29 @@ OV.ImporterBase = class
         this.error = false;
         this.message = null;
 
-		this.ResetState ();
-        this.ImportContent (content);
+        let obj = this;
+		obj.ResetState ();
+        obj.ImportContent (content, function () {
+            obj.CreateResult (callbacks);
+        });
+	}
+
+    CreateResult (callbacks)
+    {
         if (this.error) {
+            callbacks.onError ();
             return;
         }
 
         if (OV.IsModelEmpty (this.model)) {
             this.error = true;
+            callbacks.onError ();
             return;
         }
 
         OV.FinalizeModel (this.model, this.callbacks.getDefaultMaterial);
-	}
+        callbacks.onSuccess ();
+    }
 
     ResetState ()
     {
@@ -51,7 +61,7 @@ OV.ImporterBase = class
         return OV.Direction.Z;
     }
 
-    ImportContent (content)
+    ImportContent (content, onFinish)
     {
 
     }

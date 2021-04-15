@@ -57,10 +57,10 @@ OV.ThreeModelLoader = class
 		this.callbacks.onImportStart ();
 		OV.RunTaskAsync (function () {
 			obj.importer.Import (settings, {
-				success : function (importResult) {
+				onSuccess : function (importResult) {
 					obj.OnModelImported (importResult);
 				},
-				error : function (importError) {
+				onError : function (importError) {
 					obj.callbacks.onLoadError (importError);
 					obj.inProgress = false;
 				}

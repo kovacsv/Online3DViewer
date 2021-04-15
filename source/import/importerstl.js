@@ -31,7 +31,7 @@ OV.ImporterStl = class extends OV.ImporterBase
         return OV.Direction.Z;
     }
 
-	ImportContent (fileContent)
+	ImportContent (fileContent, onFinish)
 	{
         if (this.IsBinaryStlFile (fileContent)) {
             this.ProcessBinary (fileContent);
@@ -44,6 +44,7 @@ OV.ImporterStl = class extends OV.ImporterBase
                 }    
             });
         }
+        onFinish ();
 	}
 
 	IsBinaryStlFile (fileContent)

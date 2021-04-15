@@ -179,7 +179,7 @@ describe ('Exporter', function () {
         ].join ('\n'));
     });
 
-    it ('Stl Binary Export', function () {
+    it ('Stl Binary Export', function (done) {
         let model = CreateTestModel ();
         let exporter = new OV.Exporter ();
 
@@ -195,11 +195,14 @@ describe ('Exporter', function () {
         importer.Import (contentBuffer, 'stl', {
             getDefaultMaterial () {
                 return new OV.Material ();
+            },
+            onSuccess () {
+                let importedModel = importer.GetModel ();
+                assert.strictEqual (importedModel.VertexCount (), 12);
+                assert.strictEqual (importedModel.TriangleCount (), 4);
+                done ();
             }
         });
-        let importedModel = importer.GetModel ();
-        assert.strictEqual (importedModel.VertexCount (), 12);
-        assert.strictEqual (importedModel.TriangleCount (), 4);
     });
 
     it ('Off Export', function () {
@@ -267,7 +270,7 @@ describe ('Exporter', function () {
         ].join ('\n'));
     });
 
-    it ('Ply Binary Export', function () {
+    it ('Ply Binary Export', function (done) {
         let model = CreateTestModel ();
         let exporter = new OV.Exporter ();
 
@@ -283,14 +286,17 @@ describe ('Exporter', function () {
         importer.Import (contentBuffer, 'ply', {
             getDefaultMaterial () {
                 return new OV.Material ();
+            },
+            onSuccess () {
+                let importedModel = importer.GetModel ();
+                assert.strictEqual (importedModel.VertexCount (), 8);
+                assert.strictEqual (importedModel.TriangleCount (), 4);
+                done ();
             }
-        });
-        let importedModel = importer.GetModel ();
-        assert.strictEqual (importedModel.VertexCount (), 8);
-        assert.strictEqual (importedModel.TriangleCount (), 4);        
+        });  
     });
 
-    it ('Gltf Ascii Export', function () {
+    it ('Gltf Ascii Export', function (done) {
         let model = CreateTestModel ();
         let exporter = new OV.Exporter ();
   
@@ -320,20 +326,22 @@ describe ('Exporter', function () {
             },
             getTextureBuffer (filePath) {
                 return null;
+            },
+            onSuccess () {
+                let importedModel = importer.GetModel ();
+                assert (OV.CheckModel (importedModel));
+                assert.strictEqual (importedModel.MaterialCount (), 2);
+                assert.strictEqual (importedModel.MeshCount (), 2);
+                assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
+                assert.strictEqual (importedModel.GetMesh (1).GetName (), 'TestMesh2');
+                assert.strictEqual (importedModel.VertexCount (), 12);
+                assert.strictEqual (importedModel.TriangleCount (), 4);
+                done ();
             }
         });
-  
-        let importedModel = importer.GetModel ();
-        assert (OV.CheckModel (importedModel));
-        assert.strictEqual (importedModel.MaterialCount (), 2);
-        assert.strictEqual (importedModel.MeshCount (), 2);
-        assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
-        assert.strictEqual (importedModel.GetMesh (1).GetName (), 'TestMesh2');
-        assert.strictEqual (importedModel.VertexCount (), 12);
-        assert.strictEqual (importedModel.TriangleCount (), 4);         
   });
 
-  it ('Gltf Binary Export', function () {
+  it ('Gltf Binary Export', function (done) {
     let model = CreateTestModel ();
     let exporter = new OV.Exporter ();
 
@@ -354,16 +362,18 @@ describe ('Exporter', function () {
         },
         getTextureBuffer (filePath) {
             return null;
+        },
+        onSuccess () {
+            let importedModel = importer.GetModel ();
+            assert (OV.CheckModel (importedModel));
+            assert.strictEqual (importedModel.MaterialCount (), 2);
+            assert.strictEqual (importedModel.MeshCount (), 2);
+            assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
+            assert.strictEqual (importedModel.GetMesh (1).GetName (), 'TestMesh2');
+            assert.strictEqual (importedModel.VertexCount (), 12);
+            assert.strictEqual (importedModel.TriangleCount (), 4);
+            done ();
         }
-    });
-
-    let importedModel = importer.GetModel ();
-    assert (OV.CheckModel (importedModel));
-    assert.strictEqual (importedModel.MaterialCount (), 2);
-    assert.strictEqual (importedModel.MeshCount (), 2);
-    assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
-    assert.strictEqual (importedModel.GetMesh (1).GetName (), 'TestMesh2');
-    assert.strictEqual (importedModel.VertexCount (), 12);
-    assert.strictEqual (importedModel.TriangleCount (), 4);         
+    });     
   });   
 });

@@ -380,13 +380,14 @@ OV.ImporterGltf = class extends OV.ImporterBase
         return OV.Direction.Y;
     }
     
-	ImportContent (fileContent)
+	ImportContent (fileContent, onFinish)
 	{
         if (this.extension === 'gltf') {
             this.ProcessGltf (fileContent);
         } else if (this.extension === 'glb') {
             this.ProcessBinaryGltf (fileContent);
         }
+        onFinish ();
 	}
 
     ProcessGltf (fileContent)

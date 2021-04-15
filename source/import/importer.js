@@ -287,7 +287,7 @@ OV.Importer = class
 	{
 		let mainFile = this.fileList.GetMainFile ();
 		if (mainFile === null || mainFile.file === null || mainFile.file.content === null) {
-			callbacks.error (new OV.ImportError (OV.ImportErrorCode.NoImportableFile, null));
+			callbacks.onError (new OV.ImportError (OV.ImportErrorCode.NoImportableFile, null));
 			return;
 		}
 
@@ -296,9 +296,6 @@ OV.Importer = class
 		this.usedFiles = [];
 		this.missingFiles = [];
 		this.usedFiles.push (mainFile.file.name);
-
-		let result = new OV.ImportResult ();
-		result.mainFile = mainFile.file.name;
 
 		let obj = this;
 		let importer = mainFile.importer;
@@ -326,23 +323,24 @@ OV.Importer = class
 			},
 			getTextureBuffer : function (filePath) {
 				return buffers.GetTextureBuffer (filePath);
+			},
+			onSuccess : function () {
+				obj.model = importer.GetModel ();
+				obj.model.SetName (mainFile.file.name);
+		
+				let result = new OV.ImportResult ();
+				result.mainFile = mainFile.file.name;
+				result.model = obj.model;
+				result.usedFiles = obj.usedFiles;
+				result.missingFiles = obj.missingFiles;
+				result.upVector = importer.GetUpDirection ();
+				callbacks.onSuccess (result);
+			},
+			onError : function () {
+				let message = importer.GetMessage ();
+				callbacks.onError (new OV.ImportError (OV.ImportErrorCode.ImportFailed, message));
 			}
 		});
-
-		if (importer.IsError ()) {
-			let message = importer.GetMessage ();
-			callbacks.error (new OV.ImportError (OV.ImportErrorCode.ImportFailed, message));
-			return;
-		}
-
-		this.model = importer.GetModel ();
-		this.model.SetName (mainFile.file.name);
-
-		result.model = this.model;
-		result.usedFiles = this.usedFiles;
-		result.missingFiles = this.missingFiles;
-		result.upVector = importer.GetUpDirection ();
-		callbacks.success (result);
 	}
 
 	LoadFiles (fileList, fileSource, onReady)
