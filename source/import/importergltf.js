@@ -1,40 +1,40 @@
 OV.GltfComponentType =
 {
-	BYTE : 5120,
-	UNSIGNED_BYTE : 5121,
-	SHORT : 5122,
-	UNSIGNED_SHORT : 5123,
-	UNSIGNED_INT : 5125,
-	FLOAT  : 5126
+    BYTE : 5120,
+    UNSIGNED_BYTE : 5121,
+    SHORT : 5122,
+    UNSIGNED_SHORT : 5123,
+    UNSIGNED_INT : 5125,
+    FLOAT  : 5126
 };
 
 OV.GltfDataType =
 {
-	SCALAR : 0,
-	VEC2 : 1,
-	VEC3 : 2,
-	VEC4 : 3,
-	MAT2 : 4,
-	MAT3  : 5,
+    SCALAR : 0,
+    VEC2 : 1,
+    VEC3 : 2,
+    VEC4 : 3,
+    MAT2 : 4,
+    MAT3  : 5,
     MAT4  : 6
 };
 
 OV.GltfRenderMode =
 {
-	POINTS : 0,
-	LINES : 1,
-	LINE_LOOP : 2,
-	LINE_STRIP : 3,
-	TRIANGLES : 4,
-	TRIANGLE_STRIP  : 5,
+    POINTS : 0,
+    LINES : 1,
+    LINE_LOOP : 2,
+    LINE_STRIP : 3,
+    TRIANGLES : 4,
+    TRIANGLE_STRIP  : 5,
     TRIANGLE_FAN : 6
 };
 
 OV.GltfConstants =
 {
-	GLTF_STRING : 0x46546C67,
-	JSON_CHUNK_TYPE : 0x4E4F534A,
-	BINARY_CHUNK_TYPE : 0x004E4942
+    GLTF_STRING : 0x46546C67,
+    JSON_CHUNK_TYPE : 0x4E4F534A,
+    BINARY_CHUNK_TYPE : 0x004E4942
 };
 
 OV.GltfNodeTree = class
@@ -345,50 +345,50 @@ OV.GltfExtensions = class
 
 OV.ImporterGltf = class extends OV.ImporterBase
 {
-	constructor ()
-	{
-		super ();
+    constructor ()
+    {
+        super ();
         
         this.bufferContents = null;
         this.gltfExtensions = null;
         this.imageIndexToTextureParams = null;
-	}
-	
-	ResetState ()
-	{
+    }
+    
+    ResetState ()
+    {
         this.bufferContents = [];
         this.gltfExtensions = new OV.GltfExtensions ();
         this.imageIndexToTextureParams = {};
-	}
+    }
 
-	CanImportExtension (extension)
-	{
-		return extension === 'gltf' || extension === 'glb';
-	}
+    CanImportExtension (extension)
+    {
+        return extension === 'gltf' || extension === 'glb';
+    }
 
-	GetKnownFileFormats ()
-	{
-		return {
-			'gltf' : OV.FileFormat.Text,
+    GetKnownFileFormats ()
+    {
+        return {
+            'gltf' : OV.FileFormat.Text,
             'glb' : OV.FileFormat.Binary,
             'bin' : OV.FileFormat.Binary
-		};
-	}
+        };
+    }
 
     GetUpDirection ()
     {
         return OV.Direction.Y;
     }
     
-	ImportContent (fileContent, onFinish)
-	{
+    ImportContent (fileContent, onFinish)
+    {
         if (this.extension === 'gltf') {
             this.ProcessGltf (fileContent);
         } else if (this.extension === 'glb') {
             this.ProcessBinaryGltf (fileContent);
         }
         onFinish ();
-	}
+    }
 
     ProcessGltf (fileContent)
     {

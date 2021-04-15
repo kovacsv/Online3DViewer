@@ -92,32 +92,32 @@ OV.ImporterPly = class extends OV.ImporterBase
         this.model = null;
         this.mesh = null;
     }
-	
-	ResetState ()
-	{
+    
+    ResetState ()
+    {
         this.mesh = new OV.Mesh ();
         this.model.AddMesh (this.mesh);
-	}
+    }
 
-	CanImportExtension (extension)
-	{
-		return extension === 'ply';
-	}
+    CanImportExtension (extension)
+    {
+        return extension === 'ply';
+    }
     
     GetKnownFileFormats ()
-	{
-		return {
-			'ply' : OV.FileFormat.Binary
-		};
-	}
-	
+    {
+        return {
+            'ply' : OV.FileFormat.Binary
+        };
+    }
+    
     GetUpDirection ()
     {
         return OV.Direction.Y;
     }
 
-	ImportContent (fileContent, onFinish)
-	{
+    ImportContent (fileContent, onFinish)
+    {
         let headerString = this.GetHeaderContent (fileContent);
         let header = this.ReadHeader (headerString);
         if (header.Check ()) {
@@ -133,7 +133,7 @@ OV.ImporterPly = class extends OV.ImporterBase
             this.SetMessage ('Invalid header information.');
         }
         onFinish ();
-	}
+    }
 
     GetHeaderContent (fileContent)
     {
@@ -180,7 +180,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                     header.AddSingleFormat (parameters[1], parameters[2]);
                 }
             }
-		});
+        });
 
         return header;
     }
@@ -231,7 +231,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                 }
                 return;
             }
-		});
+        });
     }
 
     ReadBinaryContent (header, fileContent, headerLength)

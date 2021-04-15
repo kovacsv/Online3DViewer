@@ -8,9 +8,9 @@ OV.ImporterBase = class
         this.error = null;
         this.message = null;
     }
-	
-	Import (content, extension, callbacks)
-	{
+    
+    Import (content, extension, callbacks)
+    {
         this.extension = extension;
         this.callbacks = callbacks;
         this.model = new OV.Model ();
@@ -18,11 +18,11 @@ OV.ImporterBase = class
         this.message = null;
 
         let obj = this;
-		obj.ResetState ();
+        obj.ResetState ();
         obj.ImportContent (content, function () {
             obj.CreateResult (callbacks);
         });
-	}
+    }
 
     CreateResult (callbacks)
     {
@@ -46,15 +46,15 @@ OV.ImporterBase = class
 
     }
 
-	CanImportExtension (extension)
-	{
-		return false;
-	}
+    CanImportExtension (extension)
+    {
+        return false;
+    }
 
-	GetKnownFileFormats ()
-	{
-		return {};
-	}
+    GetKnownFileFormats ()
+    {
+        return {};
+    }
 
     GetUpDirection ()
     {

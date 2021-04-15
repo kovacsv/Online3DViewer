@@ -6,33 +6,33 @@ OV.ImporterStl = class extends OV.ImporterBase
         this.mesh = null;
         this.triangle = null;
     }
-	
-	ResetState ()
-	{
+    
+    ResetState ()
+    {
         this.mesh = new OV.Mesh ();
         this.model.AddMesh (this.mesh);
         this.triangle = null;
-	}
+    }
 
-	CanImportExtension (extension)
-	{
-		return extension === 'stl';
-	}
+    CanImportExtension (extension)
+    {
+        return extension === 'stl';
+    }
 
-	GetKnownFileFormats ()
-	{
-		return {
-			'stl' : OV.FileFormat.Binary
-		};
-	}
-	
+    GetKnownFileFormats ()
+    {
+        return {
+            'stl' : OV.FileFormat.Binary
+        };
+    }
+    
     GetUpDirection ()
     {
         return OV.Direction.Z;
     }
 
-	ImportContent (fileContent, onFinish)
-	{
+    ImportContent (fileContent, onFinish)
+    {
         if (this.IsBinaryStlFile (fileContent)) {
             this.ProcessBinary (fileContent);
         } else {
@@ -45,10 +45,10 @@ OV.ImporterStl = class extends OV.ImporterBase
             });
         }
         onFinish ();
-	}
+    }
 
-	IsBinaryStlFile (fileContent)
-	{
+    IsBinaryStlFile (fileContent)
+    {
         let byteLength = fileContent.byteLength;
         if (byteLength < 84) {
             return false;
@@ -65,17 +65,17 @@ OV.ImporterStl = class extends OV.ImporterBase
         return true;        
     }
 
-	ProcessLine (line)
-	{
-		if (line[0] === '#') {
-			return;
-		}
+    ProcessLine (line)
+    {
+        if (line[0] === '#') {
+            return;
+        }
 
-		let parameters = OV.ParametersFromLine (line, '#');
-		if (parameters.length === 0) {
-			return;
-		}
-		
+        let parameters = OV.ParametersFromLine (line, '#');
+        if (parameters.length === 0) {
+            return;
+        }
+        
         let keyword = parameters[0];
         if (keyword === 'solid') {
             if (parameters.length > 1) {
@@ -133,7 +133,7 @@ OV.ImporterStl = class extends OV.ImporterBase
     }
 
     ProcessBinary (fileContent)
-	{
+    {
         function ReadVector (reader)
         {
             let coord = new OV.Coord3D ();
