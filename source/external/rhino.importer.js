@@ -168,19 +168,41 @@ OV.Importer3dm = class extends OV.ImporterBase
 		}
 
 		let rhinoColor = null;
-		if (rhinoAttributes.colorSource === this.rhino.ObjectColorSource.ColorFromObject) {
-			rhinoColor = rhinoAttributes.objectColor;
-		} else if (rhinoAttributes.colorSource === this.rhino.ObjectColorSource.ColorFromLayer) {
+		if (rhinoAttributes.materialSource === this.rhino.ObjectMaterialSource.MaterialFromObject) {
+			let materialIndex = rhinoAttributes.materialIndex;
+			if (materialIndex > -1) {
+				let material = rhinoDoc.materials ().get (materialIndex);
+				rhinoColor = material.diffuseColor;
+			}
+		} else if (rhinoAttributes.materialSource === this.rhino.ObjectMaterialSource.MaterialFromLayer) {
 			let layerIndex = rhinoAttributes.layerIndex;
 			if (layerIndex > 0) {
 				let layer = rhinoDoc.layers ().get (layerIndex);
-				rhinoColor = layer.color;
+				let layerMaterialIndex = layer.renderMaterialIndex;
+				if (layerMaterialIndex > -1) {
+					let material = rhinoDoc.materials ().get (layerMaterialIndex);
+					rhinoColor = material.diffuseColor;
+				}
 			}
-		} else if (rhinoAttributes.colorSource === this.rhino.ObjectColorSource.ColorFromParent) {
+		} else if (rhinoAttributes.materialSource === this.rhino.ObjectMaterialSource.MaterialFromParent) {
 			// TODO: handle instances
 		}
+		
+		if (rhinoColor === null) {
+			if (rhinoAttributes.colorSource === this.rhino.ObjectColorSource.ColorFromObject) {
+				rhinoColor = rhinoAttributes.objectColor;
+			} else if (rhinoAttributes.colorSource === this.rhino.ObjectColorSource.ColorFromLayer) {
+				let layerIndex = rhinoAttributes.layerIndex;
+				if (layerIndex > 0) {
+					let layer = rhinoDoc.layers ().get (layerIndex);
+					rhinoColor = layer.color;
+				}
+			} else if (rhinoAttributes.colorSource === this.rhino.ObjectColorSource.ColorFromParent) {
+				// TODO: handle instances
+			}
+		}
 
-		let color = new OV.Color (250, 250, 250);
+		let color = new OV.Color (255, 255, 255);
 		if (rhinoColor !== null) {
 			color = new OV.Color (rhinoColor.r, rhinoColor.g, rhinoColor.b);
 		}
