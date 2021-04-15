@@ -279,7 +279,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                 return null;
             }
 
-            let materialName = '#' + IntegerToHex (color[0]) + IntegerToHex (color[1]) + IntegerToHex (color[2]) + IntegerToHex (color[3]);
+            let materialName = 'Color ' + IntegerToHex (color[0]) + IntegerToHex (color[1]) + IntegerToHex (color[2]) + IntegerToHex (color[3]);
             let materialIndex = colorToMaterial[materialName];
             if (materialIndex === undefined) {
                 let material = new OV.Material ();

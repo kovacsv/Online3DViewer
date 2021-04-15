@@ -5,11 +5,13 @@ OV.Importer3dm = class extends OV.ImporterBase
         super ();
 		this.rhino = null;
 		this.colorToMaterial = null;
+		this.materialNameToIndex = null;
     }
     
     ResetState ()
     {
 		this.colorToMaterial = {};
+		this.materialNameToIndex = {};
     }
 
     CanImportExtension (extension)
@@ -167,39 +169,52 @@ OV.Importer3dm = class extends OV.ImporterBase
 			return result;
 		}
 
-		let rhinoColor = null;
-		if (rhinoAttributes.materialSource === this.rhino.ObjectMaterialSource.MaterialFromObject) {
-			let materialIndex = rhinoAttributes.materialIndex;
-			if (materialIndex > -1) {
-				let material = rhinoDoc.materials ().get (materialIndex);
-				rhinoColor = material.diffuseColor;
-			}
-		} else if (rhinoAttributes.materialSource === this.rhino.ObjectMaterialSource.MaterialFromLayer) {
-			let layerIndex = rhinoAttributes.layerIndex;
-			if (layerIndex > 0) {
-				let layer = rhinoDoc.layers ().get (layerIndex);
-				let layerMaterialIndex = layer.renderMaterialIndex;
-				if (layerMaterialIndex > -1) {
-					let material = rhinoDoc.materials ().get (layerMaterialIndex);
-					rhinoColor = material.diffuseColor;
+		function GetMaterial (rhino, rhinoAttributes)
+		{
+			if (rhinoAttributes.materialSource === rhino.ObjectMaterialSource.MaterialFromObject) {
+				let materialIndex = rhinoAttributes.materialIndex;
+				if (materialIndex > -1) {
+					return rhinoDoc.materials ().get (materialIndex);
 				}
-			}
-		} else if (rhinoAttributes.materialSource === this.rhino.ObjectMaterialSource.MaterialFromParent) {
-			// TODO: handle instances
-		}
-		
-		if (rhinoColor === null) {
-			if (rhinoAttributes.colorSource === this.rhino.ObjectColorSource.ColorFromObject) {
-				rhinoColor = rhinoAttributes.objectColor;
-			} else if (rhinoAttributes.colorSource === this.rhino.ObjectColorSource.ColorFromLayer) {
+			} else if (rhinoAttributes.materialSource === rhino.ObjectMaterialSource.MaterialFromLayer) {
 				let layerIndex = rhinoAttributes.layerIndex;
 				if (layerIndex > 0) {
 					let layer = rhinoDoc.layers ().get (layerIndex);
-					rhinoColor = layer.color;
+					let layerMaterialIndex = layer.renderMaterialIndex;
+					if (layerMaterialIndex > -1) {
+						return rhinoDoc.materials ().get (layerMaterialIndex);
+					}
 				}
-			} else if (rhinoAttributes.colorSource === this.rhino.ObjectColorSource.ColorFromParent) {
+			} else if (rhinoAttributes.materialSource === rhino.ObjectMaterialSource.MaterialFromParent) {
 				// TODO: handle instances
 			}
+			return null;
+		}
+
+		function GetColor (rhino, rhinoAttributes)
+		{
+			if (rhinoAttributes.colorSource === rhino.ObjectColorSource.ColorFromObject) {
+				return rhinoAttributes.objectColor;
+			} else if (rhinoAttributes.colorSource === rhino.ObjectColorSource.ColorFromLayer) {
+				let layerIndex = rhinoAttributes.layerIndex;
+				if (layerIndex > 0) {
+					let layer = rhinoDoc.layers ().get (layerIndex);
+					return layer.color;
+				}
+			} else if (rhinoAttributes.colorSource === rhino.ObjectColorSource.ColorFromParent) {
+				// TODO: handle instances
+			}
+			return null;
+		}		
+
+		let rhinoColor = null;
+
+		let rhinoMaterial = GetMaterial (this.rhino, rhinoAttributes);
+		if (rhinoMaterial !== null) {
+			rhinoColor = rhinoMaterial.diffuseColor;
+		}
+		if (rhinoColor === null) {
+			rhinoColor = GetColor (this.rhino, rhinoAttributes);
 		}
 
 		let color = new OV.Color (255, 255, 255);
@@ -208,10 +223,15 @@ OV.Importer3dm = class extends OV.ImporterBase
 		}
 
 		// TODO: transparency?
-		let materialName = '#' + IntegerToHex (color.r) + IntegerToHex (color.g) + IntegerToHex (color.b);
+		let materialName = 'Color ' + IntegerToHex (color.r) + IntegerToHex (color.g) + IntegerToHex (color.b);
 		let materialIndex = this.colorToMaterial[materialName];
 		if (materialIndex === undefined) {
 			let material = new OV.Material ();
+			if (rhinoMaterial !== null) {
+				material.name = rhinoMaterial.name;
+			} else {
+				material.name = materialName;
+			}
 			material.diffuse = color;
 			materialIndex = this.model.AddMaterial (material);
 			this.colorToMaterial[materialName] = materialIndex;
