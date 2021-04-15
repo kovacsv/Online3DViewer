@@ -203,10 +203,10 @@ describe ('Ply Importer', function() {
             assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
                 name : '',
                 materials : [
-                    { name : '#cc0000ff' },
-                    { name : '#00cc00ff' },
-                    { name : '#0000ccff' },
-                    { name : '#cccccc7f' }
+                    { name : 'Color cc0000ff' },
+                    { name : 'Color 00cc00ff' },
+                    { name : 'Color 0000ccff' },
+                    { name : 'Color cccccc7f' }
                 ],
                 meshes : [
                     {
