@@ -273,6 +273,11 @@ OV.Importer = class
         this.missingFiles = [];
     }
     
+	AddImporter (importer)
+	{
+		this.importers.push (importer);
+	}
+
     LoadFilesFromUrls (fileList, onReady)
     {
         this.LoadFiles (fileList, OV.FileSource.Url, onReady);

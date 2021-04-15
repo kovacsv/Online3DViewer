@@ -1,7 +1,8 @@
 {
 	"lib_files" : [
 		"libs/jquery-3.5.1.min.js",
-		"libs/three.min-126.js"
+		"libs/three.min-126.js",
+		"libs/rhino3dm.min.js"
 	],
 	"importer_files" : [
 		"source/core/core.js",
@@ -40,6 +41,7 @@
 		"source/export/exporteroff.js",
 		"source/export/exportergltf.js",
 		"source/export/exporter.js",
+		"source/external/rhino.importer.js",
 		"source/external/three.converter.js",
 		"source/external/three.model.loader.js",
 		"source/parameters/parameterlist.js",
