@@ -61,7 +61,7 @@ OV.ImporterBase = class
         return OV.Direction.Z;
     }
 
-    ImportContent (content, onFinish)
+    ImportContent (fileContent, onFinish)
     {
 
     }
