@@ -28,7 +28,7 @@ OV.Importer3dm = class extends OV.ImporterBase
     
     GetUpDirection ()
     {
-        return OV.Direction.X;
+        return OV.Direction.Z;
     }
 
     ImportContent (fileContent, onFinish)
