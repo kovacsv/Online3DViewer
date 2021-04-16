@@ -43,7 +43,10 @@ OV.UpVector = class
         let newEye = oldCamera.center.Clone ().Offset (defaultDir, distance);
 
         let newCamera = oldCamera.Clone ();
-        if (this.direction === OV.Direction.Y) {
+        if (this.direction === OV.Direction.X) {
+            newCamera.up = new OV.Coord3D (1.0, 0.0, 0.0);
+            newCamera.eye = newEye;
+        } if (this.direction === OV.Direction.Y) {
             newCamera.up = new OV.Coord3D (0.0, 1.0, 0.0);
             newCamera.eye = newEye;
         } else if (this.direction === OV.Direction.Z) {

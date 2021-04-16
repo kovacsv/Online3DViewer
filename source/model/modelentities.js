@@ -25,6 +25,13 @@ OV.Color = class
         this.b = b; // 0 .. 255
     }
 
+    Set (r, g, b)
+    {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+    }
+
     Clone ()
     {
         return new OV.Color (this.r, this.g, this.b);

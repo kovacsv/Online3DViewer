@@ -4,14 +4,14 @@ OV.Importer3dm = class extends OV.ImporterBase
     {
         super ();
 		this.rhino = null;
-		this.colorToMaterial = null;
-		this.materialNameToIndex = null;
+		this.instanceObjects = null;
+		this.instanceDefinitions = null;
     }
     
     ResetState ()
     {
-		this.colorToMaterial = {};
-		this.materialNameToIndex = {};
+		this.instanceObjects = {};
+		this.instanceDefinitions = {};
     }
 
     CanImportExtension (extension)
@@ -54,26 +54,49 @@ OV.Importer3dm = class extends OV.ImporterBase
 
 	ImportRhinoDocument (rhinoDoc)
 	{
+		this.InitRhinoInstances (rhinoDoc);
+		this.ImportRhinoGeometry (rhinoDoc);
+	}
+
+	InitRhinoInstances (rhinoDoc)
+	{
 		let rhinoObjects = rhinoDoc.objects ();
 		for (let i = 0; i < rhinoObjects.count; i++) {
 			let rhinoObject = rhinoObjects.get (i);
-			this.ImportRhinoObject (rhinoDoc, rhinoObject);
+			let rhinoAttributes = rhinoObject.attributes ();
+			if (rhinoAttributes.isInstanceDefinitionObject) {
+				this.instanceObjects[rhinoAttributes.id] = rhinoObject;
+			}
+		}
+		let rhinoInstanceDefinitions = rhinoDoc.instanceDefinitions ();
+		for (let i = 0; i < rhinoInstanceDefinitions.count (); i++) {
+			let rhinoInstanceDefinition = rhinoInstanceDefinitions.get (i);
+			this.instanceDefinitions[rhinoInstanceDefinition.id] = rhinoInstanceDefinition;
 		}
 	}
 
-	ImportRhinoObject (rhinoDoc, rhinoObject)
+	ImportRhinoGeometry (rhinoDoc)
 	{
+		let rhinoObjects = rhinoDoc.objects ();
+		for (let i = 0; i < rhinoObjects.count; i++) {
+			let rhinoObject = rhinoObjects.get (i);
+			this.ImportRhinoGeometryObject (rhinoDoc, rhinoObject, []);		
+		}
+	}
+
+	ImportRhinoGeometryObject (rhinoDoc, rhinoObject, rhinoInstanceReferences)
+	{
+		let rhinoGeometry = rhinoObject.geometry ();
+		let rhinoAttributes = rhinoObject.attributes ();
+
+		let objectType = rhinoGeometry.objectType;
+		if (rhinoAttributes.isInstanceDefinitionObject && rhinoInstanceReferences.length === 0) {
+			return;
+		}		
+	
 		let rhinoMesh = null;
 		let deleteMesh = false;
 
-		let rhinoGeometry = rhinoObject.geometry ();
-		let rhinoAttributes = rhinoObject.attributes ();
-		if (rhinoAttributes.isInstanceDefinitionObject) {
-			// TODO: handle instances
-			return;
-		}
-
-		let objectType = rhinoGeometry.objectType;
 		if (objectType === this.rhino.ObjectType.Mesh) {
 			rhinoMesh = rhinoGeometry;
 			deleteMesh = false;
@@ -95,22 +118,39 @@ OV.Importer3dm = class extends OV.ImporterBase
 			faces.delete ();
 			rhinoMesh.compact ();
 			deleteMesh = true;
+		} else if (objectType === this.rhino.ObjectType.InstanceReference) {
+			let parentDefinitionId = rhinoGeometry.parentIdefId;
+			let instanceDefinition = this.instanceDefinitions[parentDefinitionId]; 
+			if (instanceDefinition !== undefined) {
+				let instanceObjectIds = instanceDefinition.getObjectIds ();
+				for (let i = 0; i < instanceObjectIds.length; i++) {
+					let instanceObjectId = instanceObjectIds[i];
+					let instanceObject = this.instanceObjects[instanceObjectId];
+					if (instanceObject !== undefined) {
+						rhinoInstanceReferences.push (rhinoObject);
+						this.ImportRhinoGeometryObject (rhinoDoc, instanceObject, rhinoInstanceReferences);
+						rhinoInstanceReferences.pop ();
+					}
+				}
+			}
 		}
 
 		if (rhinoMesh !== null) {
-			this.ImportRhinoMesh (rhinoDoc, rhinoMesh, rhinoAttributes);
+			this.ImportRhinoMesh (rhinoDoc, rhinoMesh, rhinoObject, rhinoInstanceReferences);
 			if (deleteMesh) {
 				rhinoMesh.delete ();
 			}
 		}
 	}
 
-	ImportRhinoMesh (rhinoDoc, rhinoMesh, rhinoAttributes)
+	ImportRhinoMesh (rhinoDoc, rhinoMesh, rhinoObject, rhinoInstanceReferences)
 	{
+		let rhinoAttributes = rhinoObject.attributes ();
+
 		let mesh = new OV.Mesh ();
 		mesh.SetName (rhinoAttributes.name);
 
-		let materialIndex = this.GetMaterialIndex (rhinoDoc, rhinoAttributes);
+		let materialIndex = this.GetMaterialIndex (rhinoDoc, rhinoObject, rhinoInstanceReferences);
 		let threeJson = rhinoMesh.toThreejsJSON ();
 		let vertices = threeJson.data.attributes.position.array;
 		for (let i = 0; i < vertices.length; i += 3) {
@@ -155,22 +195,26 @@ OV.Importer3dm = class extends OV.ImporterBase
 			}
 			mesh.AddTriangle (triangle);
 		}
+		if (rhinoInstanceReferences.length !== 0) {
+			let matrix = new OV.Matrix ().CreateIdentity ();
+			for (let i = rhinoInstanceReferences.length - 1; i >= 0; i--) {
+				let rhinoInstanceReference = rhinoInstanceReferences[i];
+				let rhinoInstanceReferenceGeometry = rhinoInstanceReference.geometry ();
+				let rhinoInstanceReferenceMatrix = rhinoInstanceReferenceGeometry.xform.toFloatArray (0);
+				let transformationMatrix = new OV.Matrix (rhinoInstanceReferenceMatrix);
+				matrix = matrix.MultiplyMatrix (transformationMatrix);
+			}
+			let transformation = new OV.Transformation (matrix);
+			OV.TransformMesh (mesh, transformation);
+		}
 		this.model.AddMesh (mesh);
 	}
 
-	GetMaterialIndex (rhinoDoc, rhinoAttributes)
+	GetMaterialIndex (rhinoDoc, rhinoObject, rhinoInstanceReferences)
 	{
-		function IntegerToHex (intVal)
+		function GetRhinoMaterial (rhino, rhinoObject, rhinoInstanceReferences)
 		{
-			let result = parseInt (intVal, 10).toString (16);
-			while (result.length < 2) {
-				result = '0' + result;
-			}
-			return result;
-		}
-
-		function GetMaterial (rhino, rhinoAttributes)
-		{
+			let rhinoAttributes = rhinoObject.attributes ();
 			if (rhinoAttributes.materialSource === rhino.ObjectMaterialSource.MaterialFromObject) {
 				let materialIndex = rhinoAttributes.materialIndex;
 				if (materialIndex > -1) {
@@ -186,56 +230,44 @@ OV.Importer3dm = class extends OV.ImporterBase
 					}
 				}
 			} else if (rhinoAttributes.materialSource === rhino.ObjectMaterialSource.MaterialFromParent) {
-				// TODO: handle instances
-			}
-			return null;
-		}
-
-		function GetColor (rhino, rhinoAttributes)
-		{
-			if (rhinoAttributes.colorSource === rhino.ObjectColorSource.ColorFromObject) {
-				return rhinoAttributes.objectColor;
-			} else if (rhinoAttributes.colorSource === rhino.ObjectColorSource.ColorFromLayer) {
-				let layerIndex = rhinoAttributes.layerIndex;
-				if (layerIndex > 0) {
-					let layer = rhinoDoc.layers ().get (layerIndex);
-					return layer.color;
+				if (rhinoInstanceReferences.length !== 0) {
+					return GetRhinoMaterial (rhino, rhinoInstanceReferences[0], []);
 				}
-			} else if (rhinoAttributes.colorSource === rhino.ObjectColorSource.ColorFromParent) {
-				// TODO: handle instances
 			}
 			return null;
-		}		
-
-		let rhinoColor = null;
-
-		let rhinoMaterial = GetMaterial (this.rhino, rhinoAttributes);
-		if (rhinoMaterial !== null) {
-			rhinoColor = rhinoMaterial.diffuseColor;
-		}
-		if (rhinoColor === null) {
-			rhinoColor = GetColor (this.rhino, rhinoAttributes);
 		}
 
-		let color = new OV.Color (255, 255, 255);
-		if (rhinoColor !== null) {
-			color = new OV.Color (rhinoColor.r, rhinoColor.g, rhinoColor.b);
-		}
-
-		// TODO: transparency?
-		let materialName = 'Color ' + IntegerToHex (color.r) + IntegerToHex (color.g) + IntegerToHex (color.b);
-		let materialIndex = this.colorToMaterial[materialName];
-		if (materialIndex === undefined) {
+		function FindMatchingMaterial (model, rhinoMaterial)
+		{
 			let material = new OV.Material ();
-			if (rhinoMaterial !== null) {
-				material.name = rhinoMaterial.name;
+			if (rhinoMaterial === null) {
+				material.diffuse.Set (255, 255, 255);
 			} else {
-				material.name = materialName;
+				material.name = rhinoMaterial.name;
+				material.ambient.Set (rhinoMaterial.ambientColor.r, rhinoMaterial.ambientColor.g, rhinoMaterial.ambientColor.b);
+				material.diffuse.Set (rhinoMaterial.diffuseColor.r, rhinoMaterial.diffuseColor.g, rhinoMaterial.diffuseColor.b);
+				material.specular.Set (rhinoMaterial.specularColor.r, rhinoMaterial.specularColor.g, rhinoMaterial.specularColor.b);
 			}
-			material.diffuse = color;
-			materialIndex = this.model.AddMaterial (material);
-			this.colorToMaterial[materialName] = materialIndex;
+			for (let i = 0; i < model.MaterialCount (); i++) {
+				let current = model.GetMaterial (i);
+				if (current.name !== material.name) {
+					continue;
+				}
+				if (!OV.ColorIsEqual (current.ambient, material.ambient)) {
+					continue;
+				}
+				if (!OV.ColorIsEqual (current.diffuse, material.diffuse)) {
+					continue;
+				}
+				if (!OV.ColorIsEqual (current.specular, material.specular)) {
+					continue;
+				}
+				return i;
+			}
+			return model.AddMaterial (material);
 		}
-		return materialIndex;
+
+		let rhinoMaterial = GetRhinoMaterial (this.rhino, rhinoObject, rhinoInstanceReferences);
+		return FindMatchingMaterial (this.model, rhinoMaterial);
 	}
 };
