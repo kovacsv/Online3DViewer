@@ -118,6 +118,10 @@ OV.Importer3dm = class extends OV.ImporterBase
 			faces.delete ();
 			rhinoMesh.compact ();
 			deleteMesh = true;
+		} else if (objectType === this.rhino.ObjectType.SubD) {
+			rhinoGeometry.subdivide (3);
+			rhinoMesh = this.rhino.Mesh.createFromSubDControlNet (rhinoGeometry);
+			deleteMesh = true;
 		} else if (objectType === this.rhino.ObjectType.InstanceReference) {
 			let parentDefinitionId = rhinoGeometry.parentIdefId;
 			let instanceDefinition = this.instanceDefinitions[parentDefinitionId]; 
@@ -200,7 +204,7 @@ OV.Importer3dm = class extends OV.ImporterBase
 			for (let i = rhinoInstanceReferences.length - 1; i >= 0; i--) {
 				let rhinoInstanceReference = rhinoInstanceReferences[i];
 				let rhinoInstanceReferenceGeometry = rhinoInstanceReference.geometry ();
-				let rhinoInstanceReferenceMatrix = rhinoInstanceReferenceGeometry.xform.toFloatArray (0);
+				let rhinoInstanceReferenceMatrix = rhinoInstanceReferenceGeometry.xform.toFloatArray (false);
 				let transformationMatrix = new OV.Matrix (rhinoInstanceReferenceMatrix);
 				matrix = matrix.MultiplyMatrix (transformationMatrix);
 			}
