@@ -239,14 +239,34 @@ OV.Importer3dm = class extends OV.ImporterBase
 
 		function FindMatchingMaterial (model, rhinoMaterial)
 		{
+			function SetColor (color, rhinoColor)
+			{
+				color.Set (rhinoColor.r, rhinoColor.g, rhinoColor.b);
+			}
+
+			function IsWhite (rhinoColor)
+			{
+				return rhinoColor.r === 255 && rhinoColor.g === 255 && rhinoColor.b === 255;
+			}
+
 			let material = new OV.Material ();
 			if (rhinoMaterial === null) {
 				material.diffuse.Set (255, 255, 255);
 			} else {
 				material.name = rhinoMaterial.name;
-				material.ambient.Set (rhinoMaterial.ambientColor.r, rhinoMaterial.ambientColor.g, rhinoMaterial.ambientColor.b);
-				material.diffuse.Set (rhinoMaterial.diffuseColor.r, rhinoMaterial.diffuseColor.g, rhinoMaterial.diffuseColor.b);
-				material.specular.Set (rhinoMaterial.specularColor.r, rhinoMaterial.specularColor.g, rhinoMaterial.specularColor.b);
+				SetColor (material.ambient, rhinoMaterial.ambientColor);
+				SetColor (material.diffuse, rhinoMaterial.diffuseColor);
+				SetColor (material.specular, rhinoMaterial.specularColor);
+				material.opacity = 1.0 - rhinoMaterial.transparency;
+				if (OV.IsEqual (material.opacity, 0.0)) {
+					material.opacity = 0.1;
+				}
+                material.transparent = OV.IsLower (material.opacity, 1.0);
+				if (!IsWhite (rhinoMaterial.reflectionColor)) {
+					SetColor (material.diffuse, rhinoMaterial.reflectionColor);
+				} else if (!IsWhite (rhinoMaterial.transparentColor)) {
+					SetColor (material.diffuse, rhinoMaterial.transparentColor);
+				}
 			}
 			for (let i = 0; i < model.MaterialCount (); i++) {
 				let current = model.GetMaterial (i);
@@ -260,6 +280,12 @@ OV.Importer3dm = class extends OV.ImporterBase
 					continue;
 				}
 				if (!OV.ColorIsEqual (current.specular, material.specular)) {
+					continue;
+				}
+				if (!OV.IsEqual (current.opacity, material.opacity)) {
+					continue;
+				}
+				if (current.transparent !== material.transparent) {
 					continue;
 				}
 				return i;
