@@ -49,6 +49,9 @@ OV.Importer3dm = class extends OV.ImporterBase
 	ImportRhinoContent (fileContent)
 	{
 		let rhinoDoc = this.rhino.File3dm.fromByteArray (fileContent);
+		if (rhinoDoc === null) {
+			return;
+		}
 		this.ImportRhinoDocument (rhinoDoc);
 	}
 
@@ -263,6 +266,7 @@ OV.Importer3dm = class extends OV.ImporterBase
 				SetColor (material.specular, rhinoMaterial.specularColor);
 				material.opacity = 1.0 - rhinoMaterial.transparency;
 				if (OV.IsEqual (material.opacity, 0.0)) {
+					// TODO: ?
 					material.opacity = 0.1;
 				}
                 material.transparent = OV.IsLower (material.opacity, 1.0);
