@@ -265,10 +265,6 @@ OV.Importer3dm = class extends OV.ImporterBase
 				SetColor (material.diffuse, rhinoMaterial.diffuseColor);
 				SetColor (material.specular, rhinoMaterial.specularColor);
 				material.opacity = 1.0 - rhinoMaterial.transparency;
-				if (OV.IsEqual (material.opacity, 0.0)) {
-					// TODO: ?
-					material.opacity = 0.1;
-				}
                 material.transparent = OV.IsLower (material.opacity, 1.0);
 				if (!IsWhite (rhinoMaterial.reflectionColor)) {
 					SetColor (material.diffuse, rhinoMaterial.reflectionColor);
