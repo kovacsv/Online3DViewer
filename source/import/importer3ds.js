@@ -163,8 +163,8 @@ OV.Importer3ds = class extends OV.ImporterBase
             }
         });
 
-        if (shininess !== null || shininessStrength !== null) {
-            material.shininess = shininess * shininessStrength;
+        if (shininess !== null && shininessStrength !== null) {
+            material.shininess = shininess * shininessStrength / 10.0;
         }
         let materialIndex = this.model.AddMaterial (material);
         this.materialNameToIndex[material.name] = materialIndex;

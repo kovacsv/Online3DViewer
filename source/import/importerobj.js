@@ -258,7 +258,7 @@ OV.ImporterObj = class extends OV.ImporterBase
             if (this.currentMaterial === null || parameters.length < 1) {
                 return true;
             }
-            this.currentMaterial.shininess = parseFloat (parameters[0]) / 100.0;
+            this.currentMaterial.shininess = parseFloat (parameters[0]) / 1000.0;
             return true;
         } else if (keyword === 'tr') {
             if (this.currentMaterial === null || parameters.length < 1) {

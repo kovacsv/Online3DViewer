@@ -39,7 +39,7 @@ OV.ConvertModelToThreeMeshes = function (model, callbacks)
 			color : diffuseColor,
 			specular : specularColor,
 			emissive : emissiveColor,
-			shininess : material.shininess * 10.0,
+			shininess : material.shininess * 100.0,
 			opacity : material.opacity,
 			transparent : material.transparent,
 			alphaTest : material.alphaTest,
