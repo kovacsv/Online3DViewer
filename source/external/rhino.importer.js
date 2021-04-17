@@ -251,6 +251,11 @@ OV.Importer3dm = class extends OV.ImporterBase
 				color.Set (rhinoColor.r, rhinoColor.g, rhinoColor.b);
 			}
 
+			function IsBlack (rhinoColor)
+			{
+				return rhinoColor.r === 0 && rhinoColor.g === 0 && rhinoColor.b === 0;
+			}
+
 			function IsWhite (rhinoColor)
 			{
 				return rhinoColor.r === 255 && rhinoColor.g === 255 && rhinoColor.b === 255;
@@ -266,9 +271,11 @@ OV.Importer3dm = class extends OV.ImporterBase
 				SetColor (material.specular, rhinoMaterial.specularColor);
 				material.opacity = 1.0 - rhinoMaterial.transparency;
                 material.transparent = OV.IsLower (material.opacity, 1.0);
-				if (!IsWhite (rhinoMaterial.reflectionColor)) {
+				// material.shininess = rhinoMaterial.shine / 255.0;
+				if (IsBlack (material.diffuse) && !IsWhite (rhinoMaterial.reflectionColor)) {
 					SetColor (material.diffuse, rhinoMaterial.reflectionColor);
-				} else if (!IsWhite (rhinoMaterial.transparentColor)) {
+				}
+				if (IsBlack (material.diffuse) && !IsWhite (rhinoMaterial.transparentColor)) {
 					SetColor (material.diffuse, rhinoMaterial.transparentColor);
 				}
 			}
@@ -290,6 +297,9 @@ OV.Importer3dm = class extends OV.ImporterBase
 					continue;
 				}
 				if (current.transparent !== material.transparent) {
+					continue;
+				}
+				if (!OV.IsEqual (current.shininess, material.shininess)) {
 					continue;
 				}
 				return i;
