@@ -718,7 +718,6 @@ div.intro div.intro_section
 {
 	font-size: 16px;
 	line-height: 20px;
-	margin: 20px 0px;
 }
 
 div.intro div.intro_big_text
@@ -755,7 +754,7 @@ div.ov_progress
 
 div.intro div.intro_section
 {
-	margin: 20px 0px;
+	margin: 15px 0px;
 }
 
 }

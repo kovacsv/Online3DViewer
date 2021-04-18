@@ -23,6 +23,7 @@ The repository is separated into two parts. See more information in the [Develop
 - stl (text and binary)
 - ply (text and binary)
 - gltf (text and binary)
+- 3dm (experimental)
 - off (text only)
 
 ### Export
