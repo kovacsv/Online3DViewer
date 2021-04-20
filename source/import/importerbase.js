@@ -36,17 +36,20 @@ OV.ImporterBase = class
     {
         if (this.error) {
             callbacks.onError ();
+            callbacks.onComplete ();
             return;
         }
 
         if (OV.IsModelEmpty (this.model)) {
             this.error = true;
             callbacks.onError ();
+            callbacks.onComplete ();
             return;
         }
 
         OV.FinalizeModel (this.model, this.callbacks.getDefaultMaterial);
         callbacks.onSuccess ();
+        callbacks.onComplete ();
     }
 
     CanImportExtension (extension)

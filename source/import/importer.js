@@ -344,6 +344,9 @@ OV.Importer = class
             onError : function () {
                 let message = importer.GetMessage ();
                 callbacks.onError (new OV.ImportError (OV.ImportErrorCode.ImportFailed, message));
+            },
+            onComplete : function () {
+                importer.Clear ();
             }
         });
     }

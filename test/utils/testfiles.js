@@ -84,6 +84,9 @@ module.exports =
             },
             onError : function () {
                 onReady (model);
+            },
+            onComplete : function () {
+                
             }
         });
     }
