@@ -89,16 +89,8 @@ OV.ImporterPly = class extends OV.ImporterBase
     constructor ()
     {
         super ();
-        this.model = null;
-        this.mesh = null;
     }
     
-    ResetState ()
-    {
-        this.mesh = new OV.Mesh ();
-        this.model.AddMesh (this.mesh);
-    }
-
     CanImportExtension (extension)
     {
         return extension === 'ply';
@@ -114,6 +106,18 @@ OV.ImporterPly = class extends OV.ImporterBase
     GetUpDirection ()
     {
         return OV.Direction.Y;
+    }
+    
+    ClearContent ()
+    {
+        this.model = null;
+        this.mesh = null;
+    }
+
+    ResetContent ()
+    {
+        this.mesh = new OV.Mesh ();
+        this.model.AddMesh (this.mesh);
     }
 
     ImportContent (fileContent, onFinish)

@@ -2,15 +2,13 @@ OV.ImporterBase = class
 {
     constructor ()
     {
-        this.extension = null;
-        this.callbacks = null;
-        this.model = null;
-        this.error = null;
-        this.message = null;
+        
     }
     
     Import (content, extension, callbacks)
     {
+        this.Clear ();
+
         this.extension = extension;
         this.callbacks = callbacks;
         this.model = new OV.Model ();
@@ -18,10 +16,20 @@ OV.ImporterBase = class
         this.message = null;
 
         let obj = this;
-        obj.ResetState ();
-        obj.ImportContent (content, function () {
+        this.ResetContent ();
+        this.ImportContent (content, function () {
             obj.CreateResult (callbacks);
         });
+    }
+
+    Clear ()
+    {
+        this.extension = null;
+        this.callbacks = null;
+        this.model = null;
+        this.error = null;
+        this.message = null;
+        this.ClearContent ();
     }
 
     CreateResult (callbacks)
@@ -41,11 +49,6 @@ OV.ImporterBase = class
         callbacks.onSuccess ();
     }
 
-    ResetState ()
-    {
-
-    }
-
     CanImportExtension (extension)
     {
         return false;
@@ -59,6 +62,16 @@ OV.ImporterBase = class
     GetUpDirection ()
     {
         return OV.Direction.Z;
+    }
+
+    ClearContent ()
+    {
+
+    }
+
+    ResetContent ()
+    {
+
     }
 
     ImportContent (fileContent, onFinish)

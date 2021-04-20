@@ -3,33 +3,6 @@ OV.ImporterObj = class extends OV.ImporterBase
     constructor ()
     {
         super ();
-
-        this.globalVertices = null;
-        this.globalNormals = null;
-        this.globalUvs = null;
-    
-        this.currentMesh = null;
-        this.currentMeshData = null;
-        this.currentMaterial = null;
-        this.currentMaterialIndex = null;
-    
-        this.meshNameToMeshData = null;
-        this.materialNameToIndex = null;
-    }
-    
-    ResetState ()
-    {
-        this.globalVertices = [];
-        this.globalNormals = [];
-        this.globalUvs = [];
-
-        this.currentMesh = null;
-        this.currentMeshData = null;
-        this.currentMaterial = null;
-        this.currentMaterialIndex = null;        
-
-        this.meshNameToMeshData = {};
-        this.materialNameToIndex = {};
     }
 
     CanImportExtension (extension)
@@ -48,6 +21,36 @@ OV.ImporterObj = class extends OV.ImporterBase
     GetUpDirection ()
     {
         return OV.Direction.Y;
+    }
+    
+    ClearContent ()
+    {
+        this.globalVertices = null;
+        this.globalNormals = null;
+        this.globalUvs = null;
+    
+        this.currentMesh = null;
+        this.currentMeshData = null;
+        this.currentMaterial = null;
+        this.currentMaterialIndex = null;
+    
+        this.meshNameToMeshData = null;
+        this.materialNameToIndex = null;
+    }
+
+    ResetContent ()
+    {
+        this.globalVertices = [];
+        this.globalNormals = [];
+        this.globalUvs = [];
+
+        this.currentMesh = null;
+        this.currentMeshData = null;
+        this.currentMaterial = null;
+        this.currentMaterialIndex = null;        
+
+        this.meshNameToMeshData = {};
+        this.materialNameToIndex = {};
     }
     
     ImportContent (fileContent, onFinish)

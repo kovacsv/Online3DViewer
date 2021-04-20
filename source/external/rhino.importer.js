@@ -4,16 +4,8 @@ OV.Importer3dm = class extends OV.ImporterBase
     {
         super ();
 		this.rhino = null;
-		this.instanceObjects = null;
-		this.instanceDefinitions = null;
     }
-    
-    ResetState ()
-    {
-		this.instanceObjects = {};
-		this.instanceDefinitions = {};
-    }
-
+	
     CanImportExtension (extension)
     {
         return extension === '3dm';
@@ -29,6 +21,18 @@ OV.Importer3dm = class extends OV.ImporterBase
     GetUpDirection ()
     {
         return OV.Direction.Z;
+    }
+
+	ClearContent ()
+	{
+		this.instanceObjects = null;
+		this.instanceDefinitions = null;
+	}
+
+    ResetContent ()
+    {
+		this.instanceObjects = {};
+		this.instanceDefinitions = {};
     }
 
     ImportContent (fileContent, onFinish)

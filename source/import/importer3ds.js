@@ -49,21 +49,6 @@ OV.Importer3ds = class extends OV.ImporterBase
     constructor ()
     {
         super ();
-
-        this.materialNameToIndex = null;
-        this.meshNameToIndex = null;
-    
-        this.meshTransformations = null;
-        this.defaultMaterialIndex = null;
-    }
-    
-    ResetState ()
-    {
-        this.materialNameToIndex = {};
-        this.meshNameToIndex = {};
-
-        this.meshTransformations = [];
-        this.defaultMaterialIndex = null;
     }
 
     CanImportExtension (extension)
@@ -81,6 +66,24 @@ OV.Importer3ds = class extends OV.ImporterBase
     GetUpDirection ()
     {
         return OV.Direction.Z;
+    }    
+
+    ClearContent ()
+    {
+        this.materialNameToIndex = null;
+        this.meshNameToIndex = null;
+    
+        this.meshTransformations = null;
+        this.defaultMaterialIndex = null;
+    }
+
+    ResetContent ()
+    {
+        this.materialNameToIndex = {};
+        this.meshNameToIndex = {};
+
+        this.meshTransformations = [];
+        this.defaultMaterialIndex = null;
     }
 
     ImportContent (fileContent, onFinish)

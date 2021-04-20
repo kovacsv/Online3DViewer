@@ -348,17 +348,6 @@ OV.ImporterGltf = class extends OV.ImporterBase
     constructor ()
     {
         super ();
-        
-        this.bufferContents = null;
-        this.gltfExtensions = null;
-        this.imageIndexToTextureParams = null;
-    }
-    
-    ResetState ()
-    {
-        this.bufferContents = [];
-        this.gltfExtensions = new OV.GltfExtensions ();
-        this.imageIndexToTextureParams = {};
     }
 
     CanImportExtension (extension)
@@ -380,6 +369,20 @@ OV.ImporterGltf = class extends OV.ImporterBase
         return OV.Direction.Y;
     }
     
+    ClearContent ()
+    {
+        this.bufferContents = null;
+        this.gltfExtensions = null;
+        this.imageIndexToTextureParams = null;
+    }
+
+    ResetContent ()
+    {
+        this.bufferContents = [];
+        this.gltfExtensions = new OV.GltfExtensions ();
+        this.imageIndexToTextureParams = {};
+    }
+
     ImportContent (fileContent, onFinish)
     {
         if (this.extension === 'gltf') {

@@ -3,23 +3,8 @@ OV.ImporterOff = class extends OV.ImporterBase
     constructor ()
     {
         super ();
-        this.model = null;
-        this.mesh = null;
-        this.status = null;
     }
     
-    ResetState ()
-    {
-        this.mesh = new OV.Mesh ();
-        this.model.AddMesh (this.mesh);
-        this.status = {
-            vertexCount : 0,
-            faceCount : 0,
-            foundVertex : 0,
-            foundFace : 0
-        };
-    }
-
     CanImportExtension (extension)
     {
         return extension === 'off';
@@ -35,6 +20,25 @@ OV.ImporterOff = class extends OV.ImporterBase
     GetUpDirection ()
     {
         return OV.Direction.Y;
+    }
+    
+    ClearContent ()
+    {
+        this.model = null;
+        this.mesh = null;
+        this.status = null;
+    }
+
+    ResetContent ()
+    {
+        this.mesh = new OV.Mesh ();
+        this.model.AddMesh (this.mesh);
+        this.status = {
+            vertexCount : 0,
+            faceCount : 0,
+            foundVertex : 0,
+            foundFace : 0
+        };
     }
 
     ImportContent (fileContent, onFinish)

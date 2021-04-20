@@ -3,15 +3,6 @@ OV.ImporterStl = class extends OV.ImporterBase
     constructor ()
     {
         super ();
-        this.mesh = null;
-        this.triangle = null;
-    }
-    
-    ResetState ()
-    {
-        this.mesh = new OV.Mesh ();
-        this.model.AddMesh (this.mesh);
-        this.triangle = null;
     }
 
     CanImportExtension (extension)
@@ -29,6 +20,19 @@ OV.ImporterStl = class extends OV.ImporterBase
     GetUpDirection ()
     {
         return OV.Direction.Z;
+    }    
+    
+    ClearContent ()
+    {
+        this.mesh = null;
+        this.triangle = null;
+    }
+
+    ResetContent ()
+    {
+        this.mesh = new OV.Mesh ();
+        this.model.AddMesh (this.mesh);
+        this.triangle = null;
     }
 
     ImportContent (fileContent, onFinish)
