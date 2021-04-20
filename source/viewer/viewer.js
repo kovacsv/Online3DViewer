@@ -155,9 +155,7 @@ OV.Viewer = class
         let fov = this.camera.fov;
         if (animation) {
             let newCamera = this.navigation.GetFitToSphereCamera (center, radius, fov);
-            if (newCamera !== null) {
-                this.navigation.MoveCamera (newCamera, this.settings.animationSteps);
-            }
+            this.navigation.MoveCamera (newCamera, this.settings.animationSteps);
         } else {
             this.navigation.FitToSphere (center, radius, fov);
         }

@@ -308,6 +308,10 @@ OV.Navigation = class
 			}
 		}
 
+		if (newCamera === null) {
+			return;
+		}
+		
 		if (stepCount === 0) {
 			this.SetCamera (newCamera);
 			return;
