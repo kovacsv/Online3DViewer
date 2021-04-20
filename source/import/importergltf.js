@@ -872,7 +872,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
         let reader = new OV.GltfBufferReader (buffer);
         reader.SkipBytes (bufferView.byteOffset || 0);
         let byteStride = bufferView.byteStride;
-        if (byteStride !== undefined) {
+        if (byteStride !== undefined && byteStride !== 0) {
             reader.SetByteStride (byteStride);
         }
 
