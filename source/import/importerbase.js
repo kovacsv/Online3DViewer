@@ -14,9 +14,9 @@ OV.ImporterBase = class
         this.model = new OV.Model ();
         this.error = false;
         this.message = null;
+        this.ResetContent ();
 
         let obj = this;
-        this.ResetContent ();
         this.ImportContent (content, function () {
             obj.CreateResult (callbacks);
         });
