@@ -61,7 +61,7 @@ OV.Importer3dm = class extends OV.ImporterBase
 		this.ImportRhinoDocument (rhinoDoc);
         if (OV.IsModelEmpty (this.model)) {
 			this.SetError ();
-			this.SetMessage ('The model doesn\'t contain meshes.');
+			this.SetMessage ('The model doesn\'t contain any 3D meshes. Try to save the model while you are in shaded view in Rhino.');
         }
 	}
 
