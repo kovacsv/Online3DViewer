@@ -104,6 +104,9 @@ OV.Viewer = class
         };
         
         this.renderer = new THREE.WebGLRenderer (parameters);
+        if (window.devicePixelRatio) {
+            this.renderer.setPixelRatio (window.devicePixelRatio);
+        }
         this.renderer.setClearColor ('#ffffff', 1.0);
         this.renderer.setSize (this.canvas.width, this.canvas.height);
         
@@ -394,7 +397,13 @@ OV.Viewer = class
     GetImageAsDataUrl (width, height)
     {
         let originalSize = this.GetImageSize ();
-        this.ResizeRenderer (width, height);
+        let renderWidth = width;
+        let renderHeight = height;
+        if (window.devicePixelRatio) {
+            renderWidth /= window.devicePixelRatio;
+            renderHeight /= window.devicePixelRatio;
+        }
+        this.ResizeRenderer (renderWidth, renderHeight);
         this.Render ();
         let url = this.renderer.domElement.toDataURL ();
         this.ResizeRenderer (originalSize.width, originalSize.height);
