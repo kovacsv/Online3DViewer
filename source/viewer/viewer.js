@@ -86,8 +86,16 @@ OV.Viewer = class
         this.navigation = null;
         this.upVector = null;
         this.settings = {
-            animationSteps : 40
+            animationSteps : 40,
+            showEdges : false,
+            edgesAngle : 15,
+            edgesColor : new OV.Color (0, 0, 0),
         };
+    }
+
+    UpdateSettings (settings)
+    {
+        this.settings = Object.assign ({ animationSteps: 40 }, settings);
     }
     
     Init (canvas)
@@ -236,6 +244,11 @@ OV.Viewer = class
         for (let i = 0; i < meshes.length; i++) {
             let mesh = meshes[i];
             this.scene.add (mesh);
+            if (this.settings.showEdges) {
+                let edges = new THREE.EdgesGeometry (mesh.geometry, this.settings.edgesAngle);
+                let lines = new THREE.LineSegments (edges, new THREE.LineBasicMaterial ( { color: '#' + OV.ColorToHexString (this.settings.edgesColor) }));
+                this.scene.add (lines);
+            }
         }
         this.Render ();
     }
@@ -351,7 +364,7 @@ OV.Viewer = class
     {
         for (let i = this.scene.children.length - 1; i >= 0; i--) {
             let object = this.scene.children[i];
-            if (object.isMesh) {
+            if (object.isMesh || object.type === 'LineSegments') {
                 object.geometry.dispose ();
                 this.scene.remove (object);
             }
