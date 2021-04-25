@@ -74,7 +74,17 @@ OV.Init3DViewerElements = function ()
                 settings.defaultColor = color;
             }
         }
+        
+        let edgeColor = element.getAttribute ('edge');
+        if (edgeColor) {
+            let color = OV.ParameterConverter.StringToColor (edgeColor);
+            if (color !== null) {
+                settings.showEdges = true;
+                settings.edgesColor = color;
+            }
+        }
 
+        viewer.UpdateSettings (settings);
         loader.LoadFromUrlList (modelUrls, settings);
         return {
             element: element,
