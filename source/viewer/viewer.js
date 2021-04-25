@@ -142,6 +142,9 @@ OV.Viewer = class
 
     ResizeRenderer (width, height)
     {
+        if (window.devicePixelRatio) {
+            this.renderer.setPixelRatio (window.devicePixelRatio);
+        }
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix ();
         this.renderer.setSize (width, height);    
