@@ -196,9 +196,8 @@ OV.ExporterGltf = class extends OV.ExporterBase
         let writer = new OV.BinaryWriter (mainBufferSize, true);
         for (let meshIndex = 0; meshIndex < meshDataArr.length; meshIndex++) {
             let meshData = meshDataArr[meshIndex];
-            let primitives = meshData.buffer.primitives;
-            for (let primitiveIndex = 0; primitiveIndex < primitives.length; primitiveIndex++) {
-                let primitive = primitives[primitiveIndex];
+            for (let primitiveIndex = 0; primitiveIndex < meshData.buffer.PrimitiveCount (); primitiveIndex++) {
+                let primitive = meshData.buffer.GetPrimitive (primitiveIndex);
                 let offset = writer.GetPosition ();
                 for (let i = 0; i < primitive.indices.length; i++) {
                     writer.WriteUnsignedInteger32 (primitive.indices[i]);

@@ -45,6 +45,12 @@ OV.ExportDialog = class
                 ]
             },
             {
+                name : '3dm',
+                formats : [
+                    { name : 'binary', type: OV.ExportType.Model, format : OV.FileFormat.Binary, extension : '3dm' }
+                ]
+            },
+            {
                 name : 'png',
                 formats : [
                     { name : 'current size', type: OV.ExportType.Image, width : null, height : null, extension : 'png' },
@@ -157,6 +163,7 @@ OV.ExportDialog = class
             progressDialog.Show ('Exporting Model');
             OV.RunTaskAsync (function () {
                 let exporter = new OV.Exporter ();
+                exporter.AddExporter (new OV.Exporter3dm ());
                 exporter.Export (model, selectedFormat.format, selectedFormat.extension, {
                     onError : function () {
                         progressDialog.Hide ();

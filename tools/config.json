@@ -42,6 +42,7 @@
 		"source/export/exportergltf.js",
 		"source/export/exporter.js",
 		"source/external/rhino.importer.js",
+		"source/external/rhino.exporter.js",
 		"source/external/three.converter.js",
 		"source/external/three.model.loader.js",
 		"source/parameters/parameterlist.js",

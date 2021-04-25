@@ -11,6 +11,11 @@ OV.Exporter = class
         ];
     }
 
+    AddExporter (exporter)
+    {
+        this.exporters.push (exporter);
+    }
+
     Export (model, format, extension, callbacks)
     {
         let exporter = null;

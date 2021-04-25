@@ -10,7 +10,6 @@ OV.Init3DViewerElements = function ()
 
         let width = element.clientWidth;
         let height = element.clientHeight;
-        console.log (element.clientHeight);
         viewer.Resize (width, height);
 
         let loader = new OV.ThreeModelLoader ();

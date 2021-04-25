@@ -40,6 +40,16 @@ OV.MeshBuffer = class
         this.primitives = [];
     }
 
+    PrimitiveCount ()
+    {
+        return this.primitives.length;
+    }
+
+    GetPrimitive (index)
+    {
+        return this.primitives[index];
+    }
+
     GetByteLength (indexTypeSize, numberTypeSize)
     {
         let byteLength = 0;
