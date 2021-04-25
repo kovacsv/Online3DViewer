@@ -408,6 +408,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
                     roughnessFactor : 1.0
                 },
                 emissiveFactor : ColorToRGB (material.emissive),
+                doubleSided : true,
                 alphaMode : 'OPAQUE'
             };
 
