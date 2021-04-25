@@ -184,9 +184,6 @@ OV.ImportSettings = class
     constructor ()
     {
         this.defaultColor = new OV.Color (200, 200, 200);
-        this.edgesColor = new OV.Color (0, 0, 0);
-        this.showEdges = false;
-        this.edgesAngle = 15;
     }
 };
 

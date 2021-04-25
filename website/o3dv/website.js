@@ -21,7 +21,6 @@ OV.Website = class
     {
         let canvas = $('<canvas>').appendTo (this.parameters.viewerDiv);
         this.viewer.Init (canvas.get (0));
-        this.viewer.UpdateSettings (this.importSettings);
         this.ShowViewer (false);
         this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
 
@@ -194,7 +193,7 @@ OV.Website = class
                 return;
             }
             let settings = new OV.ImportSettings ();
-            Object.assign(settings, this.importSettings);
+            settings.defaultColor = this.importSettings.defaultColor;
             let color = this.hashHandler.GetColorFromHash ();
             if (color !== null) {
                 settings.defaultColor = color;
@@ -291,27 +290,16 @@ OV.Website = class
         AddButton (this.toolbar, 'share', 'Share model', true, function () {
             obj.dialog = OV.ShowSharingDialog (importer, obj.importSettings, obj.viewer.GetCamera ());
         });
-        if (OV.FeatureSet.SetDefaultColor || OV.FeatureSet.SetShowEdge) {
+        if (OV.FeatureSet.SetDefaultColor) {
             AddSeparator (this.toolbar, true);
             AddButton (this.toolbar, 'settings', 'Settings', true, function () {
                 obj.dialog = OV.ShowSettingsDialog (obj.importSettings, function (dialogSettings) {
                     let reload = false;
-                    for (let key in dialogSettings) {
-                        if (key.indexOf ('Color') !== -1) {
-                            if (!OV.ColorIsEqual (obj.importSettings[key], dialogSettings[key])) {
-                                obj.importSettings[key] = dialogSettings[key];
-                                reload = true;
-                            }
-                        }
-                        else {
-                            if (dialogSettings[key] !== obj.importSettings[key]) {
-                                obj.importSettings[key] = dialogSettings[key];
-                                reload = true;
-                            }
-                        }
+                    if (!OV.ColorIsEqual (obj.importSettings.defaultColor, dialogSettings.defaultColor)) {
+                        obj.importSettings.defaultColor = dialogSettings.defaultColor;
+                        reload = true;
                     }
                     if (reload) {
-                        obj.viewer.UpdateSettings (obj.importSettings);
                         obj.ReloadFiles ();
                     }
                 });
