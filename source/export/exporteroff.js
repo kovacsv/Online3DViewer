@@ -10,7 +10,7 @@ OV.ExporterOff = class extends OV.ExporterBase
         return format === OV.FileFormat.Text && extension === 'off';
     }
     
-	ExportContent (model, format, files)
+	ExportContent (model, format, files, onFinish)
 	{
 		let offFile = new OV.ExportedFile ('model.off');
 		files.push (offFile);
@@ -29,5 +29,6 @@ OV.ExporterOff = class extends OV.ExporterBase
 		});
 
 		offFile.SetContent (offWriter.GetText ());
+		onFinish ();
 	}   
 };

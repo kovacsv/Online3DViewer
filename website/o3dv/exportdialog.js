@@ -157,17 +157,23 @@ OV.ExportDialog = class
             progressDialog.Show ('Exporting Model');
             OV.RunTaskAsync (function () {
                 let exporter = new OV.Exporter ();
-                let files = exporter.Export (model, selectedFormat.format, selectedFormat.extension);
-                if (files.length === 0) {
-                    progressDialog.Hide ();
-                } else if (files.length === 1) {
-                    progressDialog.Hide ();
-                    let file = files[0];
-                    OV.DownloadArrayBufferAsFile (file.GetContent (), file.GetName ());
-                } else if (files.length > 1) {
-                    progressDialog.Hide ();
-                    obj.ShowExportedFiles (files);
-                }
+                exporter.Export (model, selectedFormat.format, selectedFormat.extension, {
+                    onError : function () {
+                        progressDialog.Hide ();
+                    },
+                    onSuccess : function (files) {
+                        if (files.length === 0) {
+                            progressDialog.Hide ();
+                        } else if (files.length === 1) {
+                            progressDialog.Hide ();
+                            let file = files[0];
+                            OV.DownloadArrayBufferAsFile (file.GetContent (), file.GetName ());
+                        } else if (files.length > 1) {
+                            progressDialog.Hide ();
+                            obj.ShowExportedFiles (files);
+                        }
+                    }
+                });
             });
         } else if (selectedFormat.type === OV.ExportType.Image) {
             let url = null;

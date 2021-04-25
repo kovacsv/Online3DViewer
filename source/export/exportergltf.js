@@ -20,13 +20,14 @@ OV.ExporterGltf = class extends OV.ExporterBase
         return (format === OV.FileFormat.Text && extension === 'gltf') || (format === OV.FileFormat.Binary && extension === 'glb');
     }
     
-	ExportContent (model, format, files)
+	ExportContent (model, format, files, onFinish)
 	{
         if (format === OV.FileFormat.Text) {
             this.ExportAsciiContent (model, files);
         } else if (format === OV.FileFormat.Binary) {
             this.ExportBinaryContent (model, files);
         }
+        onFinish ();
 	}
 
 	ExportAsciiContent (model, files)

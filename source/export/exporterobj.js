@@ -10,7 +10,7 @@ OV.ExporterObj = class extends OV.ExporterBase
         return format === OV.FileFormat.Text && extension === 'obj';
     }
     
-    ExportContent (model, format, files)
+    ExportContent (model, format, files, onFinish)
     {
         function WriteTexture (mtlWriter, keyword, texture, files)
         {
@@ -105,7 +105,8 @@ OV.ExporterObj = class extends OV.ExporterBase
             uvOffset += mesh.TextureUVCount ();
         }
 
-        objFile.SetContent (objWriter.GetText ());        
+        objFile.SetContent (objWriter.GetText ());
+        onFinish ();  
     }
 
     GetHeaderText ()
