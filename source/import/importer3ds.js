@@ -504,8 +504,10 @@ OV.Importer3ds = class extends OV.ImporterBase
                 nodeMatrix = GetNodeTransformation (nodeHierarchy, node);
             }
 
+            let mesh = model.GetMesh (currentMeshIndex);
             let determinant = meshMatrix.Determinant ();
-            if (OV.IsNegative (determinant)) {
+            let mirrorByX = OV.IsNegative (determinant);
+            if (mirrorByX) {
                 // Mirror by x coordinates
                 let scaleMatrix = new OV.Matrix ().CreateScale (-1.0, 1.0, 1.0);
                 meshMatrix = scaleMatrix.MultiplyMatrix (meshMatrix);
@@ -524,7 +526,9 @@ OV.Importer3ds = class extends OV.ImporterBase
             matrix = invMeshMatrix.MultiplyMatrix (matrix);
 
             let transformation = new OV.Transformation (matrix);
-            let mesh = model.GetMesh (currentMeshIndex);
+            if (mirrorByX) {
+                OV.FlipMeshTrianglesOrientation (mesh);
+            }
             OV.TransformMesh (mesh, transformation);
         }
 
