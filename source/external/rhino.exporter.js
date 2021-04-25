@@ -68,7 +68,7 @@ OV.Exporter3dm = class extends OV.ExporterBase
 
                 let material = model.GetMaterial (primitive.material);
                 let rhinoMaterial = new this.rhino.Material ();
-                rhinoMaterial.name = material.name;
+                rhinoMaterial.name = this.GetExportedMaterialName (material.name);
                 rhinoMaterial.ambientColor = ColorToRhinoColor (material.ambient);
                 rhinoMaterial.diffuseColor = ColorToRhinoColor (material.diffuse);
                 rhinoMaterial.specularColor = ColorToRhinoColor (material.specular);
@@ -79,6 +79,7 @@ OV.Exporter3dm = class extends OV.ExporterBase
 
                 let rhinoMesh = new this.rhino.Mesh.createFromThreejsJSON (threeJson);
                 let rhinoAttributes = new this.rhino.ObjectAttributes ();
+                rhinoAttributes.name = this.GetExportedMeshName (mesh.GetName ());
                 rhinoAttributes.materialSource = this.rhino.ObjectMaterialSource.MaterialFromObject;
                 rhinoAttributes.materialIndex = rhinoMaterialIndex;
                 rhinoDoc.objects ().add (rhinoMesh, rhinoAttributes);
