@@ -15,6 +15,7 @@ OV.Website = class
         });
         this.model = null;
         this.dialog = null;
+        this.faceSelector = null;
     }
 
     Load ()
@@ -290,6 +291,17 @@ OV.Website = class
         AddButton (this.toolbar, 'share', 'Share model', true, function () {
             obj.dialog = OV.ShowSharingDialog (importer, obj.importSettings, obj.viewer.GetCamera ());
         });
+        AddSeparator (this.toolbar, true);
+        AddRadioButton (this.toolbar, ['measure'], ['Measure model'], 1, false, function (buttonIndex, button) {
+            if (button.selected) {
+                obj.faceSelector = new OV.FaceSelector (obj.viewer);
+            } else {
+                obj.faceSelector.Dispose (); 
+                obj.faceSelector = null;
+            }
+        });
+
+
         if (OV.FeatureSet.SetDefaultColor) {
             AddSeparator (this.toolbar, true);
             AddButton (this.toolbar, 'settings', 'Settings', true, function () {

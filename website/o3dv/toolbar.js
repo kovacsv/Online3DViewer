@@ -59,14 +59,10 @@ OV.Toolbar = class
             let button = this.AddImageButton (data.image, data.title, function () {
                 for (let i = 0; i < buttons.length; i++) {
                     let currentButton = buttons[i];
-                    if (i === buttonIndex) {
-                        currentButton.selected = true;
-                    } else {
-                        currentButton.selected = false;
-                    }
+                    currentButton.selected = buttonData.length > 1 ? i === buttonIndex : !currentButton.selected;
                     currentButton.Update ();
                 }
-                onClick (buttonIndex);
+                onClick (buttonIndex, buttons[buttonIndex]);
             });
             if (selectedIndex === buttonIndex) {
                 button.selected = true;
