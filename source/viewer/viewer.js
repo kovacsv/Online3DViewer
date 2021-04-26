@@ -145,8 +145,19 @@ OV.Viewer = class
         this.navigation = null;
         this.upVector = null;
         this.settings = {
-            animationSteps : 40
+            animationSteps : 40,
         };
+        this.edgesSettings = {
+            showEdges : false,
+            edgesAngle : 15,
+            edgesColor : new OV.Color (0, 0, 0),
+        };
+        this.edgesMap = {};
+    }
+
+    UpdateEdgesSettings (settings)
+    {
+        this.edgesSettings = Object.assign ({}, settings);
     }
     
     Init (canvas)
@@ -297,6 +308,30 @@ OV.Viewer = class
     AddMeshes (meshes)
     {
         this.geometry.AddModelMeshes (meshes);
+        if (this.edgesSettings.showEdges) {
+            this.ToggleEdges (true);
+        }
+        this.Render ();
+    }
+
+    ToggleEdges (isVisible)
+    {
+        for (let i = this.scene.children.length - 1; i >= 0; i--) {
+            let object = this.scene.children[i];
+            if (object.isMesh) {
+                if (object.id in this.edgesMap && !isVisible) {
+                    let edgeMesh = this.edgesMap[object.id];
+                    edgeMesh.geometry.dispose ();
+                    this.scene.remove (edgeMesh);
+                    delete this.edgesMap[object.id];
+                } else if (isVisible) {
+                    let edges = new THREE.EdgesGeometry (object.geometry, this.edgesSettings.edgesAngle);
+                    let lines = new THREE.LineSegments (edges, new THREE.LineBasicMaterial ( { color: '#' + OV.ColorToHexString (this.edgesSettings.edgesColor) }));
+                    this.scene.add (lines);
+                    this.edgesMap[object.id] = lines;
+                }
+            }
+        }
         this.Render ();
     }
 
@@ -312,8 +347,12 @@ OV.Viewer = class
             let visible = isVisible (mesh.userData);
             if (mesh.visible !== visible) {
                 mesh.visible = visible;
+
+                if (mesh.id in this.edgesMap) {
+                    this.edgesMap[mesh.id].visible = visible;
+                }
             }
-        });
+        }.bind (this));
         this.Render ();
     }
 
@@ -389,6 +428,8 @@ OV.Viewer = class
             enumerator (mesh.userData);
         });
     }
+
+        this.ToggleEdges (false);
 
     InitCamera ()
     {
