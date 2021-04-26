@@ -140,6 +140,7 @@ OV.Website = class
     UpdateMeshesVisibility ()
     {
         let obj = this;
+        this.UpdateMeasureTool (false);
         this.viewer.SetMeshesVisibility (function (meshUserData) {
             return obj.menu.IsMeshVisible (meshUserData.originalMeshIndex);
         });
@@ -203,6 +204,16 @@ OV.Website = class
         } else {
             this.ClearModel ();
             this.parameters.introDiv.show ();
+        }
+    }
+
+    UpdateMeasureTool (isEnabled, button)
+    {
+        if (isEnabled && this.faceSelector === null) {
+            this.faceSelector = new OV.FaceSelector (this.viewer, button, this.menu.infoPanel);
+        } else if (!isEnabled && this.faceSelector !== null) {
+            this.faceSelector.Dispose (); 
+            this.faceSelector = null;
         }
     }
 
@@ -293,12 +304,7 @@ OV.Website = class
         });
         AddSeparator (this.toolbar, true);
         AddRadioButton (this.toolbar, ['measure'], ['Measure model'], 1, false, function (buttonIndex, button) {
-            if (button.selected) {
-                obj.faceSelector = new OV.FaceSelector (obj.viewer);
-            } else {
-                obj.faceSelector.Dispose (); 
-                obj.faceSelector = null;
-            }
+            obj.UpdateMeasureTool(button.selected, button);
         });
 
 

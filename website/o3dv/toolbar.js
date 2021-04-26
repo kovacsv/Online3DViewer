@@ -35,6 +35,12 @@ OV.ToolbarButton = class
             this.buttonDiv.addClass ('selected');
         }
     }
+
+    Select (isSelected)
+    {
+        this.selected = isSelected;
+        this.Update ();
+    }
 };
 
 OV.Toolbar = class

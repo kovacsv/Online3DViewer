@@ -4,10 +4,16 @@ OV.InfoPanel = class
     {
         this.mainDiv = $('<div>').addClass ('ov_info_panel_main').appendTo (parentDiv);
         this.treeView = new OV.TreeView (this.mainDiv);
+        this.measureItem = new OV.TreeViewGroupItem ('Measures', 'assets/images/toolbar/measure.svg');
+        this.measureItem.ShowChildren (false, null);
+        this.treeView.AddItem (this.measureItem);
+        let childrenDiv = this.measureItem.CreateChildrenDiv ();
+        childrenDiv.addClass ('ov_info_panel_content');
+
         this.detailsItem = new OV.TreeViewGroupItem ('Details', 'assets/images/tree/details.svg');
         this.detailsItem.ShowChildren (!OV.IsSmallHeight (), null);
         this.treeView.AddItem (this.detailsItem);
-        let childrenDiv = this.detailsItem.CreateChildrenDiv ();
+        childrenDiv = this.detailsItem.CreateChildrenDiv ();
         childrenDiv.addClass ('ov_info_panel_content');
         this.popup = null;
     }
@@ -15,7 +21,7 @@ OV.InfoPanel = class
     SetOpenCloseHandler (openCloseHandler)
     {
         this.detailsItem.SetAnimated (false);
-        this.detailsItem.SetOpenCloseHandler (openCloseHandler);
+        this.detailsItem.SetOpenCloseHandler (openCloseHandler);        
     }
 
     FillWithMaterialInfo (info, getMeshInfo, callbacks)
@@ -97,15 +103,16 @@ OV.InfoPanel = class
         });
     }
 
+    AddCounter (parent, name, value)
+    {
+        let infoBox = $('<div>').addClass ('ov_info_box_column').css ('width', '50%').appendTo (parent);
+        $('<div>').addClass ('ov_info_box_title').html (name).appendTo (infoBox);
+        $('<div>').addClass ('ov_info_box_content_big').html (value.toLocaleString ('en-US')).appendTo (infoBox);
+    }        
+
+
     FillWithModelInfo (info, getMaterialInfo, callbacks)
     {
-        function AddCounter (parent, name, value)
-        {
-            let infoBox = $('<div>').addClass ('ov_info_box_column').css ('width', '50%').appendTo (parent);
-            $('<div>').addClass ('ov_info_box_title').html (name).appendTo (infoBox);
-            $('<div>').addClass ('ov_info_box_content_big').html (value.toLocaleString ('en-US')).appendTo (infoBox);
-        }
-
         this.Clear ();
         if (info === null) {
             return;
@@ -114,8 +121,8 @@ OV.InfoPanel = class
         let contentDiv = this.detailsItem.GetChildrenDiv ();
 
         let counterContainer = $('<div>').addClass ('ov_info_box').appendTo (contentDiv);
-        AddCounter (counterContainer, 'Vertices', info.vertexCount);
-        AddCounter (counterContainer, 'Triangles', info.triangleCount);
+        this.AddCounter (counterContainer, 'Vertices', info.vertexCount);
+        this.AddCounter (counterContainer, 'Triangles', info.triangleCount);
 
         let sizeContainer = $('<div>').addClass ('ov_info_box').appendTo (contentDiv);
         $('<div>').addClass ('ov_info_box_title').html ('Size').appendTo (sizeContainer);
@@ -144,13 +151,29 @@ OV.InfoPanel = class
         });
     }
 
+    UpdateMeasure (distance, angle) 
+    {
+        let contentDiv = this.measureItem.GetChildrenDiv ();
+        contentDiv.empty ();
+
+        if (distance === null || angle === null) {
+            this.measureItem.ShowChildren (false, null);
+            return;
+        }
+        this.measureItem.ShowChildren (true, null);
+
+        let measureContainer = $('<div>').addClass ('ov_info_box').appendTo (contentDiv);
+        this.AddCounter (measureContainer, 'Distance', distance.toFixed(2));
+        this.AddCounter (measureContainer, 'Angle', (angle * 180 / Math.PI).toFixed(2) + '°');
+    }
+
     Clear ()
     {
         if (this.popup !== null) {
             this.popup.Hide ();
             this.popup = null;
         }        
-        let contentDiv = this.detailsItem.GetChildrenDiv ();
-        contentDiv.empty ();
+        this.detailsItem.GetChildrenDiv ().empty ();
+        this.measureItem.GetChildrenDiv ().empty ();
     }
 };

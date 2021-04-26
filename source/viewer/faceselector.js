@@ -1,62 +1,154 @@
 
 OV.FaceSelector = class
 {
-    static NoneSelected = 0;
-    static OneFaceSelected = 1;
-    static TwoFaceSelected = 2;
+    static get NoneSelected() 
+    { 
+        return 0;
+    }
+    static get OneFaceSelected()
+    {
+        return 1;
+    } 
+    static get TwoFaceSelected()
+    {
+        return 2;
+    }
 
-    constructor (viewer)
+    constructor (viewer, button, infoPanel)
     {
         this.viewer = viewer;
         this.raycaster = new THREE.Raycaster ();
         this.mousePos = new THREE.Vector2 ();
         this.state = OV.FaceSelector.NoneSelected;
 
-        this.geometry = new THREE.PlaneGeometry (1, 1);
-		this.geometry.setAttribute ( 'position', new THREE.BufferAttribute (new Float32Array ( 4 * 3 ), 3 ) );
+        let planeGeometry = new THREE.PlaneGeometry (10, 10);
+        let circleGeometry = new THREE.CircleGeometry (3, 32);
 
-		this.material = new THREE.MeshBasicMaterial ( { color: 0x00ff00, transparent: false, side: THREE.DoubleSide } );
+		this.material = [ 
+            new THREE.MeshBasicMaterial ( { color: 0xffff00, transparent: true,  opacity: 0.3, side: THREE.DoubleSide } ), 
+            new THREE.MeshBasicMaterial ( { color: 0xff0000, transparent: true,  opacity: 0.8, side: THREE.DoubleSide } )
+        ];
 
-		this.mesh = new THREE.Mesh (this.geometry, this.material);
-		this.viewer.scene.add (this.mesh);
+		this.mesh = [
+            new THREE.Mesh (planeGeometry, this.material[0]),
+            new THREE.Mesh (circleGeometry, this.material[1]),
+            new THREE.Mesh (circleGeometry, this.material[1])
+        ];
+
+        for (let m = 0; m < this.mesh.length; m++) {
+            let mesh = this.mesh[m];
+            mesh.visible = false;
+		    this.viewer.scene.add (mesh);
+        }
+        this.viewer.Render();
         this.viewer.navigation.SetMoveHandler(this.GetFaceUnderMouse.bind (this));
+        this.viewer.navigation.SetClickHandler(this.SelectFace.bind (this));
+        this.button = button;
+        this.infoPanel = infoPanel;
     }
 
-    GetFaceUnderMouse (mouseCoords)
+    IntersectPlane(mouseCoords)
     {
         this.mousePos.x = (mouseCoords.x / this.viewer.canvas.width) * 2 - 1;
         this.mousePos.y = -(mouseCoords.y / this.viewer.canvas.height) * 2 + 1;
         this.raycaster.setFromCamera (this.mousePos, this.viewer.camera);
         let iSectObjects = this.raycaster.intersectObjects (this.viewer.scene.children);
-        this.mesh.visible = false;
+        this.mesh[0].visible = false;
         if (iSectObjects.length > 0) {
-            let iSectObject = iSectObjects[0];
-            if (iSectObject.object.type === 'Mesh' && iSectObject.object.visible) {
-                let iSectFace = iSectObject.face;
-                iSectObject.object.material.color = 0xFF0000;
-                const position = this.mesh.geometry.attributes.position;
-				const meshPosition = iSectObject.object.geometry.attributes.position;
-
-				position.copyAt( 0, meshPosition, iSectFace.a );
-				position.copyAt( 1, meshPosition, iSectFace.b );
-				position.copyAt( 2, meshPosition, iSectFace.c );
-				position.copyAt( 3, meshPosition, iSectFace.a );
-
-				iSectObject.object.updateMatrix();
-
-				this.mesh.geometry.applyMatrix4( iSectObject.object.matrix );
-
-				this.mesh.visible = true;
-                this.viewer.Render();
-                return true;
+            // Don't intersect with our own planes
+            for (let i = 0; i < iSectObjects.length; i++) {
+                let obj = iSectObjects[i];
+                if (obj.object.id === this.mesh[0].id || obj.object.id === this.mesh[1].id || obj.object.id === this.mesh[2].id) {
+                    continue;
+                }
+                if (obj.object.type === 'Mesh' && obj.object.visible) {
+                    return { normal : obj.face.normal, position : obj.point };
+                }
             }
+        }
+        return null;
+    }
+
+    GetFaceUnderMouse (mouseCoords)
+    {
+        let plane = this.IntersectPlane(mouseCoords);
+
+        if (plane !== null) {
+            this.mesh[0].position.copy (plane.position);
+            this.mesh[0].quaternion.setFromUnitVectors (new THREE.Vector3 (0, 0, 1), plane.normal);
+
+            this.mesh[0].visible = true;
+            this.viewer.Render();
+            return true;
         }
         return false;
     }
 
+    SelectFace (button, isCtrlPressed, mouseCoords)
+    {
+        // Handle HiDPI display
+        let dpr = window.devicePixelRatio || 1;
+		mouseCoords.x *= dpr; mouseCoords.y *= dpr;
+
+        let plane = this.IntersectPlane(mouseCoords);
+        if (plane === null) {
+            return false;
+        }
+
+        switch (this.state) {
+            case OV.FaceSelector.TwoFaceSelected:
+                this.mesh[2].visible = false;
+                /* falls through */ 
+            case OV.FaceSelector.NoneSelected:
+                this.mesh[1].position.copy (plane.position);
+                this.mesh[1].quaternion.setFromUnitVectors (new THREE.Vector3 (0, 0, 1), plane.normal);
+
+                this.state = OV.FaceSelector.OneFaceSelected;
+                this.mesh[1].visible = true;
+                break;
+            case OV.FaceSelector.OneFaceSelected:
+                this.mesh[2].position.copy (plane.position);
+                this.mesh[2].quaternion.setFromUnitVectors (new THREE.Vector3 (0, 0, 1), plane.normal);
+
+                this.state = OV.FaceSelector.TwoFaceSelected;
+                this.mesh[2].visible = true;
+
+                let normals = [ 
+                    new THREE.Vector3 (0, 0, 1).applyQuaternion (this.mesh[1].quaternion), 
+                    new THREE.Vector3 (0, 0, 1).applyQuaternion (this.mesh[2].quaternion), 
+                ];
+                let pos = [
+                    new THREE.Vector3 ().copy (this.mesh[1].position),
+                    new THREE.Vector3 ().copy (this.mesh[2].position),
+                ];
+
+                // Compute the distance to the origin for each plane
+                // dist = |a| |n| cos(alpha) / | n | = |a| cos (alpha)
+                let origin = new THREE.Vector3 (0, 0, 0);
+                let dist1 = pos[0].length () * Math.cos (pos[0].angleTo (normals[0])); 
+                let dist2 = pos[1].length () * Math.cos (pos[1].angleTo (normals[1])); 
+                let distance = Math.abs (dist1 - dist2);
+                let angle = normals[0].angleTo (normals[1]);
+                // Check if the 2 planes are intersecting (in that case, the distance must be zeroed)
+                if (Math.abs (angle % Math.PI) > 0.01) {
+                    distance = 0;
+                }
+                this.infoPanel.UpdateMeasure (distance, angle);
+                break;
+        }
+        this.viewer.Render();
+    }
+
     Dispose ()
     {
-        this.viewer.navigation.SetMoveHandler(null);
-        this.viewer.scene.remove (this.line);
+        this.viewer.navigation.SetMoveHandler (null);
+        for (let m = 0; m < this.mesh.length; m++) {
+            let mesh = this.mesh[m];
+            mesh.visible = false;
+		    this.viewer.scene.remove (mesh);
+        }
+        this.button.Select (false);
+        this.infoPanel.UpdateMeasure (null, null);
+        this.viewer.Render ();
     }
 };
