@@ -48,6 +48,7 @@
 		"source/parameters/parameterlist.js",
 		"source/viewer/domutils.js",
 		"source/viewer/navigation.js",
+		"source/viewer/faceselector.js",
 		"source/viewer/viewer.js",
 		"source/viewer/domviewer.js"
 	],

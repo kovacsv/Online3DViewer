@@ -151,7 +151,7 @@ OV.InfoPanel = class
         });
     }
 
-    UpdateMeasure (distance, angle) 
+    UpdateMeasure (distance, angle, hypDistance) 
     {
         let contentDiv = this.measureItem.GetChildrenDiv ();
         contentDiv.empty ();
@@ -165,6 +165,7 @@ OV.InfoPanel = class
         let measureContainer = $('<div>').addClass ('ov_info_box').appendTo (contentDiv);
         this.AddCounter (measureContainer, 'Distance', distance.toFixed(2));
         this.AddCounter (measureContainer, 'Angle', (angle * 180 / Math.PI).toFixed(2) + '°');
+        this.AddCounter (measureContainer, 'Length', hypDistance.toFixed(2));
     }
 
     Clear ()

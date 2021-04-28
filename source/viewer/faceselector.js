@@ -23,6 +23,10 @@ OV.FaceSelector = class
 
         let planeGeometry = new THREE.PlaneGeometry (10, 10);
         let circleGeometry = new THREE.CircleGeometry (3, 32);
+        this.selectedPlanes = [
+            new THREE.Plane (new THREE.Vector3 (1, 0, 0), 0),
+            new THREE.Plane (new THREE.Vector3 (1, 0, 0), 0),
+        ];
 
 		this.material = [ 
             new THREE.MeshBasicMaterial ( { color: 0xffff00, transparent: true,  opacity: 0.3, side: THREE.DoubleSide } ), 
@@ -74,7 +78,7 @@ OV.FaceSelector = class
         let plane = this.IntersectPlane(mouseCoords);
 
         if (plane !== null) {
-            this.mesh[0].position.copy (plane.position);
+            this.mesh[0].position.copy (plane.position.addScaledVector (plane.normal, 0.005));
             this.mesh[0].quaternion.setFromUnitVectors (new THREE.Vector3 (0, 0, 1), plane.normal);
 
             this.mesh[0].visible = true;
@@ -100,40 +104,33 @@ OV.FaceSelector = class
                 this.mesh[2].visible = false;
                 /* falls through */ 
             case OV.FaceSelector.NoneSelected:
-                this.mesh[1].position.copy (plane.position);
+                this.selectedPlanes[0].setFromNormalAndCoplanarPoint (plane.normal, plane.position);
+                this.mesh[1].position.copy (plane.position.addScaledVector (plane.normal, 0.01));
                 this.mesh[1].quaternion.setFromUnitVectors (new THREE.Vector3 (0, 0, 1), plane.normal);
 
                 this.state = OV.FaceSelector.OneFaceSelected;
                 this.mesh[1].visible = true;
                 break;
             case OV.FaceSelector.OneFaceSelected:
-                this.mesh[2].position.copy (plane.position);
+                this.selectedPlanes[1].setFromNormalAndCoplanarPoint (plane.normal, plane.position);
+                this.mesh[2].position.copy (plane.position.addScaledVector (plane.normal, 0.01));
                 this.mesh[2].quaternion.setFromUnitVectors (new THREE.Vector3 (0, 0, 1), plane.normal);
 
                 this.state = OV.FaceSelector.TwoFaceSelected;
                 this.mesh[2].visible = true;
 
-                let normals = [ 
-                    new THREE.Vector3 (0, 0, 1).applyQuaternion (this.mesh[1].quaternion), 
-                    new THREE.Vector3 (0, 0, 1).applyQuaternion (this.mesh[2].quaternion), 
-                ];
-                let pos = [
-                    new THREE.Vector3 ().copy (this.mesh[1].position),
-                    new THREE.Vector3 ().copy (this.mesh[2].position),
-                ];
-
-                // Compute the distance to the origin for each plane
-                // dist = |a| |n| cos(alpha) / | n | = |a| cos (alpha)
-                let origin = new THREE.Vector3 (0, 0, 0);
-                let dist1 = pos[0].length () * Math.cos (pos[0].angleTo (normals[0])); 
-                let dist2 = pos[1].length () * Math.cos (pos[1].angleTo (normals[1])); 
-                let distance = Math.abs (dist1 - dist2);
-                let angle = normals[0].angleTo (normals[1]);
+                let angle = this.selectedPlanes[0].normal.angleTo (this.selectedPlanes[1].normal);
+                let pointOnFirstPlane = new THREE.Vector3 (0, 0, 0);
+                this.selectedPlanes[0].coplanarPoint (pointOnFirstPlane);
+                let distance = Math.abs(this.selectedPlanes[1].distanceToPoint (pointOnFirstPlane));
+                let hypDistance = this.mesh[1].position.clone().addScaledVector (this.selectedPlanes[0].normal, -0.01).distanceTo (
+                    this.mesh[2].position.clone().addScaledVector (this.selectedPlanes[0].normal, -0.01)
+                );
                 // Check if the 2 planes are intersecting (in that case, the distance must be zeroed)
                 if (Math.abs (angle % Math.PI) > 0.01) {
                     distance = 0;
                 }
-                this.infoPanel.UpdateMeasure (distance, angle);
+                this.infoPanel.UpdateMeasure (distance, angle, hypDistance);
                 break;
         }
         this.viewer.Render();
