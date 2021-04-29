@@ -431,6 +431,9 @@ OV.Navigation = class
 	OnTouchStart (ev)
 	{
 		ev.preventDefault ();
+		if (this.onMove) {
+			this.clickDetector.Down (ev);
+		}
 		this.touch.Start (this.canvas, ev);
 	}
 
@@ -438,11 +441,11 @@ OV.Navigation = class
 	{
 		ev.preventDefault ();
 		this.touch.Move (this.canvas, ev);
+		if (this.onMove) {
+			this.clickDetector.Move (ev);
+		}
 		if (!this.touch.IsFingerDown ()) {
 			return;
-		}
-		if (this.onMove) {
-			this.Move (ev.clientX, ev.clientY);
 		}
 
 		let moveDiff = this.touch.GetMoveDiff ();
@@ -465,6 +468,13 @@ OV.Navigation = class
 	{
 		ev.preventDefault ();
 		this.touch.End (this.canvas, ev);
+
+		if (this.onMove) {
+			this.clickDetector.Up (ev);
+			if (this.clickDetector.IsClick ()) {
+				this.Click (1, false, ev.changedTouches[0].clientX, ev.changedTouches[0].clientY);
+			}
+		}
 	}
 
 	OnMouseWheel (ev)
