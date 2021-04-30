@@ -97,7 +97,7 @@ OV.Website = class
     OnModelClicked (button, isCtrlPressed, mouseCoordinates)
     {
         if (button === 1) {
-            let meshUserData = this.viewer.GetMeshUnderMouse (mouseCoordinates);
+            let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
             if (meshUserData === null) {
                 this.menu.SetSelection (null);
             } else {
