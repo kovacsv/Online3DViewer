@@ -74,6 +74,7 @@ OV.ShowOpenUrlDialog = function (onOk)
     $('<div>').html (text).addClass ('ov_dialog_section').appendTo (contentDiv);
     urlsTextArea.appendTo (contentDiv);
     dialog.Show ();
+    urlsTextArea.focus ();
     return dialog;
 };
 
