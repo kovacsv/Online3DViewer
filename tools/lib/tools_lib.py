@@ -13,13 +13,9 @@ def WriteContentToFile (filePath, content):
 	fileObject.write (content)
 	fileObject.close ()
 
-def RunCommand (commands):
-	process = subprocess.Popen (commands, stdout = subprocess.PIPE, stderr = subprocess.PIPE, shell = True)
-	out, err = process.communicate ()
-	if process.returncode != 0:
-		print (out.decode ())
-		print (err.decode ())
-	return process.returncode
+def RunCommand (executable, arguments):
+	command = executable + ' "' + '" "'.join (arguments) + '"'
+	return os.system (command)
 
 class TokenReplacer:
 	def __init__ (self, filePath, keepToken):
