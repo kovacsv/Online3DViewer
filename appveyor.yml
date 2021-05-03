@@ -14,7 +14,6 @@ build_script:
 
 test_script:
   - npm run test
-  - npm run codecov
   
 artifacts:
   - path: build\final\package\*
