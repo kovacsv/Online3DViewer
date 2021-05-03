@@ -11,16 +11,32 @@ OV.Exporter = class
         ];
     }
 
-    Export (model, format, extension)
+    AddExporter (exporter)
     {
-        let files = [];
+        this.exporters.push (exporter);
+    }
+
+    Export (model, format, extension, callbacks)
+    {
+        let exporter = null;
         for (let i = 0; i < this.exporters.length; i++) {
-            let exporter = this.exporters[i];
-            if (exporter.CanExport (format, extension)) {
-                exporter.Export (model, format, files);
+            let currentExporter = this.exporters[i];
+            if (currentExporter.CanExport (format, extension)) {
+                exporter = currentExporter;
                 break;
             }
         }
-        return files;
+        if (exporter === null) {
+            callbacks.onError ();
+            return;
+        }
+
+        exporter.Export (model, format, function (files) {
+            if (files.length === 0) {
+                callbacks.onError ();
+            } else {
+                callbacks.onSuccess (files);
+            }
+        });
     }
 };

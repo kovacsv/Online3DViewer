@@ -5,7 +5,7 @@ OV.InitModelLoader = function (modelLoader, callbacks)
         if (importError.code === OV.ImportErrorCode.NoImportableFile) {
             return OV.ShowMessageDialog (
                 'Something went wrong',
-                'No importable file found. You can open obj, 3ds, stl, ply, gltf, glb and off files.',
+                'No importable file found. You can open obj, 3ds, stl, ply, gltf, glb, 3dm, and off files.',
                 importError.message
             );
         } else if (importError.code === OV.ImportErrorCode.ImportFailed) {

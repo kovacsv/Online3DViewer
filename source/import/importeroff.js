@@ -3,13 +3,34 @@ OV.ImporterOff = class extends OV.ImporterBase
     constructor ()
     {
         super ();
+    }
+    
+    CanImportExtension (extension)
+    {
+        return extension === 'off';
+    }
+    
+    GetKnownFileFormats ()
+    {
+        return {
+            'off' : OV.FileFormat.Text
+        };
+    }
+    
+    GetUpDirection ()
+    {
+        return OV.Direction.Y;
+    }
+    
+    ClearContent ()
+    {
         this.model = null;
         this.mesh = null;
         this.status = null;
     }
-	
-	ResetState ()
-	{
+
+    ResetContent ()
+    {
         this.mesh = new OV.Mesh ();
         this.model.AddMesh (this.mesh);
         this.status = {
@@ -18,46 +39,30 @@ OV.ImporterOff = class extends OV.ImporterBase
             foundVertex : 0,
             foundFace : 0
         };
-	}
-
-	CanImportExtension (extension)
-	{
-		return extension === 'off';
-	}
-    
-    GetKnownFileFormats ()
-	{
-		return {
-			'off' : OV.FileFormat.Text
-		};
-	}
-	
-    GetUpDirection ()
-    {
-        return OV.Direction.Y;
     }
 
-	ImportContent (fileContent)
-	{
+    ImportContent (fileContent, onFinish)
+    {
         let obj = this;
-		OV.ReadLines (fileContent, function (line) {
-			if (!obj.IsError ()) {
-				obj.ProcessLine (line);
-			}
-		});
-	}
-	
-	ProcessLine (line)
-	{
-		if (line[0] === '#') {
-			return;
-		}
+        OV.ReadLines (fileContent, function (line) {
+            if (!obj.IsError ()) {
+                obj.ProcessLine (line);
+            }
+        });
+        onFinish ();
+    }
+    
+    ProcessLine (line)
+    {
+        if (line[0] === '#') {
+            return;
+        }
 
-		let parameters = OV.ParametersFromLine (line, '#');
-		if (parameters.length === 0) {
-			return;
-		}
-		
+        let parameters = OV.ParametersFromLine (line, '#');
+        if (parameters.length === 0) {
+            return;
+        }
+        
         if (parameters[0] === 'OFF') {
             return;
         }
@@ -99,5 +104,5 @@ OV.ImporterOff = class extends OV.ImporterBase
             }
             return;
         }
-	}
+    }
 };

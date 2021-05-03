@@ -21,6 +21,7 @@
 	"globals" : {
 		"OV" : true,
 		"THREE" : false,
+		"rhino3dm" : false,
 		"TextEncoder" : false,
 		"TextDecoder" : false,
 		"XMLHttpRequest" : false,

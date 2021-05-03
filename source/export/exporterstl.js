@@ -10,13 +10,14 @@ OV.ExporterStl = class extends OV.ExporterBase
         return (format === OV.FileFormat.Text || format === OV.FileFormat.Binary) && extension === 'stl';
     }
     
-	ExportContent (model, format, files)
+	ExportContent (model, format, files, onFinish)
 	{
 		if (format === OV.FileFormat.Text) {
 			this.ExportText (model, files);
 		} else {
 			this.ExportBinary (model, files);
 		}
+		onFinish ();
 	}
 
 	ExportText (model, files)

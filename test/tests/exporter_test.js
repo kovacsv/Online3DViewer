@@ -62,308 +62,340 @@ function CreateTestModel ()
     return model;
 }
 
-describe ('Exporter', function () {
-    it ('Obj Export', function () {
-        let model = CreateTestModel ();
-        let exporter = new OV.Exporter ();
-
-        let result = exporter.Export (model, OV.FileFormat.Text, 'obj');
-        assert.strictEqual (result.length, 5);
-
-        let mtlFile = result[0];
-        assert.strictEqual (mtlFile.GetName (), 'model.mtl');
-        assert.strictEqual (mtlFile.GetContent (),
-        [
-            '# exported by https://3dviewer.net',
-            'newmtl TestMaterial1',
-            'Ka 0 0 0',
-            'Kd 1 0 0',
-            'Ks 0.2 0.2 0.2',
-            'Ns 0',
-            'd 1',
-            'map_Kd texture1.png',
-            'map_Ks texture2.png',
-            'bump texture3.png',
-            'newmtl TestMaterial2',
-            'Ka 0 0 0',
-            'Kd 0 1 0',
-            'Ks 0.2 0.2 0.2',
-            'Ns 0',
-            'd 1',
-            ''
-        ].join ('\n'));
-        let objFile = result[1];
-        assert.strictEqual (objFile.GetName (), 'model.obj');
-        assert.strictEqual (objFile.GetContent (),
-        [
-            '# exported by https://3dviewer.net',
-            'mtllib model.mtl',
-            'g TestMesh1',
-            'v 0 0 1',
-            'v 1 0 1',
-            'v 0 1 1',
-            'vn 0 0 1',
-            'usemtl TestMaterial1',
-            'f 1//1 2//1 3//1',
-            'g TestMesh2',
-            'v 0 0 0',
-            'v 1 0 0',
-            'v 0 1 0',
-            'v -1 0 0',
-            'v 0 0 1',
-            'vn 0 0 1',
-            'vn 0 0 1',
-            'vn -1 0 0',
-            'f 4//2 5//2 6//2',
-            'usemtl TestMaterial2',
-            'f 4//3 6//3 7//3',
-            'f 4//4 8//4 6//4',
-            ''
-        ].join ('\n'));
-
-        let textureFile1 = result[2];
-        assert.strictEqual (textureFile1.GetName (), 'texture1.png');
-        assert.strictEqual (textureFile1.GetContent ().byteLength, 1);
-
-        let textureFile2 = result[3];
-        assert.strictEqual (textureFile2.GetName (), 'texture2.png');
-        assert.strictEqual (textureFile2.GetContent ().byteLength, 2);
-
-        let textureFile3 = result[4];
-        assert.strictEqual (textureFile3.GetName (), 'texture3.png');
-        assert.strictEqual (textureFile3.GetContent ().byteLength, 3);
-    });
-
-    it ('Stl Export', function () {
-        let model = CreateTestModel ();
-        let exporter = new OV.Exporter ();
-
-        let result = exporter.Export (model, OV.FileFormat.Text, 'stl');
-        assert.strictEqual (result.length, 1);
-
-        let stlFile = result[0];
-        assert.strictEqual (stlFile.GetName (), 'model.stl');
-        assert.strictEqual (stlFile.GetContent (),
-        [
-            'solid Model',
-            'facet normal 0 0 1',
-            '  outer loop',
-            '    vertex 0 0 1',
-            '    vertex 1 0 1',
-            '    vertex 0 1 1',
-            '  endloop',
-            'endfacet',
-            'facet normal 0 0 1',
-            '  outer loop',
-            '    vertex 0 0 0',
-            '    vertex 1 0 0',
-            '    vertex 0 1 0',
-            '  endloop',
-            'endfacet',
-            'facet normal 0 0 1',
-            '  outer loop',
-            '    vertex 0 0 0',
-            '    vertex 0 1 0',
-            '    vertex -1 0 0',
-            '  endloop',
-            'endfacet',
-            'facet normal -1 0 0',
-            '  outer loop',
-            '    vertex 0 0 0',
-            '    vertex 0 0 1',
-            '    vertex 0 1 0',
-            '  endloop',
-            'endfacet',
-            'endsolid Model',
-            ''
-        ].join ('\n'));
-    });
-
-    it ('Stl Binary Export', function () {
-        let model = CreateTestModel ();
-        let exporter = new OV.Exporter ();
-
-        let result = exporter.Export (model, OV.FileFormat.Binary, 'stl');
-        assert.strictEqual (result.length, 1);
-
-        let stlFile = result[0];
-        assert.strictEqual (stlFile.GetName (), 'model.stl');
-        assert.strictEqual (stlFile.GetContent ().byteLength, 284);
-        
-        let contentBuffer = stlFile.GetContent ();
-        let importer = new OV.ImporterStl ();
-        importer.Import (contentBuffer, 'stl', {
-            getDefaultMaterial () {
-                return new OV.Material ();
-            }
-        });
-        let importedModel = importer.GetModel ();
-        assert.strictEqual (importedModel.VertexCount (), 12);
-        assert.strictEqual (importedModel.TriangleCount (), 4);
-    });
-
-    it ('Off Export', function () {
-        let model = CreateTestModel ();
-        let exporter = new OV.Exporter ();
-
-        let result = exporter.Export (model, OV.FileFormat.Text, 'off');
-        assert.strictEqual (result.length, 1);
-
-        let offFile = result[0];
-        assert.strictEqual (offFile.GetName (), 'model.off');
-        assert.strictEqual (offFile.GetContent (),
-        [
-            'OFF',
-            '8 4 0',
-            '0 0 1',
-            '1 0 1',
-            '0 1 1',
-            '0 0 0',
-            '1 0 0',
-            '0 1 0',
-            '-1 0 0',
-            '0 0 1',
-            '3 0 1 2',
-            '3 3 4 5',
-            '3 3 5 6',
-            '3 3 7 5',
-            ''
-        ].join ('\n'));
-    });
-
-    it ('Ply Export', function () {
-        let model = CreateTestModel ();
-        let exporter = new OV.Exporter ();
-
-        let result = exporter.Export (model, OV.FileFormat.Text, 'ply');
-        assert.strictEqual (result.length, 1);
-
-        let plyFile = result[0];
-        assert.strictEqual (plyFile.GetName (), 'model.ply');
-        assert.strictEqual (plyFile.GetContent (),
-        [
-            'ply',
-            'format ascii 1.0',
-            'element vertex 8',
-            'property float x',
-            'property float y',
-            'property float z',
-            'element face 4',
-            'property list uchar int vertex_index',
-            'end_header',
-            '0 0 1',
-            '1 0 1',
-            '0 1 1',
-            '0 0 0',
-            '1 0 0',
-            '0 1 0',
-            '-1 0 0',
-            '0 0 1',
-            '3 0 1 2',
-            '3 3 4 5',
-            '3 3 5 6',
-            '3 3 7 5',
-            ''
-        ].join ('\n'));
-    });
-
-    it ('Ply Binary Export', function () {
-        let model = CreateTestModel ();
-        let exporter = new OV.Exporter ();
-
-        let result = exporter.Export (model, OV.FileFormat.Binary, 'ply');
-        assert.strictEqual (result.length, 1);
-
-        let plyFile = result[0];
-        assert.strictEqual (plyFile.GetName (), 'model.ply');
-        assert.strictEqual (plyFile.GetContent ().byteLength, 315);
-        
-        let contentBuffer = plyFile.GetContent ();
-        let importer = new OV.ImporterPly ();
-        importer.Import (contentBuffer, 'ply', {
-            getDefaultMaterial () {
-                return new OV.Material ();
-            }
-        });
-        let importedModel = importer.GetModel ();
-        assert.strictEqual (importedModel.VertexCount (), 8);
-        assert.strictEqual (importedModel.TriangleCount (), 4);        
-    });
-
-    it ('Gltf Ascii Export', function () {
-        let model = CreateTestModel ();
-        let exporter = new OV.Exporter ();
-  
-        let result = exporter.Export (model, OV.FileFormat.Text, 'gltf');
-        assert.strictEqual (result.length, 3);
-  
-        let gltfFile = result[0];
-        let binFile = result[1];
-        let textureFile = result[2];
-        assert.strictEqual (gltfFile.GetName (), 'model.gltf');
-        assert.strictEqual (binFile.GetName (), 'model.bin');
-  
-        assert.strictEqual (textureFile.GetName (), 'texture1.png');
-        assert.strictEqual (textureFile.GetContent ().byteLength, 1);
-  
-        let contentBuffer = gltfFile.GetContent ();
-        let importer = new OV.ImporterGltf ();
-        importer.Import (contentBuffer, 'gltf', {
-            getDefaultMaterial () {
-                return new OV.Material ();
-            },
-            getFileBuffer (filePath) {
-                if (filePath == 'model.bin') {
-                    return binFile.GetContent ();
-                }
-                return null;
-            },
-            getTextureBuffer (filePath) {
-                return null;
-            }
-        });
-  
-        let importedModel = importer.GetModel ();
-        assert (OV.CheckModel (importedModel));
-        assert.strictEqual (importedModel.MaterialCount (), 2);
-        assert.strictEqual (importedModel.MeshCount (), 2);
-        assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
-        assert.strictEqual (importedModel.GetMesh (1).GetName (), 'TestMesh2');
-        assert.strictEqual (importedModel.VertexCount (), 12);
-        assert.strictEqual (importedModel.TriangleCount (), 4);         
-  });
-
-  it ('Gltf Binary Export', function () {
-    let model = CreateTestModel ();
+function Export (model, format, extension, onReady)
+{
     let exporter = new OV.Exporter ();
-
-    let result = exporter.Export (model, OV.FileFormat.Binary, 'glb');
-    assert.strictEqual (result.length, 1);
-
-    let glbFile = result[0];
-    assert.strictEqual (glbFile.GetName (), 'model.glb');
-
-    let contentBuffer = glbFile.GetContent ();
-    let importer = new OV.ImporterGltf ();
-    importer.Import (contentBuffer, 'glb', {
-        getDefaultMaterial () {
-            return new OV.Material ();
-        },
-        getFileBuffer (filePath) {
-            return null;
-        },
-        getTextureBuffer (filePath) {
-            return null;
+    exporter.Export (model, format, extension, {
+        onSuccess : function (files) {
+            onReady (files);
         }
     });
+}
 
-    let importedModel = importer.GetModel ();
-    assert (OV.CheckModel (importedModel));
-    assert.strictEqual (importedModel.MaterialCount (), 2);
-    assert.strictEqual (importedModel.MeshCount (), 2);
-    assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
-    assert.strictEqual (importedModel.GetMesh (1).GetName (), 'TestMesh2');
-    assert.strictEqual (importedModel.VertexCount (), 12);
-    assert.strictEqual (importedModel.TriangleCount (), 4);         
-  });   
+describe ('Exporter', function () {
+    it ('Exporter Error', function (done) {
+        let model = CreateTestModel ();
+        let exporter = new OV.Exporter ();
+        exporter.Export (model, OV.FileFormat.Text, 'ext', {
+            onError : function () {
+                done ();
+            }
+        });
+    });
+
+    it ('Obj Export', function (done) {
+        let model = CreateTestModel ();
+        Export (model, OV.FileFormat.Text, 'obj', function (result) {
+            assert.strictEqual (result.length, 5);
+
+            let mtlFile = result[0];
+            assert.strictEqual (mtlFile.GetName (), 'model.mtl');
+            assert.strictEqual (mtlFile.GetContent (),
+            [
+                '# exported by https://3dviewer.net',
+                'newmtl TestMaterial1',
+                'Ka 0 0 0',
+                'Kd 1 0 0',
+                'Ks 0.2 0.2 0.2',
+                'Ns 0',
+                'd 1',
+                'map_Kd texture1.png',
+                'map_Ks texture2.png',
+                'bump texture3.png',
+                'newmtl TestMaterial2',
+                'Ka 0 0 0',
+                'Kd 0 1 0',
+                'Ks 0.2 0.2 0.2',
+                'Ns 0',
+                'd 1',
+                ''
+            ].join ('\n'));
+            let objFile = result[1];
+            assert.strictEqual (objFile.GetName (), 'model.obj');
+            assert.strictEqual (objFile.GetContent (),
+            [
+                '# exported by https://3dviewer.net',
+                'mtllib model.mtl',
+                'g TestMesh1',
+                'v 0 0 1',
+                'v 1 0 1',
+                'v 0 1 1',
+                'vn 0 0 1',
+                'usemtl TestMaterial1',
+                'f 1//1 2//1 3//1',
+                'g TestMesh2',
+                'v 0 0 0',
+                'v 1 0 0',
+                'v 0 1 0',
+                'v -1 0 0',
+                'v 0 0 1',
+                'vn 0 0 1',
+                'vn 0 0 1',
+                'vn -1 0 0',
+                'f 4//2 5//2 6//2',
+                'usemtl TestMaterial2',
+                'f 4//3 6//3 7//3',
+                'f 4//4 8//4 6//4',
+                ''
+            ].join ('\n'));
+    
+            let textureFile1 = result[2];
+            assert.strictEqual (textureFile1.GetName (), 'texture1.png');
+            assert.strictEqual (textureFile1.GetContent ().byteLength, 1);
+    
+            let textureFile2 = result[3];
+            assert.strictEqual (textureFile2.GetName (), 'texture2.png');
+            assert.strictEqual (textureFile2.GetContent ().byteLength, 2);
+    
+            let textureFile3 = result[4];
+            assert.strictEqual (textureFile3.GetName (), 'texture3.png');
+            assert.strictEqual (textureFile3.GetContent ().byteLength, 3);
+            
+            done ();
+        });
+    });
+
+    it ('Stl Export', function (done) {
+        let model = CreateTestModel ();
+        Export (model, OV.FileFormat.Text, 'stl', function (result) {
+            assert.strictEqual (result.length, 1);
+
+            let stlFile = result[0];
+            assert.strictEqual (stlFile.GetName (), 'model.stl');
+            assert.strictEqual (stlFile.GetContent (),
+            [
+                'solid Model',
+                'facet normal 0 0 1',
+                '  outer loop',
+                '    vertex 0 0 1',
+                '    vertex 1 0 1',
+                '    vertex 0 1 1',
+                '  endloop',
+                'endfacet',
+                'facet normal 0 0 1',
+                '  outer loop',
+                '    vertex 0 0 0',
+                '    vertex 1 0 0',
+                '    vertex 0 1 0',
+                '  endloop',
+                'endfacet',
+                'facet normal 0 0 1',
+                '  outer loop',
+                '    vertex 0 0 0',
+                '    vertex 0 1 0',
+                '    vertex -1 0 0',
+                '  endloop',
+                'endfacet',
+                'facet normal -1 0 0',
+                '  outer loop',
+                '    vertex 0 0 0',
+                '    vertex 0 0 1',
+                '    vertex 0 1 0',
+                '  endloop',
+                'endfacet',
+                'endsolid Model',
+                ''
+            ].join ('\n'));
+
+            done ();            
+        });
+    });
+
+    it ('Stl Binary Export', function (done) {
+        let model = CreateTestModel ();
+        Export (model, OV.FileFormat.Binary, 'stl', function (result) {
+            assert.strictEqual (result.length, 1);
+
+            let stlFile = result[0];
+            assert.strictEqual (stlFile.GetName (), 'model.stl');
+            assert.strictEqual (stlFile.GetContent ().byteLength, 284);
+            
+            let contentBuffer = stlFile.GetContent ();
+            let importer = new OV.ImporterStl ();
+            importer.Import (contentBuffer, 'stl', {
+                getDefaultMaterial () {
+                    return new OV.Material ();
+                },
+                onSuccess () {
+                    let importedModel = importer.GetModel ();
+                    assert.strictEqual (importedModel.VertexCount (), 12);
+                    assert.strictEqual (importedModel.TriangleCount (), 4);
+                    done ();
+                }
+            });
+            
+            done ();
+        });
+    });
+
+    it ('Off Export', function (done) {
+        let model = CreateTestModel ();
+        Export (model, OV.FileFormat.Text, 'off', function (result) {
+            assert.strictEqual (result.length, 1);
+
+            let offFile = result[0];
+            assert.strictEqual (offFile.GetName (), 'model.off');
+            assert.strictEqual (offFile.GetContent (),
+            [
+                'OFF',
+                '8 4 0',
+                '0 0 1',
+                '1 0 1',
+                '0 1 1',
+                '0 0 0',
+                '1 0 0',
+                '0 1 0',
+                '-1 0 0',
+                '0 0 1',
+                '3 0 1 2',
+                '3 3 4 5',
+                '3 3 5 6',
+                '3 3 7 5',
+                ''
+            ].join ('\n'));
+            
+            done ();
+        });
+    });
+
+    it ('Ply Export', function (done) {
+        let model = CreateTestModel ();
+        Export (model, OV.FileFormat.Text, 'ply', function (result) {
+            assert.strictEqual (result.length, 1);
+
+            let plyFile = result[0];
+            assert.strictEqual (plyFile.GetName (), 'model.ply');
+            assert.strictEqual (plyFile.GetContent (),
+            [
+                'ply',
+                'format ascii 1.0',
+                'element vertex 8',
+                'property float x',
+                'property float y',
+                'property float z',
+                'element face 4',
+                'property list uchar int vertex_index',
+                'end_header',
+                '0 0 1',
+                '1 0 1',
+                '0 1 1',
+                '0 0 0',
+                '1 0 0',
+                '0 1 0',
+                '-1 0 0',
+                '0 0 1',
+                '3 0 1 2',
+                '3 3 4 5',
+                '3 3 5 6',
+                '3 3 7 5',
+                ''
+            ].join ('\n'));
+            
+            done ();
+        });
+    });
+
+    it ('Ply Binary Export', function (done) {
+        let model = CreateTestModel ();
+        Export (model, OV.FileFormat.Binary, 'ply', function (result) {
+            assert.strictEqual (result.length, 1);
+
+            let plyFile = result[0];
+            assert.strictEqual (plyFile.GetName (), 'model.ply');
+            assert.strictEqual (plyFile.GetContent ().byteLength, 315);
+            
+            let contentBuffer = plyFile.GetContent ();
+            let importer = new OV.ImporterPly ();
+            importer.Import (contentBuffer, 'ply', {
+                getDefaultMaterial () {
+                    return new OV.Material ();
+                },
+                onSuccess () {
+                    let importedModel = importer.GetModel ();
+                    assert.strictEqual (importedModel.VertexCount (), 8);
+                    assert.strictEqual (importedModel.TriangleCount (), 4);
+                    done ();
+                }
+            });            
+        });
+    });
+
+    it ('Gltf Ascii Export', function (done) {
+        let model = CreateTestModel ();
+        Export (model, OV.FileFormat.Text, 'gltf', function (result) {
+            assert.strictEqual (result.length, 3);
+  
+            let gltfFile = result[0];
+            let binFile = result[1];
+            let textureFile = result[2];
+            assert.strictEqual (gltfFile.GetName (), 'model.gltf');
+            assert.strictEqual (binFile.GetName (), 'model.bin');
+      
+            assert.strictEqual (textureFile.GetName (), 'texture1.png');
+            assert.strictEqual (textureFile.GetContent ().byteLength, 1);
+      
+            let contentBuffer = gltfFile.GetContent ();
+            let importer = new OV.ImporterGltf ();
+            importer.Import (contentBuffer, 'gltf', {
+                getDefaultMaterial () {
+                    return new OV.Material ();
+                },
+                getFileBuffer (filePath) {
+                    if (filePath == 'model.bin') {
+                        return binFile.GetContent ();
+                    }
+                    return null;
+                },
+                getTextureBuffer (filePath) {
+                    return null;
+                },
+                onSuccess () {
+                    let importedModel = importer.GetModel ();
+                    assert (OV.CheckModel (importedModel));
+                    assert.strictEqual (importedModel.MaterialCount (), 2);
+                    assert.strictEqual (importedModel.MeshCount (), 2);
+                    assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
+                    assert.strictEqual (importedModel.GetMesh (1).GetName (), 'TestMesh2');
+                    assert.strictEqual (importedModel.VertexCount (), 12);
+                    assert.strictEqual (importedModel.TriangleCount (), 4);
+                    done ();
+                }
+            });            
+        });
+    });
+
+    it ('Gltf Binary Export', function (done) {
+        let model = CreateTestModel ();
+        Export (model, OV.FileFormat.Binary, 'glb', function (result) {
+            assert.strictEqual (result.length, 1);
+
+            let glbFile = result[0];
+            assert.strictEqual (glbFile.GetName (), 'model.glb');
+
+            let contentBuffer = glbFile.GetContent ();
+            let importer = new OV.ImporterGltf ();
+            importer.Import (contentBuffer, 'glb', {
+                getDefaultMaterial () {
+                    return new OV.Material ();
+                },
+                getFileBuffer (filePath) {
+                    return null;
+                },
+                getTextureBuffer (filePath) {
+                    return null;
+                },
+                onSuccess () {
+                    let importedModel = importer.GetModel ();
+                    assert (OV.CheckModel (importedModel));
+                    assert.strictEqual (importedModel.MaterialCount (), 2);
+                    assert.strictEqual (importedModel.MeshCount (), 2);
+                    assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
+                    assert.strictEqual (importedModel.GetMesh (1).GetName (), 'TestMesh2');
+                    assert.strictEqual (importedModel.VertexCount (), 12);
+                    assert.strictEqual (importedModel.TriangleCount (), 4);
+                    done ();
+                }
+            });
+        });
+    });   
 });

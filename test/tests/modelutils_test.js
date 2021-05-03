@@ -78,4 +78,62 @@ describe ('Model Utils', function () {
             ]
         });        
     });
+
+    it ('Mesh Volume Calculation', function () {
+        function GetTriangleArea (v0, v1, v2)
+        {
+            let a = OV.CoordDistance3D (v0, v1);
+            let b = OV.CoordDistance3D (v1, v2);
+            let c = OV.CoordDistance3D (v0, v2);
+            let s = (a + b + c) / 2.0;
+            let areaSquare = s * (s - a) * (s - b) * (s - c);
+            if (areaSquare < 0.0) {
+                return 0.0;
+            }
+            return Math.sqrt (areaSquare);
+        }
+
+        var model = new OV.Model ();
+        var cube = new OV.Mesh ();
+        cube.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
+        cube.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
+        cube.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
+        cube.AddVertex (new OV.Coord3D (0.0, 1.0, 0.0));
+        cube.AddVertex (new OV.Coord3D (0.0, 0.0, 1.0));
+        cube.AddVertex (new OV.Coord3D (1.0, 0.0, 1.0));
+        cube.AddVertex (new OV.Coord3D (1.0, 1.0, 1.0));
+        cube.AddVertex (new OV.Coord3D (0.0, 1.0, 1.0));
+        cube.AddTriangle (new OV.Triangle (0, 1, 5));
+        cube.AddTriangle (new OV.Triangle (0, 5, 4));
+        cube.AddTriangle (new OV.Triangle (1, 2, 6));
+        cube.AddTriangle (new OV.Triangle (1, 6, 5));
+        cube.AddTriangle (new OV.Triangle (2, 3, 7));
+        cube.AddTriangle (new OV.Triangle (2, 7, 6));
+        cube.AddTriangle (new OV.Triangle (3, 0, 4));
+        cube.AddTriangle (new OV.Triangle (3, 4, 7));
+        cube.AddTriangle (new OV.Triangle (0, 3, 2));
+        cube.AddTriangle (new OV.Triangle (0, 2, 1));
+        cube.AddTriangle (new OV.Triangle (4, 5, 6));
+        cube.AddTriangle (new OV.Triangle (4, 6, 7));
+        model.AddMesh (cube);
+        OV.FinalizeModel (model, function () {
+            return new OV.Material ();
+        });
+        let surface = 0.0;
+        let volume = 0.0;
+        for (let i = 0; i < model.MeshCount (); i++) {
+            let mesh = model.GetMesh (i);
+            for (j = 0; j < mesh.TriangleCount (); j++) {
+                let triangle = mesh.GetTriangle (j);
+                let v0 = mesh.GetVertex (triangle.v0);
+                let v1 = mesh.GetVertex (triangle.v1);
+                let v2 = mesh.GetVertex (triangle.v2);
+                surface += GetTriangleArea (v0, v1, v2);
+                let signedVolume = OV.DotVector3D (v0, OV.CrossVector3D (v1, v2)) / 6.0;
+                volume += signedVolume;
+            }
+        }
+        assert (OV.IsEqual (volume, 1.0));
+        assert (OV.IsEqual (surface, 6.0));
+    });
 });

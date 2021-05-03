@@ -2,56 +2,82 @@ OV.ImporterBase = class
 {
     constructor ()
     {
-        this.extension = null;
-        this.callbacks = null;
-        this.model = null;
-        this.error = null;
-        this.message = null;
+        
     }
-	
-	Import (content, extension, callbacks)
-	{
+    
+    Import (content, extension, callbacks)
+    {
+        this.Clear ();
+
         this.extension = extension;
         this.callbacks = callbacks;
         this.model = new OV.Model ();
         this.error = false;
         this.message = null;
+        this.ResetContent ();
 
-		this.ResetState ();
-        this.ImportContent (content);
+        let obj = this;
+        this.ImportContent (content, function () {
+            obj.CreateResult (callbacks);
+        });
+    }
+
+    Clear ()
+    {
+        this.extension = null;
+        this.callbacks = null;
+        this.model = null;
+        this.error = null;
+        this.message = null;
+        this.ClearContent ();
+    }
+
+    CreateResult (callbacks)
+    {
         if (this.error) {
+            callbacks.onError ();
+            callbacks.onComplete ();
             return;
         }
 
         if (OV.IsModelEmpty (this.model)) {
             this.error = true;
+            callbacks.onError ();
+            callbacks.onComplete ();
             return;
         }
 
         OV.FinalizeModel (this.model, this.callbacks.getDefaultMaterial);
-	}
-
-    ResetState ()
-    {
-
+        callbacks.onSuccess ();
+        callbacks.onComplete ();
     }
 
-	CanImportExtension (extension)
-	{
-		return false;
-	}
+    CanImportExtension (extension)
+    {
+        return false;
+    }
 
-	GetKnownFileFormats ()
-	{
-		return {};
-	}
+    GetKnownFileFormats ()
+    {
+        return {};
+    }
 
     GetUpDirection ()
     {
         return OV.Direction.Z;
     }
 
-    ImportContent (content)
+    ClearContent ()
+    {
+
+    }
+
+    ResetContent ()
+    {
+
+    }
+
+    ImportContent (fileContent, onFinish)
     {
 
     }

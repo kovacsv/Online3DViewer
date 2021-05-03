@@ -3,6 +3,7 @@ OV.ThreeModelLoader = class
     constructor ()
     {
         this.importer = new OV.Importer ();
+		this.importer.AddImporter (new OV.Importer3dm ());
         this.callbacks = null;
 		this.inProgress = false;
     }
@@ -57,10 +58,10 @@ OV.ThreeModelLoader = class
 		this.callbacks.onImportStart ();
 		OV.RunTaskAsync (function () {
 			obj.importer.Import (settings, {
-				success : function (importResult) {
+				onSuccess : function (importResult) {
 					obj.OnModelImported (importResult);
 				},
-				error : function (importError) {
+				onError : function (importError) {
 					obj.callbacks.onLoadError (importError);
 					obj.inProgress = false;
 				}

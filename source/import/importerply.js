@@ -89,51 +89,55 @@ OV.ImporterPly = class extends OV.ImporterBase
     constructor ()
     {
         super ();
-        this.model = null;
-        this.mesh = null;
     }
-	
-	ResetState ()
-	{
-        this.mesh = new OV.Mesh ();
-        this.model.AddMesh (this.mesh);
-	}
-
-	CanImportExtension (extension)
-	{
-		return extension === 'ply';
-	}
+    
+    CanImportExtension (extension)
+    {
+        return extension === 'ply';
+    }
     
     GetKnownFileFormats ()
-	{
-		return {
-			'ply' : OV.FileFormat.Binary
-		};
-	}
-	
+    {
+        return {
+            'ply' : OV.FileFormat.Binary
+        };
+    }
+    
     GetUpDirection ()
     {
         return OV.Direction.Y;
     }
+    
+    ClearContent ()
+    {
+        this.model = null;
+        this.mesh = null;
+    }
 
-	ImportContent (fileContent)
-	{
+    ResetContent ()
+    {
+        this.mesh = new OV.Mesh ();
+        this.model.AddMesh (this.mesh);
+    }
+
+    ImportContent (fileContent, onFinish)
+    {
         let headerString = this.GetHeaderContent (fileContent);
         let header = this.ReadHeader (headerString);
-        if (!header.Check ()) {
+        if (header.Check ()) {
+            if (header.format === 'ascii') {
+                let contentString = OV.ArrayBufferToUtf8String (fileContent);
+                contentString = contentString.substr (headerString.length);
+                this.ReadAsciiContent (header, contentString);
+            } else if (header.format === 'binary_little_endian' || header.format === 'binary_big_endian') {
+                this.ReadBinaryContent (header, fileContent, headerString.length);
+            }
+        } else {
             this.SetError ();
             this.SetMessage ('Invalid header information.');
-            return;
         }
-
-        if (header.format === 'ascii') {
-            let contentString = OV.ArrayBufferToUtf8String (fileContent);
-            contentString = contentString.substr (headerString.length);
-            this.ReadAsciiContent (header, contentString);
-        } else if (header.format === 'binary_little_endian' || header.format === 'binary_big_endian') {
-            this.ReadBinaryContent (header, fileContent, headerString.length);
-        }
-	}
+        onFinish ();
+    }
 
     GetHeaderContent (fileContent)
     {
@@ -180,7 +184,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                     header.AddSingleFormat (parameters[1], parameters[2]);
                 }
             }
-		});
+        });
 
         return header;
     }
@@ -231,7 +235,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                 }
                 return;
             }
-		});
+        });
     }
 
     ReadBinaryContent (header, fileContent, headerLength)
@@ -279,7 +283,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                 return null;
             }
 
-            let materialName = '#' + IntegerToHex (color[0]) + IntegerToHex (color[1]) + IntegerToHex (color[2]) + IntegerToHex (color[3]);
+            let materialName = 'Color ' + IntegerToHex (color[0]) + IntegerToHex (color[1]) + IntegerToHex (color[2]) + IntegerToHex (color[3]);
             let materialIndex = colorToMaterial[materialName];
             if (materialIndex === undefined) {
                 let material = new OV.Material ();

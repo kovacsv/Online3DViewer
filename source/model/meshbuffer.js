@@ -40,6 +40,16 @@ OV.MeshBuffer = class
         this.primitives = [];
     }
 
+    PrimitiveCount ()
+    {
+        return this.primitives.length;
+    }
+
+    GetPrimitive (index)
+    {
+        return this.primitives[index];
+    }
+
     GetByteLength (indexTypeSize, numberTypeSize)
     {
         let byteLength = 0;
@@ -53,7 +63,7 @@ OV.MeshBuffer = class
 
 OV.ConvertMeshToMeshBuffer = function (mesh)
 {
-    function AddVertexToPrimitiveBuffer (mesh, vertexIndex, normalIndex, uvIndex, primitiveBuffer, primitiveMaps)
+    function AddVertexToPrimitiveBuffer (mesh, vertexIndex, normalIndex, uvIndex, primitiveBuffer, meshToPrimitiveVertices)
     {
         function GetUVOrDefault (mesh, uvIndex, forceUVs)
         {
@@ -106,10 +116,10 @@ OV.ConvertMeshToMeshBuffer = function (mesh)
             return null;
         }
 
-        let primitiveVertices = primitiveMaps.meshToPrimitiveVertices[vertexIndex];
+        let primitiveVertices = meshToPrimitiveVertices[vertexIndex];
         if (primitiveVertices === undefined) {
             let primitiveVertex = AddVertex (mesh, vertexIndex, normalIndex, uvIndex, primitiveBuffer);
-            primitiveMaps.meshToPrimitiveVertices[vertexIndex] = [primitiveVertex];
+            meshToPrimitiveVertices[vertexIndex] = [primitiveVertex];
         } else {
             let existingPrimitiveVertex = FindMatchingPrimitiveVertex (mesh, primitiveVertices, normalIndex, uvIndex);
             if (existingPrimitiveVertex !== null) {
@@ -139,21 +149,19 @@ OV.ConvertMeshToMeshBuffer = function (mesh)
     });
 
     let primitiveBuffer = null;
-    let primitiveMaps = null;
+    let meshToPrimitiveVertices = null;
     for (let i = 0; i < triangleIndices.length; i++) {
         let triangleIndex = triangleIndices[i];
         let triangle = mesh.GetTriangle (triangleIndex);
         if (primitiveBuffer === null || primitiveBuffer.material !== triangle.mat) {
             primitiveBuffer = new OV.MeshPrimitiveBuffer ();
             primitiveBuffer.material = triangle.mat;
-            primitiveMaps = {
-                meshToPrimitiveVertices : {}
-            };
+            meshToPrimitiveVertices = {};
             meshBuffer.primitives.push (primitiveBuffer);
         }
-        AddVertexToPrimitiveBuffer (mesh, triangle.v0, triangle.n0, triangle.u0, primitiveBuffer, primitiveMaps);
-        AddVertexToPrimitiveBuffer (mesh, triangle.v1, triangle.n1, triangle.u1, primitiveBuffer, primitiveMaps);
-        AddVertexToPrimitiveBuffer (mesh, triangle.v2, triangle.n2, triangle.u2, primitiveBuffer, primitiveMaps);
+        AddVertexToPrimitiveBuffer (mesh, triangle.v0, triangle.n0, triangle.u0, primitiveBuffer, meshToPrimitiveVertices);
+        AddVertexToPrimitiveBuffer (mesh, triangle.v1, triangle.n1, triangle.u1, primitiveBuffer, meshToPrimitiveVertices);
+        AddVertexToPrimitiveBuffer (mesh, triangle.v2, triangle.n2, triangle.u2, primitiveBuffer, meshToPrimitiveVertices);
     }
 
     return meshBuffer;

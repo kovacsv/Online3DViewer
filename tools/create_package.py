@@ -19,20 +19,19 @@ def GetVersion (rootDir):
 	return packageJson['version']
 
 def JSHintFolder (folder):
-	result = Tools.RunCommand (['jshint', folder])
+	result = Tools.RunCommand ('jshint', [folder])
 	if result != 0:
 		return False
 	return True
 
 def CompressFiles (inputFiles, outputFile):
 	parameters = []
-	parameters.append ('google-closure-compiler')
 	for inputFile in inputFiles:
 		extension = os.path.splitext (inputFile)[1]
 		if extension == '.js':
 			parameters.append ('--js=' + os.path.join ('..', inputFile))
 	parameters.append ('--js_output_file=' + outputFile)
-	result = Tools.RunCommand (parameters)
+	result = Tools.RunCommand ('google-closure-compiler', parameters)
 	if result != 0:
 		return False
 	return True

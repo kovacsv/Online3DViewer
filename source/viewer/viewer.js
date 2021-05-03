@@ -43,7 +43,10 @@ OV.UpVector = class
         let newEye = oldCamera.center.Clone ().Offset (defaultDir, distance);
 
         let newCamera = oldCamera.Clone ();
-        if (this.direction === OV.Direction.Y) {
+        if (this.direction === OV.Direction.X) {
+            newCamera.up = new OV.Coord3D (1.0, 0.0, 0.0);
+            newCamera.eye = newEye;
+        } if (this.direction === OV.Direction.Y) {
             newCamera.up = new OV.Coord3D (0.0, 1.0, 0.0);
             newCamera.eye = newEye;
         } else if (this.direction === OV.Direction.Z) {
@@ -71,6 +74,64 @@ OV.UpVector = class
     }
 };
 
+OV.ViewerGeometry = class
+{
+    constructor (scene)
+    {
+        this.scene = scene;
+        this.modelMeshes = [];
+    }
+
+    AddModelMeshes (meshes)
+    {
+        for (let i = 0; i < meshes.length; i++) {
+            let mesh = meshes[i];
+            this.modelMeshes.push (mesh);
+            this.scene.add (mesh);
+        }
+    }
+
+    GetModelMeshes ()
+    {
+        return this.modelMeshes;
+    }
+
+    ClearModelMeshes ()
+    {
+        for (let i = 0; i < this.modelMeshes.length; i++) {
+            let mesh = this.modelMeshes[i];
+            mesh.geometry.dispose ();
+            this.scene.remove (mesh);
+        }
+        this.modelMeshes = [];
+    }
+
+    EnumerateModelMeshes (enumerator)
+    {
+        for (let i = 0; i < this.modelMeshes.length; i++) {
+            let mesh = this.modelMeshes[i];
+            enumerator (mesh);
+        }
+    }
+
+    GetModelMeshUnderMouse (mouseCoords, camera, width, height)
+    {
+        let raycaster = new THREE.Raycaster ();
+        let mousePos = new THREE.Vector2 ();
+        mousePos.x = (mouseCoords.x / width) * 2 - 1;
+        mousePos.y = -(mouseCoords.y / height) * 2 + 1;
+        raycaster.setFromCamera (mousePos, camera);
+        let iSectObjects = raycaster.intersectObjects (this.modelMeshes);
+        for (let i = 0; i < iSectObjects.length; i++) {
+            let iSectObject = iSectObjects[i];
+            if (iSectObject.object.type === 'Mesh' && iSectObject.object.visible) {
+                return iSectObject.object;
+            }
+        }
+        return null;
+    }    
+};
+
 OV.Viewer = class
 {
     constructor ()
@@ -78,6 +139,7 @@ OV.Viewer = class
         this.canvas = null;
         this.renderer = null;
         this.scene = null;
+        this.geometry = null;
         this.camera = null;
         this.light = null;
         this.navigation = null;
@@ -101,10 +163,14 @@ OV.Viewer = class
         };
         
         this.renderer = new THREE.WebGLRenderer (parameters);
+        if (window.devicePixelRatio) {
+            this.renderer.setPixelRatio (window.devicePixelRatio);
+        }
         this.renderer.setClearColor ('#ffffff', 1.0);
         this.renderer.setSize (this.canvas.width, this.canvas.height);
         
         this.scene = new THREE.Scene ();
+        this.geometry = new OV.ViewerGeometry (this.scene);
 
         this.InitCamera ();
         this.InitLights ();
@@ -136,6 +202,9 @@ OV.Viewer = class
 
     ResizeRenderer (width, height)
     {
+        if (window.devicePixelRatio) {
+            this.renderer.setPixelRatio (window.devicePixelRatio);
+        }
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix ();
         this.renderer.setSize (width, height);    
@@ -227,22 +296,19 @@ OV.Viewer = class
 
     AddMeshes (meshes)
     {
-        for (let i = 0; i < meshes.length; i++) {
-            let mesh = meshes[i];
-            this.scene.add (mesh);
-        }
+        this.geometry.AddModelMeshes (meshes);
         this.Render ();
     }
 
     Clear ()
     {
-        this.ClearMeshes ();
+        this.geometry.ClearModelMeshes ();
         this.Render ();
     }
 
     SetMeshesVisibility (isVisible)
     {
-        this.EnumerateMeshes (function (mesh) {
+        this.geometry.EnumerateModelMeshes (function (mesh) {
             let visible = isVisible (mesh.userData);
             if (mesh.visible !== visible) {
                 mesh.visible = visible;
@@ -262,7 +328,7 @@ OV.Viewer = class
             return highlightMaterials;
         }
 
-        this.EnumerateMeshes (function (mesh) {
+        this.geometry.EnumerateModelMeshes (function (mesh) {
             let highlighted = isHighlighted (mesh.userData);
             if (highlighted) {
                 if (mesh.userData.threeMaterials === null) {
@@ -279,28 +345,20 @@ OV.Viewer = class
         this.Render ();
     }    
 
-    GetMeshUnderMouse (mouseCoords)
+    GetMeshUserDataUnderMouse (mouseCoords)
     {
-        let raycaster = new THREE.Raycaster ();
-        let mousePos = new THREE.Vector2 ();
-        mousePos.x = (mouseCoords.x / this.canvas.width) * 2 - 1;
-        mousePos.y = -(mouseCoords.y / this.canvas.height) * 2 + 1;
-        raycaster.setFromCamera (mousePos, this.camera);
-        let iSectObjects = raycaster.intersectObjects (this.scene.children);
-        for (let i = 0; i < iSectObjects.length; i++) {
-            let iSectObject = iSectObjects[i];
-            if (iSectObject.object.type === 'Mesh' && iSectObject.object.visible) {
-                return iSectObject.object.userData;
-            }
+        let mesh = this.geometry.GetModelMeshUnderMouse (mouseCoords, this.camera, this.canvas.width, this.canvas.height);
+        if (mesh === null) {
+            return null;
         }
-        return null;
+        return mesh.userData;
     }
 
     GetBoundingBox (needToProcess)
     {
         let hasMesh = false;
         let boundingBox = new THREE.Box3 ();
-        this.EnumerateMeshes (function (mesh) {
+        this.geometry.EnumerateModelMeshes (function (mesh) {
             if (needToProcess (mesh.userData)) {
                 boundingBox.union (new THREE.Box3 ().setFromObject (mesh));
                 hasMesh = true;
@@ -327,29 +385,9 @@ OV.Viewer = class
 
     EnumerateMeshesUserData (enumerator)
     {
-        this.EnumerateMeshes (function (mesh) {
+        this.geometry.EnumerateModelMeshes (function (mesh) {
             enumerator (mesh.userData);
         });
-    }
-
-    EnumerateMeshes (enumerator)
-    {
-        this.scene.traverse (function (object) {
-            if (object.isMesh) {
-                enumerator (object);
-            }
-        });
-    }
-
-    ClearMeshes ()
-    {
-        for (let i = this.scene.children.length - 1; i >= 0; i--) {
-            let object = this.scene.children[i];
-            if (object.isMesh) {
-                object.geometry.dispose ();
-                this.scene.remove (object);
-            }
-        }
     }
 
     InitCamera ()
@@ -378,22 +416,29 @@ OV.Viewer = class
         this.scene.add (this.light);
     }
 
+    GetImageSize ()
+    {
+        let originalSize = new THREE.Vector2 ();
+        this.renderer.getSize (originalSize);
+        return {
+            width : parseInt (originalSize.x, 10),
+            height : parseInt (originalSize.y, 10)
+        };
+    }
+
     GetImageAsDataUrl (width, height)
     {
-        let originalSize = null;
-        if (width && height) {
-            originalSize = new THREE.Vector2 ();
-            this.renderer.getSize (originalSize);
-            this.ResizeRenderer (width, height);
+        let originalSize = this.GetImageSize ();
+        let renderWidth = width;
+        let renderHeight = height;
+        if (window.devicePixelRatio) {
+            renderWidth /= window.devicePixelRatio;
+            renderHeight /= window.devicePixelRatio;
         }
+        this.ResizeRenderer (renderWidth, renderHeight);
         this.Render ();
         let url = this.renderer.domElement.toDataURL ();
-        if (originalSize !== null) {
-            this.ResizeRenderer (
-                parseInt (originalSize.x, 10),
-                parseInt (originalSize.y, 10)
-            );
-        }
+        this.ResizeRenderer (originalSize.width, originalSize.height);
         return url;
     }
 };

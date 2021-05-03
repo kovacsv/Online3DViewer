@@ -39,12 +39,15 @@ OV.ExporterBase = class
         return false;
     }
     
-	Export (model, format, files)
+	Export (model, format, onFinish)
 	{
-		this.ExportContent (model, format, files);
+		let files = [];
+		this.ExportContent (model, format, files, function () {
+			onFinish (files);
+		});
 	}
 
-	ExportContent (model, format, files)
+	ExportContent (model, format, files, onFinish)
 	{
 
 	}
