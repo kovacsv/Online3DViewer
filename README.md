@@ -38,22 +38,22 @@ The repository is separated into two parts. See more information in the [Develop
 ## Features
 
 - Load model:
-  - Select files from a file browser dialog
-  - Drag and drop files from your computer
-  - Specify files by web url
-  - Specify files by web url in hash parameters
+  - Select files from a file browser dialog.
+  - Drag and drop files from your computer.
+  - Specify files by web url.
+  - Specify files by web url in hash parameters.
 - Explore model:
-  - Orbit, pan, zoom
-  - Set up direction
-  - Fit to window
+  - Orbit, pan, zoom.
+  - Set up direction.
+  - Fit to window.
 - Investigate model:
-  - List used and missing files
-  - List all materials and meshes
-  - Show/hide and zoom to a specific mesh
-  - List materials used by a specific mesh
-  - Show model information (model size, vertex and polygon count)
-- Export model to various format
-- Embed viewer in your website
+  - List used and missing files.
+  - List all materials and meshes.
+  - Show/hide and zoom to a specific mesh.
+  - List materials used by a specific mesh.
+  - Show model information (model size, vertex and polygon count).
+- Export model to various format.
+- Embed viewer in your website.
 
 ## External Libraries
 
