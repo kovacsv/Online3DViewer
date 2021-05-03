@@ -492,12 +492,17 @@ OV.Website = class
                 obj.FitMeshToWindow (meshIndex);
             },
             getMaterialInformation : function (materialIndex) {
+                obj.UpdateMeasureTool (false);
                 return GetMaterialInfo (obj.viewer, obj.model, materialIndex);
             },
             getMeshInformation : function (meshIndex) {
+                obj.UpdateMeasureTool (false);
+
                 return GetMeshInfo (obj.viewer, obj.model, meshIndex);
             },
             getModelInformation : function () {
+                obj.UpdateMeasureTool (false);
+
                 return GetModelInfo (obj.model, obj.viewer);
             }
         });

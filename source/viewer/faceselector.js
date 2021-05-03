@@ -21,8 +21,12 @@ OV.FaceSelector = class
         this.mousePos = new THREE.Vector2 ();
         this.state = OV.FaceSelector.NoneSelected;
 
-        let planeGeometry = new THREE.PlaneGeometry (10, 10);
-        let circleGeometry = new THREE.CircleGeometry (3, 32);
+        let bsphere = viewer.GetBoundingSphere(function(){return true;});
+
+        let planeGeometry = new THREE.PlaneGeometry (bsphere.radius * 0.1, bsphere.radius * 0.1);
+        let circleGeometry = new THREE.ConeGeometry (bsphere.radius * 0.03, bsphere.radius * 0.06, 32);
+        this.coneHeight = bsphere.radius * 0.06;
+
         this.selectedPlanes = [
             new THREE.Plane (new THREE.Vector3 (1, 0, 0), 0),
             new THREE.Plane (new THREE.Vector3 (1, 0, 0), 0),
@@ -30,7 +34,7 @@ OV.FaceSelector = class
 
 		this.material = [ 
             new THREE.MeshBasicMaterial ( { color: 0xffff00, transparent: true,  opacity: 0.3, side: THREE.DoubleSide } ), 
-            new THREE.MeshBasicMaterial ( { color: 0xff0000, transparent: true,  opacity: 0.8, side: THREE.DoubleSide } )
+            new THREE.MeshPhongMaterial ( { color: 0xff0000, transparent: true,  opacity: 0.8, shininess: 100 } )
         ];
 
 		this.mesh = [
@@ -105,16 +109,17 @@ OV.FaceSelector = class
                 /* falls through */ 
             case OV.FaceSelector.NoneSelected:
                 this.selectedPlanes[0].setFromNormalAndCoplanarPoint (plane.normal, plane.position);
-                this.mesh[1].position.copy (plane.position.addScaledVector (plane.normal, 0.01));
-                this.mesh[1].quaternion.setFromUnitVectors (new THREE.Vector3 (0, 0, 1), plane.normal);
+                this.mesh[1].position.copy (plane.position.addScaledVector (plane.normal, this.coneHeight/2));
+                this.mesh[1].quaternion.setFromUnitVectors (new THREE.Vector3 (0, -1, 0), plane.normal);
+
 
                 this.state = OV.FaceSelector.OneFaceSelected;
                 this.mesh[1].visible = true;
                 break;
             case OV.FaceSelector.OneFaceSelected:
                 this.selectedPlanes[1].setFromNormalAndCoplanarPoint (plane.normal, plane.position);
-                this.mesh[2].position.copy (plane.position.addScaledVector (plane.normal, 0.01));
-                this.mesh[2].quaternion.setFromUnitVectors (new THREE.Vector3 (0, 0, 1), plane.normal);
+                this.mesh[2].position.copy (plane.position.addScaledVector (plane.normal, this.coneHeight / 2));
+                this.mesh[2].quaternion.setFromUnitVectors (new THREE.Vector3 (0, -1, 0), plane.normal);
 
                 this.state = OV.FaceSelector.TwoFaceSelected;
                 this.mesh[2].visible = true;
