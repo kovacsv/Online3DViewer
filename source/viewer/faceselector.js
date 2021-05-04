@@ -25,7 +25,8 @@ OV.FaceSelector = class
 
         let planeGeometry = new THREE.PlaneGeometry (bsphere.radius * 0.2, bsphere.radius * 0.2);
         this.coneHeight = bsphere.radius * 0.12;
-        let circleGeometry = new THREE.ConeGeometry (this.coneHeight / 2, this.coneHeight, 32);
+        let coneGeometry = new THREE.ConeGeometry (this.coneHeight / 2, this.coneHeight, 32);
+        let circleGeometry = new THREE.CircleGeometry (this.coneHeight / 4, 32);
 
         this.selectedPlanes = [
             new THREE.Plane (new THREE.Vector3 (1, 0, 0), 0),
@@ -34,13 +35,16 @@ OV.FaceSelector = class
 
 		this.material = [ 
             new THREE.MeshBasicMaterial ( { color: 0xffff00, transparent: true,  opacity: 0.3, side: THREE.DoubleSide } ), 
+            new THREE.MeshBasicMaterial ( { color: 0x000000, transparent: true,  opacity: 0.3, side: THREE.DoubleSide } ), 
             new THREE.MeshPhongMaterial ( { color: 0xff0000, transparent: true,  opacity: 0.8, shininess: 100 } )
         ];
 
 		this.mesh = [
             new THREE.Mesh (planeGeometry, this.material[0]),
             new THREE.Mesh (circleGeometry, this.material[1]),
-            new THREE.Mesh (circleGeometry, this.material[1])
+            new THREE.Mesh (coneGeometry, this.material[2]),
+            new THREE.Mesh (circleGeometry, this.material[1]),
+            new THREE.Mesh (coneGeometry, this.material[2])
         ];
 
         for (let m = 0; m < this.mesh.length; m++) {
@@ -109,27 +113,33 @@ OV.FaceSelector = class
                 /* falls through */ 
             case OV.FaceSelector.NoneSelected:
                 this.selectedPlanes[0].setFromNormalAndCoplanarPoint (plane.normal, plane.position);
-                this.mesh[1].position.copy (plane.position.addScaledVector (plane.normal, this.coneHeight/2));
-                this.mesh[1].quaternion.setFromUnitVectors (new THREE.Vector3 (0, -1, 0), plane.normal);
+                this.mesh[1].position.copy (plane.position.addScaledVector (plane.normal, this.coneHeight/100));
+                this.mesh[1].quaternion.setFromUnitVectors (new THREE.Vector3 (0, 0, 1), plane.normal);
+                this.mesh[2].position.copy (plane.position.addScaledVector (plane.normal, this.coneHeight/2));
+                this.mesh[2].quaternion.setFromUnitVectors (new THREE.Vector3 (0, -1, 0), plane.normal);
 
 
                 this.state = OV.FaceSelector.OneFaceSelected;
                 this.mesh[1].visible = true;
+                this.mesh[2].visible = true;
                 break;
             case OV.FaceSelector.OneFaceSelected:
                 this.selectedPlanes[1].setFromNormalAndCoplanarPoint (plane.normal, plane.position);
-                this.mesh[2].position.copy (plane.position.addScaledVector (plane.normal, this.coneHeight / 2));
-                this.mesh[2].quaternion.setFromUnitVectors (new THREE.Vector3 (0, -1, 0), plane.normal);
+                this.mesh[3].position.copy (plane.position.addScaledVector (plane.normal, this.coneHeight/100));
+                this.mesh[3].quaternion.setFromUnitVectors (new THREE.Vector3 (0, 0, 1), plane.normal);
+                this.mesh[4].position.copy (plane.position.addScaledVector (plane.normal, this.coneHeight / 2));
+                this.mesh[4].quaternion.setFromUnitVectors (new THREE.Vector3 (0, -1, 0), plane.normal);
 
                 this.state = OV.FaceSelector.TwoFaceSelected;
-                this.mesh[2].visible = true;
+                this.mesh[3].visible = true;
+                this.mesh[4].visible = true;
 
                 let angle = this.selectedPlanes[0].normal.angleTo (this.selectedPlanes[1].normal);
                 let pointOnFirstPlane = new THREE.Vector3 (0, 0, 0);
                 this.selectedPlanes[0].coplanarPoint (pointOnFirstPlane);
                 let distance = Math.abs(this.selectedPlanes[1].distanceToPoint (pointOnFirstPlane));
-                let hypDistance = this.mesh[1].position.clone().addScaledVector (this.selectedPlanes[0].normal, -0.01).distanceTo (
-                    this.mesh[2].position.clone().addScaledVector (this.selectedPlanes[0].normal, -0.01)
+                let hypDistance = this.mesh[1].position.clone().addScaledVector (this.selectedPlanes[0].normal, -this.coneHeight/100).distanceTo (
+                    this.mesh[3].position.clone().addScaledVector (this.selectedPlanes[0].normal, -this.coneHeight/100)
                 );
                 // Check if the 2 planes are intersecting (in that case, the distance must be zeroed)
                 if (Math.abs (angle % Math.PI) > 0.01) {
