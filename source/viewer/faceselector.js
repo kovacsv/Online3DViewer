@@ -23,9 +23,9 @@ OV.FaceSelector = class
 
         let bsphere = viewer.GetBoundingSphere(function(){return true;});
 
-        let planeGeometry = new THREE.PlaneGeometry (bsphere.radius * 0.1, bsphere.radius * 0.1);
-        let circleGeometry = new THREE.ConeGeometry (bsphere.radius * 0.03, bsphere.radius * 0.06, 32);
-        this.coneHeight = bsphere.radius * 0.06;
+        let planeGeometry = new THREE.PlaneGeometry (bsphere.radius * 0.2, bsphere.radius * 0.2);
+        this.coneHeight = bsphere.radius * 0.12;
+        let circleGeometry = new THREE.ConeGeometry (this.coneHeight / 2, this.coneHeight, 32);
 
         this.selectedPlanes = [
             new THREE.Plane (new THREE.Vector3 (1, 0, 0), 0),
