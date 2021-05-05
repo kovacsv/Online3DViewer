@@ -347,7 +347,13 @@ OV.Viewer = class
 
     GetMeshUserDataUnderMouse (mouseCoords)
     {
-        let mesh = this.geometry.GetModelMeshUnderMouse (mouseCoords, this.camera, this.canvas.width, this.canvas.height);
+        let width = this.canvas.width;
+        let height = this.canvas.height;
+        if (window.devicePixelRatio) {
+            width /= window.devicePixelRatio;
+            height /= window.devicePixelRatio;
+        }
+        let mesh = this.geometry.GetModelMeshUnderMouse (mouseCoords, this.camera, width, height);
         if (mesh === null) {
             return null;
         }
