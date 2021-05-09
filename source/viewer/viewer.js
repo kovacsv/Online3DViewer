@@ -153,9 +153,6 @@ OV.Viewer = class
     {
         this.canvas = canvas;
         this.canvas.id = 'viewer';
-        this.canvas.addEventListener ('contenxtmenu', function (ev) {
-            ev.preventDefault ();
-        });
 
         let parameters = {
             canvas : this.canvas,
