@@ -80,6 +80,13 @@ OV.ViewerGeometry = class
     {
         this.scene = scene;
         this.modelMeshes = [];
+        this.edgesMeshes = [];
+
+        this.edgesSettings = {
+            showEdges : false,
+            edgesAngle : 15,
+            edgesColor : new OV.Color (0, 0, 0),
+        };
     }
 
     AddModelMeshes (meshes)
@@ -88,6 +95,9 @@ OV.ViewerGeometry = class
             let mesh = meshes[i];
             this.modelMeshes.push (mesh);
             this.scene.add (mesh);
+        }
+        if (this.edgesSettings.showEdges) {
+            this.ToggleEdges (true);
         }
     }
 
@@ -98,6 +108,8 @@ OV.ViewerGeometry = class
 
     ClearModelMeshes ()
     {
+        this.ToggleEdges (false);
+
         for (let i = 0; i < this.modelMeshes.length; i++) {
             let mesh = this.modelMeshes[i];
             mesh.geometry.dispose ();
@@ -129,7 +141,39 @@ OV.ViewerGeometry = class
             }
         }
         return null;
-    }    
+    } 
+    
+    ToggleEdges (isVisible)
+    {
+        if (!isVisible) {
+            for (let i = this.edgesMeshes.length - 1; i >= 0; i--) {
+                let object = this.edgesMeshes[i];
+                object.geometry.dispose ();
+                this.scene.remove (object);
+            }
+            this.edgesMeshes = [];
+        } else {
+            for (let i = 0; i < this.modelMeshes.length; i++) {
+                let object = this.modelMeshes[i];
+                let edges = new THREE.EdgesGeometry (object.geometry, this.edgesSettings.edgesAngle);
+                let lines = new THREE.LineSegments (edges, new THREE.LineBasicMaterial ( { color: '#' + OV.ColorToHexString (this.edgesSettings.edgesColor) }));
+                this.scene.add (lines);
+                this.edgesMeshes.push (lines);
+            }
+        }
+    }
+
+    SetMeshVisibility (mesh, visible)
+    {
+        if (mesh.visible !== visible) {
+            mesh.visible = visible;
+            
+            let meshPos = this.modelMeshes.indexOf (mesh);
+            if (this.edgesMeshes.length > meshPos) {
+                this.edgesMeshes[meshPos].visible = visible;
+            }
+        }
+    }
 };
 
 OV.Viewer = class
@@ -145,8 +189,13 @@ OV.Viewer = class
         this.navigation = null;
         this.upVector = null;
         this.settings = {
-            animationSteps : 40
+            animationSteps : 40,
         };
+    }
+
+    UpdateEdgesSettings (settings)
+    {
+        this.geometry.edgesSettings = Object.assign ({}, settings);
     }
     
     Init (canvas)
@@ -291,6 +340,12 @@ OV.Viewer = class
         this.renderer.render (this.scene, this.camera);
     }
 
+    ToggleEdges (isVisible)
+    {
+        this.geometry.ToggleEdges (isVisible);
+        this.Render ();
+    }
+
     AddMeshes (meshes)
     {
         this.geometry.AddModelMeshes (meshes);
@@ -307,10 +362,8 @@ OV.Viewer = class
     {
         this.geometry.EnumerateModelMeshes (function (mesh) {
             let visible = isVisible (mesh.userData);
-            if (mesh.visible !== visible) {
-                mesh.visible = visible;
-            }
-        });
+            this.geometry.SetMeshVisibility (mesh, visible);
+        }.bind (this));
         this.Render ();
     }
 
