@@ -34,18 +34,16 @@ def Main (argv):
 		replacer.ReplaceTokenFileLinks ('<!-- website start -->', '<!-- website end -->', websiteFiles, None)
 		replacer.WriteToFile (htmlFilePath)
 
-	sandboxFiles = [
-		os.path.join ('tools', 'sandbox', 'embed_selfhost_single.html'),
-		os.path.join ('tools', 'sandbox', 'embed_selfhost_multiple.html'),
-		os.path.join ('tools', 'sandbox', 'embed_selfhost_fullscreen.html')
-	]
-	for htmlFileName in sandboxFiles:
-		htmlFilePath = os.path.join (rootDir, htmlFileName)
+	sandboxFolder = os.path.join (rootDir, 'sandbox')
+	for htmlFileName in sandboxFolder:
+		if os.path.splitext (htmlFileName)[1] != '.html':
+			continue
+		htmlFilePath = os.path.join (sandboxFolder, htmlFileName)
 		replacer = Tools.TokenReplacer (htmlFilePath, True)
 		importerFiles = Tools.CreateFileList (config['importer_files'], 'source/', '../../source/')
 		replacer.ReplaceTokenFileLinks ('<!-- importer start -->', '<!-- importer end -->', importerFiles, None)
 		replacer.WriteToFile (htmlFilePath)
-	
+		
 	return 0
 
 sys.exit (Main (sys.argv))
