@@ -35,12 +35,12 @@ def Main (argv):
 		replacer.WriteToFile (htmlFilePath)
 
 	sandboxFolder = os.path.join (rootDir, 'sandbox')
-	for htmlFileName in sandboxFolder:
+	for htmlFileName in os.listdir (sandboxFolder):
 		if os.path.splitext (htmlFileName)[1] != '.html':
 			continue
 		htmlFilePath = os.path.join (sandboxFolder, htmlFileName)
 		replacer = Tools.TokenReplacer (htmlFilePath, True)
-		importerFiles = Tools.CreateFileList (config['importer_files'], 'source/', '../../source/')
+		importerFiles = Tools.CreateFileList (config['importer_files'], 'source/', '../source/')
 		replacer.ReplaceTokenFileLinks ('<!-- importer start -->', '<!-- importer end -->', importerFiles, None)
 		replacer.WriteToFile (htmlFilePath)
 		
