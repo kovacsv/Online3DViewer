@@ -76,10 +76,5 @@ OV.UpdateMaterialTransparency = function (material)
 	material.transparent = false;
 	if (OV.IsLower (material.opacity, 1.0)) {
 		material.transparent = true;
-	} else if (material.diffuseMap !== null) {
-		let extension = OV.GetFileExtension (material.diffuseMap.name);
-		if (extension === 'png') {
-			material.transparent = true;
-		}
 	}
 };
