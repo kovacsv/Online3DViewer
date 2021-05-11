@@ -158,9 +158,10 @@ OV.Importer3ds = class extends OV.ImporterBase
                 shininessStrength = obj.ReadPercentageChunk (reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.MAT_TRANSPARENCY) {
                 material.opacity = 1.0 - obj.ReadPercentageChunk (reader, chunkLength);
-                material.transparent = OV.IsLower (material.opacity, 1.0);
+                OV.UpdateMaterialTransparency (material);
             } else if (chunkId === OV.CHUNK3DS.MAT_TEXMAP) {
                 material.diffuseMap = obj.ReadTextureMapChunk (reader, chunkLength);
+                OV.UpdateMaterialTransparency (material);
             } else {
                 obj.SkipChunk (reader, chunkLength);
             }

@@ -290,7 +290,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                 material.name = materialName;
                 material.diffuse = new OV.Color (color[0], color[1], color[2]);
                 material.opacity = color[3] / 255.0;
-                material.transparent = OV.IsLower (material.opacity, 1.0);
+                OV.UpdateMaterialTransparency (material);
                 materialIndex = obj.model.AddMaterial (material);
                 colorToMaterial[materialName] = materialIndex;
             }

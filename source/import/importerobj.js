@@ -226,6 +226,7 @@ OV.ImporterObj = class extends OV.ImporterBase
                 return true;
             }
             this.currentMaterial.diffuseMap = CreateTexture (keyword, line, this.callbacks);
+            OV.UpdateMaterialTransparency (this.currentMaterial);
             return true;
         } else if (keyword === 'map_ks') {
             if (this.currentMaterial === null || parameters.length === 0) {
@@ -268,14 +269,14 @@ OV.ImporterObj = class extends OV.ImporterBase
                 return true;
             }
             this.currentMaterial.opacity = 1.0 - parseFloat (parameters[0]);
-            this.currentMaterial.transparent = OV.IsLower (this.currentMaterial.opacity, 1.0);
+            OV.UpdateMaterialTransparency (this.currentMaterial);
             return true;
         } else if (keyword === 'd') {
             if (this.currentMaterial === null || parameters.length < 1) {
                 return true;
             }
             this.currentMaterial.opacity = parseFloat (parameters[0]);
-            this.currentMaterial.transparent = OV.IsLower (this.currentMaterial.opacity, 1.0);
+            OV.UpdateMaterialTransparency (this.currentMaterial);
             return true;
         }
 
