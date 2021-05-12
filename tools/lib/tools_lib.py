@@ -1,6 +1,5 @@
 import codecs
 import os
-import subprocess
 
 def GetFileContent (filePath):
 	fileObject = codecs.open (filePath, 'r', 'utf-8')
