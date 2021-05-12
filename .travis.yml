@@ -1,8 +1,9 @@
 language: node_js
 
 os:
-  - linux
+  - windows
   - osx
+  - linux
 
 node_js:
   - "15"
