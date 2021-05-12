@@ -15,8 +15,8 @@
 	"scripts": {
 		"test": "mocha test",
 		"coverage": "nyc mocha test",
-		"build": "python tools/create_package.py",
-		"update": "python tools/update_includes.py",
-		"svg": "python tools/optimize_svg_files.py"
+		"build": "py -3 tools/create_package.py",
+		"update": "py -3 tools/update_includes.py",
+		"svg": "py -3 tools/optimize_svg_files.py"
 	}
 }
