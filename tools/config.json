@@ -10,6 +10,8 @@
 		"source/geometry/geometry.js",
 		"source/geometry/coord2d.js",
 		"source/geometry/coord3d.js",
+		"source/geometry/box3d.js",
+		"source/geometry/octree.js",
 		"source/geometry/matrix.js",
 		"source/geometry/transformation.js",
 		"source/geometry/tween.js",

@@ -17,6 +17,16 @@ OV.IsGreater = function (a, b)
 	return a - b > OV.Eps;
 };
 
+OV.IsLowerOrEqual = function (a, b)
+{
+	return b - a > -OV.Eps;
+};
+
+OV.IsGreaterOrEqual = function (a, b)
+{
+	return a - b > -OV.Eps;
+};
+
 OV.IsEqual = function (a, b)
 {
 	return Math.abs (b - a) < OV.Eps;
