@@ -220,8 +220,3 @@ OV.EnumerateModelTrianglesWithNormals = function (model, onTriangle)
         }
     }
 };
-
-OV.IsModelClosed ()
-{
-    
-};
