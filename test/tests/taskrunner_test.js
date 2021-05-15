@@ -1,7 +1,7 @@
 var assert = require ('assert');
 
 describe ('Task Runner', function () {
-    it ('Run task zero times', function () {
+    it ('Run task zero times', function (done) {
         var tr = new OV.TaskRunner ();
         var numbers = [];
         tr.Run (0, {
@@ -11,11 +11,12 @@ describe ('Task Runner', function () {
             },
             onReady : function () {
                 assert.deepStrictEqual (numbers, []);
+                done ();
             }
         });
     });
 
-    it ('Run task three times', function () {
+    it ('Run task three times', function (done) {
         var tr = new OV.TaskRunner ();
         var numbers = [];
         tr.Run (3, {
@@ -25,6 +26,7 @@ describe ('Task Runner', function () {
             },
             onReady : function () {
                 assert.deepStrictEqual (numbers, [0, 1, 2]);
+                done ();
             }
         });
     });        
