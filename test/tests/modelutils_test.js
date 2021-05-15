@@ -79,7 +79,14 @@ describe ('Model Utils', function () {
         });        
     });
 
-    it ('Bounding Box', function () {
+    it ('Mesh Bounding Box', function () {
+        var cube = testUtils.GetCubeMesh ();
+        let cubeBounds = OV.GetMeshBoundingBox (cube);
+        assert (OV.CoordIsEqual3D (cubeBounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (cubeBounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
+    });
+
+    it ('Model Bounding Box', function () {
         var model = new OV.Model ();
         
         var mesh1 = new OV.Mesh ();
