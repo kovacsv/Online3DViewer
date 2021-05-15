@@ -79,6 +79,34 @@ describe ('Model Utils', function () {
         });        
     });
 
+    it ('Bounding Box', function () {
+        var model = new OV.Model ();
+        
+        var mesh1 = new OV.Mesh ();
+        mesh1.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
+        mesh1.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
+        mesh1.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
+        mesh1.AddTriangle (new OV.Triangle (0, 1, 2));
+        model.AddMesh (mesh1);
+
+        var mesh2 = new OV.Mesh ();
+        mesh2.AddVertex (new OV.Coord3D (0.0, 0.0, 1.0));
+        mesh2.AddVertex (new OV.Coord3D (1.0, 0.0, 1.0));
+        mesh2.AddVertex (new OV.Coord3D (1.0, 1.0, 1.0));
+        mesh2.AddTriangle (new OV.Triangle (0, 1, 2));
+        model.AddMesh (mesh2);
+
+        OV.FinalizeModel (model, function () { return new OV.Material (); });
+
+        let mesh1Bounds = OV.GetMeshBoundingBox (model.GetMesh (0));
+        assert (OV.CoordIsEqual3D (mesh1Bounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (mesh1Bounds.max, new OV.Coord3D (1.0, 1.0, 0.0)));
+
+        let mesh2Bounds = OV.GetMeshBoundingBox (model.GetMesh (1));
+        assert (OV.CoordIsEqual3D (mesh2Bounds.min, new OV.Coord3D (0.0, 0.0, 1.0)));
+        assert (OV.CoordIsEqual3D (mesh2Bounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
+    });
+
     it ('Mesh Volume Calculation', function () {
         function GetTriangleArea (v0, v1, v2)
         {

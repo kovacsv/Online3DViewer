@@ -51,24 +51,6 @@ OV.FlipMeshTrianglesOrientation = function (mesh)
     }
 };
 
-OV.GetMeshBoundingBox = function (mesh)
-{
-    let min = new OV.Coord3D (Infinity, Infinity, Infinity);
-    let max = new OV.Coord3D (-Infinity, -Infinity, -Infinity);
-
-    for (let i = 0; i < mesh.VertexCount (); i++) {
-        let vertex = mesh.GetVertex (i);
-        min.x = Math.min (min.x, vertex.x);
-        min.y = Math.min (min.y, vertex.y);
-        min.z = Math.min (min.z, vertex.z);
-        max.x = Math.max (max.x, vertex.x);
-        max.y = Math.max (max.y, vertex.y);
-        max.z = Math.max (max.z, vertex.z);
-    }
-    
-    return [min, max];
-};
-
 OV.IsModelEmpty = function (model)
 {
     for (let i = 0; i < model.MeshCount (); i++) {
@@ -219,4 +201,24 @@ OV.EnumerateModelTrianglesWithNormals = function (model, onTriangle)
             onTriangle (v0, v1, v2, normal);
         }
     }
+};
+
+OV.GetMeshBoundingBox = function (mesh)
+{
+    let box = new OV.Box3D (
+        new OV.Coord3D (Infinity, Infinity, Infinity),
+        new OV.Coord3D (-Infinity, -Infinity, -Infinity)
+    );
+
+    for (let i = 0; i < mesh.VertexCount (); i++) {
+        let vertex = mesh.GetVertex (i);
+        box.min.x = Math.min (box.min.x, vertex.x);
+        box.min.y = Math.min (box.min.y, vertex.y);
+        box.min.z = Math.min (box.min.z, vertex.z);
+        box.max.x = Math.max (box.max.x, vertex.x);
+        box.max.y = Math.max (box.max.y, vertex.y);
+        box.max.z = Math.max (box.max.z, vertex.z);
+    }
+    
+    return box;
 };

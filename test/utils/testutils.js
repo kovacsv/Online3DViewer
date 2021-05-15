@@ -127,8 +127,8 @@ module.exports =
                 uvCount : mesh.TextureUVCount (),
                 triangleCount : mesh.TriangleCount (),
                 boundingBox : {
-                    min : [boundingBox[0].x, boundingBox[0].y, boundingBox[0].z],
-                    max : [boundingBox[1].x, boundingBox[1].y, boundingBox[1].z]
+                    min : [boundingBox.min.x, boundingBox.min.y, boundingBox.min.z],
+                    max : [boundingBox.max.x, boundingBox.max.y, boundingBox.max.z]
                 }
             };
             obj.meshes.push (meshObj);
