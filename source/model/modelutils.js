@@ -212,3 +212,41 @@ OV.GetMeshBoundingBox = function (mesh)
     }
     return calculator.GetBox ();
 };
+
+OV.GetModelBoundingBox = function (model)
+{
+    let calculator = new OV.BoundingBoxCalculator3D ();
+    for (let i = 0; i < model.MeshCount (); i++) {
+        let mesh = model.GetMesh (i);
+        for (let j = 0; j < mesh.VertexCount (); j++) {
+            let vertex = mesh.GetVertex (j);
+            calculator.AddPoint (vertex);
+        }
+    }
+    return calculator.GetBox ();
+};
+
+OV.GetModelTopology = function (model)
+{
+    function GetVertexIndex (vertex, octree, topology)
+    {
+        let index = octree.FindPoint (vertex);
+        if (index === null) {
+            index = topology.AddVertex ();
+            octree.AddPoint (vertex, index);
+        }
+        return index;
+    }
+
+    let boundingBox = OV.GetModelBoundingBox (model);
+    let octree = new OV.Octree (boundingBox);
+    let topology = new OV.Topology ();
+    
+    OV.EnumerateModelTriangles (model, function (v0, v1, v2) {
+        let v0Index = GetVertexIndex (v0, octree, topology);
+        let v1Index = GetVertexIndex (v1, octree, topology);
+        let v2Index = GetVertexIndex (v2, octree, topology);
+        topology.AddTriangle (v0Index, v1Index, v2Index);
+    });
+    return topology;
+};

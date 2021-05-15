@@ -163,12 +163,28 @@ module.exports =
         return cube;
     },
 
-    GetCubeModel ()
+    GetTetrahedronMesh ()
+    {
+        var tetrahedron = new OV.Mesh ();
+        
+        let a = 1.0;
+        tetrahedron.AddVertex (new OV.Coord3D (+a, +a, +a));
+        tetrahedron.AddVertex (new OV.Coord3D (-a, -a, +a));
+        tetrahedron.AddVertex (new OV.Coord3D (-a, +a, -a));
+        tetrahedron.AddVertex (new OV.Coord3D (+a, -a, -a));
+        tetrahedron.AddTriangle (new OV.Triangle (0, 1, 3));
+        tetrahedron.AddTriangle (new OV.Triangle (0, 2, 1));
+        tetrahedron.AddTriangle (new OV.Triangle (0, 3, 2));
+        tetrahedron.AddTriangle (new OV.Triangle (1, 2, 3));
+
+        return tetrahedron;
+    },    
+
+    GetModelWithOneMesh (mesh)
     {
         var model = new OV.Model ();
-        var cube = this.GetCubeMesh ();
-        model.AddMesh (cube);
+        model.AddMesh (mesh);
         OV.FinalizeModel (model, function () { new OV.Material () });
         return model;
-    }    
+    } 
 }

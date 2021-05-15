@@ -24,6 +24,7 @@
 		"source/model/mesh.js",
 		"source/model/meshbuffer.js",
 		"source/model/model.js",
+		"source/model/topology.js",
 		"source/model/modelutils.js",
 		"source/model/modelfinalization.js",
 		"source/import/importerutils.js",
