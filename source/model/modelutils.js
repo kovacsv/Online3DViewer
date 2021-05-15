@@ -205,20 +205,10 @@ OV.EnumerateModelTrianglesWithNormals = function (model, onTriangle)
 
 OV.GetMeshBoundingBox = function (mesh)
 {
-    let box = new OV.Box3D (
-        new OV.Coord3D (Infinity, Infinity, Infinity),
-        new OV.Coord3D (-Infinity, -Infinity, -Infinity)
-    );
-
+    let calculator = new OV.BoundingBoxCalculator3D ();
     for (let i = 0; i < mesh.VertexCount (); i++) {
         let vertex = mesh.GetVertex (i);
-        box.min.x = Math.min (box.min.x, vertex.x);
-        box.min.y = Math.min (box.min.y, vertex.y);
-        box.min.z = Math.min (box.min.z, vertex.z);
-        box.max.x = Math.max (box.max.x, vertex.x);
-        box.max.y = Math.max (box.max.y, vertex.y);
-        box.max.z = Math.max (box.max.z, vertex.z);
+        calculator.AddPoint (vertex);
     }
-    
-    return box;
+    return calculator.GetBox ();
 };

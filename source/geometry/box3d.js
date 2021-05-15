@@ -25,3 +25,29 @@ OV.Box3D = class
         );
     }
 };
+
+OV.BoundingBoxCalculator3D = class
+{
+    constructor ()
+    {
+        this.box = new OV.Box3D (
+            new OV.Coord3D (Infinity, Infinity, Infinity),
+            new OV.Coord3D (-Infinity, -Infinity, -Infinity)
+        );
+    }
+
+    GetBox ()
+    {
+        return this.box;
+    }
+
+    AddPoint (point)
+    {
+        this.box.min.x = Math.min (this.box.min.x, point.x);
+        this.box.min.y = Math.min (this.box.min.y, point.y);
+        this.box.min.z = Math.min (this.box.min.z, point.z);
+        this.box.max.x = Math.max (this.box.max.x, point.x);
+        this.box.max.y = Math.max (this.box.max.y, point.y);
+        this.box.max.z = Math.max (this.box.max.z, point.z);
+    }
+};
