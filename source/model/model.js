@@ -95,7 +95,7 @@ OV.Model = class
     {
         return this.meshes[index];
     }
-
+    
     Clear ()
     {
         this.name = '';

@@ -35,7 +35,6 @@
 		"source/import/importer3ds.js",
 		"source/import/importergltf.js",
 		"source/import/importer.js",
-		"source/export/exporterutils.js",
 		"source/export/exporterbase.js",
 		"source/export/exporterobj.js",
 		"source/export/exporterstl.js",
