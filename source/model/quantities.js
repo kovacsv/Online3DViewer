@@ -11,7 +11,7 @@ OV.GetTriangleArea = function (v0, v1, v2)
     return Math.sqrt (areaSquare);
 };
 
-OV.GetTriangleSignedVolume = function (v0, v1, v2)
+OV.GetTetrahedronSignedVolume = function (v0, v1, v2)
 {
     return OV.DotVector3D (v0, OV.CrossVector3D (v1, v2)) / 6.0;
 };
@@ -23,7 +23,7 @@ OV.CalculateModelVolume = function (model)
     }
     let volume = 0.0;
     OV.EnumerateModelTriangles (model, function (v0, v1, v2) {
-        volume += OV.GetTriangleSignedVolume (v0, v1, v2);
+        volume += OV.GetTetrahedronSignedVolume (v0, v1, v2);
     });
     return volume;
 };
