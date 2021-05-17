@@ -174,17 +174,22 @@ OV.EnumerateModelVerticesAndTriangles = function (model, callbacks)
     }
 };
 
+OV.EnumerateMeshTriangles = function (mesh, onTriangle)
+{
+    for (let triangleIndex = 0; triangleIndex < mesh.TriangleCount (); triangleIndex++) {
+        let triangle = mesh.GetTriangle (triangleIndex);
+        let v0 = mesh.GetVertex (triangle.v0);
+        let v1 = mesh.GetVertex (triangle.v1);
+        let v2 = mesh.GetVertex (triangle.v2);
+        onTriangle (v0, v1, v2);
+    }
+};
+
 OV.EnumerateModelTriangles = function (model, onTriangle)
 {
     for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
         let mesh = model.GetMesh (meshIndex);
-        for (let triangleIndex = 0; triangleIndex < mesh.TriangleCount (); triangleIndex++) {
-            let triangle = mesh.GetTriangle (triangleIndex);
-            let v0 = mesh.GetVertex (triangle.v0);
-            let v1 = mesh.GetVertex (triangle.v1);
-            let v2 = mesh.GetVertex (triangle.v2);
-            onTriangle (v0, v1, v2);
-        }
+        OV.EnumerateMeshTriangles (mesh, onTriangle);
     }
 };
 
@@ -202,6 +207,7 @@ OV.EnumerateModelTrianglesWithNormals = function (model, onTriangle)
         }
     }
 };
+
 
 OV.GetMeshBoundingBox = function (mesh)
 {
@@ -238,7 +244,7 @@ OV.GetModelTopology = function (model)
         return index;
     }
 
-    let boundingBox = OV.GetModelBoundingBox (model);
+    const boundingBox = OV.GetModelBoundingBox (model);
     let octree = new OV.Octree (boundingBox);
     let topology = new OV.Topology ();
     
@@ -249,4 +255,16 @@ OV.GetModelTopology = function (model)
         topology.AddTriangle (v0Index, v1Index, v2Index);
     });
     return topology;
+};
+
+OV.IsModelSolid = function (model)
+{
+    const topology = OV.GetModelTopology (model);
+    for (let i = 0; i < topology.edges.length; i++) {
+        const edge = topology.edges[i];
+        if (edge.triangles.length !== 2) {
+            return false;
+        }
+    }
+    return true;
 };

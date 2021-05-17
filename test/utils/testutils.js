@@ -163,6 +163,30 @@ module.exports =
         return cube;
     },
 
+    GetCubeWithOneMissingFaceMesh ()
+    {
+        var cube = new OV.Mesh ();
+        cube.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
+        cube.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
+        cube.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
+        cube.AddVertex (new OV.Coord3D (0.0, 1.0, 0.0));
+        cube.AddVertex (new OV.Coord3D (0.0, 0.0, 1.0));
+        cube.AddVertex (new OV.Coord3D (1.0, 0.0, 1.0));
+        cube.AddVertex (new OV.Coord3D (1.0, 1.0, 1.0));
+        cube.AddVertex (new OV.Coord3D (0.0, 1.0, 1.0));
+        cube.AddTriangle (new OV.Triangle (0, 1, 5));
+        cube.AddTriangle (new OV.Triangle (0, 5, 4));
+        cube.AddTriangle (new OV.Triangle (1, 2, 6));
+        cube.AddTriangle (new OV.Triangle (1, 6, 5));
+        cube.AddTriangle (new OV.Triangle (2, 3, 7));
+        cube.AddTriangle (new OV.Triangle (2, 7, 6));
+        cube.AddTriangle (new OV.Triangle (3, 0, 4));
+        cube.AddTriangle (new OV.Triangle (3, 4, 7));
+        cube.AddTriangle (new OV.Triangle (0, 3, 2));
+        cube.AddTriangle (new OV.Triangle (0, 2, 1));
+        return cube;
+    },    
+
     GetTetrahedronMesh ()
     {
         var tetrahedron = new OV.Mesh ();
