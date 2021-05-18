@@ -305,6 +305,12 @@ OV.Website = class
                 });
             });
         }
+        if (OV.FeatureSet.ModelQuantities) {
+            AddSeparator (this.toolbar, true);
+            AddButton (this.toolbar, 'settings', 'Model Quantities', true, function () {
+                obj.dialog = OV.ShowQuantitiesDialog (obj.model);
+            });
+        }
 
         this.parameters.fileInput.on ('change', function (ev) {
             if (ev.target.files.length > 0) {
