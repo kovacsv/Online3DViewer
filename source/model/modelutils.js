@@ -259,10 +259,33 @@ OV.GetModelTopology = function (model)
 
 OV.IsModelSolid = function (model)
 {
+    function GetEdgeOrientationInTriangle (topology, triangleIndex, edgeIndex)
+    {
+        const triangle = topology.triangles[triangleIndex];
+        const triEdge1 = topology.triangleEdges[triangle.triEdge1];
+        const triEdge2 = topology.triangleEdges[triangle.triEdge2];
+        const triEdge3 = topology.triangleEdges[triangle.triEdge3];
+        if (triEdge1.edge === edgeIndex) {
+            return triEdge1.reversed;
+        }
+        if (triEdge2.edge === edgeIndex) {
+            return triEdge2.reversed;
+        }
+        if (triEdge3.edge === edgeIndex) {
+            return triEdge3.reversed;
+        }
+        return null;
+    }
+
     const topology = OV.GetModelTopology (model);
-    for (let i = 0; i < topology.edges.length; i++) {
-        const edge = topology.edges[i];
+    for (let edgeIndex = 0; edgeIndex < topology.edges.length; edgeIndex++) {
+        const edge = topology.edges[edgeIndex];
         if (edge.triangles.length !== 2) {
+            return false;
+        }
+        const edgeOrientation1 = GetEdgeOrientationInTriangle (topology, edge.triangles[0], edgeIndex);
+        const edgeOrientation2 = GetEdgeOrientationInTriangle (topology, edge.triangles[1], edgeIndex);
+        if (edgeOrientation1 === edgeOrientation2) {
             return false;
         }
     }
