@@ -1,4 +1,4 @@
-OV.Init3DViewerElements = function ()
+OV.Init3DViewerElements = function (loadedCB)
 {
     function LoadElement (element)
     {
@@ -45,7 +45,8 @@ OV.Init3DViewerElements = function ()
                 } else {
                     viewer.SetUpVector (importResult.upVector, false);
                 }
-                viewer.FitToWindow (boundingSphere, false);                                
+                viewer.FitToWindow (boundingSphere, false); 
+                loadedCB (viewer);                               
             },
             onTextureLoaded : function () {
                 viewer.Render ();
@@ -73,7 +74,19 @@ OV.Init3DViewerElements = function ()
                 settings.defaultColor = color;
             }
         }
+        
+        let edgesSettings = {};
+        let edgeColor = element.getAttribute ('edge');
+        if (edgeColor) {
+            let color = OV.ParameterConverter.StringToColor (edgeColor);
+            if (color !== null) {
+                edgesSettings.showEdges = true;
+                edgesSettings.edgesColor = color;
+                edgesSettings.edgesAngle = 30;
+            }
+        }
 
+        viewer.UpdateEdgesSettings (edgesSettings);
         loader.LoadFromUrlList (modelUrls, settings);
         return {
             element: element,
@@ -99,4 +112,6 @@ OV.Init3DViewerElements = function ()
             viewerElement.viewer.Resize (width, height);    
         }
     });
+
+    return viewerElements;
 };

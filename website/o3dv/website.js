@@ -15,6 +15,7 @@ OV.Website = class
         });
         this.model = null;
         this.dialog = null;
+        this.faceSelector = null;
     }
 
     Load ()
@@ -139,6 +140,7 @@ OV.Website = class
     UpdateMeshesVisibility ()
     {
         let obj = this;
+        this.UpdateMeasureTool (false);
         this.viewer.SetMeshesVisibility (function (meshUserData) {
             return obj.menu.IsMeshVisible (meshUserData.originalMeshIndex);
         });
@@ -202,6 +204,16 @@ OV.Website = class
         } else {
             this.ClearModel ();
             this.parameters.introDiv.show ();
+        }
+    }
+
+    UpdateMeasureTool (isEnabled, button)
+    {
+        if (isEnabled && this.faceSelector === null) {
+            this.faceSelector = new OV.FaceSelector (this.viewer, button, this.menu.infoPanel);
+        } else if (!isEnabled && this.faceSelector !== null) {
+            this.faceSelector.Dispose (); 
+            this.faceSelector = null;
         }
     }
 
@@ -290,6 +302,12 @@ OV.Website = class
         AddButton (this.toolbar, 'share', 'Share model', true, function () {
             obj.dialog = OV.ShowSharingDialog (importer, obj.importSettings, obj.viewer.GetCamera ());
         });
+        AddSeparator (this.toolbar, true);
+        AddRadioButton (this.toolbar, ['measure'], ['Measure model'], 1, false, function (buttonIndex, button) {
+            obj.UpdateMeasureTool(button.selected, button);
+        });
+
+
         if (OV.FeatureSet.SetDefaultColor) {
             AddSeparator (this.toolbar, true);
             AddButton (this.toolbar, 'settings', 'Settings', true, function () {
@@ -480,12 +498,17 @@ OV.Website = class
                 obj.FitMeshToWindow (meshIndex);
             },
             getMaterialInformation : function (materialIndex) {
+                obj.UpdateMeasureTool (false);
                 return GetMaterialInfo (obj.viewer, obj.model, materialIndex);
             },
             getMeshInformation : function (meshIndex) {
+                obj.UpdateMeasureTool (false);
+
                 return GetMeshInfo (obj.viewer, obj.model, meshIndex);
             },
             getModelInformation : function () {
+                obj.UpdateMeasureTool (false);
+
                 return GetModelInfo (obj.model, obj.viewer);
             }
         });

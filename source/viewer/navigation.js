@@ -245,6 +245,7 @@ OV.Navigation = class
 		
 		this.onUpdate = null;
 		this.onClick = null;
+		this.onMove = null;
 
 		if (this.canvas.addEventListener) {
 			this.canvas.addEventListener ('mousedown', this.OnMouseDown.bind (this));
@@ -269,6 +270,11 @@ OV.Navigation = class
 	SetClickHandler (onClick)
 	{
 		this.onClick = onClick;
+	}
+
+	SetMoveHandler (onMove)
+	{
+		this.onMove = onMove;
 	}
 
 	IsFixUpVector ()
@@ -384,6 +390,9 @@ OV.Navigation = class
 	{
 		this.mouse.Move (this.canvas, ev);
 		this.clickDetector.Move ();
+		if (this.onMove) {
+			this.Move (ev.clientX, ev.clientY);
+		}
 		if (!this.mouse.IsButtonDown ()) {
 			return;
 		}
@@ -421,6 +430,9 @@ OV.Navigation = class
 	OnTouchStart (ev)
 	{
 		ev.preventDefault ();
+		if (this.onMove) {
+			this.clickDetector.Down (ev);
+		}
 		this.touch.Start (this.canvas, ev);
 	}
 
@@ -428,6 +440,9 @@ OV.Navigation = class
 	{
 		ev.preventDefault ();
 		this.touch.Move (this.canvas, ev);
+		if (this.onMove) {
+			this.clickDetector.Move (ev);
+		}
 		if (!this.touch.IsFingerDown ()) {
 			return;
 		}
@@ -452,6 +467,13 @@ OV.Navigation = class
 	{
 		ev.preventDefault ();
 		this.touch.End (this.canvas, ev);
+
+		if (this.onMove) {
+			this.clickDetector.Up (ev);
+			if (this.clickDetector.IsClick ()) {
+				this.Click (1, false, ev.changedTouches[0].clientX, ev.changedTouches[0].clientY);
+			}
+		}
 	}
 
 	OnMouseWheel (ev)
@@ -542,5 +564,17 @@ OV.Navigation = class
 			let mouseCoords = OV.GetClientCoordinates (this.canvas, clientX, clientY);
 			this.onClick (button, isCtrlPressed, mouseCoords);
 		}
-	}	
+	}
+	
+	Move (clientX, clientY)
+	{
+		let mouseCoords = OV.GetClientCoordinates (this.canvas, clientX, clientY);
+		
+		let dpr = window.devicePixelRatio || 1;
+		mouseCoords.x *= dpr; mouseCoords.y *= dpr;
+
+		if (mouseCoords.x >= 0 && mouseCoords.x < this.canvas.width && mouseCoords.y >= 0 && mouseCoords.y < this.canvas.height) {
+			this.onMove (mouseCoords);
+		}
+	}
 };
