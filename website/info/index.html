@@ -33,16 +33,13 @@
 				<ol>
 					<li><a href="#loading_models_computer">Loading models from your computer</a></li>
 					<li><a href="#loading_models_server">Loading models hosted on a web server</a></li>
+					<li><a href="#loading_models_github">Loading models models hosted on GitHub</a></li>
+					<li><a href="#loading_models_dropbox">Loading models models hosted on DropBox</a></li>
 					<li><a href="#loading_models_missing_files">Missing files</a></li>
 				</ol>
-				<li><a href="#sharing_link">Generate sharing link</a></li>
-				<li><a href="#embedding_viewer">Embedding the viewer</a></li>
-				<ol>
-					<li><a href="#embed_github">Embedding models hosted on GitHub</a></li>
-					<li><a href="#embed_dropbox">Embedding models hosted on DropBox</a></li>
-					<li><a href="#embed_selfhost">Self-hosted viewer</a></li>
-				</ol>
+				<li><a href="#sharing_and_embedding_models">Sharing and embedding models</a></li>
 				<li><a href="#exporting_models">Exporting models</a></li>
+				<li><a href="#embed_selfhost">Self-hosted viewer</a></li>
 				<li><a href="#cookies_policy">Cookies policy</a></li>
 			</ol>
 		</p>
@@ -171,28 +168,9 @@
 			To make this work, CORS (Cross-Origin Resource Sharing) must be enabled on the server.
 		</p>
 
-		<h3 id="loading_models_missing_files">Missing files</h3>
+		<h3 id="loading_models_github">Loading models hosted on GitHub</h3>
 		<p>
-			Sometimes you see missing files in the tree (<img class="inline" src="../assets/images/tree/missing_files.svg"/>). It means that your model
-			refers to another files, but they are not selected to import. To solve the issue you have to import the model again together with the referenced
-			files, or just import the missing files on their own.
-		</p>
-
-		<h2 id="sharing_link">Generate sharing link</h2>
-		<p>
-			You can generate sharing link to make it easy to share your models. It works only if your models are <a href="#loading_models_server">hosted on a web server</a>.
-			To get the sharing link, click on the share model button (<img class="inline" src="../assets/images/toolbar/share.svg"/>) in the toolbar.
-		</p>
-
-		<h2 id="embedding_viewer">Embedding the viewer</h2>
-		<p>
-			The website allows you to embed a 3D model in your page. It works only if your models are <a href="#loading_models_server">hosted on a web server</a>.
-			To get the embedding code, click on the share model button (<img class="inline" src="../assets/images/toolbar/share.svg"/>) in the toolbar.
-		</p>
-
-		<h3 id="embed_github">Embedding models hosted on GitHub</h3>
-		<p>
-			To host your models on GitHub follow the steps below:
+			To load a model hosted on GitHub follow the steps below:
 		</p>
 		<p>
 			<ol>
@@ -205,13 +183,13 @@
 						https://github.com/kovacsv/Online3DViewer/blob/master/test/testfiles/3ds/texture.png
 					</div>
 				</li>
-				<li>Click on OK, and if the model is loaded, click on the share button in the toolbar (<img class="inline" src="../assets/images/toolbar/share.svg"/>).</li>
+				<li>Click on OK.</li>
 			</ol>
 		</p>
 
-		<h3 id="embed_dropbox">Embedding models hosted on DropBox</h3>
+		<h3 id="loading_models_dropbox">Loading models hosted on DropBox</h3>
 		<p>
-			To host your models on DropBox follow the steps below:
+			To load a model hosted on DropBox follow the steps below:
 		</p>
 		<p>
 			<ol>
@@ -224,22 +202,36 @@
 						https://www.dropbox.com/s/6dfk1jveevbofxm/texture.png?dl=0
 					</div>
 				</li>
-				<li>Click on OK, and if the model is loaded, click on the share button in the toolbar (<img class="inline" src="../assets/images/toolbar/share.svg"/>).</li>
+				<li>Click on OK.</li>
 			</ol>
 		</p>		
 
-		<h3 id="embed_selfhost">Self-hosted viewer</h3>
+		<h3 id="loading_models_missing_files">Missing files</h3>
 		<p>
-			You can host the viewer and the models on your website.
-			See the <a href="https://github.com/kovacsv/Online3DViewer/wiki">developer documentation</a> for details.
+			Sometimes you see missing files in the tree (<img class="inline" src="../assets/images/tree/missing_files.svg"/>). It means that your model
+			refers to another files, but they are not selected to import. To solve the issue you have to import the model again together with the referenced
+			files, or just import the missing files on their own.
 		</p>
-		
+
+		<h2 id="sharing_and_embedding_models">Sharing and embedding models</h2>
+		<p>
+			If your models are hosted on a web server, you can share the link with others, or you can generate embedding code to integrate the viewer in your website.
+			To get the sharing link or the embedding code, click on the share model button (<img class="inline" src="../assets/images/toolbar/share.svg"/>) in the toolbar.
+		</p>
+
 		<h2 id="exporting_models">Exporting models</h2>
 		<p>
 			You can export your model in several file formats. To achieve this, click on the export button in the toolbar (<img class="inline" src="../assets/images/toolbar/export.svg"/>).
 			After that select the format you would like to export to, and download the resulting files one by one.
 		</p>
 
+		<h2 id="embed_selfhost">Self-hosted viewer</h2>
+		<p>
+			You can use the code without involving the official website.
+			In this case you should self-host the viewer code and the models as well.
+			See the <a href="https://github.com/kovacsv/Online3DViewer/wiki">developer documentation</a> for details.
+		</p>
+		
 		<h2 id="cookies_policy">Cookies policy</h2>
 		<p>
 			You can check the policy at the <a href="cookies.html">Cookies Policy</a> page.
