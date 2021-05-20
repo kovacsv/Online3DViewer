@@ -174,65 +174,37 @@ OV.EnumerateModelVerticesAndTriangles = function (model, callbacks)
     }
 };
 
-OV.EnumerateMeshTriangles = function (mesh, onTriangle)
-{
-    for (let triangleIndex = 0; triangleIndex < mesh.TriangleCount (); triangleIndex++) {
-        let triangle = mesh.GetTriangle (triangleIndex);
-        let v0 = mesh.GetVertex (triangle.v0);
-        let v1 = mesh.GetVertex (triangle.v1);
-        let v2 = mesh.GetVertex (triangle.v2);
-        onTriangle (v0, v1, v2);
-    }
-};
-
-OV.EnumerateModelTriangles = function (model, onTriangle)
-{
-    for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
-        let mesh = model.GetMesh (meshIndex);
-        OV.EnumerateMeshTriangles (mesh, onTriangle);
-    }
-};
-
 OV.EnumerateModelTrianglesWithNormals = function (model, onTriangle)
 {
-    for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
-        let mesh = model.GetMesh (meshIndex);
-        for (let triangleIndex = 0; triangleIndex < mesh.TriangleCount (); triangleIndex++) {
-            let triangle = mesh.GetTriangle (triangleIndex);
-            let v0 = mesh.GetVertex (triangle.v0);
-            let v1 = mesh.GetVertex (triangle.v1);
-            let v2 = mesh.GetVertex (triangle.v2);
-            let normal = OV.CalculateTriangleNormal (v0, v1, v2);
-            onTriangle (v0, v1, v2, normal);
-        }
-    }
+    let enumerator = new OV.ModelEnumerator (model);
+    enumerator.EnumerateTriangles (function (v0, v1, v2) {
+        let normal = OV.CalculateTriangleNormal (v0, v1, v2);
+        onTriangle (v0, v1, v2, normal);
+    });
 };
 
+OV.GetBoundingBox = function (enumerator)
+{
+    let calculator = new OV.BoundingBoxCalculator3D ();
+    enumerator.EnumerateVertices (function (vertex) {
+        calculator.AddPoint (vertex);
+    });
+    return calculator.GetBox ();
+};
 
 OV.GetMeshBoundingBox = function (mesh)
 {
-    let calculator = new OV.BoundingBoxCalculator3D ();
-    for (let i = 0; i < mesh.VertexCount (); i++) {
-        let vertex = mesh.GetVertex (i);
-        calculator.AddPoint (vertex);
-    }
-    return calculator.GetBox ();
+    let enumerator = new OV.MeshEnumerator (mesh);
+    return OV.GetBoundingBox (enumerator);
 };
 
 OV.GetModelBoundingBox = function (model)
 {
-    let calculator = new OV.BoundingBoxCalculator3D ();
-    for (let i = 0; i < model.MeshCount (); i++) {
-        let mesh = model.GetMesh (i);
-        for (let j = 0; j < mesh.VertexCount (); j++) {
-            let vertex = mesh.GetVertex (j);
-            calculator.AddPoint (vertex);
-        }
-    }
-    return calculator.GetBox ();
+    let enumerator = new OV.ModelEnumerator (model);
+    return OV.GetBoundingBox (enumerator);
 };
 
-OV.GetModelTopology = function (model)
+OV.GetTopology = function (enumerator)
 {
     function GetVertexIndex (vertex, octree, topology)
     {
@@ -244,11 +216,11 @@ OV.GetModelTopology = function (model)
         return index;
     }
 
-    const boundingBox = OV.GetModelBoundingBox (model);
+    let boundingBox = OV.GetBoundingBox (enumerator);
     let octree = new OV.Octree (boundingBox);
     let topology = new OV.Topology ();
     
-    OV.EnumerateModelTriangles (model, function (v0, v1, v2) {
+    enumerator.EnumerateTriangles (function (v0, v1, v2) {
         let v0Index = GetVertexIndex (v0, octree, topology);
         let v1Index = GetVertexIndex (v1, octree, topology);
         let v2Index = GetVertexIndex (v2, octree, topology);
@@ -257,7 +229,19 @@ OV.GetModelTopology = function (model)
     return topology;
 };
 
-OV.IsModelSolid = function (model)
+OV.GetMeshTopology = function (mesh)
+{
+    let enumerator = new OV.MeshEnumerator (mesh);
+    return OV.GetTopology (enumerator);
+};
+
+OV.GetModelTopology = function (model)
+{
+    let enumerator = new OV.ModelEnumerator (model);
+    return OV.GetTopology (enumerator);
+};
+
+OV.IsSolid = function (enumerator)
 {
     function GetEdgeOrientationInTriangle (topology, triangleIndex, edgeIndex)
     {
@@ -277,7 +261,7 @@ OV.IsModelSolid = function (model)
         return null;
     }
 
-    const topology = OV.GetModelTopology (model);
+    const topology = OV.GetTopology (enumerator);
     for (let edgeIndex = 0; edgeIndex < topology.edges.length; edgeIndex++) {
         const edge = topology.edges[edgeIndex];
         if (edge.triangles.length !== 2) {
@@ -290,4 +274,16 @@ OV.IsModelSolid = function (model)
         }
     }
     return true;
+};
+
+OV.IsMeshSolid = function (mesh)
+{
+    let enumerator = new OV.MeshEnumerator (mesh);
+    return OV.IsSolid (enumerator);
+};
+
+OV.IsModelSolid = function (model)
+{
+    let enumerator = new OV.ModelEnumerator (model);
+    return OV.IsSolid (enumerator);
 };

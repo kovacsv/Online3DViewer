@@ -16,23 +16,47 @@ OV.GetTetrahedronSignedVolume = function (v0, v1, v2)
     return OV.DotVector3D (v0, OV.CrossVector3D (v1, v2)) / 6.0;
 };
 
-OV.CalculateModelVolume = function (model)
+OV.CalculateVolume = function (enumerator)
 {
-    if (!OV.IsModelSolid (model)) {
+    if (!OV.IsSolid (enumerator)) {
         return null;
     }
     let volume = 0.0;
-    OV.EnumerateModelTriangles (model, function (v0, v1, v2) {
+    enumerator.EnumerateTriangles (function (v0, v1, v2) {
         volume += OV.GetTetrahedronSignedVolume (v0, v1, v2);
     });
     return volume;
 };
 
-OV.CalculateModelSurfaceArea = function (model)
+OV.CalculateMeshVolume = function (mesh)
+{
+    let enumerator = new OV.MeshEnumerator (mesh);
+    return OV.CalculateVolume (enumerator);
+};
+
+OV.CalculateModelVolume = function (model)
+{
+    let enumerator = new OV.ModelEnumerator (model);
+    return OV.CalculateVolume (enumerator);
+};
+
+OV.CalculateSurfaceArea = function (enumerator)
 {
     let surface = 0.0;
-    OV.EnumerateModelTriangles (model, function (v0, v1, v2) {
+    enumerator.EnumerateTriangles (function (v0, v1, v2) {
         surface += OV.GetTriangleArea (v0, v1, v2);
     });
     return surface;
+};
+
+OV.CalculateMeshSurfaceArea = function (mesh)
+{
+    let enumerator = new OV.MeshEnumerator (mesh);
+    return OV.CalculateSurfaceArea (enumerator);
+};
+
+OV.CalculateModelSurfaceArea = function (model)
+{
+    let enumerator = new OV.ModelEnumerator (model);
+    return OV.CalculateSurfaceArea (enumerator);
 };

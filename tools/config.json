@@ -25,6 +25,7 @@
 		"source/model/meshbuffer.js",
 		"source/model/model.js",
 		"source/model/topology.js",
+		"source/model/enumerator.js",
 		"source/model/modelutils.js",
 		"source/model/modelfinalization.js",
 		"source/model/quantities.js",
