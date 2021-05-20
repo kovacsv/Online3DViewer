@@ -1,5 +1,12 @@
 OV.ShowQuantitiesDialog = function (model)
 {
+    function AddTableRow (table, name, value)
+    {
+        let row = $('<tr>').appendTo (table);
+        $('<td>').html (name).appendTo (row);
+        $('<td>').addClass ('right').html (value).appendTo (row);
+    }
+
     if (model === null) {
         return OV.ShowMessageDialog (
             'Quantity Calculation Failed',
@@ -32,9 +39,10 @@ OV.ShowQuantitiesDialog = function (model)
         } else {
             volumeString = volume.toFixed (5);
         }
-        const surfaceAreaString = surfaceArea.toFixed (5);
-        $('<div>').html ('Volume: ' + volumeString).appendTo (contentDiv);
-        $('<div>').html ('Surface Area: ' + surfaceAreaString).appendTo (contentDiv);
+        let surfaceAreaString = surfaceArea.toFixed (5);
+        let table = $('<table>').addClass ('ov_dialog_table').appendTo (contentDiv);
+        AddTableRow (table, 'Volume', volumeString);
+        AddTableRow (table, 'Surface Area', surfaceAreaString);
 
         dialog.Show ();
     

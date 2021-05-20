@@ -1,9 +1,3 @@
-OV.FeatureSet =
-{
-    SetDefaultColor : false,
-    ModelQuantities : false
-};
-
 OV.ShowMessageDialog = function (title, message, subMessage)
 {
     let dialog = new OV.ButtonDialog ();
@@ -28,8 +22,8 @@ OV.ShowListPopup = function (button, items, callbacks)
     let popup = new OV.ListPopup ();
     popup.SetCustomResizeHandler (function (modalDiv) {
         let offset = button.offset ();
-        let left = offset.left + button.outerWidth (true);
-        let bottom = offset.top + button.outerHeight (true);
+        let left = offset.left + button.outerWidth (false);
+        let bottom = offset.top + button.outerHeight (false);
         modalDiv.offset ({
             left : left,
             top : bottom - modalDiv.outerHeight (true)

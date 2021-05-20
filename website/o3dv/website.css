@@ -265,8 +265,8 @@ div.ov_menu_info_panel div.ov_info_box_details
 
 div.ov_menu_info_panel div.ov_info_box_row
 {
-	overflow: auto;
 	padding: 2px 0px;
+	overflow: auto;
 }
 
 div.ov_menu_info_panel div.ov_info_box_row_name
@@ -301,6 +301,7 @@ div.ov_menu_info_panel div.ov_info_box_rgbtext
 div.ov_menu_info_panel div.ov_info_box_button
 {
 	cursor: pointer;
+	margin-top: 10px;
 	border: 1px solid #dddddd;
 	border-radius: 5px;
 	overflow: auto;
@@ -599,6 +600,23 @@ div.ov_dialog span.ov_dialog_table_row_comment
 div.ov_dialog input.ov_dialog_checkradio
 {
 	margin-right: 10px;
+}
+
+div.ov_dialog table.ov_dialog_table
+{
+	width: 100%;
+	border-collapse: collapse;
+}
+
+div.ov_dialog table.ov_dialog_table td
+{
+	padding: 5px 10px;
+	border: 1px solid #dddddd;
+}
+
+div.ov_dialog table.ov_dialog_table td.right
+{
+	text-align: right;
 }
 
 div.ov_popup

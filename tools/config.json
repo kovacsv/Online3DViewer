@@ -56,6 +56,7 @@
 		"source/viewer/domviewer.js"
 	],
 	"website_files" : [
+		"website/o3dv/featureset.js",
 		"website/o3dv/utils.js",
 		"website/o3dv/toolbar.js",
 		"website/o3dv/treeview.js",
