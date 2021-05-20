@@ -78,12 +78,11 @@ OV.InfoPanel = class
 
         let obj = this;
         let meshesText = 'Meshes (' + meshItems.length + ')';
-        let meshesButton = $('<div>').addClass ('ov_info_box_button').html (meshesText).appendTo (contentDiv);
-        meshesButton.click (function () {
+        this.CreateButton (contentDiv, meshesText, function (button) {
             if (meshItems.length === 0) {
                 return;
             }
-            obj.popup = OV.ShowListPopup (meshesButton, meshItems, {
+            obj.popup = OV.ShowListPopup (button, meshItems, {
                 onHoverStart : function (index) {
                     callbacks.onMeshHover (info.usedByMeshes[index]);
                 },
@@ -134,13 +133,22 @@ OV.InfoPanel = class
 
         let obj = this;
         let materialsText = 'Materials (' + materialItems.length + ')';
-        let materialsButton = $('<div>').addClass ('ov_info_box_button').html (materialsText).appendTo (contentDiv);
-        materialsButton.click (function () {
-            obj.popup = OV.ShowListPopup (materialsButton, materialItems, {
+        this.CreateButton (contentDiv, materialsText, function (button) {
+            obj.popup = OV.ShowListPopup (button, materialItems, {
                 onClick : function (index) {
                     callbacks.onMaterialSelect (info.usedMaterials[index]);
                 }
             });
+        });
+    }
+
+    CreateButton (parentDiv, buttonText, onClick)
+    {
+        let button = $('<div>').addClass ('ov_info_box_button').appendTo (parentDiv);
+        $('<div>').addClass ('ov_info_box_button_text').html (buttonText).appendTo (button);
+        $('<img>').addClass ('ov_info_box_button_icon').attr ('src', 'assets/images/tree/arrow_right.svg').appendTo (button);
+        button.click (function () {
+            onClick (button);
         });
     }
 

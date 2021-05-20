@@ -301,9 +301,23 @@ div.ov_menu_info_panel div.ov_info_box_rgbtext
 div.ov_menu_info_panel div.ov_info_box_button
 {
 	cursor: pointer;
-	padding: 5px;
 	border: 1px solid #dddddd;
 	border-radius: 5px;
+	overflow: auto;
+}
+
+div.ov_menu_info_panel div.ov_info_box_button_text
+{
+	padding: 5px;
+	float: left;
+}
+
+div.ov_menu_info_panel img.ov_info_box_button_icon
+{
+	width: 18px;
+	height: 18px;
+	padding: 6px;
+	float: right;
 }
 
 div.ov_tree_menu
