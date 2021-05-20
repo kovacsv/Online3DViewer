@@ -221,11 +221,7 @@ OV.Menu = class
         let obj = this;
         if (this.selection === null) {
             let modelInfo = this.callbacks.getModelInformation ();
-            modelInfo.usedMaterials = [];
-            for (let i = 0; i < this.modelData.MaterialCount (); i++) {
-                modelInfo.usedMaterials.push (i);
-            }
-            this.infoPanel.FillWithModelInfo (modelInfo, this.callbacks.getMaterialInformation, {
+            this.infoPanel.FillWithModelInfo (modelInfo, {
                 onMaterialSelect : function (materialIndex) {
                     obj.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                 }
@@ -243,7 +239,7 @@ OV.Menu = class
                 });
             } else if (this.selection.type === OV.SelectionType.Mesh) {
                 let meshInfo = this.callbacks.getMeshInformation (this.selection.index);
-                this.infoPanel.FillWithModelInfo (meshInfo, this.callbacks.getMaterialInformation, {
+                this.infoPanel.FillWithModelInfo (meshInfo, {
                     onMaterialSelect : function (materialIndex) {
                         obj.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                     }

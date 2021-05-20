@@ -423,6 +423,16 @@ OV.Website = class
             return materialInfo;
         }
 
+        function GetMaterialReferenceInfo (model, materialIndex)
+        {
+            const material = model.GetMaterial (materialIndex);
+            return {
+                index : materialIndex,
+                name : material.name,
+                diffuse : material.diffuse.Clone ()
+            };
+        }
+
         function GetMeshInfo (viewer, model, meshIndex)
         {
             let result = {
@@ -439,8 +449,14 @@ OV.Website = class
             result.triangleCount = mesh.TriangleCount ();
 
             let userData = GetMeshUserData (viewer, meshIndex);
-            result.usedMaterials = userData.originalMaterials;
-            result.usedMaterials.sort ();
+            result.usedMaterials = [];
+            for (let i = 0; i < userData.originalMaterials.length; i++) {
+                const materialIndex = userData.originalMaterials[i];
+                result.usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));                
+            }
+            result.usedMaterials.sort (function (a, b) {
+                return a.index - b.index;
+            });            
 
             let boundingBox = viewer.GetBoundingBox (function (meshUserData) {
                 return meshUserData.originalMeshIndex === meshIndex;
@@ -461,6 +477,10 @@ OV.Website = class
             let boundingBox = viewer.GetBoundingBox (function (meshUserData) {
                 return true;
             });
+            result.usedMaterials = [];
+            for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
+                result.usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
+            }
             result.boundingBox = GetBoundingBoxInfo (boundingBox);
             return result;
         }

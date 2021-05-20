@@ -96,7 +96,7 @@ OV.InfoPanel = class
         });
     }
 
-    FillWithModelInfo (info, getMaterialInfo, callbacks)
+    FillWithModelInfo (info, callbacks)
     {
         function AddCounter (parent, name, value)
         {
@@ -124,10 +124,10 @@ OV.InfoPanel = class
 
         let materialItems = [];
         for (let i = 0; i < info.usedMaterials.length; i++) {
-            let materialInfo = getMaterialInfo (info.usedMaterials[i]);
+            let usedMaterial = info.usedMaterials[i];
             materialItems.push ({
-                name : OV.GetMaterialName (materialInfo.name),
-                color : OV.ColorToHexString (materialInfo.diffuse)
+                name : OV.GetMaterialName (usedMaterial.name),
+                color : OV.ColorToHexString (usedMaterial.diffuse)
             });
         }
 
@@ -136,10 +136,11 @@ OV.InfoPanel = class
         this.CreateButton (contentDiv, materialsText, function (button) {
             obj.popup = OV.ShowListPopup (button, materialItems, {
                 onClick : function (index) {
-                    callbacks.onMaterialSelect (info.usedMaterials[index]);
+                    let usedMaterial = info.usedMaterials[index];
+                    callbacks.onMaterialSelect (usedMaterial.index);
                 }
             });
-        });
+        });        
     }
 
     CreateButton (parentDiv, buttonText, onClick)
