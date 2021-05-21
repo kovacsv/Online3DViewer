@@ -163,4 +163,10 @@ describe ('Model Utils', function () {
             assert.strictEqual (topology.edges[i].triangles.length, 2);
         }
     });
+
+    it ('Two Cubes Connection in One Edge Topology Calculation', function () {
+        const model = testUtils.GetTwoCubesConnectingInOneEdgeModel ();
+        let topology = OV.GetTopology (model);
+        assert.strictEqual (topology.vertices.length, 14);
+    });    
 });
