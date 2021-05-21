@@ -236,6 +236,7 @@ OV.IsSolid = function (element)
         return null;
     }
 
+    // TODO: two cubes connecting in one edge is solid, but it detects it as not solid
     const topology = OV.GetTopology (element);
     for (let edgeIndex = 0; edgeIndex < topology.edges.length; edgeIndex++) {
         const edge = topology.edges[edgeIndex];
