@@ -163,6 +163,23 @@ module.exports =
         return cube;
     },
 
+    GetTwoCubesConnectingInOneVertexModel ()
+    {
+        let model = new OV.Model ();
+
+        let cube1 = this.GetCubeMesh ();
+        model.AddMesh (cube1);
+        
+        let cube2 = this.GetCubeMesh ();
+        let matrix = new OV.Matrix ().CreateTranslation (1.0, 1.0, 1.0);
+        let transformation = new OV.Transformation (matrix);
+        OV.TransformMesh (cube2, transformation);
+        model.AddMesh (cube2);
+
+        OV.FinalizeModel (model, function () { new OV.Material () });
+        return model;
+    },
+
     GetTwoCubesConnectingInOneEdgeModel ()
     {
         let model = new OV.Model ();

@@ -167,7 +167,14 @@ describe ('Model Utils', function () {
         }
     });
 
-    it ('Two Cubes Connection in One Edge Topology Calculation', function () {
+    it ('Two Cubes Connecting in One Vertex Topology Calculation', function () {
+        const model = testUtils.GetTwoCubesConnectingInOneVertexModel ();
+        let topology = OV.GetTopology (model);
+        assert.strictEqual (topology.vertices.length, 15);
+        assert (OV.IsSolid (model));
+    });  
+
+    it ('Two Cubes Connecting in One Edge Topology Calculation', function () {
         const model = testUtils.GetTwoCubesConnectingInOneEdgeModel ();
         let topology = OV.GetTopology (model);
         assert.strictEqual (topology.vertices.length, 14);
