@@ -229,7 +229,7 @@ OV.Menu = class
         } else {
             if (this.selection.type === OV.SelectionType.Material) {
                 let materialInfo = this.callbacks.getMaterialInformation (this.selection.index);
-                this.infoPanel.FillWithMaterialInfo (materialInfo, this.callbacks.getMeshInformation, {
+                this.infoPanel.FillWithMaterialInfo (materialInfo, {
                     onMeshHover : function (meshIndex) {
                         obj.SetTempSelectedMeshIndex (meshIndex);
                     },

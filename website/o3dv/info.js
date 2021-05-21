@@ -18,7 +18,7 @@ OV.InfoPanel = class
         this.detailsItem.SetOpenCloseHandler (openCloseHandler);
     }
 
-    FillWithMaterialInfo (info, getMeshInfo, callbacks)
+    FillWithMaterialInfo (info, callbacks)
     {
         function AddRow (container, name, fillValue)
         {
@@ -70,7 +70,7 @@ OV.InfoPanel = class
 
         let meshItems = [];
         for (let i = 0; i < info.usedByMeshes.length; i++) {
-            let meshInfo = getMeshInfo (info.usedByMeshes[i]);
+            let meshInfo = info.usedByMeshes[i];
             meshItems.push ({
                 name : OV.GetMeshName (meshInfo.name)
             });
@@ -84,13 +84,15 @@ OV.InfoPanel = class
             }
             obj.popup = OV.ShowListPopup (button, meshItems, {
                 onHoverStart : function (index) {
-                    callbacks.onMeshHover (info.usedByMeshes[index]);
+                    const meshItem = info.usedByMeshes[index];
+                    callbacks.onMeshHover (meshItem.index);
                 },
                 onHoverStop : function (index) {
                     callbacks.onMeshHover (null);
                 },
                 onClick : function (index) {
-                    callbacks.onMeshSelect (info.usedByMeshes[index]);
+                    const meshItem = info.usedByMeshes[index];
+                    callbacks.onMeshSelect (meshItem.index);
                 }
             });
         });

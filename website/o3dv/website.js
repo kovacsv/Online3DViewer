@@ -417,7 +417,11 @@ OV.Website = class
 
             viewer.EnumerateMeshesUserData (function (meshUserData) {
                 if (meshUserData.originalMaterials.indexOf (materialIndex) !== -1) {
-                    materialInfo.usedByMeshes.push (meshUserData.originalMeshIndex);
+                    const mesh = model.GetMesh (meshUserData.originalMeshIndex);
+                    materialInfo.usedByMeshes.push ({
+                        index : meshUserData.originalMeshIndex,
+                        name : mesh.GetName ()
+                    });
                 }
             });
             return materialInfo;
