@@ -81,7 +81,7 @@ describe ('Model Utils', function () {
 
     it ('Mesh Bounding Box', function () {
         var cube = testUtils.GetCubeMesh ();
-        let cubeBounds = OV.GetMeshBoundingBox (cube);
+        let cubeBounds = OV.GetBoundingBox (cube);
         assert (OV.CoordIsEqual3D (cubeBounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
         assert (OV.CoordIsEqual3D (cubeBounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
     });
@@ -105,18 +105,18 @@ describe ('Model Utils', function () {
 
         OV.FinalizeModel (model, function () { return new OV.Material (); });
 
-        let mesh1Bounds = OV.GetMeshBoundingBox (model.GetMesh (0));
+        let mesh1Bounds = OV.GetBoundingBox (model.GetMesh (0));
         assert (OV.CoordIsEqual3D (mesh1Bounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
         assert (OV.CoordIsEqual3D (mesh1Bounds.max, new OV.Coord3D (1.0, 1.0, 0.0)));
 
-        let mesh2Bounds = OV.GetMeshBoundingBox (model.GetMesh (1));
+        let mesh2Bounds = OV.GetBoundingBox (model.GetMesh (1));
         assert (OV.CoordIsEqual3D (mesh2Bounds.min, new OV.Coord3D (0.0, 0.0, 1.0)));
         assert (OV.CoordIsEqual3D (mesh2Bounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
     });
 
     it ('Tetrahedron Topology Calculation', function () {
         let tetrahedron = testUtils.GetModelWithOneMesh (testUtils.GetTetrahedronMesh ());
-        let topology = OV.GetModelTopology (tetrahedron);
+        let topology = OV.GetTopology (tetrahedron);
         assert.strictEqual (topology.vertices.length, 4);
         assert.strictEqual (topology.edges.length, 6);
         assert.strictEqual (topology.triangleEdges.length, 4 * 3);
@@ -132,7 +132,7 @@ describe ('Model Utils', function () {
 
     it ('Cube Topology Calculation', function () {
         let cube = testUtils.GetModelWithOneMesh (testUtils.GetCubeMesh ());
-        let topology = OV.GetModelTopology (cube);
+        let topology = OV.GetTopology (cube);
         assert.strictEqual (topology.vertices.length, 8);
         assert.strictEqual (topology.edges.length, 12 + 6);
         assert.strictEqual (topology.triangleEdges.length, 6 * 2 * 3);

@@ -27,7 +27,7 @@ OV.ExporterStl = class extends OV.ExporterBase
 
 		let stlWriter = new OV.TextWriter ();
 		stlWriter.WriteLine ('solid Model');
-		OV.EnumerateModelTrianglesWithNormals (model, function (v0, v1, v2, normal) {
+		OV.EnumerateTrianglesWithNormals (model, function (v0, v1, v2, normal) {
 			stlWriter.WriteArrayLine (['facet', 'normal', normal.x, normal.y, normal.z]);
 			stlWriter.Indent (1);
 			stlWriter.WriteLine ('outer loop');
@@ -60,7 +60,7 @@ OV.ExporterStl = class extends OV.ExporterBase
 		}
 
 		stlWriter.WriteUnsignedInteger32 (triangleCount);
-		OV.EnumerateModelTrianglesWithNormals (model, function (v0, v1, v2, normal) {
+		OV.EnumerateTrianglesWithNormals (model, function (v0, v1, v2, normal) {
 			stlWriter.WriteFloat32 (normal.x);
 			stlWriter.WriteFloat32 (normal.y);
 			stlWriter.WriteFloat32 (normal.z);

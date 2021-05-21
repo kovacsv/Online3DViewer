@@ -174,37 +174,24 @@ OV.EnumerateModelVerticesAndTriangles = function (model, callbacks)
     }
 };
 
-OV.EnumerateModelTrianglesWithNormals = function (model, onTriangle)
+OV.EnumerateTrianglesWithNormals = function (element, onTriangle)
 {
-    let enumerator = new OV.ModelEnumerator (model);
-    enumerator.EnumerateTriangles (function (v0, v1, v2) {
+    element.EnumerateTriangles (function (v0, v1, v2) {
         let normal = OV.CalculateTriangleNormal (v0, v1, v2);
         onTriangle (v0, v1, v2, normal);
     });
 };
 
-OV.GetBoundingBox = function (enumerator)
+OV.GetBoundingBox = function (element)
 {
     let calculator = new OV.BoundingBoxCalculator3D ();
-    enumerator.EnumerateVertices (function (vertex) {
+    element.EnumerateVertices (function (vertex) {
         calculator.AddPoint (vertex);
     });
     return calculator.GetBox ();
 };
 
-OV.GetMeshBoundingBox = function (mesh)
-{
-    let enumerator = new OV.MeshEnumerator (mesh);
-    return OV.GetBoundingBox (enumerator);
-};
-
-OV.GetModelBoundingBox = function (model)
-{
-    let enumerator = new OV.ModelEnumerator (model);
-    return OV.GetBoundingBox (enumerator);
-};
-
-OV.GetTopology = function (enumerator)
+OV.GetTopology = function (element)
 {
     function GetVertexIndex (vertex, octree, topology)
     {
@@ -216,11 +203,11 @@ OV.GetTopology = function (enumerator)
         return index;
     }
 
-    let boundingBox = OV.GetBoundingBox (enumerator);
+    let boundingBox = OV.GetBoundingBox (element);
     let octree = new OV.Octree (boundingBox);
     let topology = new OV.Topology ();
     
-    enumerator.EnumerateTriangles (function (v0, v1, v2) {
+    element.EnumerateTriangles (function (v0, v1, v2) {
         let v0Index = GetVertexIndex (v0, octree, topology);
         let v1Index = GetVertexIndex (v1, octree, topology);
         let v2Index = GetVertexIndex (v2, octree, topology);
@@ -229,19 +216,7 @@ OV.GetTopology = function (enumerator)
     return topology;
 };
 
-OV.GetMeshTopology = function (mesh)
-{
-    let enumerator = new OV.MeshEnumerator (mesh);
-    return OV.GetTopology (enumerator);
-};
-
-OV.GetModelTopology = function (model)
-{
-    let enumerator = new OV.ModelEnumerator (model);
-    return OV.GetTopology (enumerator);
-};
-
-OV.IsSolid = function (enumerator)
+OV.IsSolid = function (element)
 {
     function GetEdgeOrientationInTriangle (topology, triangleIndex, edgeIndex)
     {
@@ -261,7 +236,7 @@ OV.IsSolid = function (enumerator)
         return null;
     }
 
-    const topology = OV.GetTopology (enumerator);
+    const topology = OV.GetTopology (element);
     for (let edgeIndex = 0; edgeIndex < topology.edges.length; edgeIndex++) {
         const edge = topology.edges[edgeIndex];
         if (edge.triangles.length !== 2) {
@@ -274,16 +249,4 @@ OV.IsSolid = function (enumerator)
         }
     }
     return true;
-};
-
-OV.IsMeshSolid = function (mesh)
-{
-    let enumerator = new OV.MeshEnumerator (mesh);
-    return OV.IsSolid (enumerator);
-};
-
-OV.IsModelSolid = function (model)
-{
-    let enumerator = new OV.ModelEnumerator (model);
-    return OV.IsSolid (enumerator);
 };

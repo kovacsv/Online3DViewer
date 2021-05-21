@@ -119,7 +119,7 @@ module.exports =
         var mesh, meshObj, boundingBox;
         for (i = 0; i < model.MeshCount (); i++) {
             mesh = model.GetMesh (i);
-            boundingBox = OV.GetMeshBoundingBox (mesh);
+            boundingBox = OV.GetBoundingBox (mesh);
             meshObj = {
                 name : mesh.GetName (),
                 vertexCount : mesh.VertexCount (),

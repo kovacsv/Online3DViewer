@@ -1,24 +1,14 @@
-OV.Mesh = class
+OV.Mesh = class extends OV.Element
 {
     constructor ()
     {
-        this.name = '';
+        super ();
         this.vertices = [];
         this.normals = [];
         this.uvs = [];
         this.triangles = [];
     }
 
-    GetName ()
-    {
-        return this.name;
-    }
-    
-    SetName (name)
-    {
-        this.name = name;
-    }
-    
     VertexCount ()
     {
         return this.vertices.length;
@@ -97,4 +87,23 @@ OV.Mesh = class
     {
         return this.triangles[index];
     }
+
+    EnumerateVertices (onVertex)
+    {
+        for (let vertexIndex = 0; vertexIndex < this.vertices.length; vertexIndex++) {
+            let vertex = this.vertices[vertexIndex];
+            onVertex (vertex);
+        }
+    }
+
+    EnumerateTriangles (onTriangle)
+    {
+        for (let triangleIndex = 0; triangleIndex < this.triangles.length; triangleIndex++) {
+            let triangle = this.triangles[triangleIndex];
+            let v0 = this.vertices[triangle.v0];
+            let v1 = this.vertices[triangle.v1];
+            let v2 = this.vertices[triangle.v2];
+            onTriangle (v0, v1, v2);
+        }
+    }      
 };

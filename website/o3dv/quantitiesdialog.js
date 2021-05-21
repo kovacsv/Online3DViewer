@@ -30,8 +30,8 @@ OV.ShowQuantitiesDialog = function (model)
     OV.RunTaskAsync (function () {
         progressDialog.Hide ();
 
-        const volume = OV.CalculateModelVolume (model);
-        const surfaceArea = OV.CalculateModelSurfaceArea (model);
+        const volume = OV.CalculateVolume (model);
+        const surfaceArea = OV.CalculateSurfaceArea (model);
         
         let volumeString = '';
         if (volume === null) {
