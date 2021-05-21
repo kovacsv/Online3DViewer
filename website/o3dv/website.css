@@ -628,6 +628,22 @@ div.ov_popup
 	border-radius: 5px;
 }
 
+div.ov_popup div.ov_popup_title
+{
+	font-weight: bold;
+	margin-top: 15px;
+	margin-bottom: 10px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+div.ov_popup div.ov_popup_text
+{
+	margin-bottom: 15px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
 div.ov_popup div.ov_popup_list
 {
 	max-height: 200px;

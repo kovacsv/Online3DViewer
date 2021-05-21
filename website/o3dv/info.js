@@ -115,8 +115,8 @@ OV.InfoPanel = class
         let contentDiv = this.detailsItem.GetChildrenDiv ();
 
         let counterContainer = $('<div>').addClass ('ov_info_box').appendTo (contentDiv);
-        AddCounter (counterContainer, 'Vertices', info.vertexCount);
-        AddCounter (counterContainer, 'Triangles', info.triangleCount);
+        AddCounter (counterContainer, 'Vertices', info.element.VertexCount ());
+        AddCounter (counterContainer, 'Triangles', info.element.TriangleCount ());
 
         let sizeContainer = $('<div>').addClass ('ov_info_box').appendTo (contentDiv);
         $('<div>').addClass ('ov_info_box_title').html ('Size').appendTo (sizeContainer);
@@ -134,6 +134,10 @@ OV.InfoPanel = class
         }
 
         let obj = this;
+        this.CreateButton (contentDiv, 'Calculate Quantities', function (button) {
+            obj.popup = OV.ShowQuantitiesPopup (button, info.element);
+        });   
+        
         let materialsText = 'Materials (' + materialItems.length + ')';
         this.CreateButton (contentDiv, materialsText, function (button) {
             obj.popup = OV.ShowListPopup (button, materialItems, {

@@ -20,16 +20,7 @@ OV.ShowMessageDialog = function (title, message, subMessage)
 OV.ShowListPopup = function (button, items, callbacks)
 {
     let popup = new OV.ListPopup ();
-    popup.SetCustomResizeHandler (function (modalDiv) {
-        let offset = button.offset ();
-        let left = offset.left + button.outerWidth (false);
-        let bottom = offset.top + button.outerHeight (false);
-        modalDiv.offset ({
-            left : left,
-            top : bottom - modalDiv.outerHeight (true)
-        });
-    });
-    popup.Init ();
+    popup.Init (button);
     for (let i = 0; i < items.length; i++) {
         let item = items[i];
         popup.AddListItem (item, {

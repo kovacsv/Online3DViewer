@@ -181,24 +181,58 @@ OV.ButtonDialog = class
     }
 };
 
-OV.ListPopup = class
+OV.PopupDialog = class
 {
     constructor ()
     {
         this.modal = new OV.Modal ();
-        this.listDiv = null;
     }
 
-    Init ()
+    Init (parentItem)
     {
         let contentDiv = this.modal.GetContentDiv ();
         contentDiv.addClass ('ov_popup');
-        this.listDiv = $('<div>').addClass ('ov_popup_list').addClass ('ov_thin_scrollbar').appendTo (contentDiv);
+        this.modal.SetCustomResizeHandler (function (modalDiv) {
+            let offset = parentItem.offset ();
+            let left = offset.left + parentItem.outerWidth (false);
+            let bottom = offset.top + parentItem.outerHeight (false);
+            modalDiv.offset ({
+                left : left,
+                top : bottom - modalDiv.outerHeight (true)
+            });
+        });        
+        return contentDiv;
     }
 
     SetCustomResizeHandler (customResizeHandler)
     {
         this.modal.SetCustomResizeHandler (customResizeHandler);
+    }
+
+    Show ()
+    {
+        this.modal.Open ();
+    }
+
+    Hide ()
+    {
+        this.modal.Close ();
+    }
+};
+
+OV.ListPopup = class extends OV.PopupDialog
+{
+    constructor ()
+    {
+        super ();
+        this.listDiv = null;
+    }
+
+    Init (parentItem)
+    {
+        let contentDiv = super.Init (parentItem);
+        this.listDiv = $('<div>').addClass ('ov_popup_list').addClass ('ov_thin_scrollbar').appendTo (contentDiv);
+        return contentDiv;
     }
 
     AddListItem (item, callbacks)
@@ -219,15 +253,5 @@ OV.ListPopup = class
                 }
             );
         }
-    }
-
-    Show ()
-    {
-        this.modal.Open ();
-    }
-
-    Hide ()
-    {
-        this.modal.Close ();
     }
 };

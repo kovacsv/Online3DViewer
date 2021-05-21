@@ -305,13 +305,7 @@ OV.Website = class
                 });
             });
         }
-        if (OV.FeatureSet.ModelQuantities) {
-            AddSeparator (this.toolbar, true);
-            AddButton (this.toolbar, 'settings', 'Model Quantities', true, function () {
-                obj.dialog = OV.ShowQuantitiesDialog (obj.model);
-            });
-        }
-
+        
         this.parameters.fileInput.on ('change', function (ev) {
             if (ev.target.files.length > 0) {
                 obj.LoadModelFromFileList (ev.target.files);
@@ -440,17 +434,13 @@ OV.Website = class
         function GetMeshInfo (viewer, model, meshIndex)
         {
             let result = {
-                name : null,
-                vertexCount : null,
-                triangleCount : null,
+                element : null,
                 usedMaterials : null,
                 boundingBox : null
             };
             
             let mesh = model.GetMesh (meshIndex);
-            result.name = mesh.GetName ();
-            result.vertexCount = mesh.VertexCount ();
-            result.triangleCount = mesh.TriangleCount ();
+            result.element = mesh;
 
             let userData = GetMeshUserData (viewer, meshIndex);
             result.usedMaterials = [];
@@ -472,9 +462,7 @@ OV.Website = class
         function GetModelInfo (model, viewer)
         {
             let result = {
-                name : null,
-                vertexCount : model.VertexCount (),
-                triangleCount : model.TriangleCount (),
+                element : model,
                 usedMaterials : null,
                 boundingBox : null
             };
