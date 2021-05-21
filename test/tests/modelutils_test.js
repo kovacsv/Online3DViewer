@@ -117,6 +117,7 @@ describe ('Model Utils', function () {
     it ('Tetrahedron Topology Calculation', function () {
         let tetrahedron = testUtils.GetModelWithOneMesh (testUtils.GetTetrahedronMesh ());
         let topology = OV.GetTopology (tetrahedron);
+        assert (OV.IsSolid (tetrahedron));
         assert.strictEqual (topology.vertices.length, 4);
         assert.strictEqual (topology.edges.length, 6);
         assert.strictEqual (topology.triangleEdges.length, 4 * 3);
@@ -132,6 +133,8 @@ describe ('Model Utils', function () {
 
     it ('Cube Topology Calculation', function () {
         let cube = testUtils.GetModelWithOneMesh (testUtils.GetCubeMesh ());
+        assert (OV.IsSolid (cube));
+
         let topology = OV.GetTopology (cube);
         assert.strictEqual (topology.vertices.length, 8);
         assert.strictEqual (topology.edges.length, 12 + 6);
@@ -168,5 +171,6 @@ describe ('Model Utils', function () {
         const model = testUtils.GetTwoCubesConnectingInOneEdgeModel ();
         let topology = OV.GetTopology (model);
         assert.strictEqual (topology.vertices.length, 14);
+        assert (!OV.IsSolid (model)); // TODO: should be identified as solid
     });    
 });
