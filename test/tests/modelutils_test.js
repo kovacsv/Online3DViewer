@@ -178,6 +178,13 @@ describe ('Model Utils', function () {
         const model = testUtils.GetTwoCubesConnectingInOneEdgeModel ();
         let topology = OV.GetTopology (model);
         assert.strictEqual (topology.vertices.length, 14);
-        assert (!OV.IsSolid (model)); // TODO: should be identified as solid
-    });    
+        assert (OV.IsSolid (model));
+    });
+
+    it ('Two Cubes Connecting in One Face Topology Calculation', function () {
+        const model = testUtils.GetTwoCubesConnectingInOneFaceModel ();
+        let topology = OV.GetTopology (model);
+        assert.strictEqual (topology.vertices.length, 12);
+        assert (OV.IsSolid (model));
+    });     
 });

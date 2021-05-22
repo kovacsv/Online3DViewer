@@ -236,16 +236,24 @@ OV.IsSolid = function (element)
         return null;
     }
 
-    // TODO: two cubes connecting in one edge is solid, but it detects it as not solid
     const topology = OV.GetTopology (element);
     for (let edgeIndex = 0; edgeIndex < topology.edges.length; edgeIndex++) {
         const edge = topology.edges[edgeIndex];
-        if (edge.triangles.length !== 2) {
+        let triCount = edge.triangles.length;
+        if (triCount === 0 || triCount % 2 !== 0) {
             return false;
         }
-        const edgeOrientation1 = GetEdgeOrientationInTriangle (topology, edge.triangles[0], edgeIndex);
-        const edgeOrientation2 = GetEdgeOrientationInTriangle (topology, edge.triangles[1], edgeIndex);
-        if (edgeOrientation1 === edgeOrientation2) {
+        let edgesDirection = 0;
+        for (let triIndex = 0; triIndex < edge.triangles.length; triIndex++) {
+            const triangleIndex = edge.triangles[triIndex];
+            const edgeOrientation = GetEdgeOrientationInTriangle (topology, triangleIndex, edgeIndex);
+            if (edgeOrientation) {
+                edgesDirection += 1;
+            } else {
+                edgesDirection -= 1;
+            }
+        }
+        if (edgesDirection !== 0) {
             return false;
         }
     }

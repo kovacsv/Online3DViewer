@@ -15,6 +15,21 @@ describe ('Quantities', function () {
         assert.strictEqual (OV.CalculateVolume (model), null);
     });
 
+    it ('Two Cubes Connecting in One Vertex Volume Calculation', function () {
+        const model = testUtils.GetTwoCubesConnectingInOneVertexModel ();
+        assert (OV.IsEqual (OV.CalculateVolume (model), 2.0));
+    });  
+
+    it ('Two Cubes Connecting in One Edge Volume Calculation', function () {
+        const model = testUtils.GetTwoCubesConnectingInOneEdgeModel ();
+        assert (OV.IsEqual (OV.CalculateVolume (model), 2.0));
+    });
+
+    it ('Two Cubes Connecting in One Face Volume Calculation', function () {
+        const model = testUtils.GetTwoCubesConnectingInOneFaceModel ();
+        assert (OV.IsEqual (OV.CalculateVolume (model), 2.0));
+    });  
+
     it ('Cube with Wrongly Oriented Triangle Volume Calculation', function () {
         var mesh = new OV.Mesh ();
         mesh.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
