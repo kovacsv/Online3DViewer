@@ -30,6 +30,7 @@
 		"source/model/modelutils.js",
 		"source/model/modelfinalization.js",
 		"source/model/quantities.js",
+		"source/model/generator.js",
 		"source/import/importerutils.js",
 		"source/import/importerbase.js",
 		"source/import/importerobj.js",
