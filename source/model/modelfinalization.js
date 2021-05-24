@@ -6,6 +6,8 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
         {
             function AddAverageNormal (mesh, triangle, vertexIndex, triangleNormals, vertexToTriangles)
             {
+                // TODO: do not calculate the same normal multiple times
+                
                 let averageNormal = new OV.Coord3D (0.0, 0.0, 0.0);
                 let averageCount = 0;
                 
