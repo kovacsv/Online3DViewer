@@ -5,6 +5,24 @@ OV.GeneratorParams = class
         this.material = null;
         this.transformation = null;
     }
+
+    SetMaterial (material)
+    {
+        this.material = material;
+        return this;
+    }
+
+    SetTransformation (translation, rotation, scale)
+    {
+        const matrix = new OV.Matrix ().ComposeTRS (translation, rotation, scale);
+        return this.SetTransformationMatrix (matrix);
+    }
+
+    SetTransformationMatrix (matrix)
+    {
+        this.transformation = new OV.Transformation (matrix);
+        return this;
+    }
 };
 
 OV.Generator = class

@@ -3,7 +3,7 @@ var testUtils = require ('../utils/testutils.js');
 
 describe ('Quantities', function () {
     it ('Cube Volume Calculation', function () {
-        const mesh = testUtils.GetCubeMesh ();
+        const mesh = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         const model = testUtils.GetModelWithOneMesh (mesh);
         assert (OV.IsEqual (OV.CalculateVolume (mesh), 1.0));
         assert (OV.IsEqual (OV.CalculateVolume (model), 1.0));
@@ -58,7 +58,7 @@ describe ('Quantities', function () {
     });
 
     it ('Cube Surface Area Calculation', function () {
-        const mesh = testUtils.GetCubeMesh ();
+        const mesh = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         const model = testUtils.GetModelWithOneMesh (mesh);
         assert (OV.IsEqual (OV.CalculateSurfaceArea (mesh), 6.0));
         assert (OV.IsEqual (OV.CalculateSurfaceArea (model), 6.0));

@@ -80,7 +80,7 @@ describe ('Model Utils', function () {
     });
 
     it ('Mesh Bounding Box', function () {
-        var cube = testUtils.GetCubeMesh ();
+        var cube = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         let cubeBounds = OV.GetBoundingBox (cube);
         assert (OV.CoordIsEqual3D (cubeBounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
         assert (OV.CoordIsEqual3D (cubeBounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
@@ -132,7 +132,7 @@ describe ('Model Utils', function () {
     });  
 
     it ('Cube Topology Calculation', function () {
-        let cube = testUtils.GetModelWithOneMesh (testUtils.GetCubeMesh ());
+        let cube = testUtils.GetModelWithOneMesh (OV.GenerateCuboid (null, 1.0, 1.0, 1.0));
         assert (OV.IsSolid (cube));
 
         let topology = OV.GetTopology (cube);

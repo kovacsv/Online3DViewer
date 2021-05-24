@@ -137,43 +137,15 @@ module.exports =
         return obj;
     },
 
-    GetCubeMesh ()
-    {
-        var cube = new OV.Mesh ();
-        cube.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
-        cube.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
-        cube.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
-        cube.AddVertex (new OV.Coord3D (0.0, 1.0, 0.0));
-        cube.AddVertex (new OV.Coord3D (0.0, 0.0, 1.0));
-        cube.AddVertex (new OV.Coord3D (1.0, 0.0, 1.0));
-        cube.AddVertex (new OV.Coord3D (1.0, 1.0, 1.0));
-        cube.AddVertex (new OV.Coord3D (0.0, 1.0, 1.0));
-        cube.AddTriangle (new OV.Triangle (0, 1, 5));
-        cube.AddTriangle (new OV.Triangle (0, 5, 4));
-        cube.AddTriangle (new OV.Triangle (1, 2, 6));
-        cube.AddTriangle (new OV.Triangle (1, 6, 5));
-        cube.AddTriangle (new OV.Triangle (2, 3, 7));
-        cube.AddTriangle (new OV.Triangle (2, 7, 6));
-        cube.AddTriangle (new OV.Triangle (3, 0, 4));
-        cube.AddTriangle (new OV.Triangle (3, 4, 7));
-        cube.AddTriangle (new OV.Triangle (0, 3, 2));
-        cube.AddTriangle (new OV.Triangle (0, 2, 1));
-        cube.AddTriangle (new OV.Triangle (4, 5, 6));
-        cube.AddTriangle (new OV.Triangle (4, 6, 7));
-        return cube;
-    },
-
     GetTwoCubesConnectingInOneVertexModel ()
     {
         let model = new OV.Model ();
 
-        let cube1 = this.GetCubeMesh ();
+        let cube1 = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         model.AddMesh (cube1);
         
-        let cube2 = this.GetCubeMesh ();
         let matrix = new OV.Matrix ().CreateTranslation (1.0, 1.0, 1.0);
-        let transformation = new OV.Transformation (matrix);
-        OV.TransformMesh (cube2, transformation);
+        let cube2 = OV.GenerateCuboid (new OV.GeneratorParams ().SetTransformationMatrix (matrix), 1.0, 1.0, 1.0);
         model.AddMesh (cube2);
 
         OV.FinalizeModel (model, function () { new OV.Material () });
@@ -184,13 +156,11 @@ module.exports =
     {
         let model = new OV.Model ();
 
-        let cube1 = this.GetCubeMesh ();
+        let cube1 = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         model.AddMesh (cube1);
         
-        let cube2 = this.GetCubeMesh ();
         let matrix = new OV.Matrix ().CreateTranslation (1.0, 0.0, 1.0);
-        let transformation = new OV.Transformation (matrix);
-        OV.TransformMesh (cube2, transformation);
+        let cube2 = OV.GenerateCuboid (new OV.GeneratorParams ().SetTransformationMatrix (matrix), 1.0, 1.0, 1.0);
         model.AddMesh (cube2);
 
         OV.FinalizeModel (model, function () { new OV.Material () });
@@ -202,13 +172,11 @@ module.exports =
     {
         let model = new OV.Model ();
 
-        let cube1 = this.GetCubeMesh ();
+        let cube1 = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         model.AddMesh (cube1);
         
-        let cube2 = this.GetCubeMesh ();
         let matrix = new OV.Matrix ().CreateTranslation (1.0, 0.0, 0.0);
-        let transformation = new OV.Transformation (matrix);
-        OV.TransformMesh (cube2, transformation);
+        let cube2 = OV.GenerateCuboid (new OV.GeneratorParams ().SetTransformationMatrix (matrix), 1.0, 1.0, 1.0);
         model.AddMesh (cube2);
 
         OV.FinalizeModel (model, function () { new OV.Material () });
