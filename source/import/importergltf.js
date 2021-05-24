@@ -700,7 +700,11 @@ OV.ImporterGltf = class extends OV.ImporterBase
                 }
                 
                 if (hasTransformation) {
-                    matrix.ComposeTRS (translation, rotation, scale);
+                    matrix.ComposeTRS (
+                        OV.ArrayToCoord3D (translation),
+                        OV.ArrayToQuaternion (rotation),
+                        OV.ArrayToCoord3D (scale)
+                    );
                 }
             }
 

@@ -468,9 +468,9 @@ OV.Importer3ds = class extends OV.ImporterBase
             
             let matrix = new OV.Matrix ();
             matrix.ComposeTRS (
-                GetNodePosition (node),
-                GetNodeRotation (node),
-                GetNodeScale (node)
+                OV.ArrayToCoord3D (GetNodePosition (node)),
+                OV.ArrayToQuaternion (GetNodeRotation (node)),
+                OV.ArrayToCoord3D (GetNodeScale (node))
             );
 
             if (node.userId !== 65535) {

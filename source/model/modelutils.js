@@ -29,7 +29,7 @@ OV.TransformMesh = function (mesh, transformation)
 
     if (mesh.NormalCount () > 0) {
         let trs = transformation.GetMatrix ().DecomposeTRS ();
-        let normalMatrix = new OV.Matrix ().ComposeTRS ([0.0, 0.0, 0.0], trs.rotation, [1.0, 1.0, 1.0]);
+        let normalMatrix = new OV.Matrix ().ComposeTRS (new OV.Coord3D (0.0, 0.0, 0.0), trs.rotation, new OV.Coord3D (1.0, 1.0, 1.0));
         let normalTransformation = new OV.Transformation (normalMatrix);
         for (let i = 0; i < mesh.NormalCount (); i++) {
             let normal = mesh.GetNormal (i);

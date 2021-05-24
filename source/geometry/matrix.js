@@ -104,16 +104,16 @@ OV.Matrix = class
 
     ComposeTRS (translation, rotation, scale)
     {
-        let tx = translation[0];
-        let ty = translation[1];
-        let tz = translation[2];
-        let qx = rotation[0];
-        let qy = rotation[1];
-        let qz = rotation[2];
-        let qw = rotation[3];
-        let sx = scale[0];
-        let sy = scale[1];
-        let sz = scale[2];     
+        let tx = translation.x;
+        let ty = translation.y;
+        let tz = translation.z;
+        let qx = rotation.x;
+        let qy = rotation.y;
+        let qz = rotation.z;
+        let qw = rotation.w;
+        let sx = scale.x;
+        let sy = scale.y;
+        let sz = scale.z;     
 
         let x2 = qx + qx;
         let y2 = qy + qy;
@@ -139,11 +139,11 @@ OV.Matrix = class
 
     DecomposeTRS ()
     {
-        let translation = [
+        let translation = new OV.Coord3D (
             this.matrix[12],
             this.matrix[13],
             this.matrix[14]
-        ];
+        );
 
         let sx = OV.VectorLength3D (this.matrix[0], this.matrix[1], this.matrix[2]);
         let sy = OV.VectorLength3D (this.matrix[4], this.matrix[5], this.matrix[6]);
@@ -152,7 +152,7 @@ OV.Matrix = class
         if (OV.IsNegative (determinant)) {
             sx *= -1.0;
         }
-        let scale = [sx, sy, sz];
+        let scale = new OV.Coord3D (sx, sy, sz);
 
         let m00 = this.matrix[0] / sx;
         let m01 = this.matrix[4] / sy;
@@ -169,36 +169,36 @@ OV.Matrix = class
         let tr = m00 + m11 + m22;
         if (tr > 0.0) { 
             let s = Math.sqrt (tr + 1.0) * 2.0;
-            rotation = [
+            rotation = new OV.Quaternion (
                 (m21 - m12) / s,
                 (m02 - m20) / s,
                 (m10 - m01) / s,
                 0.25 * s
-            ];
+            );
         } else if ((m00 > m11) && (m00 > m22)) { 
             let s = Math.sqrt (1.0 + m00 - m11 - m22) * 2.0;
-            rotation = [
+            rotation = new OV.Quaternion (
                 0.25 * s,
                 (m01 + m10) / s,
                 (m02 + m20) / s,
                 (m21 - m12) / s
-            ];
+            );
         } else if (m11 > m22) { 
             let s = Math.sqrt (1.0 + m11 - m00 - m22) * 2.0;
-            rotation = [
+            rotation = new OV.Quaternion (
                 (m01 + m10) / s,
                 0.25 * s,
                 (m12 + m21) / s,
                 (m02 - m20) / s
-            ];
+            );
         } else { 
             let s = Math.sqrt (1.0 + m22 - m00 - m11) * 2.0;
-            rotation = [
+            rotation = new OV.Quaternion (
                 (m02 + m20) / s,
                 (m12 + m21) / s,
                 0.25 * s,
                 (m10 - m01) / s
-            ];
+            );
         }
 
         return {

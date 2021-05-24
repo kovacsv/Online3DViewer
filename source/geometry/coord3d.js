@@ -117,3 +117,8 @@ OV.VectorLength3D = function (x, y, z)
 {
 	return Math.sqrt (x * x + y * y + z * z);
 };
+
+OV.ArrayToCoord3D = function (arr)
+{
+	return new OV.Coord3D (arr[0], arr[1], arr[2]);
+};

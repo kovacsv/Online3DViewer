@@ -12,12 +12,12 @@ function CreateYRot90Quaternion ()
     let rotX = 0.0;
     let rotY = 1.0;
     let rotZ = 0.0;
-    let quaternion = [
+    let quaternion = new OV.Quaternion (
         Math.sin (angle / 2.0) * rotX,
         Math.sin (angle / 2.0) * rotY,
         Math.sin (angle / 2.0) * rotZ,
         Math.cos (angle / 2.0)
-    ];
+    );
     return quaternion;
 }
 
@@ -102,7 +102,7 @@ describe ('Transformation', function() {
         assert (!tr.IsIdentity ());
         assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (3.0, 8.0, 15.0)));
 
-        tr.AppendMatrix (new OV.Matrix ().CreateRotation (rotation[0], rotation[1], rotation[2], rotation[3]));
+        tr.AppendMatrix (new OV.Matrix ().CreateRotation (rotation.x, rotation.y, rotation.z, rotation.w));
         assert (!tr.IsIdentity ());
         assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (15.0, 8.0, -3.0)));
         
@@ -111,7 +111,7 @@ describe ('Transformation', function() {
         assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
 
         let tr2 = new OV.Transformation ();
-        tr2.SetMatrix (new OV.Matrix ().ComposeTRS ([4.0, 5.0, 6.0], rotation, [3.0, 4.0, 5.0]));
+        tr2.SetMatrix (new OV.Matrix ().ComposeTRS (new OV.Coord3D (4.0, 5.0, 6.0), rotation, new OV.Coord3D (3.0, 4.0, 5.0)));
         assert (OV.CoordIsEqual3D (tr2.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
     });
 
@@ -120,7 +120,7 @@ describe ('Transformation', function() {
         let coord = new OV.Coord3D (1.0, 2.0, 3.0);
 
         let tr = new OV.Transformation ();
-        tr.SetMatrix (new OV.Matrix ().ComposeTRS ([4.0, 5.0, 6.0], rotation, [3.0, 4.0, 5.0]));
+        tr.SetMatrix (new OV.Matrix ().ComposeTRS (new OV.Coord3D (4.0, 5.0, 6.0), rotation, new OV.Coord3D (3.0, 4.0, 5.0)));
         assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
     });    
 
@@ -129,7 +129,7 @@ describe ('Transformation', function() {
         let coord = new OV.Coord3D (1.0, 2.0, 3.0);
 
         let tr = new OV.Transformation ();
-        tr.SetMatrix (new OV.Matrix ().ComposeTRS ([4.0, 5.0, 6.0], rotation, [3.0, 4.0, 5.0]));
+        tr.SetMatrix (new OV.Matrix ().ComposeTRS (new OV.Coord3D (4.0, 5.0, 6.0), rotation, new OV.Coord3D (3.0, 4.0, 5.0)));
         assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
 
         let trs = tr.GetMatrix ().DecomposeTRS ();
