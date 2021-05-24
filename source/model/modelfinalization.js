@@ -6,22 +6,36 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
         {
             function AddAverageNormal (mesh, triangle, vertexIndex, triangleNormals, vertexToTriangles)
             {
-                // TODO: do not calculate the same normal multiple times
-                
-                let averageNormal = new OV.Coord3D (0.0, 0.0, 0.0);
-                let averageCount = 0;
-                
+                function IsNormalInArray (array, normal)
+                {
+                    for (let i = 0; i < array.length; i++) {
+                        let current = array[i];
+                        if (OV.CoordIsEqual3D (current, normal)) {
+                            return true;
+                        }                        
+                    }
+                    return false;
+                }
+
+                let averageNormals = [];
                 let neigTriangles = vertexToTriangles[vertexIndex];
                 for (let i = 0; i < neigTriangles.length; i++) {
                     let neigIndex = neigTriangles[i];
                     let neigTriangle = mesh.GetTriangle (neigIndex);
                     if (triangle.curve === neigTriangle.curve) {
-                        averageNormal = OV.AddCoord3D (averageNormal, triangleNormals[neigIndex]);
-                        averageCount = averageCount + 1;
+                        let triangleNormal = triangleNormals[neigIndex];
+                        if (!IsNormalInArray (averageNormals, triangleNormal)) {
+                            averageNormals.push (triangleNormal);
+                        }
                     }
                 }
+
+                let averageNormal = new OV.Coord3D (0.0, 0.0, 0.0);
+                for (let i = 0; i < averageNormals.length; i++) {
+                    averageNormal = OV.AddCoord3D (averageNormal, averageNormals[i]);
+                }
                 
-                averageNormal.MultiplyScalar (1.0 / averageCount);
+                averageNormal.MultiplyScalar (1.0 / averageNormals.length);
                 averageNormal.Normalize ();
                 return mesh.AddNormal (averageNormal);
             }

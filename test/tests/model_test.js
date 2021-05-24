@@ -149,6 +149,39 @@ describe ('Model Finalization', function() {
         assert.strictEqual (normal.y, -0.7071067811865475);
         assert.strictEqual (normal.z, 0.7071067811865475);
     });
+
+    it ('Calculate Curved Normal 2', function () {
+        var mesh = new OV.Mesh ();
+        var v0 = mesh.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
+        var v1 = mesh.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
+        var v2 = mesh.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
+        var v3 = mesh.AddVertex (new OV.Coord3D (0.0, 0.0, -1.0));
+        var v4 = mesh.AddVertex (new OV.Coord3D (0.0, 1.0, 0.0));
+
+        var triangle1 = new OV.Triangle (v0, v1, v2);
+        triangle1.curve = 1;
+        var triangle2 = new OV.Triangle (v0, v2, v4);
+        triangle2.curve = 1;
+        var triangle3 = new OV.Triangle (v0, v3, v1);
+        triangle3.curve = 1;
+
+        mesh.AddTriangle (triangle1);
+        mesh.AddTriangle (triangle2);
+        mesh.AddTriangle (triangle3);
+
+        var model = new OV.Model ()
+        var meshIndex = model.AddMesh (mesh);
+
+        OV.FinalizeModel (model, function () { new OV.Material () });
+        
+        var theMesh = model.GetMesh (meshIndex);
+        assert.strictEqual (theMesh.NormalCount (), 9);
+        
+        var normal = theMesh.GetNormal (0);
+        assert.strictEqual (normal.x, 0.0);
+        assert.strictEqual (normal.y, -0.7071067811865475);
+        assert.strictEqual (normal.z, 0.7071067811865475);
+    });    
 });
 
 describe ('Color Conversion', function() {
