@@ -265,7 +265,8 @@ OV.Importer = class
             new OV.ImporterOff (),
             new OV.ImporterPly (),
             new OV.Importer3ds (),
-            new OV.ImporterGltf ()
+            new OV.ImporterGltf (),
+            new OV.ImporterO3dv ()
         ];
         this.fileList = new OV.FileList (this.importers);
         this.model = null;

@@ -195,3 +195,8 @@ OV.ColorIsEqual = function (a, b)
 {
 	return a.r === b.r && a.g === b.g && a.b === b.b;
 };
+
+OV.ArrayToColor = function (arr)
+{
+	return new OV.Color (arr[0], arr[1], arr[2]);
+};

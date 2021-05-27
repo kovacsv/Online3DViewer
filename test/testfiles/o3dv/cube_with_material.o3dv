@@ -1,0 +1,20 @@
+{
+	"materials" : [
+		{
+			"name" : "Material",
+			"diffuse" : [200, 0, 0]
+		}
+	],
+	"meshes" : [
+		{
+			"name" : "Cube",
+			"material" : 0,
+			"type" : "cuboid",
+			"parameters" : {
+				"size_x" : 1.0,
+				"size_y" : 1.0,
+				"size_z" : 1.0
+			}
+		}
+	]
+}

@@ -40,6 +40,7 @@
 		"source/import/importerply.js",
 		"source/import/importer3ds.js",
 		"source/import/importergltf.js",
+		"source/import/importero3dv.js",
 		"source/import/importer.js",
 		"source/export/exporterbase.js",
 		"source/export/exporterobj.js",

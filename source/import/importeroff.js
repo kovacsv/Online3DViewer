@@ -24,7 +24,6 @@ OV.ImporterOff = class extends OV.ImporterBase
     
     ClearContent ()
     {
-        this.model = null;
         this.mesh = null;
         this.status = null;
     }

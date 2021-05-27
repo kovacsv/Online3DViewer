@@ -2,8 +2,15 @@ OV.GeneratorParams = class
 {
     constructor ()
     {
+        this.name = null;
         this.material = null;
         this.transformation = null;
+    }
+
+    SetName (name)
+    {
+        this.name = name;
+        return this;
     }
 
     SetMaterial (material)
@@ -31,6 +38,9 @@ OV.Generator = class
     {
         this.params = params || new OV.GeneratorParams ();
         this.mesh = new OV.Mesh ();
+        if (this.params.name !== null) {
+            this.mesh.SetName (this.params.name);
+        }
     }
 
     GetMesh ()

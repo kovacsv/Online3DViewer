@@ -43,6 +43,12 @@ module.exports =
         this.ImportFile (importer, format, 'gltf/' + folderName, fileName, onReady);
     },
 
+    ImportO3dvFile : function (fileName, onReady)
+    {    
+        var importer = new OV.ImporterO3dv ();
+        this.ImportFile (importer, OV.FileFormat.Text, 'o3dv', fileName, onReady);
+    },
+
     ImportFile : function (importer, format, folder, fileName, onReady)
     {
         var content = null;

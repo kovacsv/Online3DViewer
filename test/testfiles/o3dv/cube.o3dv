@@ -1,0 +1,12 @@
+{
+	"meshes" : [
+		{
+			"type" : "cuboid",
+			"parameters" : {
+				"size_x" : 1.0,
+				"size_y" : 1.0,
+				"size_z" : 1.0
+			}
+		}
+	]
+}

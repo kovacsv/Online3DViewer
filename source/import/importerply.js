@@ -110,7 +110,6 @@ OV.ImporterPly = class extends OV.ImporterBase
     
     ClearContent ()
     {
-        this.model = null;
         this.mesh = null;
     }
 

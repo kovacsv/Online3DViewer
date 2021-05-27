@@ -1,0 +1,74 @@
+{
+	"materials" : [
+		{
+			"name" : "Material 1",
+			"diffuse" : [200, 0, 0]
+		},
+		{
+			"name" : "Material 2",
+			"diffuse" : [0, 200, 0]
+		},
+		{
+			"name" : "Material 3",
+			"diffuse" : [0, 0, 200]
+		},
+		{
+			"name" : "Material 4",
+			"diffuse" : [200, 200, 0]
+		}
+	],
+	"meshes" : [
+		{
+			"name" : "Cube",
+			"material" : 0,
+			"type" : "cuboid",
+			"parameters" : {
+				"size_x" : 1.0,
+				"size_y" : 1.0,
+				"size_z" : 1.0
+			}
+		},		
+		{
+			"name" : "Cube T",
+			"material" : 1,
+			"transformation" : {
+				"translation" : [2.0, 0.0, 0.0]
+			},
+			"type" : "cuboid",
+			"parameters" : {
+				"size_x" : 1.0,
+				"size_y" : 1.0,
+				"size_z" : 1.0
+			}
+		},		
+		{
+			"name" : "Cube TR",
+			"material" : 2,
+			"transformation" : {
+				"translation" : [4.0, 0.0, 0.0],
+				"rotation" : [0.0, 0.0, 0.3826834323650898, 0.9238795325112867]
+			},
+			"type" : "cuboid",
+			"parameters" : {
+				"size_x" : 1.0,
+				"size_y" : 1.0,
+				"size_z" : 1.0
+			}
+		},		
+		{
+			"name" : "Cube TRS",
+			"material" : 3,
+			"transformation" : {
+				"translation" : [6.0, 0.0, 0.0],
+				"rotation" : [0.0, 0.0, 0.3826834323650898, 0.9238795325112867],
+				"scale" : [1.5, 2.0, 2.5]
+			},
+			"type" : "cuboid",
+			"parameters" : {
+				"size_x" : 1.0,
+				"size_y" : 1.0,
+				"size_z" : 1.0
+			}
+		}
+	]
+}
