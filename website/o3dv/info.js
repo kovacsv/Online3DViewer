@@ -134,10 +134,12 @@ OV.InfoPanel = class
         }
 
         let obj = this;
-        this.CreateButton (contentDiv, 'Calculate Quantities', function (button) {
-            obj.popup = OV.ShowQuantitiesPopup (button, info.element);
-        });   
-        
+        if (OV.FeatureSet.CalculateQuantities) {
+            this.CreateButton (contentDiv, 'Calculate Quantities', function (button) {
+                obj.popup = OV.ShowQuantitiesPopup (button, info.element);
+            });   
+        }
+
         let materialsText = 'Materials (' + materialItems.length + ')';
         this.CreateButton (contentDiv, materialsText, function (button) {
             obj.popup = OV.ShowListPopup (button, materialItems, {
