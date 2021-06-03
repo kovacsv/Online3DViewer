@@ -156,8 +156,7 @@ OV.Viewer = class
 
         let parameters = {
             canvas : this.canvas,
-            antialias : true,
-            precision : 'mediump' // https://github.com/kovacsv/Online3DViewer/issues/69
+            antialias : true
         };
         
         this.renderer = new THREE.WebGLRenderer (parameters);
