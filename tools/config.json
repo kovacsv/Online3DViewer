@@ -51,6 +51,7 @@
 		"source/export/exporter.js",
 		"source/external/rhinoimporter.js",
 		"source/external/rhinoexporter.js",
+		"source/external/threeutils.js",
 		"source/external/threeconverter.js",
 		"source/external/threemodelloader.js",
 		"source/parameters/parameterlist.js",

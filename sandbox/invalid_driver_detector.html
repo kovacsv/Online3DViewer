@@ -53,11 +53,6 @@
 				pixels
 			);
 			
-			// TODO: remove
-			let resultDiv = document.createElement ('div');
-			document.body.appendChild (resultDiv);
-			resultDiv.innerHTML = pixels;
-
 			document.body.removeChild (canvas);
 			if (pixels[0] < 50 && pixels[1] < 50 && pixels[2] < 50) {
 				return true;

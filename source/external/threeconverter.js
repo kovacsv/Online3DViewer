@@ -1,4 +1,12 @@
-OV.ConvertModelToThreeMeshes = function (model, callbacks)
+OV.ModelToThreeConversionParams = class
+{
+	constructor ()
+	{
+		this.forceMediumpForMaterials = false;
+	}
+};
+
+OV.ConvertModelToThreeMeshes = function (model, params, callbacks)
 {
 	function CreateThreeMaterial (model, materialIndex)
 	{
@@ -35,7 +43,7 @@ OV.ConvertModelToThreeMeshes = function (model, callbacks)
 			specularColor.setRGB (0.0, 0.0, 0.0);
 		}
 
-		let threeMaterial = new THREE.MeshPhongMaterial ({
+		let materialParams = {
 			color : diffuseColor,
 			specular : specularColor,
 			emissive : emissiveColor,
@@ -44,8 +52,12 @@ OV.ConvertModelToThreeMeshes = function (model, callbacks)
 			transparent : material.transparent,
 			alphaTest : material.alphaTest,
 			side : THREE.DoubleSide
-		});
-		
+		};
+		if (params.forceMediumpForMaterials) {
+			materialParams.precision = 'mediump';
+		}
+
+		let threeMaterial = new THREE.MeshPhongMaterial (materialParams);
 		LoadTexture (threeMaterial, material.diffuseMap, function (threeTexture) {
 			if (!material.multiplyDiffuseMap) {
 				threeMaterial.color.setRGB (1.0, 1.0, 1.0);
