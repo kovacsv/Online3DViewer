@@ -75,7 +75,6 @@ OV.ThreeModelLoader = class
         let obj = this;
         this.callbacks.onVisualizationStart ();
         let params = new OV.ModelToThreeConversionParams ();
-		// https://github.com/kovacsv/Online3DViewer/issues/69
         params.forceMediumpForMaterials = this.hasHighpDriverIssue;
         OV.ConvertModelToThreeMeshes (importResult.model, params, {
             onTextureLoaded : function () {

@@ -1,3 +1,7 @@
+// Some mobile devices say that they support mediump, but in reality they don't. At the end
+// all materials rendered as black. This hack renders a single plane with red material and
+// it checks if it's really red. If it's not, then probably there is a driver issue.
+// https://github.com/kovacsv/Online3DViewer/issues/69
 OV.HasHighpDriverIssue = function ()
 {
     let canvas = document.createElement ('canvas');
@@ -43,7 +47,9 @@ OV.HasHighpDriverIssue = function ()
     );
     
     document.body.removeChild (canvas);
-    if (pixels[0] < 50 && pixels[1] < 50 && pixels[2] < 50) {
+
+    let blackThreshold = 50;
+    if (pixels[0] < blackThreshold && pixels[1] < blackThreshold && pixels[2] < blackThreshold) {
         return true;
     }
     return false;
