@@ -22,7 +22,7 @@ function CreateYRot90Quaternion ()
 }
 
 describe ('Comparison', function () {
-    it ('IsGreater', function () {
+    it ('IsEqual', function () {
         assert (OV.IsEqual (1.0, 1.0));
         assert (OV.IsEqual (1.0, 1.000000001));
         assert (!OV.IsEqual (1.0, 1.0001));
@@ -124,7 +124,7 @@ describe ('Transformation', function() {
         assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
     });    
 
-    it ('TRS Compose Test', function () {
+    it ('TRS Compose Test 2', function () {
         let rotation = CreateYRot90Quaternion ();
         let coord = new OV.Coord3D (1.0, 2.0, 3.0);
 
