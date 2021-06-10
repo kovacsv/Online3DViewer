@@ -116,7 +116,7 @@ div.main
 
 }
 
-div.main_menu
+div.main_navigator
 {
 	width: 240px;
 	margin: 10px 0px 10px 10px;
@@ -194,7 +194,7 @@ div.ov_toolbar div.ov_toolbar_separator
 	float: left;
 }
 
-div.ov_menu_tree_title
+div.ov_navigator_tree_title
 {
 	font-weight: bold;
 	white-space: nowrap;
@@ -205,45 +205,45 @@ div.ov_menu_tree_title
 	border-bottom: 1px solid #dddddd;
 }
 
-div.ov_menu_tree_panel
+div.ov_navigator_tree_panel
 {
 	overflow: auto;
 	margin-bottom: 10px;
 }
 
-div.ov_menu_info_panel
+div.ov_navigator_info_panel
 {
 	overflow: auto;
 	border-top: 1px solid #dddddd;
 }
 
-div.ov_menu_info_panel div.ov_info_panel_main
+div.ov_navigator_info_panel div.ov_info_panel_main
 {
 	margin-top: 5px;
 }
 
-div.ov_menu_info_panel div.ov_info_panel_content
+div.ov_navigator_info_panel div.ov_info_panel_content
 {
 	padding: 5px 0px 0px 5px;
 }
 
-div.ov_menu_info_panel div.ov_info_box
+div.ov_navigator_info_panel div.ov_info_box
 {
 	margin-bottom: 10px;
 	overflow: auto;
 }
 
-div.ov_menu_info_panel div.ov_info_box_column
+div.ov_navigator_info_panel div.ov_info_box_column
 {
 	float: left;
 }
 
-div.ov_menu_info_panel div.ov_info_box_title
+div.ov_navigator_info_panel div.ov_info_box_title
 {
 	margin-bottom: 3px;
 }
 
-div.ov_menu_info_panel div.ov_info_box_content
+div.ov_navigator_info_panel div.ov_info_box_content
 {
 	font-weight: bold;
 	overflow: hidden;
@@ -251,31 +251,31 @@ div.ov_menu_info_panel div.ov_info_box_content
 	white-space: nowrap;
 }
 
-div.ov_menu_info_panel div.ov_info_box_content_big
+div.ov_navigator_info_panel div.ov_info_box_content_big
 {
 	font-size: 21px;
 	font-weight: bold;
 }
 
-div.ov_menu_info_panel div.ov_info_box_details
+div.ov_navigator_info_panel div.ov_info_box_details
 {
 	font-size: 14px;
 	padding-left: 10px;
 }
 
-div.ov_menu_info_panel div.ov_info_box_row
+div.ov_navigator_info_panel div.ov_info_box_row
 {
 	padding: 2px 0px;
 	overflow: auto;
 }
 
-div.ov_menu_info_panel div.ov_info_box_row_name
+div.ov_navigator_info_panel div.ov_info_box_row_name
 {
 	width: 40%;
 	float: left;
 }
 
-div.ov_menu_info_panel div.ov_info_box_row_value
+div.ov_navigator_info_panel div.ov_info_box_row_value
 {
 	font-weight: bold;
 	overflow: hidden;
@@ -283,7 +283,7 @@ div.ov_menu_info_panel div.ov_info_box_row_value
 	white-space: nowrap;	
 }
 
-div.ov_menu_info_panel div.ov_info_box_rgbbox
+div.ov_navigator_info_panel div.ov_info_box_rgbbox
 {
 	width : 32px;
 	height: 16px;
@@ -293,12 +293,12 @@ div.ov_menu_info_panel div.ov_info_box_rgbbox
 	float: left;
 }
 
-div.ov_menu_info_panel div.ov_info_box_rgbtext
+div.ov_navigator_info_panel div.ov_info_box_rgbtext
 {
 	font-size: 14px;
 }
 
-div.ov_menu_info_panel div.ov_info_box_button
+div.ov_navigator_info_panel div.ov_info_box_button
 {
 	cursor: pointer;
 	margin-top: 10px;
@@ -307,13 +307,13 @@ div.ov_menu_info_panel div.ov_info_box_button
 	overflow: auto;
 }
 
-div.ov_menu_info_panel div.ov_info_box_button_text
+div.ov_navigator_info_panel div.ov_info_box_button_text
 {
 	padding: 5px;
 	float: left;
 }
 
-div.ov_menu_info_panel img.ov_info_box_button_icon
+div.ov_navigator_info_panel img.ov_info_box_button_icon
 {
 	width: 18px;
 	height: 18px;
@@ -321,36 +321,36 @@ div.ov_menu_info_panel img.ov_info_box_button_icon
 	float: right;
 }
 
-div.ov_tree_menu
+div.ov_tree_view
 {
 	user-select: none;
 }
 
-div.ov_tree_menu div.ov_tree_menu_item
+div.ov_tree_view div.ov_tree_item
 {
 	overflow: auto;
 	border-radius: 5px;
 	padding-right: 5px;
 }
 
-div.ov_tree_menu div.ov_tree_menu_item.selected
+div.ov_tree_view div.ov_tree_item.selected
 {
 	background: #eeeeee;
 	font-weight: bold;;
 }
 
-div.ov_tree_menu div.ov_tree_menu_item.clickable
+div.ov_tree_view div.ov_tree_item.clickable
 {
 	cursor: pointer;
 	border-radius: 5px;
 }
 
-div.ov_tree_menu div.ov_tree_menu_item_button_container
+div.ov_tree_view div.ov_tree_item_button_container
 {
 	float: right;
 }
 
-div.ov_tree_menu img.ov_tree_menu_item_button
+div.ov_tree_view img.ov_tree_item_button
 {
 	width: 18px;
 	height: 18px;
@@ -359,7 +359,7 @@ div.ov_tree_menu img.ov_tree_menu_item_button
 	cursor: pointer;
 }
 
-div.ov_tree_menu img.ov_tree_menu_item_icon
+div.ov_tree_view img.ov_tree_item_icon
 {
 	width: 18px;
 	height: 18px;
@@ -367,7 +367,7 @@ div.ov_tree_menu img.ov_tree_menu_item_icon
 	float: left;
 }
 
-div.ov_tree_menu div.ov_tree_menu_item_name
+div.ov_tree_view div.ov_tree_item_name
 {
 	padding: 4px 5px;
 	overflow: hidden;
@@ -375,7 +375,7 @@ div.ov_tree_menu div.ov_tree_menu_item_name
 	white-space: nowrap;
 }
 
-div.ov_tree_menu div.ov_tree_menu_children
+div.ov_tree_view div.ov_tree_view_children
 {
 	margin-left: 28px;
 }
@@ -727,12 +727,12 @@ div.ov_toolbar div.ov_toolbar_button_div:hover
 	background: #c9e5f8;
 }
 
-div.ov_tree_menu div.ov_tree_menu_item.clickable:hover
+div.ov_tree_view div.ov_tree_item.clickable:hover
 {
 	background: #e4f4ff;
 }
 
-div.ov_menu_info_panel div.ov_menu_info_panel_title:hover
+div.ov_navigator_info_panel div.ov_navigator_info_panel_title:hover
 {
 	background: #e4f4ff;
 }
@@ -747,7 +747,7 @@ div.ov_popup div.ov_popup_list_item:hover
 	background: #e4f4ff;
 }
 
-div.ov_menu_info_panel div.ov_info_box_button:hover
+div.ov_navigator_info_panel div.ov_info_box_button:hover
 {
 	background: #e4f4ff;
 }

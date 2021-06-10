@@ -28,7 +28,7 @@ OV.TreeViewButton = class
 
     CreateDomElement (parentDiv)
     {
-        this.domElement = $('<img>').addClass ('ov_tree_menu_item_button').appendTo (parentDiv);
+        this.domElement = $('<img>').addClass ('ov_tree_item_button').appendTo (parentDiv);
         this.domElement.attr ('src', this.imagePath);
         if (this.clickHandler !== null) {
             this.domElement.click (this.clickHandler);
@@ -57,12 +57,12 @@ OV.TreeViewItem = class
 
     CreateMainElement (parentDiv)
     {
-        this.mainElement = $('<div>').addClass ('ov_tree_menu_item').attr ('title', this.name).appendTo (parentDiv);
+        this.mainElement = $('<div>').addClass ('ov_tree_item').attr ('title', this.name).appendTo (parentDiv);
     }
     
     CreateNameElement ()
     {
-        this.nameElement = $('<div>').addClass ('ov_tree_menu_item_name').html (this.name).appendTo (this.mainElement);
+        this.nameElement = $('<div>').addClass ('ov_tree_item_name').html (this.name).appendTo (this.mainElement);
     }    
 };
 
@@ -124,7 +124,7 @@ OV.TreeViewButtonItem = class extends OV.TreeViewSingleItem
     {
         this.CreateMainElement (parentDiv);
         this.mainElement.addClass ('clickable');
-        let buttonContainer = $('<div>').addClass ('ov_tree_menu_item_button_container').appendTo (this.mainElement);
+        let buttonContainer = $('<div>').addClass ('ov_tree_item_button_container').appendTo (this.mainElement);
         for (let i = 0; i < this.buttons.length; i++) {
             let button = this.buttons[i];
             button.CreateDomElement (buttonContainer);
@@ -208,7 +208,7 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
     {
         if (this.childrenDiv === null) {
             let obj = this;
-            this.childrenDiv = $('<div>').addClass ('ov_tree_menu_children').insertAfter (this.mainElement);
+            this.childrenDiv = $('<div>').addClass ('ov_tree_view_children').insertAfter (this.mainElement);
             this.mainElement.addClass ('clickable');
             this.ShowChildren (this.showChildren, null);
             this.mainElement.click (function (ev) {
@@ -237,9 +237,9 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
     CreateDomElement (parentDiv)
     {
         this.CreateMainElement (parentDiv);
-        $('<img>').addClass ('ov_tree_menu_item_icon').attr ('src', this.iconPath).appendTo (this.mainElement);
-        let buttonContainer = $('<div>').addClass ('ov_tree_menu_item_button_container').appendTo (this.mainElement);
-        this.openCloseButton = $('<img>').addClass ('ov_tree_menu_item_button').attr ('src', this.openButtonPath).appendTo (buttonContainer);
+        $('<img>').addClass ('ov_tree_item_icon').attr ('src', this.iconPath).appendTo (this.mainElement);
+        let buttonContainer = $('<div>').addClass ('ov_tree_item_button_container').appendTo (this.mainElement);
+        this.openCloseButton = $('<img>').addClass ('ov_tree_item_button').attr ('src', this.openButtonPath).appendTo (buttonContainer);
         this.CreateNameElement ();
     }
 };
@@ -248,7 +248,7 @@ OV.TreeView = class
 {
     constructor (parentDiv)
     {
-        this.mainDiv = $('<div>').addClass ('ov_tree_menu').appendTo (parentDiv);
+        this.mainDiv = $('<div>').addClass ('ov_tree_view').appendTo (parentDiv);
     }
 
     AddItem (item)

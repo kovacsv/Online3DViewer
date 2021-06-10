@@ -13,15 +13,15 @@ OV.Selection = class
     }
 };
 
-OV.Menu = class
+OV.Navigator = class
 {
     constructor (parentDiv)
     {
         this.parentDiv = parentDiv;
         this.callbacks = null;
-        this.titleDiv = $('<div>').addClass ('ov_menu_tree_title').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
-        this.treeDiv = $('<div>').addClass ('ov_menu_tree_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
-        this.infoDiv = $('<div>').addClass ('ov_menu_info_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
+        this.titleDiv = $('<div>').addClass ('ov_navigator_tree_title').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
+        this.treeDiv = $('<div>').addClass ('ov_navigator_tree_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
+        this.infoDiv = $('<div>').addClass ('ov_navigator_info_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
         this.treeView = new OV.TreeView (this.treeDiv);
         this.infoPanel = new OV.InfoPanel (this.infoDiv);
         this.modelData = new OV.ModelData ();

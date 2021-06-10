@@ -6,7 +6,7 @@ OV.Website = class
         this.viewer = new OV.Viewer ();
         this.hashHandler = new OV.HashHandler ();
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
-        this.menu = new OV.Menu (this.parameters.menuDiv);
+        this.navigator = new OV.Navigator (this.parameters.navigatorDiv);
         this.importSettings = new OV.ImportSettings ();
         this.modelLoader = new OV.ThreeModelLoader ();
         this.highlightMaterial = new THREE.MeshPhongMaterial ({
@@ -27,7 +27,7 @@ OV.Website = class
         this.InitToolbar ();
         this.InitDragAndDrop ();
         this.InitModelLoader ();
-        this.InitMenu ();
+        this.InitNavigator ();
 
         this.viewer.SetClickHandler (this.OnModelClicked.bind (this));
         this.Resize ();
@@ -46,19 +46,19 @@ OV.Website = class
         let windowHeight = $(window).outerHeight ();
         let headerHeight = parseInt (this.parameters.headerDiv.outerHeight (true), 10);
 
-        let menuWidth = 0;
+        let navigatorWidth = 0;
         let safetyMargin = 0;
         if (!OV.IsSmallWidth ()) {
-            menuWidth = parseInt (this.parameters.menuDiv.outerWidth (true), 10);
+            navigatorWidth = parseInt (this.parameters.navigatorDiv.outerWidth (true), 10);
             safetyMargin = 1;
         }
         
-        let contentWidth = windowWidth - menuWidth - safetyMargin;
+        let contentWidth = windowWidth - navigatorWidth - safetyMargin;
         let contentHeight = windowHeight - headerHeight - safetyMargin;
-        this.parameters.menuDiv.outerHeight (contentHeight, true);
+        this.parameters.navigatorDiv.outerHeight (contentHeight, true);
         this.parameters.introDiv.outerHeight (contentHeight, true);
 
-        this.menu.Resize ();
+        this.navigator.Resize ();
         this.viewer.Resize (contentWidth, contentHeight);
     }
 
@@ -81,7 +81,7 @@ OV.Website = class
         this.parameters.introDiv.hide ();
         this.ShowViewer (false);
         this.viewer.Clear ();
-        this.menu.Clear ();
+        this.navigator.Clear ();
     }
     
     OnModelFinished (importResult, threeMeshes)
@@ -90,7 +90,7 @@ OV.Website = class
         this.ShowViewer (true);
         this.viewer.AddMeshes (threeMeshes);
         this.viewer.SetUpVector (importResult.upVector, false);
-        this.menu.FillTree (importResult);
+        this.navigator.FillTree (importResult);
         this.FitModelToWindow (true);
     }
 
@@ -99,12 +99,12 @@ OV.Website = class
         if (button === 1) {
             let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
             if (meshUserData === null) {
-                this.menu.SetSelection (null);
+                this.navigator.SetSelection (null);
             } else {
                 if (isCtrlPressed) {
-                    this.menu.IsolateMesh (meshUserData.originalMeshIndex);
+                    this.navigator.IsolateMesh (meshUserData.originalMeshIndex);
                 } else {
-                    this.menu.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshUserData.originalMeshIndex));
+                    this.navigator.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshUserData.originalMeshIndex));
                 }
             }
         }
@@ -120,7 +120,7 @@ OV.Website = class
         let obj = this;
         let animation = !onLoad;
         let boundingSphere = this.viewer.GetBoundingSphere (function (meshUserData) {
-            return obj.menu.IsMeshVisible (meshUserData.originalMeshIndex);
+            return obj.navigator.IsMeshVisible (meshUserData.originalMeshIndex);
         });
         if (onLoad) {
             this.viewer.AdjustClippingPlanes (boundingSphere);
@@ -140,13 +140,13 @@ OV.Website = class
     {
         let obj = this;
         this.viewer.SetMeshesVisibility (function (meshUserData) {
-            return obj.menu.IsMeshVisible (meshUserData.originalMeshIndex);
+            return obj.navigator.IsMeshVisible (meshUserData.originalMeshIndex);
         });
     }
 
     UpdateMeshesSelection ()
     {
-        let selectedMeshIndex = this.menu.GetSelectedMeshIndex ();
+        let selectedMeshIndex = this.navigator.GetSelectedMeshIndex ();
         this.viewer.SetMeshesHighlight (this.highlightMaterial, function (meshUserData) {
             if (meshUserData.originalMeshIndex === selectedMeshIndex) {
                 return true;
@@ -354,7 +354,7 @@ OV.Website = class
         });
     }
 
-    InitMenu ()
+    InitNavigator ()
     {
         function GetMeshUserData (viewer, meshIndex)
         {
@@ -478,7 +478,7 @@ OV.Website = class
         }
 
         let obj = this;
-        this.menu.Init ({
+        this.navigator.Init ({
             openFileBrowserDialog : function () {
                 obj.OpenFileBrowserDialog ();
             },
