@@ -15,10 +15,17 @@ OV.Exporter3dm = class extends OV.ExporterBase
 	{
 		if (this.rhino === null) {
 			let obj = this;
-			rhino3dm ().then (function (rhino) {
-				obj.rhino = rhino;
-				obj.ExportRhinoContent (model, files, onFinish);
-			});
+			OV.LoadExternalLibrary ('rhino3dm.min.js', {
+				success : function () {
+                    rhino3dm ().then (function (rhino) {
+                        obj.rhino = rhino;
+                        obj.ExportRhinoContent (model, files, onFinish);
+                    });
+                },
+				error : function () {
+					onFinish ();
+				}
+			});            
 		} else {
 			this.ExportRhinoContent (model, files, onFinish);
 		}
