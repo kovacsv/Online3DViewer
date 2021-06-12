@@ -57,7 +57,10 @@ class TokenReplacer:
 	def ReplaceContent (self, begToken, endToken, begPosition, endPosition, linePrefix, newContent):
 		if self.keepToken:
 			newContent = linePrefix + begToken + self.eolChar + newContent + self.eolChar + linePrefix + endToken
-		self.fileContent = self.fileContent.replace (self.fileContent[begPosition : endPosition], newContent)
+		self.ReplaceString (self.fileContent[begPosition : endPosition], newContent)
+
+	def ReplaceString (self, oldString, newString):
+		self.fileContent = self.fileContent.replace (oldString, newString)
 
 	def GetTokenBegPosition (self, begToken):	
 		begPosition = self.fileContent.find (begToken)

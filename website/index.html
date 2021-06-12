@@ -11,7 +11,6 @@
 	<!-- libs start -->
 	<script type="text/javascript" src="../libs/jquery-3.5.1.min.js"></script>
 	<script type="text/javascript" src="../libs/three.min-129.js"></script>
-	<script type="text/javascript" src="../libs/rhino3dm.min.js"></script>
 	<!-- libs end -->
 	
 	<!-- meta start -->
@@ -62,6 +61,7 @@
 	<script type="text/javascript" src="../source/export/exporteroff.js"></script>
 	<script type="text/javascript" src="../source/export/exportergltf.js"></script>
 	<script type="text/javascript" src="../source/export/exporter.js"></script>
+	<script type="text/javascript" src="../source/external/externallibs.js"></script>
 	<script type="text/javascript" src="../source/external/rhinoimporter.js"></script>
 	<script type="text/javascript" src="../source/external/rhinoexporter.js"></script>
 	<script type="text/javascript" src="../source/external/threeutils.js"></script>
@@ -96,7 +96,13 @@
 	<script type="text/javascript" src="o3dv/embed.js"></script>
 	<!-- website end -->
 
-	<script type='text/javascript'>
+	<!-- externals start -->
+	<script type="text/javascript">
+		OV.ExternalLibLocation = '../libs';
+	</script>
+	<!-- externals end -->
+
+	<script type="text/javascript">
 		$(window).on ('load', function () {
 			let website = new OV.Website ({
 				headerDiv : $('#header'),

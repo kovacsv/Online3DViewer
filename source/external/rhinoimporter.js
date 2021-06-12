@@ -39,10 +39,17 @@ OV.Importer3dm = class extends OV.ImporterBase
     {
 		if (this.rhino === null) {
 			let obj = this;
-			rhino3dm ().then (function (rhino) {
-				obj.rhino = rhino;
-				obj.ImportRhinoContent (fileContent);
-				onFinish ();
+			OV.LoadExternalLibrary ('rhino3dm.min.js', {
+				success : function () {
+					rhino3dm ().then (function (rhino) {
+						obj.rhino = rhino;
+						obj.ImportRhinoContent (fileContent);
+						onFinish ();
+					});
+				},
+				error : function () {
+					onFinish ();
+				}
 			});
 		} else {
 			this.ImportRhinoContent (fileContent);

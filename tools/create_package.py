@@ -71,6 +71,11 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 		replacer.ReplaceTokenFileLinks ('<!-- libs start -->', '<!-- libs end -->', libFiles, None)
 		replacer.ReplaceTokenFileLinks ('<!-- importer start -->', '<!-- importer end -->', importerFiles, version)
 		replacer.ReplaceTokenFileLinks ('<!-- website start -->', '<!-- website end -->', websiteFiles, version)
+		externalScriptContent = ''
+		externalScriptContent += '<script type="text/javascript">' + replacer.eolChar
+		externalScriptContent += '    OV.ExternalLibLocation = \'libs\';' + replacer.eolChar
+		externalScriptContent += '</script>'
+		replacer.ReplaceTokenContent ('<!-- externals start -->', '<!-- externals end -->', externalScriptContent)
 		metaFile = os.path.join (rootDir, 'tools', 'website_meta_data.txt')
 		if os.path.exists (metaFile):
 			metaContent = Tools.GetFileContent (metaFile)
