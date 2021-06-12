@@ -22,6 +22,7 @@
 		"OV" : true,
 		"THREE" : false,
 		"rhino3dm" : false,
+		"IfcAPI" : false,
 		"TextEncoder" : false,
 		"TextDecoder" : false,
 		"XMLHttpRequest" : false,

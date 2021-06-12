@@ -41,7 +41,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
 				success : function () {
 					obj.ifc = new IfcAPI ();
                     obj.ifc.Init ().then (function () {
-                        obj.ImportIfcContent (fileContent)
+                        obj.ImportIfcContent (fileContent);
                         onFinish ();
                     });
 				},
@@ -90,7 +90,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
                 const x = ifcVertices[i];
                 const y = ifcVertices[i + 1];
                 const z = ifcVertices[i + 2];
-                const coord = new OV.Coord3D (x, y, z)
+                const coord = new OV.Coord3D (x, y, z);
                 const transformed = transformation.TransformCoord3D (coord);
                 mesh.AddVertex (transformed);
             }
