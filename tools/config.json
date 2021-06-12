@@ -51,6 +51,7 @@
 		"source/external/externallibs.js",
 		"source/external/rhinoimporter.js",
 		"source/external/rhinoexporter.js",
+		"source/external/ifcimporter.js",
 		"source/external/threeutils.js",
 		"source/external/threeconverter.js",
 		"source/external/threemodelloader.js",

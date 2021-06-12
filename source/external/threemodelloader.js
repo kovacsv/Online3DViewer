@@ -4,6 +4,7 @@ OV.ThreeModelLoader = class
     {
         this.importer = new OV.Importer ();
         this.importer.AddImporter (new OV.Importer3dm ());
+        this.importer.AddImporter (new OV.ImporterIfc ());
         this.callbacks = null;
         this.inProgress = false;
         this.hasHighpDriverIssue = OV.HasHighpDriverIssue ();
