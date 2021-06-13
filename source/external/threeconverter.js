@@ -189,16 +189,16 @@ OV.ConvertModelToThreeMeshes = function (model, params, callbacks)
 
 	let threeMeshes = [];
 	let taskRunner = new OV.TaskRunner ();
-	taskRunner.Run (model.MeshCount (), {
-		runTask : function (index, ready) {
-			let mesh = model.GetMesh (index);
-			if (mesh.TriangleCount () === 0) {
-				ready ();
-			} else {
-				let threeMesh = CreateThreeMesh (model, index, modelThreeMaterials);
-				threeMeshes.push (threeMesh);
-				ready ();
+	taskRunner.RunBatch (model.MeshCount (), 100, {
+		runTask : function (firstIndex, lastIndex, ready) {
+			for (let meshIndex = firstIndex; meshIndex <= lastIndex; meshIndex++) {
+				let mesh = model.GetMesh (meshIndex);
+				if (mesh.TriangleCount () > 0) {
+					let threeMesh = CreateThreeMesh (model, meshIndex, modelThreeMaterials);
+					threeMeshes.push (threeMesh);
+				}
 			}
+			ready ();
 		},
 		onReady : function () {
 			callbacks.onModelLoaded (threeMeshes);
