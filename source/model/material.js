@@ -162,20 +162,20 @@ OV.LinearToSRGB = function (component)
     }
 };
 
+OV.IntegerToHexString = function (intVal)
+{
+    let result = parseInt (intVal, 10).toString (16);
+    while (result.length < 2) {
+        result = '0' + result;
+    }
+    return result;
+};
+
 OV.ColorToHexString = function (color)
 {
-    function IntegerToHex (intVal)
-    {
-        let result = parseInt (intVal, 10).toString (16);
-        while (result.length < 2) {
-            result = '0' + result;
-        }
-        return result;
-    }
-
-    let r = IntegerToHex (color.r);
-    let g = IntegerToHex (color.g);
-    let b = IntegerToHex (color.b);
+    let r = OV.IntegerToHexString (color.r);
+    let g = OV.IntegerToHexString (color.g);
+    let b = OV.IntegerToHexString (color.b);
     return r + g + b;
 };
 
