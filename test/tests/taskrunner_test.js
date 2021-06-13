@@ -29,5 +29,20 @@ describe ('Task Runner', function () {
                 done ();
             }
         });
-    });        
+    });
+
+    it ('Run task batched', function (done) {
+        var tr = new OV.TaskRunner ();
+        var indices = [];
+        tr.RunBatch (10, 3, {
+            runTask : function (firstIndex, lastIndex, ready) {
+                indices.push ([firstIndex, lastIndex]);
+                ready ();
+            },
+            onReady : function () {
+                assert.deepStrictEqual (indices, [[0, 2], [3, 5], [6, 8], [9, 9]]);
+                done ();
+            }
+        });
+    });     
 });
