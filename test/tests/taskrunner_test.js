@@ -44,5 +44,20 @@ describe ('Task Runner', function () {
                 done ();
             }
         });
+    });
+
+    it ('Run task batched zero times', function (done) {
+        var tr = new OV.TaskRunner ();
+        var indices = [];
+        tr.RunBatch (0, 3, {
+            runTask : function (firstIndex, lastIndex, ready) {
+                indices.push ([firstIndex, lastIndex]);
+                ready ();
+            },
+            onReady : function () {
+                assert.deepStrictEqual (indices, []);
+                done ();
+            }
+        });
     });     
 });
