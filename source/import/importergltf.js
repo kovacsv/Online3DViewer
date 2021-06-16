@@ -476,6 +476,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
 
     ProcessMainFile (gltf)
     {
+        console.log (gltf);
         let unsupportedExtensions = this.gltfExtensions.GetUnsupportedExtensions (gltf.extensionsRequired);
         if (unsupportedExtensions.length > 0) {
             this.SetError ();
@@ -726,6 +727,8 @@ OV.ImporterGltf = class extends OV.ImporterBase
         this.model.AddMesh (mesh);
         if (gltfMesh.name !== undefined) {
             mesh.SetName (gltfMesh.name);
+        } else if (gltfNode.name !== undefined) {
+            mesh.SetName (gltfNode.name);
         }
 
         for (let i = 0; i < gltfMesh.primitives.length; i++) {
