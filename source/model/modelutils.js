@@ -2,13 +2,7 @@ OV.CalculateTriangleNormal = function (v0, v1, v2)
 {
     let v = OV.SubCoord3D (v1, v0);
     let w = OV.SubCoord3D (v2, v0);
-    
-    let normal = new OV.Coord3D (
-        v.y * w.z - v.z * w.y,
-        v.z * w.x - v.x * w.z,
-        v.x * w.y - v.y * w.x
-    );
-
+    let normal = OV.CrossVector3D (v, w);
     normal.Normalize ();
     return normal;
 };
