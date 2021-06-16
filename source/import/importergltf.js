@@ -476,7 +476,6 @@ OV.ImporterGltf = class extends OV.ImporterBase
 
     ProcessMainFile (gltf)
     {
-        console.log (gltf);
         let unsupportedExtensions = this.gltfExtensions.GetUnsupportedExtensions (gltf.extensionsRequired);
         if (unsupportedExtensions.length > 0) {
             this.SetError ();
