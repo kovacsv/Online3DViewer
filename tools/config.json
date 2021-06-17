@@ -63,6 +63,7 @@
 	"website_files" : [
 		"website/o3dv/featureset.js",
 		"website/o3dv/utils.js",
+		"website/o3dv/cookies.js",
 		"website/o3dv/toolbar.js",
 		"website/o3dv/treeview.js",
 		"website/o3dv/modal.js",

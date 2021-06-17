@@ -5,6 +5,7 @@ OV.Website = class
         this.parameters = parameters;
         this.viewer = new OV.Viewer ();
         this.hashHandler = new OV.HashHandler ();
+        this.cookieHandler = new OV.CookieHandler ();
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
         this.navigator = new OV.Navigator (this.parameters.navigatorDiv);
         this.importSettings = new OV.ImportSettings ();
@@ -28,6 +29,7 @@ OV.Website = class
         this.InitDragAndDrop ();
         this.InitModelLoader ();
         this.InitNavigator ();
+        //this.InitCookieConsent ();
 
         this.viewer.SetClickHandler (this.OnModelClicked.bind (this));
         this.Resize ();
@@ -501,5 +503,25 @@ OV.Website = class
                 return GetModelInfo (obj.model, obj.viewer);
             }
         });
-    }    
+    }
+
+    InitCookieConsent ()
+    {
+        let cookieConsentKey = 'ov_cookie_consent';
+        this.cookieHandler.ClearVal (cookieConsentKey);
+        let accepted = this.cookieHandler.GetBoolVal (cookieConsentKey, false);
+        if (accepted) {
+            return;
+        }
+
+        let obj = this;
+        let consentPopup = $('<div>').addClass ('ov_message_popup').appendTo (document.body);
+        let consentText = $('<div>').addClass ('ov_message_popup_text').appendTo (consentPopup);
+        consentText.html ('This website uses cookies. See the details at the <a href="info/cookies.html">Cookies Policy</a> page.');
+        let consentButton = $('<div>').html ('Accept').addClass ('ov_message_popup_button').appendTo (consentPopup);
+        consentButton.click (function () {
+            obj.cookieHandler.SetBoolVal (cookieConsentKey, true);
+            consentPopup.remove ();
+        });
+    }
 };
