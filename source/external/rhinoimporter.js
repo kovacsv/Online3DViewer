@@ -246,7 +246,7 @@ OV.Importer3dm = class extends OV.ImporterBase
 				}
 			} else if (rhinoAttributes.materialSource === rhino.ObjectMaterialSource.MaterialFromLayer) {
 				let layerIndex = rhinoAttributes.layerIndex;
-				if (layerIndex > 0) {
+				if (layerIndex > -1) {
 					let layer = rhinoDoc.layers ().get (layerIndex);
 					let layerMaterialIndex = layer.renderMaterialIndex;
 					if (layerMaterialIndex > -1) {
