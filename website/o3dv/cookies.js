@@ -2,7 +2,7 @@ OV.CookieHandler = class
 {
     constructor ()
     {
-        this.expirationDays = 30;
+        this.expirationDays = 365;
     }
 
     ClearVal (key)

@@ -165,6 +165,11 @@ OV.ButtonDialog = class
         return dialogContentDiv;
     }
 
+    SetCloseable (closeable)
+    {
+        this.modal.SetCloseable (closeable);
+    }
+
     SetCloseHandler (closeHandler)
     {
         this.modal.SetCloseHandler (closeHandler);

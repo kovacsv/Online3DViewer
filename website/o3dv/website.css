@@ -714,34 +714,6 @@ div.ov_thin_scrollbar::-webkit-scrollbar-thumb
 	background: #cccccc;
 }
 
-div.ov_message_popup
-{
-	padding: 4px 10px;
-	position: absolute;
-	bottom: 15px;
-	right: 10px;
-	overflow: auto;
-}
-
-div.ov_message_popup div.ov_message_popup_text
-{
-	padding: 3px;
-	float: left;
-}
-
-div.ov_message_popup div.ov_message_popup_button
-{
-	color: #ffffff;
-	background: #3393bd;
-	text-align: center;
-	margin-left: 10px;
-	padding: 3px;
-	width: 60px;
-	border-radius: 5px;
-	cursor: pointer;	
-	float: right;
-}
-
 @media (hover)
 {
 
