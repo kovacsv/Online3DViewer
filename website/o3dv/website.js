@@ -29,8 +29,7 @@ OV.Website = class
         this.InitDragAndDrop ();
         this.InitModelLoader ();
         this.InitNavigator ();
-        // TODO
-        // this.InitCookieConsent ();
+        this.InitCookieConsent ();
 
         this.viewer.SetClickHandler (this.OnModelClicked.bind (this));
         this.Resize ();
@@ -509,8 +508,6 @@ OV.Website = class
     InitCookieConsent ()
     {
         let cookieConsentKey = 'ov_cookie_consent';
-        // TODO: remove
-        this.cookieHandler.ClearVal (cookieConsentKey);
         let accepted = this.cookieHandler.GetBoolVal (cookieConsentKey, false);
         if (accepted) {
             return;

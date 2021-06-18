@@ -1,19 +1,12 @@
-OV.ShowCookieDialog = function (onOk)
+OV.ShowCookieDialog = function (onAccept)
 {
     let dialog = new OV.ButtonDialog ();
     let contentDiv = dialog.Init ('Cookie Consent', [
         {
-            name : 'Cancel',
-            subClass : 'outline',
+            name : 'Accept',
             onClick () {
                 dialog.Hide ();
-            }
-        },
-        {
-            name : 'OK',
-            onClick () {
-                dialog.Hide ();
-                onOk ();
+                onAccept ();
             }
         }
     ]);
