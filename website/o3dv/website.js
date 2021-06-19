@@ -8,6 +8,7 @@ OV.Website = class
         this.cookieHandler = new OV.CookieHandler ();
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
         this.navigator = new OV.Navigator (this.parameters.navigatorDiv);
+        this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv);
         this.importSettings = new OV.ImportSettings ();
         this.modelLoader = new OV.ThreeModelLoader ();
         this.highlightMaterial = new THREE.MeshPhongMaterial ({
@@ -49,13 +50,15 @@ OV.Website = class
         let headerHeight = parseInt (this.parameters.headerDiv.outerHeight (true), 10);
 
         let navigatorWidth = 0;
+        let sidebarWidth = 0;
         let safetyMargin = 0;
         if (!OV.IsSmallWidth ()) {
             navigatorWidth = parseInt (this.parameters.navigatorDiv.outerWidth (true), 10);
+            sidebarWidth = parseInt (this.parameters.sidebarDiv.outerWidth (true), 10);
             safetyMargin = 1;
         }
         
-        let contentWidth = windowWidth - navigatorWidth - safetyMargin;
+        let contentWidth = windowWidth - navigatorWidth - sidebarWidth - safetyMargin;
         let contentHeight = windowHeight - headerHeight - safetyMargin;
         this.parameters.navigatorDiv.outerHeight (contentHeight, true);
         this.parameters.introDiv.outerHeight (contentHeight, true);

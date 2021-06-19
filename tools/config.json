@@ -76,6 +76,7 @@
 		"website/o3dv/cookiedialog.js",
 		"website/o3dv/modeldata.js",
 		"website/o3dv/navigator.js",
+		"website/o3dv/sidebar.js",
 		"website/o3dv/hashhandler.js",
 		"website/o3dv/website.css",
 		"website/o3dv/loader.js",

@@ -129,6 +129,14 @@ div.main_viewer
 	float: left;
 }
 
+div.main_sidebar
+{
+	width: 240px;
+	margin: 10px 10px 10px 0px;
+	overflow: none;
+	float: right;
+}
+
 div.main_viewer canvas
 {
 	margin: 10px;
@@ -238,6 +246,17 @@ div.ov_navigator_info_panel img.ov_navigator_info_button_icon
 	height: 18px;
 	padding: 6px;
 	float: right;
+}
+
+div.ov_sidebar_title
+{
+	font-weight: bold;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #dddddd;
 }
 
 div.ov_tree_view
