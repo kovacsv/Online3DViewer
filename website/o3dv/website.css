@@ -217,88 +217,7 @@ div.ov_navigator_info_panel
 	border-top: 1px solid #dddddd;
 }
 
-div.ov_navigator_info_panel div.ov_info_panel_main
-{
-	margin-top: 5px;
-}
-
-div.ov_navigator_info_panel div.ov_info_panel_content
-{
-	padding: 5px 0px 0px 5px;
-}
-
-div.ov_navigator_info_panel div.ov_info_box
-{
-	margin-bottom: 10px;
-	overflow: auto;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_column
-{
-	float: left;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_title
-{
-	margin-bottom: 3px;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_content
-{
-	font-weight: bold;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_content_big
-{
-	font-size: 21px;
-	font-weight: bold;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_details
-{
-	font-size: 14px;
-	padding-left: 10px;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_row
-{
-	padding: 2px 0px;
-	overflow: auto;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_row_name
-{
-	width: 40%;
-	float: left;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_row_value
-{
-	font-weight: bold;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;	
-}
-
-div.ov_navigator_info_panel div.ov_info_box_rgbbox
-{
-	width : 32px;
-	height: 16px;
-	margin-right: 10px;
-	border: 1px solid #222222;
-	border-radius: 5px;
-	float: left;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_rgbtext
-{
-	font-size: 14px;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_button
+div.ov_navigator_info_panel div.ov_navigator_info_button
 {
 	cursor: pointer;
 	margin-top: 10px;
@@ -307,13 +226,13 @@ div.ov_navigator_info_panel div.ov_info_box_button
 	overflow: auto;
 }
 
-div.ov_navigator_info_panel div.ov_info_box_button_text
+div.ov_navigator_info_panel div.ov_navigator_info_button_text
 {
 	padding: 5px;
 	float: left;
 }
 
-div.ov_navigator_info_panel img.ov_info_box_button_icon
+div.ov_navigator_info_panel img.ov_navigator_info_button_icon
 {
 	width: 18px;
 	height: 18px;
@@ -747,7 +666,7 @@ div.ov_popup div.ov_popup_list_item:hover
 	background: #e4f4ff;
 }
 
-div.ov_navigator_info_panel div.ov_info_box_button:hover
+div.ov_navigator_info_panel div.ov_navigator_info_button:hover
 {
 	background: #e4f4ff;
 }

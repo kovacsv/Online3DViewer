@@ -13,6 +13,105 @@ OV.Selection = class
     }
 };
 
+OV.NavigatorInfoPanel = class
+{
+    constructor (parentDiv)
+    {
+        this.parentDiv = parentDiv;
+        this.popup = null;
+    }
+
+    FillWithMaterialInfo (info, callbacks)
+    {
+        this.Clear ();
+        if (info === null) {
+            return;
+        }
+
+        let meshItems = [];
+        for (let i = 0; i < info.usedByMeshes.length; i++) {
+            let meshInfo = info.usedByMeshes[i];
+            meshItems.push ({
+                name : OV.GetMeshName (meshInfo.name)
+            });
+        }
+
+        let obj = this;
+        let meshesText = 'Meshes (' + meshItems.length + ')';
+        this.CreateButton (this.parentDiv, meshesText, function (button) {
+            if (meshItems.length === 0) {
+                return;
+            }
+            obj.popup = OV.ShowListPopup (button, meshItems, {
+                onHoverStart : function (index) {
+                    const meshItem = info.usedByMeshes[index];
+                    callbacks.onMeshHover (meshItem.index);
+                },
+                onHoverStop : function (index) {
+                    callbacks.onMeshHover (null);
+                },
+                onClick : function (index) {
+                    const meshItem = info.usedByMeshes[index];
+                    callbacks.onMeshSelect (meshItem.index);
+                }
+            });
+        });
+    }
+
+    FillWithModelInfo (info, callbacks)
+    {
+        this.Clear ();
+        if (info === null) {
+            return;
+        }
+
+        let materialItems = [];
+        for (let i = 0; i < info.usedMaterials.length; i++) {
+            let usedMaterial = info.usedMaterials[i];
+            materialItems.push ({
+                name : OV.GetMaterialName (usedMaterial.name),
+                color : OV.ColorToHexString (usedMaterial.diffuse)
+            });
+        }
+
+        let obj = this;
+        if (OV.FeatureSet.CalculateQuantities) {
+            this.CreateButton (this.parentDiv, 'Calculate Quantities', function (button) {
+                obj.popup = OV.ShowQuantitiesPopup (button, info.element);
+            });   
+        }
+
+        let materialsText = 'Materials (' + materialItems.length + ')';
+        this.CreateButton (this.parentDiv, materialsText, function (button) {
+            obj.popup = OV.ShowListPopup (button, materialItems, {
+                onClick : function (index) {
+                    let usedMaterial = info.usedMaterials[index];
+                    callbacks.onMaterialSelect (usedMaterial.index);
+                }
+            });
+        });        
+    }
+
+    CreateButton (parentDiv, buttonText, onClick)
+    {
+        let button = $('<div>').addClass ('ov_navigator_info_button').appendTo (parentDiv);
+        $('<div>').addClass ('ov_navigator_info_button_text').html (buttonText).appendTo (button);
+        $('<img>').addClass ('ov_navigator_info_button_icon').attr ('src', 'assets/images/tree/arrow_right.svg').appendTo (button);
+        button.click (function () {
+            onClick (button);
+        });
+    }
+
+    Clear ()
+    {
+        if (this.popup !== null) {
+            this.popup.Hide ();
+            this.popup = null;
+        }        
+        this.parentDiv.empty ();
+    }
+};
+
 OV.Navigator = class
 {
     constructor (parentDiv)
@@ -23,7 +122,7 @@ OV.Navigator = class
         this.treeDiv = $('<div>').addClass ('ov_navigator_tree_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
         this.infoDiv = $('<div>').addClass ('ov_navigator_info_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
         this.treeView = new OV.TreeView (this.treeDiv);
-        this.infoPanel = new OV.InfoPanel (this.infoDiv);
+        this.infoPanel = new OV.NavigatorInfoPanel (this.infoDiv);
         this.modelData = new OV.ModelData ();
         this.selection = null;
         this.tempSelectedMeshIndex = null;
@@ -31,11 +130,7 @@ OV.Navigator = class
 
     Init (callbacks)
     {
-        let obj = this;
         this.callbacks = callbacks;
-        this.infoPanel.SetOpenCloseHandler (function () {
-            obj.Resize ();
-        });
     }
 
     Resize ()
