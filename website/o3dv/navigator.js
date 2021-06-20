@@ -21,16 +21,16 @@ OV.NavigatorInfoPanel = class
         this.popup = null;
     }
 
-    FillWithMaterialInfo (info, callbacks)
+    FillWithMaterialInfo (usedByMeshes, callbacks)
     {
         this.Clear ();
-        if (info === null) {
+        if (usedByMeshes === null) {
             return;
         }
 
         let meshItems = [];
-        for (let i = 0; i < info.usedByMeshes.length; i++) {
-            let meshInfo = info.usedByMeshes[i];
+        for (let i = 0; i < usedByMeshes.length; i++) {
+            let meshInfo = usedByMeshes[i];
             meshItems.push ({
                 name : OV.GetMeshName (meshInfo.name)
             });
@@ -44,30 +44,30 @@ OV.NavigatorInfoPanel = class
             }
             obj.popup = OV.ShowListPopup (button, meshItems, {
                 onHoverStart : function (index) {
-                    const meshItem = info.usedByMeshes[index];
+                    const meshItem = usedByMeshes[index];
                     callbacks.onMeshHover (meshItem.index);
                 },
                 onHoverStop : function (index) {
                     callbacks.onMeshHover (null);
                 },
                 onClick : function (index) {
-                    const meshItem = info.usedByMeshes[index];
+                    const meshItem = usedByMeshes[index];
                     callbacks.onMeshSelect (meshItem.index);
                 }
             });
         });
     }
 
-    FillWithModelInfo (info, callbacks)
+    FillWithModelInfo (usedMaterials, callbacks)
     {
         this.Clear ();
-        if (info === null) {
+        if (usedMaterials === null) {
             return;
         }
 
         let materialItems = [];
-        for (let i = 0; i < info.usedMaterials.length; i++) {
-            let usedMaterial = info.usedMaterials[i];
+        for (let i = 0; i < usedMaterials.length; i++) {
+            let usedMaterial = usedMaterials[i];
             materialItems.push ({
                 name : OV.GetMaterialName (usedMaterial.name),
                 color : OV.ColorToHexString (usedMaterial.diffuse)
@@ -75,17 +75,11 @@ OV.NavigatorInfoPanel = class
         }
 
         let obj = this;
-        if (OV.FeatureSet.CalculateQuantities) {
-            this.CreateButton (this.parentDiv, 'Calculate Quantities', function (button) {
-                obj.popup = OV.ShowQuantitiesPopup (button, info.element);
-            });   
-        }
-
         let materialsText = 'Materials (' + materialItems.length + ')';
         this.CreateButton (this.parentDiv, materialsText, function (button) {
             obj.popup = OV.ShowListPopup (button, materialItems, {
                 onClick : function (index) {
-                    let usedMaterial = info.usedMaterials[index];
+                    let usedMaterial = usedMaterials[index];
                     callbacks.onMaterialSelect (usedMaterial.index);
                 }
             });
@@ -114,9 +108,10 @@ OV.NavigatorInfoPanel = class
 
 OV.Navigator = class
 {
-    constructor (parentDiv)
+    constructor (parentDiv, sidebar)
     {
         this.parentDiv = parentDiv;
+        this.sidebar = sidebar;
         this.callbacks = null;
         this.titleDiv = $('<div>').addClass ('ov_navigator_tree_title').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
         this.treeDiv = $('<div>').addClass ('ov_navigator_tree_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
@@ -315,16 +310,16 @@ OV.Navigator = class
     {
         let obj = this;
         if (this.selection === null) {
-            let modelInfo = this.callbacks.getModelInformation ();
-            this.infoPanel.FillWithModelInfo (modelInfo, {
+            let usedMaterial = this.callbacks.getMaterialsForModel ();
+            this.infoPanel.FillWithModelInfo (usedMaterial, {
                 onMaterialSelect : function (materialIndex) {
                     obj.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                 }
             });
         } else {
             if (this.selection.type === OV.SelectionType.Material) {
-                let materialInfo = this.callbacks.getMaterialInformation (this.selection.index);
-                this.infoPanel.FillWithMaterialInfo (materialInfo, {
+                let usedByMeshes = this.callbacks.getMeshesForMaterial (this.selection.index);
+                this.infoPanel.FillWithMaterialInfo (usedByMeshes, {
                     onMeshHover : function (meshIndex) {
                         obj.SetTempSelectedMeshIndex (meshIndex);
                     },
@@ -333,8 +328,8 @@ OV.Navigator = class
                     }
                 });
             } else if (this.selection.type === OV.SelectionType.Mesh) {
-                let meshInfo = this.callbacks.getMeshInformation (this.selection.index);
-                this.infoPanel.FillWithModelInfo (meshInfo, {
+                let usedByMeshes = this.callbacks.getMaterialsForMesh (this.selection.index);
+                this.infoPanel.FillWithModelInfo (usedByMeshes, {
                     onMaterialSelect : function (materialIndex) {
                         obj.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                     }
