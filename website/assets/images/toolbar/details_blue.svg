@@ -12,35 +12,16 @@
    x="0px"
    id="Layer_1"
    version="1.1"><metadata
-   id="metadata28"><rdf:RDF><cc:Work
+   id="metadata46"><rdf:RDF><cc:Work
        rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
          rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
-   id="defs26" />
-<g
-   id="g3772">
-	
-		<line
-   y2="3.5"
-   x2="14.5"
-   y1="14.5"
-   x1="3.5"
+   id="defs44" />
+<path
+   id="path39"
+   d="M14.5,16.5h-11  c-0.5,0-1-0.5-1-1v-14c0-0.6,0.5-1,1-1h11c0.6,0,1,0.4,1,1v14C15.5,16.1,15.1,16.5,14.5,16.5z M7.5,3.5h5 M7.5,6.5h5 M7.5,9.5h5   M7.5,12.5h5 M5.5,3.5L5.5,3.5 M5.5,6.5L5.5,6.5 M5.5,9.5L5.5,9.5 M5.5,12.5L5.5,12.5"
    stroke-miterlimit="10"
    stroke-linejoin="round"
    stroke-linecap="round"
-   stroke="#263238"
-   fill="none"
-   id="line3768" />
-	
-		<line
-   y2="3.5"
-   x2="3.5"
-   y1="14.5"
-   x1="14.5"
-   stroke-miterlimit="10"
-   stroke-linejoin="round"
-   stroke-linecap="round"
-   stroke="#263238"
-   fill="none"
-   id="line3770" />
-</g>
+   stroke="#3393BD"
+   fill="none" />
 </svg>
