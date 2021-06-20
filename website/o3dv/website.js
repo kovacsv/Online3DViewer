@@ -384,6 +384,12 @@ OV.Website = class
 
     InitSidebar ()
     {
+        let obj = this;
+        this.sidebar.Init ({
+            onClose : function () {
+                obj.ShowSidebar (false);
+            }
+        });
         let show = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
         this.ShowSidebar (show);
     }

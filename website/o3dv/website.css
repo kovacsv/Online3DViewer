@@ -271,6 +271,19 @@ div.ov_sidebar_title
 	border-bottom: 1px solid #dddddd;
 }
 
+div.ov_sidebar_title div.ov_sidebar_title_text
+{
+	float: left;
+}
+
+div.ov_sidebar_title img.ov_sidebar_title_img
+{
+	width: 18px;
+	height: 18px;
+	float: right;
+	cursor: pointer;
+}
+
 div.ov_sidebar_content
 {
 	overflow: auto;

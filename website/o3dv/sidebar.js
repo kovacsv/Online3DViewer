@@ -8,10 +8,24 @@ OV.Sidebar = class
     constructor (parentDiv)
     {
         this.parentDiv = parentDiv;
+        this.callbacks = null;
         this.visible = true;
-        this.titleDiv = $('<div>').addClass ('ov_sidebar_title').appendTo (parentDiv);
-        this.titleDiv.html ('Details');
-        this.contentDiv = $('<div>').addClass ('ov_sidebar_content').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
+        this.titleDiv = null;
+        this.contentDiv = null;
+
+    }
+
+    Init (callbacks)
+    {
+        this.callbacks = callbacks;
+        this.titleDiv = $('<div>').addClass ('ov_sidebar_title').appendTo (this.parentDiv);
+        this.contentDiv = $('<div>').addClass ('ov_sidebar_content').addClass ('ov_thin_scrollbar').appendTo (this.parentDiv);
+        let titleTextDiv = $('<div>').addClass ('ov_sidebar_title_text').html ('Details').appendTo (this.titleDiv);
+        let titleImg = $('<img>').addClass ('ov_sidebar_title_img').attr ('src', 'assets/images/sidebar/close.svg').appendTo (this.titleDiv);
+        let obj = this
+        titleImg.click (function () {
+            obj.callbacks.onClose ();
+        });
     }
 
     Show (show)
