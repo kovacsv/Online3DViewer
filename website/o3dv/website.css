@@ -657,34 +657,47 @@ div.ov_progress div.ov_progress_text
 	text-align: center;
 }
 
-table.ov_property_table
+div.ov_property_table
 {
-	width: 100%;
-	border-collapse: collapse;
+	
 }
 
-table.ov_property_table td
+div.ov_property_table_custom
+{
+	margin-top: 8px;
+	padding-top: 8px;
+	border-top: 1px solid #dddddd;
+}
+
+div.ov_property_table div.ov_property_table_row
+{
+	overflow: auto;
+}
+
+div.ov_property_table div.ov_property_table_cell
 {
 	padding: 4px 0px;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	display: inline-block;
+	box-sizing: border-box;
 }
 
-table.ov_property_table td.ov_property_table_name
+div.ov_property_table div.ov_property_table_name
 {
-	width: 45%;
-	padding-right: 8%;
+	width: 49%;
+	padding-right: 2%;
+	float: left;
 }
 
-table.ov_property_table td.ov_property_table_value
+div.ov_property_table div.ov_property_table_value
 {
-	width: 45%;
+	width: 49%;
 	text-align: right;
+	float: left;
 }
 
-table.ov_property_table div.ov_property_table_button
+div.ov_property_table div.ov_property_table_button
 {
 	color: #3393bd;
 	cursor: pointer;

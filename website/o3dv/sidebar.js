@@ -38,27 +38,20 @@ OV.Sidebar = class
         return this.visible;
     }
 
-    CreatePropertyTable ()
-    {
-        this.Clear ();
-        let table = $('<table>').addClass ('ov_property_table').appendTo (this.contentDiv);
-        return table;
-    }
-
     AddProperty (table, property)
     {
-        let row = $('<tr>').appendTo (table);
-        let nameColum = $('<td>').addClass ('ov_property_table_name').appendTo (row);
-        let valueColumn = $('<td>').addClass ('ov_property_table_value').appendTo (row);
+        let row = $('<div>').addClass ('ov_property_table_row').appendTo (table);
+        let nameColum = $('<div>').addClass ('ov_property_table_cell ov_property_table_name').appendTo (row);
+        let valueColumn = $('<div>').addClass ('ov_property_table_cell ov_property_table_value').appendTo (row);
         nameColum.html (property.name + ':').attr ('title', property.name);
         this.DisplayPropertyValue (property, valueColumn);
     }
 
     AddCalculatedProperty (table, name, calculateValue)
     {
-        let row = $('<tr>').appendTo (table);
-        let nameColum = $('<td>').addClass ('ov_property_table_name').appendTo (row);
-        let valueColumn = $('<td>').addClass ('ov_property_table_value').appendTo (row);
+        let row = $('<div>').addClass ('ov_property_table_row').appendTo (table);
+        let nameColum = $('<div>').addClass ('ov_property_table_cell ov_property_table_name').appendTo (row);
+        let valueColumn = $('<div>').addClass ('ov_property_table_cell ov_property_table_value').appendTo (row);
         nameColum.html (name + ':').attr ('title', name);
 
         let obj = this;
@@ -106,7 +99,7 @@ OV.Sidebar = class
     AddElementProperties (element)
     {
         this.Clear ();
-        let table = this.CreatePropertyTable ();
+        let table = $('<div>').addClass ('ov_property_table').appendTo (this.contentDiv);
         let boundingBox = OV.GetBoundingBox (element);
         let size = OV.SubCoord3D (boundingBox.max, boundingBox.min);
         this.AddProperty (table, new OV.Property (OV.PropertyType.Integer, 'Vertex Count', element.VertexCount ()));
@@ -128,6 +121,13 @@ OV.Sidebar = class
             }
             return new OV.Property (OV.PropertyType.Number, null, volume);
         });
+        if (element.PropertyCount () > 0) {
+            let customTable = $('<div>').addClass ('ov_property_table ov_property_table_custom').appendTo (this.contentDiv);
+            for (let i = 0; i < element.PropertyCount (); i++) {
+                const property = element.GetProperty (i);
+                this.AddProperty (customTable, property);
+            }
+        }
         this.Resize ();
     }
 
@@ -143,7 +143,7 @@ OV.Sidebar = class
         }
 
         this.Clear ();
-        let table = this.CreatePropertyTable ();
+        let table = $('<div>').addClass ('ov_property_table').appendTo (this.contentDiv);
         this.AddProperty (table, new OV.Property (OV.PropertyType.Color, 'Color', material.diffuse));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Percent, 'Opacity', material.opacity));
         AddTextureMap (this, table, 'Diffuse Map', material.diffuseMap);
