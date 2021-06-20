@@ -131,7 +131,7 @@ div.main_viewer
 
 div.main_sidebar
 {
-	width: 240px;
+	width: 300px;
 	margin: 10px 10px 10px 0px;
 	overflow: none;
 	float: right;
@@ -257,6 +257,11 @@ div.ov_sidebar_title
 	padding-bottom: 10px;
 	margin-bottom: 10px;
 	border-bottom: 1px solid #dddddd;
+}
+
+div.ov_sidebar_content
+{
+	overflow: auto;
 }
 
 div.ov_tree_view
@@ -566,22 +571,6 @@ div.ov_popup
 	border-radius: 5px;
 }
 
-div.ov_popup div.ov_popup_title
-{
-	font-weight: bold;
-	margin-top: 15px;
-	margin-bottom: 10px;
-	margin-left: 10px;
-	margin-right: 10px;
-}
-
-div.ov_popup div.ov_popup_text
-{
-	margin-bottom: 15px;
-	margin-left: 10px;
-	margin-right: 10px;
-}
-
 div.ov_popup div.ov_popup_list
 {
 	max-height: 200px;
@@ -633,6 +622,32 @@ div.ov_progress div.ov_progress_text
 {
 	font-size: 19px;
 	text-align: center;
+}
+
+table.ov_property_table
+{
+	border-collapse: collapse;
+}
+
+table.ov_property_table td
+{
+	padding: 4px 0px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	display: inline-block;
+}
+
+table.ov_property_table td.ov_property_table_name
+{
+	width: 45%;
+	padding-right: 8%;
+}
+
+table.ov_property_table td.ov_property_table_value
+{
+	width: 45%;
+	text-align: right;
 }
 
 div.ov_thin_scrollbar

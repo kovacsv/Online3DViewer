@@ -61,9 +61,11 @@ OV.Website = class
         let contentWidth = windowWidth - navigatorWidth - sidebarWidth - safetyMargin;
         let contentHeight = windowHeight - headerHeight - safetyMargin;
         this.parameters.navigatorDiv.outerHeight (contentHeight, true);
+        this.parameters.sidebarDiv.outerHeight (contentHeight, true);
         this.parameters.introDiv.outerHeight (contentHeight, true);
 
         this.navigator.Resize ();
+        this.sidebar.Resize ();
         this.viewer.Resize (contentWidth, contentHeight);
     }
 

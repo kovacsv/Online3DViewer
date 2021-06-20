@@ -113,7 +113,7 @@ OV.Navigator = class
         this.parentDiv = parentDiv;
         this.sidebar = sidebar;
         this.callbacks = null;
-        this.titleDiv = $('<div>').addClass ('ov_navigator_tree_title').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
+        this.titleDiv = $('<div>').addClass ('ov_navigator_tree_title').appendTo (parentDiv);
         this.treeDiv = $('<div>').addClass ('ov_navigator_tree_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
         this.infoDiv = $('<div>').addClass ('ov_navigator_info_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
         this.treeView = new OV.TreeView (this.treeDiv);
@@ -311,6 +311,7 @@ OV.Navigator = class
         let obj = this;
         if (this.selection === null) {
             let usedMaterial = this.callbacks.getMaterialsForModel ();
+            this.sidebar.AddProperties (null);
             this.infoPanel.FillWithModelInfo (usedMaterial, {
                 onMaterialSelect : function (materialIndex) {
                     obj.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
