@@ -1,8 +1,3 @@
-OV.PropertyType =
-{
-    Text : 1
-};
-
 OV.Sidebar = class
 {
     constructor (parentDiv)
@@ -45,36 +40,50 @@ OV.Sidebar = class
 
     AddProperties (properties)
     {
-        function AddProperty (table, name, value)
+        function AddProperty (table, property)
         {
             let row = $('<tr>').appendTo (table);
             let nameColum = $('<td>').addClass ('ov_property_table_name').appendTo (row);
             let valueColumn = $('<td>').addClass ('ov_property_table_value').appendTo (row);
-            nameColum.html (name).attr ('title', name);
-            valueColumn.html (value).attr ('title', value);
+            nameColum.html (property.name).attr ('title', property.name);
+            let valueText = null;
+            if (property.type === OV.PropertyType.Integer) {
+                valueText = property.value.toLocaleString ();
+            } else if (property.type === OV.PropertyType.Percent) {
+                valueText = parseInt (property.value * 100, 10).toString () + '%';
+            } else if (property.type === OV.PropertyType.Color) {
+                valueText = '#' + OV.ColorToHexString (property.value);
+            }
+            if (valueText !== null) {
+                valueColumn.html (valueText).attr ('title', valueText);
+            }
         }
 
         this.Clear ();
         let table = $('<table>').addClass ('ov_property_table').appendTo (this.contentDiv);
-        AddProperty (table, 'Vertex Count', '1245');
-        AddProperty (table, 'Triangle Count', '23466');
-        AddProperty (table, 'Size', '12.0 x 14.0 x 6.0');
-        AddProperty (table, 'Volume', '23423');
-        AddProperty (table, 'Surface Area', '45463');
-        AddProperty (table, 'Emission Texture', 'Very very long property value');
-        AddProperty (table, 'Very very long property name', 'Very very long property value');
-        AddProperty (table, 'Surface Area', '45463');
-        AddProperty (table, 'Surface Area', '45463');
-        AddProperty (table, 'Surface Area', '45463');
-        AddProperty (table, 'Surface Area', '45463');
-        AddProperty (table, 'Surface Area', '45463');
-        AddProperty (table, 'Surface Area', '45463');
-        AddProperty (table, 'Surface Area', '45463');
-        AddProperty (table, 'Surface Area', '45463');
-        AddProperty (table, 'Surface Area', '45463');
-        AddProperty (table, 'Surface Area', '45463');
+        for (let i = 0; i < properties.length; i++) {
+            let property = properties[i];
+            AddProperty (table, property);
+        }
+
         this.Resize ();
     }
+
+    AddElementProperties (element)
+    {
+        let properties = [];
+        properties.push (new OV.Property (OV.PropertyType.Integer, 'Vertex Count', element.VertexCount ()));
+        properties.push (new OV.Property (OV.PropertyType.Integer, 'Triangle Count', element.TriangleCount ()));
+        this.AddProperties (properties);
+    }
+
+    AddMaterialProperties (material)
+    {
+        let properties = [];
+        properties.push (new OV.Property (OV.PropertyType.Color, 'Color', material.diffuse));
+        properties.push (new OV.Property (OV.PropertyType.Percent, 'Opacity', material.opacity));
+        this.AddProperties (properties);
+    }    
 
     Resize ()
     {
