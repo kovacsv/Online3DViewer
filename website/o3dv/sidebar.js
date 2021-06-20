@@ -45,16 +45,21 @@ OV.Sidebar = class
             let row = $('<tr>').appendTo (table);
             let nameColum = $('<td>').addClass ('ov_property_table_name').appendTo (row);
             let valueColumn = $('<td>').addClass ('ov_property_table_value').appendTo (row);
-            nameColum.html (property.name).attr ('title', property.name);
+            nameColum.html (property.name + ':').attr ('title', property.name);
             let valueText = null;
             if (property.type === OV.PropertyType.Text) {
                 valueText = property.value;
             } else if (property.type === OV.PropertyType.Integer) {
                 valueText = property.value.toLocaleString ();
+            } else if (property.type === OV.PropertyType.Number) {
+                valueText = property.value.toFixed (2);
             } else if (property.type === OV.PropertyType.Percent) {
                 valueText = parseInt (property.value * 100, 10).toString () + '%';
             } else if (property.type === OV.PropertyType.Color) {
-                valueText = '#' + OV.ColorToHexString (property.value);
+                let hexString = '#' + OV.ColorToHexString (property.value);
+                let colorCircle = OV.CreateInlineColorCircle (property.value);
+                colorCircle.appendTo (valueColumn);
+                $('<span>').html (hexString).appendTo (valueColumn);
             }
             if (valueText !== null) {
                 valueColumn.html (valueText).attr ('title', valueText);
@@ -76,6 +81,11 @@ OV.Sidebar = class
         let properties = [];
         properties.push (new OV.Property (OV.PropertyType.Integer, 'Vertex Count', element.VertexCount ()));
         properties.push (new OV.Property (OV.PropertyType.Integer, 'Triangle Count', element.TriangleCount ()));
+        let boundingBox = OV.GetBoundingBox (element);
+        let size = OV.SubCoord3D (boundingBox.max, boundingBox.min);
+        properties.push (new OV.Property (OV.PropertyType.Number, 'Size X', size.x));
+        properties.push (new OV.Property (OV.PropertyType.Number, 'Size Y', size.y));
+        properties.push (new OV.Property (OV.PropertyType.Number, 'Size Z', size.z));
         this.AddProperties (properties);
     }
 

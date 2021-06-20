@@ -136,3 +136,15 @@ OV.CreateIconButton = function (iconName, hoverIconName, title, link)
     }
     return buttonLink;
 };
+
+OV.CreateInlineColorCircle = function (color)
+{
+    let hexString = '#' + OV.ColorToHexString (color);
+    let darkerColor = new OV.Color (
+        Math.max (0, color.r - 50),
+        Math.max (0, color.g - 50),
+        Math.max (0, color.b - 50)
+    );
+    let darkerColorHexString = '#' + OV.ColorToHexString (darkerColor);
+    return $('<div>').addClass ('ov_color_circle').css ('background', hexString).css ('border', '1px solid ' + darkerColorHexString);
+};

@@ -118,7 +118,7 @@ div.main
 
 div.main_navigator
 {
-	width: 240px;
+	width: 260px;
 	margin: 10px 0px 10px 10px;
 	overflow: none;
 	float: left;
@@ -131,7 +131,7 @@ div.main_viewer
 
 div.main_sidebar
 {
-	width: 300px;
+	width: 260px;
 	margin: 10px 10px 10px 0px;
 	overflow: none;
 	float: right;
@@ -346,6 +346,18 @@ div.ov_tree_view div.ov_tree_item_name
 div.ov_tree_view div.ov_tree_view_children
 {
 	margin-left: 28px;
+}
+
+div.ov_color_circle
+{
+	background: #ffffff;
+	border: 1px solid #000000;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+	margin-right: 5px;
+	margin-bottom: -2px;
+	border-radius: 10px;
 }
 
 div.ov_modal_overlay
@@ -612,12 +624,8 @@ div.ov_popup div.ov_popup_list_item
 	cursor: pointer;
 }
 
-div.ov_popup div.ov_popup_list_item_rgbbox
+div.ov_popup div.ov_popup_list_item_icon
 {
-	width: 18px;
-	height: 18px;
-	margin-right: 5px;
-	border: 1px solid #222222;
 	float: left;
 }
 
