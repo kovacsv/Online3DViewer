@@ -283,7 +283,7 @@ OV.Website = class
             });
         });
         AddSeparator (this.toolbar);
-        AddButton (this.toolbar, 'fit', 'Fit model to Window', false, function () {
+        AddButton (this.toolbar, 'fit', 'Fit model to window', false, function () {
             obj.FitModelToWindow (false);
         });
         AddButton (this.toolbar, 'up_y', 'Set Y axis as up vector', false, function () {
@@ -330,7 +330,7 @@ OV.Website = class
                 });
             });
         }
-        AddRightButton (this.toolbar, 'details', 'Details Panel', true, function () {
+        AddRightButton (this.toolbar, 'details', 'Details panel', true, function () {
             obj.ShowSidebar (!obj.sidebar.IsVisible ());
         });
         

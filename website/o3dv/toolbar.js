@@ -18,6 +18,7 @@ OV.ToolbarButton = class
         if (this.onClick !== null) {
             this.buttonDiv.click (this.onClick);
         }
+        this.buttonDiv.attr ('alt', this.imageTitle);
         OV.InstallTooltip (this.buttonDiv, this.imageTitle);
         this.Update ();
     }

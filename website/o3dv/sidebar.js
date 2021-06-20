@@ -52,7 +52,10 @@ OV.Sidebar = class
             } else if (property.type === OV.PropertyType.Integer) {
                 valueText = property.value.toLocaleString ();
             } else if (property.type === OV.PropertyType.Number) {
-                valueText = property.value.toFixed (2);
+                valueText = property.value.toLocaleString (undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
             } else if (property.type === OV.PropertyType.Percent) {
                 valueText = parseInt (property.value * 100, 10).toString () + '%';
             } else if (property.type === OV.PropertyType.Color) {
