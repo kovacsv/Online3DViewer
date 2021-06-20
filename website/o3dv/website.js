@@ -21,6 +21,7 @@ OV.Website = class
 
     Load ()
     {
+
         let canvas = $('<canvas>').appendTo (this.parameters.viewerDiv);
         this.viewer.Init (canvas.get (0));
         this.ShowViewer (false);
@@ -63,6 +64,7 @@ OV.Website = class
         
         let contentWidth = windowWidth - navigatorWidth - sidebarWidth - safetyMargin;
         let contentHeight = windowHeight - headerHeight - safetyMargin;
+        
         this.parameters.navigatorDiv.outerHeight (contentHeight, true);
         this.parameters.sidebarDiv.outerHeight (contentHeight, true);
         this.parameters.introDiv.outerHeight (contentHeight, true);
@@ -85,7 +87,6 @@ OV.Website = class
     {
         this.sidebar.Show (show);
         this.cookieHandler.SetBoolVal ('ov_show_sidebar', show);
-        this.Resize ();
     }
 
     ClearModel ()
@@ -332,6 +333,7 @@ OV.Website = class
         }
         AddRightButton (this.toolbar, 'details', 'Details panel', true, function () {
             obj.ShowSidebar (!obj.sidebar.IsVisible ());
+            obj.Resize ();
         });
         
         this.parameters.fileInput.on ('change', function (ev) {
@@ -388,6 +390,7 @@ OV.Website = class
         this.sidebar.Init ({
             onClose : function () {
                 obj.ShowSidebar (false);
+                obj.Resize ();
             }
         });
         let show = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
