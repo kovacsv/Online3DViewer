@@ -22,7 +22,7 @@ OV.Sidebar = class
         this.contentDiv = $('<div>').addClass ('ov_sidebar_content').addClass ('ov_thin_scrollbar').appendTo (this.parentDiv);
         let titleTextDiv = $('<div>').addClass ('ov_sidebar_title_text').html ('Details').appendTo (this.titleDiv);
         let titleImg = $('<img>').addClass ('ov_sidebar_title_img').attr ('src', 'assets/images/sidebar/close.svg').appendTo (this.titleDiv);
-        let obj = this
+        let obj = this;
         titleImg.click (function () {
             obj.callbacks.onClose ();
         });
