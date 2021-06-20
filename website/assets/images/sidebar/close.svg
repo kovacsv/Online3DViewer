@@ -1,1 +1,41 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" xml:space="preserve"><path fill="none" stroke="#263238" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="M14.5 16.5h-11c-.5 0-1-.5-1-1v-14c0-.6.5-1 1-1h11c.6 0 1 .4 1 1v14c0 .6-.4 1-1 1zm-7-13h5m-5 3h5m-5 3h5m-5 3h5m-7-9h0m0 3h0m0 3h0m0 3h0"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xml:space="preserve"
+   style="enable-background:new 0 0 18 18;"
+   viewBox="0 0 18 18"
+   y="0px"
+   x="0px"
+   id="Layer_1"
+   version="1.1"><metadata
+   id="metadata3779"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+   id="defs3777" />
+<style
+   id="style3766"
+   type="text/css">
+	.st0{fill:none;stroke:#263238;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+</style>
+<g
+   id="g3772">
+	<line
+   id="line3768"
+   y2="1.5"
+   x2="16.5"
+   y1="16.5"
+   x1="1.5"
+   class="st0" />
+	<line
+   id="line3770"
+   y2="1.5"
+   x2="1.5"
+   y1="16.5"
+   x1="16.5"
+   class="st0" />
+</g>
+</svg>
