@@ -477,6 +477,9 @@ OV.Website = class
             },
             getMaterialsForModel : function () {
                 return GetMaterialsForModel (obj.model);
+            },
+            getModel : function () {
+                return obj.model;
             }
         });
     }

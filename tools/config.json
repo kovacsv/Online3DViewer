@@ -22,6 +22,7 @@
 		"source/io/fileutils.js",
 		"source/model/material.js",
 		"source/model/triangle.js",
+		"source/model/property.js",
 		"source/model/element.js",
 		"source/model/mesh.js",
 		"source/model/meshbuffer.js",

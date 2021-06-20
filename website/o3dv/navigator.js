@@ -311,16 +311,16 @@ OV.Navigator = class
         let obj = this;
         if (this.selection === null) {
             let usedMaterials = this.callbacks.getMaterialsForModel ();
-            this.sidebar.AddProperties (null);
             this.infoPanel.FillWithModelInfo (usedMaterials, {
                 onMaterialSelect : function (materialIndex) {
                     obj.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                 }
             });
+            let model = this.callbacks.getModel ();
+            this.sidebar.AddElementProperties (model);
         } else {
             if (this.selection.type === OV.SelectionType.Material) {
                 let usedByMeshes = this.callbacks.getMeshesForMaterial (this.selection.index);
-                this.sidebar.AddProperties (null);
                 this.infoPanel.FillWithMaterialInfo (usedByMeshes, {
                     onMeshHover : function (meshIndex) {
                         obj.SetTempSelectedMeshIndex (meshIndex);
@@ -329,14 +329,19 @@ OV.Navigator = class
                         obj.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshIndex));
                     }
                 });
+                let model = this.callbacks.getModel ();
+                let material = model.GetMaterial (this.selection.index);
+                this.sidebar.AddMaterialProperties (material);
             } else if (this.selection.type === OV.SelectionType.Mesh) {
                 let usedMaterials = this.callbacks.getMaterialsForMesh (this.selection.index);
-                this.sidebar.AddProperties (null);
                 this.infoPanel.FillWithModelInfo (usedMaterials, {
                     onMaterialSelect : function (materialIndex) {
                         obj.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                     }
                 });
+                let model = this.callbacks.getModel ();
+                let mesh = model.GetMesh (this.selection.index);
+                this.sidebar.AddElementProperties (mesh);
             }
         }
         this.Resize ();

@@ -651,6 +651,7 @@ div.ov_progress div.ov_progress_text
 
 table.ov_property_table
 {
+	width: 100%;
 	border-collapse: collapse;
 }
 
