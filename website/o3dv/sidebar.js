@@ -8,9 +8,25 @@ OV.Sidebar = class
     constructor (parentDiv)
     {
         this.parentDiv = parentDiv;
+        this.visible = true;
         this.titleDiv = $('<div>').addClass ('ov_sidebar_title').appendTo (parentDiv);
         this.titleDiv.html ('Details');
         this.contentDiv = $('<div>').addClass ('ov_sidebar_content').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
+    }
+
+    Show (show)
+    {
+        this.visible = show;
+        if (show) {
+            this.parentDiv.show ();
+        } else {
+            this.parentDiv.hide ();
+        }
+    }
+
+    IsVisible ()
+    {
+        return this.visible;
     }
 
     AddProperties (properties)

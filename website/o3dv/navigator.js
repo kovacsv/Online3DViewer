@@ -310,9 +310,9 @@ OV.Navigator = class
     {
         let obj = this;
         if (this.selection === null) {
-            let usedMaterial = this.callbacks.getMaterialsForModel ();
+            let usedMaterials = this.callbacks.getMaterialsForModel ();
             this.sidebar.AddProperties (null);
-            this.infoPanel.FillWithModelInfo (usedMaterial, {
+            this.infoPanel.FillWithModelInfo (usedMaterials, {
                 onMaterialSelect : function (materialIndex) {
                     obj.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                 }
@@ -320,6 +320,7 @@ OV.Navigator = class
         } else {
             if (this.selection.type === OV.SelectionType.Material) {
                 let usedByMeshes = this.callbacks.getMeshesForMaterial (this.selection.index);
+                this.sidebar.AddProperties (null);
                 this.infoPanel.FillWithMaterialInfo (usedByMeshes, {
                     onMeshHover : function (meshIndex) {
                         obj.SetTempSelectedMeshIndex (meshIndex);
@@ -329,8 +330,9 @@ OV.Navigator = class
                     }
                 });
             } else if (this.selection.type === OV.SelectionType.Mesh) {
-                let usedByMeshes = this.callbacks.getMaterialsForMesh (this.selection.index);
-                this.infoPanel.FillWithModelInfo (usedByMeshes, {
+                let usedMaterials = this.callbacks.getMaterialsForMesh (this.selection.index);
+                this.sidebar.AddProperties (null);
+                this.infoPanel.FillWithModelInfo (usedMaterials, {
                     onMaterialSelect : function (materialIndex) {
                         obj.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                     }

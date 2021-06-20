@@ -175,14 +175,26 @@ div.ov_toolbar
 	user-select: none;
 }
 
-div.ov_toolbar div.ov_toolbar_button_div
+div.ov_toolbar div.ov_toolbar_button
 {
 	padding: 10px;
 	float: left;
 	cursor: pointer;
 }
 
-div.ov_toolbar div.ov_toolbar_button_div.selected
+div.ov_toolbar div.ov_toolbar_button
+{
+	padding: 10px;
+	float: left;
+	cursor: pointer;
+}
+
+div.ov_toolbar div.ov_toolbar_button.right
+{
+	float: right;
+}
+
+div.ov_toolbar div.ov_toolbar_button.selected
 {
 	background: #e1e1e1;
 }
@@ -675,7 +687,7 @@ a:hover
 	text-decoration: underline;
 }
 
-div.ov_toolbar div.ov_toolbar_button_div:hover
+div.ov_toolbar div.ov_toolbar_button:hover
 {
 	background: #c9e5f8;
 }

@@ -54,7 +54,9 @@ OV.Website = class
         let safetyMargin = 0;
         if (!OV.IsSmallWidth ()) {
             navigatorWidth = parseInt (this.parameters.navigatorDiv.outerWidth (true), 10);
-            sidebarWidth = parseInt (this.parameters.sidebarDiv.outerWidth (true), 10);
+            if (this.sidebar.IsVisible ()) {
+                sidebarWidth = parseInt (this.parameters.sidebarDiv.outerWidth (true), 10);
+            }
             safetyMargin = 1;
         }
         
@@ -221,7 +223,15 @@ OV.Website = class
             if (onlyFullWidth) {
                 button.AddClass ('only_full_width');
             }
+            return button;
         }
+
+        function AddRightButton (toolbar, imageName, imageTitle, onlyFullWidth, onClick)
+        {
+            let button = AddButton (toolbar, imageName, imageTitle, onlyFullWidth, onClick);
+            button.AddClass ('right');
+            return button;
+        }        
 
         function AddRadioButton (toolbar, imageNames, imageTitles, selectedIndex, onlyFullWidth, onClick)
         {
@@ -312,6 +322,11 @@ OV.Website = class
                 });
             });
         }
+        AddRightButton (this.toolbar, 'details', 'Details Panel', true, function () {
+            let isVisible = obj.sidebar.IsVisible ();
+            obj.sidebar.Show (!isVisible);
+            obj.Resize ();
+        });
         
         this.parameters.fileInput.on ('change', function (ev) {
             if (ev.target.files.length > 0) {
