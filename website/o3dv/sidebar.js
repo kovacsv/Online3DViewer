@@ -47,7 +47,9 @@ OV.Sidebar = class
             let valueColumn = $('<td>').addClass ('ov_property_table_value').appendTo (row);
             nameColum.html (property.name).attr ('title', property.name);
             let valueText = null;
-            if (property.type === OV.PropertyType.Integer) {
+            if (property.type === OV.PropertyType.Text) {
+                valueText = property.value;
+            } else if (property.type === OV.PropertyType.Integer) {
                 valueText = property.value.toLocaleString ();
             } else if (property.type === OV.PropertyType.Percent) {
                 valueText = parseInt (property.value * 100, 10).toString () + '%';
@@ -79,9 +81,23 @@ OV.Sidebar = class
 
     AddMaterialProperties (material)
     {
+        function AddTextureMap (properties, name, map)
+        {
+            if (map === null || map.name === null) {
+                return;
+            }
+            let fileName = OV.GetFileName (map.name);
+            properties.push (new OV.Property (OV.PropertyType.Text, name, fileName));
+        }
+
         let properties = [];
         properties.push (new OV.Property (OV.PropertyType.Color, 'Color', material.diffuse));
         properties.push (new OV.Property (OV.PropertyType.Percent, 'Opacity', material.opacity));
+        AddTextureMap (properties, 'Diffuse Map', material.diffuseMap);
+        AddTextureMap (properties, 'Specular Map', material.specularMap);
+        AddTextureMap (properties, 'Bump Map', material.bumpMap);
+        AddTextureMap (properties, 'Normal Map', material.normalMap);
+        AddTextureMap (properties, 'Emissive Map', material.emissiveMap);      
         this.AddProperties (properties);
     }    
 
