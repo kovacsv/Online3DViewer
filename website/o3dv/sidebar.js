@@ -17,7 +17,7 @@ OV.Sidebar = class
     Show (show)
     {
         this.visible = show;
-        if (show) {
+        if (this.visible) {
             this.parentDiv.show ();
         } else {
             this.parentDiv.hide ();

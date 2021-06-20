@@ -29,6 +29,7 @@ OV.Website = class
         this.InitToolbar ();
         this.InitDragAndDrop ();
         this.InitModelLoader ();
+        this.InitSidebar ();
         this.InitNavigator ();
         this.InitCookieConsent ();
 
@@ -78,6 +79,13 @@ OV.Website = class
         } else {
             this.parameters.mainDiv.hide ();
         }
+    }
+
+    ShowSidebar (show)
+    {
+        this.sidebar.Show (show);
+        this.cookieHandler.SetBoolVal ('ov_show_sidebar', show);
+        this.Resize ();
     }
 
     ClearModel ()
@@ -323,9 +331,7 @@ OV.Website = class
             });
         }
         AddRightButton (this.toolbar, 'details', 'Details Panel', true, function () {
-            let isVisible = obj.sidebar.IsVisible ();
-            obj.sidebar.Show (!isVisible);
-            obj.Resize ();
+            obj.ShowSidebar (!obj.sidebar.IsVisible ());
         });
         
         this.parameters.fileInput.on ('change', function (ev) {
@@ -374,6 +380,12 @@ OV.Website = class
                 obj.viewer.Render ();
             }
         });
+    }
+
+    InitSidebar ()
+    {
+        let show = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
+        this.ShowSidebar (show);
     }
 
     InitNavigator ()
@@ -465,15 +477,14 @@ OV.Website = class
 
     InitCookieConsent ()
     {
-        let cookieConsentKey = 'ov_cookie_consent';
-        let accepted = this.cookieHandler.GetBoolVal (cookieConsentKey, false);
+        let accepted = this.cookieHandler.GetBoolVal ('ov_cookie_consent', false);
         if (accepted) {
             return;
         }
 
         let obj = this;
         OV.ShowCookieDialog (function () {
-            obj.cookieHandler.SetBoolVal (cookieConsentKey, true);
+            obj.cookieHandler.SetBoolVal ('ov_cookie_consent', true);
         });
     }
 };
