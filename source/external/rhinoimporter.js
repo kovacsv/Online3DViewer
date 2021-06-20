@@ -75,6 +75,7 @@ OV.Importer3dm = class extends OV.ImporterBase
 	ImportRhinoDocument (rhinoDoc)
 	{
 		this.InitRhinoInstances (rhinoDoc);
+		this.ImportRhinoUserStrings (rhinoDoc);
 		this.ImportRhinoGeometry (rhinoDoc);
 	}
 
@@ -95,6 +96,11 @@ OV.Importer3dm = class extends OV.ImporterBase
 		}
 	}
 
+	ImportRhinoUserStrings (rhinoDoc)
+	{
+		// TODO: https://github.com/mcneel/rhino3dm/issues/303
+	}
+
 	ImportRhinoGeometry (rhinoDoc)
 	{
 		let rhinoObjects = rhinoDoc.objects ();
@@ -113,7 +119,7 @@ OV.Importer3dm = class extends OV.ImporterBase
 		if (rhinoAttributes.isInstanceDefinitionObject && rhinoInstanceReferences.length === 0) {
 			return;
 		}		
-	
+		
 		let rhinoMesh = null;
 		let deleteMesh = false;
 
@@ -173,6 +179,12 @@ OV.Importer3dm = class extends OV.ImporterBase
 
 		let mesh = new OV.Mesh ();
 		mesh.SetName (rhinoAttributes.name);
+
+		let userStrings = rhinoAttributes.getUserStrings ();
+		for (let i = 0; i < userStrings.length; i++) {
+			let userString = userStrings[i];
+			mesh.AddProperty (new OV.Property (OV.PropertyType.Text, userString[0], userString[1]));
+		}
 
 		let materialIndex = this.GetMaterialIndex (rhinoDoc, rhinoObject, rhinoInstanceReferences);
 		let threeJson = rhinoMesh.toThreejsJSON ();
