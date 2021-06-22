@@ -50,8 +50,6 @@ OV.ImporterIfc = class extends OV.ImporterBase
 				}
 			});
 		} else {
-            // TODO: without another Init call it fails
-            // to load the same model multiple times            
 			this.ImportIfcContent (fileContent);
 			onFinish ();
 		}
