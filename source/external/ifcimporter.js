@@ -26,11 +26,13 @@ OV.ImporterIfc = class extends OV.ImporterBase
 	ClearContent ()
 	{
         this.materialNameToIndex = null;
+        this.expressIDToMesh = null;
 	}
 
     ResetContent ()
     {
         this.materialNameToIndex = {};
+        this.expressIDToMesh = {};
     }
 
     ImportContent (fileContent, onFinish)
@@ -66,6 +68,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
             const ifcMesh = ifcMeshes.get (meshIndex);
             this.ImportIfcMesh (modelID, ifcMesh);
         }
+        this.ImportProperties (modelID);
         this.ifc.CloseModel (modelID);
 	}
 
@@ -109,7 +112,45 @@ OV.ImporterIfc = class extends OV.ImporterBase
             vertexOffset += ifcVertices.length / 6;
         }
 
+        this.expressIDToMesh[ifcMesh.expressID] = mesh;
         this.model.AddMesh (mesh);
+    }
+
+    ImportProperties (modelID)
+    {
+        let obj = this;
+        const lines = this.ifc.GetLineIDsWithType (modelID, IFCRELDEFINESBYPROPERTIES);
+        for (let i = 0; i < lines.size (); i++) {
+            const relID = lines.get (i);
+            const rel = this.ifc.GetLine (modelID, relID);
+            rel.RelatedObjects.forEach (function (objectRelID) {
+                let foundMesh = obj.expressIDToMesh[objectRelID.value];
+                if (foundMesh === undefined) {
+                    return;
+                }
+                if (Array.isArray (rel.RelatingPropertyDefinition)) {
+                    return;
+                }
+                let propSetDef = rel.RelatingPropertyDefinition;
+                let propSet = obj.ifc.GetLine (modelID, propSetDef.value, true);
+                // TODO: same property can exist in different sets
+                if (!propSet.Name.value.endsWith ('Common')) {
+                    return;
+                }
+                propSet.HasProperties.forEach (function (property) {
+                    let meshProperty = null;
+                    if (property.NominalValue.label === 'IFCLABEL' || property.NominalValue.label === 'IFCIDENTIFIER') {
+                        meshProperty = new OV.Property (OV.PropertyType.Text, property.Name.value, property.NominalValue.value);
+                    } else if (property.NominalValue.label === 'IFCBOOLEAN') {
+                        // TODO: bool property type
+                        meshProperty = new OV.Property (OV.PropertyType.Text, property.Name.value, property.NominalValue.value === 'T' ? 'Yes' : 'No');
+                    }
+                    if (meshProperty !== null) {
+                        foundMesh.AddProperty (meshProperty);
+                    }
+                });
+            });
+        }
     }
 
     GetMaterialIndexByColor (ifcColor)
