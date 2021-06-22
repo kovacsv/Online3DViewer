@@ -68,6 +68,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
             const ifcMesh = ifcMeshes.get (meshIndex);
             this.ImportIfcMesh (modelID, ifcMesh);
         }
+        this.ifc.CloseModel (modelID);
 	}
 
     ImportIfcMesh (modelID, ifcMesh)
