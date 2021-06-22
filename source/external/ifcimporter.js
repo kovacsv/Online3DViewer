@@ -119,7 +119,8 @@ OV.ImporterIfc = class extends OV.ImporterBase
     ImportProperties (modelID)
     {
         let obj = this;
-        const lines = this.ifc.GetLineIDsWithType (modelID, IFCRELDEFINESBYPROPERTIES);
+        // TODO: var IFCRELDEFINESBYPROPERTIES = 4186316022;
+        const lines = this.ifc.GetLineIDsWithType (modelID, 4186316022);
         for (let i = 0; i < lines.size (); i++) {
             const relID = lines.get (i);
             const rel = this.ifc.GetLine (modelID, relID);
