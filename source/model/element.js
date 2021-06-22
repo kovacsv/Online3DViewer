@@ -3,6 +3,7 @@ OV.Element = class
     constructor ()
     {
         this.name = '';
+        this.properties = [];
     }
 
     GetName ()
@@ -33,6 +34,22 @@ OV.Element = class
     TriangleCount ()
     {
         return 0;
+    }
+
+    PropertyCount ()
+    {
+        return this.properties.length;
+    }
+
+    AddProperty (property)
+    {
+        this.properties.push (property);
+        return this.properties.length - 1;
+    }
+
+    GetProperty (index)
+    {
+        return this.properties[index];
     }
 
     EnumerateVertices (onVertex)

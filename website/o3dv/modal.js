@@ -165,6 +165,11 @@ OV.ButtonDialog = class
         return dialogContentDiv;
     }
 
+    SetCloseable (closeable)
+    {
+        this.modal.SetCloseable (closeable);
+    }
+
     SetCloseHandler (closeHandler)
     {
         this.modal.SetCloseHandler (closeHandler);
@@ -239,7 +244,9 @@ OV.ListPopup = class extends OV.PopupDialog
     {
         let listItemDiv = $('<div>').addClass ('ov_popup_list_item').appendTo (this.listDiv);
         if (item.color) {
-            $('<div>').addClass ('ov_popup_list_item_rgbbox').css ('background', '#' + item.color).appendTo (listItemDiv);    
+            let iconDiv = $('<div>').addClass ('ov_popup_list_item_icon').appendTo (listItemDiv);
+            let colorCircle = OV.CreateInlineColorCircle (item.color);
+            colorCircle.appendTo (iconDiv);
         }
         $('<div>').addClass ('ov_popup_list_item_name').html (item.name).appendTo (listItemDiv);
         listItemDiv.click (callbacks.onClick);

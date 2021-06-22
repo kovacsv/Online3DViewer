@@ -118,7 +118,7 @@ div.main
 
 div.main_navigator
 {
-	width: 240px;
+	width: 260px;
 	margin: 10px 0px 10px 10px;
 	overflow: none;
 	float: left;
@@ -127,6 +127,14 @@ div.main_navigator
 div.main_viewer
 {
 	float: left;
+}
+
+div.main_sidebar
+{
+	width: 260px;
+	margin: 10px 10px 10px 0px;
+	overflow: none;
+	float: right;
 }
 
 div.main_viewer canvas
@@ -167,14 +175,26 @@ div.ov_toolbar
 	user-select: none;
 }
 
-div.ov_toolbar div.ov_toolbar_button_div
+div.ov_toolbar div.ov_toolbar_button
 {
 	padding: 10px;
 	float: left;
 	cursor: pointer;
 }
 
-div.ov_toolbar div.ov_toolbar_button_div.selected
+div.ov_toolbar div.ov_toolbar_button
+{
+	padding: 10px;
+	float: left;
+	cursor: pointer;
+}
+
+div.ov_toolbar div.ov_toolbar_button.right
+{
+	float: right;
+}
+
+div.ov_toolbar div.ov_toolbar_button.selected
 {
 	background: #e1e1e1;
 }
@@ -217,88 +237,7 @@ div.ov_navigator_info_panel
 	border-top: 1px solid #dddddd;
 }
 
-div.ov_navigator_info_panel div.ov_info_panel_main
-{
-	margin-top: 5px;
-}
-
-div.ov_navigator_info_panel div.ov_info_panel_content
-{
-	padding: 5px 0px 0px 5px;
-}
-
-div.ov_navigator_info_panel div.ov_info_box
-{
-	margin-bottom: 10px;
-	overflow: auto;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_column
-{
-	float: left;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_title
-{
-	margin-bottom: 3px;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_content
-{
-	font-weight: bold;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_content_big
-{
-	font-size: 21px;
-	font-weight: bold;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_details
-{
-	font-size: 14px;
-	padding-left: 10px;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_row
-{
-	padding: 2px 0px;
-	overflow: auto;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_row_name
-{
-	width: 40%;
-	float: left;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_row_value
-{
-	font-weight: bold;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;	
-}
-
-div.ov_navigator_info_panel div.ov_info_box_rgbbox
-{
-	width : 32px;
-	height: 16px;
-	margin-right: 10px;
-	border: 1px solid #222222;
-	border-radius: 5px;
-	float: left;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_rgbtext
-{
-	font-size: 14px;
-}
-
-div.ov_navigator_info_panel div.ov_info_box_button
+div.ov_navigator_info_panel div.ov_navigator_info_button
 {
 	cursor: pointer;
 	margin-top: 10px;
@@ -307,18 +246,47 @@ div.ov_navigator_info_panel div.ov_info_box_button
 	overflow: auto;
 }
 
-div.ov_navigator_info_panel div.ov_info_box_button_text
+div.ov_navigator_info_panel div.ov_navigator_info_button_text
 {
 	padding: 5px;
 	float: left;
 }
 
-div.ov_navigator_info_panel img.ov_info_box_button_icon
+div.ov_navigator_info_panel img.ov_navigator_info_button_icon
 {
 	width: 18px;
 	height: 18px;
 	padding: 6px;
 	float: right;
+}
+
+div.ov_sidebar_title
+{
+	font-weight: bold;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #dddddd;
+}
+
+div.ov_sidebar_title div.ov_sidebar_title_text
+{
+	float: left;
+}
+
+div.ov_sidebar_title img.ov_sidebar_title_img
+{
+	width: 18px;
+	height: 18px;
+	float: right;
+	cursor: pointer;
+}
+
+div.ov_sidebar_content
+{
+	overflow: auto;
 }
 
 div.ov_tree_view
@@ -380,9 +348,21 @@ div.ov_tree_view div.ov_tree_view_children
 	margin-left: 28px;
 }
 
+div.ov_color_circle
+{
+	background: #ffffff;
+	border: 1px solid #000000;
+	width: 14px;
+	height: 14px;
+	display: inline-block;
+	margin-right: 5px;
+	margin-bottom: -2px;
+	border-radius: 10px;
+}
+
 div.ov_modal_overlay
 {
-
+	
 }
 
 div.ov_dialog
@@ -628,22 +608,6 @@ div.ov_popup
 	border-radius: 5px;
 }
 
-div.ov_popup div.ov_popup_title
-{
-	font-weight: bold;
-	margin-top: 15px;
-	margin-bottom: 10px;
-	margin-left: 10px;
-	margin-right: 10px;
-}
-
-div.ov_popup div.ov_popup_text
-{
-	margin-bottom: 15px;
-	margin-left: 10px;
-	margin-right: 10px;
-}
-
 div.ov_popup div.ov_popup_list
 {
 	max-height: 200px;
@@ -660,12 +624,8 @@ div.ov_popup div.ov_popup_list_item
 	cursor: pointer;
 }
 
-div.ov_popup div.ov_popup_list_item_rgbbox
+div.ov_popup div.ov_popup_list_item_icon
 {
-	width: 18px;
-	height: 18px;
-	margin-right: 5px;
-	border: 1px solid #222222;
 	float: left;
 }
 
@@ -697,6 +657,52 @@ div.ov_progress div.ov_progress_text
 	text-align: center;
 }
 
+div.ov_property_table
+{
+	
+}
+
+div.ov_property_table_custom
+{
+	margin-top: 8px;
+	padding-top: 8px;
+	border-top: 1px solid #dddddd;
+}
+
+div.ov_property_table div.ov_property_table_row
+{
+	overflow: auto;
+}
+
+div.ov_property_table div.ov_property_table_cell
+{
+	padding: 4px 0px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+
+div.ov_property_table div.ov_property_table_name
+{
+	width: 49%;
+	padding-right: 2%;
+	float: left;
+}
+
+div.ov_property_table div.ov_property_table_value
+{
+	width: 49%;
+	text-align: right;
+	float: left;
+}
+
+div.ov_property_table div.ov_property_table_button
+{
+	color: #3393bd;
+	cursor: pointer;
+}
+
 div.ov_thin_scrollbar
 {
 	scrollbar-color: #cccccc transparent;
@@ -722,7 +728,7 @@ a:hover
 	text-decoration: underline;
 }
 
-div.ov_toolbar div.ov_toolbar_button_div:hover
+div.ov_toolbar div.ov_toolbar_button:hover
 {
 	background: #c9e5f8;
 }
@@ -747,7 +753,7 @@ div.ov_popup div.ov_popup_list_item:hover
 	background: #e4f4ff;
 }
 
-div.ov_navigator_info_panel div.ov_info_box_button:hover
+div.ov_navigator_info_panel div.ov_navigator_info_button:hover
 {
 	background: #e4f4ff;
 }

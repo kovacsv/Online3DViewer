@@ -5,8 +5,10 @@ OV.Website = class
         this.parameters = parameters;
         this.viewer = new OV.Viewer ();
         this.hashHandler = new OV.HashHandler ();
+        this.cookieHandler = new OV.CookieHandler ();
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
-        this.navigator = new OV.Navigator (this.parameters.navigatorDiv);
+        this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv);
+        this.navigator = new OV.Navigator (this.parameters.navigatorDiv, this.sidebar);
         this.importSettings = new OV.ImportSettings ();
         this.modelLoader = new OV.ThreeModelLoader ();
         this.highlightMaterial = new THREE.MeshPhongMaterial ({
@@ -19,6 +21,7 @@ OV.Website = class
 
     Load ()
     {
+
         let canvas = $('<canvas>').appendTo (this.parameters.viewerDiv);
         this.viewer.Init (canvas.get (0));
         this.ShowViewer (false);
@@ -27,7 +30,9 @@ OV.Website = class
         this.InitToolbar ();
         this.InitDragAndDrop ();
         this.InitModelLoader ();
+        this.InitSidebar ();
         this.InitNavigator ();
+        this.InitCookieConsent ();
 
         this.viewer.SetClickHandler (this.OnModelClicked.bind (this));
         this.Resize ();
@@ -47,18 +52,25 @@ OV.Website = class
         let headerHeight = parseInt (this.parameters.headerDiv.outerHeight (true), 10);
 
         let navigatorWidth = 0;
+        let sidebarWidth = 0;
         let safetyMargin = 0;
         if (!OV.IsSmallWidth ()) {
             navigatorWidth = parseInt (this.parameters.navigatorDiv.outerWidth (true), 10);
+            if (this.sidebar.IsVisible ()) {
+                sidebarWidth = parseInt (this.parameters.sidebarDiv.outerWidth (true), 10);
+            }
             safetyMargin = 1;
         }
         
-        let contentWidth = windowWidth - navigatorWidth - safetyMargin;
+        let contentWidth = windowWidth - navigatorWidth - sidebarWidth - safetyMargin;
         let contentHeight = windowHeight - headerHeight - safetyMargin;
+        
         this.parameters.navigatorDiv.outerHeight (contentHeight, true);
+        this.parameters.sidebarDiv.outerHeight (contentHeight, true);
         this.parameters.introDiv.outerHeight (contentHeight, true);
 
         this.navigator.Resize ();
+        this.sidebar.Resize ();
         this.viewer.Resize (contentWidth, contentHeight);
     }
 
@@ -69,6 +81,12 @@ OV.Website = class
         } else {
             this.parameters.mainDiv.hide ();
         }
+    }
+
+    ShowSidebar (show)
+    {
+        this.sidebar.Show (show);
+        this.cookieHandler.SetBoolVal ('ov_show_sidebar', show);
     }
 
     ClearModel ()
@@ -214,7 +232,15 @@ OV.Website = class
             if (onlyFullWidth) {
                 button.AddClass ('only_full_width');
             }
+            return button;
         }
+
+        function AddRightButton (toolbar, imageName, imageTitle, onlyFullWidth, onClick)
+        {
+            let button = AddButton (toolbar, imageName, imageTitle, onlyFullWidth, onClick);
+            button.AddClass ('right');
+            return button;
+        }        
 
         function AddRadioButton (toolbar, imageNames, imageTitles, selectedIndex, onlyFullWidth, onClick)
         {
@@ -258,7 +284,7 @@ OV.Website = class
             });
         });
         AddSeparator (this.toolbar);
-        AddButton (this.toolbar, 'fit', 'Fit model to Window', false, function () {
+        AddButton (this.toolbar, 'fit', 'Fit model to window', false, function () {
             obj.FitModelToWindow (false);
         });
         AddButton (this.toolbar, 'up_y', 'Set Y axis as up vector', false, function () {
@@ -305,6 +331,10 @@ OV.Website = class
                 });
             });
         }
+        AddRightButton (this.toolbar, 'details', 'Details panel', true, function () {
+            obj.ShowSidebar (!obj.sidebar.IsVisible ());
+            obj.Resize ();
+        });
         
         this.parameters.fileInput.on ('change', function (ev) {
             if (ev.target.files.length > 0) {
@@ -354,6 +384,19 @@ OV.Website = class
         });
     }
 
+    InitSidebar ()
+    {
+        let obj = this;
+        this.sidebar.Init ({
+            onClose : function () {
+                obj.ShowSidebar (false);
+                obj.Resize ();
+            }
+        });
+        let show = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
+        this.ShowSidebar (show);
+    }
+
     InitNavigator ()
     {
         function GetMeshUserData (viewer, meshIndex)
@@ -367,58 +410,19 @@ OV.Website = class
             return userData;
         }
 
-        function GetBoundingBoxInfo (boundingBox)
+        function GetMeshesForMaterial (viewer, model, materialIndex)
         {
-            if (boundingBox === null) {
-                return null;
-            }
-            return {
-                min : new OV.Coord3D (boundingBox.min.x, boundingBox.min.y, boundingBox.min.z),
-                max : new OV.Coord3D (boundingBox.max.x, boundingBox.max.y, boundingBox.max.z)
-            };
-        }
-
-        function GetMaterialInfo (viewer, model, materialIndex)
-        {
-            function AddTexture (textureNames, type, texture)
-            {
-                if (texture === null) {
-                    return;
-                }
-                textureNames.push ({
-                    type : type,
-                    name : OV.GetFileName (texture.name),
-                    path : texture.name
-                });
-            }
-
-            let material = model.GetMaterial (materialIndex);
-            let materialInfo = {
-                name : material.name,
-                ambient : material.ambient.Clone (),
-                diffuse : material.diffuse.Clone (),
-                specular : material.specular.Clone (),
-                opacity : material.opacity,
-                textureNames : [],
-                usedByMeshes : []
-            };
-
-            AddTexture (materialInfo.textureNames, 'Base', material.diffuseMap);
-            AddTexture (materialInfo.textureNames, 'Specular', material.specularMap);
-            AddTexture (materialInfo.textureNames, 'Bump', material.bumpMap);
-            AddTexture (materialInfo.textureNames, 'Normal', material.normalMap);
-            AddTexture (materialInfo.textureNames, 'Emissive', material.emissiveMap);
-
+            let usedByMeshes = [];
             viewer.EnumerateMeshesUserData (function (meshUserData) {
                 if (meshUserData.originalMaterials.indexOf (materialIndex) !== -1) {
                     const mesh = model.GetMesh (meshUserData.originalMeshIndex);
-                    materialInfo.usedByMeshes.push ({
+                    usedByMeshes.push ({
                         index : meshUserData.originalMeshIndex,
                         name : mesh.GetName ()
                     });
                 }
             });
-            return materialInfo;
+            return usedByMeshes;
         }
 
         function GetMaterialReferenceInfo (model, materialIndex)
@@ -431,50 +435,27 @@ OV.Website = class
             };
         }
 
-        function GetMeshInfo (viewer, model, meshIndex)
+        function GetMaterialsForMesh (viewer, model, meshIndex)
         {
-            let result = {
-                element : null,
-                usedMaterials : null,
-                boundingBox : null
-            };
-            
-            let mesh = model.GetMesh (meshIndex);
-            result.element = mesh;
-
+            let usedMaterials = [];
             let userData = GetMeshUserData (viewer, meshIndex);
-            result.usedMaterials = [];
             for (let i = 0; i < userData.originalMaterials.length; i++) {
                 const materialIndex = userData.originalMaterials[i];
-                result.usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));                
+                usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));                
             }
-            result.usedMaterials.sort (function (a, b) {
+            usedMaterials.sort (function (a, b) {
                 return a.index - b.index;
             });            
-
-            let boundingBox = viewer.GetBoundingBox (function (meshUserData) {
-                return meshUserData.originalMeshIndex === meshIndex;
-            });
-            result.boundingBox = GetBoundingBoxInfo (boundingBox);
-            return result;
+            return usedMaterials;
         }
     
-        function GetModelInfo (model, viewer)
+        function GetMaterialsForModel (model)
         {
-            let result = {
-                element : model,
-                usedMaterials : null,
-                boundingBox : null
-            };
-            let boundingBox = viewer.GetBoundingBox (function (meshUserData) {
-                return true;
-            });
-            result.usedMaterials = [];
+            let usedMaterials = [];
             for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
-                result.usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
+                usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
             }
-            result.boundingBox = GetBoundingBoxInfo (boundingBox);
-            return result;
+            return usedMaterials;
         }
 
         let obj = this;
@@ -491,15 +472,31 @@ OV.Website = class
             fitMeshToWindow : function (meshIndex) {
                 obj.FitMeshToWindow (meshIndex);
             },
-            getMaterialInformation : function (materialIndex) {
-                return GetMaterialInfo (obj.viewer, obj.model, materialIndex);
+            getMeshesForMaterial : function (materialIndex) {
+                return GetMeshesForMaterial (obj.viewer, obj.model, materialIndex);
             },
-            getMeshInformation : function (meshIndex) {
-                return GetMeshInfo (obj.viewer, obj.model, meshIndex);
+            getMaterialsForMesh : function (meshIndex) {
+                return GetMaterialsForMesh (obj.viewer, obj.model, meshIndex);
             },
-            getModelInformation : function () {
-                return GetModelInfo (obj.model, obj.viewer);
+            getMaterialsForModel : function () {
+                return GetMaterialsForModel (obj.model);
+            },
+            getModel : function () {
+                return obj.model;
             }
         });
-    }    
+    }
+
+    InitCookieConsent ()
+    {
+        let accepted = this.cookieHandler.GetBoolVal ('ov_cookie_consent', false);
+        if (accepted) {
+            return;
+        }
+
+        let obj = this;
+        OV.ShowCookieDialog (function () {
+            obj.cookieHandler.SetBoolVal ('ov_cookie_consent', true);
+        });
+    }
 };
