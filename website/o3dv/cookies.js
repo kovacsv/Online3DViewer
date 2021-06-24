@@ -10,20 +10,6 @@ OV.CookieHandler = class
         this.SetStringVal (key, '');
     }
 
-    GetBoolVal (key, defVal)
-    {
-        let stringVal = this.GetStringVal (key);
-        if (stringVal === null) {
-            return defVal;
-        }
-        return stringVal === 'true' ? true : false;
-    }
-
-    SetBoolVal (key, value)
-    {
-        this.SetStringVal (key, value ? 'true' : false);
-    }
-
     SetStringVal (key, value)
     {
 		let date = new Date ();
@@ -43,4 +29,32 @@ OV.CookieHandler = class
         }
         return null;
     }
+
+    GetBoolVal (key, defVal)
+    {
+        let stringVal = this.GetStringVal (key);
+        if (stringVal === null) {
+            return defVal;
+        }
+        return stringVal === 'true' ? true : false;
+    }
+
+    SetBoolVal (key, value)
+    {
+        this.SetStringVal (key, value ? 'true' : 'false');
+    }
+
+    GetColorVal (key, defVal)
+    {
+        let stringVal = this.GetStringVal (key);
+        if (stringVal === null) {
+            return defVal;
+        }
+        return OV.ParameterConverter.StringToColor (stringVal);
+    }
+
+    SetColorVal (key, value)
+    {
+        this.SetStringVal (key, OV.ParameterConverter.ColorToString (value));
+    }    
 };

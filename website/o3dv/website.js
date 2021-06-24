@@ -225,10 +225,7 @@ OV.Website = class
 
     InitSettings ()
     {
-        let defaultColorStr = this.cookieHandler.GetStringVal ('ov_default_color', null);
-        if (defaultColorStr !== null) {
-            this.importSettings.defaultColor = OV.ParameterConverter.StringToColor (defaultColorStr);
-        }
+        this.importSettings.defaultColor = this.cookieHandler.GetColorVal ('ov_default_color', new OV.Color (200, 200, 200));
     }
 
     InitToolbar ()
@@ -330,7 +327,7 @@ OV.Website = class
                 obj.dialog = OV.ShowSettingsDialog (obj.importSettings, function (dialogSettings) {
                     let reload = !OV.ColorIsEqual (obj.importSettings.defaultColor, dialogSettings.defaultColor);
                     obj.importSettings.defaultColor = dialogSettings.defaultColor;
-                    obj.cookieHandler.SetStringVal ('ov_default_color', OV.ParameterConverter.ColorToString (obj.importSettings.defaultColor));
+                    obj.cookieHandler.SetColorVal ('ov_default_color', obj.importSettings.defaultColor);
                     if (reload) {
                         obj.ReloadFiles ();
                     }
