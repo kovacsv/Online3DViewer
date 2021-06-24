@@ -99,4 +99,6 @@ OV.Init3DViewerElements = function ()
             viewerElement.viewer.Resize (width, height);    
         }
     });
+
+    return viewerElements;
 };
