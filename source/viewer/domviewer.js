@@ -1,4 +1,4 @@
-OV.Init3DViewerElements = function ()
+OV.Init3DViewerElements = function (onReady)
 {
     function LoadElement (element)
     {
@@ -89,6 +89,9 @@ OV.Init3DViewerElements = function ()
             let viewerElement = LoadElement (element);
             viewerElements.push (viewerElement);
         }
+        if (onReady !== undefined && onReady !== null) {
+            onReady (viewerElements);
+        }
     }); 
 
     window.addEventListener ('resize', function () {
@@ -99,6 +102,4 @@ OV.Init3DViewerElements = function ()
             viewerElement.viewer.Resize (width, height);    
         }
     });
-
-    return viewerElements;
 };

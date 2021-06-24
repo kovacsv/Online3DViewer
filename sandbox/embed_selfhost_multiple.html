@@ -69,7 +69,9 @@
 	<!-- importer end -->
 
     <script type='text/javascript'>
-        OV.Init3DViewerElements ();
+        OV.Init3DViewerElements (function (viewers) {
+			viewers[0].viewer.renderer.setClearColor ('#222222', 1.0);
+		});
     </script>
 
     <style>
