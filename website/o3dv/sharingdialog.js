@@ -63,13 +63,13 @@ OV.ShowSharingDialog = function (importer, importSettings, camera)
         let section = $('<div>').addClass ('ov_dialog_section').appendTo (parentDiv);
         $('<div>').html ('Sharing Link').addClass ('ov_dialog_inner_title').appendTo (section);
         let optionsSection = null;
-        if (OV.FeatureSet.SetDefaultColor) {
+        if (OV.FeatureSet.SettingsAvailable) {
             optionsSection = $('<div>').addClass ('ov_dialog_section').appendTo (section);
         }
         let sharingLinkInput = AddCopyableTextInput (section, function () {
             return GetSharingLink (sharingLinkParams);
         });
-        if (OV.FeatureSet.SetDefaultColor) {
+        if (OV.FeatureSet.SettingsAvailable) {
             AddCheckboxLine (optionsSection, 'Use overridden default color', 'share_color', function (checked) {
                 sharingLinkParams.color = checked ? importSettings.defaultColor : null;
                 sharingLinkInput.val (GetSharingLink (sharingLinkParams));
@@ -91,7 +91,7 @@ OV.ShowSharingDialog = function (importer, importSettings, camera)
             embeddingCodeParams.camera = checked ? camera : null;
             embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
         });
-        if (OV.FeatureSet.SetDefaultColor) {
+        if (OV.FeatureSet.SettingsAvailable) {
             AddCheckboxLine (optionsSection, 'Use overridden default color', 'embed_color', function (checked) {
                 embeddingCodeParams.color = checked ? importSettings.defaultColor : null;
                 embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));

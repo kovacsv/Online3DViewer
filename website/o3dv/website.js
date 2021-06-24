@@ -21,7 +21,6 @@ OV.Website = class
 
     Load ()
     {
-
         let canvas = $('<canvas>').appendTo (this.parameters.viewerDiv);
         this.viewer.Init (canvas.get (0));
         this.ShowViewer (false);
@@ -316,15 +315,12 @@ OV.Website = class
         AddButton (this.toolbar, 'share', 'Share model', true, function () {
             obj.dialog = OV.ShowSharingDialog (importer, obj.importSettings, obj.viewer.GetCamera ());
         });
-        if (OV.FeatureSet.SetDefaultColor) {
+        if (OV.FeatureSet.SettingsAvailable) {
             AddSeparator (this.toolbar, true);
             AddButton (this.toolbar, 'settings', 'Settings', true, function () {
                 obj.dialog = OV.ShowSettingsDialog (obj.importSettings, function (dialogSettings) {
-                    let reload = false;
-                    if (!OV.ColorIsEqual (obj.importSettings.defaultColor, dialogSettings.defaultColor)) {
-                        obj.importSettings.defaultColor = dialogSettings.defaultColor;
-                        reload = true;
-                    }
+                    let reload = !OV.ColorIsEqual (obj.importSettings.defaultColor, dialogSettings.defaultColor);
+                    obj.importSettings.defaultColor = dialogSettings.defaultColor;
                     if (reload) {
                         obj.ReloadFiles ();
                     }
