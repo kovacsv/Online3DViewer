@@ -180,6 +180,13 @@ OV.Viewer = class
         this.navigation.SetClickHandler (onClick);
     }
 
+    SetBackgroundColor (color)
+    {
+        let hexColor = '#' + OV.ColorToHexString (color);
+        this.renderer.setClearColor (hexColor, 1.0);
+        this.Render ();
+    }
+
     GetCamera ()
     {
         return this.navigation.GetCamera ();
