@@ -26,6 +26,7 @@ OV.Website = class
         this.ShowViewer (false);
         this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
 
+        this.InitSettings ();
         this.InitToolbar ();
         this.InitDragAndDrop ();
         this.InitModelLoader ();
@@ -222,6 +223,14 @@ OV.Website = class
         }
     }
 
+    InitSettings ()
+    {
+        let defaultColorStr = this.cookieHandler.GetStringVal ('ov_default_color', null);
+        if (defaultColorStr !== null) {
+            this.importSettings.defaultColor = OV.ParameterConverter.StringToColor (defaultColorStr);
+        }
+    }
+
     InitToolbar ()
     {
         function AddButton (toolbar, imageName, imageTitle, onlyFullWidth, onClick)
@@ -321,6 +330,7 @@ OV.Website = class
                 obj.dialog = OV.ShowSettingsDialog (obj.importSettings, function (dialogSettings) {
                     let reload = !OV.ColorIsEqual (obj.importSettings.defaultColor, dialogSettings.defaultColor);
                     obj.importSettings.defaultColor = dialogSettings.defaultColor;
+                    obj.cookieHandler.SetStringVal ('ov_default_color', OV.ParameterConverter.ColorToString (obj.importSettings.defaultColor));
                     if (reload) {
                         obj.ReloadFiles ();
                     }
