@@ -8,15 +8,18 @@ describe ('Parameter List', function () {
             new OV.Coord3D (0.0, 0.0, 0.0),
             new OV.Coord3D (0.0, 0.0, 1.0)
         );
+        let background = new OV.Color (4, 5, 6);
         let color = new OV.Color (1, 2, 3);
         let urlParams1 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).GetParameterList ();
         let urlParams2 = OV.CreateUrlBuilder ().AddCamera (camera).GetParameterList ();
         let urlParams3 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).GetParameterList ();
         let urlParams4 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).AddColor (color).GetParameterList ();
+        let urlParams5 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).AddBackground (background).AddColor (color).GetParameterList ();
         assert.strictEqual (urlParams1, 'model=a.txt,b.txt');
         assert.strictEqual (urlParams2, 'camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000');
         assert.strictEqual (urlParams3, 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000');
         assert.strictEqual (urlParams4, 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$color=1,2,3');
+        assert.strictEqual (urlParams5, 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$background=4,5,6$color=1,2,3');
     });
 
     it ('Parameter list parser', function () {
@@ -26,12 +29,14 @@ describe ('Parameter List', function () {
             new OV.Coord3D (0.0, 0.0, 0.0),
             new OV.Coord3D (0.0, 0.0, 1.0)
         );
-        let color = new OV.Color (1, 2, 3);     
+        let background = new OV.Color (4, 5, 6);
+        let color = new OV.Color (1, 2, 3);
         let urlParamsLegacy = 'a.txt,b.txt';
         let urlParams1 = 'model=a.txt,b.txt';
         let urlParams2 = 'camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000';
         let urlParams3 = 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000';
         let urlParams4 = 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$color=1,2,3';
+        let urlParams5 = 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$background=4,5,6$color=1,2,3';
         let parserLegacy = OV.CreateUrlParser (urlParamsLegacy);
         assert.deepStrictEqual (parserLegacy.GetModelUrls (), modelUrls);
         assert.deepStrictEqual (parserLegacy.GetCamera (), null);
@@ -51,5 +56,10 @@ describe ('Parameter List', function () {
         assert.deepStrictEqual (parser4.GetModelUrls (), modelUrls);
         assert.deepStrictEqual (parser4.GetCamera (), camera);
         assert.deepStrictEqual (parser4.GetColor (), color);
+        let parser5 = OV.CreateUrlParser (urlParams5);
+        assert.deepStrictEqual (parser5.GetModelUrls (), modelUrls);
+        assert.deepStrictEqual (parser5.GetCamera (), camera);
+        assert.deepStrictEqual (parser5.GetColor (), color);
+        assert.deepStrictEqual (parser5.GetBackground (), background);
     });
 });

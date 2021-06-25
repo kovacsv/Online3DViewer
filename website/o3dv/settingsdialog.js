@@ -1,4 +1,4 @@
-OV.ShowSettingsDialog = function (importSettings, onOk)
+OV.ShowSettingsDialog = function (viewerSettings, importSettings, onOk)
 {
     function AddColorRow (contentDiv, defaultColor, paramName, paramDesc)
     {
@@ -12,6 +12,7 @@ OV.ShowSettingsDialog = function (importSettings, onOk)
     }
 
     let dialogSettings = {
+        backgroundColor: viewerSettings.backgroundColor,
         defaultColor : importSettings.defaultColor
     };
     let dialog = new OV.ButtonDialog ();
@@ -32,11 +33,18 @@ OV.ShowSettingsDialog = function (importSettings, onOk)
         }
     ]);
     
-    let colorInput = AddColorRow (contentDiv, dialogSettings.defaultColor, 'Default Color', '(For surfaces with no material)');
+    let backgroundColorInput = AddColorRow (contentDiv, dialogSettings.backgroundColor, 'Background Color', '(Visualization only)');
+    backgroundColorInput.change (function () {
+        let colorStr = backgroundColorInput.val ().substr (1);
+        dialogSettings.backgroundColor = OV.HexStringToColor (colorStr);
+    });
+
+    let colorInput = AddColorRow (contentDiv, dialogSettings.defaultColor, 'Default Color', '(When no material defined)');
     colorInput.change (function () {
         let colorStr = colorInput.val ().substr (1);
         dialogSettings.defaultColor = OV.HexStringToColor (colorStr);
     });
+
     dialog.Show ();
     return dialog;
 };

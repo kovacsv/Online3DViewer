@@ -1,5 +1,4 @@
-
-OV.ShowSharingDialog = function (importer, importSettings, camera)
+OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camera)
 {
     function AddCheckboxLine (parentDiv, text, id, onChange)
     {
@@ -25,6 +24,7 @@ OV.ShowSharingDialog = function (importer, importSettings, camera)
         let builder = OV.CreateUrlBuilder ();
         builder.AddModelUrls (params.files);
         builder.AddCamera (params.camera);
+        builder.AddBackground (params.background);
         builder.AddColor (params.color);
         let hashParameters = builder.GetParameterList ();
 
@@ -58,7 +58,7 @@ OV.ShowSharingDialog = function (importer, importSettings, camera)
         return input;
     }
 
-    function AddSharingLinkTab (parentDiv, sharingLinkParams)
+    function AddSharingLinkTab (parentDiv, importSettings, sharingLinkParams)
     {
         let section = $('<div>').addClass ('ov_dialog_section').appendTo (parentDiv);
         $('<div>').html ('Sharing Link').addClass ('ov_dialog_inner_title').appendTo (section);
@@ -79,7 +79,7 @@ OV.ShowSharingDialog = function (importer, importSettings, camera)
         sharingLinkInput.val (GetSharingLink (sharingLinkParams));
     }
 
-    function AddEmbeddingCodeTab (parentDiv, embeddingCodeParams)
+    function AddEmbeddingCodeTab (parentDiv, viewerSettings, importSettings, embeddingCodeParams)
     {
         let section = $('<div>').addClass ('ov_dialog_section').css ('margin-top', '20px').appendTo (parentDiv);
         $('<div>').html ('Embedding Code').addClass ('ov_dialog_inner_title').appendTo (section);
@@ -92,10 +92,15 @@ OV.ShowSharingDialog = function (importer, importSettings, camera)
             embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
         });
         if (OV.FeatureSet.SettingsAvailable) {
+            AddCheckboxLine (optionsSection, 'Use overridden background color', 'embed_background', function (checked) {
+                embeddingCodeParams.background = checked ? viewerSettings.backgroundColor : null;
+                embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
+            });
             AddCheckboxLine (optionsSection, 'Use overridden default color', 'embed_color', function (checked) {
                 embeddingCodeParams.color = checked ? importSettings.defaultColor : null;
                 embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
             });
+            embeddingCodeParams.background = viewerSettings.backgroundColor;
             embeddingCodeParams.color = importSettings.defaultColor;
         }
         embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
@@ -124,6 +129,7 @@ OV.ShowSharingDialog = function (importer, importSettings, camera)
     let embeddingCodeParams = {
         files : modelFiles,
         camera : camera,
+        background : null,
         color : null
     };
 
@@ -137,8 +143,8 @@ OV.ShowSharingDialog = function (importer, importSettings, camera)
         }
     ]);
 
-    AddSharingLinkTab (contentDiv, sharingLinkParams);
-    AddEmbeddingCodeTab (contentDiv, embeddingCodeParams);
+    AddSharingLinkTab (contentDiv, importSettings, sharingLinkParams);
+    AddEmbeddingCodeTab (contentDiv, viewerSettings, importSettings, embeddingCodeParams);
 
     dialog.Show ();
     return dialog;

@@ -46,6 +46,12 @@ OV.HashHandler = class
         return parser.GetCamera ();
     }
 
+    GetBackgroundFromHash ()
+    {
+        let parser = OV.CreateUrlParser (this.GetHash ());
+        return parser.GetBackground ();
+    }
+
     GetColorFromHash ()
     {
         let parser = OV.CreateUrlParser (this.GetHash ());

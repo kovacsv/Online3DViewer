@@ -9,6 +9,7 @@ OV.Website = class
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
         this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv);
         this.navigator = new OV.Navigator (this.parameters.navigatorDiv, this.sidebar);
+        this.viewerSettings = new OV.ViewerSettings ();
         this.importSettings = new OV.ImportSettings ();
         this.modelLoader = new OV.ThreeModelLoader ();
         this.highlightMaterial = new THREE.MeshPhongMaterial ({
@@ -21,12 +22,8 @@ OV.Website = class
 
     Load ()
     {
-        let canvas = $('<canvas>').appendTo (this.parameters.viewerDiv);
-        this.viewer.Init (canvas.get (0));
-        this.ShowViewer (false);
-        this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
-
         this.InitSettings ();
+        this.InitViewer ();
         this.InitToolbar ();
         this.InitDragAndDrop ();
         this.InitModelLoader ();
@@ -37,6 +34,7 @@ OV.Website = class
         this.viewer.SetClickHandler (this.OnModelClicked.bind (this));
         this.Resize ();
 
+        this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
         this.OnHashChange ();
 
         let obj = this;
@@ -210,13 +208,13 @@ OV.Website = class
             if (urls === null) {
                 return;
             }
-            let settings = new OV.ImportSettings ();
-            settings.defaultColor = this.importSettings.defaultColor;
+            let importSettings = new OV.ImportSettings ();
+            importSettings.defaultColor = this.importSettings.defaultColor;
             let color = this.hashHandler.GetColorFromHash ();
             if (color !== null) {
-                settings.defaultColor = color;
+                importSettings.defaultColor = color;
             }
-            this.LoadModelFromUrlList (urls, settings);
+            this.LoadModelFromUrlList (urls, importSettings);
         } else {
             this.ClearModel ();
             this.parameters.introDiv.show ();
@@ -225,7 +223,16 @@ OV.Website = class
 
     InitSettings ()
     {
+        this.viewerSettings.backgroundColor = this.cookieHandler.GetColorVal ('ov_background_color', new OV.Color (255, 255, 255));
         this.importSettings.defaultColor = this.cookieHandler.GetColorVal ('ov_default_color', new OV.Color (200, 200, 200));
+    }
+
+    InitViewer ()
+    {
+        let canvas = $('<canvas>').appendTo (this.parameters.viewerDiv);
+        this.viewer.Init (canvas.get (0));
+        this.viewer.SetBackgroundColor (this.viewerSettings.backgroundColor);
+        this.ShowViewer (false);
     }
 
     InitToolbar ()
@@ -319,15 +326,20 @@ OV.Website = class
             exportDialog.Show (obj.model, obj.viewer);
         });
         AddButton (this.toolbar, 'share', 'Share model', true, function () {
-            obj.dialog = OV.ShowSharingDialog (importer, obj.importSettings, obj.viewer.GetCamera ());
+            obj.dialog = OV.ShowSharingDialog (importer, obj.viewerSettings, obj.importSettings, obj.viewer.GetCamera ());
         });
         if (OV.FeatureSet.SettingsAvailable) {
             AddSeparator (this.toolbar, true);
             AddButton (this.toolbar, 'settings', 'Settings', true, function () {
-                obj.dialog = OV.ShowSettingsDialog (obj.importSettings, function (dialogSettings) {
+                obj.dialog = OV.ShowSettingsDialog (obj.viewerSettings, obj.importSettings, function (dialogSettings) {
+                    obj.viewerSettings.backgroundColor = dialogSettings.backgroundColor;
+                    obj.viewer.SetBackgroundColor (obj.viewerSettings.backgroundColor);
+                    obj.cookieHandler.SetColorVal ('ov_background_color', obj.viewerSettings.backgroundColor);
+
                     let reload = !OV.ColorIsEqual (obj.importSettings.defaultColor, dialogSettings.defaultColor);
                     obj.importSettings.defaultColor = dialogSettings.defaultColor;
                     obj.cookieHandler.SetColorVal ('ov_default_color', obj.importSettings.defaultColor);
+
                     if (reload) {
                         obj.ReloadFiles ();
                     }

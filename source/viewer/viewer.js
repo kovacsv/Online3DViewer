@@ -132,6 +132,14 @@ OV.ViewerGeometry = class
     }    
 };
 
+OV.ViewerSettings = class
+{
+    constructor ()
+    {
+        this.backgroundColor = new OV.Color (255, 255, 255);
+    }
+};
+
 OV.Viewer = class
 {
     constructor ()
