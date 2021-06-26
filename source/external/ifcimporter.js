@@ -134,10 +134,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
                 }
                 let propSetDef = rel.RelatingPropertyDefinition;
                 let propSet = obj.ifc.GetLine (modelID, propSetDef.value, true);
-                // TODO: same property can exist in different sets
-                if (!propSet.Name.value.endsWith ('Common')) {
-                    return;
-                }
+                let propertyGroup = new OV.PropertyGroup (propSet.Name.value);
                 propSet.HasProperties.forEach (function (property) {
                     let meshProperty = null;
                     if (property.NominalValue.label === 'IFCLABEL' || property.NominalValue.label === 'IFCIDENTIFIER') {
@@ -147,9 +144,12 @@ OV.ImporterIfc = class extends OV.ImporterBase
                         meshProperty = new OV.Property (OV.PropertyType.Text, property.Name.value, property.NominalValue.value === 'T' ? 'Yes' : 'No');
                     }
                     if (meshProperty !== null) {
-                        foundMesh.AddProperty (meshProperty);
+                        propertyGroup.AddProperty (meshProperty);
                     }
                 });
+                if (propertyGroup.PropertyCount () > 0) {
+                    foundMesh.AddPropertyGroup (propertyGroup);
+                }
             });
         }
     }
