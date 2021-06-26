@@ -149,12 +149,15 @@ OV.ImporterIfc = class extends OV.ImporterBase
                         case 'IFCBOOLEAN':
                             meshProperty = new OV.Property (OV.PropertyType.Boolean, property.Name.value, property.NominalValue.value === 'T' ? true : false);
                             break;
+                        case 'IFCINTEGER':
                         case 'IFCCOUNTMEASURE':
                             meshProperty = new OV.Property (OV.PropertyType.Integer, property.Name.value, property.NominalValue.value);
                             break;
                         case 'IFCREAL':
                         case 'IFCLENGTHMEASURE':
                         case 'IFCPOSITIVELENGTHMEASURE':
+                        case 'IFCAREAMEASURE':
+                        case 'IFCVOLUMEMEASURE':
                         case 'IFCRATIOMEASURE':
                         case 'IFCPOSITIVERATIOMEASURE':
                         case 'IFCMASSMEASURE':
