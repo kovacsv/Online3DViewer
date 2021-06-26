@@ -134,14 +134,39 @@ OV.ImporterIfc = class extends OV.ImporterBase
                 }
                 let propSetDef = rel.RelatingPropertyDefinition;
                 let propSet = obj.ifc.GetLine (modelID, propSetDef.value, true);
+                if (!propSet || !propSet.HasProperties) {
+                    return;
+                }
                 let propertyGroup = new OV.PropertyGroup (propSet.Name.value);
                 propSet.HasProperties.forEach (function (property) {
                     let meshProperty = null;
-                    if (property.NominalValue.label === 'IFCLABEL' || property.NominalValue.label === 'IFCIDENTIFIER') {
-                        meshProperty = new OV.Property (OV.PropertyType.Text, property.Name.value, property.NominalValue.value);
-                    } else if (property.NominalValue.label === 'IFCBOOLEAN') {
-                        // TODO: bool property type
-                        meshProperty = new OV.Property (OV.PropertyType.Boolean, property.Name.value, property.NominalValue.value === 'T' ? true : false);
+                    switch (property.NominalValue.label) {
+                        case 'IFCTEXT':
+                        case 'IFCLABEL':
+                        case 'IFCIDENTIFIER':
+                            meshProperty = new OV.Property (OV.PropertyType.Text, property.Name.value, property.NominalValue.value);
+                            break;
+                        case 'IFCBOOLEAN':
+                            meshProperty = new OV.Property (OV.PropertyType.Boolean, property.Name.value, property.NominalValue.value === 'T' ? true : false);
+                            break;
+                        case 'IFCCOUNTMEASURE':
+                            meshProperty = new OV.Property (OV.PropertyType.Integer, property.Name.value, property.NominalValue.value);
+                            break;
+                        case 'IFCREAL':
+                        case 'IFCLENGTHMEASURE':
+                        case 'IFCPOSITIVELENGTHMEASURE':
+                        case 'IFCRATIOMEASURE':
+                        case 'IFCPOSITIVERATIOMEASURE':
+                        case 'IFCMASSMEASURE':
+                        case 'IFCMASSPERLENGTHMEASURE':
+                        case 'IFCPLANEANGLEMEASURE':
+                        case 'IFCTHERMALTRANSMITTANCEMEASURE':
+                            meshProperty = new OV.Property (OV.PropertyType.Number, property.Name.value, property.NominalValue.value);
+                            break;
+                        default:
+                            // TODO
+                            console.log (property.NominalValue.label);
+                            break;
                     }
                     if (meshProperty !== null) {
                         propertyGroup.AddProperty (meshProperty);
