@@ -96,6 +96,8 @@ OV.Sidebar = class
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
+        } else if (property.type === OV.PropertyType.Boolean) {
+            valueText = property.value ? 'Yes' : 'No';
         } else if (property.type === OV.PropertyType.Percent) {
             valueText = parseInt (property.value * 100, 10).toString () + '%';
         } else if (property.type === OV.PropertyType.Color) {
