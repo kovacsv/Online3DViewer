@@ -677,6 +677,9 @@ div.ov_property_table div.ov_property_table_row
 div.ov_property_table div.ov_property_table_row.group
 {
 	padding: 4px 0px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;	
 }
 
 div.ov_property_table div.ov_property_table_row.ingroup

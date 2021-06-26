@@ -3,8 +3,9 @@ OV.PropertyType =
     Text : 1,
     Integer : 2,
     Number : 3,
-    Percent : 4,
-    Color : 5
+    Boolean : 4,
+    Percent : 5,
+    Color : 6
 };
 
 OV.Property = class
