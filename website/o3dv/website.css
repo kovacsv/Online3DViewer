@@ -674,6 +674,16 @@ div.ov_property_table div.ov_property_table_row
 	overflow: auto;
 }
 
+div.ov_property_table div.ov_property_table_row.group
+{
+	padding: 4px 0px;
+}
+
+div.ov_property_table div.ov_property_table_row.ingroup
+{
+	margin-left: 15px;
+}
+
 div.ov_property_table div.ov_property_table_cell
 {
 	padding: 4px 0px;

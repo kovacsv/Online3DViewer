@@ -38,6 +38,12 @@ OV.Sidebar = class
         return this.visible;
     }
 
+    AddPropertyGroup (table, propertyGroup)
+    {
+        let row = $('<div>').addClass ('ov_property_table_row group').appendTo (table);
+        row.html (propertyGroup.name).attr ('title', propertyGroup.name);
+    }
+
     AddProperty (table, property)
     {
         let row = $('<div>').addClass ('ov_property_table_row').appendTo (table);
@@ -45,6 +51,13 @@ OV.Sidebar = class
         let valueColumn = $('<div>').addClass ('ov_property_table_cell ov_property_table_value').appendTo (row);
         nameColum.html (property.name + ':').attr ('title', property.name);
         this.DisplayPropertyValue (property, valueColumn);
+        return row;
+    }
+
+    AddPropertyInGroup (table, property)
+    {
+        let row = this.AddProperty (table, property);
+        row.addClass ('ingroup');
     }
 
     AddCalculatedProperty (table, name, calculateValue)
@@ -121,11 +134,15 @@ OV.Sidebar = class
             }
             return new OV.Property (OV.PropertyType.Number, null, volume);
         });
-        if (element.PropertyCount () > 0) {
+        if (element.PropertyGroupCount () > 0) {
             let customTable = $('<div>').addClass ('ov_property_table ov_property_table_custom').appendTo (this.contentDiv);
-            for (let i = 0; i < element.PropertyCount (); i++) {
-                const property = element.GetProperty (i);
-                this.AddProperty (customTable, property);
+            for (let i = 0; i < element.PropertyGroupCount (); i++) {
+                const propertyGroup = element.GetPropertyGroup (i);
+                this.AddPropertyGroup (customTable, propertyGroup);
+                for (let j = 0; j < propertyGroup.PropertyCount (); j++) {
+                    const property = propertyGroup.GetProperty (j);
+                    this.AddPropertyInGroup (customTable, property);
+                }
             }
         }
         this.Resize ();

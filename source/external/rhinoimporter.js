@@ -181,9 +181,13 @@ OV.Importer3dm = class extends OV.ImporterBase
 		mesh.SetName (rhinoAttributes.name);
 
 		let userStrings = rhinoAttributes.getUserStrings ();
-		for (let i = 0; i < userStrings.length; i++) {
-			let userString = userStrings[i];
-			mesh.AddProperty (new OV.Property (OV.PropertyType.Text, userString[0], userString[1]));
+		if (userStrings.length > 0) {
+			let propertyGroup = new OV.PropertyGroup ('User texts');
+			for (let i = 0; i < userStrings.length; i++) {
+				let userString = userStrings[i];
+				propertyGroup.AddProperty (new OV.Property (OV.PropertyType.Text, userString[0], userString[1]));
+			}
+			mesh.AddPropertyGroup (propertyGroup);
 		}
 
 		let materialIndex = this.GetMaterialIndex (rhinoDoc, rhinoObject, rhinoInstanceReferences);
