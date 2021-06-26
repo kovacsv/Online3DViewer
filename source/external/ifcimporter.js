@@ -141,7 +141,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
                         meshProperty = new OV.Property (OV.PropertyType.Text, property.Name.value, property.NominalValue.value);
                     } else if (property.NominalValue.label === 'IFCBOOLEAN') {
                         // TODO: bool property type
-                        meshProperty = new OV.Property (OV.PropertyType.Text, property.Name.value, property.NominalValue.value === 'T' ? 'Yes' : 'No');
+                        meshProperty = new OV.Property (OV.PropertyType.Boolean, property.Name.value, property.NominalValue.value === 'T' ? true : false);
                     }
                     if (meshProperty !== null) {
                         propertyGroup.AddProperty (meshProperty);
