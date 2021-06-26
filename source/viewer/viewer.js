@@ -132,6 +132,14 @@ OV.ViewerGeometry = class
     }    
 };
 
+OV.ViewerSettings = class
+{
+    constructor ()
+    {
+        this.backgroundColor = new OV.Color (255, 255, 255);
+    }
+};
+
 OV.Viewer = class
 {
     constructor ()
@@ -178,6 +186,13 @@ OV.Viewer = class
     SetClickHandler (onClick)
     {
         this.navigation.SetClickHandler (onClick);
+    }
+
+    SetBackgroundColor (color)
+    {
+        let hexColor = '#' + OV.ColorToHexString (color);
+        this.renderer.setClearColor (hexColor, 1.0);
+        this.Render ();
     }
 
     GetCamera ()

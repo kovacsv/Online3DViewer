@@ -3,7 +3,7 @@ OV.Element = class
     constructor ()
     {
         this.name = '';
-        this.properties = [];
+        this.propertyGroups = [];
     }
 
     GetName ()
@@ -36,20 +36,20 @@ OV.Element = class
         return 0;
     }
 
-    PropertyCount ()
+    PropertyGroupCount ()
     {
-        return this.properties.length;
+        return this.propertyGroups.length;
     }
 
-    AddProperty (property)
+    AddPropertyGroup (propertyGroup)
     {
-        this.properties.push (property);
-        return this.properties.length - 1;
+        this.propertyGroups.push (propertyGroup);
+        return this.propertyGroups.length - 1;
     }
 
-    GetProperty (index)
+    GetPropertyGroup (index)
     {
-        return this.properties[index];
+        return this.propertyGroups[index];
     }
 
     EnumerateVertices (onVertex)

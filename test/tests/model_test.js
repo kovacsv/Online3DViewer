@@ -184,20 +184,6 @@ describe ('Model Finalization', function() {
     });    
 });
 
-describe ('Model Properties', function() {
-    let model = new OV.Model ();
-    model.AddProperty (new OV.Property (OV.PropertyType.Text, 'name 01', 'value 01'));
-    model.AddProperty (new OV.Property (OV.PropertyType.Integer, 'name 02', 2));
-    model.AddProperty (new OV.Property (OV.PropertyType.Number, 'name 03', 3.5));
-    assert.strictEqual (model.PropertyCount (), 3);
-    assert.strictEqual (model.GetProperty (0).name, 'name 01');
-    assert.strictEqual (model.GetProperty (0).value, 'value 01');
-    assert.strictEqual (model.GetProperty (1).name, 'name 02');
-    assert.strictEqual (model.GetProperty (1).value, 2);
-    assert.strictEqual (model.GetProperty (2).name, 'name 03');
-    assert.strictEqual (model.GetProperty (2).value, 3.5);
-});
-
 describe ('Color Conversion', function() {
     it ('Color equality check', function () {
         assert (OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (10, 20, 30)));

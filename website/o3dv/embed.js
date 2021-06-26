@@ -20,6 +20,10 @@ OV.Embed = class
             if (urls === null) {
                 return;
             }
+            let background = this.hashHandler.GetBackgroundFromHash ();
+            if (background !== null) {
+                this.viewer.SetBackgroundColor (background);
+            }
             let settings = new OV.ImportSettings ();
             let color = this.hashHandler.GetColorFromHash ();
             if (color !== null) {

@@ -562,7 +562,7 @@ div.ov_dialog div.ov_dialog_table_row
 
 div.ov_dialog div.ov_dialog_table_row_name
 {
-	width: 120px;
+	width: 140px;
 	float: left;
 }
 
@@ -672,6 +672,16 @@ div.ov_property_table_custom
 div.ov_property_table div.ov_property_table_row
 {
 	overflow: auto;
+}
+
+div.ov_property_table div.ov_property_table_row.group
+{
+	padding: 4px 0px;
+}
+
+div.ov_property_table div.ov_property_table_row.ingroup
+{
+	margin-left: 15px;
 }
 
 div.ov_property_table div.ov_property_table_cell

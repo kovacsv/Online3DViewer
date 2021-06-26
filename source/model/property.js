@@ -16,3 +16,27 @@ OV.Property = class
         this.value = value;
     }
 };
+
+OV.PropertyGroup = class
+{
+    constructor (name)
+    {
+        this.name = name;
+        this.properties = [];
+    }
+
+    PropertyCount ()
+    {
+        return this.properties.length;
+    }
+
+    AddProperty (property)
+    {
+        this.properties.push (property);
+    }
+
+    GetProperty (index)
+    {
+        return this.properties[index];
+    }
+};

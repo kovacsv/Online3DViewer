@@ -70,7 +70,9 @@
 	<!-- importer end -->
 
     <script type='text/javascript'>
-        OV.Init3DViewerElements ();
+        OV.Init3DViewerElements (function (viewers) {
+			viewers[0].viewer.renderer.setClearColor ('#222222', 1.0);
+		});
     </script>
 
     <style>
@@ -109,7 +111,8 @@
     <div class="online_3d_viewer"
 		style="width: 360px; height: 240px;"
         model="../../test/testfiles/obj/hundred_cubes.obj"
-        color="200,0,0">
+        color="200,0,0"
+		background="200,200,200">
     </div>
     <div class="online_3d_viewer"
 		style="width: 360px; height: 240px;"
