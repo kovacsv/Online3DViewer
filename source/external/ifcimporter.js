@@ -140,18 +140,19 @@ OV.ImporterIfc = class extends OV.ImporterBase
                 let propertyGroup = new OV.PropertyGroup (propSet.Name.value);
                 propSet.HasProperties.forEach (function (property) {
                     let meshProperty = null;
+                    let propertyName = obj.DecodeIFCString (property.Name.value);
                     switch (property.NominalValue.label) {
                         case 'IFCTEXT':
                         case 'IFCLABEL':
                         case 'IFCIDENTIFIER':
-                            meshProperty = new OV.Property (OV.PropertyType.Text, property.Name.value, property.NominalValue.value);
+                            meshProperty = new OV.Property (OV.PropertyType.Text, propertyName, obj.DecodeIFCString (property.NominalValue.value));
                             break;
                         case 'IFCBOOLEAN':
-                            meshProperty = new OV.Property (OV.PropertyType.Boolean, property.Name.value, property.NominalValue.value === 'T' ? true : false);
+                            meshProperty = new OV.Property (OV.PropertyType.Boolean, propertyName, property.NominalValue.value === 'T' ? true : false);
                             break;
                         case 'IFCINTEGER':
                         case 'IFCCOUNTMEASURE':
-                            meshProperty = new OV.Property (OV.PropertyType.Integer, property.Name.value, property.NominalValue.value);
+                            meshProperty = new OV.Property (OV.PropertyType.Integer, propertyName, property.NominalValue.value);
                             break;
                         case 'IFCREAL':
                         case 'IFCLENGTHMEASURE':
@@ -164,7 +165,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
                         case 'IFCMASSPERLENGTHMEASURE':
                         case 'IFCPLANEANGLEMEASURE':
                         case 'IFCTHERMALTRANSMITTANCEMEASURE':
-                            meshProperty = new OV.Property (OV.PropertyType.Number, property.Name.value, property.NominalValue.value);
+                            meshProperty = new OV.Property (OV.PropertyType.Number, propertyName, property.NominalValue.value);
                             break;
                         default:
                             // TODO
@@ -207,5 +208,13 @@ OV.ImporterIfc = class extends OV.ImporterBase
             this.materialNameToIndex[materialName] = materialIndex;
         }
         return materialIndex;
+    }
+
+    DecodeIFCString (ifcString)
+    {
+        // TODO: https://github.com/tomvandig/web-ifc/issues/58
+        let ifcUnicodeRegEx = /\\X2\\(.*?)\\X0\\/uig;
+        let escapedUnicode = ifcString.replace (ifcUnicodeRegEx, '\\u$1');
+        return decodeURIComponent (JSON.parse ('"' + escapedUnicode + '"'));
     }
 };
