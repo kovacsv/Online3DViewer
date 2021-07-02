@@ -58,4 +58,4 @@ The repository is separated into two parts. See more information in the [Develop
 
 ## External Libraries
 
-Online 3D Viewer uses these wonderful libraries: [jquery](https://github.com/jquery/jquery), [three.js](https://github.com/mrdoob/three.js), [web-ifc](https://github.com/tomvandig/web-ifc).
+Online 3D Viewer uses these wonderful libraries: [jquery](https://github.com/jquery/jquery), [three.js](https://github.com/mrdoob/three.js), [rhino3dm](https://github.com/mcneel/rhino3dm), [web-ifc](https://github.com/tomvandig/web-ifc).
