@@ -118,7 +118,7 @@ div.main
 
 div.main_navigator
 {
-	width: 260px;
+	width: 240px;
 	margin: 10px 0px 10px 10px;
 	overflow: none;
 	float: left;
@@ -131,7 +131,7 @@ div.main_viewer
 
 div.main_sidebar
 {
-	width: 260px;
+	width: 300px;
 	margin: 10px 10px 10px 0px;
 	overflow: none;
 	float: right;
@@ -696,6 +696,11 @@ div.ov_property_table div.ov_property_table_cell
 	box-sizing: border-box;
 }
 
+div.ov_property_table_custom div.ov_property_table_cell
+{
+	
+}
+
 div.ov_property_table div.ov_property_table_name
 {
 	width: 49%;
@@ -706,7 +711,7 @@ div.ov_property_table div.ov_property_table_name
 div.ov_property_table div.ov_property_table_value
 {
 	width: 49%;
-	text-align: right;
+	text-align: left;
 	float: left;
 }
 

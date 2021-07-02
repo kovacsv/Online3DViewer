@@ -120,14 +120,20 @@ OV.ImporterIfc = class extends OV.ImporterBase
     {
         let obj = this;
         // TODO: var IFCRELDEFINESBYPROPERTIES = 4186316022;
+        // TODO: var IFCBUILDING = 4031249490;
         const lines = this.ifc.GetLineIDsWithType (modelID, 4186316022);
         for (let i = 0; i < lines.size (); i++) {
             const relID = lines.get (i);
             const rel = this.ifc.GetLine (modelID, relID);
             rel.RelatedObjects.forEach (function (objectRelID) {
-                let foundMesh = obj.expressIDToMesh[objectRelID.value];
-                if (foundMesh === undefined) {
-                    return;
+                let element = obj.expressIDToMesh[objectRelID.value];
+                if (element === undefined) {
+                    let propSetOwner = obj.ifc.GetLine (modelID, objectRelID.value, true);
+                    if (propSetOwner.type === 4031249490) {
+                        element = obj.model;
+                    } else {
+                        return;
+                    }
                 }
                 if (Array.isArray (rel.RelatingPropertyDefinition)) {
                     return;
@@ -139,13 +145,16 @@ OV.ImporterIfc = class extends OV.ImporterBase
                 }
                 let propertyGroup = new OV.PropertyGroup (propSet.Name.value);
                 propSet.HasProperties.forEach (function (property) {
+                    if (!property || !property.Name || !property.NominalValue) {
+                        return;
+                    }
                     let meshProperty = null;
-                    let propertyName = obj.DecodeIFCString (property.Name.value);
+                    let propertyName = obj.GetIFCString (property.Name.value);
                     switch (property.NominalValue.label) {
                         case 'IFCTEXT':
                         case 'IFCLABEL':
                         case 'IFCIDENTIFIER':
-                            meshProperty = new OV.Property (OV.PropertyType.Text, propertyName, obj.DecodeIFCString (property.NominalValue.value));
+                            meshProperty = new OV.Property (OV.PropertyType.Text, propertyName, obj.GetIFCString (property.NominalValue.value));
                             break;
                         case 'IFCBOOLEAN':
                             meshProperty = new OV.Property (OV.PropertyType.Boolean, propertyName, property.NominalValue.value === 'T' ? true : false);
@@ -177,7 +186,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
                     }
                 });
                 if (propertyGroup.PropertyCount () > 0) {
-                    foundMesh.AddPropertyGroup (propertyGroup);
+                    element.AddPropertyGroup (propertyGroup);
                 }
             });
         }
@@ -210,11 +219,26 @@ OV.ImporterIfc = class extends OV.ImporterBase
         return materialIndex;
     }
 
+    GetIFCString (ifcString)
+    {
+        let decoded = this.DecodeIFCString (ifcString);
+        if (decoded.length === 0) {
+            decoded = '-';
+        }
+        return decoded;
+    }
+
     DecodeIFCString (ifcString)
     {
         // TODO: https://github.com/tomvandig/web-ifc/issues/58
-        let ifcUnicodeRegEx = /\\X2\\(.*?)\\X0\\/uig;
-        let escapedUnicode = ifcString.replace (ifcUnicodeRegEx, '\\u$1');
-        return decodeURIComponent (JSON.parse ('"' + escapedUnicode + '"'));
+        const ifcUnicodeRegEx = /\\X2\\(.*?)\\X0\\/uig;
+        let resultString = ifcString;
+        let match = ifcUnicodeRegEx.exec (ifcString);
+        while (match) {
+            const unicodeChar = String.fromCharCode (parseInt (match[1], 16));
+            resultString = resultString.replace (match[0], unicodeChar);
+            match = ifcUnicodeRegEx.exec (ifcString);
+        }
+        return resultString;
     }
 };
