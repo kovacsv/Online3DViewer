@@ -148,20 +148,20 @@ OV.ImporterIfc = class extends OV.ImporterBase
                     if (!property || !property.Name || !property.NominalValue) {
                         return;
                     }
-                    let meshProperty = null;
+                    let elemProperty = null;
                     let propertyName = obj.GetIFCString (property.Name.value);
                     switch (property.NominalValue.label) {
                         case 'IFCTEXT':
                         case 'IFCLABEL':
                         case 'IFCIDENTIFIER':
-                            meshProperty = new OV.Property (OV.PropertyType.Text, propertyName, obj.GetIFCString (property.NominalValue.value));
+                            elemProperty = new OV.Property (OV.PropertyType.Text, propertyName, obj.GetIFCString (property.NominalValue.value));
                             break;
                         case 'IFCBOOLEAN':
-                            meshProperty = new OV.Property (OV.PropertyType.Boolean, propertyName, property.NominalValue.value === 'T' ? true : false);
+                            elemProperty = new OV.Property (OV.PropertyType.Boolean, propertyName, property.NominalValue.value === 'T' ? true : false);
                             break;
                         case 'IFCINTEGER':
                         case 'IFCCOUNTMEASURE':
-                            meshProperty = new OV.Property (OV.PropertyType.Integer, propertyName, property.NominalValue.value);
+                            elemProperty = new OV.Property (OV.PropertyType.Integer, propertyName, property.NominalValue.value);
                             break;
                         case 'IFCREAL':
                         case 'IFCLENGTHMEASURE':
@@ -174,15 +174,15 @@ OV.ImporterIfc = class extends OV.ImporterBase
                         case 'IFCMASSPERLENGTHMEASURE':
                         case 'IFCPLANEANGLEMEASURE':
                         case 'IFCTHERMALTRANSMITTANCEMEASURE':
-                            meshProperty = new OV.Property (OV.PropertyType.Number, propertyName, property.NominalValue.value);
+                            elemProperty = new OV.Property (OV.PropertyType.Number, propertyName, property.NominalValue.value);
                             break;
                         default:
                             // TODO
                             console.log (property.NominalValue.label);
                             break;
                     }
-                    if (meshProperty !== null) {
-                        propertyGroup.AddProperty (meshProperty);
+                    if (elemProperty !== null) {
+                        propertyGroup.AddProperty (elemProperty);
                     }
                 });
                 if (propertyGroup.PropertyCount () > 0) {
