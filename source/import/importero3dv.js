@@ -99,6 +99,12 @@ OV.ImporterO3dv = class extends OV.ImporterBase
             }
             const mesh = OV.GenerateCuboid (genParams, parameters.size_x, parameters.size_y, parameters.size_z);
             this.model.AddMesh (mesh);
+        } else if (meshContent.type === 'cylinder') {
+            if (parameters.radius === undefined || parameters.height === undefined || parameters.segments === undefined) {
+                return;
+            }
+            const mesh = OV.GenerateCylinder (genParams, parameters.radius, parameters.height, parameters.segments);
+            this.model.AddMesh (mesh);
         }
     }
 };

@@ -115,5 +115,31 @@ describe ('O3dv Importer', function () {
             });
             done ();
         });
-    });  
+    });
+
+    it ('cylinder.o3dv', function (done) {
+        testFiles.ImportO3dvFile ('cylinder.o3dv', function (model) {
+            assert (OV.CheckModel (model));
+            assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+                name : '',
+                materials : [
+                    { name : '' }
+                ],
+                meshes : [
+                    {
+                        name : '',
+                        vertexCount : 40,
+                        normalCount : 76,
+                        uvCount : 0,
+                        triangleCount : 76,
+                        boundingBox : {
+                            min : [-0.5, -0.5, 0],
+                            max : [0.5, 0.5, 1]
+                        }
+                    }
+                ]
+            });
+            done ();
+        });
+    });    
 });

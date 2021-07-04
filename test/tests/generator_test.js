@@ -26,6 +26,11 @@ describe ('Generator', function () {
         const bounds = OV.GetBoundingBox (cuboid);
         assert (OV.CoordIsEqual3D (bounds.min, new OV.Coord3D (1.0, 0.0, 0.0)));
         assert (OV.CoordIsEqual3D (bounds.max, new OV.Coord3D (2.0, 1.0, 1.0)));
+    });
 
+    it ('Cylinder with Default Parameters', function () {
+        const cylinder = OV.GenerateCylinder (null, 0.5, 1.0, 10);
+        assert (OV.IsSolid (cylinder));
+        assert (OV.IsEqualEps (OV.CalculateVolume (cylinder), Math.PI * 0.5 * 0.5 * 1.0, 0.1));
     });    
 });

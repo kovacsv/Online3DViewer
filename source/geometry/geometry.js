@@ -32,6 +32,11 @@ OV.IsEqual = function (a, b)
 	return Math.abs (b - a) < OV.Eps;
 };
 
+OV.IsEqualEps = function (a, b, eps)
+{
+	return Math.abs (b - a) < eps;
+};
+
 OV.IsPositive = function (a)
 {
 	return a > OV.Eps;

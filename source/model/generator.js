@@ -78,25 +78,65 @@ OV.Generator = class
     }
 };
 
-OV.GenerateCuboid = function (genParams, xSize, ySize, zSize)
+
+OV.GenerateExtrude = function (genParams, vertices, height)
 {
 	let generator = new OV.Generator (genParams);
 
-	generator.AddVertex (0.0, 0.0, 0.0);
-	generator.AddVertex (xSize, 0.0, 0.0);
-	generator.AddVertex (xSize, ySize, 0.0);
-	generator.AddVertex (0.0, ySize, 0.0);
-	generator.AddVertex (0.0, 0.0, zSize);
-	generator.AddVertex (xSize, 0.0, zSize);
-	generator.AddVertex (xSize, ySize, zSize);
-	generator.AddVertex (0.0, ySize, zSize);
+    let topPolygon = [];
+    let bottomPolygon = [];
+    for (let i = 0; i < vertices.length; i++) {
+        const vertex = vertices[i];
+        generator.AddVertex (vertex.x, vertex.y, 0.0);
+        generator.AddVertex (vertex.x, vertex.y, height);
+        topPolygon.push (i * 2 + 1);
+        bottomPolygon.push (2 * vertices.length - (i + 1) * 2);
+    }
 
-    generator.AddConvexPolygon ([0, 3, 2, 1]);
-    generator.AddConvexPolygon ([0, 1, 5, 4]);
-    generator.AddConvexPolygon ([1, 2, 6, 5]);
-    generator.AddConvexPolygon ([2, 3, 7, 6]);
-    generator.AddConvexPolygon ([3, 0, 4, 7]);
-    generator.AddConvexPolygon ([4, 5, 6, 7]);
+    for (let i = 0; i < vertices.length; i++) {
+        const bottom = i * 2;
+        const bottomNext = (i < vertices.length - 1) ? bottom + 2 : 0;
+        const top = i * 2 + 1;
+        const topNext = (i < vertices.length - 1) ? top + 2 : 1;
+        generator.AddConvexPolygon ([
+            bottom,
+            bottomNext,
+            topNext,
+            top
+        ]);
+    }
 
+    generator.AddConvexPolygon (bottomPolygon);
+    generator.AddConvexPolygon (topPolygon);
     return generator.GetMesh ();
+};
+
+OV.GenerateCuboid = function (genParams, xSize, ySize, zSize)
+{
+    let vertices = [
+        new OV.Coord2D (0.0, 0.0),
+        new OV.Coord2D (xSize, 0.0),
+        new OV.Coord2D (xSize, ySize),
+        new OV.Coord2D (0.0, ySize),
+    ];
+    return OV.GenerateExtrude (genParams, vertices, zSize);
+};
+
+OV.GenerateCylinder = function (genParams, radius, height, segments)
+{
+    function GetCylindricalCoord (radius, angle)
+    {
+        return new OV.Coord2D (
+            radius * Math.cos (angle),
+            radius * Math.sin (angle)
+        );
+    }
+
+    let baseVertices = [];
+	const step = 2.0 * Math.PI / segments;
+	for (let i = 0; i < segments; i++) {
+        let cylindrical = GetCylindricalCoord (radius, i * step);
+		baseVertices.push (cylindrical);
+	}
+    return OV.GenerateExtrude (genParams, baseVertices, height);
 };
