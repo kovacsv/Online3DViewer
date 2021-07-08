@@ -115,7 +115,7 @@ OV.GeneratorHelper = class
         this.generator = generator;
     }
 
-    GenerateExtrude (vertices, height, isSmooth)
+    GenerateExtrude (vertices, height, smooth)
     {
         let topPolygon = [];
         let bottomPolygon = [];
@@ -124,10 +124,10 @@ OV.GeneratorHelper = class
             bottomPolygon.push (this.generator.AddVertex (vertex.x, vertex.y, 0.0));
             topPolygon.push (this.generator.AddVertex (vertex.x, vertex.y, height));
         }
-        if (isSmooth) {
+        if (smooth) {
             this.generator.SetCurve (1);
         }
-        this.GenerateSurfaceBetweenPolygons (bottomPolygon, topPolygon, isSmooth);
+        this.GenerateSurfaceBetweenPolygons (bottomPolygon, topPolygon, smooth);
         this.generator.ResetCurve ();
 
         this.generator.AddConvexPolygonInverted (bottomPolygon);
@@ -167,7 +167,7 @@ OV.GenerateCuboid = function (genParams, xSize, ySize, zSize)
     return generator.GetMesh ();
 };
 
-OV.GenerateCylinder = function (genParams, radius, height, segments, isSmooth)
+OV.GenerateCylinder = function (genParams, radius, height, segments, smooth)
 {
     function GetCylindricalCoord (radius, angle)
     {
@@ -185,6 +185,6 @@ OV.GenerateCylinder = function (genParams, radius, height, segments, isSmooth)
 		baseVertices.push (cylindrical);
 	}
     let helper = new OV.GeneratorHelper (generator);
-    helper.GenerateExtrude (baseVertices, height, isSmooth);
+    helper.GenerateExtrude (baseVertices, height, smooth);
     return generator.GetMesh ();    
 };

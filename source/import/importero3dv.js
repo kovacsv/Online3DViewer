@@ -100,11 +100,12 @@ OV.ImporterO3dv = class extends OV.ImporterBase
             const mesh = OV.GenerateCuboid (genParams, parameters.size_x, parameters.size_y, parameters.size_z);
             this.model.AddMesh (mesh);
         } else if (meshContent.type === 'cylinder') {
-            if (parameters.radius === undefined || parameters.height === undefined || parameters.segments === undefined) {
+            if (parameters.radius === undefined || parameters.height === undefined) {
                 return;
             }
-            let isSmooth = OV.ValueOrDefault (parameters.smooth, true);
-            const mesh = OV.GenerateCylinder (genParams, parameters.radius, parameters.height, parameters.segments, isSmooth);
+            let segments = OV.ValueOrDefault (parameters.segments, 25);
+            let smooth = OV.ValueOrDefault (parameters.smooth, true);
+            const mesh = OV.GenerateCylinder (genParams, parameters.radius, parameters.height, segments, smooth);
             this.model.AddMesh (mesh);
         }
     }

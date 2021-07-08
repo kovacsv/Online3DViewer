@@ -4,7 +4,8 @@
 			"type" : "cylinder",
 			"parameters" : {
 				"radius" : 0.5,
-				"height" : 1.0
+				"height" : 1.0,
+				"segments" : 50
 			}
 		}
 	]
