@@ -129,6 +129,32 @@ describe ('O3dv Importer', function () {
                     {
                         name : '',
                         vertexCount : 40,
+                        normalCount : 156,
+                        uvCount : 0,
+                        triangleCount : 76,
+                        boundingBox : {
+                            min : [-0.5, -0.5, 0],
+                            max : [0.5, 0.5, 1]
+                        }
+                    }
+                ]
+            });
+            done ();
+        });
+    });
+
+    it ('cylinder_non_smooth.o3dv', function (done) {
+        testFiles.ImportO3dvFile ('cylinder_non_smooth.o3dv', function (model) {
+            assert (OV.CheckModel (model));
+            assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+                name : '',
+                materials : [
+                    { name : '' }
+                ],
+                meshes : [
+                    {
+                        name : '',
+                        vertexCount : 40,
                         normalCount : 76,
                         uvCount : 0,
                         triangleCount : 76,
@@ -141,5 +167,5 @@ describe ('O3dv Importer', function () {
             });
             done ();
         });
-    });    
+    });      
 });
