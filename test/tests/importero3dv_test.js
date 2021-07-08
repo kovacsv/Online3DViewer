@@ -128,13 +128,13 @@ describe ('O3dv Importer', function () {
                 meshes : [
                     {
                         name : '',
-                        vertexCount : 40,
-                        normalCount : 156,
+                        vertexCount : 50,
+                        normalCount : 196,
                         uvCount : 0,
-                        triangleCount : 76,
+                        triangleCount : 96,
                         boundingBox : {
-                            min : [-0.5, -0.5, 0],
-                            max : [0.5, 0.5, 1]
+                            min : [-0.49605735065723894, -0.4990133642141358, 0],
+                            max : [0.5, 0.4990133642141358, 1]
                         }
                     }
                 ]
