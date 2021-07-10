@@ -1,6 +1,7 @@
 OV.SidebarPanelId =
 {
-    Details : 0
+    Details : 0,
+    Settings : 1
 };
 
 OV.Sidebar = class
@@ -12,7 +13,8 @@ OV.Sidebar = class
         this.titleDiv = null;
         this.contentDiv = null;
         this.panels = [
-            new OV.DetailsSidebarPanel (this.parentDiv)
+            new OV.DetailsSidebarPanel (this.parentDiv),
+            new OV.SettingsSidebarPanel (this.parentDiv)
         ];
     }
 
@@ -24,7 +26,7 @@ OV.Sidebar = class
     Init (callbacks)
     {
         for (let i = 0; i < this.panels.length; i++) {
-            this.panels[i].Init ('Details', callbacks);
+            this.panels[i].Init (callbacks);
         }
     }
 

@@ -3,8 +3,11 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
     constructor (parentDiv)
     {
         super (parentDiv);
-        this.titleDiv = null;
-        this.contentDiv = null;
+    }
+
+    GetTitle ()
+    {
+        return 'Details';
     }
 
     AddPropertyGroup (table, propertyGroup)
@@ -140,17 +143,5 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
         AddTextureMap (this, table, 'Normal Map', material.normalMap);
         AddTextureMap (this, table, 'Emissive Map', material.emissiveMap);      
         this.Resize ();
-    }    
-
-    Resize ()
-    {
-        let titleHeight = this.titleDiv.outerHeight (true);
-        let height = this.parentDiv.height ();
-        this.contentDiv.outerHeight (height - titleHeight, true);
     }
-
-    Clear ()
-    {
-        this.contentDiv.empty ();
-    }    
 };

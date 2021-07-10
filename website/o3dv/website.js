@@ -337,29 +337,17 @@ OV.Website = class
         AddButton (this.toolbar, 'share', 'Share model', true, function () {
             obj.dialog = OV.ShowSharingDialog (importer, obj.viewerSettings, obj.importSettings, obj.viewer.GetCamera ());
         });
-        if (OV.FeatureSet.SettingsAvailable) {
-            AddSeparator (this.toolbar, true);
-            AddButton (this.toolbar, 'settings', 'Settings', true, function () {
-                obj.dialog = OV.ShowSettingsDialog (obj.viewerSettings, obj.importSettings, function (dialogSettings) {
-                    obj.viewerSettings.backgroundColor = dialogSettings.backgroundColor;
-                    obj.viewer.SetBackgroundColor (obj.viewerSettings.backgroundColor);
-                    obj.cookieHandler.SetColorVal ('ov_background_color', obj.viewerSettings.backgroundColor);
-
-                    let reload = !OV.ColorIsEqual (obj.importSettings.defaultColor, dialogSettings.defaultColor);
-                    obj.importSettings.defaultColor = dialogSettings.defaultColor;
-                    obj.cookieHandler.SetColorVal ('ov_default_color', obj.importSettings.defaultColor);
-
-                    if (reload) {
-                        obj.ReloadFiles ();
-                    }
-                });
-            });
-        }
         AddRightButton (this.toolbar, 'details', 'Details panel', true, function () {
             obj.ToggleSidebar (OV.SidebarPanelId.Details);
             obj.Resize ();
         });
-        
+        if (OV.FeatureSet.SettingsAvailable) {
+            AddRightButton (this.toolbar, 'settings', 'Settings panel', true, function () {
+                obj.ToggleSidebar (OV.SidebarPanelId.Settings);
+                obj.Resize ();
+            });            
+        }
+
         this.parameters.fileInput.on ('change', function (ev) {
             if (ev.target.files.length > 0) {
                 obj.LoadModelFromFileList (ev.target.files);

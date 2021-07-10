@@ -9,16 +9,27 @@ OV.SidebarPanel = class
         this.visible = false;
     }
 
-    Init (title, callbacks)
+    Init (callbacks)
     {
         this.titleDiv = $('<div>').addClass ('ov_sidebar_title').appendTo (this.panelDiv);
         this.contentDiv = $('<div>').addClass ('ov_sidebar_content').addClass ('ov_thin_scrollbar').appendTo (this.panelDiv);
-        let titleTextDiv = $('<div>').addClass ('ov_sidebar_title_text').html (title).appendTo (this.titleDiv);
+        let titleTextDiv = $('<div>').addClass ('ov_sidebar_title_text').html (this.GetTitle ()).appendTo (this.titleDiv);
         let titleImg = $('<img>').addClass ('ov_sidebar_title_img').attr ('src', 'assets/images/sidebar/close.svg').appendTo (this.titleDiv);
         titleImg.click (function () {
             callbacks.onClose ();
         });
-    }    
+        this.InitContent ();
+    }
+
+    GetTitle ()
+    {
+        return '';
+    }
+
+    InitContent ()
+    {
+
+    }
 
     Show (show)
     {
@@ -33,5 +44,17 @@ OV.SidebarPanel = class
     IsVisible ()
     {
         return this.visible;
-    }    
+    }
+
+    Resize ()
+    {
+        let titleHeight = this.titleDiv.outerHeight (true);
+        let height = this.parentDiv.height ();
+        this.contentDiv.outerHeight (height - titleHeight, true);
+    }
+
+    Clear ()
+    {
+        this.contentDiv.empty ();
+    }
 };
