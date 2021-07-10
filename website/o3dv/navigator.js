@@ -108,10 +108,10 @@ OV.NavigatorInfoPanel = class
 
 OV.Navigator = class
 {
-    constructor (parentDiv, sidebar)
+    constructor (parentDiv, propertiesPanel)
     {
         this.parentDiv = parentDiv;
-        this.sidebar = sidebar;
+        this.propertiesPanel = propertiesPanel;
         this.callbacks = null;
         this.titleDiv = $('<div>').addClass ('ov_navigator_tree_title').appendTo (parentDiv);
         this.treeDiv = $('<div>').addClass ('ov_navigator_tree_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
@@ -317,7 +317,7 @@ OV.Navigator = class
                 }
             });
             let model = this.callbacks.getModel ();
-            this.sidebar.AddElementProperties (model);
+            this.propertiesPanel.AddElementProperties (model);
         } else {
             if (this.selection.type === OV.SelectionType.Material) {
                 let usedByMeshes = this.callbacks.getMeshesForMaterial (this.selection.index);
@@ -331,7 +331,7 @@ OV.Navigator = class
                 });
                 let model = this.callbacks.getModel ();
                 let material = model.GetMaterial (this.selection.index);
-                this.sidebar.AddMaterialProperties (material);
+                this.propertiesPanel.AddMaterialProperties (material);
             } else if (this.selection.type === OV.SelectionType.Mesh) {
                 let usedMaterials = this.callbacks.getMaterialsForMesh (this.selection.index);
                 this.infoPanel.FillWithModelInfo (usedMaterials, {
@@ -341,7 +341,7 @@ OV.Navigator = class
                 });
                 let model = this.callbacks.getModel ();
                 let mesh = model.GetMesh (this.selection.index);
-                this.sidebar.AddElementProperties (mesh);
+                this.propertiesPanel.AddElementProperties (mesh);
             }
         }
         this.Resize ();
