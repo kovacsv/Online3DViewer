@@ -1,6 +1,6 @@
 OV.SidebarPanelId =
 {
-    Properties : 0
+    Details : 0
 };
 
 OV.Sidebar = class
@@ -12,7 +12,7 @@ OV.Sidebar = class
         this.titleDiv = null;
         this.contentDiv = null;
         this.panels = [
-            new OV.PropertySidebarPanel (this.parentDiv)
+            new OV.DetailsSidebarPanel (this.parentDiv)
         ];
     }
 
@@ -28,12 +28,21 @@ OV.Sidebar = class
         }
     }
 
-    Show (show)
+    Show (panelId)
     {
-        this.visible = show;
-        if (this.visible) {
+        if (panelId !== null) {
+            this.visible = true;
             this.parentDiv.show ();
+            for (let i = 0; i < this.panels.length; i++) {
+                const panel = this.panels[i];
+                if (i === panelId) {
+                    panel.Show (true);
+                } else {
+                    panel.Show (false);
+                }
+            }
         } else {
+            this.visible = false;
             this.parentDiv.hide ();
         }
     }
@@ -41,6 +50,19 @@ OV.Sidebar = class
     IsVisible ()
     {
         return this.visible;
+    }
+
+    GetVisiblePanelId ()
+    {
+        if (!this.visible) {
+            return null;
+        }
+        for (let i = 0; i < this.panels.length; i++) {
+            if (this.panels[i].IsVisible ()) {
+                return i;
+            }
+        }
+        return null;
     }
 
     Resize ()

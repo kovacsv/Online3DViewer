@@ -3,10 +3,10 @@ OV.SidebarPanel = class
     constructor (parentDiv)
     {
         this.parentDiv = parentDiv;
-        this.panelDiv = $('<div>').appendTo (this.parentDiv);
+        this.panelDiv = $('<div>').appendTo (this.parentDiv).hide ();
         this.titleDiv = null;
         this.contentDiv = null;
-        this.visible = true;
+        this.visible = false;
     }
 
     Init (title, callbacks)

@@ -8,7 +8,7 @@ OV.Website = class
         this.cookieHandler = new OV.CookieHandler ();
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
         this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv);
-        this.navigator = new OV.Navigator (this.parameters.navigatorDiv, this.sidebar.GetPanel (OV.SidebarPanelId.Properties));
+        this.navigator = new OV.Navigator (this.parameters.navigatorDiv, this.sidebar.GetPanel (OV.SidebarPanelId.Details));
         this.viewerSettings = new OV.ViewerSettings ();
         this.importSettings = new OV.ImportSettings ();
         this.modelLoader = new OV.ThreeModelLoader ();
@@ -81,10 +81,19 @@ OV.Website = class
         }
     }
 
-    ShowSidebar (show)
+    ShowSidebar (panelId)
     {
-        this.sidebar.Show (show);
-        this.cookieHandler.SetBoolVal ('ov_show_sidebar', show);
+        this.sidebar.Show (panelId);
+        this.cookieHandler.SetBoolVal ('ov_show_sidebar', this.sidebar.IsVisible ());
+    }
+
+    ToggleSidebar (panelId)
+    {
+        if (this.sidebar.GetVisiblePanelId () !== panelId) {
+            this.ShowSidebar (panelId);
+        } else {
+            this.ShowSidebar (null);
+        }        
     }
 
     ClearModel ()
@@ -347,7 +356,7 @@ OV.Website = class
             });
         }
         AddRightButton (this.toolbar, 'details', 'Details panel', true, function () {
-            obj.ShowSidebar (!obj.sidebar.IsVisible ());
+            obj.ToggleSidebar (OV.SidebarPanelId.Details);
             obj.Resize ();
         });
         
@@ -404,12 +413,12 @@ OV.Website = class
         let obj = this;
         this.sidebar.Init ({
             onClose : function () {
-                obj.ShowSidebar (false);
+                obj.ShowSidebar (null);
                 obj.Resize ();
             }
         });
         let show = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
-        this.ShowSidebar (show);
+        this.ShowSidebar (show ? OV.SidebarPanelId.Details : null);
     }
 
     InitNavigator ()

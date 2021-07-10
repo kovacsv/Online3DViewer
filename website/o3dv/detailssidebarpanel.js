@@ -1,4 +1,4 @@
-OV.PropertySidebarPanel = class extends OV.SidebarPanel
+OV.DetailsSidebarPanel = class extends OV.SidebarPanel
 {
     constructor (parentDiv)
     {
