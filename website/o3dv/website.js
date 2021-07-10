@@ -8,7 +8,7 @@ OV.Website = class
         this.cookieHandler = new OV.CookieHandler ();
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
         this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv);
-        this.navigator = new OV.Navigator (this.parameters.navigatorDiv, this.sidebar.GetPanel (OV.SidebarPanelId.Details));
+        this.navigator = new OV.Navigator (this.parameters.navigatorDiv);
         this.viewerSettings = new OV.ViewerSettings ();
         this.importSettings = new OV.ImportSettings ();
         this.modelLoader = new OV.ThreeModelLoader ();
@@ -16,6 +16,7 @@ OV.Website = class
             color : 0x8ec9f0,
             side : THREE.DoubleSide
         });
+        this.detailsPanel = null;
         this.model = null;
         this.dialog = null;
     }
@@ -79,21 +80,6 @@ OV.Website = class
         } else {
             this.parameters.mainDiv.hide ();
         }
-    }
-
-    ShowSidebar (panelId)
-    {
-        this.sidebar.Show (panelId);
-        this.cookieHandler.SetBoolVal ('ov_show_sidebar', this.sidebar.IsVisible ());
-    }
-
-    ToggleSidebar (panelId)
-    {
-        if (this.sidebar.GetVisiblePanelId () !== panelId) {
-            this.ShowSidebar (panelId);
-        } else {
-            this.ShowSidebar (null);
-        }        
     }
 
     ClearModel ()
@@ -256,13 +242,6 @@ OV.Website = class
             return button;
         }
 
-        function AddRightButton (toolbar, imageName, imageTitle, onlyFullWidth, onClick)
-        {
-            let button = AddButton (toolbar, imageName, imageTitle, onlyFullWidth, onClick);
-            button.AddClass ('right');
-            return button;
-        }        
-
         function AddRadioButton (toolbar, imageNames, imageTitles, selectedIndex, onlyFullWidth, onClick)
         {
             let imageData = [];
@@ -337,16 +316,6 @@ OV.Website = class
         AddButton (this.toolbar, 'share', 'Share model', true, function () {
             obj.dialog = OV.ShowSharingDialog (importer, obj.viewerSettings, obj.importSettings, obj.viewer.GetCamera ());
         });
-        AddRightButton (this.toolbar, 'details', 'Details panel', true, function () {
-            obj.ToggleSidebar (OV.SidebarPanelId.Details);
-            obj.Resize ();
-        });
-        if (OV.FeatureSet.SettingsAvailable) {
-            AddRightButton (this.toolbar, 'settings', 'Settings panel', true, function () {
-                obj.ToggleSidebar (OV.SidebarPanelId.Settings);
-                obj.Resize ();
-            });            
-        }
 
         this.parameters.fileInput.on ('change', function (ev) {
             if (ev.target.files.length > 0) {
@@ -398,15 +367,57 @@ OV.Website = class
 
     InitSidebar ()
     {
+        function AddSidebarButton (toolbar, imageName, imageTitle, onClick)
+        {
+            let image = 'assets/images/toolbar/' + imageName + '.svg';
+            let button = toolbar.AddImageButton (image, imageTitle, onClick);
+            button.AddClass ('only_full_width');
+            button.AddClass ('right');
+            return button;
+        }
+
+        function ShowSidebar (sidebar, cookieHandler, panelId)
+        {
+            sidebar.Show (panelId);
+            cookieHandler.SetBoolVal ('ov_show_sidebar', sidebar.IsVisible ());
+        }
+    
+        function ToggleSidebar (sidebar, cookieHandler, panelId)
+        {
+            if (sidebar.GetVisiblePanelId () !== panelId) {
+                ShowSidebar (sidebar, cookieHandler, panelId);
+            } else {
+                ShowSidebar (sidebar, cookieHandler, null);
+            }        
+        }
+
+        const detailsPanelId = this.sidebar.AddPanel (new OV.DetailsSidebarPanel (this.parameters.sidebarDiv));
+        const settingsPanelId = this.sidebar.AddPanel (new OV.SettingsSidebarPanel (this.parameters.sidebarDiv));
+
+        this.detailsPanel = this.sidebar.GetPanel (detailsPanelId);
+
         let obj = this;
+        AddSidebarButton (this.toolbar, 'details', 'Details panel', function () {
+            ToggleSidebar (obj.sidebar, obj.cookieHandler, detailsPanelId);
+            obj.Resize ();
+        });
+
+        if (OV.FeatureSet.SettingsAvailable) {
+            AddSidebarButton (this.toolbar, 'settings', 'Settings panel', function () {
+                ToggleSidebar (obj.sidebar, obj.cookieHandler, settingsPanelId);
+                obj.Resize ();
+            });            
+        }
+
         this.sidebar.Init ({
             onClose : function () {
-                obj.ShowSidebar (null);
+                ShowSidebar (obj.sidebar, obj.cookieHandler, null);
                 obj.Resize ();
             }
         });
+
         let show = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
-        this.ShowSidebar (show ? OV.SidebarPanelId.Details : null);
+        ShowSidebar (this.sidebar, this.cookieHandler, show ? detailsPanelId : null);
     }
 
     InitNavigator ()
@@ -493,8 +504,14 @@ OV.Website = class
             getMaterialsForModel : function () {
                 return GetMaterialsForModel (obj.model);
             },
-            getModel : function () {
-                return obj.model;
+            onModelSelected : function () {
+                obj.detailsPanel.AddElementProperties (obj.model);
+            },
+            onMeshSelected : function (meshIndex) {
+                obj.detailsPanel.AddElementProperties (obj.model.GetMesh (meshIndex));
+            },
+            onMaterialSelected : function (materialIndex) {
+                obj.detailsPanel.AddMaterialProperties (obj.model.GetMaterial (materialIndex));
             }
         });
     }

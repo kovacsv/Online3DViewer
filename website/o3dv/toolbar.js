@@ -20,7 +20,6 @@ OV.ToolbarButton = class
         }
         this.buttonDiv.attr ('alt', this.imageTitle);
         OV.InstallTooltip (this.buttonDiv, this.imageTitle);
-        this.Update ();
     }
 
     AddClass (className)
@@ -28,13 +27,14 @@ OV.ToolbarButton = class
         this.buttonDiv.addClass (className);
     }
 
-    Update ()
+    SetSelected (selected)
     {
+        this.selected = selected;
         if (!this.selected) {
             this.buttonDiv.removeClass ('selected');
         } else {
             this.buttonDiv.addClass ('selected');
-        }
+        }        
     }
 };
 
@@ -61,17 +61,15 @@ OV.Toolbar = class
                 for (let i = 0; i < buttons.length; i++) {
                     let currentButton = buttons[i];
                     if (i === buttonIndex) {
-                        currentButton.selected = true;
+                        currentButton.SetSelected (true);
                     } else {
-                        currentButton.selected = false;
+                        currentButton.SetSelected (false);
                     }
-                    currentButton.Update ();
                 }
                 onClick (buttonIndex);
             });
             if (selectedIndex === buttonIndex) {
-                button.selected = true;
-                button.Update ();
+                button.SetSelected (true);
             }
             buttons.push (button);
         }

@@ -10,3 +10,12 @@ OV.ValueOrDefault = function (val, def)
     }
     return val;
 };
+
+OV.EnumerateKeyValuePairs = function (arr, proc)
+{
+    for (let key in arr) {
+        if (arr.hasOwnProperty (key)) {
+            proc (key, arr[key]);
+        }
+    }
+};

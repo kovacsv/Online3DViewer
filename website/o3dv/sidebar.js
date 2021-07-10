@@ -1,9 +1,3 @@
-OV.SidebarPanelId =
-{
-    Details : 0,
-    Settings : 1
-};
-
 OV.Sidebar = class
 {
     constructor (parentDiv)
@@ -12,10 +6,13 @@ OV.Sidebar = class
         this.visible = true;
         this.titleDiv = null;
         this.contentDiv = null;
-        this.panels = [
-            new OV.DetailsSidebarPanel (this.parentDiv),
-            new OV.SettingsSidebarPanel (this.parentDiv)
-        ];
+        this.panels = [];
+    }
+
+    AddPanel (panel)
+    {
+        this.panels.push (panel);
+        return this.panels.length - 1;
     }
 
     GetPanel (id)
@@ -25,8 +22,8 @@ OV.Sidebar = class
 
     Init (callbacks)
     {
-        for (let i = 0; i < this.panels.length; i++) {
-            this.panels[i].Init (callbacks);
+        for (let id = 0; id < this.panels.length; id++) {
+            this.panels[id].Init (callbacks);
         }
     }
 
@@ -35,9 +32,9 @@ OV.Sidebar = class
         if (panelId !== null) {
             this.visible = true;
             this.parentDiv.show ();
-            for (let i = 0; i < this.panels.length; i++) {
-                const panel = this.panels[i];
-                if (i === panelId) {
+            for (let id = 0; id < this.panels.length; id++) {
+                let panel = this.panels[id];
+                if (id === panelId) {
                     panel.Show (true);
                 } else {
                     panel.Show (false);
@@ -59,9 +56,9 @@ OV.Sidebar = class
         if (!this.visible) {
             return null;
         }
-        for (let i = 0; i < this.panels.length; i++) {
-            if (this.panels[i].IsVisible ()) {
-                return i;
+        for (let id = 0; id < this.panels.length; id++) {
+            if (this.panels[id].IsVisible ()) {
+                return id;
             }
         }
         return null;
@@ -69,8 +66,8 @@ OV.Sidebar = class
 
     Resize ()
     {
-        for (let i = 0; i < this.panels.length; i++) {
-            this.panels[i].Resize ();
-        }        
+        for (let id = 0; id < this.panels.length; id++) {
+            this.panels[id].Resize ();
+        }
     }
 };

@@ -108,10 +108,9 @@ OV.NavigatorInfoPanel = class
 
 OV.Navigator = class
 {
-    constructor (parentDiv, propertiesPanel)
+    constructor (parentDiv)
     {
         this.parentDiv = parentDiv;
-        this.propertiesPanel = propertiesPanel;
         this.callbacks = null;
         this.titleDiv = $('<div>').addClass ('ov_navigator_tree_title').appendTo (parentDiv);
         this.treeDiv = $('<div>').addClass ('ov_navigator_tree_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
@@ -316,8 +315,7 @@ OV.Navigator = class
                     obj.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                 }
             });
-            let model = this.callbacks.getModel ();
-            this.propertiesPanel.AddElementProperties (model);
+            this.callbacks.onModelSelected ();
         } else {
             if (this.selection.type === OV.SelectionType.Material) {
                 let usedByMeshes = this.callbacks.getMeshesForMaterial (this.selection.index);
@@ -329,9 +327,7 @@ OV.Navigator = class
                         obj.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshIndex));
                     }
                 });
-                let model = this.callbacks.getModel ();
-                let material = model.GetMaterial (this.selection.index);
-                this.propertiesPanel.AddMaterialProperties (material);
+                this.callbacks.onMaterialSelected (this.selection.index);
             } else if (this.selection.type === OV.SelectionType.Mesh) {
                 let usedMaterials = this.callbacks.getMaterialsForMesh (this.selection.index);
                 this.infoPanel.FillWithModelInfo (usedMaterials, {
@@ -339,9 +335,7 @@ OV.Navigator = class
                         obj.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                     }
                 });
-                let model = this.callbacks.getModel ();
-                let mesh = model.GetMesh (this.selection.index);
-                this.propertiesPanel.AddElementProperties (mesh);
+                this.callbacks.onMeshSelected (this.selection.index);
             }
         }
         this.Resize ();
