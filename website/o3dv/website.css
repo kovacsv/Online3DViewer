@@ -284,14 +284,37 @@ div.ov_sidebar_title img.ov_sidebar_title_img
 	cursor: pointer;
 }
 
+div.ov_sidebar_subtitle
+{
+
+}
+
 div.ov_sidebar_content
 {
 	overflow: auto;
 }
 
+div.ov_sidebar_content div.ov_sidebar_settings_content
+{
+	margin: 10px 0px;
+	overflow: auto;
+}
+
+div.ov_sidebar_content div.ov_sidebar_small_column
+{
+	width: 50px;
+	float: left;
+}
+
+div.ov_sidebar_content div.ov_sidebar_column
+{
+	width: 250px;
+	float: left;
+}
+
 div.ov_sidebar_content input.ov_sidebar_color
 {
-	width: 64px;
+	width: 30px;
 	height: 18px;
 }
 

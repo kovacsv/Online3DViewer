@@ -450,12 +450,19 @@ OV.Website = class
 
         settingsPanel.InitSettings ({
             backgroundColor : {
-                name : 'Background Color',
                 defaultValue : this.viewerSettings.backgroundColor,
                 onChange : function (newVal) {
                     obj.viewerSettings.backgroundColor = newVal;
                     obj.viewer.SetBackgroundColor (newVal);
                     obj.cookieHandler.SetColorVal ('ov_background_color', newVal);
+                }
+            },
+            defaultColor : {
+                defaultValue : this.importSettings.defaultColor,
+                onChange : function (newVal) {
+                    obj.importSettings.defaultColor = newVal;
+                    obj.cookieHandler.SetColorVal ('ov_default_color', newVal);
+                    obj.ReloadFiles ();
                 }
             }
         });
