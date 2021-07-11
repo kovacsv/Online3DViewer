@@ -205,9 +205,9 @@ OV.Website = class
             }
             let importSettings = new OV.ImportSettings ();
             importSettings.defaultColor = this.importSettings.defaultColor;
-            let color = this.hashHandler.GetColorFromHash ();
-            if (color !== null) {
-                importSettings.defaultColor = color;
+            let defaultColor = this.hashHandler.GetDefaultColorFromHash ();
+            if (defaultColor !== null) {
+                importSettings.defaultColor = defaultColor;
             }
             this.LoadModelFromUrlList (urls, importSettings);
         } else {

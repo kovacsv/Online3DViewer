@@ -55,11 +55,11 @@ OV.Init3DViewerElements = function (onReady)
             },
         });
 
-        let backgroundParam = element.getAttribute ('background');
+        let backgroundParam = element.getAttribute ('backgroundcolor');
         if (backgroundParam) {
-            let color = OV.ParameterConverter.StringToColor (backgroundParam);
-            if (color !== null) {
-                viewer.SetBackgroundColor (color);
+            let backgroundColor = OV.ParameterConverter.StringToColor (backgroundParam);
+            if (backgroundColor !== null) {
+                viewer.SetBackgroundColor (backgroundColor);
             }
         }
 
@@ -74,11 +74,11 @@ OV.Init3DViewerElements = function (onReady)
         }
 
         let settings = new OV.ImportSettings ();
-        let colorParam = element.getAttribute ('color');
+        let colorParam = element.getAttribute ('defaultcolor');
         if (colorParam) {
-            let color = OV.ParameterConverter.StringToColor (colorParam);
-            if (color !== null) {
-                settings.defaultColor = color;
+            let defaultColor = OV.ParameterConverter.StringToColor (colorParam);
+            if (defaultColor !== null) {
+                settings.defaultColor = defaultColor;
             }
         }
 

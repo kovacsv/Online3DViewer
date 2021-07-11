@@ -49,13 +49,13 @@ OV.HashHandler = class
     GetBackgroundFromHash ()
     {
         let parser = OV.CreateUrlParser (this.GetHash ());
-        return parser.GetBackground ();
+        return parser.GetBackgroundColor ();
     }
 
-    GetColorFromHash ()
+    GetDefaultColorFromHash ()
     {
         let parser = OV.CreateUrlParser (this.GetHash ());
-        return parser.GetColor ();
+        return parser.GetDefaultColor ();
     }
 
     GetHash ()

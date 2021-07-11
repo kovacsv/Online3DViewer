@@ -120,13 +120,13 @@ OV.ParameterListBuilder = class
 
     AddBackground (background)
     {
-        this.AddUrlPart ('background', OV.ParameterConverter.ColorToString (background));
+        this.AddUrlPart ('backgroundcolor', OV.ParameterConverter.ColorToString (background));
         return this;
     }
 
     AddColor (color)
     {
-        this.AddUrlPart ('color', OV.ParameterConverter.ColorToString (color));
+        this.AddUrlPart ('defaultcolor', OV.ParameterConverter.ColorToString (color));
         return this;
     }
 
@@ -172,15 +172,15 @@ OV.ParameterListParser = class
         return OV.ParameterConverter.StringToCamera (keywordParams);
     }
 
-    GetBackground ()
+    GetBackgroundColor ()
     {
-        let backgroundParams = this.GetKeywordParams ('background');
+        let backgroundParams = this.GetKeywordParams ('backgroundcolor');
         return OV.ParameterConverter.StringToColor (backgroundParams);
     }
 
-    GetColor ()
+    GetDefaultColor ()
     {
-        let colorParams = this.GetKeywordParams ('color');
+        let colorParams = this.GetKeywordParams ('defaultcolor');
         return OV.ParameterConverter.StringToColor (colorParams);
     }
     

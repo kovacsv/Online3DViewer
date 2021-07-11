@@ -25,9 +25,9 @@ OV.Embed = class
                 this.viewer.SetBackgroundColor (background);
             }
             let settings = new OV.ImportSettings ();
-            let color = this.hashHandler.GetColorFromHash ();
-            if (color !== null) {
-                settings.defaultColor = color;
+            let defaultColor = this.hashHandler.GetDefaultColorFromHash ();
+            if (defaultColor !== null) {
+                settings.defaultColor = defaultColor;
             }            
             this.modelLoader.LoadFromUrlList (urls, settings);
             let hashParameters = OV.CreateModelUrlParameters (urls);
