@@ -69,6 +69,8 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
         let sharingLinkInput = AddCopyableTextInput (section, function () {
             return GetSharingLink (sharingLinkParams);
         });
+        // TODO: camera position in sharing link
+        // TODO: background color in sharing link
         if (OV.FeatureSet.SettingsPanel) {
             AddCheckboxLine (optionsSection, 'Use overridden default color', 'share_color', function (checked) {
                 sharingLinkParams.color = checked ? importSettings.defaultColor : null;
