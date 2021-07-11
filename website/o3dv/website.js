@@ -367,57 +367,89 @@ OV.Website = class
 
     InitSidebar ()
     {
-        function AddSidebarButton (toolbar, imageName, imageTitle, onClick)
+        function AddSidebarButton (toolbar, sidebarPanel, onClick)
         {
-            let image = 'assets/images/toolbar/' + imageName + '.svg';
-            let button = toolbar.AddImageButton (image, imageTitle, onClick);
+            let image = 'assets/images/toolbar/' + sidebarPanel.image + '.svg';
+            let button = toolbar.AddImageButton (image, sidebarPanel.title, onClick);
             button.AddClass ('only_full_width');
             button.AddClass ('right');
             return button;
         }
 
-        function ShowSidebar (sidebar, cookieHandler, panelId)
+        function UpdateSidebarButtons (sidebar, sidebarPanels)
+        {
+            const visiblePanelId = sidebar.GetVisiblePanelId ();
+            for (let i = 0; i < sidebarPanels.length; i++) {
+                let sidebarPanel = sidebarPanels[i];
+                if (sidebarPanel.panelId === visiblePanelId) {
+                    let image = 'assets/images/toolbar/' + sidebarPanel.image + '_active.svg';
+                    sidebarPanel.button.SetImage (image);
+                } else {
+                    let image = 'assets/images/toolbar/' + sidebarPanel.image + '.svg';
+                    sidebarPanel.button.SetImage (image);
+                }
+            }
+        }
+
+        function ShowSidebar (sidebar, cookieHandler, sidebarPanels, panelId)
         {
             sidebar.Show (panelId);
+            UpdateSidebarButtons (sidebar, sidebarPanels);
             cookieHandler.SetBoolVal ('ov_show_sidebar', sidebar.IsVisible ());
         }
     
-        function ToggleSidebar (sidebar, cookieHandler, panelId)
+        function ToggleSidebar (sidebar, cookieHandler, sidebarPanels, panelId)
         {
             if (sidebar.GetVisiblePanelId () !== panelId) {
-                ShowSidebar (sidebar, cookieHandler, panelId);
+                ShowSidebar (sidebar, cookieHandler, sidebarPanels, panelId);
             } else {
-                ShowSidebar (sidebar, cookieHandler, null);
-            }        
+                ShowSidebar (sidebar, cookieHandler, sidebarPanels, null);
+            }
         }
 
-        const detailsPanelId = this.sidebar.AddPanel (new OV.DetailsSidebarPanel (this.parameters.sidebarDiv));
-        const settingsPanelId = this.sidebar.AddPanel (new OV.SettingsSidebarPanel (this.parameters.sidebarDiv));
-
-        this.detailsPanel = this.sidebar.GetPanel (detailsPanelId);
-
         let obj = this;
-        AddSidebarButton (this.toolbar, 'details', 'Details panel', function () {
-            ToggleSidebar (obj.sidebar, obj.cookieHandler, detailsPanelId);
-            obj.Resize ();
-        });
 
+        this.detailsPanel = new OV.DetailsSidebarPanel (this.parameters.sidebarDiv);
+
+        let sidebarPanels = [
+            {
+                panelId : null,
+                panel : this.detailsPanel,
+                image : 'details',
+                title : 'Details panel',
+                button : null
+            }
+        ];
         if (OV.FeatureSet.SettingsAvailable) {
-            AddSidebarButton (this.toolbar, 'settings', 'Settings panel', function () {
-                ToggleSidebar (obj.sidebar, obj.cookieHandler, settingsPanelId);
+            sidebarPanels.push (
+                {
+                    panelId : null,
+                    panel : new OV.SettingsSidebarPanel (this.parameters.sidebarDiv),
+                    image : 'settings',
+                    title : 'Settings panel',
+                    button : null
+                }
+            );
+        }
+
+        for (let id = 0; id < sidebarPanels.length; id++) {
+            let sidebarPanel = sidebarPanels[id];
+            sidebarPanel.panelId = this.sidebar.AddPanel (sidebarPanel.panel);
+            sidebarPanel.button = AddSidebarButton (this.toolbar, sidebarPanel, function () {
+                ToggleSidebar (obj.sidebar, obj.cookieHandler, sidebarPanels, sidebarPanel.panelId);
                 obj.Resize ();
-            });            
+            });
         }
 
         this.sidebar.Init ({
             onClose : function () {
-                ShowSidebar (obj.sidebar, obj.cookieHandler, null);
+                ShowSidebar (obj.sidebar, obj.cookieHandler, sidebarPanels, null);
                 obj.Resize ();
             }
         });
 
         let show = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
-        ShowSidebar (this.sidebar, this.cookieHandler, show ? detailsPanelId : null);
+        ShowSidebar (this.sidebar, this.cookieHandler, sidebarPanels, show ? sidebarPanels[0].panelId : null);
     }
 
     InitNavigator ()

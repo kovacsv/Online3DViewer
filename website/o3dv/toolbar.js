@@ -36,6 +36,12 @@ OV.ToolbarButton = class
             this.buttonDiv.addClass ('selected');
         }        
     }
+
+    SetImage (image)
+    {
+        this.image = image;
+        this.buttonImg.attr ('src', this.image);
+    }
 };
 
 OV.Toolbar = class
