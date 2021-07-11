@@ -289,6 +289,12 @@ div.ov_sidebar_content
 	overflow: auto;
 }
 
+div.ov_sidebar_content input.ov_sidebar_color
+{
+	width: 64px;
+	height: 18px;
+}
+
 div.ov_tree_view
 {
 	user-select: none;
@@ -472,13 +478,6 @@ div.ov_dialog div.ov_dialog_select_option.selected
 {
 	color: #ffffff;
 	background: #3393bd;
-}
-
-div.ov_dialog input.ov_dialog_color
-{
-	width: 36px;
-	height: 18px;
-	margin-right: 10px;
 }
 
 div.ov_dialog div.ov_dialog_file_list

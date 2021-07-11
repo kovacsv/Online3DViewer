@@ -410,6 +410,7 @@ OV.Website = class
         let obj = this;
 
         this.detailsPanel = new OV.DetailsSidebarPanel (this.parameters.sidebarDiv);
+        let settingsPanel = new OV.SettingsSidebarPanel (this.parameters.sidebarDiv);
 
         let sidebarPanels = [
             {
@@ -420,11 +421,11 @@ OV.Website = class
                 button : null
             }
         ];
-        if (OV.FeatureSet.SettingsAvailable) {
+        if (OV.FeatureSet.SettingsPanel) {
             sidebarPanels.push (
                 {
                     panelId : null,
-                    panel : new OV.SettingsSidebarPanel (this.parameters.sidebarDiv),
+                    panel : settingsPanel,
                     image : 'settings',
                     title : 'Settings panel',
                     button : null
@@ -439,12 +440,23 @@ OV.Website = class
                 ToggleSidebar (obj.sidebar, obj.cookieHandler, sidebarPanels, sidebarPanel.panelId);
                 obj.Resize ();
             });
+            sidebarPanel.panel.Init ({
+                onClose : function () {
+                    ShowSidebar (obj.sidebar, obj.cookieHandler, sidebarPanels, null);
+                    obj.Resize ();
+                }
+            });            
         }
 
-        this.sidebar.Init ({
-            onClose : function () {
-                ShowSidebar (obj.sidebar, obj.cookieHandler, sidebarPanels, null);
-                obj.Resize ();
+        settingsPanel.InitSettings ({
+            backgroundColor : {
+                name : 'Background Color',
+                defaultValue : this.viewerSettings.backgroundColor,
+                onChange : function (newVal) {
+                    obj.viewerSettings.backgroundColor = newVal;
+                    obj.viewer.SetBackgroundColor (newVal);
+                    obj.cookieHandler.SetColorVal ('ov_background_color', newVal);
+                }
             }
         });
 

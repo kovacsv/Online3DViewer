@@ -18,17 +18,11 @@ OV.SidebarPanel = class
         titleImg.click (function () {
             callbacks.onClose ();
         });
-        this.InitContent ();
     }
 
     GetTitle ()
     {
         return '';
-    }
-
-    InitContent ()
-    {
-
     }
 
     Show (show)

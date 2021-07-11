@@ -20,13 +20,6 @@ OV.Sidebar = class
         return this.panels[id];
     }
 
-    Init (callbacks)
-    {
-        for (let id = 0; id < this.panels.length; id++) {
-            this.panels[id].Init (callbacks);
-        }
-    }
-
     Show (panelId)
     {
         if (panelId !== null) {

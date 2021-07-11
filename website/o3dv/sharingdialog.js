@@ -63,13 +63,13 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
         let section = $('<div>').addClass ('ov_dialog_section').appendTo (parentDiv);
         $('<div>').html ('Sharing Link').addClass ('ov_dialog_inner_title').appendTo (section);
         let optionsSection = null;
-        if (OV.FeatureSet.SettingsAvailable) {
+        if (OV.FeatureSet.SettingsPanel) {
             optionsSection = $('<div>').addClass ('ov_dialog_section').appendTo (section);
         }
         let sharingLinkInput = AddCopyableTextInput (section, function () {
             return GetSharingLink (sharingLinkParams);
         });
-        if (OV.FeatureSet.SettingsAvailable) {
+        if (OV.FeatureSet.SettingsPanel) {
             AddCheckboxLine (optionsSection, 'Use overridden default color', 'share_color', function (checked) {
                 sharingLinkParams.color = checked ? importSettings.defaultColor : null;
                 sharingLinkInput.val (GetSharingLink (sharingLinkParams));
@@ -91,16 +91,16 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
             embeddingCodeParams.camera = checked ? camera : null;
             embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
         });
-        if (OV.FeatureSet.SettingsAvailable) {
+        if (OV.FeatureSet.SettingsPanel) {
             AddCheckboxLine (optionsSection, 'Use overridden background color', 'embed_background', function (checked) {
                 embeddingCodeParams.background = checked ? viewerSettings.backgroundColor : null;
                 embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
             });
+            embeddingCodeParams.background = viewerSettings.backgroundColor;
             AddCheckboxLine (optionsSection, 'Use overridden default color', 'embed_color', function (checked) {
                 embeddingCodeParams.color = checked ? importSettings.defaultColor : null;
                 embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
             });
-            embeddingCodeParams.background = viewerSettings.backgroundColor;
             embeddingCodeParams.color = importSettings.defaultColor;
         }
         embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
