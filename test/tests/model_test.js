@@ -110,7 +110,7 @@ describe ('Model Finalization', function() {
         var model = new OV.Model ();
         var meshIndex = model.AddMesh (mesh);
         assert.strictEqual (model.MaterialCount (), 0);
-        OV.FinalizeModel (model, function () { new OV.Material () });
+        OV.FinalizeModel (model, function () { return new OV.Material () });
         assert.strictEqual (model.MaterialCount (), 1);
         var theMesh = model.GetMesh (meshIndex);
         assert.strictEqual (theMesh.NormalCount (), 1);
@@ -139,7 +139,7 @@ describe ('Model Finalization', function() {
         var model = new OV.Model ()
         var meshIndex = model.AddMesh (mesh);
 
-        OV.FinalizeModel (model, function () { new OV.Material () });
+        OV.FinalizeModel (model, function () { return new OV.Material () });
         
         var theMesh = model.GetMesh (meshIndex);
         assert.strictEqual (theMesh.NormalCount (), 6);
@@ -172,7 +172,7 @@ describe ('Model Finalization', function() {
         var model = new OV.Model ()
         var meshIndex = model.AddMesh (mesh);
 
-        OV.FinalizeModel (model, function () { new OV.Material () });
+        OV.FinalizeModel (model, function () { return new OV.Material () });
         
         var theMesh = model.GetMesh (meshIndex);
         assert.strictEqual (theMesh.NormalCount (), 9);

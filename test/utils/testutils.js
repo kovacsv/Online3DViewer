@@ -148,7 +148,7 @@ module.exports =
         let cube2 = OV.GenerateCuboid (new OV.GeneratorParams ().SetTransformationMatrix (matrix), 1.0, 1.0, 1.0);
         model.AddMesh (cube2);
 
-        OV.FinalizeModel (model, function () { new OV.Material () });
+        OV.FinalizeModel (model, function () { return new OV.Material () });
         return model;
     },
 
@@ -163,10 +163,9 @@ module.exports =
         let cube2 = OV.GenerateCuboid (new OV.GeneratorParams ().SetTransformationMatrix (matrix), 1.0, 1.0, 1.0);
         model.AddMesh (cube2);
 
-        OV.FinalizeModel (model, function () { new OV.Material () });
+        OV.FinalizeModel (model, function () { return new OV.Material () });
         return model;
     },
-
 
     GetTwoCubesConnectingInOneFaceModel ()
     {
@@ -179,7 +178,7 @@ module.exports =
         let cube2 = OV.GenerateCuboid (new OV.GeneratorParams ().SetTransformationMatrix (matrix), 1.0, 1.0, 1.0);
         model.AddMesh (cube2);
 
-        OV.FinalizeModel (model, function () { new OV.Material () });
+        OV.FinalizeModel (model, function () { return new OV.Material () });
         return model;
     },
     
@@ -228,7 +227,7 @@ module.exports =
     {
         var model = new OV.Model ();
         model.AddMesh (mesh);
-        OV.FinalizeModel (model, function () { new OV.Material () });
+        OV.FinalizeModel (model, function () { return new OV.Material () });
         return model;
     } 
 }
