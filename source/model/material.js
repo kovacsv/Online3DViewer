@@ -87,6 +87,8 @@ OV.Material = class
         this.alphaTest = 0.0; // 0.0 .. 1.0
         this.transparent = false;
         this.multiplyDiffuseMap = false;
+
+        this.isDefault = false;
     }
 
     EnumerateTextureMaps (enumerator)

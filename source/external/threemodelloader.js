@@ -7,6 +7,7 @@ OV.ThreeModelLoader = class
         this.importer.AddImporter (new OV.ImporterIfc ());
         this.callbacks = null;
         this.inProgress = false;
+        this.defaultMaterial = null;
         this.hasHighpDriverIssue = OV.HasHighpDriverIssue ();
     }
 
@@ -77,11 +78,13 @@ OV.ThreeModelLoader = class
         this.callbacks.onVisualizationStart ();
         let params = new OV.ModelToThreeConversionParams ();
         params.forceMediumpForMaterials = this.hasHighpDriverIssue;
-        OV.ConvertModelToThreeMeshes (importResult.model, params, {
+        let result = new OV.ModelToThreeConversionResult ();
+        OV.ConvertModelToThreeMeshes (importResult.model, params, result, {
             onTextureLoaded : function () {
                 obj.callbacks.onTextureLoaded ();
             },
             onModelLoaded : function (meshes) {
+                obj.defaultMaterial = result.defaultMaterial;
                 obj.callbacks.onModelFinished (importResult, meshes);
                 obj.inProgress = false;
             }

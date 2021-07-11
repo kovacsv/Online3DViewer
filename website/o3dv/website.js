@@ -462,7 +462,11 @@ OV.Website = class
                 onChange : function (newVal) {
                     obj.importSettings.defaultColor = newVal;
                     obj.cookieHandler.SetColorVal ('ov_default_color', newVal);
-                    obj.ReloadFiles ();
+                    if (obj.modelLoader.defaultMaterial !== null) {
+                        OV.ReplaceDefaultMaterialColor (obj.model, newVal);
+                        obj.modelLoader.defaultMaterial.color = new THREE.Color (newVal.r / 255.0, newVal.g / 255.0, newVal.b / 255.0);
+                    }
+                    obj.viewer.Render ();
                 }
             }
         });

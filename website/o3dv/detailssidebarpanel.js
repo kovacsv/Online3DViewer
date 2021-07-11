@@ -62,6 +62,7 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
 
         this.Clear ();
         let table = $('<div>').addClass ('ov_property_table').appendTo (this.contentDiv);
+        this.AddProperty (table, new OV.Property (OV.PropertyType.Text, 'Source', material.isDefault ? 'Default' : 'Model'));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Color, 'Color', material.diffuse));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Percent, 'Opacity', material.opacity));
         AddTextureMap (this, table, 'Diffuse Map', material.diffuseMap);

@@ -109,7 +109,9 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
     let defaultMaterialIndex = null;
     let getDefaultMaterialIndex = function () {
         if (defaultMaterialIndex === null) {
-            defaultMaterialIndex = model.AddMaterial (getDefaultMaterial ());
+            let defaultMaterial = getDefaultMaterial ();
+            defaultMaterial.isDefault = true;
+            defaultMaterialIndex = model.AddMaterial (defaultMaterial);
         }
         return defaultMaterialIndex;
     };
