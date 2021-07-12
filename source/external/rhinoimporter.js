@@ -14,7 +14,7 @@ OV.Importer3dm = class extends OV.ImporterBase
     GetKnownFileFormats ()
     {
         return {
-    		'3dm' : OV.FileFormat.Binary
+			'3dm' : OV.FileFormat.Binary
         };
     }
     

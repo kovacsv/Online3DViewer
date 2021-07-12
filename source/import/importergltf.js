@@ -510,7 +510,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
     {
         let propertyGroup = new OV.PropertyGroup ('Asset properties');
         for (let propertyName in gltf.asset) {
-            if (gltf.asset.hasOwnProperty (propertyName)) {
+            if (Object.prototype.hasOwnProperty.call (gltf.asset, propertyName)) {
                 if (typeof gltf.asset[propertyName] === 'string') {
                     const property = new OV.Property (OV.PropertyType.Text, propertyName, gltf.asset[propertyName]);
                     propertyGroup.AddProperty (property);

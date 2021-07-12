@@ -18,8 +18,8 @@ def GetVersion (rootDir):
 		packageJson = json.load (packageJsonFile)
 	return packageJson['version']
 
-def JSHintFolder (folder):
-	result = Tools.RunCommand ('jshint', [folder])
+def ESLintFolder (folder):
+	result = Tools.RunCommand ('eslint', [folder])
 	if result != 0:
 		return False
 	return True
@@ -125,16 +125,16 @@ def Main (argv):
 	with open ('config.json') as configJson:
 		config = json.load (configJson)
 
-	PrintInfo ('JSHint importer sources.')
-	jsHintResult = JSHintFolder (os.path.join (rootDir, 'source'))
-	if not jsHintResult:
-		PrintError ('JSHint importer sources failed.')
+	PrintInfo ('ESLint importer sources.')
+	esLintResult = ESLintFolder (os.path.join (rootDir, 'source'))
+	if not esLintResult:
+		PrintError ('ESLint importer sources failed.')
 		return 1
 	
-	PrintInfo ('JSHint website sources.')
-	jsHintResult = JSHintFolder (os.path.join (rootDir, 'website', 'o3dv'))
-	if not jsHintResult:
-		PrintError ('JSHint website sources failed.')
+	PrintInfo ('ESLint website sources.')
+	esLintResult = ESLintFolder (os.path.join (rootDir, 'website', 'o3dv'))
+	if not esLintResult:
+		PrintError ('ESLint website sources failed.')
 		return 1
 
 	version = GetVersion (rootDir)

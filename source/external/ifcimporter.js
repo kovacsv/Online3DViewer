@@ -3,7 +3,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
     constructor ()
     {
         super ();
-		this.ifc = null;
+        this.ifc = null;
     }
 	
     CanImportExtension (extension)
@@ -14,7 +14,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
     GetKnownFileFormats ()
     {
         return {
-    		'ifc' : OV.FileFormat.Binary
+            'ifc' : OV.FileFormat.Binary
         };
     }
     

@@ -1,0 +1,30 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": "eslint:recommended",
+	"globals": {
+		"OV": "writable",
+		"$": "readonly",
+		"THREE": "readonly",
+		"rhino3dm": "readonly",
+		"IfcAPI": "readonly"
+	},
+    "parserOptions": {
+        "ecmaVersion": 12
+    },
+    "rules": {
+		"no-var": "error",
+		"guard-for-in": "error",
+		"no-use-before-define": "error",
+		"no-new": "error",
+		"quotes": ["error", "single"],
+		"block-scoped-var": "error",
+		"no-loop-func": "error",
+		"no-undef": "error",
+		"no-extend-native": "error",
+		"eqeqeq": "error",
+		"no-unused-vars": "off"
+    }
+}
