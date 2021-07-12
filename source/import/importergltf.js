@@ -888,7 +888,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
     {
         let bufferIndex = bufferView.buffer || 0;
         let buffer = this.bufferContents[bufferIndex];
-        if (buffer === null) {
+        if (buffer === undefined || buffer === null) {
             return null;
         }
 
