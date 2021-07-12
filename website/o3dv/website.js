@@ -38,9 +38,8 @@ OV.Website = class
         this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
         this.OnHashChange ();
 
-        let obj = this;
-        $(window).on ('resize', function () {
-			obj.Resize ();
+        $(window).on ('resize', () => {
+			this.Resize ();
 		});
     }
 
@@ -128,10 +127,9 @@ OV.Website = class
 
     FitModelToWindow (onLoad)
     {
-        let obj = this;
         let animation = !onLoad;
-        let boundingSphere = this.viewer.GetBoundingSphere (function (meshUserData) {
-            return obj.navigator.IsMeshVisible (meshUserData.originalMeshIndex);
+        let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
+            return this.navigator.IsMeshVisible (meshUserData.originalMeshIndex);
         });
         if (onLoad) {
             this.viewer.AdjustClippingPlanes (boundingSphere);
@@ -141,7 +139,7 @@ OV.Website = class
 
     FitMeshToWindow (meshIndex)
     {
-        let boundingSphere = this.viewer.GetBoundingSphere (function (meshUserData) {
+        let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
             return meshUserData.originalMeshIndex === meshIndex;
         });        
         this.viewer.FitToWindow (boundingSphere, true);
@@ -149,16 +147,15 @@ OV.Website = class
 
     UpdateMeshesVisibility ()
     {
-        let obj = this;
-        this.viewer.SetMeshesVisibility (function (meshUserData) {
-            return obj.navigator.IsMeshVisible (meshUserData.originalMeshIndex);
+        this.viewer.SetMeshesVisibility ((meshUserData) => {
+            return this.navigator.IsMeshVisible (meshUserData.originalMeshIndex);
         });
     }
 
     UpdateMeshesSelection ()
     {
         let selectedMeshIndex = this.navigator.GetSelectedMeshIndex ();
-        this.viewer.SetMeshesHighlight (this.highlightMaterial, function (meshUserData) {
+        this.viewer.SetMeshesHighlight (this.highlightMaterial, (meshUserData) => {
             if (meshUserData.originalMeshIndex === selectedMeshIndex) {
                 return true;
             }
@@ -270,97 +267,94 @@ OV.Website = class
             }
         }
 
-        let obj = this;
         let importer = this.modelLoader.GetImporter ();
 
-        AddButton (this.toolbar, 'open', 'Open model from your device', false, function () {
-            obj.OpenFileBrowserDialog ();
+        AddButton (this.toolbar, 'open', 'Open model from your device', false, () => {
+            this.OpenFileBrowserDialog ();
         });
-        AddButton (this.toolbar, 'open_url', 'Open model from a url', false, function () {
-            obj.dialog = OV.ShowOpenUrlDialog (function (urls) {
+        AddButton (this.toolbar, 'open_url', 'Open model from a url', false, () => {
+            this.dialog = OV.ShowOpenUrlDialog ((urls) => {
                 if (urls.length > 0) {
-                    obj.hashHandler.SetModelFilesToHash (urls);
+                    this.hashHandler.SetModelFilesToHash (urls);
                 }
             });
         });
         AddSeparator (this.toolbar);
-        AddButton (this.toolbar, 'fit', 'Fit model to window', false, function () {
-            obj.FitModelToWindow (false);
+        AddButton (this.toolbar, 'fit', 'Fit model to window', false, () => {
+            this.FitModelToWindow (false);
         });
-        AddButton (this.toolbar, 'up_y', 'Set Y axis as up vector', false, function () {
-            obj.viewer.SetUpVector (OV.Direction.Y, true);
+        AddButton (this.toolbar, 'up_y', 'Set Y axis as up vector', false, () => {
+            this.viewer.SetUpVector (OV.Direction.Y, true);
         });
-        AddButton (this.toolbar, 'up_z', 'Set Z axis as up vector', false, function () {
-            obj.viewer.SetUpVector (OV.Direction.Z, true);
+        AddButton (this.toolbar, 'up_z', 'Set Z axis as up vector', false, () => {
+            this.viewer.SetUpVector (OV.Direction.Z, true);
         });
-        AddButton (this.toolbar, 'flip', 'Flip up vector', false, function () {
-            obj.viewer.FlipUpVector ();
+        AddButton (this.toolbar, 'flip', 'Flip up vector', false, () => {
+            this.viewer.FlipUpVector ();
         });
         AddSeparator (this.toolbar);
-        AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, false, function (buttonIndex) {
+        AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, false, (buttonIndex) => {
             if (buttonIndex === 0) {
-                obj.viewer.SetFixUpVector (true);
+                this.viewer.SetFixUpVector (true);
             } else if (buttonIndex === 1) {
-                obj.viewer.SetFixUpVector (false);
+                this.viewer.SetFixUpVector (false);
             }
         });
         AddSeparator (this.toolbar, true);
-        AddButton (this.toolbar, 'export', 'Export model', true, function () {
+        AddButton (this.toolbar, 'export', 'Export model', true, () => {
             let exportDialog = new OV.ExportDialog ({
-                onDialog : function (dialog) {
-                    obj.dialog = dialog;
+                onDialog : (dialog) => {
+                    this.dialog = dialog;
                 }
             });
-            exportDialog.Show (obj.model, obj.viewer);
+            exportDialog.Show (this.model, this.viewer);
         });
-        AddButton (this.toolbar, 'share', 'Share model', true, function () {
-            obj.dialog = OV.ShowSharingDialog (importer, obj.viewerSettings, obj.importSettings, obj.viewer.GetCamera ());
+        AddButton (this.toolbar, 'share', 'Share model', true, () => {
+            this.dialog = OV.ShowSharingDialog (importer, this.viewerSettings, this.importSettings, this.viewer.GetCamera ());
         });
 
-        this.parameters.fileInput.on ('change', function (ev) {
+        this.parameters.fileInput.on ('change', (ev) => {
             if (ev.target.files.length > 0) {
-                obj.LoadModelFromFileList (ev.target.files);
+                this.LoadModelFromFileList (ev.target.files);
             }
         });
     }
 
     InitDragAndDrop ()
     {
-        window.addEventListener ('dragstart', function (ev) {
+        window.addEventListener ('dragstart', (ev) => {
             ev.preventDefault ();
         }, false);
 
-        window.addEventListener ('dragover', function (ev) {
+        window.addEventListener ('dragover', (ev) => {
             ev.stopPropagation ();
             ev.preventDefault ();
             ev.dataTransfer.dropEffect = 'copy';
         }, false);
 
-        let obj = this;
-        window.addEventListener ('drop', function (ev) {
+        window.addEventListener ('drop', (ev) => {
             ev.stopPropagation ();
             ev.preventDefault ();
             if (ev.dataTransfer.files.length > 0) {
-                obj.LoadModelFromFileList (ev.dataTransfer.files);
+                this.LoadModelFromFileList (ev.dataTransfer.files);
             }
         }, false);
     }
 
     InitModelLoader ()
     {
-        let obj = this;
         OV.InitModelLoader (this.modelLoader, {
-            onStart : function ()
+            onStart : () =>
             {
-                obj.ClearModel ();
+                this.ClearModel ();
             },
-            onFinish : function (importResult, threeMeshes)
+            onFinish : (importResult, threeMeshes) =>
             {
-                obj.OnModelFinished (importResult, threeMeshes);
+                this.OnModelFinished (importResult, threeMeshes);
             },
-            onRender : function ()
+            onRender : () =>
             {
-                obj.viewer.Render ();
+                this.viewer.Render ();
             }
         });
     }
@@ -407,8 +401,6 @@ OV.Website = class
             }
         }
 
-        let obj = this;
-
         this.detailsPanel = new OV.DetailsSidebarPanel (this.parameters.sidebarDiv);
         let settingsPanel = new OV.SettingsSidebarPanel (this.parameters.sidebarDiv);
 
@@ -436,14 +428,14 @@ OV.Website = class
         for (let id = 0; id < sidebarPanels.length; id++) {
             let sidebarPanel = sidebarPanels[id];
             sidebarPanel.panelId = this.sidebar.AddPanel (sidebarPanel.panel);
-            sidebarPanel.button = AddSidebarButton (this.toolbar, sidebarPanel, function () {
-                ToggleSidebar (obj.sidebar, obj.cookieHandler, sidebarPanels, sidebarPanel.panelId);
-                obj.Resize ();
+            sidebarPanel.button = AddSidebarButton (this.toolbar, sidebarPanel, () => {
+                ToggleSidebar (this.sidebar, this.cookieHandler, sidebarPanels, sidebarPanel.panelId);
+                this.Resize ();
             });
             sidebarPanel.panel.Init ({
-                onClose : function () {
-                    ShowSidebar (obj.sidebar, obj.cookieHandler, sidebarPanels, null);
-                    obj.Resize ();
+                onClose : () => {
+                    ShowSidebar (this.sidebar, this.cookieHandler, sidebarPanels, null);
+                    this.Resize ();
                 }
             });            
         }
@@ -451,22 +443,22 @@ OV.Website = class
         settingsPanel.InitSettings ({
             backgroundColor : {
                 defaultValue : this.viewerSettings.backgroundColor,
-                onChange : function (newVal) {
-                    obj.viewerSettings.backgroundColor = newVal;
-                    obj.viewer.SetBackgroundColor (newVal);
-                    obj.cookieHandler.SetColorVal ('ov_background_color', newVal);
+                onChange : (newVal) => {
+                    this.viewerSettings.backgroundColor = newVal;
+                    this.viewer.SetBackgroundColor (newVal);
+                    this.cookieHandler.SetColorVal ('ov_background_color', newVal);
                 }
             },
             defaultColor : {
                 defaultValue : this.importSettings.defaultColor,
-                onChange : function (newVal) {
-                    obj.importSettings.defaultColor = newVal;
-                    obj.cookieHandler.SetColorVal ('ov_default_color', newVal);
-                    if (obj.modelLoader.defaultMaterial !== null) {
-                        OV.ReplaceDefaultMaterialColor (obj.model, newVal);
-                        obj.modelLoader.defaultMaterial.color = new THREE.Color (newVal.r / 255.0, newVal.g / 255.0, newVal.b / 255.0);
+                onChange : (newVal) => {
+                    this.importSettings.defaultColor = newVal;
+                    this.cookieHandler.SetColorVal ('ov_default_color', newVal);
+                    if (this.modelLoader.defaultMaterial !== null) {
+                        OV.ReplaceDefaultMaterialColor (this.model, newVal);
+                        this.modelLoader.defaultMaterial.color = new THREE.Color (newVal.r / 255.0, newVal.g / 255.0, newVal.b / 255.0);
                     }
-                    obj.viewer.Render ();
+                    this.viewer.Render ();
                 }
             }
         });
@@ -480,7 +472,7 @@ OV.Website = class
         function GetMeshUserData (viewer, meshIndex)
         {
             let userData = null;
-            viewer.EnumerateMeshesUserData (function (meshUserData) {
+            viewer.EnumerateMeshesUserData ((meshUserData) => {
                 if (meshUserData.originalMeshIndex === meshIndex) {
                     userData = meshUserData;
                 }
@@ -491,7 +483,7 @@ OV.Website = class
         function GetMeshesForMaterial (viewer, model, materialIndex)
         {
             let usedByMeshes = [];
-            viewer.EnumerateMeshesUserData (function (meshUserData) {
+            viewer.EnumerateMeshesUserData ((meshUserData) => {
                 if (meshUserData.originalMaterials.indexOf (materialIndex) !== -1) {
                     const mesh = model.GetMesh (meshUserData.originalMeshIndex);
                     usedByMeshes.push ({
@@ -521,7 +513,7 @@ OV.Website = class
                 const materialIndex = userData.originalMaterials[i];
                 usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));                
             }
-            usedMaterials.sort (function (a, b) {
+            usedMaterials.sort ((a, b) => {
                 return a.index - b.index;
             });            
             return usedMaterials;
@@ -536,37 +528,36 @@ OV.Website = class
             return usedMaterials;
         }
 
-        let obj = this;
         this.navigator.Init ({
-            openFileBrowserDialog : function () {
-                obj.OpenFileBrowserDialog ();
+            openFileBrowserDialog : () => {
+                this.OpenFileBrowserDialog ();
             },
-            updateMeshesVisibility : function () {
-                obj.UpdateMeshesVisibility ();
+            updateMeshesVisibility : () => {
+                this.UpdateMeshesVisibility ();
             },
-            updateMeshesSelection : function () {
-                obj.UpdateMeshesSelection ();
+            updateMeshesSelection : () => {
+                this.UpdateMeshesSelection ();
             },
-            fitMeshToWindow : function (meshIndex) {
-                obj.FitMeshToWindow (meshIndex);
+            fitMeshToWindow : (meshIndex) => {
+                this.FitMeshToWindow (meshIndex);
             },
-            getMeshesForMaterial : function (materialIndex) {
-                return GetMeshesForMaterial (obj.viewer, obj.model, materialIndex);
+            getMeshesForMaterial : (materialIndex) => {
+                return GetMeshesForMaterial (this.viewer, this.model, materialIndex);
             },
-            getMaterialsForMesh : function (meshIndex) {
-                return GetMaterialsForMesh (obj.viewer, obj.model, meshIndex);
+            getMaterialsForMesh : (meshIndex) => {
+                return GetMaterialsForMesh (this.viewer, this.model, meshIndex);
             },
-            getMaterialsForModel : function () {
-                return GetMaterialsForModel (obj.model);
+            getMaterialsForModel : () => {
+                return GetMaterialsForModel (this.model);
             },
-            onModelSelected : function () {
-                obj.detailsPanel.AddElementProperties (obj.model);
+            onModelSelected : () => {
+                this.detailsPanel.AddElementProperties (this.model);
             },
-            onMeshSelected : function (meshIndex) {
-                obj.detailsPanel.AddElementProperties (obj.model.GetMesh (meshIndex));
+            onMeshSelected : (meshIndex) => {
+                this.detailsPanel.AddElementProperties (this.model.GetMesh (meshIndex));
             },
-            onMaterialSelected : function (materialIndex) {
-                obj.detailsPanel.AddMaterialProperties (obj.model.GetMaterial (materialIndex));
+            onMaterialSelected : (materialIndex) => {
+                this.detailsPanel.AddMaterialProperties (this.model.GetMaterial (materialIndex));
             }
         });
     }
@@ -578,9 +569,8 @@ OV.Website = class
             return;
         }
 
-        let obj = this;
-        OV.ShowCookieDialog (function () {
-            obj.cookieHandler.SetBoolVal ('ov_cookie_consent', true);
+        OV.ShowCookieDialog (() => {
+            this.cookieHandler.SetBoolVal ('ov_cookie_consent', true);
         });
     }
 };

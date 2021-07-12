@@ -20,7 +20,7 @@ OV.ExporterObj = class extends OV.ExporterBase
             let fileName = OV.GetFileName (texture.name);
             mtlWriter.WriteArrayLine ([keyword, fileName]);
 
-            let fileIndex = files.findIndex (function (file) {
+            let fileIndex = files.findIndex ((file) => {
                 return file.GetName () === fileName;
             });
             if (fileIndex === -1) {

@@ -24,7 +24,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         $('<div>').addClass ('ov_sidebar_column').html (description).appendTo (contentDiv);
         let colorInput = $('<input>').attr ('type', 'color').addClass ('ov_sidebar_color').appendTo (colorColumn);
         colorInput.val ('#' + OV.ColorToHexString (params.defaultValue));
-        colorInput.change (function () {
+        colorInput.change (() => {
             let colorStr = colorInput.val ().substr (1);
             params.onChange (OV.HexStringToColor (colorStr));
         });

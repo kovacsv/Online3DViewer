@@ -613,9 +613,8 @@ OV.ImporterGltf = class extends OV.ImporterBase
             }
         }
 
-        let obj = this;
-        this.gltfExtensions.ProcessMaterial (gltfMaterial, material, function (textureRef) {
-            return obj.ImportTexture (gltf, textureRef);
+        this.gltfExtensions.ProcessMaterial (gltfMaterial, material, (textureRef) => {
+            return this.ImportTexture (gltf, textureRef);
         });
         this.model.AddMaterial (material);
     }
@@ -810,7 +809,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
             if (reader === null) {
                 return;
             }
-            reader.EnumerateData (function (data) {
+            reader.EnumerateData ((data) => {
                 mesh.AddVertex (data);
             });
         } else {
@@ -823,7 +822,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
             if (reader === null) {
                 return;
             }
-            reader.EnumerateData (function (data) {
+            reader.EnumerateData ((data) => {
                 mesh.AddNormal (data);
             });
         }
@@ -834,7 +833,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
             if (reader === null) {
                 return;
             }
-            reader.EnumerateData (function (data) {
+            reader.EnumerateData ((data) => {
                 data.y = -data.y;
                 mesh.AddTextureUV (data);
             });
@@ -847,7 +846,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
             if (reader === null) {
                 return;
             }
-            reader.EnumerateData (function (data) {
+            reader.EnumerateData ((data) => {
                 vertexIndices.push (data);
             });          
         } else {

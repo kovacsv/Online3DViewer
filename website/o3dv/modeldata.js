@@ -13,10 +13,9 @@ OV.MaterialData = class
 
     CreateMenuItem (name, callbacks)
     {
-        let obj = this;
         this.menuItem = new OV.TreeViewButtonItem (name);
-        this.menuItem.OnNameClick (function () {
-            callbacks.onSelected (obj.originalIndex);
+        this.menuItem.OnNameClick (() => {
+            callbacks.onSelected (this.originalIndex);
         });
         return this.menuItem;
     }    
@@ -54,27 +53,26 @@ OV.MeshData = class
 
     CreateMenuItem (name, callbacks)
     {
-        let obj = this;
         this.menuItem = new OV.TreeViewButtonItem (name);
 
         let fitToWindowButton = new OV.TreeViewButton ('assets/images/tree/fit_tree.svg');
-        fitToWindowButton.OnClick (function () {
-            callbacks.onFitToWindow (obj.originalIndex);
+        fitToWindowButton.OnClick (() => {
+            callbacks.onFitToWindow (this.originalIndex);
         });
         this.menuItem.AddButton (fitToWindowButton);
 
         this.showHideButton = new OV.TreeViewButton ('assets/images/tree/visible.svg');
-        this.showHideButton.OnClick (function (ev) {
+        this.showHideButton.OnClick ((ev) => {
             if (ev.ctrlKey || ev.metaKey) {
-                callbacks.onIsolate (obj.originalIndex);
+                callbacks.onIsolate (this.originalIndex);
             } else {
-                callbacks.onShowHide (obj.originalIndex);
+                callbacks.onShowHide (this.originalIndex);
             }
         });
         this.menuItem.AddButton (this.showHideButton);
 
-        this.menuItem.OnNameClick (function () {
-            callbacks.onSelected (obj.originalIndex);
+        this.menuItem.OnNameClick (() => {
+            callbacks.onSelected (this.originalIndex);
         });
 
         return this.menuItem;

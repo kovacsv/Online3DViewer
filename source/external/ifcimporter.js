@@ -38,16 +38,15 @@ OV.ImporterIfc = class extends OV.ImporterBase
     ImportContent (fileContent, onFinish)
     {
 		if (this.ifc === null) {
-			let obj = this;
 			OV.LoadExternalLibrary ('web-ifc-api.js', {
-				success : function () {
-					obj.ifc = new IfcAPI ();
-                    obj.ifc.Init ().then (function () {
-                        obj.ImportIfcContent (fileContent);
+				success : () => {
+					this.ifc = new IfcAPI ();
+                    this.ifc.Init ().then (() => {
+                        this.ImportIfcContent (fileContent);
                         onFinish ();
                     });
 				},
-				error : function () {
+				error : () => {
 					onFinish ();
 				}
 			});
@@ -118,19 +117,18 @@ OV.ImporterIfc = class extends OV.ImporterBase
 
     ImportProperties (modelID)
     {
-        let obj = this;
         // TODO: var IFCRELDEFINESBYPROPERTIES = 4186316022;
         // TODO: var IFCBUILDING = 4031249490;
         const lines = this.ifc.GetLineIDsWithType (modelID, 4186316022);
         for (let i = 0; i < lines.size (); i++) {
             const relID = lines.get (i);
             const rel = this.ifc.GetLine (modelID, relID);
-            rel.RelatedObjects.forEach (function (objectRelID) {
-                let element = obj.expressIDToMesh[objectRelID.value];
+            rel.RelatedObjects.forEach ((objectRelID) => {
+                let element = this.expressIDToMesh[objectRelID.value];
                 if (element === undefined) {
-                    let propSetOwner = obj.ifc.GetLine (modelID, objectRelID.value, true);
+                    let propSetOwner = this.ifc.GetLine (modelID, objectRelID.value, true);
                     if (propSetOwner.type === 4031249490) {
-                        element = obj.model;
+                        element = this.model;
                     } else {
                         return;
                     }
@@ -139,22 +137,22 @@ OV.ImporterIfc = class extends OV.ImporterBase
                     return;
                 }
                 let propSetDef = rel.RelatingPropertyDefinition;
-                let propSet = obj.ifc.GetLine (modelID, propSetDef.value, true);
+                let propSet = this.ifc.GetLine (modelID, propSetDef.value, true);
                 if (!propSet || !propSet.HasProperties) {
                     return;
                 }
                 let propertyGroup = new OV.PropertyGroup (propSet.Name.value);
-                propSet.HasProperties.forEach (function (property) {
+                propSet.HasProperties.forEach ((property) => {
                     if (!property || !property.Name || !property.NominalValue) {
                         return;
                     }
                     let elemProperty = null;
-                    let propertyName = obj.GetIFCString (property.Name.value);
+                    let propertyName = this.GetIFCString (property.Name.value);
                     switch (property.NominalValue.label) {
                         case 'IFCTEXT':
                         case 'IFCLABEL':
                         case 'IFCIDENTIFIER':
-                            elemProperty = new OV.Property (OV.PropertyType.Text, propertyName, obj.GetIFCString (property.NominalValue.value));
+                            elemProperty = new OV.Property (OV.PropertyType.Text, propertyName, this.GetIFCString (property.NominalValue.value));
                             break;
                         case 'IFCBOOLEAN':
                             elemProperty = new OV.Property (OV.PropertyType.Boolean, propertyName, property.NominalValue.value === 'T' ? true : false);

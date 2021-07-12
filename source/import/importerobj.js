@@ -55,10 +55,9 @@ OV.ImporterObj = class extends OV.ImporterBase
     
     ImportContent (fileContent, onFinish)
     {
-        let obj = this;
-        OV.ReadLines (fileContent, function (line) {
-            if (!obj.IsError ()) {
-                obj.ProcessLine (line);
+        OV.ReadLines (fileContent, (line) => {
+            if (!this.IsError ()) {
+                this.ProcessLine (line);
             }
         });
         onFinish ();
@@ -183,7 +182,6 @@ OV.ImporterObj = class extends OV.ImporterBase
             return texture;
         }
 
-        let obj = this;
         if (keyword === 'newmtl') {
             if (parameters.length === 0) {
                 return true;
@@ -214,9 +212,9 @@ OV.ImporterObj = class extends OV.ImporterBase
             let fileName = OV.NameFromLine (line, keyword.length, '#');
             let fileBuffer = this.callbacks.getFileBuffer (fileName);
             if (fileBuffer !== null) {
-                OV.ReadLines (fileBuffer, function (line) {
-                    if (!obj.IsError ()) {
-                        obj.ProcessLine (line);
+                OV.ReadLines (fileBuffer, (line) => {
+                    if (!this.IsError ()) {
+                        this.ProcessLine (line);
                     }
                 });
             }
@@ -313,21 +311,21 @@ OV.ImporterObj = class extends OV.ImporterBase
         
         function GetLocalVertexIndex (obj, mesh, globalIndex)
         {
-            return GetLocalIndex (obj.globalVertices, obj.currentMeshData.globalToCurrentVertices, globalIndex, function (val) {
+            return GetLocalIndex (obj.globalVertices, obj.currentMeshData.globalToCurrentVertices, globalIndex, (val) => {
                 return mesh.AddVertex (new OV.Coord3D (val.x, val.y, val.z));
             });
         }
         
         function GetLocalNormalIndex (obj, mesh, globalIndex)
         {
-            return GetLocalIndex (obj.globalNormals, obj.currentMeshData.globalToCurrentNormals, globalIndex, function (val) {
+            return GetLocalIndex (obj.globalNormals, obj.currentMeshData.globalToCurrentNormals, globalIndex, (val) => {
                 return mesh.AddNormal (new OV.Coord3D (val.x, val.y, val.z));
             });
         }
         
         function GetLocalUVIndex (obj, mesh, globalIndex)
         {
-            return GetLocalIndex (obj.globalUvs, obj.currentMeshData.globalToCurrentUvs, globalIndex, function (val) {
+            return GetLocalIndex (obj.globalUvs, obj.currentMeshData.globalToCurrentUvs, globalIndex, (val) => {
                 return mesh.AddTextureUV (new OV.Coord2D (val.x, val.y));
             });
         }        

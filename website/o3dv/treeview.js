@@ -79,10 +79,9 @@ OV.TreeViewSingleItem = class extends OV.TreeViewItem
     {
         this.selected = selected;
         if (this.selected) {
-            let obj = this;
             this.mainElement.addClass ('selected');
-            this.parent.ShowChildren (true, function () {
-                OV.ScrollToView (obj.mainElement);
+            this.parent.ShowChildren (true, () => {
+                OV.ScrollToView (this.mainElement);
             });
         } else {
             this.mainElement.removeClass ('selected');
@@ -131,10 +130,9 @@ OV.TreeViewButtonItem = class extends OV.TreeViewSingleItem
         }
         this.CreateNameElement ();
         if (this.onNameClick !== null) {
-            let obj = this;
             this.nameElement.css ('cursor', 'pointer');
-            this.nameElement.click (function (ev) {
-                obj.onNameClick ();
+            this.nameElement.click ((ev) => {
+                this.onNameClick ();
             });
         }
     }
@@ -207,15 +205,14 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
     CreateChildrenDiv ()
     {
         if (this.childrenDiv === null) {
-            let obj = this;
             this.childrenDiv = $('<div>').addClass ('ov_tree_view_children').insertAfter (this.mainElement);
             this.mainElement.addClass ('clickable');
             this.ShowChildren (this.showChildren, null);
-            this.mainElement.click (function (ev) {
-                obj.showChildren = !obj.showChildren;
-                obj.ShowChildren (obj.showChildren, null);
-                if (obj.openCloseHandler !== null) {
-                    obj.openCloseHandler ();
+            this.mainElement.click ((ev) => {
+                this.showChildren = !this.showChildren;
+                this.ShowChildren (this.showChildren, null);
+                if (this.openCloseHandler !== null) {
+                    this.openCloseHandler ();
                 }
             });
         }

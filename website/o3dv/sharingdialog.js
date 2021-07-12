@@ -5,7 +5,7 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
         let line = $('<div>').addClass ('ov_dialog_table_row').appendTo (parentDiv);
         let check = $('<input>').attr ('type', 'checkbox').attr ('checked', 'true').addClass ('ov_dialog_checkradio').attr ('id', id).appendTo (line);
         $('<label>').attr ('for', id).html (text).appendTo (line);
-        check.change (function () {
+        check.change (() => {
             onChange (check.prop ('checked'));
         });
     }
@@ -44,12 +44,12 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
         let container = $('<div>').addClass ('ov_dialog_copyable_input').appendTo (parentDiv);
         let input = $('<input>').prop ('readonly', true).appendTo (container);
         let button = $('<div>').addClass ('button').html (copyText).appendTo (container);
-        button.click (function () {
+        button.click (() => {
             OV.CopyToClipboard (getText ());
-            button.fadeOut (200, function () {
+            button.fadeOut (200, () => {
                 button.html (copiedText).fadeIn (200);
-                setTimeout (function () {
-                    button.fadeOut (200, function () {
+                setTimeout (() => {
+                    button.fadeOut (200, () => {
                         button.html (copyText).fadeIn (200);
                     });
                 }, 2000);
@@ -66,13 +66,13 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
         if (OV.FeatureSet.SettingsPanel) {
             optionsSection = $('<div>').addClass ('ov_dialog_section').appendTo (section);
         }
-        let sharingLinkInput = AddCopyableTextInput (section, function () {
+        let sharingLinkInput = AddCopyableTextInput (section, () => {
             return GetSharingLink (sharingLinkParams);
         });
         // TODO: camera position in sharing link
         // TODO: background color in sharing link
         if (OV.FeatureSet.SettingsPanel) {
-            AddCheckboxLine (optionsSection, 'Use overridden default color', 'share_color', function (checked) {
+            AddCheckboxLine (optionsSection, 'Use overridden default color', 'share_color', (checked) => {
                 sharingLinkParams.color = checked ? importSettings.defaultColor : null;
                 sharingLinkInput.val (GetSharingLink (sharingLinkParams));
             });
@@ -86,20 +86,20 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
         let section = $('<div>').addClass ('ov_dialog_section').css ('margin-top', '20px').appendTo (parentDiv);
         $('<div>').html ('Embedding Code').addClass ('ov_dialog_inner_title').appendTo (section);
         let optionsSection = $('<div>').addClass ('ov_dialog_section').appendTo (section);
-        let embeddingCodeInput = AddCopyableTextInput (section, function () {
+        let embeddingCodeInput = AddCopyableTextInput (section, () => {
             return GetEmbeddingCode (embeddingCodeParams);
         });
-        AddCheckboxLine (optionsSection, 'Use current camera position', 'embed_camera', function (checked) {
+        AddCheckboxLine (optionsSection, 'Use current camera position', 'embed_camera', (checked) => {
             embeddingCodeParams.camera = checked ? camera : null;
             embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
         });
         if (OV.FeatureSet.SettingsPanel) {
-            AddCheckboxLine (optionsSection, 'Use overridden background color', 'embed_background', function (checked) {
+            AddCheckboxLine (optionsSection, 'Use overridden background color', 'embed_background', (checked) => {
                 embeddingCodeParams.background = checked ? viewerSettings.backgroundColor : null;
                 embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
             });
             embeddingCodeParams.background = viewerSettings.backgroundColor;
-            AddCheckboxLine (optionsSection, 'Use overridden default color', 'embed_color', function (checked) {
+            AddCheckboxLine (optionsSection, 'Use overridden default color', 'embed_color', (checked) => {
                 embeddingCodeParams.color = checked ? importSettings.defaultColor : null;
                 embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
             });

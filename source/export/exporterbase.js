@@ -42,7 +42,7 @@ OV.ExporterBase = class
 	Export (model, format, onFinish)
 	{
 		let files = [];
-		this.ExportContent (model, format, files, function () {
+		this.ExportContent (model, format, files, () => {
 			onFinish (files);
 		});
 	}

@@ -46,7 +46,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
         });
 
         let fileNameToIndex = [];
-        this.ExportMaterials (model, mainJson, function (texture) {
+        this.ExportMaterials (model, mainJson, (texture) => {
             let fileName = OV.GetFileName (texture.name);
             let textureIndex = fileNameToIndex[fileName];
             if (textureIndex === undefined) {
@@ -100,7 +100,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
         let textureOffset = mainBuffer.byteLength;
 
         let fileNameToIndex = [];
-        this.ExportMaterials (model, mainJson, function (texture) {
+        this.ExportMaterials (model, mainJson, (texture) => {
             let fileName = OV.GetFileName (texture.name);
             let extension = OV.GetFileExtension (texture.name);
             let textureIndex = fileNameToIndex[fileName];

@@ -142,7 +142,7 @@ OV.ConvertMeshToMeshBuffer = function (mesh)
     for (let i = 0; i < triangleCount; i++) {
         triangleIndices.push (i);
     }
-    triangleIndices.sort (function (a, b) {
+    triangleIndices.sort ((a, b) => {
         let aTriangle = mesh.GetTriangle (a);
         let bTriangle = mesh.GetTriangle (b);
         return aTriangle.mat - bTriangle.mat;

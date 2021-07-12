@@ -301,7 +301,7 @@ OV.Navigation = class
 			obj.Update ();
 
 			if (index < count - 1) {
-				requestAnimationFrame (function () {
+				requestAnimationFrame (() => {
 					Step (obj, steps, count, index + 1);
 				});
 			}
@@ -324,14 +324,13 @@ OV.Navigation = class
 		}
 		
 		let tweenFunc = OV.ParabolicTweenFunction;
-		let obj = this;
 		let steps = {
 			eye : OV.TweenCoord3D (this.camera.eye, newCamera.eye, stepCount, tweenFunc),
 			center : OV.TweenCoord3D (this.camera.center, newCamera.center, stepCount, tweenFunc),
 			up : OV.TweenCoord3D (this.camera.up, newCamera.up, stepCount, tweenFunc)
 		};
-		requestAnimationFrame (function () {
-			Step (obj, steps, stepCount, 0);
+		requestAnimationFrame (() => {
+			Step (this, steps, stepCount, 0);
 		});
 		this.Update ();
 	}

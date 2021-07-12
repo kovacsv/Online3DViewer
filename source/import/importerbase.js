@@ -15,10 +15,8 @@ OV.ImporterBase = class
         this.error = false;
         this.message = null;
         this.ResetContent ();
-
-        let obj = this;
-        this.ImportContent (content, function () {
-            obj.CreateResult (callbacks);
+        this.ImportContent (content, () => {
+            this.CreateResult (callbacks);
         });
     }
 

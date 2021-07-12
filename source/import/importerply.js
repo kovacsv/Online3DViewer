@@ -164,7 +164,7 @@ OV.ImporterPly = class extends OV.ImporterBase
     ReadHeader (headerContent)
     {
         let header = new OV.PlyHeader ();
-        OV.ReadLines (headerContent, function (line) {
+        OV.ReadLines (headerContent, (line) => {
             let parameters = OV.ParametersFromLine (line, null);
             if (parameters.length === 0 || parameters[0] === 'comment') {
                 return;
@@ -190,13 +190,12 @@ OV.ImporterPly = class extends OV.ImporterBase
 
     ReadAsciiContent (header, fileContent)
     {
-        let obj = this;
         let vertex = header.GetElement ('vertex');
         let face = header.GetElement ('face');
         let foundVertex = 0;
         let foundFace = 0;
-        OV.ReadLines (fileContent, function (line) {
-            if (obj.IsError ()) {
+        OV.ReadLines (fileContent, (line) => {
+            if (this.IsError ()) {
                 return;
             }
             
@@ -207,7 +206,7 @@ OV.ImporterPly = class extends OV.ImporterBase
     
             if (foundVertex < vertex.count) {
                 if (parameters.length >= 3) {
-                    obj.mesh.AddVertex (new OV.Coord3D (
+                    this.mesh.AddVertex (new OV.Coord3D (
                         parseFloat (parameters[0]),
                         parseFloat (parameters[1]),
                         parseFloat (parameters[2])
@@ -228,7 +227,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                         let v1 = parseInt (parameters[i + 2]);
                         let v2 = parseInt (parameters[i + 3]);
                         let triangle = new OV.Triangle (v0, v1, v2);
-                        obj.mesh.AddTriangle (triangle);
+                        this.mesh.AddTriangle (triangle);
                     }
                     foundFace += 1;
                 }

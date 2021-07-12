@@ -77,11 +77,11 @@ OV.InstallTooltip = function (item, text)
     let bodyObj = $(document.body);
     let tooltip = null;
     item.hover (
-        function () {
+        () => {
             tooltip = $('<div>').html (text).addClass ('ov_tooltip').appendTo (bodyObj);
             tooltip.offset (CalculateOffset (item, tooltip));
         },
-        function () {
+        () => {
             tooltip.remove ();
         }
     );
@@ -126,10 +126,10 @@ OV.CreateIconButton = function (iconName, hoverIconName, title, link)
     let imgElem = $('<img>').attr ('src', iconName).appendTo (buttonLink);
     if (hoverIconName !== null && OV.IsHoverEnabled ()) {
         buttonLink.hover (
-            function () {
+            () => {
                 imgElem.attr ('src', hoverIconName);
             },
-            function () {
+            () => {
                 imgElem.attr ('src', iconName);
             }
         );

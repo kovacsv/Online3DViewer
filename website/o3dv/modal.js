@@ -42,9 +42,8 @@ OV.Modal = class
         this.resizeHandler = this.Resize.bind (this);
         windowObj.bind ('resize', this.resizeHandler);
         if (this.closeable) {
-            let obj = this;
-            this.overlayDiv.click (function (ev) {
-                obj.Close ();
+            this.overlayDiv.click ((ev) => {
+                this.Close ();
             });
         }
 
@@ -146,7 +145,7 @@ OV.ButtonDialog = class
             if (button.subClass) {
                 buttonDiv.addClass (button.subClass);
             }
-            buttonDiv.click (function () {
+            buttonDiv.click (() => {
                 button.onClick ();
             });
         }
@@ -197,7 +196,7 @@ OV.PopupDialog = class
     {
         let contentDiv = this.modal.GetContentDiv ();
         contentDiv.addClass ('ov_popup');
-        this.modal.SetCustomResizeHandler (function (modalDiv) {
+        this.modal.SetCustomResizeHandler ((modalDiv) => {
             let offset = parentItem.offset ();
             let left = offset.left + parentItem.outerWidth (false);
             let bottom = offset.top + parentItem.outerHeight (false);
@@ -252,10 +251,10 @@ OV.ListPopup = class extends OV.PopupDialog
         listItemDiv.click (callbacks.onClick);
         if (OV.IsHoverEnabled () && callbacks.onHoverStart && callbacks.onHoverStop) {
             listItemDiv.hover (
-                function () {
+                () => {
                     callbacks.onHoverStart ();
                 },
-                function () {
+                () => {
                     callbacks.onHoverStop ();
                 }
             );

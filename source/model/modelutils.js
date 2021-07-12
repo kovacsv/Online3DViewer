@@ -170,7 +170,7 @@ OV.EnumerateModelVerticesAndTriangles = function (model, callbacks)
 
 OV.EnumerateTrianglesWithNormals = function (element, onTriangle)
 {
-    element.EnumerateTriangles (function (v0, v1, v2) {
+    element.EnumerateTriangles ((v0, v1, v2) => {
         let normal = OV.CalculateTriangleNormal (v0, v1, v2);
         onTriangle (v0, v1, v2, normal);
     });
@@ -179,7 +179,7 @@ OV.EnumerateTrianglesWithNormals = function (element, onTriangle)
 OV.GetBoundingBox = function (element)
 {
     let calculator = new OV.BoundingBoxCalculator3D ();
-    element.EnumerateVertices (function (vertex) {
+    element.EnumerateVertices ((vertex) => {
         calculator.AddPoint (vertex);
     });
     return calculator.GetBox ();
@@ -201,7 +201,7 @@ OV.GetTopology = function (element)
     let octree = new OV.Octree (boundingBox);
     let topology = new OV.Topology ();
     
-    element.EnumerateTriangles (function (v0, v1, v2) {
+    element.EnumerateTriangles ((v0, v1, v2) => {
         let v0Index = GetVertexIndex (v0, octree, topology);
         let v1Index = GetVertexIndex (v1, octree, topology);
         let v2Index = GetVertexIndex (v2, octree, topology);

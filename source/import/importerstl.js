@@ -40,11 +40,10 @@ OV.ImporterStl = class extends OV.ImporterBase
         if (this.IsBinaryStlFile (fileContent)) {
             this.ProcessBinary (fileContent);
         } else {
-            let obj = this;
             let textContent = OV.ArrayBufferToUtf8String (fileContent);
-            OV.ReadLines (textContent, function (line) {
-                if (!obj.IsError ()) {
-                    obj.ProcessLine (line);
+            OV.ReadLines (textContent, (line) => {
+                if (!this.IsError ()) {
+                    this.ProcessLine (line);
                 }    
             });
         }

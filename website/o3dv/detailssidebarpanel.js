@@ -21,14 +21,14 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
         this.AddProperty (table, new OV.Property (OV.PropertyType.Number, 'Size X', size.x));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Number, 'Size Y', size.y));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Number, 'Size Z', size.z));
-        this.AddCalculatedProperty (table, 'Volume', function () {
+        this.AddCalculatedProperty (table, 'Volume', () => {
             const volume = OV.CalculateVolume (element);
             if (volume === null) {
                 return null;
             }
             return new OV.Property (OV.PropertyType.Number, null, volume);
         });
-        this.AddCalculatedProperty (table, 'Surface Area', function () {
+        this.AddCalculatedProperty (table, 'Surface Area', () => {
             const volume = OV.CalculateSurfaceArea (element);
             if (volume === null) {
                 return null;
@@ -102,17 +102,16 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
         let valueColumn = $('<div>').addClass ('ov_property_table_cell ov_property_table_value').appendTo (row);
         nameColum.html (name + ':').attr ('title', name);
 
-        let obj = this;
         let calculateButton = $('<div>').addClass ('ov_property_table_button').html ('Calculate...').appendTo (valueColumn);
-        calculateButton.click (function () {
+        calculateButton.click (() => {
             valueColumn.empty ();
             valueColumn.html ('Please wait...');
-            OV.RunTaskAsync (function () {
+            OV.RunTaskAsync (() => {
                 let propertyValue = calculateValue ();
                 if (propertyValue === null) {
                     valueColumn.html ('-');
                 } else {
-                    obj.DisplayPropertyValue (propertyValue, valueColumn);
+                    this.DisplayPropertyValue (propertyValue, valueColumn);
                 }
             });
         });

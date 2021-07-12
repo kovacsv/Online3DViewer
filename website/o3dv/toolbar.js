@@ -63,7 +63,7 @@ OV.Toolbar = class
         let buttons = [];
         for (let buttonIndex = 0; buttonIndex < buttonData.length; buttonIndex++) {
             let data = buttonData[buttonIndex];
-            let button = this.AddImageButton (data.image, data.title, function () {
+            let button = this.AddImageButton (data.image, data.title, () => {
                 for (let i = 0; i < buttons.length; i++) {
                     let currentButton = buttons[i];
                     if (i === buttonIndex) {

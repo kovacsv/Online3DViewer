@@ -38,7 +38,7 @@ OV.ShowOpenUrlDialog = function (onOk)
             name : 'OK',
             onClick () {
                 let urls = [];
-                OV.ReadLines (urlsTextArea.val (), function (line) {
+                OV.ReadLines (urlsTextArea.val (), (line) => {
                     urls.push (line);
                 });
                 dialog.Hide ();

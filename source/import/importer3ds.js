@@ -94,76 +94,72 @@ OV.Importer3ds = class extends OV.ImporterBase
 
     ProcessBinary (fileContent)
     {
-        let obj = this;
         let reader = new OV.BinaryReader (fileContent, true);
         let endByte = reader.GetByteLength ();
-        this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+        this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.MAIN3DS) {
-                obj.ReadMainChunk (reader, chunkLength);
+                this.ReadMainChunk (reader, chunkLength);
             } else {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             }
         });        
     }
 
     ReadMainChunk (reader, length)
     {
-        let obj = this;
         let endByte = this.GetChunkEnd (reader, length);
-        this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+        this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.EDIT3DS) {
-                obj.ReadEditorChunk (reader, chunkLength);
+                this.ReadEditorChunk (reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.KF3DS) {
-                obj.ReadKeyFrameChunk (reader, chunkLength);
+                this.ReadKeyFrameChunk (reader, chunkLength);
             } else {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             }
         });
     }
 
     ReadEditorChunk (reader, length)
     {
-        let obj = this;
         let endByte = this.GetChunkEnd (reader, length);
-        this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+        this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.EDIT_MATERIAL) {
-                obj.ReadMaterialChunk (reader, chunkLength);
+                this.ReadMaterialChunk (reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.EDIT_OBJECT) {
-                obj.ReadObjectChunk (reader, chunkLength);
+                this.ReadObjectChunk (reader, chunkLength);
             } else {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             }
         });
     }
 
     ReadMaterialChunk (reader, length)
     {
-        let obj = this;
         let material = new OV.Material ();
         let endByte = this.GetChunkEnd (reader, length);
         let shininess = null;
         let shininessStrength = null;
-        this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+        this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.MAT_NAME) {
-                material.name = obj.ReadName (reader);
+                material.name = this.ReadName (reader);
             } else if (chunkId === OV.CHUNK3DS.MAT_AMBIENT) {
-                material.ambient = obj.ReadColorChunk (reader, chunkLength);
+                material.ambient = this.ReadColorChunk (reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.MAT_DIFFUSE) {
-                material.diffuse = obj.ReadColorChunk (reader, chunkLength);
+                material.diffuse = this.ReadColorChunk (reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.MAT_SPECULAR) {
-                material.specular = obj.ReadColorChunk (reader, chunkLength);
+                material.specular = this.ReadColorChunk (reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.MAT_SHININESS) {
-                shininess = obj.ReadPercentageChunk (reader, chunkLength);
+                shininess = this.ReadPercentageChunk (reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.MAT_SHININESS_STRENGTH) {
-                shininessStrength = obj.ReadPercentageChunk (reader, chunkLength);
+                shininessStrength = this.ReadPercentageChunk (reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.MAT_TRANSPARENCY) {
-                material.opacity = 1.0 - obj.ReadPercentageChunk (reader, chunkLength);
+                material.opacity = 1.0 - this.ReadPercentageChunk (reader, chunkLength);
                 OV.UpdateMaterialTransparency (material);
             } else if (chunkId === OV.CHUNK3DS.MAT_TEXMAP) {
-                material.diffuseMap = obj.ReadTextureMapChunk (reader, chunkLength);
+                material.diffuseMap = this.ReadTextureMapChunk (reader, chunkLength);
                 OV.UpdateMaterialTransparency (material);
             } else {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             }
         });
 
@@ -176,13 +172,12 @@ OV.Importer3ds = class extends OV.ImporterBase
 
     ReadTextureMapChunk (reader, length)
     {
-        let obj = this;
         let texture = new OV.TextureMap ();
         let endByte = this.GetChunkEnd (reader, length);
-        this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+        this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.MAT_TEXMAP_NAME) {
-                let textureName = obj.ReadName (reader);
-                let textureBuffer = obj.callbacks.getTextureBuffer (textureName);
+                let textureName = this.ReadName (reader);
+                let textureBuffer = this.callbacks.getTextureBuffer (textureName);
                 texture.name = textureName;
                 if (textureBuffer !== null) {
                     texture.url = textureBuffer.url;
@@ -199,7 +194,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             } else if (chunkId === OV.CHUNK3DS.MAT_TEXMAP_ROTATION) {
                 texture.rotation = reader.ReadFloat32 () * OV.DegRad;
             } else {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             }
         });
         return texture;
@@ -207,11 +202,10 @@ OV.Importer3ds = class extends OV.ImporterBase
 
     ReadColorChunk (reader, length)
     {
-        let obj = this;
         let color = new OV.Color (0, 0, 0);
         let endByte = this.GetChunkEnd (reader, length);
         let hasLinColor = false;
-        this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+        this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.MAT_COLOR) {
                 if (!hasLinColor) {
                     color.r = reader.ReadUnsignedCharacter8 ();
@@ -235,7 +229,7 @@ OV.Importer3ds = class extends OV.ImporterBase
                 color.b = parseInt (reader.ReadFloat32 () * 255.0, 10);
                 hasLinColor = true;
             } else {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             }
         });
         return color;
@@ -243,16 +237,15 @@ OV.Importer3ds = class extends OV.ImporterBase
 
     ReadPercentageChunk (reader, length)
     {
-        let obj = this;
         let percentage = 0.0;
         let endByte = this.GetChunkEnd (reader, length);
-        this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+        this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.PERCENTAGE) {
                 percentage = reader.ReadUnsignedInteger16 () / 100.0;
             } else if (chunkId === OV.CHUNK3DS.PERCENTAGE_F) {
                 percentage = reader.ReadFloat32 ();
             } else {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             }
         });
         return percentage;
@@ -260,42 +253,39 @@ OV.Importer3ds = class extends OV.ImporterBase
 
     ReadObjectChunk (reader, length)
     {
-        let obj = this;
         let endByte = this.GetChunkEnd (reader, length);
         let objectName = this.ReadName (reader);
-        this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+        this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.OBJ_TRIMESH) {
-                obj.ReadMeshChunk (reader, chunkLength, objectName);
+                this.ReadMeshChunk (reader, chunkLength, objectName);
             } else if (chunkId === OV.CHUNK3DS.OBJ_LIGHT) {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.OBJ_CAMERA) {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             } else {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             }
         });
     }
 
     ReadMeshChunk (reader, length, objectName)
     {
-        let obj = this;
-
         let mesh = new OV.Mesh ();
         mesh.SetName (objectName);
 
         let endByte = this.GetChunkEnd (reader, length);
         let transformation = null;
-        this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+        this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.TRI_VERTEX) {
-                obj.ReadVerticesChunk (mesh, reader);
+                this.ReadVerticesChunk (mesh, reader);
             } else if (chunkId === OV.CHUNK3DS.TRI_TEXVERTEX) {
-                obj.ReadTextureVerticesChunk (mesh, reader);
+                this.ReadTextureVerticesChunk (mesh, reader);
             } else if (chunkId === OV.CHUNK3DS.TRI_FACE) {
-                obj.ReadFacesChunk (mesh, reader, chunkLength);
+                this.ReadFacesChunk (mesh, reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.TRI_TRANSFORMATION) {
-                transformation = obj.ReadTransformationChunk (reader);
+                transformation = this.ReadTransformationChunk (reader);
             } else {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             }
         });
 
@@ -348,14 +338,13 @@ OV.Importer3ds = class extends OV.ImporterBase
             mesh.AddTriangle (new OV.Triangle (v0, v1, v2));
         }
 
-        let obj = this;
-        this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+        this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.TRI_MATERIAL) {
-                obj.ReadFaceMaterialsChunk (mesh, reader);
+                this.ReadFaceMaterialsChunk (mesh, reader);
             } else if (chunkId === OV.CHUNK3DS.TRI_SMOOTH) {
-                obj.ReadFaceSmoothingGroupsChunk (mesh, faceCount, reader);
+                this.ReadFaceSmoothingGroupsChunk (mesh, faceCount, reader);
             } else {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             }
         });
     }
@@ -408,12 +397,11 @@ OV.Importer3ds = class extends OV.ImporterBase
         };
 
         let endByte = this.GetChunkEnd (reader, length);
-        let obj = this;
-        this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+        this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.OBJECT_NODE) {
-                obj.ReadObjectNodeChunk (nodeHierarchy, reader, chunkLength);
+                this.ReadObjectNodeChunk (nodeHierarchy, reader, chunkLength);
             } else {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             }
         });
 
@@ -606,27 +594,26 @@ OV.Importer3ds = class extends OV.ImporterBase
             matrix : null
         };
         
-        let obj = this;
         let endByte = this.GetChunkEnd (reader, length);
-        this.ReadChunks (reader, endByte, function (chunkId, chunkLength) {
+        this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.OBJECT_HIERARCHY) {
-                objectNode.name = obj.ReadName (reader);
+                objectNode.name = this.ReadName (reader);
                 objectNode.flags = reader.ReadUnsignedInteger32 ();
                 objectNode.userId = reader.ReadUnsignedInteger16 ();
             } else if (chunkId === OV.CHUNK3DS.OBJECT_INSTANCE_NAME) {
-                objectNode.instanceName = obj.ReadName (reader);
+                objectNode.instanceName = this.ReadName (reader);
             } else if (chunkId === OV.CHUNK3DS.OBJECT_PIVOT) {
-                objectNode.pivot = obj.ReadVector (reader);
+                objectNode.pivot = this.ReadVector (reader);
             } else if (chunkId === OV.CHUNK3DS.OBJECT_POSITION) {
-                objectNode.positions = ReadTrackVector (obj, reader, OV.CHUNK3DS.OBJECT_POSITION);
+                objectNode.positions = ReadTrackVector (this, reader, OV.CHUNK3DS.OBJECT_POSITION);
             } else if (chunkId === OV.CHUNK3DS.OBJECT_ROTATION) {
-                objectNode.rotations = ReadTrackVector (obj, reader, OV.CHUNK3DS.OBJECT_ROTATION);
+                objectNode.rotations = ReadTrackVector (this, reader, OV.CHUNK3DS.OBJECT_ROTATION);
             } else if (chunkId === OV.CHUNK3DS.OBJECT_SCALE) {
-                objectNode.scales = ReadTrackVector (obj, reader, OV.CHUNK3DS.OBJECT_SCALE);
+                objectNode.scales = ReadTrackVector (this, reader, OV.CHUNK3DS.OBJECT_SCALE);
             } else if (chunkId === OV.CHUNK3DS.OBJECT_ID) {
                 objectNode.nodeId = reader.ReadUnsignedInteger16 ();
             } else {
-                obj.SkipChunk (reader, chunkLength);
+                this.SkipChunk (reader, chunkLength);
             }
         });
 

@@ -31,7 +31,7 @@ OV.Init3DViewerElements = function (onReady)
                 element.removeChild (progressDiv);
                 canvas.style.display = 'inherit';
                 viewer.AddMeshes (threeMeshes);
-                let boundingSphere = viewer.GetBoundingSphere (function (meshUserData) {
+                let boundingSphere = viewer.GetBoundingSphere ((meshUserData) => {
                     return true;
                 });
                 viewer.AdjustClippingPlanes (boundingSphere);
@@ -90,7 +90,7 @@ OV.Init3DViewerElements = function (onReady)
     }
 
     let viewerElements = [];
-    window.addEventListener ('load', function () {
+    window.addEventListener ('load', () => {
         let elements = document.getElementsByClassName ('online_3d_viewer');
         for (let i = 0; i < elements.length; i++) {
             let element = elements[i];
@@ -102,7 +102,7 @@ OV.Init3DViewerElements = function (onReady)
         }
     }); 
 
-    window.addEventListener ('resize', function () {
+    window.addEventListener ('resize', () => {
         for (let i = 0; i < viewerElements.length; i++) {
             let viewerElement = viewerElements[i];
             let width = viewerElement.element.clientWidth;

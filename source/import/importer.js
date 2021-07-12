@@ -53,11 +53,10 @@ OV.FileList = class
 
     GetContent (onReady)
     {
-        let obj = this;
         let taskRunner = new OV.TaskRunner ();
         taskRunner.Run (this.files.length, {
-            runTask : function (index, complete) {
-                obj.GetFileContent (obj.files[index], complete);
+            runTask : (index, complete) => {
+                this.GetFileContent (this.files[index], complete);
             },
             onReady : onReady
         });
@@ -132,13 +131,13 @@ OV.FileList = class
     GetFileContent (file, complete)
     {
         let callbacks = {
-            success : function (content) {
+            success : (content) => {
                 file.content = content;
             },
-            error : function () {
+            error : () => {
                 
             },
-            complete : function () {
+            complete : () => {
                 complete ();
             }
         };
@@ -303,50 +302,49 @@ OV.Importer = class
         this.missingFiles = [];
         this.usedFiles.push (mainFile.file.name);
 
-        let obj = this;
         let importer = mainFile.importer;
-        let buffers = new OV.ImportBuffers (function (fileName) {
+        let buffers = new OV.ImportBuffers ((fileName) => {
             let fileBuffer = null;
-            let file = obj.fileList.FindFileByPath (fileName);
+            let file = this.fileList.FindFileByPath (fileName);
             if (file === null || file.content === null) {
-                obj.missingFiles.push (fileName);
+                this.missingFiles.push (fileName);
                 fileBuffer = null;
             } else {
                 fileBuffer = file.content;
-                obj.usedFiles.push (fileName);
+                this.usedFiles.push (fileName);
             }
             return fileBuffer;
         });
 
         importer.Import (mainFile.file.content, mainFile.file.extension, {
-            getDefaultMaterial : function () {
+            getDefaultMaterial : () => {
                 let material = new OV.Material ();
                 material.diffuse = settings.defaultColor;
                 return material;
             },
-            getFileBuffer : function (filePath) {
+            getFileBuffer : (filePath) => {
                 return buffers.GetFileBuffer (filePath);
             },
-            getTextureBuffer : function (filePath) {
+            getTextureBuffer : (filePath) => {
                 return buffers.GetTextureBuffer (filePath);
             },
-            onSuccess : function () {
-                obj.model = importer.GetModel ();
-                obj.model.SetName (mainFile.file.name);
+            onSuccess : () => {
+                this.model = importer.GetModel ();
+                this.model.SetName (mainFile.file.name);
         
                 let result = new OV.ImportResult ();
                 result.mainFile = mainFile.file.name;
-                result.model = obj.model;
-                result.usedFiles = obj.usedFiles;
-                result.missingFiles = obj.missingFiles;
+                result.model = this.model;
+                result.usedFiles = this.usedFiles;
+                result.missingFiles = this.missingFiles;
                 result.upVector = importer.GetUpDirection ();
                 callbacks.onSuccess (result);
             },
-            onError : function () {
+            onError : () => {
                 let message = importer.GetMessage ();
                 callbacks.onError (new OV.ImportError (OV.ImportErrorCode.ImportFailed, message));
             },
-            onComplete : function () {
+            onComplete : () => {
                 importer.Clear ();
             }
         });
@@ -382,7 +380,7 @@ OV.Importer = class
         if (reset) {
             this.fileList = newFileList;
         }
-        this.fileList.GetContent (function () {
+        this.fileList.GetContent (() => {
             onReady ();
         });
     }
@@ -404,7 +402,7 @@ OV.Importer = class
         }
         for (let i = 0; i < this.model.MaterialCount (); i++) {
             let material = this.model.GetMaterial (i);
-            material.EnumerateTextureMaps (function (texture) {
+            material.EnumerateTextureMaps ((texture) => {
                 if (texture.url !== null) {
                     OV.RevokeObjectUrl (texture.url);
                 }

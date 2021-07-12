@@ -22,11 +22,10 @@ OV.ThreeModelLoader = class
             return;
         }
 
-        let obj = this;
         this.inProgress = true;
         this.callbacks.onLoadStart ();
-        this.importer.LoadFilesFromUrls (urls, function () {
-            obj.OnFilesLoaded (settings);
+        this.importer.LoadFilesFromUrls (urls, () => {
+            this.OnFilesLoaded (settings);
         });
     }
     
@@ -36,11 +35,10 @@ OV.ThreeModelLoader = class
             return;
         }
 
-        let obj = this;
         this.inProgress = true;
         this.callbacks.onLoadStart ();
-        this.importer.LoadFilesFromFileObjects (files, function () {
-            obj.OnFilesLoaded (settings);
+        this.importer.LoadFilesFromFileObjects (files, () => {
+            this.OnFilesLoaded (settings);
         });
     }
 
@@ -57,16 +55,15 @@ OV.ThreeModelLoader = class
     
     OnFilesLoaded (settings)
     {
-        let obj = this;
         this.callbacks.onImportStart ();
-        OV.RunTaskAsync (function () {
-            obj.importer.Import (settings, {
-                onSuccess : function (importResult) {
-                    obj.OnModelImported (importResult);
+        OV.RunTaskAsync (() => {
+            this.importer.Import (settings, {
+                onSuccess : (importResult) => {
+                    this.OnModelImported (importResult);
                 },
-                onError : function (importError) {
-                    obj.callbacks.onLoadError (importError);
-                    obj.inProgress = false;
+                onError : (importError) => {
+                    this.callbacks.onLoadError (importError);
+                    this.inProgress = false;
                 }
             });
         });
@@ -74,19 +71,18 @@ OV.ThreeModelLoader = class
 
     OnModelImported (importResult)
     {
-        let obj = this;
         this.callbacks.onVisualizationStart ();
         let params = new OV.ModelToThreeConversionParams ();
         params.forceMediumpForMaterials = this.hasHighpDriverIssue;
         let result = new OV.ModelToThreeConversionResult ();
         OV.ConvertModelToThreeMeshes (importResult.model, params, result, {
-            onTextureLoaded : function () {
-                obj.callbacks.onTextureLoaded ();
+            onTextureLoaded : () => {
+                this.callbacks.onTextureLoaded ();
             },
-            onModelLoaded : function (meshes) {
-                obj.defaultMaterial = result.defaultMaterial;
-                obj.callbacks.onModelFinished (importResult, meshes);
-                obj.inProgress = false;
+            onModelLoaded : (meshes) => {
+                this.defaultMaterial = result.defaultMaterial;
+                this.callbacks.onModelFinished (importResult, meshes);
+                this.inProgress = false;
             }
         });
     }

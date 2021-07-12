@@ -35,7 +35,7 @@ OV.ConvertModelToThreeMeshes = function (model, params, result, callbacks)
 				return;
 			}
 			let loader = new THREE.TextureLoader ();
-			loader.load (texture.url, function (threeTexture) {
+			loader.load (texture.url, (threeTexture) => {
 				SetTextureParameters (texture, threeTexture);
 				threeTexture.image = OV.ResizeImageToPowerOfTwoSides (threeTexture.image);
 				threeMaterial.needsUpdate = true;
@@ -66,26 +66,26 @@ OV.ConvertModelToThreeMeshes = function (model, params, result, callbacks)
 		}
 
 		let threeMaterial = new THREE.MeshPhongMaterial (materialParams);
-		LoadTexture (threeMaterial, material.diffuseMap, function (threeTexture) {
+		LoadTexture (threeMaterial, material.diffuseMap, (threeTexture) => {
 			if (!material.multiplyDiffuseMap) {
 				threeMaterial.color.setRGB (1.0, 1.0, 1.0);
 			}
 			threeMaterial.map = threeTexture;
 			callbacks.onTextureLoaded ();
 		});
-		LoadTexture (threeMaterial, material.specularMap, function (threeTexture) {
+		LoadTexture (threeMaterial, material.specularMap, (threeTexture) => {
 			threeMaterial.specularMap = threeTexture;
 			callbacks.onTextureLoaded ();
 		});
-		LoadTexture (threeMaterial, material.bumpMap, function (threeTexture) {
+		LoadTexture (threeMaterial, material.bumpMap, (threeTexture) => {
 			threeMaterial.bumpMap = threeTexture;
 			callbacks.onTextureLoaded ();
 		});
-		LoadTexture (threeMaterial, material.normalMap, function (threeTexture) {
+		LoadTexture (threeMaterial, material.normalMap, (threeTexture) => {
 			threeMaterial.normalMap = threeTexture;
 			callbacks.onTextureLoaded ();
 		});
-		LoadTexture (threeMaterial, material.emissiveMap, function (threeTexture) {
+		LoadTexture (threeMaterial, material.emissiveMap, (threeTexture) => {
 			threeMaterial.emissiveMap = threeTexture;
 			callbacks.onTextureLoaded ();
 		});
@@ -109,7 +109,7 @@ OV.ConvertModelToThreeMeshes = function (model, params, result, callbacks)
 		for (let i = 0; i < triangleCount; i++) {
 			triangleIndices.push (i);
 		}
-		triangleIndices.sort (function (a, b) {
+		triangleIndices.sort ((a, b) => {
 			let aTriangle = mesh.GetTriangle (a);
 			let bTriangle = mesh.GetTriangle (b);
 			return aTriangle.mat - bTriangle.mat;

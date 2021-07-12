@@ -22,7 +22,7 @@ OV.CalculateVolume = function (element)
         return null;
     }
     let volume = 0.0;
-    element.EnumerateTriangles (function (v0, v1, v2) {
+    element.EnumerateTriangles ((v0, v1, v2) => {
         volume += OV.GetTetrahedronSignedVolume (v0, v1, v2);
     });
     return volume;
@@ -31,7 +31,7 @@ OV.CalculateVolume = function (element)
 OV.CalculateSurfaceArea = function (element)
 {
     let surface = 0.0;
-    element.EnumerateTriangles (function (v0, v1, v2) {
+    element.EnumerateTriangles ((v0, v1, v2) => {
         surface += OV.GetTriangleArea (v0, v1, v2);
     });
     return surface;

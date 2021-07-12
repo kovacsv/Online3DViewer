@@ -320,7 +320,7 @@ OV.Viewer = class
 
     SetMeshesVisibility (isVisible)
     {
-        this.geometry.EnumerateModelMeshes (function (mesh) {
+        this.geometry.EnumerateModelMeshes ((mesh) => {
             let visible = isVisible (mesh.userData);
             if (mesh.visible !== visible) {
                 mesh.visible = visible;
@@ -340,7 +340,7 @@ OV.Viewer = class
             return highlightMaterials;
         }
 
-        this.geometry.EnumerateModelMeshes (function (mesh) {
+        this.geometry.EnumerateModelMeshes ((mesh) => {
             let highlighted = isHighlighted (mesh.userData);
             if (highlighted) {
                 if (mesh.userData.threeMaterials === null) {
@@ -376,7 +376,7 @@ OV.Viewer = class
     {
         let hasMesh = false;
         let boundingBox = new THREE.Box3 ();
-        this.geometry.EnumerateModelMeshes (function (mesh) {
+        this.geometry.EnumerateModelMeshes ((mesh) => {
             if (needToProcess (mesh.userData)) {
                 boundingBox.union (new THREE.Box3 ().setFromObject (mesh));
                 hasMesh = true;
@@ -403,7 +403,7 @@ OV.Viewer = class
 
     EnumerateMeshesUserData (enumerator)
     {
-        this.geometry.EnumerateModelMeshes (function (mesh) {
+        this.geometry.EnumerateModelMeshes ((mesh) => {
             enumerator (mesh.userData);
         });
     }
@@ -416,10 +416,9 @@ OV.Viewer = class
         let canvasElem = this.renderer.domElement;
         let camera = OV.GetDefaultCamera (OV.Direction.Z);
 
-        let obj = this;
         this.navigation = new OV.Navigation (canvasElem, camera);
-        this.navigation.SetUpdateHandler (function () {
-            obj.Render ();
+        this.navigation.SetUpdateHandler (() => {
+            this.Render ();
         });
 
         this.upVector = new OV.UpVector ();

@@ -35,10 +35,9 @@ OV.Embed = class
             this.parameters.websiteLinkDiv.attr ('href', websiteUrl);
         }
 
-        let obj = this;
-		$(window).on ('resize', function () {
-			obj.Resize ();
-		});        
+		$(window).on ('resize', () => {
+			this.Resize ();
+		});
     }
 
     Resize ()
@@ -51,7 +50,7 @@ OV.Embed = class
     OnModelFinished (importResult, threeMeshes)
     {
         this.viewer.AddMeshes (threeMeshes);
-        let boundingSphere = this.viewer.GetBoundingSphere (function (meshUserData) {
+        let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
             return true;
         });
         this.viewer.AdjustClippingPlanes (boundingSphere);
@@ -66,19 +65,18 @@ OV.Embed = class
 
     InitModelLoader ()
     {
-        let obj = this;
         OV.InitModelLoader (this.modelLoader, {
-            onStart : function ()
+            onStart : () =>
             {
                 
             },
-            onFinish : function (importResult, threeMeshes)
+            onFinish : (importResult, threeMeshes) =>
             {
-                obj.OnModelFinished (importResult, threeMeshes);
+                this.OnModelFinished (importResult, threeMeshes);
             },
-            onRender : function ()
+            onRender : () =>
             {
-                obj.viewer.Render ();
+                this.viewer.Render ();
             }
         });
     } 

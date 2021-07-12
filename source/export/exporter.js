@@ -31,7 +31,7 @@ OV.Exporter = class
             return;
         }
 
-        exporter.Export (model, format, function (files) {
+        exporter.Export (model, format, (files) => {
             if (files.length === 0) {
                 callbacks.onError ();
             } else {

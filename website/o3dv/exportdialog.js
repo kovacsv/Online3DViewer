@@ -77,7 +77,6 @@ OV.ExportDialog = class
             return;
         }
 
-        let obj = this;
         let mainDialog = new OV.ButtonDialog ();
         let contentDiv = mainDialog.Init ('Export', [
             {
@@ -89,13 +88,13 @@ OV.ExportDialog = class
             },
             {
                 name : 'Export',
-                onClick () {
-                    let selectedFormat = obj.formatParameters.selectedFormat;
+                onClick : () => {
+                    let selectedFormat = this.formatParameters.selectedFormat;
                     if (selectedFormat === null) {
                         return;
                     }
                     mainDialog.Hide ();
-                    obj.ExportFormat (model, viewer);
+                    this.ExportFormat (model, viewer);
                 }
             }
         ]);
@@ -111,8 +110,8 @@ OV.ExportDialog = class
             let exportFormat = this.exportFormats[i];
             let exportFormatButton = $('<div>').addClass ('ov_dialog_select_option').html (exportFormat.name).width (buttonWidth).appendTo (exportFormatSelect);
             this.formatParameters.exportFormatButtonDivs.push (exportFormatButton);
-            exportFormatButton.click (function () {
-                obj.OnExportFormatSelect (i);
+            exportFormatButton.click (() => {
+                this.OnExportFormatSelect (i);
             });
         }
         this.OnExportFormatSelect (0);
@@ -133,7 +132,6 @@ OV.ExportDialog = class
             }
         }
 
-        let obj = this;
         let exportFormat = this.exportFormats[exportFormatIndex];
         for (let i = 0; i < exportFormat.formats.length; i++) {
             let format = exportFormat.formats[i];
@@ -144,8 +142,8 @@ OV.ExportDialog = class
                 formatInput.prop ('checked', true);
                 this.formatParameters.selectedFormat = format;
             }
-            formatInput.change (function () {
-                obj.formatParameters.selectedFormat = format;
+            formatInput.change (() => {
+                this.formatParameters.selectedFormat = format;
             });
         }        
     }
@@ -158,17 +156,16 @@ OV.ExportDialog = class
         }
 
         if (selectedFormat.type === OV.ExportType.Model) {
-            let obj = this;
             let progressDialog = new OV.ProgressDialog ();
             progressDialog.Show ('Exporting Model');
-            OV.RunTaskAsync (function () {
+            OV.RunTaskAsync (() => {
                 let exporter = new OV.Exporter ();
                 exporter.AddExporter (new OV.Exporter3dm ());
                 exporter.Export (model, selectedFormat.format, selectedFormat.extension, {
-                    onError : function () {
+                    onError : () => {
                         progressDialog.Hide ();
                     },
-                    onSuccess : function (files) {
+                    onSuccess : (files) => {
                         if (files.length === 0) {
                             progressDialog.Hide ();
                         } else if (files.length === 1) {
@@ -177,7 +174,7 @@ OV.ExportDialog = class
                             OV.DownloadArrayBufferAsFile (file.GetContent (), file.GetName ());
                         } else if (files.length > 1) {
                             progressDialog.Hide ();
-                            obj.ShowExportedFiles (files);
+                            this.ShowExportedFiles (files);
                         }
                     }
                 });

@@ -26,7 +26,7 @@ OV.TaskRunner = class
             stepCount = parseInt ((count - 1) / batchCount, 10) + 1;
         }
         this.Run (stepCount, {
-            runTask : function (index, ready) {
+            runTask : (index, ready) => {
                 const firstIndex = index * batchCount;
                 const lastIndex = Math.min ((index + 1) * batchCount, count) - 1;
                 callbacks.runTask (firstIndex, lastIndex, ready);
@@ -37,9 +37,8 @@ OV.TaskRunner = class
 
     RunOnce ()
     {
-        let obj = this;
-        setTimeout (function () {
-            obj.callbacks.runTask (obj.current, obj.TaskReady.bind (obj));
+        setTimeout (() => {
+            this.callbacks.runTask (this.current, this.TaskReady.bind (this));
         }, 0);
     }
 
@@ -58,7 +57,7 @@ OV.TaskRunner = class
 
 OV.RunTaskAsync = function (task)
 {
-    setTimeout (function () {
+    setTimeout (() => {
         task ();
     }, 0);
 };
