@@ -14,7 +14,6 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
     {
         let builder = OV.CreateUrlBuilder ();
         builder.AddModelUrls (params.files);
-        builder.AddColor (params.color);
         let hashParameters = builder.GetParameterList ();
         return 'https://3dviewer.net#' + hashParameters;
     }
@@ -58,7 +57,7 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
         return input;
     }
 
-    function AddSharingLinkTab (parentDiv, importSettings, sharingLinkParams)
+    function AddSharingLinkTab (parentDiv, sharingLinkParams)
     {
         let section = $('<div>').addClass ('ov_dialog_section').appendTo (parentDiv);
         $('<div>').html ('Sharing Link').addClass ('ov_dialog_inner_title').appendTo (section);
@@ -68,16 +67,7 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
         }
         let sharingLinkInput = AddCopyableTextInput (section, () => {
             return GetSharingLink (sharingLinkParams);
-        });
-        // TODO: camera position in sharing link
-        // TODO: background color in sharing link
-        if (OV.FeatureSet.SettingsPanel) {
-            AddCheckboxLine (optionsSection, 'Use overridden default color', 'share_color', (checked) => {
-                sharingLinkParams.color = checked ? importSettings.defaultColor : null;
-                sharingLinkInput.val (GetSharingLink (sharingLinkParams));
-            });
-            sharingLinkParams.color = importSettings.defaultColor;
-        }        
+        }); 
         sharingLinkInput.val (GetSharingLink (sharingLinkParams));
     }
 
@@ -124,8 +114,7 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
     }
 
     let sharingLinkParams = {
-        files : modelFiles,
-        color : null
+        files : modelFiles
     };
 
     let embeddingCodeParams = {
@@ -145,7 +134,7 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
         }
     ]);
 
-    AddSharingLinkTab (contentDiv, importSettings, sharingLinkParams);
+    AddSharingLinkTab (contentDiv, sharingLinkParams);
     AddEmbeddingCodeTab (contentDiv, viewerSettings, importSettings, embeddingCodeParams);
 
     dialog.Show ();
