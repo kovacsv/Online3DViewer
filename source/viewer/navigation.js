@@ -36,7 +36,7 @@ OV.MouseInteraction = class
     constructor ()
     {
         this.prev = new OV.Coord2D (0.0, 0.0);
-        this.curr = new OV.Coord2D (0.0, 0,0);
+        this.curr = new OV.Coord2D (0.0, 0.0);
         this.diff = new OV.Coord2D (0.0, 0.0);
         this.buttons = [];
     }
@@ -100,7 +100,7 @@ OV.TouchInteraction = class
 	constructor ()
 	{
 		this.prevPos = new OV.Coord2D (0.0, 0.0);
-		this.currPos = new OV.Coord2D (0.0, 0,0);
+		this.currPos = new OV.Coord2D (0.0, 0.0);
 		this.diffPos = new OV.Coord2D (0.0, 0.0);
 		this.prevDist = 0.0;
 		this.currDist = 0.0;

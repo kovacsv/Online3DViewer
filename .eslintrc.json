@@ -15,6 +15,7 @@
         "ecmaVersion": 12
     },
     "rules": {
+		"semi": "error",
 		"no-var": "error",
 		"guard-for-in": "error",
 		"no-use-before-define": "error",
@@ -25,7 +26,9 @@
 		"no-prototype-builtins": "error",
 		"no-eval": "error",
 		"no-useless-escape": "error",
-		"prefer-arrow-callback" : "error",
+		"no-multiple-empty-lines": "error",
+		"comma-spacing": "error",
+		"prefer-arrow-callback": "error",
 		"quotes": ["error", "single"],
 		"block-scoped-var": "error",
 		"no-loop-func": "error",
