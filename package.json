@@ -11,7 +11,7 @@
 		"mocha": "^8.3.2",
 		"nyc": "^15.1.0",
 		"rewire": "^5.0.0",
-		"svgo": "^2.2.2"
+		"svgo": "^2.3.1"
 	},
 	"scripts": {
 		"test": "mocha test",
