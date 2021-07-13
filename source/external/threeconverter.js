@@ -6,7 +6,7 @@ OV.ModelToThreeConversionParams = class
 	}
 };
 
-OV.ModelToThreeConversionResult = class
+OV.ModelToThreeConversionOutput = class
 {
 	constructor ()
 	{
@@ -14,9 +14,9 @@ OV.ModelToThreeConversionResult = class
 	}
 };
 
-OV.ConvertModelToThreeMeshes = function (model, params, result, callbacks)
+OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 {
-	function CreateThreeMaterial (model, materialIndex, params, result)
+	function CreateThreeMaterial (model, materialIndex, params, output)
 	{
 		function SetTextureParameters (texture, threeTexture)
 		{
@@ -91,7 +91,7 @@ OV.ConvertModelToThreeMeshes = function (model, params, result, callbacks)
 		});
 
 		if (material.isDefault) {
-			result.defaultMaterial = threeMaterial;
+			output.defaultMaterial = threeMaterial;
 		}
 
 		return threeMaterial;
@@ -195,7 +195,7 @@ OV.ConvertModelToThreeMeshes = function (model, params, result, callbacks)
 
 	let modelThreeMaterials = [];
 	for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
-		let threeMaterial = CreateThreeMaterial (model, materialIndex, params, result);
+		let threeMaterial = CreateThreeMaterial (model, materialIndex, params, output);
 		modelThreeMaterials.push (threeMaterial);
 	}
 

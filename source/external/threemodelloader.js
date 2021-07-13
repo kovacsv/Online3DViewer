@@ -63,13 +63,13 @@ OV.ThreeModelLoader = class
         this.callbacks.onVisualizationStart ();
         let params = new OV.ModelToThreeConversionParams ();
         params.forceMediumpForMaterials = this.hasHighpDriverIssue;
-        let result = new OV.ModelToThreeConversionResult ();
-        OV.ConvertModelToThreeMeshes (importResult.model, params, result, {
+        let output = new OV.ModelToThreeConversionOutput ();
+        OV.ConvertModelToThreeMeshes (importResult.model, params, output, {
             onTextureLoaded : () => {
                 this.callbacks.onTextureLoaded ();
             },
             onModelLoaded : (meshes) => {
-                this.defaultMaterial = result.defaultMaterial;
+                this.defaultMaterial = output.defaultMaterial;
                 this.callbacks.onModelFinished (importResult, meshes);
                 this.inProgress = false;
             }
