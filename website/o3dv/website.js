@@ -1,3 +1,24 @@
+OV.WebsiteSettings = class
+{
+    constructor ()
+    {
+        this.backgroundColor = new OV.Color (255, 255, 255);
+        this.defaultColor = new OV.Color (200, 200, 200);
+    }
+
+    LoadFromCookies (cookieHandler)
+    {
+        this.backgroundColor = cookieHandler.GetColorVal ('ov_background_color', new OV.Color (255, 255, 255));
+        this.defaultColor = cookieHandler.GetColorVal ('ov_default_color', new OV.Color (200, 200, 200));
+    }
+
+    SaveToCookies (cookieHandler)
+    {
+        cookieHandler.SetColorVal ('ov_background_color', this.backgroundColor);
+        cookieHandler.SetColorVal ('ov_default_color', this.defaultColor);
+    }
+};
+
 OV.Website = class
 {
     constructor (parameters)
@@ -9,8 +30,7 @@ OV.Website = class
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
         this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv);
         this.navigator = new OV.Navigator (this.parameters.navigatorDiv);
-        this.viewerSettings = new OV.ViewerSettings ();
-        this.importSettings = new OV.ImportSettings ();
+        this.settings = new OV.WebsiteSettings ();
         this.modelLoader = new OV.ThreeModelLoader ();
         this.highlightMaterial = new THREE.MeshPhongMaterial ({
             color : 0x8ec9f0,
@@ -23,7 +43,8 @@ OV.Website = class
 
     Load ()
     {
-        this.InitSettings ();
+        this.settings.LoadFromCookies (this.cookieHandler);
+
         this.InitViewer ();
         this.InitToolbar ();
         this.InitDragAndDrop ();
@@ -171,16 +192,10 @@ OV.Website = class
 
     LoadModelFromFileList (files)
     {
-        this.modelLoader.LoadFromFileList (files, this.importSettings);
+        let importSettings = new OV.ImportSettings ();
+        importSettings.defaultColor = this.settings.defaultColor;
+        this.modelLoader.LoadFromFileList (files, importSettings);
         this.ClearHashIfNotOnlyUrlList ();
-    }
-
-    ReloadFiles ()
-    {
-        if (this.model === null) {
-            return;
-        }
-        this.modelLoader.ReloadFiles (this.importSettings);
     }
 
     ClearHashIfNotOnlyUrlList ()
@@ -201,7 +216,7 @@ OV.Website = class
                 return;
             }
             let importSettings = new OV.ImportSettings ();
-            importSettings.defaultColor = this.importSettings.defaultColor;
+            importSettings.defaultColor = this.settings.defaultColor;
             let defaultColor = this.hashHandler.GetDefaultColorFromHash ();
             if (defaultColor !== null) {
                 importSettings.defaultColor = defaultColor;
@@ -213,17 +228,11 @@ OV.Website = class
         }
     }
 
-    InitSettings ()
-    {
-        this.viewerSettings.backgroundColor = this.cookieHandler.GetColorVal ('ov_background_color', new OV.Color (255, 255, 255));
-        this.importSettings.defaultColor = this.cookieHandler.GetColorVal ('ov_default_color', new OV.Color (200, 200, 200));
-    }
-
     InitViewer ()
     {
         let canvas = $('<canvas>').appendTo (this.parameters.viewerDiv);
         this.viewer.Init (canvas.get (0));
-        this.viewer.SetBackgroundColor (this.viewerSettings.backgroundColor);
+        this.viewer.SetBackgroundColor (this.settings.backgroundColor);
         this.ShowViewer (false);
     }
 
@@ -310,7 +319,7 @@ OV.Website = class
             exportDialog.Show (this.model, this.viewer);
         });
         AddButton (this.toolbar, 'share', 'Share model', true, () => {
-            this.dialog = OV.ShowSharingDialog (importer, this.viewerSettings, this.importSettings, this.viewer.GetCamera ());
+            this.dialog = OV.ShowSharingDialog (importer, this.settings, this.viewer.GetCamera ());
         });
 
         this.parameters.fileInput.on ('change', (ev) => {
@@ -440,28 +449,27 @@ OV.Website = class
             });            
         }
 
-        settingsPanel.InitSettings ({
-            backgroundColor : {
-                defaultValue : this.viewerSettings.backgroundColor,
-                onChange : (newVal) => {
-                    this.viewerSettings.backgroundColor = newVal;
+        let defaultSettings = new OV.WebsiteSettings ();
+        settingsPanel.InitSettings (
+            this.settings,
+            defaultSettings,
+            {
+                onBackgroundColorChange : (newVal) => {
+                    this.settings.backgroundColor = newVal;
+                    this.settings.SaveToCookies (this.cookieHandler);
                     this.viewer.SetBackgroundColor (newVal);
-                    this.cookieHandler.SetColorVal ('ov_background_color', newVal);
-                }
-            },
-            defaultColor : {
-                defaultValue : this.importSettings.defaultColor,
-                onChange : (newVal) => {
-                    this.importSettings.defaultColor = newVal;
-                    this.cookieHandler.SetColorVal ('ov_default_color', newVal);
+                },
+                onDefaultColorChange : (newVal) => {
+                    this.settings.defaultColor = newVal;
+                    this.settings.SaveToCookies (this.cookieHandler);
                     if (this.modelLoader.defaultMaterial !== null) {
                         OV.ReplaceDefaultMaterialColor (this.model, newVal);
-                        this.modelLoader.defaultMaterial.color = new THREE.Color (newVal.r / 255.0, newVal.g / 255.0, newVal.b / 255.0);
+                        this.modelLoader.ReplaceDefaultMaterialColor (newVal);
                     }
                     this.viewer.Render ();
                 }
             }
-        });
+        );
 
         let show = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
         ShowSidebar (this.sidebar, this.cookieHandler, sidebarPanels, show ? sidebarPanels[0].panelId : null);

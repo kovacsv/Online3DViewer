@@ -318,6 +318,14 @@ div.ov_sidebar_content input.ov_sidebar_color
 	height: 18px;
 }
 
+div.ov_sidebar_content div.ov_sidebar_settings_button
+{
+	color: #3393bd;
+	text-align: right;
+	margin-top: 25px;
+	cursor: pointer;
+}
+
 div.ov_tree_view
 {
 	user-select: none;

@@ -41,17 +41,6 @@ OV.ThreeModelLoader = class
             this.OnFilesLoaded (settings);
         });
     }
-
-    ReloadFiles (settings)
-    {
-        if (this.inProgress) {
-            return;
-        }
-
-        this.inProgress = true;
-        this.callbacks.onLoadStart ();
-        this.OnFilesLoaded (settings);        
-    }
     
     OnFilesLoaded (settings)
     {
@@ -90,5 +79,12 @@ OV.ThreeModelLoader = class
     GetImporter ()
     {
         return this.importer;
+    }
+
+    ReplaceDefaultMaterialColor (defaultColor)
+    {
+        if (this.defaultMaterial !== null) {
+            this.defaultMaterial.color = new THREE.Color (defaultColor.r / 255.0, defaultColor.g / 255.0, defaultColor.b / 255.0);
+        }
     }
 };

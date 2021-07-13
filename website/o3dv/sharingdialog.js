@@ -1,4 +1,4 @@
-OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camera)
+OV.ShowSharingDialog = function (importer, settings, camera)
 {
     function AddCheckboxLine (parentDiv, text, id, onChange)
     {
@@ -71,7 +71,7 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
         sharingLinkInput.val (GetSharingLink (sharingLinkParams));
     }
 
-    function AddEmbeddingCodeTab (parentDiv, viewerSettings, importSettings, embeddingCodeParams)
+    function AddEmbeddingCodeTab (parentDiv, settings, embeddingCodeParams)
     {
         let section = $('<div>').addClass ('ov_dialog_section').css ('margin-top', '20px').appendTo (parentDiv);
         $('<div>').html ('Embedding Code').addClass ('ov_dialog_inner_title').appendTo (section);
@@ -85,15 +85,15 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
         });
         if (OV.FeatureSet.SettingsPanel) {
             AddCheckboxLine (optionsSection, 'Use overridden background color', 'embed_background', (checked) => {
-                embeddingCodeParams.background = checked ? viewerSettings.backgroundColor : null;
+                embeddingCodeParams.background = checked ? settings.backgroundColor : null;
                 embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
             });
-            embeddingCodeParams.background = viewerSettings.backgroundColor;
+            embeddingCodeParams.background = settings.backgroundColor;
             AddCheckboxLine (optionsSection, 'Use overridden default color', 'embed_color', (checked) => {
-                embeddingCodeParams.color = checked ? importSettings.defaultColor : null;
+                embeddingCodeParams.color = checked ? settings.defaultColor : null;
                 embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
             });
-            embeddingCodeParams.color = importSettings.defaultColor;
+            embeddingCodeParams.color = settings.defaultColor;
         }
         embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
     }
@@ -135,7 +135,7 @@ OV.ShowSharingDialog = function (importer, viewerSettings, importSettings, camer
     ]);
 
     AddSharingLinkTab (contentDiv, sharingLinkParams);
-    AddEmbeddingCodeTab (contentDiv, viewerSettings, importSettings, embeddingCodeParams);
+    AddEmbeddingCodeTab (contentDiv, settings, embeddingCodeParams);
 
     dialog.Show ();
     return dialog;
