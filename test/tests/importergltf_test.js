@@ -49,7 +49,8 @@ describe ('Gltf Importer', function () {
         let testFileList = [
             ['Box/glTF', 'Box.gltf'],
             ['Box/glTF-Embedded', 'Box.gltf'],
-            ['Box/glTF-Binary', 'Box.glb']
+            ['Box/glTF-Binary', 'Box.glb'],
+            ['Box/glTF-Draco', 'Box.gltf']
         ];
         let processed = 0;
         for (let i = 0; i < testFileList.length; i++) {

@@ -257,9 +257,34 @@ OV.GltfExtensions = class
     constructor ()
     {
         this.supportedExtensions = [
+            'KHR_draco_mesh_compression',
             'KHR_materials_pbrSpecularGlossiness',
             'KHR_texture_transform',
         ];
+        this.draco = null;
+    }
+
+    LoadLibraries (extensionsRequired, onReady)
+    {
+        if (extensionsRequired === undefined) {
+            onReady ();
+            return;
+        }        
+        if (this.draco === null && extensionsRequired.indexOf ('KHR_draco_mesh_compression') !== -1) {
+			OV.LoadExternalLibrary ('draco_decoder.js', {
+				success : () => {
+					DracoDecoderModule ().then ((draco) => {
+						this.draco = draco;
+						onReady ();
+					});
+				},
+				error : () => {
+					onReady ();
+				}
+			});
+        } else {
+            onReady ();
+        }
     }
 
     GetUnsupportedExtensions (extensionsRequired)
@@ -341,6 +366,110 @@ OV.GltfExtensions = class
             }
         }
     }
+
+    ProcessPrimitive (importer, gltf, primitive, mesh)
+    {
+        function EnumerateComponents (draco, decoder, dracoMesh, attributeId, processor)
+        {
+            let attribute = decoder.GetAttributeByUniqueId (dracoMesh, attributeId);
+            let numComponents = attribute.num_components ();
+            let numPoints = dracoMesh.num_points ();
+            let numValues = numPoints * numComponents;
+            let dataSize = numValues * 4;
+            let attributePtr = draco._malloc (dataSize);
+            decoder.GetAttributeDataArrayForAllPoints (dracoMesh, attribute, draco.DT_FLOAT32, dataSize, attributePtr);
+            let attributeArray = new Float32Array (draco.HEAPF32.buffer, attributePtr, numValues).slice ();
+            if (numComponents === 2) {
+                for (let i = 0; i < attributeArray.length; i += 2) {
+                    processor (new OV.Coord2D (
+                        attributeArray[i + 0],
+                        attributeArray[i + 1]
+                    ));
+                }
+            } else if (numComponents === 3) {
+                for (let i = 0; i < attributeArray.length; i += 3) {
+                    processor (new OV.Coord3D (
+                        attributeArray[i + 0],
+                        attributeArray[i + 1],
+                        attributeArray[i + 2]
+                    ));
+                }
+            }
+            draco._free (attributePtr);
+        }
+
+        if (this.draco === null) {
+            return false;
+        }
+
+        if (primitive.extensions === undefined || primitive.extensions.KHR_draco_mesh_compression === undefined) {
+            return false;
+        }
+
+        let decoder = new this.draco.Decoder ();
+        let decoderBuffer = new this.draco.DecoderBuffer ();
+
+        let extensionParams = primitive.extensions.KHR_draco_mesh_compression;
+        let compressedBufferView = gltf.bufferViews[extensionParams.bufferView];
+        let compressedReader = importer.GetReaderFromBufferView (compressedBufferView);
+        let compressedArrayBuffer = compressedReader.ReadArrayBuffer (compressedBufferView.byteLength);
+        decoderBuffer.Init (new Int8Array (compressedArrayBuffer), compressedArrayBuffer.byteLength);
+        let geometryType = decoder.GetEncodedGeometryType (decoderBuffer);
+        if (geometryType !== this.draco.TRIANGULAR_MESH) {
+            return true;
+        }
+
+        let dracoMesh = new this.draco.Mesh ();
+        let decodingStatus = decoder.DecodeBufferToMesh (decoderBuffer, dracoMesh);
+        if (!decodingStatus.ok ()) {
+            return true;
+        }
+
+        let hasVertices = (extensionParams.attributes.POSITION !== undefined);
+        let hasNormals = (extensionParams.attributes.NORMAL !== undefined);
+        let hasUVs = (extensionParams.attributes.TEXCOORD_0 !== undefined);
+
+        if (!hasVertices) {
+            return true;
+        }
+
+        let vertexOffset = mesh.VertexCount ();
+        let normalOffset = mesh.NormalCount ();
+        let uvOffset = mesh.TextureUVCount ();
+
+        EnumerateComponents (this.draco, decoder, dracoMesh, extensionParams.attributes.POSITION, (vertex) => {
+            mesh.AddVertex (vertex);
+        });
+
+        if (hasNormals) {
+            EnumerateComponents (this.draco, decoder, dracoMesh, extensionParams.attributes.NORMAL, (normal) => {
+                mesh.AddNormal (normal);
+            });
+        }
+
+        if (hasUVs) {
+            EnumerateComponents (this.draco, decoder, dracoMesh, extensionParams.attributes.TEXCOORD_0, (uv) => {
+                uv.y = -uv.y;
+                mesh.AddTextureUV (uv);
+            });
+        }
+
+        let faceCount = dracoMesh.num_faces ();
+        let indexCount = faceCount * 3;
+        let indexDataSize = indexCount * 4;
+        let indexDataPtr = this.draco._malloc (indexDataSize);
+        decoder.GetTrianglesUInt32Array (dracoMesh, indexDataSize, indexDataPtr);
+        let indexArray = new Uint32Array (this.draco.HEAPU32.buffer, indexDataPtr, indexCount).slice ();
+        for (let i = 0; i < indexArray.length; i += 3) {
+            let v0 = indexArray[i];
+            let v1 = indexArray[i + 1];
+            let v2 = indexArray[i + 2];
+            importer.AddTriangle (primitive, mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset);
+        }
+        this.draco._free (indexDataPtr);
+
+        return true;
+    }
 };
 
 OV.ImporterGltf = class extends OV.ImporterBase
@@ -348,6 +477,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
     constructor ()
     {
         super ();
+        this.gltfExtensions = new OV.GltfExtensions ();
     }
 
     CanImportExtension (extension)
@@ -372,33 +502,31 @@ OV.ImporterGltf = class extends OV.ImporterBase
     ClearContent ()
     {
         this.bufferContents = null;
-        this.gltfExtensions = null;
         this.imageIndexToTextureParams = null;
     }
 
     ResetContent ()
     {
         this.bufferContents = [];
-        this.gltfExtensions = new OV.GltfExtensions ();
         this.imageIndexToTextureParams = {};
     }
 
     ImportContent (fileContent, onFinish)
     {
         if (this.extension === 'gltf') {
-            this.ProcessGltf (fileContent);
+            this.ProcessGltf (fileContent, onFinish);
         } else if (this.extension === 'glb') {
-            this.ProcessBinaryGltf (fileContent);
+            this.ProcessBinaryGltf (fileContent, onFinish);
         }
-        onFinish ();
     }
 
-    ProcessGltf (fileContent)
+    ProcessGltf (fileContent, onFinish)
     {
         let gltf = JSON.parse (fileContent);
         if (gltf.asset.version !== '2.0') {
             this.SetError ();
             this.SetMessage ('Invalid glTF version.');
+            onFinish ();
             return;
         }
 
@@ -417,15 +545,16 @@ OV.ImporterGltf = class extends OV.ImporterBase
             if (buffer === null) {
                 this.SetError ();
                 this.SetMessage ('One  of the requested buffers is missing.');
+                onFinish ();
                 return;
             }
             this.bufferContents.push (buffer);
         }
 
-        this.ProcessMainFile (gltf);
+        this.ProcessMainFile (gltf, onFinish);
     }
 
-    ProcessBinaryGltf (fileContent)
+    ProcessBinaryGltf (fileContent, onFinish)
     {
         function ReadChunk (reader)
         {
@@ -443,18 +572,21 @@ OV.ImporterGltf = class extends OV.ImporterBase
         if (magic !== OV.GltfConstants.GLTF_STRING) {
             this.SetError ();
             this.SetMessage ('Invalid glTF file.');
+            onFinish ();
             return;
         }
         let version = reader.ReadUnsignedInteger32 ();
         if (version !== 2) {
             this.SetError ();
             this.SetMessage ('Invalid glTF version.');
+            onFinish ();
             return;
         }
         let length = reader.ReadUnsignedInteger32 ();
         if (length !== reader.GetByteLength ()) {
             this.SetError ();
             this.SetMessage ('Invalid glTF file.');
+            onFinish ();
             return;
         }
 
@@ -470,40 +602,46 @@ OV.ImporterGltf = class extends OV.ImporterBase
 
         if (gltfTextContent !== null) {
             let gltf = JSON.parse (gltfTextContent);
-            this.ProcessMainFile (gltf);
+            this.ProcessMainFile (gltf, onFinish);
         }
     }
 
-    ProcessMainFile (gltf)
+    ProcessMainFile (gltf, onFinish)
     {
-        this.ImportModelProperties (gltf);
-
         let unsupportedExtensions = this.gltfExtensions.GetUnsupportedExtensions (gltf.extensionsRequired);
         if (unsupportedExtensions.length > 0) {
             this.SetError ();
             this.SetMessage ('Unsupported extension: ' + unsupportedExtensions.join (', ') + '.');
-            return;            
+            onFinish ();
+            return;
         }
 
         let defaultScene = this.GetDefaultScene (gltf);
         if (defaultScene === null) {
             this.SetError ();
             this.SetMessage ('No default scene found.');
+            onFinish ();
             return;
         }
 
-        let materials = gltf.materials;
-        if (materials !== undefined) {
-            for (let i = 0; i < materials.length; i++) {
-                this.ImportMaterial (gltf, i);
-            }          
-        }
+        this.gltfExtensions.LoadLibraries (gltf.extensionsRequired, () => {
+            this.ImportModelProperties (gltf);
 
-        let nodeTree = this.CollectMeshNodesForScene (gltf, defaultScene);
-        for (let i = 0; i < nodeTree.nodes.length; i++) {
-            let nodeIndex = nodeTree.nodes[i];
-            this.ImportMeshNode (gltf, nodeIndex, nodeTree);
-        }
+            let materials = gltf.materials;
+            if (materials !== undefined) {
+                for (let i = 0; i < materials.length; i++) {
+                    this.ImportMaterial (gltf, i);
+                }          
+            }
+    
+            let nodeTree = this.CollectMeshNodesForScene (gltf, defaultScene);
+            for (let i = 0; i < nodeTree.nodes.length; i++) {
+                let nodeIndex = nodeTree.nodes[i];
+                this.ImportMeshNode (gltf, nodeIndex, nodeTree);
+            }
+
+            onFinish ();
+        });
     }
 
     ImportModelProperties (gltf)
@@ -759,27 +897,8 @@ OV.ImporterGltf = class extends OV.ImporterBase
 
     ImportPrimitive (gltf, primitive, mesh)
     {
-        function AddTriangle (mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset)
-        {
-            let triangle = new OV.Triangle (vertexOffset + v0, vertexOffset + v1, vertexOffset + v2);
-            if (hasNormals) {
-                triangle.SetNormals (
-                    normalOffset + v0,
-                    normalOffset + v1,
-                    normalOffset + v2
-                );
-            }
-            if (hasUVs) {
-                triangle.SetTextureUVs (
-                    uvOffset + v0,
-                    uvOffset + v1,
-                    uvOffset + v2
-                );
-            }
-            if (primitive.material !== undefined) {
-                triangle.mat = primitive.material;
-            }
-            mesh.AddTriangle (triangle);
+        if (this.gltfExtensions.ProcessPrimitive (this, gltf, primitive, mesh)) {
+            return;
         }
 
         if (primitive.attributes === undefined) {
@@ -860,7 +979,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
                 let v0 = vertexIndices[i];
                 let v1 = vertexIndices[i + 1];
                 let v2 = vertexIndices[i + 2];
-                AddTriangle (mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset);
+                this.AddTriangle (primitive, mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset);
             }
         } else if (mode === OV.GltfRenderMode.TRIANGLE_STRIP) {
             for (let i = 0; i < vertexIndices.length - 2; i++) {
@@ -872,17 +991,40 @@ OV.ImporterGltf = class extends OV.ImporterBase
                     v1 = v2;
                     v2 = tmp;
                 }
-                AddTriangle (mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset);
+                this.AddTriangle (primitive, mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset);
             }
         } else if (mode === OV.GltfRenderMode.TRIANGLE_FAN) {
             for (let i = 1; i < vertexIndices.length - 1; i++) {
                 let v0 = vertexIndices[0];
                 let v1 = vertexIndices[i];
                 let v2 = vertexIndices[i + 1];
-                AddTriangle (mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset);
+                this.AddTriangle (primitive, mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset);
             }
         }
     }
+
+    AddTriangle (primitive, mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset)
+    {
+        let triangle = new OV.Triangle (vertexOffset + v0, vertexOffset + v1, vertexOffset + v2);
+        if (hasNormals) {
+            triangle.SetNormals (
+                normalOffset + v0,
+                normalOffset + v1,
+                normalOffset + v2
+            );
+        }
+        if (hasUVs) {
+            triangle.SetTextureUVs (
+                uvOffset + v0,
+                uvOffset + v1,
+                uvOffset + v2
+            );
+        }
+        if (primitive.material !== undefined) {
+            triangle.mat = primitive.material;
+        }
+        mesh.AddTriangle (triangle);
+    }    
 
     GetReaderFromBufferView (bufferView)
     {

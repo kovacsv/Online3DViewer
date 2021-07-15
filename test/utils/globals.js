@@ -61,3 +61,23 @@ global.FileReader = class
         }
     }
 };
+
+global.document = {
+    head : {
+        appendChild : function (element) {
+            if (element.type === 'text/javascript') {
+                if (element.src.indexOf ('draco') !== -1) {
+                    global.DracoDecoderModule = require (element.src);
+                    element.onload ();
+                } else {
+                    element.onerror ();
+                }
+            }
+        }
+    },
+    createElement : function (type) {
+        return {
+            type : type
+        };
+    }
+};
