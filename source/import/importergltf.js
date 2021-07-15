@@ -264,10 +264,10 @@ OV.GltfExtensions = class
         this.draco = null;
     }
 
-    LoadLibraries (extensionsRequired, onReady)
+    LoadLibraries (extensionsRequired, callbacks)
     {
         if (extensionsRequired === undefined) {
-            onReady ();
+            callbacks.onSuccess ();
             return;
         }        
         if (this.draco === null && extensionsRequired.indexOf ('KHR_draco_mesh_compression') !== -1) {
@@ -275,15 +275,15 @@ OV.GltfExtensions = class
 				success : () => {
 					DracoDecoderModule ().then ((draco) => {
 						this.draco = draco;
-						onReady ();
+						callbacks.onSuccess ();
 					});
 				},
 				error : () => {
-					onReady ();
+					callbacks.onError ();
 				}
 			});
         } else {
-            onReady ();
+            callbacks.onSuccess ();
         }
     }
 
@@ -624,23 +624,30 @@ OV.ImporterGltf = class extends OV.ImporterBase
             return;
         }
 
-        this.gltfExtensions.LoadLibraries (gltf.extensionsRequired, () => {
-            this.ImportModelProperties (gltf);
+        this.gltfExtensions.LoadLibraries (gltf.extensionsRequired, {
+            onSuccess : () => {
+                this.ImportModelProperties (gltf);
 
-            let materials = gltf.materials;
-            if (materials !== undefined) {
-                for (let i = 0; i < materials.length; i++) {
-                    this.ImportMaterial (gltf, i);
-                }          
-            }
-    
-            let nodeTree = this.CollectMeshNodesForScene (gltf, defaultScene);
-            for (let i = 0; i < nodeTree.nodes.length; i++) {
-                let nodeIndex = nodeTree.nodes[i];
-                this.ImportMeshNode (gltf, nodeIndex, nodeTree);
-            }
+                let materials = gltf.materials;
+                if (materials !== undefined) {
+                    for (let i = 0; i < materials.length; i++) {
+                        this.ImportMaterial (gltf, i);
+                    }          
+                }
+        
+                let nodeTree = this.CollectMeshNodesForScene (gltf, defaultScene);
+                for (let i = 0; i < nodeTree.nodes.length; i++) {
+                    let nodeIndex = nodeTree.nodes[i];
+                    this.ImportMeshNode (gltf, nodeIndex, nodeTree);
+                }
 
-            onFinish ();
+                onFinish ();
+            },
+            onError : () => {
+                this.SetError ();
+                this.SetMessage ('Failed to load draco decoder.');
+                onFinish ();
+            }
         });
     }
 
