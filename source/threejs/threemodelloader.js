@@ -3,8 +3,6 @@ OV.ThreeModelLoader = class
     constructor ()
     {
         this.importer = new OV.Importer ();
-        this.importer.AddImporter (new OV.Importer3dm ());
-        this.importer.AddImporter (new OV.ImporterIfc ());
         this.callbacks = null;
         this.inProgress = false;
         this.defaultMaterial = null;
