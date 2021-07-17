@@ -44,8 +44,17 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, camera, backgroundColor
             viewer.Render ();
         },
         onLoadError : function (importError) {
-            progressDiv.innerHTML = 'Unknown error.';
-        },
+            let message = 'Unknown error';
+            if (importError.code === OV.ImportErrorCode.NoImportableFile) {
+                message = 'No importable file found';
+            } else if (importError.code === OV.ImportErrorCode.ImportFailed) {
+                message = 'Failed to import model.';
+            }
+            if (importError.message !== null) {
+                message += ' (' + importError.message + ')';
+            }
+            progressDiv.innerHTML = message;
+        }
     });
 
     if (modelUrls === null || modelUrls.length === 0) {
