@@ -97,5 +97,21 @@ describe ('IO Test', function () {
         let str2 = OV.ArrayBufferToUtf8String (buffer);
         assert.strictEqual (str, str2);
         assert.strictEqual (str.length, str2.length);
-    });    
+    });
+
+    it ('File Name', function () {
+        assert.strictEqual (OV.GetFileName ('file.ext'), 'file.ext');
+        assert.strictEqual (OV.GetFileName ('folder1/folder2/file.ext'), 'file.ext');
+        assert.strictEqual (OV.GetFileName ('folder1\\folder2\\file.ext'), 'file.ext');
+        assert.strictEqual (OV.GetFileName ('https://example.com/file.ext'), 'file.ext');
+        assert.strictEqual (OV.GetFileName ('https://example.com/file.ext?param1=param2'), 'file.ext');
+    });
+
+    it ('File Extension', function () {
+        assert.strictEqual (OV.GetFileExtension ('file.ext'), 'ext');
+        assert.strictEqual (OV.GetFileExtension ('folder1/folder2/file.ext'), 'ext');
+        assert.strictEqual (OV.GetFileExtension ('folder1\\folder2\\file.ext'), 'ext');
+        assert.strictEqual (OV.GetFileExtension ('https://example.com/file.ext'), 'ext');
+        assert.strictEqual (OV.GetFileExtension ('https://example.com/file.ext?param1=param2'), 'ext');
+    });
 });

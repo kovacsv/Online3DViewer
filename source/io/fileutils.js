@@ -20,11 +20,16 @@ OV.GetFileName = function (filePath)
 	if (firstSeparator !== -1) {
 		fileName = filePath.substr (firstSeparator + 1);
 	}
+	let firstParamIndex = fileName.indexOf ('?');
+	if (firstParamIndex !== -1) {
+		fileName = fileName.substr (0, firstParamIndex);
+	}
 	return decodeURI (fileName);
 };
 
-OV.GetFileExtension = function (fileName)
+OV.GetFileExtension = function (filePath)
 {
+	let fileName = OV.GetFileName (filePath);
 	let firstPoint = fileName.lastIndexOf ('.');
 	if (firstPoint === -1) {
 		return '';
