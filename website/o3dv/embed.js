@@ -11,7 +11,7 @@ OV.Embed = class
     Load ()
     {
         let canvas = $('<canvas>').appendTo (this.parameters.viewerDiv);
-        this.viewer.Init (canvas.get (0));
+        this.InitViewer (canvas);
         this.InitModelLoader ();
         this.Resize ();
 
@@ -62,6 +62,19 @@ OV.Embed = class
         }
         this.viewer.FitToWindow (boundingSphere, false);        
     }    
+
+    InitViewer (canvas)
+    {
+        this.viewer.Init (canvas.get (0));
+        this.viewer.SetEnvironmentMap ([
+            'assets/envmaps/fishermans_bastion/posx.jpg',
+            'assets/envmaps/fishermans_bastion/negx.jpg',
+            'assets/envmaps/fishermans_bastion/posy.jpg',
+            'assets/envmaps/fishermans_bastion/negy.jpg',
+            'assets/envmaps/fishermans_bastion/posz.jpg',
+            'assets/envmaps/fishermans_bastion/negz.jpg'
+        ]);
+    }
 
     InitModelLoader ()
     {

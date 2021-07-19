@@ -187,6 +187,14 @@ OV.Viewer = class
         this.Render ();
     }
 
+    SetEnvironmentMap (textures)
+    {
+        let loader = new THREE.CubeTextureLoader ();
+        this.scene.environment = loader.load (textures, () => {
+            this.Render ();
+        });
+    }
+
     GetCamera ()
     {
         return this.navigation.GetCamera ();

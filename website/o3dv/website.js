@@ -233,6 +233,14 @@ OV.Website = class
         let canvas = $('<canvas>').appendTo (this.parameters.viewerDiv);
         this.viewer.Init (canvas.get (0));
         this.viewer.SetBackgroundColor (this.settings.backgroundColor);
+        this.viewer.SetEnvironmentMap ([
+            'assets/envmaps/fishermans_bastion/posx.jpg',
+            'assets/envmaps/fishermans_bastion/negx.jpg',
+            'assets/envmaps/fishermans_bastion/posy.jpg',
+            'assets/envmaps/fishermans_bastion/negy.jpg',
+            'assets/envmaps/fishermans_bastion/posz.jpg',
+            'assets/envmaps/fishermans_bastion/negz.jpg'
+        ]);        
         this.ShowViewer (false);
     }
 

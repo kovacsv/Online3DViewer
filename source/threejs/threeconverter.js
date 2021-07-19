@@ -78,6 +78,8 @@ OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 			threeMaterial.metalness = material.metalness;
 			threeMaterial.roughness = material.roughness;
 			LoadTexture (threeMaterial, material.metallicMap, (threeTexture) => {
+				threeMaterial.metalness = 0.8;
+				threeMaterial.roughness = 0.8;
 				threeMaterial.metalnessMap = threeTexture;
 				threeMaterial.roughnessMap = threeTexture;
 				callbacks.onTextureLoaded ();
