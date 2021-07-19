@@ -320,8 +320,8 @@ OV.Importer = class
 
         importer.Import (mainFile.file.content, mainFile.file.extension, {
             getDefaultMaterial : () => {
-                let material = new OV.Material ();
-                material.diffuse = settings.defaultColor;
+                let material = new OV.Material (OV.MaterialType.Phong);
+                material.color = settings.defaultColor;
                 return material;
             },
             getFileBuffer : (filePath) => {
@@ -404,7 +404,7 @@ OV.Importer = class
         }
         for (let i = 0; i < this.model.MaterialCount (); i++) {
             let material = this.model.GetMaterial (i);
-            material.EnumerateTextureMaps ((texture) => {
+            OV.EnumerateMaterialTextureMaps (material, (texture) => {
                 if (texture.url !== null) {
                     OV.RevokeObjectUrl (texture.url);
                 }

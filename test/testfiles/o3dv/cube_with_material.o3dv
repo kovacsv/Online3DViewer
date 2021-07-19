@@ -2,7 +2,7 @@
 	"materials" : [
 		{
 			"name" : "Material",
-			"diffuse" : [200, 0, 0]
+			"color" : [200, 0, 0]
 		}
 	],
 	"meshes" : [

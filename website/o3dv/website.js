@@ -509,7 +509,7 @@ OV.Website = class
             return {
                 index : materialIndex,
                 name : material.name,
-                diffuse : material.diffuse.Clone ()
+                color : material.color.Clone ()
             };
         }
 

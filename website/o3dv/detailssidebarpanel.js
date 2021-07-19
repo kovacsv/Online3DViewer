@@ -63,13 +63,14 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
         this.Clear ();
         let table = $('<div>').addClass ('ov_property_table').appendTo (this.contentDiv);
         this.AddProperty (table, new OV.Property (OV.PropertyType.Text, 'Source', material.isDefault ? 'Default' : 'Model'));
-        this.AddProperty (table, new OV.Property (OV.PropertyType.Color, 'Color', material.diffuse));
+        this.AddProperty (table, new OV.Property (OV.PropertyType.Color, 'Color', material.color));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Percent, 'Opacity', material.opacity));
         AddTextureMap (this, table, 'Diffuse Map', material.diffuseMap);
         AddTextureMap (this, table, 'Specular Map', material.specularMap);
         AddTextureMap (this, table, 'Bump Map', material.bumpMap);
         AddTextureMap (this, table, 'Normal Map', material.normalMap);
-        AddTextureMap (this, table, 'Emissive Map', material.emissiveMap);      
+        AddTextureMap (this, table, 'Emissive Map', material.emissiveMap);
+        AddTextureMap (this, table, 'Metallic Map', material.metallicMap);
         this.Resize ();
     }
 

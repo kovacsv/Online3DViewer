@@ -76,7 +76,7 @@ OV.Exporter3dm = class extends OV.ExporterBase
                 let rhinoMaterial = new this.rhino.Material ();
                 rhinoMaterial.name = this.GetExportedMaterialName (material.name);
                 rhinoMaterial.ambientColor = ColorToRhinoColor (material.ambient);
-                rhinoMaterial.diffuseColor = ColorToRhinoColor (material.diffuse);
+                rhinoMaterial.diffuseColor = ColorToRhinoColor (material.color);
                 rhinoMaterial.specularColor = ColorToRhinoColor (material.specular);
                 rhinoMaterial.transparency = 1.0 - material.opacity;
 

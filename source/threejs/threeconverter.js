@@ -44,37 +44,50 @@ OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 		}
 
 		let material = model.GetMaterial (materialIndex);
-		let diffuseColor = new THREE.Color (material.diffuse.r / 255.0, material.diffuse.g / 255.0, material.diffuse.b / 255.0);
-		let specularColor = new THREE.Color (material.specular.r / 255.0, material.specular.g / 255.0, material.specular.b / 255.0);
+		let diffuseColor = new THREE.Color (material.color.r / 255.0, material.color.g / 255.0, material.color.b / 255.0);
 		let emissiveColor = new THREE.Color (material.emissive.r / 255.0, material.emissive.g / 255.0, material.emissive.b / 255.0);
-		if (OV.IsEqual (material.shininess, 0.0)) {
-			specularColor.setRGB (0.0, 0.0, 0.0);
-		}
 
 		let materialParams = {
 			color : diffuseColor,
-			specular : specularColor,
 			emissive : emissiveColor,
-			shininess : material.shininess * 100.0,
 			opacity : material.opacity,
 			transparent : material.transparent,
 			alphaTest : material.alphaTest,
 			side : THREE.DoubleSide
 		};
+
 		if (params.forceMediumpForMaterials) {
 			materialParams.precision = 'mediump';
 		}
 
-		let threeMaterial = new THREE.MeshPhongMaterial (materialParams);
+		let threeMaterial = null;
+		if (material.type === OV.MaterialType.Phong) {
+			threeMaterial = new THREE.MeshPhongMaterial (materialParams);
+			let specularColor = new THREE.Color (material.specular.r / 255.0, material.specular.g / 255.0, material.specular.b / 255.0);
+			if (OV.IsEqual (material.shininess, 0.0)) {
+				specularColor.setRGB (0.0, 0.0, 0.0);
+			}
+			threeMaterial.specular = specularColor;
+			threeMaterial.shininess = material.shininess * 100.0,
+			LoadTexture (threeMaterial, material.specularMap, (threeTexture) => {
+				threeMaterial.specularMap = threeTexture;
+				callbacks.onTextureLoaded ();
+			});			
+		} else if (material.type === OV.MaterialType.Physical) {
+			threeMaterial = new THREE.MeshStandardMaterial (materialParams);
+			threeMaterial.metalness = material.metalness;
+			threeMaterial.roughness = material.roughness;
+			LoadTexture (threeMaterial, material.metallicMap, (threeTexture) => {
+				threeMaterial.metalnessMap = threeTexture;
+				threeMaterial.roughnessMap = threeTexture;
+				callbacks.onTextureLoaded ();
+			});
+		}
 		LoadTexture (threeMaterial, material.diffuseMap, (threeTexture) => {
 			if (!material.multiplyDiffuseMap) {
 				threeMaterial.color.setRGB (1.0, 1.0, 1.0);
 			}
 			threeMaterial.map = threeTexture;
-			callbacks.onTextureLoaded ();
-		});
-		LoadTexture (threeMaterial, material.specularMap, (threeTexture) => {
-			threeMaterial.specularMap = threeTexture;
 			callbacks.onTextureLoaded ();
 		});
 		LoadTexture (threeMaterial, material.bumpMap, (threeTexture) => {

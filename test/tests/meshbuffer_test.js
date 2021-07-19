@@ -123,7 +123,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model, function () {
-            return new OV.Material ();
+            return new OV.Material (OV.MaterialType.Phong);
         });
         assert (OV.CheckModel (model));
 
@@ -163,7 +163,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model, function () {
-            return new OV.Material ();
+            return new OV.Material (OV.MaterialType.Phong);
         });
         assert (OV.CheckModel (model));
 
@@ -205,7 +205,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model, function () {
-            return new OV.Material ();
+            return new OV.Material (OV.MaterialType.Phong);
         });
         assert (OV.CheckModel (model));
 
@@ -221,8 +221,8 @@ describe ('Mesh Buffer', function () {
 
     it ('Mesh To Buffer Cube Materials', function () {
         var model = new OV.Model ();
-        model.AddMaterial (new OV.Material ());
-        model.AddMaterial (new OV.Material ());
+        model.AddMaterial (new OV.Material (OV.MaterialType.Phong));
+        model.AddMaterial (new OV.Material (OV.MaterialType.Phong));
         var mesh = new OV.Mesh ();
 
         mesh.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
@@ -249,7 +249,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model, function () {
-            return new OV.Material ();
+            return new OV.Material (OV.MaterialType.Phong);
         });
         assert (OV.CheckModel (model));
 
@@ -299,7 +299,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model, function () {
-            return new OV.Material ();
+            return new OV.Material (OV.MaterialType.Phong);
         });
         assert (OV.CheckModel (model));
 
@@ -342,7 +342,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model, function () {
-            return new OV.Material ();
+            return new OV.Material (OV.MaterialType.Phong);
         });
         assert (OV.CheckModel (model));
 

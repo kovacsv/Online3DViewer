@@ -259,7 +259,7 @@ OV.ReplaceDefaultMaterialColor = function (model, color)
     for (let i = 0; i < model.MaterialCount (); i++) {
         let material = model.GetMaterial (i);
         if (material.isDefault) {
-            material.diffuse = color;
+            material.color = color;
         }
     }
 };

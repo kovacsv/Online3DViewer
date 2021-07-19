@@ -52,13 +52,13 @@ OV.ImporterO3dv = class extends OV.ImporterBase
 
     ImportMaterial (materialContent)
     {
-        let material = new OV.Material ();
-        material.diffuse.Set (255, 255, 255);
+        let material = new OV.Material (OV.MaterialType.Phong);
+        material.color.Set (255, 255, 255);
         if (materialContent.name !== undefined) {
             material.name = materialContent.name;
         }
-        if (materialContent.diffuse !== undefined) {
-            material.diffuse = OV.ArrayToColor (materialContent.diffuse);
+        if (materialContent.color !== undefined) {
+            material.color = OV.ArrayToColor (materialContent.color);
         }
         this.model.AddMaterial (material);
     }

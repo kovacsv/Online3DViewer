@@ -293,22 +293,22 @@ OV.Importer3dm = class extends OV.ImporterBase
 				return rhinoColor.r === 255 && rhinoColor.g === 255 && rhinoColor.b === 255;
 			}
 
-			let material = new OV.Material ();
+			let material = new OV.Material (OV.MaterialType.Phong);
 			if (rhinoMaterial === null) {
-				material.diffuse.Set (255, 255, 255);
+				material.color.Set (255, 255, 255);
 			} else {
 				material.name = rhinoMaterial.name;
 				SetColor (material.ambient, rhinoMaterial.ambientColor);
-				SetColor (material.diffuse, rhinoMaterial.diffuseColor);
+				SetColor (material.color, rhinoMaterial.diffuseColor);
 				SetColor (material.specular, rhinoMaterial.specularColor);
 				material.opacity = 1.0 - rhinoMaterial.transparency;
 				OV.UpdateMaterialTransparency (material);
 				// material.shininess = rhinoMaterial.shine / 255.0;
-				if (IsBlack (material.diffuse) && !IsWhite (rhinoMaterial.reflectionColor)) {
-					SetColor (material.diffuse, rhinoMaterial.reflectionColor);
+				if (IsBlack (material.color) && !IsWhite (rhinoMaterial.reflectionColor)) {
+					SetColor (material.color, rhinoMaterial.reflectionColor);
 				}
-				if (IsBlack (material.diffuse) && !IsWhite (rhinoMaterial.transparentColor)) {
-					SetColor (material.diffuse, rhinoMaterial.transparentColor);
+				if (IsBlack (material.color) && !IsWhite (rhinoMaterial.transparentColor)) {
+					SetColor (material.color, rhinoMaterial.transparentColor);
 				}
 			}
 			for (let i = 0; i < model.MaterialCount (); i++) {
@@ -319,7 +319,7 @@ OV.Importer3dm = class extends OV.ImporterBase
 				if (!OV.ColorIsEqual (current.ambient, material.ambient)) {
 					continue;
 				}
-				if (!OV.ColorIsEqual (current.diffuse, material.diffuse)) {
+				if (!OV.ColorIsEqual (current.color, material.color)) {
 					continue;
 				}
 				if (!OV.ColorIsEqual (current.specular, material.specular)) {

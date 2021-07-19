@@ -135,7 +135,7 @@ OV.Importer3ds = class extends OV.ImporterBase
 
     ReadMaterialChunk (reader, length)
     {
-        let material = new OV.Material ();
+        let material = new OV.Material (OV.MaterialType.Phong);
         let endByte = this.GetChunkEnd (reader, length);
         let shininess = null;
         let shininessStrength = null;
@@ -145,7 +145,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             } else if (chunkId === OV.CHUNK3DS.MAT_AMBIENT) {
                 material.ambient = this.ReadColorChunk (reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.MAT_DIFFUSE) {
-                material.diffuse = this.ReadColorChunk (reader, chunkLength);
+                material.color = this.ReadColorChunk (reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.MAT_SPECULAR) {
                 material.specular = this.ReadColorChunk (reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.MAT_SHININESS) {

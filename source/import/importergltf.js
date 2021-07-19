@@ -314,9 +314,10 @@ OV.GltfExtensions = class
         }
         let khrSpecularGlossiness = gltfMaterial.extensions.KHR_materials_pbrSpecularGlossiness;
         if (khrSpecularGlossiness !== undefined) {
+            material.type = OV.MaterialType.Phong;
             let diffuseColor = khrSpecularGlossiness.diffuseFactor;
             if (diffuseColor !== undefined) {
-                material.diffuse = new OV.Color (
+                material.color = new OV.Color (
                     GetMaterialComponent (diffuseColor[0]),
                     GetMaterialComponent (diffuseColor[1]),
                     GetMaterialComponent (diffuseColor[2])
@@ -714,12 +715,12 @@ OV.ImporterGltf = class extends OV.ImporterBase
         }
 
         let gltfMaterial = gltf.materials[materialIndex];
-        let material = new OV.Material ();
+        let material = new OV.Material (OV.MaterialType.Physical);
         if (gltfMaterial.name !== undefined) {
             material.name = gltfMaterial.name;
         }
 
-        material.diffuse = new OV.Color (
+        material.color = new OV.Color (
             GetMaterialComponent (1.0),
             GetMaterialComponent (1.0),
             GetMaterialComponent (1.0)
@@ -727,12 +728,20 @@ OV.ImporterGltf = class extends OV.ImporterBase
         if (gltfMaterial.pbrMetallicRoughness !== undefined) {
             let baseColor = gltfMaterial.pbrMetallicRoughness.baseColorFactor;
             if (baseColor !== undefined) {
-                material.diffuse = new OV.Color (
+                material.color = new OV.Color (
                     GetMaterialComponent (baseColor[0]),
                     GetMaterialComponent (baseColor[1]),
                     GetMaterialComponent (baseColor[2])
                 );
                 material.opacity = baseColor[3];
+            }
+            let metallicFactor = gltfMaterial.pbrMetallicRoughness.metallicFactor;
+            if (metallicFactor !== undefined) {
+                material.metallic = metallicFactor;
+            }
+            let roughnessFactor = gltfMaterial.pbrMetallicRoughness.roughnessFactor;
+            if (roughnessFactor !== undefined) {
+                material.roughness = roughnessFactor;
             }
             let emissiveColor = gltfMaterial.emissiveFactor;
             if (emissiveColor !== undefined) {
@@ -744,6 +753,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
             }
 
             material.diffuseMap = this.ImportTexture (gltf, gltfMaterial.pbrMetallicRoughness.baseColorTexture);
+            material.metallicMap = this.ImportTexture (gltf, gltfMaterial.pbrMetallicRoughness.metallicRoughnessTexture);
             material.normalMap = this.ImportTexture (gltf, gltfMaterial.normalTexture);
             material.emissiveMap = this.ImportTexture (gltf, gltfMaterial.emissiveTexture);
             if (material.diffuseMap !== null) {

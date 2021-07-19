@@ -279,9 +279,9 @@ OV.ImporterPly = class extends OV.ImporterBase
                 OV.IntegerToHexString (color[3]);
             let materialIndex = colorToMaterial[materialName];
             if (materialIndex === undefined) {
-                let material = new OV.Material ();
+                let material = new OV.Material (OV.MaterialType.Phong);
                 material.name = materialName;
-                material.diffuse = new OV.Color (color[0], color[1], color[2]);
+                material.color = new OV.Color (color[0], color[1], color[2]);
                 material.opacity = color[3] / 255.0;
                 OV.UpdateMaterialTransparency (material);
                 materialIndex = obj.model.AddMaterial (material);

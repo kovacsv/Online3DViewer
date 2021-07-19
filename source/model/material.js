@@ -64,16 +64,26 @@ OV.TextureMap = class
     }
 };
 
+OV.MaterialType =
+{
+    Phong : 1,
+    Physical : 2
+};
+
 OV.Material = class
 {
-    constructor ()
+    constructor (type)
     {
+        this.type = type;
         this.name = '';
+        this.color = new OV.Color (0, 0, 0);
 
         this.ambient = new OV.Color (0, 0, 0);
-        this.diffuse = new OV.Color (0, 0, 0);
         this.specular = new OV.Color (0, 0, 0);
         this.emissive = new OV.Color (0, 0, 0);
+
+        this.metallic = 0.0;
+        this.roughness = 1.0;
 
         this.shininess = 0.0; // 0.0 .. 1.0
         this.opacity = 1.0; // 0.0 .. 1.0
@@ -83,6 +93,7 @@ OV.Material = class
         this.bumpMap = null;
         this.normalMap = null;
         this.emissiveMap = null;
+        this.metallicMap = null;
 
         this.alphaTest = 0.0; // 0.0 .. 1.0
         this.transparent = false;
@@ -91,35 +102,19 @@ OV.Material = class
         this.isDefault = false;
     }
 
-    EnumerateTextureMaps (enumerator)
-    {
-        if (this.diffuseMap !== null) {
-            enumerator (this.diffuseMap);
-        }
-        if (this.specularMap !== null) {
-            enumerator (this.specularMap);
-        }
-        if (this.bumpMap !== null) {
-            enumerator (this.bumpMap);
-        }
-        if (this.normalMap !== null) {
-            enumerator (this.normalMap);
-        }
-        if (this.emissiveMap !== null) {
-            enumerator (this.emissiveMap);
-        }
-    }
-
     Clone ()
     {
-        let cloned = new OV.Material ();
+        let cloned = new OV.Material (this.type);
 
         cloned.name = this.name;
+        cloned.color = this.color.Clone ();
 
         cloned.ambient = this.ambient.Clone ();
-        cloned.diffuse = this.diffuse.Clone ();
         cloned.specular = this.specular.Clone ();
         cloned.emissive = this.emissive.Clone ();
+
+        cloned.metallic = this.metallic;
+        cloned.roughness = this.roughness;
 
         cloned.shininess = this.shininess;
         cloned.opacity = this.opacity;
@@ -129,6 +124,7 @@ OV.Material = class
         cloned.bumpMap = this.CloneTextureMap (this.bumpMap);
         cloned.normalMap = this.CloneTextureMap (this.normalMap);
         cloned.emissiveMap = this.CloneTextureMap (this.emissiveMap);
+        cloned.metallicMap = this.CloneTextureMap (this.metallicMap);
 
         cloned.alphaTest = this.alphaTest;
         cloned.transparent = this.transparent;
@@ -201,4 +197,26 @@ OV.ColorIsEqual = function (a, b)
 OV.ArrayToColor = function (arr)
 {
 	return new OV.Color (arr[0], arr[1], arr[2]);
+};
+
+OV.EnumerateMaterialTextureMaps = function (material, enumerator)
+{
+    if (material.diffuseMap !== null) {
+        enumerator (material.diffuseMap);
+    }
+    if (material.specularMap !== null) {
+        enumerator (material.specularMap);
+    }
+    if (material.bumpMap !== null) {
+        enumerator (material.bumpMap);
+    }
+    if (material.normalMap !== null) {
+        enumerator (material.normalMap);
+    }
+    if (material.emissiveMap !== null) {
+        enumerator (material.emissiveMap);
+    }
+    if (material.metallicMap !== null) {
+        enumerator (material.metallicMap);
+    }        
 };

@@ -260,7 +260,7 @@ describe ('Importer Test', function () {
                     assert.deepStrictEqual (importResult.usedFiles, ['single_triangle.stl']);
                     assert.deepStrictEqual (importResult.missingFiles, []);
                     let material = importResult.model.GetMaterial (0);
-                    assert.deepStrictEqual (material.diffuse, new OV.Color (200, 0, 0));
+                    assert.deepStrictEqual (material.color, new OV.Color (200, 0, 0));
                     done ();
                 },
                 onError : function (importError) {

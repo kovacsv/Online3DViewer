@@ -187,7 +187,7 @@ OV.ImporterObj = class extends OV.ImporterBase
                 return true;
             }
             
-            let material = new OV.Material ();
+            let material = new OV.Material (OV.MaterialType.Phong);
             let materialName = OV.NameFromLine (line, keyword.length, '#');
             let materialIndex = this.model.AddMaterial (material);
             material.name = materialName;
@@ -248,7 +248,7 @@ OV.ImporterObj = class extends OV.ImporterBase
             if (this.currentMaterial === null || parameters.length < 3) {
                 return true;
             }
-            this.currentMaterial.diffuse = CreateColor (parameters);
+            this.currentMaterial.color = CreateColor (parameters);
             return true;
         } else if (keyword === 'ks') {
             if (this.currentMaterial === null || parameters.length < 3) {

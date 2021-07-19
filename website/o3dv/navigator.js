@@ -69,7 +69,7 @@ OV.NavigatorInfoPanel = class
             let usedMaterial = usedMaterials[i];
             materialItems.push ({
                 name : OV.GetMaterialName (usedMaterial.name),
-                color : usedMaterial.diffuse
+                color : usedMaterial.color
             });
         }
 

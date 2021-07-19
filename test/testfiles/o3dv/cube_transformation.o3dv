@@ -2,19 +2,19 @@
 	"materials" : [
 		{
 			"name" : "Material 1",
-			"diffuse" : [200, 0, 0]
+			"color" : [200, 0, 0]
 		},
 		{
 			"name" : "Material 2",
-			"diffuse" : [0, 200, 0]
+			"color" : [0, 200, 0]
 		},
 		{
 			"name" : "Material 3",
-			"diffuse" : [0, 0, 200]
+			"color" : [0, 0, 200]
 		},
 		{
 			"name" : "Material 4",
-			"diffuse" : [200, 200, 0]
+			"color" : [200, 200, 0]
 		}
 	],
 	"meshes" : [

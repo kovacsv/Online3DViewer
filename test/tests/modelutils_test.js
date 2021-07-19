@@ -19,7 +19,7 @@ describe ('Model Utils', function () {
         mesh2.AddTriangle (new OV.Triangle (0, 1, 2));
         model.AddMesh (mesh2);
 
-        OV.FinalizeModel (model, function () { return new OV.Material (); });
+        OV.FinalizeModel (model, function () { return new OV.Material (OV.MaterialType.Phong); });
         assert.deepStrictEqual (testUtils.ModelToObject (model), {
             name : '',
             materials : [
@@ -103,7 +103,7 @@ describe ('Model Utils', function () {
         mesh2.AddTriangle (new OV.Triangle (0, 1, 2));
         model.AddMesh (mesh2);
 
-        OV.FinalizeModel (model, function () { return new OV.Material (); });
+        OV.FinalizeModel (model, function () { return new OV.Material (OV.MaterialType.Phong); });
 
         let mesh1Bounds = OV.GetBoundingBox (model.GetMesh (0));
         assert (OV.CoordIsEqual3D (mesh1Bounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
