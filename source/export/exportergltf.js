@@ -403,9 +403,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
             let jsonMaterial = {
                 name : obj.GetExportedMaterialName (material.name),
                 pbrMetallicRoughness : {
-                    baseColorFactor : ColorToRGBA (material.color, material.opacity),
-                    metallicFactor : material.metallic,
-                    roughnessFactor : material.roughness
+                    baseColorFactor : ColorToRGBA (material.color, material.opacity)
                 },
                 emissiveFactor : ColorToRGB (material.emissive),
                 doubleSided : true,
@@ -424,10 +422,13 @@ OV.ExporterGltf = class extends OV.ExporterBase
                 }
                 jsonMaterial.pbrMetallicRoughness.baseColorTexture = baseColorTexture;
             }
-            let metallicTexture = GetTextureParams (mainJson, material.metallicMap, addTexture);
+            let metallicTexture = GetTextureParams (mainJson, material.metalnessMap, addTexture);
             if (metallicTexture !== null) {
                 jsonMaterial.pbrMetallicRoughness.metallicRoughnessTexture = metallicTexture; 
-            }            
+            } else {
+                jsonMaterial.pbrMetallicRoughness.metallicFactor = material.metalness;
+                jsonMaterial.pbrMetallicRoughness.roughnessFactor = material.roughness;
+            }
             let normalTexture = GetTextureParams (mainJson, material.normalMap, addTexture);
             if (normalTexture !== null) {
                 jsonMaterial.normalTexture = normalTexture; 

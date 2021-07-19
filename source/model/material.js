@@ -82,7 +82,7 @@ OV.Material = class
         this.specular = new OV.Color (0, 0, 0);
         this.emissive = new OV.Color (0, 0, 0);
 
-        this.metallic = 0.0;
+        this.metalness = 0.0;
         this.roughness = 1.0;
 
         this.shininess = 0.0; // 0.0 .. 1.0
@@ -93,11 +93,12 @@ OV.Material = class
         this.bumpMap = null;
         this.normalMap = null;
         this.emissiveMap = null;
-        this.metallicMap = null;
+        this.metalnessMap = null;
 
         this.alphaTest = 0.0; // 0.0 .. 1.0
         this.transparent = false;
         this.multiplyDiffuseMap = false;
+        this.multiplyMetallicMap = false;
 
         this.isDefault = false;
     }
@@ -113,7 +114,7 @@ OV.Material = class
         cloned.specular = this.specular.Clone ();
         cloned.emissive = this.emissive.Clone ();
 
-        cloned.metallic = this.metallic;
+        cloned.metalness = this.metalness;
         cloned.roughness = this.roughness;
 
         cloned.shininess = this.shininess;
@@ -124,7 +125,7 @@ OV.Material = class
         cloned.bumpMap = this.CloneTextureMap (this.bumpMap);
         cloned.normalMap = this.CloneTextureMap (this.normalMap);
         cloned.emissiveMap = this.CloneTextureMap (this.emissiveMap);
-        cloned.metallicMap = this.CloneTextureMap (this.metallicMap);
+        cloned.metalnessMap = this.CloneTextureMap (this.metalnessMap);
 
         cloned.alphaTest = this.alphaTest;
         cloned.transparent = this.transparent;
@@ -216,7 +217,7 @@ OV.EnumerateMaterialTextureMaps = function (material, enumerator)
     if (material.emissiveMap !== null) {
         enumerator (material.emissiveMap);
     }
-    if (material.metallicMap !== null) {
-        enumerator (material.metallicMap);
+    if (material.metalnessMap !== null) {
+        enumerator (material.metalnessMap);
     }        
 };

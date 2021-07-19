@@ -70,7 +70,7 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
         AddTextureMap (this, table, 'Bump Map', material.bumpMap);
         AddTextureMap (this, table, 'Normal Map', material.normalMap);
         AddTextureMap (this, table, 'Emissive Map', material.emissiveMap);
-        AddTextureMap (this, table, 'Metallic Map', material.metallicMap);
+        AddTextureMap (this, table, 'Metallic Map', material.metalnessMap);
         this.Resize ();
     }
 

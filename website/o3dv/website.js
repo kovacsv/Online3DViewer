@@ -240,7 +240,7 @@ OV.Website = class
             'assets/envmaps/fishermans_bastion/negy.jpg',
             'assets/envmaps/fishermans_bastion/posz.jpg',
             'assets/envmaps/fishermans_bastion/negz.jpg'
-        ]);        
+        ]);
         this.ShowViewer (false);
     }
 

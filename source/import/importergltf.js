@@ -753,7 +753,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
             }
 
             material.diffuseMap = this.ImportTexture (gltf, gltfMaterial.pbrMetallicRoughness.baseColorTexture);
-            material.metallicMap = this.ImportTexture (gltf, gltfMaterial.pbrMetallicRoughness.metallicRoughnessTexture);
+            material.metalnessMap = this.ImportTexture (gltf, gltfMaterial.pbrMetallicRoughness.metallicRoughnessTexture);
             material.normalMap = this.ImportTexture (gltf, gltfMaterial.normalTexture);
             material.emissiveMap = this.ImportTexture (gltf, gltfMaterial.emissiveTexture);
             if (material.diffuseMap !== null) {
