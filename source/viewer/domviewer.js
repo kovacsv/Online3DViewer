@@ -1,5 +1,9 @@
-OV.Init3DViewerElement = function (parentDiv, modelUrls, camera, backgroundColor, defaultColor)
+OV.Init3DViewerElement = function (parentDiv, modelUrls, parameters)
 {
+    if (!parameters) {
+        parameters = {};
+    }
+    
     let canvas = document.createElement ('canvas');
     parentDiv.appendChild (canvas);
 
@@ -33,8 +37,8 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, camera, backgroundColor
                 return true;
             });
             viewer.AdjustClippingPlanes (boundingSphere);
-            if (camera !== null) {
-                viewer.SetCamera (camera);
+            if (parameters.camera) {
+                viewer.SetCamera (parameters.camera);
             } else {
                 viewer.SetUpVector (importResult.upVector, false);
             }
@@ -61,13 +65,17 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, camera, backgroundColor
         return null;
     }
 
-    if (backgroundColor !== null) {
-        viewer.SetBackgroundColor (backgroundColor);
+    if (parameters.backgroundColor) {
+        viewer.SetBackgroundColor (parameters.backgroundColor);
+    }
+
+    if (parameters.environmentMap) {
+        viewer.SetEnvironmentMap (parameters.environmentMap);
     }
 
     let settings = new OV.ImportSettings ();
-    if (defaultColor !== null) {
-        settings.defaultColor = defaultColor;
+    if (parameters.defaultColor) {
+        settings.defaultColor = parameters.defaultColor;
     }
 
     loader.LoadFromUrlList (modelUrls, settings);
@@ -99,13 +107,27 @@ OV.Init3DViewerElements = function (onReady)
             defaultColor = OV.ParameterConverter.StringToColor (defaultColorParams);
         }
 
+        let environmentMap = null;
+        let environmentMapParams = element.getAttribute ('environmentmap');
+        if (environmentMapParams) {
+            let environmentMapParts = environmentMapParams.split (',');
+            if (environmentMapParts.length === 6) {
+                environmentMap = environmentMapParts; 
+            }
+        }
+
         let modelUrls = null;
         let modelParams = element.getAttribute ('model');
         if (modelParams) {
             modelUrls = OV.ParameterConverter.StringToModelUrls (modelParams);
         }
 
-        return OV.Init3DViewerElement (element, modelUrls, camera, backgroundColor, defaultColor);
+        return OV.Init3DViewerElement (element, modelUrls, {
+            camera,
+            backgroundColor,
+            defaultColor,
+            environmentMap
+        });
     }
 
     let viewerElements = [];
