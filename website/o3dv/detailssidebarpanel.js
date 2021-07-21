@@ -62,7 +62,14 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
 
         this.Clear ();
         let table = $('<div>').addClass ('ov_property_table').appendTo (this.contentDiv);
+        let typeString = null;
+        if (material.type === OV.MaterialType.Phong) {
+            typeString = 'Phong';
+        } else if (material.type === OV.MaterialType.Physical) {
+            typeString = 'Physical';
+        }
         this.AddProperty (table, new OV.Property (OV.PropertyType.Text, 'Source', material.isDefault ? 'Default' : 'Model'));
+        this.AddProperty (table, new OV.Property (OV.PropertyType.Text, 'Type', typeString));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Color, 'Color', material.color));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Percent, 'Opacity', material.opacity));
         AddTextureMap (this, table, 'Diffuse Map', material.diffuseMap);
