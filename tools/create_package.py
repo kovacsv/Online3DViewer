@@ -69,7 +69,7 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 		htmlFilePath = os.path.join (websiteDir, htmlFileName)
 		replacer = Tools.TokenReplacer (htmlFilePath, False)
 		replacer.ReplaceTokenFileLinks ('<!-- libs start -->', '<!-- libs end -->', libFiles, None)
-		replacer.ReplaceTokenFileLinks ('<!-- importer start -->', '<!-- importer end -->', importerFiles, version)
+		replacer.ReplaceTokenFileLinks ('<!-- engine start -->', '<!-- engine end -->', importerFiles, version)
 		replacer.ReplaceTokenFileLinks ('<!-- website start -->', '<!-- website end -->', websiteFiles, version)
 		externalScriptContent = ''
 		externalScriptContent += '<script type="text/javascript">' + replacer.eolChar
@@ -157,7 +157,7 @@ def Main (argv):
 	CreateDestinationDir (config, rootDir, websiteDir, version, testBuild)
 
 	PrintInfo ('Compress importer sources.')
-	compressResult = CompressFiles (config['importer_files'], os.path.join (websiteDir, 'o3dv', 'o3dv.min.js'))
+	compressResult = CompressFiles (config['engine_files'], os.path.join (websiteDir, 'o3dv', 'o3dv.min.js'))
 	if not compressResult:
 		PrintError ('Compress importer sources failed.')
 		return 1

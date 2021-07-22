@@ -3,7 +3,7 @@
 		"libs/jquery-3.5.1.min.js",
 		"libs/three.min-129.js"
 	],
-	"importer_files" : [
+	"engine_files" : [
 		"source/core/core.js",
 		"source/core/taskrunner.js",
 		"source/geometry/geometry.js",
