@@ -17,19 +17,19 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, parameters)
     let loader = new OV.ThreeModelLoader ();
     let progressDiv = null;
     loader.Init ({
-        onLoadStart : function () {
+        onLoadStart : () => {
             canvas.style.display = 'none';
             progressDiv = document.createElement ('div');
             parentDiv.appendChild (progressDiv);
             progressDiv.innerHTML = 'Loading model...';
         },
-        onImportStart : function () {
+        onImportStart : () => {
             progressDiv.innerHTML = 'Importing model...';
         },
-        onVisualizationStart : function () {
+        onVisualizationStart : () => {
             progressDiv.innerHTML = 'Visualizing model...';
         },
-        onModelFinished : function (importResult, threeMeshes) {
+        onModelFinished : (importResult, threeMeshes) => {
             parentDiv.removeChild (progressDiv);
             canvas.style.display = 'inherit';
             viewer.AddMeshes (threeMeshes);
@@ -44,10 +44,10 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, parameters)
             }
             viewer.FitToWindow (boundingSphere, false);                                
         },
-        onTextureLoaded : function () {
+        onTextureLoaded : () => {
             viewer.Render ();
         },
-        onLoadError : function (importError) {
+        onLoadError : (importError) => {
             let message = 'Unknown error';
             if (importError.code === OV.ImportErrorCode.NoImportableFile) {
                 message = 'No importable file found';
