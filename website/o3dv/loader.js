@@ -34,26 +34,26 @@ OV.InitModelLoader = function (modelLoader, callbacks)
     let errorDialog = null;
     let progressDialog = null;
     modelLoader.Init ({
-        onLoadStart : function () {
+        onLoadStart : () => {
             CloseDialogIfOpen (errorDialog);
             callbacks.onStart ();
             progressDialog = new OV.ProgressDialog ();
             progressDialog.Show ('Loading Model');
         },
-        onImportStart : function () {
+        onImportStart : () => {
             progressDialog.SetText ('Importing Model');
         },
-        onVisualizationStart : function () {
+        onVisualizationStart : () => {
             progressDialog.SetText ('Visualizing Model');
         },
-        onModelFinished : function (importResult, threeMeshes) {
+        onModelFinished : (importResult, threeMeshes) => {
             progressDialog.Hide ();
             callbacks.onFinish (importResult, threeMeshes);
         },
-        onTextureLoaded : function () {
+        onTextureLoaded : () => {
             callbacks.onRender ();
         },
-        onLoadError : function (importError) {
+        onLoadError : (importError) => {
             progressDialog.Hide ();
             errorDialog = OpenErrorDialog (importError);
         },
