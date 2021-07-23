@@ -14,7 +14,14 @@ OV.File = class
             this.name = OV.GetFileName (file.name);
             this.extension = OV.GetFileExtension (file.name);
         }
+        this.format = null;
         this.content = null;
+    }
+
+    SetContent (format, content)
+    {
+        this.format = format;
+        this.content = content;
     }
 };
 
@@ -130,9 +137,14 @@ OV.FileList = class
     
     GetFileContent (file, complete)
     {
+        if (file.content !== null) {
+            complete ();
+            return;
+        }
+        let format = this.GetFileFormat (file);
         let callbacks = {
             success : (content) => {
-                file.content = content;
+                file.SetContent (format, content);
             },
             error : () => {
                 
@@ -141,11 +153,6 @@ OV.FileList = class
                 complete ();
             }
         };
-        if (file.content !== null) {
-            complete ();
-            return;
-        }
-        let format = this.GetFileFormat (file);
         if (file.source === OV.FileSource.Url) {
             OV.RequestUrl (file.fileUrl, format, callbacks);
         } else if (file.source === OV.FileSource.File) {
