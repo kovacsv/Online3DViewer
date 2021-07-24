@@ -38,7 +38,8 @@ OV.InitModelLoader = function (modelLoader, callbacks)
             CloseDialogIfOpen (errorDialog);
             callbacks.onStart ();
             progressDialog = new OV.ProgressDialog ();
-            progressDialog.Show ('Loading Model');
+            progressDialog.Init ('Loading Model');
+            progressDialog.Show ();
         },
         onImportStart : () => {
             progressDialog.SetText ('Importing Model');

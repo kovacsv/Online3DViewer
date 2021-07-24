@@ -180,6 +180,11 @@ OV.Viewer = class
         this.navigation.SetClickHandler (onClick);
     }
 
+    SetContextMenuHandler (onContext)
+    {
+        this.navigation.SetContextMenuHandler (onContext);
+    }
+
     SetBackgroundColor (color)
     {
         let hexColor = '#' + OV.ColorToHexString (color);

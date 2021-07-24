@@ -245,6 +245,7 @@ OV.Navigation = class
 		
 		this.onUpdate = null;
 		this.onClick = null;
+		this.onContext = null;
 
 		if (this.canvas.addEventListener) {
 			this.canvas.addEventListener ('mousedown', this.OnMouseDown.bind (this));
@@ -269,6 +270,11 @@ OV.Navigation = class
 	SetClickHandler (onClick)
 	{
 		this.onClick = onClick;
+	}
+
+	SetContextMenuHandler (onContext)
+	{
+		this.onContext = onContext;
 	}
 
 	IsFixUpVector ()
@@ -375,12 +381,15 @@ OV.Navigation = class
 	OnMouseDown (ev)
 	{
 		ev.preventDefault ();
+
 		this.mouse.Down (this.canvas, ev);
 		this.clickDetector.Down (ev);
 	}
 
 	OnMouseMove (ev)
 	{
+		ev.preventDefault ();
+
 		this.mouse.Move (this.canvas, ev);
 		this.clickDetector.Move ();
 		if (!this.mouse.IsButtonDown ()) {
@@ -403,6 +412,8 @@ OV.Navigation = class
 
 	OnMouseUp (ev)
 	{
+		ev.preventDefault ();
+		
 		this.mouse.Up (this.canvas, ev);
 		this.clickDetector.Up (ev);
 		if (this.clickDetector.IsClick ()) {
@@ -413,6 +424,8 @@ OV.Navigation = class
 
 	OnMouseLeave (ev)
 	{
+		ev.preventDefault ();
+
 		this.mouse.Leave (this.canvas, ev);
 		this.clickDetector.Leave (ev);
 	}
@@ -420,12 +433,14 @@ OV.Navigation = class
 	OnTouchStart (ev)
 	{
 		ev.preventDefault ();
+
 		this.touch.Start (this.canvas, ev);
 	}
 
 	OnTouchMove (ev)
 	{
 		ev.preventDefault ();
+
 		this.touch.Move (this.canvas, ev);
 		if (!this.touch.IsFingerDown ()) {
 			return;
@@ -450,12 +465,14 @@ OV.Navigation = class
 	OnTouchEnd (ev)
 	{
 		ev.preventDefault ();
+
 		this.touch.End (this.canvas, ev);
 	}
 
 	OnMouseWheel (ev)
 	{
 		ev.preventDefault ();
+
 		let params = ev || window.event;
 		
 		let delta = -params.deltaY / 40;
@@ -471,6 +488,11 @@ OV.Navigation = class
 	OnContextMenu (ev)
 	{
 		ev.preventDefault ();
+		
+		this.clickDetector.Up (ev);
+		if (this.clickDetector.IsClick ()) {
+			this.Context (ev.clientX, ev.clientY);
+		}
 	}
 
 	Orbit (angleX, angleY)
@@ -541,5 +563,17 @@ OV.Navigation = class
 			let mouseCoords = OV.GetClientCoordinates (this.canvas, clientX, clientY);
 			this.onClick (button, isCtrlPressed, mouseCoords);
 		}
-	}	
+	}
+
+	Context (clientX, clientY)
+	{
+		if (this.onContext) {
+			let globalCoords = {
+				x : clientX,
+				y : clientY
+			};
+			let localCoords = OV.GetClientCoordinates (this.canvas, clientX, clientY);
+			this.onContext (globalCoords, localCoords);
+		}
+	}
 };

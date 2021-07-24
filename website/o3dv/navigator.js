@@ -41,15 +41,22 @@ OV.NavigatorInfoPanel = class
             if (meshItems.length === 0) {
                 return;
             }
-            this.popup = OV.ShowListPopup (button, meshItems, {
-                onHoverStart : function (index) {
+            this.popup = OV.ShowListPopup (meshItems, {
+                calculatePosition : (contentDiv) => {
+                    let offset = button.offset ();
+                    return {
+                        x : offset.left + button.outerWidth (false),
+                        y : offset.top + button.outerHeight (false) - contentDiv.outerHeight (true)
+                    };
+                },
+                onHoverStart : (index) => {
                     const meshItem = usedByMeshes[index];
                     callbacks.onMeshHover (meshItem.index);
                 },
-                onHoverStop : function (index) {
+                onHoverStop : (index) => {
                     callbacks.onMeshHover (null);
                 },
-                onClick : function (index) {
+                onClick : (index) => {
                     const meshItem = usedByMeshes[index];
                     callbacks.onMeshSelect (meshItem.index);
                 }
@@ -75,13 +82,20 @@ OV.NavigatorInfoPanel = class
 
         let materialsText = 'Materials (' + materialItems.length + ')';
         this.CreateButton (this.parentDiv, materialsText, (button) => {
-            this.popup = OV.ShowListPopup (button, materialItems, {
+            this.popup = OV.ShowListPopup (materialItems, {
+                calculatePosition : (contentDiv) => {
+                    let offset = button.offset ();
+                    return {
+                        x : offset.left + button.outerWidth (false),
+                        y : offset.top + button.outerHeight (false) - contentDiv.outerHeight (true)
+                    };
+                },
                 onClick : (index) => {
                     let usedMaterial = usedMaterials[index];
                     callbacks.onMaterialSelect (usedMaterial.index);
                 }
             });
-        });        
+        });
     }
 
     CreateButton (parentDiv, buttonText, onClick)
@@ -214,16 +228,20 @@ OV.Navigator = class
         return meshData.IsVisible ();
     }
 
-    IsolateMesh (meshIndex)
+    IsMeshIsolated (meshIndex)
     {
-        let isIsolated = true;
         for (let i = 0; i < this.modelData.MeshCount (); i++) {
             let meshData = this.modelData.GetMeshData (i);
             if (i !== meshIndex && meshData.IsVisible ()) {
-                isIsolated = false;
-                break;
+                return false;
             }
         }
+        return true;
+    }
+
+    IsolateMesh (meshIndex)
+    {
+        let isIsolated = this.IsMeshIsolated (meshIndex);
         for (let i = 0; i < this.modelData.MeshCount (); i++) {
             let meshData = this.modelData.GetMeshData (i);
             if (i === meshIndex || isIsolated) {
@@ -248,7 +266,7 @@ OV.Navigator = class
             return this.tempSelectedMeshIndex;
         }
         if (this.selection === null || this.selection.type !== OV.SelectionType.Mesh) {
-            return -1;
+            return null;
         }
         return this.selection.index;
     }

@@ -5,7 +5,7 @@ OV.Modal = class
         this.modalDiv = $('<div>').css ('position', 'absolute');
         this.overlayDiv = null;
         this.resizeHandler = null;
-        this.customResizeHandler = null;
+        this.positionCalculator = null;
         this.closeHandler = null;
         this.isOpen = false;
         this.closeable = true;
@@ -21,9 +21,9 @@ OV.Modal = class
         this.closeable = closeable;
     }
 
-    SetCustomResizeHandler (customResizeHandler)
+    SetPositionCalculator (positionCalculator)
     {
-        this.customResizeHandler = customResizeHandler;
+        this.positionCalculator = positionCalculator;
     }
 
     SetCloseHandler (closeHandler)
@@ -43,6 +43,11 @@ OV.Modal = class
         windowObj.bind ('resize', this.resizeHandler);
         if (this.closeable) {
             this.overlayDiv.click ((ev) => {
+                ev.preventDefault ();
+                this.Close ();
+            });
+            this.overlayDiv.contextmenu ((ev) => {
+                ev.preventDefault ();
                 this.Close ();
             });
         }
@@ -86,33 +91,69 @@ OV.Modal = class
             left : 0,
             top : 0
         });
-        if (this.customResizeHandler) {
-            this.customResizeHandler (this.modalDiv);
-        } else {
-            this.modalDiv.offset ({
-                left : (windowWidth - this.modalDiv.outerWidth ()) / 2,
-                top : (windowHeight - this.modalDiv.outerHeight ()) / 3
-            });
+        let positionX = (windowWidth - this.modalDiv.outerWidth ()) / 2;
+        let positionY = (windowHeight - this.modalDiv.outerHeight ()) / 3;
+        if (this.positionCalculator !== null) {
+            let calculatedPosition = this.positionCalculator ();
+            positionX = calculatedPosition.x;
+            positionY = calculatedPosition.y;
         }
+        this.modalDiv.offset ({
+            left : positionX,
+            top : positionY
+        });
     }
 };
 
-OV.ProgressDialog = class
+OV.Dialog = class
 {
     constructor ()
     {
         this.modal = new OV.Modal ();
+    }
+    
+    GetContentDiv ()
+    {
+        return this.modal.GetContentDiv ();
+    }
+
+    SetCloseable (closeable)
+    {
+        this.modal.SetCloseable (closeable);
+    }
+
+    SetCloseHandler (closeHandler)
+    {
+        this.modal.SetCloseHandler (closeHandler);
+    }
+
+    SetPositionCalculator (positionCalculator)
+    {
+        this.modal.SetPositionCalculator (positionCalculator);
+    }
+
+    Show ()
+    {
+        this.modal.Open ();
+    }
+
+    Hide ()
+    {
+        this.modal.Close ();
+    }    
+};
+
+OV.ProgressDialog = class extends OV.Dialog
+{
+    constructor ()
+    {
+        super ();
         this.modal.SetCloseable (false);
         this.imageDiv = null;
         this.textDiv = null;
     }
 
-    SetText (text)
-    {
-        this.textDiv.html (text);
-    }
-
-    Show (text)
+    Init (text)
     {
         let contentDiv = this.modal.GetContentDiv ();
         contentDiv.addClass ('ov_progress');
@@ -121,20 +162,19 @@ OV.ProgressDialog = class
         this.textDiv = $('<div>').addClass ('ov_progress_text').appendTo (contentDiv);
         
         this.SetText (text);
-        this.modal.Open ();
     }
 
-    Hide ()
+    SetText (text)
     {
-        this.modal.Close ();
+        this.textDiv.html (text);
     }
 };
 
-OV.ButtonDialog = class
+OV.ButtonDialog = class extends OV.Dialog
 {
     constructor ()
     {
-        this.modal = new OV.Modal ();
+        super ();
     }
 
     Init (title, buttons)
@@ -163,64 +203,21 @@ OV.ButtonDialog = class
         
         return dialogContentDiv;
     }
-
-    SetCloseable (closeable)
-    {
-        this.modal.SetCloseable (closeable);
-    }
-
-    SetCloseHandler (closeHandler)
-    {
-        this.modal.SetCloseHandler (closeHandler);
-    }
-
-    Show ()
-    {
-        this.modal.Open ();
-    }
-
-    Hide ()
-    {
-        this.modal.Close ();
-    }
 };
 
-OV.PopupDialog = class
+OV.PopupDialog = class extends OV.Dialog
 {
     constructor ()
     {
-        this.modal = new OV.Modal ();
+        super ();
     }
 
-    Init (parentItem)
+    Init (positionCalculator)
     {
         let contentDiv = this.modal.GetContentDiv ();
         contentDiv.addClass ('ov_popup');
-        this.modal.SetCustomResizeHandler ((modalDiv) => {
-            let offset = parentItem.offset ();
-            let left = offset.left + parentItem.outerWidth (false);
-            let bottom = offset.top + parentItem.outerHeight (false);
-            modalDiv.offset ({
-                left : left,
-                top : bottom - modalDiv.outerHeight (true)
-            });
-        });        
+        this.modal.SetPositionCalculator (positionCalculator);
         return contentDiv;
-    }
-
-    SetCustomResizeHandler (customResizeHandler)
-    {
-        this.modal.SetCustomResizeHandler (customResizeHandler);
-    }
-
-    Show ()
-    {
-        this.modal.Open ();
-    }
-
-    Hide ()
-    {
-        this.modal.Close ();
     }
 };
 
@@ -232,9 +229,9 @@ OV.ListPopup = class extends OV.PopupDialog
         this.listDiv = null;
     }
 
-    Init (parentItem)
+    Init (positionCalculator)
     {
-        let contentDiv = super.Init (parentItem);
+        let contentDiv = super.Init (positionCalculator);
         this.listDiv = $('<div>').addClass ('ov_popup_list').addClass ('ov_thin_scrollbar').appendTo (contentDiv);
         return contentDiv;
     }

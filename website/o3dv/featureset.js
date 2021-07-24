@@ -1,4 +1,5 @@
 OV.FeatureSet =
 {
-    SettingsPanel : false
+    SettingsPanel : false,
+    ContextMenu : false
 };

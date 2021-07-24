@@ -17,10 +17,16 @@ OV.ShowMessageDialog = function (title, message, subMessage)
     return dialog;
 };
 
-OV.ShowListPopup = function (button, items, callbacks)
+OV.ShowListPopup = function (items, callbacks)
 {
+    if (items.length === 0) {
+        return null;
+    }
+    
     let popup = new OV.ListPopup ();
-    popup.Init (button);
+    popup.Init (() => {
+        return callbacks.calculatePosition (popup.GetContentDiv ());
+    });
     for (let i = 0; i < items.length; i++) {
         let item = items[i];
         popup.AddListItem (item, {

@@ -157,7 +157,8 @@ OV.ExportDialog = class
 
         if (selectedFormat.type === OV.ExportType.Model) {
             let progressDialog = new OV.ProgressDialog ();
-            progressDialog.Show ('Exporting Model');
+            progressDialog.Init ('Exporting Model');
+            progressDialog.Show ();
             OV.RunTaskAsync (() => {
                 let exporter = new OV.Exporter ();
                 exporter.AddExporter (new OV.Exporter3dm ());
