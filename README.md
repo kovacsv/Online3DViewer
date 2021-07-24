@@ -8,6 +8,8 @@ Online 3D Viewer (https://3dviewer.net) is a free and open source web solution t
 
 ![Start Page](website/assets/images/3dviewer_net_start_page.png?raw=true)
 
+[Check the live version!](https://3dviewer.net/#model=https://raw.githubusercontent.com/kovacsv/Online3DViewer/dev/test/testfiles/gltf/DamagedHelmet/glTF-Binary/DamagedHelmet.glb)
+
 ## Documentation
 
 The repository is separated into two parts. See more information in the [Developer Documentation](https://github.com/kovacsv/Online3DViewer/wiki).
