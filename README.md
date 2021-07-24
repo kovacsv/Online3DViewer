@@ -55,6 +55,7 @@ The repository is separated into two parts. See more information in the [Develop
   - Show/hide and zoom to a specific mesh.
   - List materials used by a specific mesh.
   - Show model information (model size, vertex and polygon count).
+  - Show custom properties stored in the model.
 - Export model to various format.
 - Embed viewer in your website.
 
