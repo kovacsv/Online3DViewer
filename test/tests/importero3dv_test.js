@@ -29,6 +29,58 @@ describe ('O3dv Importer', function () {
         });
     });
 
+    it ('cylinder.o3dv', function (done) {
+        testFiles.ImportO3dvFile ('cylinder.o3dv', function (model) {
+            assert (OV.CheckModel (model));
+            assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+                name : '',
+                materials : [
+                    { name : '' }
+                ],
+                meshes : [
+                    {
+                        name : '',
+                        vertexCount : 50,
+                        normalCount : 196,
+                        uvCount : 0,
+                        triangleCount : 96,
+                        boundingBox : {
+                            min : [-0.49605735065723894, -0.4990133642141358, 0],
+                            max : [0.5, 0.4990133642141358, 1]
+                        }
+                    }
+                ]
+            });
+            done ();
+        });
+    });
+
+    it ('sphere.o3dv', function (done) {
+        testFiles.ImportO3dvFile ('sphere.o3dv', function (model) {
+            assert (OV.CheckModel (model));
+            assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+                name : '',
+                materials : [
+                    { name : '' }
+                ],
+                meshes : [
+                    {
+                        name : '',
+                        vertexCount : 382,
+                        normalCount : 2280,
+                        uvCount : 0,
+                        triangleCount : 760,
+                        boundingBox : {
+                            min : [-0.5, -0.5, -0.5],
+                            max : [0.5, 0.5, 0.5]
+                        }
+                    }
+                ]
+            });
+            done ();
+        });
+    });
+
     it ('transformation.o3dv', function (done) {
         testFiles.ImportO3dvFile ('transformation.o3dv', function (model) {
             assert (OV.CheckModel (model));
@@ -90,30 +142,4 @@ describe ('O3dv Importer', function () {
             done ();
         });
     });
-
-    it ('cylinder.o3dv', function (done) {
-        testFiles.ImportO3dvFile ('cylinder.o3dv', function (model) {
-            assert (OV.CheckModel (model));
-            assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
-                name : '',
-                materials : [
-                    { name : '' }
-                ],
-                meshes : [
-                    {
-                        name : '',
-                        vertexCount : 50,
-                        normalCount : 196,
-                        uvCount : 0,
-                        triangleCount : 96,
-                        boundingBox : {
-                            min : [-0.49605735065723894, -0.4990133642141358, 0],
-                            max : [0.5, 0.4990133642141358, 1]
-                        }
-                    }
-                ]
-            });
-            done ();
-        });
-    });     
 });
