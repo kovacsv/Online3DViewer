@@ -61,10 +61,6 @@ OV.ShowSharingDialog = function (importer, settings, camera)
     {
         let section = $('<div>').addClass ('ov_dialog_section').appendTo (parentDiv);
         $('<div>').html ('Sharing Link').addClass ('ov_dialog_inner_title').appendTo (section);
-        let optionsSection = null;
-        if (OV.FeatureSet.SettingsPanel) {
-            optionsSection = $('<div>').addClass ('ov_dialog_section').appendTo (section);
-        }
         let sharingLinkInput = AddCopyableTextInput (section, () => {
             return GetSharingLink (sharingLinkParams);
         }); 
