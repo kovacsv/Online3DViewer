@@ -220,6 +220,33 @@ OV.Navigator = class
         return meshData.IsVisible ();
     }
 
+    HasHiddenMesh ()
+    {
+        for (let i = 0; i < this.modelData.MeshCount (); i++) {
+            let meshData = this.modelData.GetMeshData (i);
+            if (!meshData.IsVisible ()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    ShowAllMeshes ()
+    {
+        for (let i = 0; i < this.modelData.MeshCount (); i++) {
+            let meshData = this.modelData.GetMeshData (i);
+            meshData.SetVisible (true);
+        }
+        this.callbacks.updateMeshesVisibility ();
+    }
+
+    ToggleMeshVisibility (meshIndex)
+    {
+        let meshData = this.modelData.GetMeshData (meshIndex);
+        meshData.SetVisible (!meshData.IsVisible ());
+        this.callbacks.updateMeshesVisibility ();
+    }
+
     IsMeshIsolated (meshIndex)
     {
         for (let i = 0; i < this.modelData.MeshCount (); i++) {
@@ -242,13 +269,6 @@ OV.Navigator = class
                 meshData.SetVisible (false);
             }
         }
-        this.callbacks.updateMeshesVisibility ();
-    }
-
-    ToggleMeshVisibility (meshIndex)
-    {
-        let meshData = this.modelData.GetMeshData (meshIndex);
-        meshData.SetVisible (!meshData.IsVisible ());
         this.callbacks.updateMeshesVisibility ();
     }
 

@@ -151,44 +151,41 @@ OV.Website = class
         let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
         let items = [];
         if (meshUserData === null) {
-            items = [
-                {
-                    name : 'Fit model to window',
-                    onClick : () => {
-                        this.FitModelToWindow (false);
-                    }
+            items.push ({
+                name : 'Fit model to window',
+                onClick : () => {
+                    this.FitModelToWindow (false);
                 }
-            ];
+            });
+            if (this.navigator.HasHiddenMesh ()) {
+                items.push ({
+                    name : 'Show all meshes',
+                    onClick : () => {
+                        this.navigator.ShowAllMeshes ();
+                    }
+                });
+            }
         } else {
             let meshIndex = meshUserData.originalMeshIndex;
-            let isSelectedMesh = (meshIndex === this.navigator.GetSelectedMeshIndex ());
             let isMeshIsolated = this.navigator.IsMeshIsolated (meshIndex);
-            items = [
-                {
-                    name : isSelectedMesh ? 'Deselect mesh' : 'Select mesh',
-                    onClick : () => {
-                        this.navigator.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshIndex));
-                    }
-                },
-                {
-                    name : 'Hide mesh',
-                    onClick : () => {
-                        this.navigator.ToggleMeshVisibility (meshIndex);
-                    }
-                },
-                {
-                    name : 'Fit mesh to window',
-                    onClick : () => {
-                        this.navigator.FitMeshToWindow (meshIndex);
-                    }
-                },              
-                {
-                    name : isMeshIsolated ? 'Remove isolation' : 'Isolate mesh',
-                    onClick : () => {
-                        this.navigator.IsolateMesh (meshIndex);
-                    }
+            items.push ({
+                name : 'Hide mesh',
+                onClick : () => {
+                    this.navigator.ToggleMeshVisibility (meshIndex);
                 }
-            ];
+            });
+            items.push ({
+                name : 'Fit mesh to window',
+                onClick : () => {
+                    this.navigator.FitMeshToWindow (meshIndex);
+                }
+            });
+            items.push ({
+                name : isMeshIsolated ? 'Remove isolation' : 'Isolate mesh',
+                onClick : () => {
+                    this.navigator.IsolateMesh (meshIndex);
+                }
+            });
         }
         this.dialog = OV.ShowListPopup (items, {
             calculatePosition : (contentDiv) => {
