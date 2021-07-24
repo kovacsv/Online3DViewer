@@ -652,6 +652,15 @@ div.ov_popup div.ov_popup_list_item
 	text-overflow: ellipsis;
 	overflow: hidden;
 	cursor: pointer;
+	overflow: auto;
+}
+
+div.ov_popup img.ov_popup_list_item_icon
+{
+	width: 18px;
+	height: 18px;
+	margin-right: 10px;
+	float: left;
 }
 
 div.ov_popup div.ov_popup_list_item_icon
@@ -661,7 +670,7 @@ div.ov_popup div.ov_popup_list_item_icon
 
 div.ov_popup div.ov_popup_list_item_name
 {
-
+	float: left;
 }
 
 div.ov_progress

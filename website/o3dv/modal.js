@@ -239,6 +239,9 @@ OV.ListPopup = class extends OV.PopupDialog
     AddListItem (item, callbacks)
     {
         let listItemDiv = $('<div>').addClass ('ov_popup_list_item').appendTo (this.listDiv);
+        if (item.icon) {
+            $('<img>').addClass ('ov_popup_list_item_icon').attr ('src', item.icon).appendTo (listItemDiv);
+        }
         if (item.color) {
             let iconDiv = $('<div>').addClass ('ov_popup_list_item_icon').appendTo (listItemDiv);
             let colorCircle = OV.CreateInlineColorCircle (item.color);
