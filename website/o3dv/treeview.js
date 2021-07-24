@@ -147,8 +147,8 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
         this.childrenDiv = null;
         this.showChildren = false;
         this.openCloseButton = null;
-        this.openButtonPath = 'assets/images/tree/arrow_down.svg';
-        this.closeButtonPath = 'assets/images/tree/arrow_up.svg';
+        this.openButtonPath = 'assets/images/navigator/arrow_down.svg';
+        this.closeButtonPath = 'assets/images/navigator/arrow_up.svg';
         this.animated = true;
         this.openCloseHandler = null;
     }

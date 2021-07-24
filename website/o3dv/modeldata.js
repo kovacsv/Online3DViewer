@@ -40,9 +40,9 @@ OV.MeshData = class
     {
         this.visible = visible;
         if (this.visible) {
-            this.showHideButton.SetImage ('assets/images/tree/visible.svg');
+            this.showHideButton.SetImage ('assets/images/navigator/visible.svg');
         } else {
-            this.showHideButton.SetImage ('assets/images/tree/hidden.svg');
+            this.showHideButton.SetImage ('assets/images/navigator/hidden.svg');
         }
     }
 
@@ -55,13 +55,13 @@ OV.MeshData = class
     {
         this.menuItem = new OV.TreeViewButtonItem (name);
 
-        let fitToWindowButton = new OV.TreeViewButton ('assets/images/tree/fit_tree.svg');
+        let fitToWindowButton = new OV.TreeViewButton ('assets/images/navigator/fit_navigator.svg');
         fitToWindowButton.OnClick (() => {
             callbacks.onFitToWindow (this.originalIndex);
         });
         this.menuItem.AddButton (fitToWindowButton);
 
-        this.showHideButton = new OV.TreeViewButton ('assets/images/tree/visible.svg');
+        this.showHideButton = new OV.TreeViewButton ('assets/images/navigator/visible.svg');
         this.showHideButton.OnClick ((ev) => {
             if (ev.ctrlKey || ev.metaKey) {
                 callbacks.onIsolate (this.originalIndex);
