@@ -1,0 +1,10 @@
+{
+	"meshes" : [
+		{
+			"type" : "sphere",
+			"parameters" : {
+				"radius" : 0.5
+			}
+		}		
+	]
+}

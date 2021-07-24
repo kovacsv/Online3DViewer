@@ -29,34 +29,8 @@ describe ('O3dv Importer', function () {
         });
     });
 
-    it ('cube_with_material.o3dv', function (done) {
-        testFiles.ImportO3dvFile ('cube_with_material.o3dv', function (model) {
-            assert (OV.CheckModel (model));
-            assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
-                name : '',
-                materials : [
-                    { name : 'Material' }
-                ],
-                meshes : [
-                    {
-                        name : 'Cube',
-                        vertexCount : 8,
-                        normalCount : 12,
-                        uvCount : 0,
-                        triangleCount : 12,
-                        boundingBox : {
-                            min : [0, 0, 0],
-                            max : [1, 1, 1]
-                        }
-                    }
-                ]
-            });
-            done ();
-        });
-    });
-
-    it ('cube_transformation.o3dv', function (done) {
-        testFiles.ImportO3dvFile ('cube_transformation.o3dv', function (model) {
+    it ('transformation.o3dv', function (done) {
+        testFiles.ImportO3dvFile ('transformation.o3dv', function (model) {
             assert (OV.CheckModel (model));
             assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
                 name : '',
@@ -141,31 +115,5 @@ describe ('O3dv Importer', function () {
             });
             done ();
         });
-    });
-
-    it ('cylinder_non_smooth.o3dv', function (done) {
-        testFiles.ImportO3dvFile ('cylinder_non_smooth.o3dv', function (model) {
-            assert (OV.CheckModel (model));
-            assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
-                name : '',
-                materials : [
-                    { name : '' }
-                ],
-                meshes : [
-                    {
-                        name : '',
-                        vertexCount : 40,
-                        normalCount : 76,
-                        uvCount : 0,
-                        triangleCount : 76,
-                        boundingBox : {
-                            min : [-0.5, -0.5, 0],
-                            max : [0.5, 0.5, 1]
-                        }
-                    }
-                ]
-            });
-            done ();
-        });
-    });      
+    });     
 });

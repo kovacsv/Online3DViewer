@@ -29,8 +29,14 @@ describe ('Generator', function () {
     });
 
     it ('Cylinder with Default Parameters', function () {
-        const cylinder = OV.GenerateCylinder (null, 0.5, 1.0, 10, false);
+        const cylinder = OV.GenerateCylinder (null, 0.5, 1.0, 25, false);
         assert (OV.IsSolid (cylinder));
         assert (OV.IsEqualEps (OV.CalculateVolume (cylinder), Math.PI * 0.5 * 0.5 * 1.0, 0.1));
-    });    
+    });
+
+    it ('Sphere with Default Parameters', function () {
+        const cylinder = OV.GenerateSphere (null, 0.5, 20, false);
+        assert (OV.IsSolid (cylinder));
+        assert (OV.IsEqualEps (OV.CalculateVolume (cylinder), Math.PI * 0.5 * 0.5 * 0.5 * 4.0 / 3.0, 0.1));
+    });
 });

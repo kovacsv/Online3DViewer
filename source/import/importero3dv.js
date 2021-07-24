@@ -107,6 +107,14 @@ OV.ImporterO3dv = class extends OV.ImporterBase
             let smooth = OV.ValueOrDefault (parameters.smooth, true);
             const mesh = OV.GenerateCylinder (genParams, parameters.radius, parameters.height, segments, smooth);
             this.model.AddMesh (mesh);
+        } else if (meshContent.type === 'sphere') {
+            if (parameters.radius === undefined) {
+                return;
+            }
+            let segments = OV.ValueOrDefault (parameters.segments, 20);
+            let smooth = OV.ValueOrDefault (parameters.smooth, true);
+            const mesh = OV.GenerateSphere (genParams, parameters.radius, segments, smooth);
+            this.model.AddMesh (mesh);
         }
     }
 };

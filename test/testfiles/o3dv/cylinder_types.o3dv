@@ -1,0 +1,45 @@
+{
+	"meshes" : [
+		{
+			"type" : "cylinder",
+			"parameters" : {
+				"radius" : 0.5,
+				"height" : 1.0
+			}
+		},
+		{
+			"type" : "cylinder",
+			"parameters" : {
+				"radius" : 0.8,
+				"height" : 1.2
+			},
+			"transformation" : {
+				"translation" : [2.0, 0.0, 0.0]
+			}
+		},
+		{
+			"type" : "cylinder",
+			"parameters" : {
+				"radius" : 0.5,
+				"height" : 1.0,
+				"smooth" : false,
+				"segments" : 5
+			},
+			"transformation" : {
+				"translation" : [2.0, 2.0, 0.0]
+			}
+		},
+		{
+			"type" : "cylinder",
+			"parameters" : {
+				"radius" : 0.5,
+				"height" : 1.0,
+				"smooth" : false,
+				"segments" : 10
+			},
+			"transformation" : {
+				"translation" : [0.0, 2.0, 0.0]
+			}
+		}
+	]
+}
