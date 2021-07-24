@@ -177,7 +177,7 @@ OV.Website = class
                     }
                 },
                 {
-                    name : 'Fit to window',
+                    name : 'Fit mesh to window',
                     onClick : () => {
                         this.navigator.FitMeshToWindow (meshIndex);
                     }
