@@ -1,5 +1,5 @@
 OV.FeatureSet =
 {
     SettingsPanel : false,
-    ContextMenu : false
+    ContextMenu : true
 };

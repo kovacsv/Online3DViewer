@@ -43,11 +43,7 @@ OV.NavigatorInfoPanel = class
             }
             this.popup = OV.ShowListPopup (meshItems, {
                 calculatePosition : (contentDiv) => {
-                    let offset = button.offset ();
-                    return {
-                        x : offset.left + button.outerWidth (false),
-                        y : offset.top + button.outerHeight (false) - contentDiv.outerHeight (true)
-                    };
+                    return OV.CalculatePopupPositionToElementBottomRight (button, contentDiv);
                 },
                 onHoverStart : (index) => {
                     const meshItem = usedByMeshes[index];
@@ -84,11 +80,7 @@ OV.NavigatorInfoPanel = class
         this.CreateButton (this.parentDiv, materialsText, (button) => {
             this.popup = OV.ShowListPopup (materialItems, {
                 calculatePosition : (contentDiv) => {
-                    let offset = button.offset ();
-                    return {
-                        x : offset.left + button.outerWidth (false),
-                        y : offset.top + button.outerHeight (false) - contentDiv.outerHeight (true)
-                    };
+                    return OV.CalculatePopupPositionToElementBottomRight (button, contentDiv);
                 },
                 onClick : (index) => {
                     let usedMaterial = usedMaterials[index];

@@ -147,7 +147,7 @@ OV.Website = class
         if (!OV.FeatureSet.ContextMenu) {
             return;
         }
-        
+
         let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
         let items = [];
         if (meshUserData === null) {
@@ -183,7 +183,7 @@ OV.Website = class
                     }
                 },              
                 {
-                    name : isMeshIsolated ? 'Remove mesh isolation' : 'Isolate mesh',
+                    name : isMeshIsolated ? 'Remove isolation' : 'Isolate mesh',
                     onClick : () => {
                         this.navigator.IsolateMesh (meshIndex);
                     }
@@ -192,11 +192,8 @@ OV.Website = class
         }
         this.dialog = OV.ShowListPopup (items, {
             calculatePosition : (contentDiv) => {
-                return {
-                    x : globalMouseCoordinates.x,
-                    y : globalMouseCoordinates.y
-                };
-            },            
+                return OV.CalculatePopupPositionToScreen (globalMouseCoordinates, contentDiv);
+            },
             onClick : (index) => {
                 let clickedItem = items[index];
                 clickedItem.onClick ();
