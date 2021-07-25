@@ -62,7 +62,7 @@
 		"source/viewer/viewer.js",
 		"source/viewer/domviewer.js"
 	],
-	"website_files" : [
+	"website_files_js" : [
 		"website/o3dv/featureset.js",
 		"website/o3dv/utils.js",
 		"website/o3dv/cookies.js",
@@ -81,9 +81,11 @@
 		"website/o3dv/settingssidebarpanel.js",
 		"website/o3dv/sidebar.js",
 		"website/o3dv/hashhandler.js",
-		"website/o3dv/website.css",
 		"website/o3dv/loader.js",
 		"website/o3dv/website.js",
 		"website/o3dv/embed.js"
+	],
+	"website_files_css" : [
+		"website/o3dv/website.css"
 	]
 }

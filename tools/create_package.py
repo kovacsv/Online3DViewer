@@ -163,7 +163,7 @@ def Main (argv):
 		return 1
 
 	PrintInfo ('Compress website sources.')
-	compressResult = CompressFiles (config['website_files'], os.path.join (websiteDir, 'o3dv', 'o3dv.website.min.js'))
+	compressResult = CompressFiles (config['website_files_js'], os.path.join (websiteDir, 'o3dv', 'o3dv.website.min.js'))
 	if not compressResult:
 		PrintError ('Compress website sources failed.')
 		return 1

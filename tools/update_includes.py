@@ -28,7 +28,9 @@ def Main (argv):
 		replacer = Tools.TokenReplacer (htmlFilePath, True)
 		libFiles = Tools.CreateFileList (config['lib_files'], 'libs/', '../libs/')
 		importerFiles = Tools.CreateFileList (config['engine_files'], 'source/', '../source/')
-		websiteFiles = Tools.CreateFileList (config['website_files'], 'website/', '')
+		websiteCssFiles = Tools.CreateFileList (config['website_files_css'], 'website/', '')
+		websiteJsFiles = Tools.CreateFileList (config['website_files_js'], 'website/', '')
+		websiteFiles = websiteCssFiles + websiteJsFiles
 		replacer.ReplaceTokenFileLinks ('<!-- libs start -->', '<!-- libs end -->', libFiles, None)
 		replacer.ReplaceTokenFileLinks ('<!-- engine start -->', '<!-- engine end -->', importerFiles, None)
 		replacer.ReplaceTokenFileLinks ('<!-- website start -->', '<!-- website end -->', websiteFiles, None)
