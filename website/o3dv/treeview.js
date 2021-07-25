@@ -28,7 +28,7 @@ OV.TreeViewButton = class
 
     CreateDomElement (parentDiv)
     {
-        this.domElement = $('<img>').addClass ('ov_tree_item_button').appendTo (parentDiv);
+        this.domElement = OV.CreateSvgIcon (parentDiv, this.imagePath, 'ov_tree_item_button');
         this.domElement.attr ('src', this.imagePath);
         if (this.clickHandler !== null) {
             this.domElement.click (this.clickHandler);
@@ -234,9 +234,9 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
     CreateDomElement (parentDiv)
     {
         this.CreateMainElement (parentDiv);
-        $('<img>').addClass ('ov_tree_item_icon').attr ('src', this.iconPath).appendTo (this.mainElement);
+        OV.CreateSvgIcon (this.mainElement, this.iconPath, 'ov_tree_item_icon');
         let buttonContainer = $('<div>').addClass ('ov_tree_item_button_container').appendTo (this.mainElement);
-        this.openCloseButton = $('<img>').addClass ('ov_tree_item_button').attr ('src', this.openButtonPath).appendTo (buttonContainer);
+        this.openCloseButton = OV.CreateSvgIcon (buttonContainer, this.openButtonPath, 'ov_tree_item_button');
         this.CreateNameElement ();
     }
 };

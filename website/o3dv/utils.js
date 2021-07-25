@@ -116,7 +116,19 @@ OV.DownloadArrayBufferAsFile = function (arrayBuffer, fileName)
     OV.DownloadUrlAsFile (url, fileName);
 };
 
-OV.CreateIconButton = function (iconName, hoverIconName, title, link)
+OV.CreateSvgIcon = function (parent, sourceImage, extraClass)
+{
+    let img = $('<img>').addClass ('svg_icon').appendTo (parent);
+    if (sourceImage !== undefined && sourceImage !== null) {
+        img.attr ('src', sourceImage);
+    }
+    if (extraClass !== undefined && extraClass !== null) {
+        img.addClass (extraClass);
+    }
+    return img;
+};
+
+OV.CreateHeaderButton = function (iconName, hoverIconName, title, link)
 {
     let buttonLink = $('<a>');
     buttonLink.attr ('href', link);

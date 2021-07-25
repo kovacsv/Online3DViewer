@@ -13,7 +13,7 @@ OV.ToolbarButton = class
     CreateDomElement (parentDiv)
     {
         this.buttonDiv = $('<div>').addClass ('ov_toolbar_button').appendTo (parentDiv);
-        this.buttonImg = $('<img>').addClass ('ov_toolbar_button').appendTo (this.buttonDiv);
+        this.buttonImg = OV.CreateSvgIcon (this.buttonDiv);
         this.buttonImg.attr ('src', this.image);
         if (this.onClick !== null) {
             this.buttonDiv.click (this.onClick);

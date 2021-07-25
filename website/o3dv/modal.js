@@ -240,7 +240,7 @@ OV.ListPopup = class extends OV.PopupDialog
     {
         let listItemDiv = $('<div>').addClass ('ov_popup_list_item').appendTo (this.listDiv);
         if (item.icon) {
-            $('<img>').addClass ('ov_popup_list_item_icon').attr ('src', item.icon).appendTo (listItemDiv);
+            OV.CreateSvgIcon (listItemDiv, item.icon, 'ov_popup_list_item_icon');
         }
         if (item.color) {
             let iconDiv = $('<div>').addClass ('ov_popup_list_item_icon').appendTo (listItemDiv);

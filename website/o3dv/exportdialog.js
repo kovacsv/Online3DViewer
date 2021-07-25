@@ -216,7 +216,7 @@ OV.ExportDialog = class
             let fileLink = $('<a>').addClass ('ov_dialog_file_link').appendTo (fileList);
             fileLink.attr ('href', url);
             fileLink.attr ('download', file.GetName ());
-            $('<img>').addClass ('ov_dialog_file_link_icon').attr ('src', 'assets/images/dialog/file_download.svg').appendTo (fileLink);
+            OV.CreateSvgIcon (fileLink, 'assets/images/dialog/file_download.svg', 'ov_dialog_file_link_icon');
             $('<div>').addClass ('ov_dialog_file_link_text').html (file.GetName ()).appendTo (fileLink);
         }
 

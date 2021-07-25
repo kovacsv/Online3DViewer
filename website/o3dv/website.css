@@ -28,6 +28,12 @@ img
 	display: block;
 }
 
+img.svg_icon
+{
+	width: 18px;
+	height: 18px;
+}
+
 div.header
 {
 	overflow: auto;
@@ -199,12 +205,6 @@ div.ov_toolbar div.ov_toolbar_button.selected
 	background: #e1e1e1;
 }
 
-div.ov_toolbar img.ov_toolbar_button
-{
-	width: 18px;
-	height: 18px;
-}
-
 div.ov_toolbar div.ov_toolbar_separator
 {
 	background: #cccccc;
@@ -254,8 +254,6 @@ div.ov_navigator_info_panel div.ov_navigator_info_button_text
 
 div.ov_navigator_info_panel img.ov_navigator_info_button_icon
 {
-	width: 18px;
-	height: 18px;
 	padding: 6px;
 	float: right;
 }
@@ -278,8 +276,6 @@ div.ov_sidebar_title div.ov_sidebar_title_text
 
 div.ov_sidebar_title img.ov_sidebar_title_img
 {
-	width: 18px;
-	height: 18px;
 	float: right;
 	cursor: pointer;
 }
@@ -357,8 +353,6 @@ div.ov_tree_view div.ov_tree_item_button_container
 
 div.ov_tree_view img.ov_tree_item_button
 {
-	width: 18px;
-	height: 18px;
 	padding: 5px;
 	float: left;
 	cursor: pointer;
@@ -366,8 +360,6 @@ div.ov_tree_view img.ov_tree_item_button
 
 div.ov_tree_view img.ov_tree_item_icon
 {
-	width: 18px;
-	height: 18px;
 	padding: 5px;
 	float: left;
 }
@@ -527,8 +519,6 @@ div.ov_dialog a.ov_dialog_file_link
 
 div.ov_dialog img.ov_dialog_file_link_icon
 {
-	width: 18px;
-	height: 18px;
 	margin-right: 10px;
 	float: left;
 }
@@ -657,8 +647,6 @@ div.ov_popup div.ov_popup_list_item
 
 div.ov_popup img.ov_popup_list_item_icon
 {
-	width: 18px;
-	height: 18px;
 	margin-right: 10px;
 	float: left;
 }
