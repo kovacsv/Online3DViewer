@@ -11,14 +11,14 @@ def PrintError (message):
 	print ('ERROR: ' + message)
 
 def Main (argv):
-	currentDir = os.path.dirname (os.path.abspath (__file__))
-	os.chdir (currentDir)
+	toolsDir = os.path.dirname (os.path.abspath (__file__))
+	rootDir = os.path.dirname (toolsDir)
+	os.chdir (rootDir)
 	
 	config = None
-	with open ('config.json') as configJson:
+	with open (os.path.join (toolsDir, 'config.json')) as configJson:
 		config = json.load (configJson)
 
-	rootDir = os.path.abspath ('..')
 	websiteFiles = [
 		os.path.join ('website', 'index.html'),
 		os.path.join ('website', 'embed.html')

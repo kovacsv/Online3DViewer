@@ -29,7 +29,7 @@ def CompressFiles (inputFiles, outputFile):
 	for inputFile in inputFiles:
 		extension = os.path.splitext (inputFile)[1]
 		if extension == '.js':
-			parameters.append ('--js=' + os.path.join ('..', inputFile))
+			parameters.append ('--js=' + inputFile)
 	parameters.append ('--js_output_file=' + outputFile)
 	result = Tools.RunCommand ('google-closure-compiler', parameters)
 	if result != 0:
@@ -119,11 +119,10 @@ def CreatePackage (rootDir, websiteDir, packageDir, version):
 	return True
 
 def Main (argv):
-	currentDir = os.path.dirname (os.path.abspath (__file__))
-	os.chdir (currentDir)
+	toolsDir = os.path.dirname (os.path.abspath (__file__))
+	rootDir = os.path.dirname (toolsDir)
+	os.chdir (rootDir)
 	
-	rootDir = os.path.abspath ('..')
-
 	testBuild = False
 	buildDir = os.path.join (rootDir, 'build', 'final')
 	if len (argv) >= 2 and argv[1] == 'test':
@@ -137,7 +136,7 @@ def Main (argv):
 		shutil.rmtree (buildDir)
 
 	config = None
-	with open ('config.json') as configJson:
+	with open (os.path.join (toolsDir, 'config.json')) as configJson:
 		config = json.load (configJson)
 
 	PrintInfo ('ESLint importer sources.')
