@@ -218,7 +218,7 @@ OV.ClickDetector = class
 		}
 	}
 
-	Leave (ev)
+	Leave ()
 	{
 		this.isClick = false;
 		this.button = 0;
@@ -427,7 +427,7 @@ OV.Navigation = class
 		ev.preventDefault ();
 
 		this.mouse.Leave (this.canvas, ev);
-		this.clickDetector.Leave (ev);
+		this.clickDetector.Leave ();
 	}
 
 	OnTouchStart (ev)
