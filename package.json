@@ -9,13 +9,11 @@
 		"google-closure-compiler": "^20210302.0.0",
 		"http-server": "^0.12.3",
 		"mocha": "^8.3.2",
-		"nyc": "^15.1.0",
 		"rewire": "^5.0.0",
 		"svgo": "^2.3.1"
 	},
 	"scripts": {
 		"test": "mocha test",
-		"coverage": "nyc mocha test",
 		"build": "node tools/run_python.js tools/create_package.py",
 		"update": "node tools/run_python.js tools/update_includes.py",
 		"svg": "node tools/run_python.js tools/optimize_svg_files.py"
