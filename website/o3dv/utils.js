@@ -118,7 +118,7 @@ OV.DownloadArrayBufferAsFile = function (arrayBuffer, fileName)
 
 OV.CreateSvgIcon = function (parent, sourceImage, extraClass)
 {
-    let img = $('<img>').addClass ('svg_icon').appendTo (parent);
+    let img = $('<img>').addClass ('ov_svg_icon').appendTo (parent);
     if (sourceImage !== undefined && sourceImage !== null) {
         img.attr ('src', sourceImage);
     }

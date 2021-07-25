@@ -135,7 +135,7 @@ OV.ExportDialog = class
         let exportFormat = this.exportFormats[exportFormatIndex];
         for (let i = 0; i < exportFormat.formats.length; i++) {
             let format = exportFormat.formats[i];
-            let formatDiv = $('<div>').addClass ('ov_dialog_table_row').appendTo (this.formatParameters.formatSettingsDiv);
+            let formatDiv = $('<div>').addClass ('ov_dialog_row').appendTo (this.formatParameters.formatSettingsDiv);
             let formatInput = $('<input>').addClass ('ov_dialog_checkradio').attr ('type', 'radio').attr ('id', format.name).attr ('name', 'format').appendTo (formatDiv);
             $('<label>').attr ('for', format.name).html (format.name).appendTo (formatDiv);
             if (i === 0) {
