@@ -14,9 +14,9 @@
 	},
 	"scripts": {
 		"test": "mocha test",
-		"build": "node tools/run_python.js tools/create_package.py",
-		"update": "node tools/run_python.js tools/update_includes.py",
-		"svg": "node tools/run_python.js tools/optimize_svg_files.py"
+		"build": "node tools/run_python.js tools/build.py",
+		"update": "node tools/run_python.js tools/update.py",
+		"svg": "node tools/run_python.js tools/svg.py"
 	},
 	"dependencies": {},
 	"eslintConfig": {
