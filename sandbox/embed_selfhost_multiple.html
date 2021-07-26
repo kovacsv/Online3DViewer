@@ -71,7 +71,8 @@
 
     <script type='text/javascript'>
         OV.Init3DViewerElements (function (viewers) {
-			viewers[0].viewer.renderer.setClearColor ('#222222', 1.0);
+			let firstViewer = viewers[0].viewer;
+			firstViewer.SetBackgroundColor (new OV.Color (34, 34, 34));
 		});
     </script>
 
