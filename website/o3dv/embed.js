@@ -53,14 +53,14 @@ OV.Embed = class
         let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
             return true;
         });
-        this.viewer.AdjustClippingPlanes (boundingSphere);
+        this.viewer.AdjustClippingPlanesToSphere (boundingSphere);
         let camera = this.hashHandler.GetCameraFromHash ();
         if (camera !== null) {
             this.viewer.SetCamera (camera);
         } else {
             this.viewer.SetUpVector (importResult.upVector, false);
         }
-        this.viewer.FitToWindow (boundingSphere, false);        
+        this.viewer.FitSphereToWindow (boundingSphere, false);        
     }    
 
     InitViewer (canvas)

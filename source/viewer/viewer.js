@@ -228,7 +228,7 @@ OV.Viewer = class
         this.Render ();
     }
 
-    FitToWindow (boundingSphere, animation)
+    FitSphereToWindow (boundingSphere, animation)
     {
         if (boundingSphere === null) {
             return;
@@ -244,7 +244,7 @@ OV.Viewer = class
         }
     }
 
-    AdjustClippingPlanes (boundingSphere)
+    AdjustClippingPlanesToSphere (boundingSphere)
     {
         if (boundingSphere === null) {
             return;

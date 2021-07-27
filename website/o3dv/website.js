@@ -210,9 +210,9 @@ OV.Website = class
             return this.navigator.IsMeshVisible (meshUserData.originalMeshIndex);
         });
         if (onLoad) {
-            this.viewer.AdjustClippingPlanes (boundingSphere);
+            this.viewer.AdjustClippingPlanesToSphere (boundingSphere);
         }
-        this.viewer.FitToWindow (boundingSphere, animation);
+        this.viewer.FitSphereToWindow (boundingSphere, animation);
     }
 
     FitMeshToWindow (meshIndex)
@@ -220,7 +220,7 @@ OV.Website = class
         let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
             return meshUserData.originalMeshIndex === meshIndex;
         });        
-        this.viewer.FitToWindow (boundingSphere, true);
+        this.viewer.FitSphereToWindow (boundingSphere, true);
     }
 
     UpdateMeshesVisibility ()

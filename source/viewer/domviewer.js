@@ -36,13 +36,13 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, parameters)
             let boundingSphere = viewer.GetBoundingSphere ((meshUserData) => {
                 return true;
             });
-            viewer.AdjustClippingPlanes (boundingSphere);
+            viewer.AdjustClippingPlanesToSphere (boundingSphere);
             if (parameters.camera) {
                 viewer.SetCamera (parameters.camera);
             } else {
                 viewer.SetUpVector (importResult.upVector, false);
             }
-            viewer.FitToWindow (boundingSphere, false);                                
+            viewer.FitSphereToWindow (boundingSphere, false);                                
         },
         onTextureLoaded : () => {
             viewer.Render ();
