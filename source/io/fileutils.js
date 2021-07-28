@@ -37,94 +37,58 @@ OV.GetFileExtension = function (filePath)
 	return fileName.substr (firstPoint + 1);
 };
 
-OV.RequestUrl = function (url, format, callbacks)
+OV.RequestUrl = function (url, format)
 {
-	function OnSuccess (result)
-	{
-		if (callbacks.success) {
-			callbacks.success (result);
-		}
-		if (callbacks.complete) {
-			callbacks.complete ();
-		}		
-	}
-
-	function OnError ()
-	{
-		if (callbacks.error) {
-			callbacks.error ();
-		}
-		if (callbacks.complete) {
-			callbacks.complete ();
-		}
-	}
-
-	let request = new XMLHttpRequest ();
-	request.open ('GET', url, true);
-	if (format === OV.FileFormat.Text) {
-		request.responseType = 'text';
-	} else if (format === OV.FileFormat.Binary) {
-		request.responseType = 'arraybuffer';
-	} else {
-		OnError ();
-		return;
-	}
-
-	request.onload = function () {
-		if (request.status === 200) {
-			let response = request.response;
-			OnSuccess (response);
+	return new Promise ((resolve, reject) => {
+		let request = new XMLHttpRequest ();
+		request.open ('GET', url, true);
+		if (format === OV.FileFormat.Text) {
+			request.responseType = 'text';
+		} else if (format === OV.FileFormat.Binary) {
+			request.responseType = 'arraybuffer';
 		} else {
-			OnError ();
+			reject ();
+			return;
 		}
-	};
 	
-	request.onerror = function () {
-		OnError ();
-	};
-
-	request.send (null);
+		request.onload = function () {
+			if (request.status === 200) {
+				resolve (request.response);
+			} else {
+				reject ();
+			}
+		};
+		
+		request.onerror = function () {
+			reject ();
+		};
+	
+		request.send (null);
+	});
 };
 
-OV.ReadFile = function (file, format, callbacks)
+OV.ReadFile = function (file, format)
 {
-	function OnSuccess (result)
-	{
-		if (callbacks.success) {
-			callbacks.success (result);
-		}
-		if (callbacks.complete) {
-			callbacks.complete ();
-		}		
-	}
+	return new Promise ((resolve, reject) => {
+		let reader = new FileReader ();
 
-	function OnError ()
-	{
-		if (callbacks.error) {
-			callbacks.error ();
-		}
-		if (callbacks.complete) {
-			callbacks.complete ();
-		}
-	}
+		reader.onloadend = function (event) {
+			if (event.target.readyState === FileReader.DONE) {
+				resolve (event.target.result);
+			}
+		};
+		
+		reader.onerror = function () {
+			reject ();
+		};
 
-	let reader = new FileReader ();
-
-	reader.onloadend = function (event) {
-		if (event.target.readyState === FileReader.DONE) {
-			OnSuccess (event.target.result);
+		if (format === OV.FileFormat.Text) {
+			reader.readAsText (file);
+		} else if (format === OV.FileFormat.Binary) {
+			reader.readAsArrayBuffer (file);
+		} else {
+			reject ();
 		}
-	};
-	
-	reader.onerror = function () {
-		OnError ();
-	};
-
-	if (format === OV.FileFormat.Text) {
-		reader.readAsText (file);
-	} else if (format === OV.FileFormat.Binary) {
-		reader.readAsArrayBuffer (file);
-	} else {
-		OnError ();
-	}
+	});
 };
+

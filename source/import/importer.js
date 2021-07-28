@@ -142,22 +142,21 @@ OV.FileList = class
             return;
         }
         let format = this.GetFileFormat (file);
-        let callbacks = {
-            success : (content) => {
-                file.SetContent (format, content);
-            },
-            error : () => {
-                
-            },
-            complete : () => {
-                complete ();
-            }
-        };
+        let loaderPromise = null;
         if (file.source === OV.FileSource.Url) {
-            OV.RequestUrl (file.fileUrl, format, callbacks);
+            loaderPromise = OV.RequestUrl (file.fileUrl, format);
         } else if (file.source === OV.FileSource.File) {
-            OV.ReadFile (file.fileObject, format, callbacks);
+            loaderPromise = OV.ReadFile (file.fileObject, format);
+        } else {
+            complete ();
+            return;
         }
+        loaderPromise.then ((content) => {
+            file.SetContent (format, content);
+        }).catch (() => {
+        }).finally (() => {
+            complete ();
+        });
     }
     
     GetFileFormat (file)
