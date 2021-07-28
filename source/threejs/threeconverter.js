@@ -37,7 +37,6 @@ OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 			let loader = new THREE.TextureLoader ();
 			loader.load (texture.url, (threeTexture) => {
 				SetTextureParameters (texture, threeTexture);
-				threeTexture.image = OV.ResizeImageToPowerOfTwoSides (threeTexture.image);
 				threeMaterial.needsUpdate = true;
 				onLoad (threeTexture);
 			});			

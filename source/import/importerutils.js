@@ -53,24 +53,6 @@ OV.NextPowerOfTwo = function (x)
 	return parseInt (npot, 10);
 };
 
-OV.ResizeImageToPowerOfTwoSides = function (image)
-{
-	if (OV.IsPowerOfTwo (image.width) && OV.IsPowerOfTwo (image.height)) {
-		return image;
-	}
-	
-	let width = OV.NextPowerOfTwo (image.width);
-	let height = OV.NextPowerOfTwo (image.height);
-
-	let canvas = document.createElement ('canvas');
-	canvas.width = width;
-	canvas.height = height;
-	
-	let context = canvas.getContext ('2d');
-	context.drawImage (image, 0, 0, width, height);
-	return context.getImageData (0, 0, width, height);
-};
-
 OV.UpdateMaterialTransparency = function (material)
 {
 	material.transparent = false;
