@@ -271,17 +271,14 @@ OV.GltfExtensions = class
             return;
         }        
         if (this.draco === null && extensionsRequired.indexOf ('KHR_draco_mesh_compression') !== -1) {
-			OV.LoadExternalLibrary ('draco_decoder.js', {
-				success : () => {
-					DracoDecoderModule ().then ((draco) => {
-						this.draco = draco;
-						callbacks.onSuccess ();
-					});
-				},
-				error : () => {
-					callbacks.onError ();
-				}
-			});
+			OV.LoadExternalLibrary ('draco_decoder.js').then (() => {
+                DracoDecoderModule ().then ((draco) => {
+                    this.draco = draco;
+                    callbacks.onSuccess ();
+                });
+            }).catch (() => {
+                callbacks.onError ();
+            });
         } else {
             callbacks.onSuccess ();
         }
