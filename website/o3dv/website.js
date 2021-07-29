@@ -144,15 +144,12 @@ OV.Website = class
 
     OnModelContextMenu (globalMouseCoordinates, mouseCoordinates)
     {
-        if (!OV.FeatureSet.ContextMenu) {
-            return;
-        }
-
         let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
         let items = [];
         if (meshUserData === null) {
             items.push ({
                 name : 'Fit model to window',
+                icon : 'assets/images/context/fit.svg',
                 onClick : () => {
                     this.FitModelToWindow (false);
                 }
@@ -160,6 +157,7 @@ OV.Website = class
             if (this.navigator.HasHiddenMesh ()) {
                 items.push ({
                     name : 'Show all meshes',
+                    icon : 'assets/images/context/show.svg',
                     onClick : () => {
                         this.navigator.ShowAllMeshes ();
                     }
@@ -170,18 +168,21 @@ OV.Website = class
             let isMeshIsolated = this.navigator.IsMeshIsolated (meshIndex);
             items.push ({
                 name : 'Hide mesh',
+                icon : 'assets/images/context/hide.svg',
                 onClick : () => {
                     this.navigator.ToggleMeshVisibility (meshIndex);
                 }
             });
             items.push ({
                 name : 'Fit mesh to window',
+                icon : 'assets/images/context/fit.svg',
                 onClick : () => {
                     this.navigator.FitMeshToWindow (meshIndex);
                 }
             });
             items.push ({
                 name : isMeshIsolated ? 'Remove isolation' : 'Isolate mesh',
+                icon : isMeshIsolated ? 'assets/images/context/deisolate.svg' : 'assets/images/context/isolate.svg',
                 onClick : () => {
                     this.navigator.IsolateMesh (meshIndex);
                 }

@@ -594,6 +594,7 @@ div.ov_popup div.ov_popup_list_item
 div.ov_popup img.ov_popup_list_item_icon
 {
 	margin-right: 10px;
+	margin-top: 2px;
 	float: left;
 }
 
