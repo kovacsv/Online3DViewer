@@ -584,9 +584,6 @@ div.ov_popup div.ov_popup_list_item
 {
 	padding: 10px;
 	border-radius: 5px;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	overflow: hidden;
 	cursor: pointer;
 	overflow: auto;
 }
@@ -605,7 +602,9 @@ div.ov_popup div.ov_popup_list_item_icon
 
 div.ov_popup div.ov_popup_list_item_name
 {
-	float: left;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 div.ov_progress
