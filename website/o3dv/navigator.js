@@ -213,6 +213,11 @@ OV.Navigator = class
         this.UpdateInfoPanel ();
         this.Resize ();
     }
+
+    MeshCount ()
+    {
+        return this.modelData.MeshCount ();
+    }
     
     IsMeshVisible (meshIndex)
     {

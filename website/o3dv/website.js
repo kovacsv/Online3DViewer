@@ -165,7 +165,6 @@ OV.Website = class
             }
         } else {
             let meshIndex = meshUserData.originalMeshIndex;
-            let isMeshIsolated = this.navigator.IsMeshIsolated (meshIndex);
             items.push ({
                 name : 'Hide mesh',
                 icon : 'assets/images/context/hide.svg',
@@ -180,13 +179,16 @@ OV.Website = class
                     this.navigator.FitMeshToWindow (meshIndex);
                 }
             });
-            items.push ({
-                name : isMeshIsolated ? 'Remove isolation' : 'Isolate mesh',
-                icon : isMeshIsolated ? 'assets/images/context/deisolate.svg' : 'assets/images/context/isolate.svg',
-                onClick : () => {
-                    this.navigator.IsolateMesh (meshIndex);
-                }
-            });
+            if (this.navigator.MeshCount () > 1) {
+                let isMeshIsolated = this.navigator.IsMeshIsolated (meshIndex);
+                items.push ({
+                    name : isMeshIsolated ? 'Remove isolation' : 'Isolate mesh',
+                    icon : isMeshIsolated ? 'assets/images/context/deisolate.svg' : 'assets/images/context/isolate.svg',
+                    onClick : () => {
+                        this.navigator.IsolateMesh (meshIndex);
+                    }
+                });
+            }
         }
         this.dialog = OV.ShowListPopup (items, {
             calculatePosition : (contentDiv) => {
