@@ -139,7 +139,7 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
                 maximumFractionDigits: 2
             });
         } else if (property.type === OV.PropertyType.Boolean) {
-            valueText = property.value ? 'Yes' : 'No';
+            valueText = property.value ? 'True' : 'False';
         } else if (property.type === OV.PropertyType.Percent) {
             valueText = parseInt (property.value * 100, 10).toString () + '%';
         } else if (property.type === OV.PropertyType.Color) {

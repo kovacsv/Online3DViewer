@@ -145,6 +145,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
                     }
                     let elemProperty = null;
                     let propertyName = this.GetIFCString (property.Name.value);
+                    let strValue = null;
                     switch (property.NominalValue.label) {
                         case 'IFCTEXT':
                         case 'IFCLABEL':
@@ -152,7 +153,14 @@ OV.ImporterIfc = class extends OV.ImporterBase
                             elemProperty = new OV.Property (OV.PropertyType.Text, propertyName, this.GetIFCString (property.NominalValue.value));
                             break;
                         case 'IFCBOOLEAN':
-                            elemProperty = new OV.Property (OV.PropertyType.Boolean, propertyName, property.NominalValue.value === 'T' ? true : false);
+                        case 'IFCLOGICAL':
+                            strValue = 'Unknown';
+                            if (property.NominalValue.value === 'T') {
+                                strValue = 'True';
+                            } else if (property.NominalValue.value === 'F') {
+                                strValue = 'False';
+                            }
+                            elemProperty = new OV.Property (OV.PropertyType.Text, propertyName, strValue);
                             break;
                         case 'IFCINTEGER':
                         case 'IFCCOUNTMEASURE':
@@ -174,6 +182,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
                         default:
                             // TODO
                             console.log (property.NominalValue.label);
+                            console.log (property.NominalValue.value);
                             break;
                     }
                     if (elemProperty !== null) {
