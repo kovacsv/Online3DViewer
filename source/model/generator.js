@@ -261,3 +261,137 @@ OV.GenerateSphere = function (genParams, radius, segments, smooth)
 
     return generator.GetMesh ();    
 };
+
+OV.GeneratePlatonicSolid = function (genParams, type, radius)
+{
+    function AddVertex (generator, radius, x, y, z)
+    {
+        let vertex = new OV.Coord3D (x, y, z);
+        vertex.MultiplyScalar (radius / vertex.Length ());
+        generator.AddVertex (vertex.x, vertex.y, vertex.z);
+    }
+
+    if (OV.IsZero (radius)) {
+        return null;
+    }
+
+    let generator = new OV.Generator (genParams);
+    if (type === 'tetrahedron') {
+        let a = 1.0;
+        AddVertex (generator, radius, +a, +a, +a);
+        AddVertex (generator, radius, -a, -a, +a);
+        AddVertex (generator, radius, -a, +a, -a);
+        AddVertex (generator, radius, +a, -a, -a);
+        generator.AddTriangle (0, 1, 3);
+        generator.AddTriangle (0, 2, 1);
+        generator.AddTriangle (0, 3, 2);
+        generator.AddTriangle (1, 2, 3);
+    } else if (type === 'hexahedron') {
+        let a = 1.0;
+        AddVertex (generator, radius, +a, +a, +a);
+        AddVertex (generator, radius, +a, +a, -a);
+        AddVertex (generator, radius, +a, -a, +a);
+        AddVertex (generator, radius, +a, -a, -a);
+        AddVertex (generator, radius, -a, +a, +a);
+        AddVertex (generator, radius, -a, +a, -a);
+        AddVertex (generator, radius, -a, -a, +a);
+        AddVertex (generator, radius, -a, -a, -a);
+        generator.AddConvexPolygon ([0, 1, 5, 4]);
+        generator.AddConvexPolygon ([0, 2, 3, 1]);
+        generator.AddConvexPolygon ([0, 4, 6, 2]);
+        generator.AddConvexPolygon ([1, 3, 7, 5]);
+        generator.AddConvexPolygon ([2, 6, 7, 3]);
+        generator.AddConvexPolygon ([4, 5, 7, 6]);
+    } else if (type === 'octahedron') {
+        let a = 1.0;
+        let b = 0.0;
+        AddVertex (generator, radius, +a, +b, +b);
+        AddVertex (generator, radius, -a, +b, +b);
+        AddVertex (generator, radius, +b, +a, +b);
+        AddVertex (generator, radius, +b, -a, +b);
+        AddVertex (generator, radius, +b, +b, +a);
+        AddVertex (generator, radius, +b, +b, -a);
+        generator.AddTriangle (0, 2, 4);
+        generator.AddTriangle (0, 3, 5);
+        generator.AddTriangle (0, 4, 3);
+        generator.AddTriangle (0, 5, 2);
+        generator.AddTriangle (1, 2, 5);
+        generator.AddTriangle (1, 3, 4);
+        generator.AddTriangle (1, 4, 2);
+        generator.AddTriangle (1, 5, 3);
+    } else if (type === 'dodecahedron') {
+        let a = 1.0;
+        let b = 0.0;
+        let c = (1.0 + Math.sqrt (5.0)) / 2.0;
+        let d = 1.0 / c;
+        AddVertex (generator, radius, +a, +a, +a);
+        AddVertex (generator, radius, +a, +a, -a);
+        AddVertex (generator, radius, +a, -a, +a);
+        AddVertex (generator, radius, -a, +a, +a);
+        AddVertex (generator, radius, +a, -a, -a);
+        AddVertex (generator, radius, -a, +a, -a);
+        AddVertex (generator, radius, -a, -a, +a);
+        AddVertex (generator, radius, -a, -a, -a);
+        AddVertex (generator, radius, +b, +d, +c);
+        AddVertex (generator, radius, +b, +d, -c);
+        AddVertex (generator, radius, +b, -d, +c);
+        AddVertex (generator, radius, +b, -d, -c);
+        AddVertex (generator, radius, +d, +c, +b);
+        AddVertex (generator, radius, +d, -c, +b);
+        AddVertex (generator, radius, -d, +c, +b);
+        AddVertex (generator, radius, -d, -c, +b);
+        AddVertex (generator, radius, +c, +b, +d);
+        AddVertex (generator, radius, -c, +b, +d);
+        AddVertex (generator, radius, +c, +b, -d);
+        AddVertex (generator, radius, -c, +b, -d);
+        generator.AddConvexPolygon ([0, 8, 10, 2, 16]);
+        generator.AddConvexPolygon ([0, 16, 18, 1, 12]);
+        generator.AddConvexPolygon ([0, 12, 14, 3, 8]);
+        generator.AddConvexPolygon ([1, 9, 5, 14, 12]);
+        generator.AddConvexPolygon ([1, 18, 4, 11, 9]);
+        generator.AddConvexPolygon ([2, 10, 6, 15, 13]);
+        generator.AddConvexPolygon ([2, 13, 4, 18, 16]);
+        generator.AddConvexPolygon ([3, 14, 5, 19, 17]);
+        generator.AddConvexPolygon ([3, 17, 6, 10, 8]);
+        generator.AddConvexPolygon ([4, 13, 15, 7, 11]);
+        generator.AddConvexPolygon ([5, 9, 11, 7, 19]);
+        generator.AddConvexPolygon ([6, 17, 19, 7, 15]);
+    } else if (type === 'icosahedron') {
+        let a = 1.0;
+        let b = 0.0;
+        let c = (1.0 + Math.sqrt (5.0)) / 2.0;
+        AddVertex (generator, radius, +b, +a, +c);
+        AddVertex (generator, radius, +b, +a, -c);
+        AddVertex (generator, radius, +b, -a, +c);
+        AddVertex (generator, radius, +b, -a, -c);
+        AddVertex (generator, radius, +a, +c, +b);
+        AddVertex (generator, radius, +a, -c, +b);
+        AddVertex (generator, radius, -a, +c, +b);
+        AddVertex (generator, radius, -a, -c, +b);
+        AddVertex (generator, radius, +c, +b, +a);
+        AddVertex (generator, radius, +c, +b, -a);
+        AddVertex (generator, radius, -c, +b, +a);
+        AddVertex (generator, radius, -c, +b, -a);
+        generator.AddTriangle (0, 2, 8);
+        generator.AddTriangle (0, 4, 6);
+        generator.AddTriangle (0, 6, 10);
+        generator.AddTriangle (0, 8, 4);
+        generator.AddTriangle (0, 10, 2);
+        generator.AddTriangle (1, 3, 11);
+        generator.AddTriangle (1, 4, 9);
+        generator.AddTriangle (1, 6, 4);
+        generator.AddTriangle (1, 9, 3);
+        generator.AddTriangle (1, 11, 6);
+        generator.AddTriangle (2, 5, 8);
+        generator.AddTriangle (2, 7, 5);
+        generator.AddTriangle (2, 10, 7);
+        generator.AddTriangle (3, 5, 7);
+        generator.AddTriangle (3, 7, 11);
+        generator.AddTriangle (3, 9, 5);
+        generator.AddTriangle (4, 8, 9);
+        generator.AddTriangle (5, 9, 8);
+        generator.AddTriangle (6, 11, 10);
+        generator.AddTriangle (7, 10, 11);
+    }
+    return generator.GetMesh ();
+};

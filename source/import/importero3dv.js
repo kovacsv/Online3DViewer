@@ -115,6 +115,13 @@ OV.ImporterO3dv = class extends OV.ImporterBase
             let smooth = OV.ValueOrDefault (parameters.smooth, true);
             const mesh = OV.GenerateSphere (genParams, parameters.radius, segments, smooth);
             this.model.AddMesh (mesh);
+        } else if (meshContent.type === 'platonic') {
+            if (parameters.solid_type === undefined) {
+                return;
+            }
+            let radius = OV.ValueOrDefault (parameters.radius, 1.0);
+            const mesh = OV.GeneratePlatonicSolid (genParams, parameters.solid_type, radius);
+            this.model.AddMesh (mesh);
         }
     }
 };

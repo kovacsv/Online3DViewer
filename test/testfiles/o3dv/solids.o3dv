@@ -1,0 +1,54 @@
+{
+	"meshes" : [
+		{
+			"type" : "platonic",
+			"parameters" : {
+				"solid_type" : "tetrahedron",
+				"radius" : 1.0
+			},
+			"transformation" : {
+				"translation" : [0.0, 0.0, 0.0]
+			}
+		},
+		{
+			"type" : "platonic",
+			"parameters" : {
+				"solid_type" : "hexahedron",
+				"radius" : 1.0
+			},
+			"transformation" : {
+				"translation" : [0.0, 0.0, 3.0]
+			}
+		},
+		{
+			"type" : "platonic",
+			"parameters" : {
+				"solid_type" : "octahedron",
+				"radius" : 1.0
+			},
+			"transformation" : {
+				"translation" : [3.0, 0.0, 0.0]
+			}
+		},
+		{
+			"type" : "platonic",
+			"parameters" : {
+				"solid_type" : "dodecahedron",
+				"radius" : 1.0
+			},
+			"transformation" : {
+				"translation" : [3.0, 0.0, 3.0]
+			}
+		},
+		{
+			"type" : "platonic",
+			"parameters" : {
+				"solid_type" : "icosahedron",
+				"radius" : 1.0
+			},
+			"transformation" : {
+				"translation" : [6.0, 0.0, 1.5]
+			}
+		}
+	]
+}

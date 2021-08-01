@@ -39,4 +39,26 @@ describe ('Generator', function () {
         assert (OV.IsSolid (cylinder));
         assert (OV.IsEqualEps (OV.CalculateVolume (cylinder), Math.PI * 0.5 * 0.5 * 0.5 * 4.0 / 3.0, 0.1));
     });
+
+    it ('Platonic Solids', function () {
+        let tetrahedron = OV.GeneratePlatonicSolid (null, 'tetrahedron', 1.0);
+        assert (OV.IsSolid (tetrahedron));
+        assert (OV.IsEqual (OV.CalculateVolume (tetrahedron), 0.5132002392796676));
+
+        let hexahedron = OV.GeneratePlatonicSolid (null, 'hexahedron', 1.0);
+        assert (OV.IsSolid (hexahedron));
+        assert (OV.IsEqual (OV.CalculateVolume (hexahedron), 1.5396007178390028));
+
+        let octahedron = OV.GeneratePlatonicSolid (null, 'octahedron', 1.0);
+        assert (OV.IsSolid (octahedron));
+        assert (OV.IsEqual (OV.CalculateVolume (octahedron), 1.3333333333333333));
+
+        let dodecahedron = OV.GeneratePlatonicSolid (null, 'dodecahedron', 1.0);
+        assert (OV.IsSolid (dodecahedron));
+        assert (OV.IsEqual (OV.CalculateVolume (dodecahedron), 2.7851638631226248));
+
+        let icosahedron = OV.GeneratePlatonicSolid (null, 'icosahedron', 1.0);
+        assert (OV.IsSolid (icosahedron));
+        assert (OV.IsEqual (OV.CalculateVolume (icosahedron), 2.5361507101204093));
+    });    
 });
