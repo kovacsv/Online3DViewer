@@ -30,6 +30,7 @@ OV.Website = class
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
         this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv);
         this.navigator = new OV.Navigator (this.parameters.navigatorDiv);
+        this.eventHandler = new OV.EventHandler (this.parameters.eventHandler);
         this.settings = new OV.WebsiteSettings ();
         this.modelLoader = new OV.ThreeModelLoader ();
         this.highlightMaterial = new THREE.MeshPhongMaterial ({
@@ -118,6 +119,8 @@ OV.Website = class
     
     OnModelFinished (importResult, threeMeshes)
     {
+        let importedExtension = OV.GetFileExtension (importResult.mainFile).toLowerCase ();
+        this.eventHandler.HandleEvent ('model_loaded', { extension : importedExtension });
         this.model = importResult.model;
         this.ShowViewer (true);
         this.viewer.AddMeshes (threeMeshes);
@@ -281,6 +284,7 @@ OV.Website = class
             if (defaultColor !== null) {
                 importSettings.defaultColor = defaultColor;
             }
+            this.eventHandler.HandleEvent ('model_load_started', { source : 'hash' });
             this.LoadModelFromUrlList (urls, importSettings);
         } else {
             this.ClearModel ();
@@ -306,17 +310,20 @@ OV.Website = class
 
     InitToolbar ()
     {
-        function AddButton (toolbar, imageName, imageTitle, onlyFullWidth, onClick)
+        function AddButton (toolbar, eventHandler, imageName, imageTitle, onlyFullWidth, onClick)
         {
             let image = 'assets/images/toolbar/' + imageName + '.svg';
-            let button = toolbar.AddImageButton (image, imageTitle, onClick);
+            let button = toolbar.AddImageButton (image, imageTitle, () => {
+                eventHandler.HandleEvent ('toolbar_clicked', { item : imageName });
+                onClick ();
+            });
             if (onlyFullWidth) {
                 button.AddClass ('only_full_width');
             }
             return button;
         }
 
-        function AddRadioButton (toolbar, imageNames, imageTitles, selectedIndex, onlyFullWidth, onClick)
+        function AddRadioButton (toolbar, eventHandler, imageNames, imageTitles, selectedIndex, onlyFullWidth, onClick)
         {
             let imageData = [];
             for (let i = 0; i < imageNames.length; i++) {
@@ -327,7 +334,10 @@ OV.Website = class
                     title : imageTitle
                 });
             }
-            let buttons = toolbar.AddImageRadioButton (imageData, selectedIndex, onClick);
+            let buttons = toolbar.AddImageRadioButton (imageData, selectedIndex, (buttonIndex) => {
+                eventHandler.HandleEvent ('toolbar_clicked', { item : imageNames[buttonIndex] });
+                onClick (buttonIndex);
+            });
             if (onlyFullWidth) {
                 for (let i = 0; i < buttons.length; i++) {
                     let button = buttons[i];
@@ -346,10 +356,10 @@ OV.Website = class
 
         let importer = this.modelLoader.GetImporter ();
 
-        AddButton (this.toolbar, 'open', 'Open model from your device', false, () => {
+        AddButton (this.toolbar, this.eventHandler, 'open', 'Open model from your device', false, () => {
             this.OpenFileBrowserDialog ();
         });
-        AddButton (this.toolbar, 'open_url', 'Open model from a url', false, () => {
+        AddButton (this.toolbar, this.eventHandler, 'open_url', 'Open model from a url', false, () => {
             this.dialog = OV.ShowOpenUrlDialog ((urls) => {
                 if (urls.length > 0) {
                     this.hashHandler.SetModelFilesToHash (urls);
@@ -357,20 +367,20 @@ OV.Website = class
             });
         });
         AddSeparator (this.toolbar);
-        AddButton (this.toolbar, 'fit', 'Fit model to window', false, () => {
+        AddButton (this.toolbar, this.eventHandler, 'fit', 'Fit model to window', false, () => {
             this.FitModelToWindow (false);
         });
-        AddButton (this.toolbar, 'up_y', 'Set Y axis as up vector', false, () => {
+        AddButton (this.toolbar, this.eventHandler, 'up_y', 'Set Y axis as up vector', false, () => {
             this.viewer.SetUpVector (OV.Direction.Y, true);
         });
-        AddButton (this.toolbar, 'up_z', 'Set Z axis as up vector', false, () => {
+        AddButton (this.toolbar, this.eventHandler, 'up_z', 'Set Z axis as up vector', false, () => {
             this.viewer.SetUpVector (OV.Direction.Z, true);
         });
-        AddButton (this.toolbar, 'flip', 'Flip up vector', false, () => {
+        AddButton (this.toolbar, this.eventHandler, 'flip', 'Flip up vector', false, () => {
             this.viewer.FlipUpVector ();
         });
         AddSeparator (this.toolbar);
-        AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, false, (buttonIndex) => {
+        AddRadioButton (this.toolbar, this.eventHandler, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, false, (buttonIndex) => {
             if (buttonIndex === 0) {
                 this.viewer.SetFixUpVector (true);
             } else if (buttonIndex === 1) {
@@ -378,7 +388,7 @@ OV.Website = class
             }
         });
         AddSeparator (this.toolbar, true);
-        AddButton (this.toolbar, 'export', 'Export model', true, () => {
+        AddButton (this.toolbar, this.eventHandler, 'export', 'Export model', true, () => {
             let exportDialog = new OV.ExportDialog ({
                 onDialog : (dialog) => {
                     this.dialog = dialog;
@@ -386,12 +396,13 @@ OV.Website = class
             });
             exportDialog.Show (this.model, this.viewer);
         });
-        AddButton (this.toolbar, 'share', 'Share model', true, () => {
+        AddButton (this.toolbar, this.eventHandler, 'share', 'Share model', true, () => {
             this.dialog = OV.ShowSharingDialog (importer, this.settings, this.viewer.GetCamera ());
         });
 
         this.parameters.fileInput.on ('change', (ev) => {
             if (ev.target.files.length > 0) {
+                this.eventHandler.HandleEvent ('model_load_started', { source : 'open_file' });
                 this.LoadModelFromFileList (ev.target.files);
             }
         });
@@ -413,6 +424,7 @@ OV.Website = class
             ev.stopPropagation ();
             ev.preventDefault ();
             if (ev.dataTransfer.files.length > 0) {
+                this.eventHandler.HandleEvent ('model_load_started', { source : 'drop' });
                 this.LoadModelFromFileList (ev.dataTransfer.files);
             }
         }, false);
@@ -432,16 +444,29 @@ OV.Website = class
             onRender : () =>
             {
                 this.viewer.Render ();
+            },
+            onError : (importError) =>
+            {
+                let reason = 'unknown';
+                if (importError.code === OV.ImportErrorCode.NoImportableFile) {
+                    reason = 'no_importable_file';
+                } else if (importError.code === OV.ImportErrorCode.ImportFailed) {
+                    reason = 'import_failed';
+                }
+                this.eventHandler.HandleEvent ('model_load_failed', { reason : reason });
             }
         });
     }
 
     InitSidebar ()
     {
-        function AddSidebarButton (toolbar, sidebarPanel, onClick)
+        function AddSidebarButton (toolbar, eventHandler, sidebarPanel, onClick)
         {
             let image = 'assets/images/toolbar/' + sidebarPanel.image + '.svg';
-            let button = toolbar.AddImageButton (image, sidebarPanel.title, onClick);
+            let button = toolbar.AddImageButton (image, sidebarPanel.title, () => {
+                eventHandler.HandleEvent ('sidebar_clicked', { item : sidebarPanel.image });
+                onClick ();
+            });
             button.AddClass ('only_full_width');
             button.AddClass ('right');
             return button;
@@ -505,7 +530,7 @@ OV.Website = class
         for (let id = 0; id < sidebarPanels.length; id++) {
             let sidebarPanel = sidebarPanels[id];
             sidebarPanel.panelId = this.sidebar.AddPanel (sidebarPanel.panel);
-            sidebarPanel.button = AddSidebarButton (this.toolbar, sidebarPanel, () => {
+            sidebarPanel.button = AddSidebarButton (this.toolbar, this.eventHandler, sidebarPanel, () => {
                 ToggleSidebar (this.sidebar, this.cookieHandler, sidebarPanels, sidebarPanel.panelId);
                 this.Resize ();
             });

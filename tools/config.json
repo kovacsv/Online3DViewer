@@ -64,6 +64,7 @@
 	],
 	"website_files_js" : [
 		"website/o3dv/featureset.js",
+		"website/o3dv/eventhandler.js",
 		"website/o3dv/utils.js",
 		"website/o3dv/cookies.js",
 		"website/o3dv/toolbar.js",

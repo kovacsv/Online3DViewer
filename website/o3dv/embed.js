@@ -90,6 +90,10 @@ OV.Embed = class
             onRender : () =>
             {
                 this.viewer.Render ();
+            },
+            onError : (importError) =>
+            {
+                
             }
         });
     } 

@@ -79,6 +79,7 @@
 	<!-- website start -->
 	<link rel="stylesheet" type="text/css" href="o3dv/website.css">
 	<script type="text/javascript" src="o3dv/featureset.js"></script>
+	<script type="text/javascript" src="o3dv/eventhandler.js"></script>
 	<script type="text/javascript" src="o3dv/utils.js"></script>
 	<script type="text/javascript" src="o3dv/cookies.js"></script>
 	<script type="text/javascript" src="o3dv/toolbar.js"></script>
@@ -107,6 +108,9 @@
 	</script>
 	<!-- externals end -->
 
+	<!-- analytics start -->
+	<!-- analytics end -->
+
 	<script type="text/javascript">
 		$(window).on ('load', function () {
 			let website = new OV.Website ({
@@ -117,14 +121,12 @@
 				navigatorDiv : $('#main_navigator'),
 				sidebarDiv : $('#main_sidebar'),
 				viewerDiv : $('#main_viewer'),
-				fileInput : $('#open_file')
+				fileInput : $('#open_file'),
+				eventHandler : window.gtagEventHandler
 			});
 			website.Load ();
 		});
 	</script>
-
-	<!-- analytics start -->
-	<!-- analytics end -->
 
 	<!-- script start -->
 	<!-- script end -->

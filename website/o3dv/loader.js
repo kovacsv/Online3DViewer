@@ -56,6 +56,7 @@ OV.InitModelLoader = function (modelLoader, callbacks)
         },
         onLoadError : (importError) => {
             progressDialog.Hide ();
+            callbacks.onError (importError);
             errorDialog = OpenErrorDialog (importError);
         },
     });
