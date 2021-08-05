@@ -94,7 +94,15 @@ OV.Importer3dm = class extends OV.ImporterBase
 
 	ImportRhinoUserStrings (rhinoDoc)
 	{
-		// TODO: https://github.com/mcneel/rhino3dm/issues/303
+		let docStrings = rhinoDoc.strings ();
+		if (docStrings.count () > 0) {
+			let propertyGroup = new OV.PropertyGroup ('Document user texts');
+			for (let i = 0; i < docStrings.count (); i++) {
+				let docString = docStrings.get (i);
+				propertyGroup.AddProperty (new OV.Property (OV.PropertyType.Text, docString[0], docString[1]));
+			}
+			this.model.AddPropertyGroup (propertyGroup);
+		}
 	}
 
 	ImportRhinoGeometry (rhinoDoc)
