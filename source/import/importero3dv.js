@@ -52,7 +52,7 @@ OV.ImporterO3dv = class extends OV.ImporterBase
 
     ImportMaterial (materialContent)
     {
-        let material = new OV.Material (OV.MaterialType.Phong);
+        let material = new OV.Material (OV.MaterialType.Physical);
         material.color.Set (255, 255, 255);
         if (materialContent.name !== undefined) {
             material.name = materialContent.name;
@@ -60,6 +60,8 @@ OV.ImporterO3dv = class extends OV.ImporterBase
         if (materialContent.color !== undefined) {
             material.color = OV.ArrayToColor (materialContent.color);
         }
+        material.metalness = OV.ValueOrDefault (materialContent.metalness, 0.0);
+        material.roughness = OV.ValueOrDefault (materialContent.roughness, 1.0);
         this.model.AddMaterial (material);
     }
 

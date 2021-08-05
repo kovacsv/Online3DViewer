@@ -1,0 +1,70 @@
+{
+	"materials" : [
+		{
+			"name" : "Material 1",
+			"color" : [200, 0, 0],
+			"metalness" : 1.0,
+			"roughness" : 0.0
+		},
+		{
+			"name" : "Material 2",
+			"color" : [0, 200, 0],
+			"metalness" : 1.0,
+			"roughness" : 0.25
+		},
+		{
+			"name" : "Material 3",
+			"color" : [0, 0, 200],
+			"metalness" : 1.0,
+			"roughness" : 0.5
+		},
+		{
+			"name" : "Material 4",
+			"color" : [200, 200, 0],
+			"metalness" : 1.0,
+			"roughness" : 0.75
+		}
+	],
+	"meshes" : [
+		{
+			"type" : "sphere",
+			"parameters" : {
+				"radius" : 0.5
+			},
+			"transformation" : {
+				"translation" : [0.0, 0.0, 0.0]
+			},
+			"material" : 0
+		},
+		{
+			"type" : "sphere",
+			"parameters" : {
+				"radius" : 0.5
+			},
+			"transformation" : {
+				"translation" : [1.5, 0.0, 0.0]
+			},
+			"material" : 1
+		},
+		{
+			"type" : "sphere",
+			"parameters" : {
+				"radius" : 0.5
+			},
+			"transformation" : {
+				"translation" : [3.0, 0.0, 0.0]
+			},
+			"material" : 2
+		},
+		{
+			"type" : "sphere",
+			"parameters" : {
+				"radius" : 0.5
+			},
+			"transformation" : {
+				"translation" : [4.5, 0.0, 0.0]
+			},
+			"material" : 3
+		}
+	]
+}
