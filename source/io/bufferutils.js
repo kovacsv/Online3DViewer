@@ -61,6 +61,18 @@ OV.Base64DataURIToArrayBuffer = function (uri)
 	};
 };
 
+OV.GetFileExtensionFromMimeType = function (mimeType)
+{
+	if (mimeType === undefined || mimeType === null) {
+		return '';
+	}
+	let mimeParts = mimeType.split ('/');
+	if (mimeParts.length === 0) {
+		return '';
+	}
+	return mimeParts[mimeParts.length - 1];
+};
+
 OV.CreateObjectUrl = function (content)
 {
 	let blob = new Blob ([content]);
