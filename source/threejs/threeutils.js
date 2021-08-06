@@ -55,6 +55,43 @@ OV.HasHighpDriverIssue = function ()
     return false;
 };
 
+OV.ConvertThreeMaterialToMaterial = function (threeMaterial)
+{
+    function SetColor (color, threeColor)
+    {
+        color.Set (
+            parseInt (threeColor.r * 255.0, 10),
+            parseInt (threeColor.g * 255.0, 10),
+            parseInt (threeColor.b * 255.0, 10)
+        );
+    }
+
+    function CreateTexture (threeMap)
+    {
+        if (threeMap.image === undefined || threeMap.image === null) {
+            return null;
+        }
+        let base64Buffer = OV.Base64DataURIToArrayBuffer (threeMap.image.currentSrc);
+        let texture = new OV.TextureMap ();
+        texture.name = 'Embedded.' + OV.GetFileExtensionFromMimeType (base64Buffer.mimeType);
+        texture.url = OV.CreateObjectUrlWithMimeType (base64Buffer.buffer, base64Buffer.mimeType);
+        texture.buffer = base64Buffer.buffer;
+        return texture;
+    }
+
+    let material = new OV.Material (OV.MaterialType.Phong);
+    material.name = threeMaterial.name;
+    SetColor (material.color, threeMaterial.color);
+    if (threeMaterial.type === 'MeshPhongMaterial') {
+        SetColor (material.specular, threeMaterial.specular);
+        material.shininess = threeMaterial.shininess / 100.0;
+    }
+    if (threeMaterial.map !== undefined && threeMaterial.map !== null) {
+        material.diffuseMap = CreateTexture (threeMaterial.map);
+    }
+    return material;
+};
+
 OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
 {
     // TODO: check if buffergeometry

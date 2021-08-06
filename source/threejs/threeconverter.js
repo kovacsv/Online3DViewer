@@ -39,7 +39,7 @@ OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 				SetTextureParameters (texture, threeTexture);
 				threeMaterial.needsUpdate = true;
 				onLoad (threeTexture);
-			});			
+			});
 		}
 
 		let material = model.GetMaterial (materialIndex);
