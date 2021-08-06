@@ -24,12 +24,19 @@ OV.ThreeImporter = class extends OV.ImporterBase
     
     ClearContent ()
     {
-        
+        if (this.loadedScene !== undefined && this.loadedScene !== null) {
+            this.loadedScene.traverse ((child) => {
+                if (child.isMesh) {
+                    child.geometry.dispose ();
+                }
+            });
+            this.loadedScene = null;
+        }
     }
 
     ResetContent ()
     {
-        
+        this.loadedScene = null;
     }
 
     ImportContent (fileContent, onFinish)
@@ -109,6 +116,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
 
     OnThreeObjectsLoaded (scene, onFinish)
     {
+        this.loadedScene = scene;
         scene.traverse ((child) => {
             if (child.isMesh) {
                 // TODO: merge same materials

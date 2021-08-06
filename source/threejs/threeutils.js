@@ -95,8 +95,8 @@ OV.ConvertThreeMaterialToMaterial = function (threeMaterial)
 OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
 {
     // TODO: check if buffergeometry
-    // TODO: name
     let mesh = new OV.Mesh ();
+    mesh.SetName (threeGeometry.name);
     let vertices = threeGeometry.attributes.position.array;
     for (let i = 0; i < vertices.length; i += 3) {
         let x = vertices[i];
