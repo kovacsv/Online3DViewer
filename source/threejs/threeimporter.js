@@ -80,6 +80,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
             this.OnThreeObjectsLoaded (loadedScene, onFinish);
         });
 
+        const mainFileUrl = OV.CreateObjectUrl (fileContent);
         loadingManager.setURLModifier ((url) => {
             if (url === mainFileUrl) {
                 return url;
@@ -92,7 +93,6 @@ OV.ThreeImporter = class extends OV.ImporterBase
             return fileUrl;
         });
 
-        const mainFileUrl = OV.CreateObjectUrl (fileContent);
         const loader = this.CreateLoader (loadingManager);
         if (loader === null) {
             onFinish ();
