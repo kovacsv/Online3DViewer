@@ -776,18 +776,6 @@ OV.ImporterGltf = class extends OV.ImporterBase
 
     ImportTexture (gltf, gltfTextureRef)
     {
-        function GetTextureFileExtension (mimeType)
-        {
-            if (mimeType === undefined || mimeType === null) {
-                return '';
-            }
-            let mimeParts = mimeType.split ('/');
-            if (mimeParts.length === 0) {
-                return '';
-            }
-            return '.' + mimeParts[mimeParts.length - 1];
-        }
-
         if (gltfTextureRef === undefined || gltfTextureRef === null) {
             return null;
         }
@@ -808,7 +796,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
             if (gltfImage.uri !== undefined) {
                 let base64Buffer = OV.Base64DataURIToArrayBuffer (gltfImage.uri);
                 if (base64Buffer !== null) {
-                    textureParams.name = 'Embedded_' + textureIndexString + GetTextureFileExtension (base64Buffer.mimeType);
+                    textureParams.name = 'Embedded_' + textureIndexString + '.' + OV.GetFileExtensionFromMimeType (base64Buffer.mimeType);
                     textureParams.url = OV.CreateObjectUrlWithMimeType (base64Buffer.buffer, base64Buffer.mimeType);
                     textureParams.buffer = base64Buffer.buffer;
                 } else {
