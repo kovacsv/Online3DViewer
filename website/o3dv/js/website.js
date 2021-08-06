@@ -119,7 +119,7 @@ OV.Website = class
     
     OnModelFinished (importResult, threeMeshes)
     {
-        let importedExtension = OV.GetFileExtension (importResult.mainFile).toLowerCase ();
+        let importedExtension = OV.GetFileExtension (importResult.mainFile);
         this.eventHandler.HandleEvent ('model_loaded', { extension : importedExtension });
         this.model = importResult.model;
         this.ShowViewer (true);

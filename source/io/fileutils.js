@@ -34,7 +34,8 @@ OV.GetFileExtension = function (filePath)
 	if (firstPoint === -1) {
 		return '';
 	}
-	return fileName.substr (firstPoint + 1);
+	let extension = fileName.substr (firstPoint + 1);
+	return extension.toLowerCase ();
 };
 
 OV.RequestUrl = function (url, format)
