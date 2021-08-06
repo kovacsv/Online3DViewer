@@ -100,9 +100,6 @@ OV.ThreeImporter = class extends OV.ImporterBase
                     // TODO: merge same materials
                     // TODO: PBR materials
                     console.log (child);
-                    setTimeout (() => {
-                        console.log (child);
-                    }, 2000);
                     let threeMaterial = child.material;
                     let material = new OV.Material (OV.MaterialType.Phong);
                     material.name = threeMaterial.name;
@@ -113,6 +110,18 @@ OV.ThreeImporter = class extends OV.ImporterBase
                     }
                     const materialIndex = this.model.AddMaterial (material);
                     let mesh = OV.ConvertThreeGeometryToMesh (child.geometry, materialIndex);
+                    if (child.matrixWorld !== undefined && child.matrixWorld !== null) {
+                        const matrix = new OV.Matrix (child.matrixWorld.elements);
+                        const transformation = new OV.Transformation (matrix);
+
+                        // TODO: flip to transform mesh
+                        let determinant = matrix.Determinant ();
+                        let mirrorByX = OV.IsNegative (determinant);
+                        if (mirrorByX) {
+                            OV.FlipMeshTrianglesOrientation (mesh);
+                        }
+                        OV.TransformMesh (mesh, transformation);
+                    }
                     // TODO: transform
                     this.model.AddMesh (mesh);
                 }
