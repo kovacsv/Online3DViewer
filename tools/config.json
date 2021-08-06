@@ -63,30 +63,30 @@
 		"source/viewer/domviewer.js"
 	],
 	"website_files_js" : [
-		"website/o3dv/featureset.js",
-		"website/o3dv/eventhandler.js",
-		"website/o3dv/utils.js",
-		"website/o3dv/cookies.js",
-		"website/o3dv/toolbar.js",
-		"website/o3dv/treeview.js",
-		"website/o3dv/modal.js",
-		"website/o3dv/dialogs.js",
-		"website/o3dv/openurldialog.js",
-		"website/o3dv/exportdialog.js",
-		"website/o3dv/sharingdialog.js",
-		"website/o3dv/cookiedialog.js",
-		"website/o3dv/modeldata.js",
-		"website/o3dv/navigator.js",
-		"website/o3dv/sidebarpanel.js",
-		"website/o3dv/detailssidebarpanel.js",
-		"website/o3dv/settingssidebarpanel.js",
-		"website/o3dv/sidebar.js",
-		"website/o3dv/hashhandler.js",
-		"website/o3dv/loader.js",
-		"website/o3dv/website.js",
-		"website/o3dv/embed.js"
+		"website/o3dv/js/featureset.js",
+		"website/o3dv/js/eventhandler.js",
+		"website/o3dv/js/utils.js",
+		"website/o3dv/js/cookies.js",
+		"website/o3dv/js/toolbar.js",
+		"website/o3dv/js/treeview.js",
+		"website/o3dv/js/modal.js",
+		"website/o3dv/js/dialogs.js",
+		"website/o3dv/js/openurldialog.js",
+		"website/o3dv/js/exportdialog.js",
+		"website/o3dv/js/sharingdialog.js",
+		"website/o3dv/js/cookiedialog.js",
+		"website/o3dv/js/modeldata.js",
+		"website/o3dv/js/navigator.js",
+		"website/o3dv/js/sidebarpanel.js",
+		"website/o3dv/js/detailssidebarpanel.js",
+		"website/o3dv/js/settingssidebarpanel.js",
+		"website/o3dv/js/sidebar.js",
+		"website/o3dv/js/hashhandler.js",
+		"website/o3dv/js/loader.js",
+		"website/o3dv/js/website.js",
+		"website/o3dv/js/embed.js"
 	],
 	"website_files_css" : [
-		"website/o3dv/website.css"
+		"website/o3dv/css/website.css"
 	]
 }
