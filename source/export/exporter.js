@@ -7,7 +7,8 @@ OV.Exporter = class
             new OV.ExporterStl (),
             new OV.ExporterPly (),
             new OV.ExporterOff (),
-            new OV.ExporterGltf ()
+            new OV.ExporterGltf (),
+            new OV.Exporter3dm ()
         ];
     }
 

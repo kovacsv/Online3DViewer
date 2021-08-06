@@ -161,7 +161,6 @@ OV.ExportDialog = class
             progressDialog.Show ();
             OV.RunTaskAsync (() => {
                 let exporter = new OV.Exporter ();
-                exporter.AddExporter (new OV.Exporter3dm ());
                 exporter.Export (model, selectedFormat.format, selectedFormat.extension, {
                     onError : () => {
                         progressDialog.Hide ();
