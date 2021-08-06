@@ -812,7 +812,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
                 let reader = this.GetReaderFromBufferView (bufferView);
                 if (reader !== null) {
                     let buffer = reader.ReadArrayBuffer (bufferView.byteLength);
-                    textureParams.name = 'Binary_' + textureIndexString + GetTextureFileExtension (gltfImage.mimeType);
+                    textureParams.name = 'Binary_' + textureIndexString + '.' + OV.GetFileExtensionFromMimeType (gltfImage.mimeType);
                     textureParams.url = OV.CreateObjectUrlWithMimeType (buffer, gltfImage.mimeType);
                     textureParams.buffer = buffer;
                 }
