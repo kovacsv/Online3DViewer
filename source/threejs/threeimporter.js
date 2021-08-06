@@ -40,9 +40,8 @@ OV.ThreeImporter = class extends OV.ImporterBase
             return;
         }
         Promise.all (libraries).then (() => {
-            const mainFileUrl = OV.CreateObjectUrl (fileContent);
-            const loader = this.CreateLoader (mainFileUrl);
-            this.LoadModel (mainFileUrl, loader, onFinish);    
+            const loader = this.CreateLoader ();
+            this.LoadModel (fileContent, loader, onFinish);    
         }).catch (() => {
             onFinish ();
         });
@@ -59,12 +58,12 @@ OV.ThreeImporter = class extends OV.ImporterBase
         return null;
     }
 
-    CreateLoader (mainFileUrl)
+    CreateLoader ()
     {
         const manager = new THREE.LoadingManager ();
         manager.setURLModifier ((url) => {
-            if (url === mainFileUrl) {
-                return mainFileUrl;
+            if (url.startsWith ('data:') || url.startsWith ('blob:')) {
+                return url;
             }
             const fileBuffer = this.callbacks.getFileBuffer (url);
             const fileUrl = OV.CreateObjectUrl (fileBuffer);
@@ -77,7 +76,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
         return loader;
     }
 
-    LoadModel (mainFileUrl, loader, onFinish)
+    LoadModel (fileContent, loader, onFinish)
     {
         function SetColor (color, threeColor)
         {
@@ -93,13 +92,17 @@ OV.ThreeImporter = class extends OV.ImporterBase
             return;
         }
 
-        // TODO: error
+        // TODO: error handling
+        const mainFileUrl = OV.CreateObjectUrl (fileContent);
         loader.load (mainFileUrl, (object) => {
             object.traverse ((child) => {
                 if (child.isMesh) {
                     // TODO: merge same materials
                     // TODO: PBR materials
                     console.log (child);
+                    setTimeout (() => {
+                        console.log (child);
+                    }, 2000);
                     let threeMaterial = child.material;
                     let material = new OV.Material (OV.MaterialType.Phong);
                     material.name = threeMaterial.name;
@@ -110,6 +113,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
                     }
                     const materialIndex = this.model.AddMaterial (material);
                     let mesh = OV.ConvertThreeGeometryToMesh (child.geometry, materialIndex);
+                    // TODO: transform
                     this.model.AddMesh (mesh);
                 }
             });
