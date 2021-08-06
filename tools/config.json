@@ -55,6 +55,7 @@
 		"source/export/exporter.js",
 		"source/threejs/threeutils.js",
 		"source/threejs/threeconverter.js",
+		"source/threejs/threeimporter.js",
 		"source/threejs/threemodelloader.js",
 		"source/parameters/parameterlist.js",
 		"source/viewer/domutils.js",
