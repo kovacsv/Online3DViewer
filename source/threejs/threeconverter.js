@@ -67,7 +67,7 @@ OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 				specularColor.setRGB (0.0, 0.0, 0.0);
 			}
 			threeMaterial.specular = specularColor;
-			threeMaterial.shininess = material.shininess * 100.0,
+			threeMaterial.shininess = material.shininess * 100.0;
 			LoadTexture (threeMaterial, material.specularMap, (threeTexture) => {
 				threeMaterial.specularMap = threeTexture;
 				callbacks.onTextureLoaded ();
