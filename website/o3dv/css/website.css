@@ -1,7 +1,7 @@
 @font-face
 {
 	font-family: Quicksand;
-	src: url('../assets/fonts/Quicksand/Quicksand-Regular.ttf');
+	src: url('Quicksand/Quicksand-Regular.ttf');
 }
 
 html, body
