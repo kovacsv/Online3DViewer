@@ -24,7 +24,18 @@ def ESLintFolder (folder):
 		return False
 	return True
 
-def CompressFiles (inputFiles, outputFile):
+def CompressCssFiles (inputFiles, outputFile):
+	parameters = ['-o', outputFile]
+	for inputFile in inputFiles:
+		extension = os.path.splitext (inputFile)[1]
+		if extension == '.css':
+			parameters.append (inputFile)
+	result = Tools.RunCommand ('cleancss', parameters)
+	if result != 0:
+		return False
+	return True
+
+def CompressJavascriptFiles (inputFiles, outputFile):
 	parameters = []
 	for inputFile in inputFiles:
 		extension = os.path.splitext (inputFile)[1]
@@ -47,7 +58,6 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 	shutil.copy2 (os.path.join (rootDir, 'website', 'index.html'), websiteDir)
 	shutil.copy2 (os.path.join (rootDir, 'website', 'embed.html'), websiteDir)
 	shutil.copy2 (os.path.join (rootDir, 'website', 'robots.txt'), websiteDir)
-	shutil.copy2 (os.path.join (rootDir, 'website', 'o3dv', 'website.css'), os.path.join (webSourcesDir, 'o3dv.website.css'))
 	shutil.copytree (os.path.join (rootDir, 'libs'), os.path.join (websiteDir, 'libs'))
 	shutil.copytree (os.path.join (rootDir, 'website', 'assets'), os.path.join (websiteDir, 'assets'))
 	shutil.copytree (os.path.join (rootDir, 'website', 'info'), os.path.join (websiteDir, 'info'))
@@ -55,7 +65,7 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 	libFiles = config['lib_files']
 	importerFiles = ['o3dv/o3dv.min.js']
 	websiteFiles = [
-		'o3dv/o3dv.website.css',
+		'o3dv/o3dv.website.min.css',
 		'o3dv/o3dv.website.min.js'
 	]
 	
@@ -97,7 +107,6 @@ def CreatePackage (rootDir, websiteDir, packageDir, version):
 	libs = [
 		'three.min-129.js',
 		'three.license.md'
-
 	]
 	externalLibs = [
 		'draco_decoder.js',
@@ -156,15 +165,21 @@ def Main (argv):
 	CreateDestinationDir (config, rootDir, websiteDir, version, testBuild)
 
 	PrintInfo ('Compress importer sources.')
-	compressResult = CompressFiles (config['engine_files'], os.path.join (websiteDir, 'o3dv', 'o3dv.min.js'))
+	compressResult = CompressJavascriptFiles (config['engine_files'], os.path.join (websiteDir, 'o3dv', 'o3dv.min.js'))
 	if not compressResult:
 		PrintError ('Compress importer sources failed.')
 		return 1
 
 	PrintInfo ('Compress website sources.')
-	compressResult = CompressFiles (config['website_files_js'], os.path.join (websiteDir, 'o3dv', 'o3dv.website.min.js'))
+	compressResult = CompressJavascriptFiles (config['website_files_js'], os.path.join (websiteDir, 'o3dv', 'o3dv.website.min.js'))
 	if not compressResult:
 		PrintError ('Compress website sources failed.')
+		return 1
+
+	PrintInfo ('Compress website css sources.')
+	compressResult = CompressCssFiles (config['website_files_css'], os.path.join (websiteDir, 'o3dv', 'o3dv.website.min.css'))
+	if not compressResult:
+		PrintError ('Compress website css sources failed.')
 		return 1
 
 	PrintInfo ('Create package.')
