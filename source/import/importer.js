@@ -163,7 +163,7 @@ OV.FileList = class
     {
         for (let importerIndex = 0; importerIndex < this.importers.length; importerIndex++) {
             let importer = this.importers[importerIndex];
-            let extension = file.extension.toLowerCase ();
+            let extension = file.extension;
             let knownFormats = importer.GetKnownFileFormats ();
             if (knownFormats[extension] !== undefined) {
                 return knownFormats[extension];
@@ -176,7 +176,7 @@ OV.FileList = class
     {
         for (let importerIndex = 0; importerIndex < this.importers.length; importerIndex++) {
             let importer = this.importers[importerIndex];
-            if (importer.CanImportExtension (file.extension.toLowerCase ())) {
+            if (importer.CanImportExtension (file.extension)) {
                 return importer;
             }
         }

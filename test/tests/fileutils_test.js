@@ -13,7 +13,7 @@ describe ('File Utils', function () {
     it ('Get File Extension', function () {
         assert.strictEqual (OV.GetFileExtension ('file'), '');
         assert.strictEqual (OV.GetFileExtension ('file.obj'), 'obj');
-        assert.strictEqual (OV.GetFileExtension ('file.OBJ'), 'OBJ');
+        assert.strictEqual (OV.GetFileExtension ('file.OBJ'), 'obj');
     });    
     
     it ('Get File Name', function () {
