@@ -71,6 +71,10 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
         this.AddProperty (table, new OV.Property (OV.PropertyType.Text, 'Source', material.isDefault ? 'Default' : 'Model'));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Text, 'Type', typeString));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Color, 'Color', material.color));
+        if (material.type === OV.MaterialType.Physical) {
+            this.AddProperty (table, new OV.Property (OV.PropertyType.Percent, 'Metalness', material.metalness));
+            this.AddProperty (table, new OV.Property (OV.PropertyType.Percent, 'Roughness', material.roughness));
+        }
         this.AddProperty (table, new OV.Property (OV.PropertyType.Percent, 'Opacity', material.opacity));
         AddTextureMap (this, table, 'Diffuse Map', material.diffuseMap);
         AddTextureMap (this, table, 'Specular Map', material.specularMap);
