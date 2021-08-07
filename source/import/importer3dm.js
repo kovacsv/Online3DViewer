@@ -318,28 +318,9 @@ OV.Importer3dm = class extends OV.ImporterBase
 			}
 			for (let i = 0; i < model.MaterialCount (); i++) {
 				let current = model.GetMaterial (i);
-				if (current.name !== material.name) {
-					continue;
+				if (OV.MaterialIsEqual (current, material)) {
+					return i;
 				}
-				if (!OV.ColorIsEqual (current.ambient, material.ambient)) {
-					continue;
-				}
-				if (!OV.ColorIsEqual (current.color, material.color)) {
-					continue;
-				}
-				if (!OV.ColorIsEqual (current.specular, material.specular)) {
-					continue;
-				}
-				if (!OV.IsEqual (current.opacity, material.opacity)) {
-					continue;
-				}
-				if (current.transparent !== material.transparent) {
-					continue;
-				}
-				if (!OV.IsEqual (current.shininess, material.shininess)) {
-					continue;
-				}
-				return i;
 			}
 			return model.AddMaterial (material);
 		}

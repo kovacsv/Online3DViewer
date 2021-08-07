@@ -190,14 +190,115 @@ OV.HexStringToColor = function (hexString)
     return new OV.Color (r, g, b);
 };
 
+OV.ArrayToColor = function (arr)
+{
+	return new OV.Color (arr[0], arr[1], arr[2]);
+};
+
 OV.ColorIsEqual = function (a, b)
 {
 	return a.r === b.r && a.g === b.g && a.b === b.b;
 };
 
-OV.ArrayToColor = function (arr)
+OV.TextureIsEqual = function (a, b)
 {
-	return new OV.Color (arr[0], arr[1], arr[2]);
+    if (a.name !== b.name) {
+        return false;
+    }
+    if (a.name !== b.name) {
+        return false;
+    }
+    if (a.url !== b.url) {
+        return false;
+    }
+    if (!OV.CoordIsEqual2D (a.offset, b.offset)) {
+        return false;
+    }
+    if (!OV.CoordIsEqual2D (a.scale, b.scale)) {
+        return false;
+    }
+    if (!OV.IsEqual (a.rotation, b.rotation)) {
+        return false;
+    }
+    return true;
+};
+
+OV.MaterialIsEqual = function (a, b)
+{
+    function TextureIsEqual (aTex, bTex)
+    {
+        if (aTex === null && bTex === null) {
+            return true;
+        } else if (aTex === null || bTex === null) {
+            return false;
+        }
+        return OV.TextureIsEqual (aTex, bTex);
+    }
+
+    if (a.type !== b.type) {
+        return false;
+    }
+    if (a.name !== b.name) {
+        return false;
+    }
+    if (!OV.ColorIsEqual (a.color, b.color)) {
+        return false;
+    }
+    if (!OV.ColorIsEqual (a.ambient, b.ambient)) {
+        return false;
+    }
+    if (!OV.ColorIsEqual (a.specular, b.specular)) {
+        return false;
+    }
+    if (!OV.ColorIsEqual (a.emissive, b.emissive)) {
+        return false;
+    }
+    if (!OV.IsEqual (a.metalness, b.metalness)) {
+        return false;
+    }
+    if (!OV.IsEqual (a.roughness, b.roughness)) {
+        return false;
+    }
+    if (!OV.IsEqual (a.shininess, b.shininess)) {
+        return false;
+    }
+    if (!OV.IsEqual (a.opacity, b.opacity)) {
+        return false;
+    }
+    if (!TextureIsEqual (a.diffuseMap, b.diffuseMap)) {
+        return false;
+    }
+    if (!TextureIsEqual (a.specularMap, b.specularMap)) {
+        return false;
+    }
+    if (!TextureIsEqual (a.bumpMap, b.bumpMap)) {
+        return false;
+    }
+    if (!TextureIsEqual (a.normalMap, b.normalMap)) {
+        return false;
+    }
+    if (!TextureIsEqual (a.emissiveMap, b.emissiveMap)) {
+        return false;
+    }
+    if (!TextureIsEqual (a.metalnessMap, b.metalnessMap)) {
+        return false;
+    }
+    if (!OV.IsEqual (a.alphaTest, b.alphaTest)) {
+        return false;
+    }
+    if (a.transparent !== b.transparent) {
+        return false;
+    }
+    if (a.multiplyDiffuseMap !== b.multiplyDiffuseMap) {
+        return false;
+    }
+    if (a.multiplyMetallicMap !== b.multiplyMetallicMap) {
+        return false;
+    }
+    if (a.isDefault !== b.isDefault) {
+        return false;
+    }
+    return true;
 };
 
 OV.EnumerateMaterialTextureMaps = function (material, enumerator)
