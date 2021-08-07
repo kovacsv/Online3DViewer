@@ -298,14 +298,23 @@ OV.Importer3dm = class extends OV.ImporterBase
 				return rhinoColor.r === 255 && rhinoColor.g === 255 && rhinoColor.b === 255;
 			}
 
-			let material = new OV.Material (OV.MaterialType.Phong);
+			let material = null;
 			if (rhinoMaterial === null) {
+				material = new OV.Material (OV.MaterialType.Phong);
 				material.color.Set (255, 255, 255);
 			} else {
+				let physicallyBased = rhinoMaterial.physicallyBased ();
+				if (physicallyBased.supported) {
+					material = new OV.Material (OV.MaterialType.Physical);
+					material.metalness = physicallyBased.metallic ? 1.0 : 0.0;
+					material.roughness = physicallyBased.roughness;
+				} else {
+					material = new OV.Material (OV.MaterialType.Phong);
+					SetColor (material.ambient, rhinoMaterial.ambientColor);
+					SetColor (material.specular, rhinoMaterial.specularColor);
+				}
 				material.name = rhinoMaterial.name;
-				SetColor (material.ambient, rhinoMaterial.ambientColor);
 				SetColor (material.color, rhinoMaterial.diffuseColor);
-				SetColor (material.specular, rhinoMaterial.specularColor);
 				material.opacity = 1.0 - rhinoMaterial.transparency;
 				OV.UpdateMaterialTransparency (material);
 				// material.shininess = rhinoMaterial.shine / 255.0;
