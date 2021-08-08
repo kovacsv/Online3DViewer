@@ -181,7 +181,9 @@ OV.Importer3dm = class extends OV.ImporterBase
 	{
 		let rhinoAttributes = rhinoObject.attributes ();
 
-		let mesh = new OV.Mesh ();
+		let materialIndex = this.GetMaterialIndex (rhinoDoc, rhinoObject, rhinoInstanceReferences);
+		let threeJson = rhinoMesh.toThreejsJSON ();
+		let mesh = OV.ConvertThreeGeometryToMesh (threeJson.data, materialIndex);
 		mesh.SetName (rhinoAttributes.name);
 
 		let userStrings = rhinoAttributes.getUserStrings ();
@@ -194,51 +196,6 @@ OV.Importer3dm = class extends OV.ImporterBase
 			mesh.AddPropertyGroup (propertyGroup);
 		}
 
-		let materialIndex = this.GetMaterialIndex (rhinoDoc, rhinoObject, rhinoInstanceReferences);
-		let threeJson = rhinoMesh.toThreejsJSON ();
-		let vertices = threeJson.data.attributes.position.array;
-		for (let i = 0; i < vertices.length; i += 3) {
-			let x = vertices[i];
-			let y = vertices[i + 1];
-			let z = vertices[i + 2];
-			mesh.AddVertex (new OV.Coord3D (x, y, z));
-		}
-		let hasNormals = (threeJson.data.attributes.normal !== undefined);
-		if (hasNormals) {
-			let normals = threeJson.data.attributes.normal.array;
-			for (let i = 0; i < normals.length; i += 3) {
-				let x = normals[i];
-				let y = normals[i + 1];
-				let z = normals[i + 2];
-				mesh.AddNormal (new OV.Coord3D (x, y, z));
-			}		
-		}
-		let hasUVs = (threeJson.data.attributes.uv !== undefined);
-		if (hasUVs) {
-			let uvs = threeJson.data.attributes.uv.array;
-			for (let i = 0; i < uvs.length; i += 2) {
-				let x = uvs[i];
-				let y = uvs[i + 1];
-				mesh.AddTextureUV (new OV.Coord2D (x, y));
-			}		
-		}
-		let indices = threeJson.data.index.array;
-		for (let i = 0; i < indices.length; i += 3) {
-			let v0 = indices[i];
-			let v1 = indices[i + 1];
-			let v2 = indices[i + 2];
-			let triangle = new OV.Triangle (v0, v1, v2);
-			if (hasNormals) {
-				triangle.SetNormals (v0, v1, v2);
-			}
-			if (hasUVs) {
-				triangle.SetTextureUVs (v0, v1, v2);
-			}
-			if (materialIndex !== null) {
-				triangle.SetMaterial (materialIndex);
-			}
-			mesh.AddTriangle (triangle);
-		}
 		if (rhinoInstanceReferences.length !== 0) {
 			let matrix = new OV.Matrix ().CreateIdentity ();
 			for (let i = rhinoInstanceReferences.length - 1; i >= 0; i--) {

@@ -57,9 +57,10 @@ OV.HasHighpDriverIssue = function ()
 
 OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
 {
-    // TODO: check if buffergeometry
     let mesh = new OV.Mesh ();
-    mesh.SetName (threeGeometry.name);
+    if (threeGeometry.name !== undefined && threeGeometry.name !== null) {
+        mesh.SetName (threeGeometry.name);
+    }
     let vertices = threeGeometry.attributes.position.array;
     for (let i = 0; i < vertices.length; i += 3) {
         let x = vertices[i];
