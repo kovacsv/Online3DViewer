@@ -76,10 +76,10 @@ OV.ThreeImporter = class extends OV.ImporterBase
     LoadModel (fileContent, onFinish)
     {
         let loadedScene = null;
-        let textureNames = {};
+        let externalFileNames = {};
         let loadingManager = new THREE.LoadingManager (() => {
             if (loadedScene !== null) {
-                this.OnThreeObjectsLoaded (loadedScene, textureNames, onFinish);
+                this.OnThreeObjectsLoaded (loadedScene, externalFileNames, onFinish);
             }
         });
 
@@ -95,7 +95,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
                     const buffer = this.callbacks.getFileBuffer (url);
                     if (buffer !== null) {
                         let objectUrl = OV.CreateObjectUrl (buffer);
-                        textureNames[objectUrl] = name;
+                        externalFileNames[objectUrl] = name;
                         return objectUrl;
                     }
                 }
@@ -123,9 +123,9 @@ OV.ThreeImporter = class extends OV.ImporterBase
         );
     }
 
-    OnThreeObjectsLoaded (loadedScene, textureNames, onFinish)
+    OnThreeObjectsLoaded (loadedScene, externalFileNames, onFinish)
     {
-        function ConvertThreeMaterialToMaterial (threeMaterial, textureNames)
+        function ConvertThreeMaterialToMaterial (threeMaterial, externalFileNames)
         {
             function SetColor (color, threeColor)
             {
@@ -136,7 +136,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
                 );
             }
         
-            function CreateTexture (threeMap, textureNames)
+            function CreateTexture (threeMap, externalFileNames)
             {
                 if (threeMap.image === undefined || threeMap.image === null) {
                     return null;
@@ -144,17 +144,19 @@ OV.ThreeImporter = class extends OV.ImporterBase
                 const dataUrl = THREE.ImageUtils.getDataURL (threeMap.image);
                 const base64Buffer = OV.Base64DataURIToArrayBuffer (dataUrl);
                 let texture = new OV.TextureMap ();
-                let textureName = textureNames[threeMap.image.src];
+                let textureName = externalFileNames[threeMap.image.src];
                 if (textureName === undefined) {
                     textureName = 'Embedded_' + threeMap.id.toString () + '.' + OV.GetFileExtensionFromMimeType (base64Buffer.mimeType);
                 }
                 texture.name = textureName;
                 texture.url = threeMap.image.src;
                 texture.buffer = base64Buffer.buffer;
+                // TODO: texture offset, rotation, scale
                 return texture;
             }
         
             // TODO: PBR materials
+            // TODO: other material properties
             let material = new OV.Material (OV.MaterialType.Phong);
             material.name = threeMaterial.name;
             SetColor (material.color, threeMaterial.color);
@@ -163,18 +165,18 @@ OV.ThreeImporter = class extends OV.ImporterBase
                 material.shininess = threeMaterial.shininess / 100.0;
             }
             if (threeMaterial.map !== undefined && threeMaterial.map !== null) {
-                material.diffuseMap = CreateTexture (threeMaterial.map, textureNames);
+                material.diffuseMap = CreateTexture (threeMaterial.map, externalFileNames);
             }
             return material;
         }
 
-        function FindMatchingMaterialIndex (model, threeMaterial, materialIdToIndex, textureNames)
+        function FindMatchingMaterialIndex (model, threeMaterial, materialIdToIndex, externalFileNames)
         {
             let index = materialIdToIndex[threeMaterial.id];
             if (index !== undefined) {
                 return index;
             }
-            let material = ConvertThreeMaterialToMaterial (threeMaterial, textureNames);
+            let material = ConvertThreeMaterialToMaterial (threeMaterial, externalFileNames);
             index = model.AddMaterial (material);
             materialIdToIndex[threeMaterial.id] = index;
             return index;
@@ -191,7 +193,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
                     if (child.geometry.attributes.color === undefined || child.geometry.attributes.color === null) {
                         let materialIndices = [];
                         for (let i = 0; i < child.material.length; i++) {
-                            materialIndices.push (FindMatchingMaterialIndex (this.model, child.material[i], materialIdToIndex, textureNames));
+                            materialIndices.push (FindMatchingMaterialIndex (this.model, child.material[i], materialIdToIndex, externalFileNames));
                         }
                         for (let i = 0; i < child.geometry.groups.length; i++) {
                             let group = child.geometry.groups[i];
@@ -204,7 +206,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
                         }
                     }
                 } else {
-                    materialIndex = FindMatchingMaterialIndex (this.model, child.material, materialIdToIndex, textureNames);
+                    materialIndex = FindMatchingMaterialIndex (this.model, child.material, materialIdToIndex, externalFileNames);
                     mesh = OV.ConvertThreeGeometryToMesh (child.geometry, materialIndex);
                 }
                 if (child.name !== undefined && child.name !== null) {
