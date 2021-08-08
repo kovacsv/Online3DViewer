@@ -7,7 +7,8 @@ OV.ThreeImporter = class extends OV.ImporterBase
 
     CanImportExtension (extension)
     {
-        return extension === 'fbx';
+        const knownExtensions = ['fbx'];
+        return knownExtensions.indexOf (extension) !== -1;
     }
 
     GetKnownFileFormats ()
@@ -41,14 +42,26 @@ OV.ThreeImporter = class extends OV.ImporterBase
 
     ImportContent (fileContent, onFinish)
     {
+        async function LoadLibraries (libraries, onFinish, onError)
+        {
+            try {
+                for (let i = 0; i < libraries.length; i++) {
+                    await OV.LoadExternalLibrary (libraries[i]);
+                }
+            } catch (err) {
+                onError ();
+            }
+            onFinish ();
+        }
+
         const libraries = this.GetExternalLibraries ();
         if (libraries === null) {
             onFinish ();
             return;
         }
-        Promise.all (libraries).then (() => {
+        LoadLibraries (libraries, () => {
             this.LoadModel (fileContent, onFinish);    
-        }).catch (() => {
+        }, () => {
             onFinish ();
         });
     }
@@ -57,8 +70,8 @@ OV.ThreeImporter = class extends OV.ImporterBase
     {
         if (this.extension === 'fbx') {
             return [
-                OV.LoadExternalLibrary ('three_loaders/FBXLoader.js'),
-                OV.LoadExternalLibrary ('three_loaders/fflate.min.js')
+                'three_loaders/fflate.min.js',
+                'three_loaders/FBXLoader.js'
             ];
         }
         return null;
@@ -69,7 +82,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
         let loader = null;
         if (this.extension === 'fbx') {
             loader = new THREE.FBXLoader (manager);
-        }        
+        }
         return loader;
     }
 
@@ -141,18 +154,22 @@ OV.ThreeImporter = class extends OV.ImporterBase
                 if (threeMap.image === undefined || threeMap.image === null) {
                     return null;
                 }
-                const dataUrl = THREE.ImageUtils.getDataURL (threeMap.image);
-                const base64Buffer = OV.Base64DataURIToArrayBuffer (dataUrl);
-                let texture = new OV.TextureMap ();
-                let textureName = externalFileNames[threeMap.image.src];
-                if (textureName === undefined) {
-                    textureName = 'Embedded_' + threeMap.id.toString () + '.' + OV.GetFileExtensionFromMimeType (base64Buffer.mimeType);
+                try {
+                    const dataUrl = THREE.ImageUtils.getDataURL (threeMap.image);
+                    const base64Buffer = OV.Base64DataURIToArrayBuffer (dataUrl);
+                    let texture = new OV.TextureMap ();
+                    let textureName = externalFileNames[threeMap.image.src];
+                    if (textureName === undefined) {
+                        textureName = 'Embedded_' + threeMap.id.toString () + '.' + OV.GetFileExtensionFromMimeType (base64Buffer.mimeType);
+                    }
+                    texture.name = textureName;
+                    texture.url = threeMap.image.src;
+                    texture.buffer = base64Buffer.buffer;
+                    // TODO: texture offset, rotation, scale
+                    return texture;
+                } catch (err) {
+                    return null;
                 }
-                texture.name = textureName;
-                texture.url = threeMap.image.src;
-                texture.buffer = base64Buffer.buffer;
-                // TODO: texture offset, rotation, scale
-                return texture;
             }
         
             // TODO: PBR materials
@@ -160,8 +177,12 @@ OV.ThreeImporter = class extends OV.ImporterBase
             let material = new OV.Material (OV.MaterialType.Phong);
             material.name = threeMaterial.name;
             SetColor (material.color, threeMaterial.color);
+            material.opacity = threeMaterial.opacity;
+            material.transparent = threeMaterial.transparent;
+            material.alphaTest = threeMaterial.alphaTest;
             if (threeMaterial.type === 'MeshPhongMaterial') {
                 SetColor (material.specular, threeMaterial.specular);
+                SetColor (material.emissive, threeMaterial.emissive);
                 material.shininess = threeMaterial.shininess / 100.0;
             }
             if (threeMaterial.map !== undefined && threeMaterial.map !== null) {
@@ -193,7 +214,8 @@ OV.ThreeImporter = class extends OV.ImporterBase
                     if (child.geometry.attributes.color === undefined || child.geometry.attributes.color === null) {
                         let materialIndices = [];
                         for (let i = 0; i < child.material.length; i++) {
-                            materialIndices.push (FindMatchingMaterialIndex (this.model, child.material[i], materialIdToIndex, externalFileNames));
+                            let material = child.material[i];
+                            materialIndices.push (FindMatchingMaterialIndex (this.model, material, materialIdToIndex, externalFileNames));
                         }
                         for (let i = 0; i < child.geometry.groups.length; i++) {
                             let group = child.geometry.groups[i];
@@ -212,7 +234,6 @@ OV.ThreeImporter = class extends OV.ImporterBase
                 if (child.name !== undefined && child.name !== null) {
                     mesh.SetName (child.name);
                 }
-                
                 if (child.matrixWorld !== undefined && child.matrixWorld !== null) {
                     const matrix = new OV.Matrix (child.matrixWorld.elements);
                     const transformation = new OV.Transformation (matrix);

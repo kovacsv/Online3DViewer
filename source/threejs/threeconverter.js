@@ -43,12 +43,10 @@ OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 		}
 
 		let material = model.GetMaterial (materialIndex);
-		let diffuseColor = new THREE.Color (material.color.r / 255.0, material.color.g / 255.0, material.color.b / 255.0);
-		let emissiveColor = new THREE.Color (material.emissive.r / 255.0, material.emissive.g / 255.0, material.emissive.b / 255.0);
+		let baseColor = new THREE.Color (material.color.r / 255.0, material.color.g / 255.0, material.color.b / 255.0);
 
 		let materialParams = {
-			color : diffuseColor,
-			emissive : emissiveColor,
+			color : baseColor,
 			opacity : material.opacity,
 			transparent : material.transparent,
 			alphaTest : material.alphaTest,
@@ -84,6 +82,10 @@ OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 				callbacks.onTextureLoaded ();
 			});
 		}
+
+		let emissiveColor = new THREE.Color (material.emissive.r / 255.0, material.emissive.g / 255.0, material.emissive.b / 255.0);
+		threeMaterial.emissive = emissiveColor;
+
 		LoadTexture (threeMaterial, material.diffuseMap, (threeTexture) => {
 			if (!material.multiplyDiffuseMap) {
 				threeMaterial.color.setRGB (1.0, 1.0, 1.0);
