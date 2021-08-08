@@ -207,6 +207,9 @@ OV.ThreeImporter = class extends OV.ImporterBase
                     materialIndex = FindMatchingMaterialIndex (this.model, child.material, materialIdToIndex, textureNames);
                     mesh = OV.ConvertThreeGeometryToMesh (child.geometry, materialIndex);
                 }
+                if (child.name !== undefined && child.name !== null) {
+                    mesh.SetName (child.name);
+                }
                 
                 if (child.matrixWorld !== undefined && child.matrixWorld !== null) {
                     const matrix = new OV.Matrix (child.matrixWorld.elements);

@@ -58,9 +58,6 @@ OV.HasHighpDriverIssue = function ()
 OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
 {
     let mesh = new OV.Mesh ();
-    if (threeGeometry.name !== undefined && threeGeometry.name !== null) {
-        mesh.SetName (threeGeometry.name);
-    }
     let vertices = threeGeometry.attributes.position.array;
     for (let i = 0; i < vertices.length; i += 3) {
         let x = vertices[i];
