@@ -182,7 +182,8 @@ OV.ThreeImporter = class extends OV.ImporterBase
             material.alphaTest = threeMaterial.alphaTest;
             if (threeMaterial.type === 'MeshPhongMaterial') {
                 SetColor (material.specular, threeMaterial.specular);
-                SetColor (material.emissive, threeMaterial.emissive);
+                // TODO:
+                //SetColor (material.emissive, threeMaterial.emissive);
                 material.shininess = threeMaterial.shininess / 100.0;
             }
             if (threeMaterial.map !== undefined && threeMaterial.map !== null) {
