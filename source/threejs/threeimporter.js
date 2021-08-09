@@ -68,13 +68,18 @@ OV.ThreeImporter = class extends OV.ImporterBase
 
     GetExternalLibraries ()
     {
+        let libraries = [
+            'three_loaders/TGALoader.js'
+        ];
         if (this.extension === 'fbx') {
-            return [
+            libraries.push (
                 'three_loaders/fflate.min.js',
                 'three_loaders/FBXLoader.js'
-            ];
+            );
+        } else {
+            return null;
         }
-        return null;
+        return libraries;
     }
 
     CreateLoader (manager)
@@ -95,6 +100,8 @@ OV.ThreeImporter = class extends OV.ImporterBase
                 this.OnThreeObjectsLoaded (loadedScene, externalFileNames, onFinish);
             }
         });
+        // TODO
+        loadingManager.addHandler (/\.tga$/i, new THREE.TGALoader (loadingManager));
 
         const mainFileUrl = OV.CreateObjectUrl (fileContent);
         loadingManager.setURLModifier ((url) => {
@@ -151,11 +158,26 @@ OV.ThreeImporter = class extends OV.ImporterBase
         
             function CreateTexture (threeMap, externalFileNames)
             {
+                function GetDataUrl (img)
+                {
+                    if (img.data !== undefined && img.data !== null) {
+                        let imageData = new ImageData (img.width, img.height);
+                        let imageSize = img.width * img.height * 4;
+                        for (let i = 0; i < imageSize; i++) {
+                            imageData.data[i] = img.data[i];
+                        }                        
+                        return THREE.ImageUtils.getDataURL (imageData);
+                    } else {
+                        return THREE.ImageUtils.getDataURL (threeMap.image);
+                    }
+                }
+
                 if (threeMap.image === undefined || threeMap.image === null) {
                     return null;
                 }
+
                 try {
-                    const dataUrl = THREE.ImageUtils.getDataURL (threeMap.image);
+                    const dataUrl = GetDataUrl (threeMap.image);
                     const base64Buffer = OV.Base64DataURIToArrayBuffer (dataUrl);
                     let texture = new OV.TextureMap ();
                     let textureName = externalFileNames[threeMap.image.src];
@@ -163,7 +185,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
                         textureName = 'Embedded_' + threeMap.id.toString () + '.' + OV.GetFileExtensionFromMimeType (base64Buffer.mimeType);
                     }
                     texture.name = textureName;
-                    texture.url = threeMap.image.src;
+                    texture.url = dataUrl;
                     texture.buffer = base64Buffer.buffer;
                     // TODO: texture offset, rotation, scale
                     return texture;
@@ -220,9 +242,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
                         }
                         for (let i = 0; i < child.geometry.groups.length; i++) {
                             let group = child.geometry.groups[i];
-                            console.log (group);
-                            for (let j = group.start; j < group.start + group.count; j++) {
-                                console.log (j);
+                            for (let j = group.start / 3; j < group.start / 3 + group.count / 3; j++) {
                                 let triangle = mesh.GetTriangle (j);
                                 triangle.SetMaterial (materialIndices[group.materialIndex]);
                             }
