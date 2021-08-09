@@ -14,9 +14,45 @@ OV.ModelToThreeConversionOutput = class
 	}
 };
 
+OV.ThreeConversionStateHandler = class
+{
+	constructor (callbacks)
+	{
+		this.callbacks = callbacks;
+		this.texturesNeeded = 0;
+		this.texturesLoaded = 0;
+		this.threeMeshes = null;
+	}
+
+	OnTextureNeeded ()
+	{
+		this.texturesNeeded += 1;
+	}
+
+	OnTextureLoaded ()
+	{
+		this.texturesLoaded += 1;
+		this.callbacks.onTextureLoaded ();
+		this.Finish ();
+	}
+
+	OnModelLoaded (threeMeshes)
+	{
+		this.threeMeshes = threeMeshes;
+		this.Finish ();
+	}
+
+	Finish ()
+	{
+		if (this.threeMeshes !== null && this.texturesNeeded === this.texturesLoaded) {
+			this.callbacks.onModelLoaded (this.threeMeshes);
+		}
+	}
+};
+
 OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 {
-	function CreateThreeMaterial (model, materialIndex, params, output)
+	function CreateThreeMaterial (stateHandler, model, materialIndex, params, output)
 	{
 		function SetTextureParameters (texture, threeTexture)
 		{
@@ -29,17 +65,25 @@ OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 			threeTexture.repeat.y = texture.scale.y;
 		}
 
-		function LoadTexture (threeMaterial, texture, onLoad)
+		function LoadTexture (stateHandler, threeMaterial, texture, onTextureLoaded)
 		{
 			if (texture === null || !texture.IsValid ()) {
 				return;
 			}
 			let loader = new THREE.TextureLoader ();
-			loader.load (texture.url, (threeTexture) => {
-				SetTextureParameters (texture, threeTexture);
-				threeMaterial.needsUpdate = true;
-				onLoad (threeTexture);
-			});			
+			stateHandler.OnTextureNeeded ();
+			loader.load (texture.url,
+				(threeTexture) => {
+					SetTextureParameters (texture, threeTexture);
+					threeMaterial.needsUpdate = true;
+					onTextureLoaded (threeTexture);
+					stateHandler.OnTextureLoaded ();
+				},
+				null,
+				(err) => {
+					stateHandler.OnTextureLoaded ();
+				}
+			);
 		}
 
 		let material = model.GetMaterial (materialIndex);
@@ -68,40 +112,34 @@ OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 			}
 			threeMaterial.specular = specularColor;
 			threeMaterial.shininess = material.shininess * 100.0;
-			LoadTexture (threeMaterial, material.specularMap, (threeTexture) => {
+			LoadTexture (stateHandler, threeMaterial, material.specularMap, (threeTexture) => {
 				threeMaterial.specularMap = threeTexture;
-				callbacks.onTextureLoaded ();
 			});			
 		} else if (material.type === OV.MaterialType.Physical) {
 			threeMaterial = new THREE.MeshStandardMaterial (materialParams);
 			threeMaterial.metalness = material.metalness;
 			threeMaterial.roughness = material.roughness;
-			LoadTexture (threeMaterial, material.metalnessMap, (threeTexture) => {
+			LoadTexture (stateHandler, threeMaterial, material.metalnessMap, (threeTexture) => {
 				threeMaterial.metalness = 1.0;
 				threeMaterial.roughness = 1.0;
 				threeMaterial.metalnessMap = threeTexture;
 				threeMaterial.roughnessMap = threeTexture;
-				callbacks.onTextureLoaded ();
 			});
 		}
-		LoadTexture (threeMaterial, material.diffuseMap, (threeTexture) => {
+		LoadTexture (stateHandler, threeMaterial, material.diffuseMap, (threeTexture) => {
 			if (!material.multiplyDiffuseMap) {
 				threeMaterial.color.setRGB (1.0, 1.0, 1.0);
 			}
 			threeMaterial.map = threeTexture;
-			callbacks.onTextureLoaded ();
 		});
-		LoadTexture (threeMaterial, material.bumpMap, (threeTexture) => {
+		LoadTexture (stateHandler, threeMaterial, material.bumpMap, (threeTexture) => {
 			threeMaterial.bumpMap = threeTexture;
-			callbacks.onTextureLoaded ();
 		});
-		LoadTexture (threeMaterial, material.normalMap, (threeTexture) => {
+		LoadTexture (stateHandler, threeMaterial, material.normalMap, (threeTexture) => {
 			threeMaterial.normalMap = threeTexture;
-			callbacks.onTextureLoaded ();
 		});
-		LoadTexture (threeMaterial, material.emissiveMap, (threeTexture) => {
+		LoadTexture (stateHandler, threeMaterial, material.emissiveMap, (threeTexture) => {
 			threeMaterial.emissiveMap = threeTexture;
-			callbacks.onTextureLoaded ();
 		});
 
 		if (material.isDefault) {
@@ -207,9 +245,11 @@ OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 		return threeMesh;
 	}
 
+	let stateHandler = new OV.ThreeConversionStateHandler (callbacks);
+
 	let modelThreeMaterials = [];
 	for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
-		let threeMaterial = CreateThreeMaterial (model, materialIndex, params, output);
+		let threeMaterial = CreateThreeMaterial (stateHandler, model, materialIndex, params, output);
 		modelThreeMaterials.push (threeMaterial);
 	}
 
@@ -227,7 +267,7 @@ OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 			ready ();
 		},
 		onReady : () => {
-			callbacks.onModelLoaded (threeMeshes);
+			stateHandler.OnModelLoaded (threeMeshes);
 		}
 	});
 };
