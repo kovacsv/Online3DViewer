@@ -1,21 +1,130 @@
-OV.ThreeImporter = class extends OV.ImporterBase
+OV.ThreeLoader = class
+{
+    constructor ()
+    {
+
+    }
+
+    GetExtension ()
+    {
+        return null;
+    }
+
+    GetExternalLibraries ()
+    {
+        return null;
+    }
+
+    CreateLoader (manager)
+    {
+        return null;
+    }
+
+    EnumerateMeshes (loadedObject, processor)
+    {
+        
+    }
+};
+
+OV.ThreeLoaderFbx = class extends OV.ThreeLoader
 {
     constructor ()
     {
         super ();
     }
 
+    GetExtension ()
+    {
+        return 'fbx';
+    }
+
+    GetExternalLibraries ()
+    {
+        return [
+            'three_loaders/fflate.min.js',
+            'three_loaders/FBXLoader.js'
+        ];
+    }
+
+    CreateLoader (manager)
+    {
+        return new THREE.FBXLoader (manager);
+    }
+
+    EnumerateMeshes (loadedObject, processor)
+    {
+        loadedObject.traverse ((child) => {
+            if (child.isMesh) {
+                processor (child);
+            }
+        });
+    }
+};
+
+OV.ThreeLoaderDae = class extends OV.ThreeLoader
+{
+    constructor ()
+    {
+        super ();
+    }
+
+    GetExtension ()
+    {
+        return 'dae';
+    }
+
+    GetExternalLibraries ()
+    {
+        return [
+            'three_loaders/ColladaLoader.js'
+        ];
+    }
+
+    CreateLoader (manager)
+    {
+        return new THREE.ColladaLoader (manager);
+    }
+
+    EnumerateMeshes (loadedObject, processor)
+    {
+        loadedObject.scene.traverse ((child) => {
+            if (child.isMesh) {
+                processor (child);
+            }
+        });
+    }
+};
+
+OV.ThreeImporter = class extends OV.ImporterBase
+{
+    constructor ()
+    {
+        super ();
+        this.loaders = [
+            new OV.ThreeLoaderFbx (),
+            new OV.ThreeLoaderDae ()
+        ];
+    }
+
     CanImportExtension (extension)
     {
-        const knownExtensions = ['fbx'];
-        return knownExtensions.indexOf (extension) !== -1;
+        for (let i = 0; i < this.loaders.length; i++)  {
+            let loader = this.loaders[i];
+            if (loader.GetExtension () === extension) {
+                return true;
+            }
+        }
+        return false;
     }
 
     GetKnownFileFormats ()
     {
-        return {
-            'fbx' : OV.FileFormat.Binary
-        };
+        let result = {};
+        for (let i = 0; i < this.loaders.length; i++)  {
+            let loader = this.loaders[i];
+            result[loader.GetExtension ()] = OV.FileFormat.Binary;
+        }
+        return result;
     }
     
     GetUpDirection ()
@@ -25,19 +134,12 @@ OV.ThreeImporter = class extends OV.ImporterBase
     
     ClearContent ()
     {
-        if (this.loadedScene !== undefined && this.loadedScene !== null) {
-            this.loadedScene.traverse ((child) => {
-                if (child.isMesh) {
-                    child.geometry.dispose ();
-                }
-            });
-            this.loadedScene = null;
-        }
+
     }
 
     ResetContent ()
     {
-        this.loadedScene = null;
+
     }
 
     ImportContent (fileContent, onFinish)
@@ -54,50 +156,54 @@ OV.ThreeImporter = class extends OV.ImporterBase
             onFinish ();
         }
 
-        const libraries = this.GetExternalLibraries ();
+        const loader = this.FindLoader ();
+        if (loader === null) {
+            onFinish ();
+            return;
+        }
+        
+        const libraries = this.GetExternalLibraries (loader);
         if (libraries === null) {
             onFinish ();
             return;
         }
         LoadLibraries (libraries, () => {
-            this.LoadModel (fileContent, onFinish);    
+            this.LoadModel (loader, fileContent, onFinish);    
         }, () => {
             onFinish ();
         });
     }
 
-    GetExternalLibraries ()
+    FindLoader ()
+    {
+        for (let i = 0; i < this.loaders.length; i++)  {
+            let loader = this.loaders[i];
+            if (loader.GetExtension () === this.extension) {
+                return loader;
+            }
+        }
+        return null;
+    }
+
+    GetExternalLibraries (loader)
     {
         let libraries = [
             'three_loaders/TGALoader.js'
         ];
-        if (this.extension === 'fbx') {
-            libraries.push (
-                'three_loaders/fflate.min.js',
-                'three_loaders/FBXLoader.js'
-            );
-        } else {
-            return null;
+        let loaderLibraries = loader.GetExternalLibraries ();
+        for (let i = 0; i < loaderLibraries.length; i++) {
+            libraries.push (loaderLibraries[i]);
         }
         return libraries;
     }
 
-    CreateLoader (manager)
+    LoadModel (loader, fileContent, onFinish)
     {
-        let loader = null;
-        if (this.extension === 'fbx') {
-            loader = new THREE.FBXLoader (manager);
-        }
-        return loader;
-    }
-
-    LoadModel (fileContent, onFinish)
-    {
-        let loadedScene = null;
+        let loadedObject = null;
         let externalFileNames = {};
         let loadingManager = new THREE.LoadingManager (() => {
-            if (loadedScene !== null) {
-                this.OnThreeObjectsLoaded (loadedScene, externalFileNames, onFinish);
+            if (loadedObject !== null) {
+                this.OnThreeObjectsLoaded (loader, loadedObject, externalFileNames, onFinish);
             }
         });
         // TODO
@@ -123,15 +229,15 @@ OV.ThreeImporter = class extends OV.ImporterBase
             return url;
         });
 
-        const loader = this.CreateLoader (loadingManager);
-        if (loader === null) {
+        const threeLoader = loader.CreateLoader (loadingManager);
+        if (threeLoader === null) {
             onFinish ();
             return;
         }
 
-        loader.load (mainFileUrl,
+        threeLoader.load (mainFileUrl,
             (object) => {
-                loadedScene = object;
+                loadedObject = object;
             },
             () => {
             },
@@ -143,7 +249,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
         );
     }
 
-    OnThreeObjectsLoaded (loadedScene, externalFileNames, onFinish)
+    OnThreeObjectsLoaded (loader, loadedObject, externalFileNames, onFinish)
     {
         function ConvertThreeMaterialToMaterial (threeMaterial, externalFileNames)
         {
@@ -227,47 +333,46 @@ OV.ThreeImporter = class extends OV.ImporterBase
         }
 
         let materialIdToIndex = {};
-        this.loadedScene = loadedScene;
-        loadedScene.traverse ((child) => {
-            if (child.isMesh) {
-                let materialIndex = null;
-                let mesh = null;
-                if (Array.isArray (child.material)) {
-                    mesh = OV.ConvertThreeGeometryToMesh (child.geometry, null);
-                    if (child.geometry.attributes.color === undefined || child.geometry.attributes.color === null) {
-                        let materialIndices = [];
-                        for (let i = 0; i < child.material.length; i++) {
-                            let material = child.material[i];
-                            materialIndices.push (FindMatchingMaterialIndex (this.model, material, materialIdToIndex, externalFileNames));
-                        }
-                        for (let i = 0; i < child.geometry.groups.length; i++) {
-                            let group = child.geometry.groups[i];
-                            for (let j = group.start / 3; j < group.start / 3 + group.count / 3; j++) {
-                                let triangle = mesh.GetTriangle (j);
-                                triangle.SetMaterial (materialIndices[group.materialIndex]);
-                            }
+        loader.EnumerateMeshes (loadedObject, (child) => {
+            let materialIndex = null;
+            let mesh = null;
+            if (Array.isArray (child.material)) {
+                mesh = OV.ConvertThreeGeometryToMesh (child.geometry, null);
+                if (child.geometry.attributes.color === undefined || child.geometry.attributes.color === null) {
+                    let materialIndices = [];
+                    for (let i = 0; i < child.material.length; i++) {
+                        let material = child.material[i];
+                        materialIndices.push (FindMatchingMaterialIndex (this.model, material, materialIdToIndex, externalFileNames));
+                    }
+                    for (let i = 0; i < child.geometry.groups.length; i++) {
+                        let group = child.geometry.groups[i];
+                        for (let j = group.start / 3; j < group.start / 3 + group.count / 3; j++) {
+                            let triangle = mesh.GetTriangle (j);
+                            triangle.SetMaterial (materialIndices[group.materialIndex]);
                         }
                     }
-                } else {
-                    materialIndex = FindMatchingMaterialIndex (this.model, child.material, materialIdToIndex, externalFileNames);
-                    mesh = OV.ConvertThreeGeometryToMesh (child.geometry, materialIndex);
                 }
-                if (child.name !== undefined && child.name !== null) {
-                    mesh.SetName (child.name);
-                }
-                if (child.matrixWorld !== undefined && child.matrixWorld !== null) {
-                    const matrix = new OV.Matrix (child.matrixWorld.elements);
-                    const transformation = new OV.Transformation (matrix);
-                    const determinant = matrix.Determinant ();
-                    const mirrorByX = OV.IsNegative (determinant);
-                    OV.TransformMesh (mesh, transformation);
-                    if (mirrorByX) {
-                        OV.FlipMeshTrianglesOrientation (mesh);
-                    }
-                }
-                this.model.AddMesh (mesh);
+            } else {
+                materialIndex = FindMatchingMaterialIndex (this.model, child.material, materialIdToIndex, externalFileNames);
+                mesh = OV.ConvertThreeGeometryToMesh (child.geometry, materialIndex);
             }
+            if (child.name !== undefined && child.name !== null) {
+                mesh.SetName (child.name);
+            }
+            if (child.matrixWorld !== undefined && child.matrixWorld !== null) {
+                const matrix = new OV.Matrix (child.matrixWorld.elements);
+                const transformation = new OV.Transformation (matrix);
+                const determinant = matrix.Determinant ();
+                const mirrorByX = OV.IsNegative (determinant);
+                OV.TransformMesh (mesh, transformation);
+                if (mirrorByX) {
+                    OV.FlipMeshTrianglesOrientation (mesh);
+                }
+            }
+            this.model.AddMesh (mesh);
+            child.geometry.dispose ();
         });
+
         onFinish ();
     }
 };
