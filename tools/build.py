@@ -105,18 +105,14 @@ def CreatePackage (rootDir, websiteDir, packageDir, version):
 	if not os.path.exists (packageDir):
 		os.makedirs (packageDir)
 
-	libs = [
-		'three.min-129.js',
-		'three.license.md'
-	]
 	zipPath = os.path.join (packageDir, 'o3dv_' + version + '.zip')
 	zip = zipfile.ZipFile (zipPath, mode = 'w', compression = zipfile.ZIP_DEFLATED)
-	for lib in libs:
-		zip.write (os.path.join (websiteDir, 'libs', lib), lib)
 	for lib in os.listdir (os.path.join (websiteDir, 'libs', 'loaders')):
 		zip.write (os.path.join (websiteDir, 'libs', 'loaders', lib), 'libs/loaders/' + lib)
 	for lib in os.listdir (os.path.join (websiteDir, 'libs', 'three_loaders')):
 		zip.write (os.path.join (websiteDir, 'libs', 'three_loaders', lib), 'libs/three_loaders/' + lib)
+	zip.write (os.path.join (websiteDir, 'libs', 'three.min-129.js'), 'three.min-129.js')
+	zip.write (os.path.join (websiteDir, 'libs', 'three.license.md'), 'three.license.md')
 	zip.write (os.path.join (websiteDir, 'o3dv', 'o3dv.min.js'), 'o3dv.min-' + version + '.js')
 	zip.write (os.path.join (rootDir, 'LICENSE.md'), 'o3dv.license.md')
 	zip.close ()
