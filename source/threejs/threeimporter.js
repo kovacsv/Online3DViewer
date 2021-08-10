@@ -42,12 +42,14 @@ OV.ThreeLoaderFbx = class extends OV.ThreeLoader
     {
         return [
             'three_loaders/fflate.min.js',
+            'three_loaders/TGALoader.js',
             'three_loaders/FBXLoader.js'
         ];
     }
 
     CreateLoader (manager)
     {
+        manager.addHandler (/\.tga$/i, new THREE.TGALoader (manager));
         return new THREE.FBXLoader (manager);
     }
 
@@ -76,12 +78,14 @@ OV.ThreeLoaderDae = class extends OV.ThreeLoader
     GetExternalLibraries ()
     {
         return [
+            'three_loaders/TGALoader.js',
             'three_loaders/ColladaLoader.js'
         ];
     }
 
     CreateLoader (manager)
     {
+        manager.addHandler (/\.tga$/i, new THREE.TGALoader (manager));
         return new THREE.ColladaLoader (manager);
     }
 
@@ -162,11 +166,12 @@ OV.ThreeImporter = class extends OV.ImporterBase
             return;
         }
         
-        const libraries = this.GetExternalLibraries (loader);
+        const libraries = loader.GetExternalLibraries ();
         if (libraries === null) {
             onFinish ();
             return;
         }
+
         LoadLibraries (libraries, () => {
             this.LoadModel (loader, fileContent, onFinish);    
         }, () => {
@@ -185,18 +190,6 @@ OV.ThreeImporter = class extends OV.ImporterBase
         return null;
     }
 
-    GetExternalLibraries (loader)
-    {
-        let libraries = [
-            'three_loaders/TGALoader.js'
-        ];
-        let loaderLibraries = loader.GetExternalLibraries ();
-        for (let i = 0; i < loaderLibraries.length; i++) {
-            libraries.push (loaderLibraries[i]);
-        }
-        return libraries;
-    }
-
     LoadModel (loader, fileContent, onFinish)
     {
         let loadedObject = null;
@@ -206,8 +199,6 @@ OV.ThreeImporter = class extends OV.ImporterBase
                 this.OnThreeObjectsLoaded (loader, loadedObject, externalFileNames, onFinish);
             }
         });
-        // TODO
-        loadingManager.addHandler (/\.tga$/i, new THREE.TGALoader (loadingManager));
 
         const mainFileUrl = OV.CreateObjectUrl (fileContent);
         loadingManager.setURLModifier ((url) => {
@@ -230,6 +221,8 @@ OV.ThreeImporter = class extends OV.ImporterBase
         });
 
         const threeLoader = loader.CreateLoader (loadingManager);
+        console.log (threeLoader.parse.getElementsByTagName);
+
         if (threeLoader === null) {
             onFinish ();
             return;
@@ -359,6 +352,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
             if (child.name !== undefined && child.name !== null) {
                 mesh.SetName (child.name);
             }
+            // TODO: handle group transformation
             if (child.matrixWorld !== undefined && child.matrixWorld !== null) {
                 const matrix = new OV.Matrix (child.matrixWorld.elements);
                 const transformation = new OV.Transformation (matrix);
