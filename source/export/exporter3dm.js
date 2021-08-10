@@ -14,7 +14,7 @@ OV.Exporter3dm = class extends OV.ExporterBase
 	ExportContent (model, format, files, onFinish)
 	{
 		if (this.rhino === null) {
-			OV.LoadExternalLibrary ('rhino3dm.min.js').then (() => {
+			OV.LoadExternalLibrary ('loaders/rhino3dm.min.js').then (() => {
                 rhino3dm ().then ((rhino) => {
                     this.rhino = rhino;
                     this.ExportRhinoContent (model, files, onFinish);
