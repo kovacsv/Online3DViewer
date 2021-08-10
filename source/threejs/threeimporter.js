@@ -24,6 +24,11 @@ OV.ThreeLoader = class
     {
         
     }
+
+    GetUpDirection ()
+    {
+        return null;
+    }
 };
 
 OV.ThreeLoaderFbx = class extends OV.ThreeLoader
@@ -61,6 +66,11 @@ OV.ThreeLoaderFbx = class extends OV.ThreeLoader
             }
         });
     }
+
+    GetUpDirection ()
+    {
+        return OV.Direction.Y;
+    }
 };
 
 OV.ThreeLoaderDae = class extends OV.ThreeLoader
@@ -96,6 +106,11 @@ OV.ThreeLoaderDae = class extends OV.ThreeLoader
                 processor (child);
             }
         });
+    }
+
+    GetUpDirection ()
+    {
+        return OV.Direction.Y;
     }
 };
 
@@ -145,6 +160,51 @@ OV.ThreeLoaderVrml = class extends OV.ThreeLoader
             }
         });
     }
+
+    GetUpDirection ()
+    {
+        return OV.Direction.Y;
+    }
+};
+
+OV.ThreeLoader3mf = class extends OV.ThreeLoader
+{
+    constructor ()
+    {
+        super ();
+    }
+
+    GetExtension ()
+    {
+        return '3mf';
+    }
+
+    GetExternalLibraries ()
+    {
+        return [
+            'three_loaders/fflate.min.js',
+            'three_loaders/3MFLoader.js'
+        ];
+    }
+
+    CreateLoader (manager)
+    {
+        return new THREE.ThreeMFLoader (manager);
+    }
+
+    EnumerateMeshes (loadedObject, processor)
+    {
+        loadedObject.traverse ((child) => {
+            if (child.isMesh) {
+                processor (child);
+            }
+        });
+    }
+
+    GetUpDirection ()
+    {
+        return OV.Direction.Z;
+    }
 };
 
 OV.ThreeImporter = class extends OV.ImporterBase
@@ -155,7 +215,8 @@ OV.ThreeImporter = class extends OV.ImporterBase
         this.loaders = [
             new OV.ThreeLoaderFbx (),
             new OV.ThreeLoaderDae (),
-            new OV.ThreeLoaderVrml ()
+            new OV.ThreeLoaderVrml (),
+            new OV.ThreeLoader3mf ()
         ];
     }
 
@@ -182,17 +243,17 @@ OV.ThreeImporter = class extends OV.ImporterBase
     
     GetUpDirection ()
     {
-        return OV.Direction.Y;
+        return this.loader.GetUpDirection ();
     }    
     
     ClearContent ()
     {
-
+        this.loader = null;
     }
 
     ResetContent ()
     {
-
+        this.loader = null;
     }
 
     ImportContent (fileContent, onFinish)
@@ -209,20 +270,20 @@ OV.ThreeImporter = class extends OV.ImporterBase
             onFinish ();
         }
 
-        const loader = this.FindLoader ();
-        if (loader === null) {
+        this.loader = this.FindLoader ();
+        if (this.loader === null) {
             onFinish ();
             return;
         }
         
-        const libraries = loader.GetExternalLibraries ();
+        const libraries = this.loader.GetExternalLibraries ();
         if (libraries === null) {
             onFinish ();
             return;
         }
 
         LoadLibraries (libraries, () => {
-            this.LoadModel (loader, fileContent, onFinish);    
+            this.LoadModel (fileContent, onFinish);    
         }, () => {
             onFinish ();
         });
@@ -239,13 +300,13 @@ OV.ThreeImporter = class extends OV.ImporterBase
         return null;
     }
 
-    LoadModel (loader, fileContent, onFinish)
+    LoadModel (fileContent, onFinish)
     {
         let loadedObject = null;
         let externalFileNames = {};
         let loadingManager = new THREE.LoadingManager (() => {
             if (loadedObject !== null) {
-                this.OnThreeObjectsLoaded (loader, loadedObject, externalFileNames, onFinish);
+                this.OnThreeObjectsLoaded (loadedObject, externalFileNames, onFinish);
             }
         });
 
@@ -269,8 +330,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
             return url;
         });
 
-        const threeLoader = loader.CreateLoader (loadingManager);
-
+        const threeLoader = this.loader.CreateLoader (loadingManager);
         if (threeLoader === null) {
             onFinish ();
             return;
@@ -290,7 +350,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
         );
     }
 
-    OnThreeObjectsLoaded (loader, loadedObject, externalFileNames, onFinish)
+    OnThreeObjectsLoaded (loadedObject, externalFileNames, onFinish)
     {
         function ConvertThreeMaterialToMaterial (threeMaterial, externalFileNames)
         {
@@ -378,7 +438,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
         }
 
         let materialIdToIndex = {};
-        loader.EnumerateMeshes (loadedObject, (child) => {
+        this.loader.EnumerateMeshes (loadedObject, (child) => {
             let materialIndex = null;
             let mesh = null;
             if (Array.isArray (child.material)) {

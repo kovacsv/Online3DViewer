@@ -109,20 +109,12 @@ def CreatePackage (rootDir, websiteDir, packageDir, version):
 		'three.min-129.js',
 		'three.license.md'
 	]
-	externalLibs = [
-		'draco_decoder.js',
-		'draco_decoder.wasm',
-		'draco.license.md',
-		'rhino3dm.min.js',
-		'rhino3dm.wasm',
-		'rhino3dm.license.md'
-	]
 	zipPath = os.path.join (packageDir, 'o3dv_' + version + '.zip')
 	zip = zipfile.ZipFile (zipPath, mode = 'w', compression = zipfile.ZIP_DEFLATED)
 	for lib in libs:
 		zip.write (os.path.join (websiteDir, 'libs', lib), lib)
-	for lib in externalLibs:
-		zip.write (os.path.join (websiteDir, 'libs', lib), 'libs/' + lib)
+	for lib in os.listdir (os.path.join (websiteDir, 'libs', 'loaders')):
+		zip.write (os.path.join (websiteDir, 'libs', 'loaders', lib), 'libs/loaders/' + lib)
 	for lib in os.listdir (os.path.join (websiteDir, 'libs', 'three_loaders')):
 		zip.write (os.path.join (websiteDir, 'libs', 'three_loaders', lib), 'libs/three_loaders/' + lib)
 	zip.write (os.path.join (websiteDir, 'o3dv', 'o3dv.min.js'), 'o3dv.min-' + version + '.js')
