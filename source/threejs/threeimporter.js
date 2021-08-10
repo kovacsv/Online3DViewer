@@ -334,7 +334,11 @@ OV.ThreeImporter = class extends OV.ImporterBase
                     texture.name = textureName;
                     texture.url = dataUrl;
                     texture.buffer = base64Buffer.buffer;
-                    // TODO: texture offset, rotation, scale
+                    texture.rotation = threeMap.rotation;
+                    texture.offset.x = threeMap.offset.x;
+                    texture.offset.y = threeMap.offset.y;
+                    texture.scale.x = threeMap.repeat.x;
+                    texture.scale.y = threeMap.repeat.y;
                     return texture;
                 } catch (err) {
                     return null;
