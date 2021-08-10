@@ -99,6 +99,54 @@ OV.ThreeLoaderDae = class extends OV.ThreeLoader
     }
 };
 
+OV.ThreeLoaderVrml = class extends OV.ThreeLoader
+{
+    constructor ()
+    {
+        super ();
+    }
+
+    GetExtension ()
+    {
+        return 'wrl';
+    }
+
+    GetExternalLibraries ()
+    {
+        return [
+            'three_loaders/chevrotain.min.js',
+            'three_loaders/VRMLLoader.js'
+        ];
+    }
+
+    CreateLoader (manager)
+    {
+        return new THREE.VRMLLoader (manager);
+    }
+
+    EnumerateMeshes (loadedObject, processor)
+    {
+        loadedObject.traverse ((child) => {
+            if (child.isMesh) {
+                let needToProcess = true;
+                if (Array.isArray (child.material)) {
+                    for (let i = 0; i < child.material.length; i++) {
+                        if (child.material[i].side === THREE.BackSide) {
+                            needToProcess = false;
+                            break;
+                        }
+                    }
+                } else {
+                    needToProcess = (child.material.side !== THREE.BackSide);
+                }
+                if (needToProcess) {
+                    processor (child);
+                }
+            }
+        });
+    }
+};
+
 OV.ThreeImporter = class extends OV.ImporterBase
 {
     constructor ()
@@ -106,7 +154,8 @@ OV.ThreeImporter = class extends OV.ImporterBase
         super ();
         this.loaders = [
             new OV.ThreeLoaderFbx (),
-            new OV.ThreeLoaderDae ()
+            new OV.ThreeLoaderDae (),
+            new OV.ThreeLoaderVrml ()
         ];
     }
 
@@ -221,7 +270,6 @@ OV.ThreeImporter = class extends OV.ImporterBase
         });
 
         const threeLoader = loader.CreateLoader (loadingManager);
-        console.log (threeLoader.parse.getElementsByTagName);
 
         if (threeLoader === null) {
             onFinish ();
@@ -352,7 +400,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
             if (child.name !== undefined && child.name !== null) {
                 mesh.SetName (child.name);
             }
-            // TODO: handle group transformation
+            child.updateWorldMatrix (true, true);
             if (child.matrixWorld !== undefined && child.matrixWorld !== null) {
                 const matrix = new OV.Matrix (child.matrixWorld.elements);
                 const transformation = new OV.Transformation (matrix);
