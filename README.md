@@ -27,6 +27,7 @@ The repository is separated into two parts. See more information in the [Develop
 - ply (text and binary)
 - gltf (text and binary)
 - 3dm (experimental)
+- fbx (experimental)
 - off (text only)
 
 ### Export
