@@ -379,6 +379,10 @@ OV.ThreeImporter = class extends OV.ImporterBase
                     }
                 }
 
+                if (threeMap === undefined || threeMap === null) {
+                    return null;
+                }
+
                 if (threeMap.image === undefined || threeMap.image === null) {
                     return null;
                 }
@@ -404,9 +408,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
                     return null;
                 }
             }
-        
-            // TODO: PBR materials
-            // TODO: other material properties
+
             let material = new OV.Material (OV.MaterialType.Phong);
             material.name = threeMaterial.name;
             SetColor (material.color, threeMaterial.color);
@@ -415,13 +417,12 @@ OV.ThreeImporter = class extends OV.ImporterBase
             material.alphaTest = threeMaterial.alphaTest;
             if (threeMaterial.type === 'MeshPhongMaterial') {
                 SetColor (material.specular, threeMaterial.specular);
-                // TODO:
-                //SetColor (material.emissive, threeMaterial.emissive);
                 material.shininess = threeMaterial.shininess / 100.0;
             }
-            if (threeMaterial.map !== undefined && threeMaterial.map !== null) {
-                material.diffuseMap = CreateTexture (threeMaterial.map, externalFileNames);
-            }
+            material.diffuseMap = CreateTexture (threeMaterial.map, externalFileNames);
+            material.normalMap = CreateTexture (threeMaterial.normalMap, externalFileNames);
+            material.bumpMap = CreateTexture (threeMaterial.bumpMap, externalFileNames);
+
             return material;
         }
 
