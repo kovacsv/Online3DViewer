@@ -453,7 +453,16 @@ OV.Website = class
                 } else if (importError.code === OV.ImportErrorCode.ImportFailed) {
                     reason = 'import_failed';
                 }
-                this.eventHandler.HandleEvent ('model_load_failed', { reason : reason });
+                let extensions = [];
+                let importer = this.modelLoader.GetImporter ();
+                let fileList = importer.GetFileList ().GetFiles ();
+                for (let i = 0; i < fileList.length; i++) {
+                    extensions.push (fileList[i].extension);
+                }
+                this.eventHandler.HandleEvent ('model_load_failed', {
+                    reason : reason,
+                    extensions : extensions
+                });
             }
         });
     }
