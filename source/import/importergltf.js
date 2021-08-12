@@ -734,7 +734,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
             }
             let metallicFactor = gltfMaterial.pbrMetallicRoughness.metallicFactor;
             if (metallicFactor !== undefined) {
-                material.metallic = metallicFactor;
+                material.metalness = metallicFactor;
             }
             let roughnessFactor = gltfMaterial.pbrMetallicRoughness.roughnessFactor;
             if (roughnessFactor !== undefined) {
