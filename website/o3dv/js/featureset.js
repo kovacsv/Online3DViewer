@@ -1,4 +1,4 @@
 OV.FeatureSet =
 {
-    SettingsPanel : true
+    
 };

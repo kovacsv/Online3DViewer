@@ -20,12 +20,24 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
 
     InitSettings (settings, defaultSettings, callbacks)
     {
-        this.backgroundColorInput = this.AddColorParameters ('Background Color', 'Changing the background color affects only the visualization.', settings.backgroundColor, callbacks.onBackgroundColorChange);
-        this.defaultColorInput = this.AddColorParameters ('Default Color', 'Default color is used when no material was defined in the file.', settings.defaultColor, callbacks.onDefaultColorChange);
+        this.backgroundColorInput = this.AddColorParameters (
+            'Background Color',
+            'Changing the background color affects only the visualization.',
+            ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'],
+            settings.backgroundColor,
+            callbacks.onBackgroundColorChange
+        );
+        this.defaultColorInput = this.AddColorParameters (
+            'Default Color',
+            'Default color is used when no material was defined in the file.',
+            ['#ffffff', '#e3e3e3', '#cc3333', '#fac832', '#4caf50', '#3393bd', '#9b27b0', '#fda4b8'],
+            settings.defaultColor,
+            callbacks.onDefaultColorChange
+        );
         this.AddResetToDefaultsButton (defaultSettings, callbacks);
     }
 
-    AddColorParameters (title, description, defaultValue, onChange)
+    AddColorParameters (title, description, predefinedColors, defaultValue, onChange)
     {
         let contentDiv = $('<div>').addClass ('ov_sidebar_settings_content').appendTo (this.contentDiv);
         let titleDiv = $('<div>').addClass ('ov_sidebar_subtitle').appendTo (contentDiv);
@@ -36,16 +48,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             el : colorInput.get (0),
             theme : 'monolith',
             appClass : 'ov_sidebar_color',
-            swatches : [
-                '#225588',
-                '#225588',
-                '#225588',
-                '#225588',
-                '#225588',
-                '#225588',
-                '#225588',
-                '#225588',
-            ],
+            swatches : predefinedColors,
             comparison : false,
             default : '#' + OV.ColorToHexString (defaultValue),
             components : {
@@ -64,19 +67,14 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
                 }
             }
         });
-        let selectedColor = null;
         pickr.on ('change', (color, source, instance) => {
-            selectedColor = color;
-            let rgbaColor = selectedColor.toRGBA ();
-            let color2 = new OV.Color (rgbaColor[0], rgbaColor[1], rgbaColor[2]);
-            onChange (color2);
-    }).on ('hide', instance => {
-            if (selectedColor !== null) {
-                let rgbaColor = selectedColor.toRGBA ();
-                let color = new OV.Color (rgbaColor[0], rgbaColor[1], rgbaColor[2]);
-                onChange (color);
-            }
-            console.log ('Event: "hide"', instance);
+            let rgbaColor = color.toRGBA ();
+            let ovColor = new OV.Color (
+                parseInt (rgbaColor[0], 10),
+                parseInt (rgbaColor[1], 10),
+                parseInt (rgbaColor[2], 10)
+            );
+            onChange (ovColor);
         });
         return pickr;
     }

@@ -528,19 +528,15 @@ OV.Website = class
                 image : 'details',
                 title : 'Details panel',
                 button : null
+            },
+            {
+                panelId : null,
+                panel : settingsPanel,
+                image : 'settings',
+                title : 'Settings panel',
+                button : null
             }
         ];
-        if (OV.FeatureSet.SettingsPanel) {
-            sidebarPanels.push (
-                {
-                    panelId : null,
-                    panel : settingsPanel,
-                    image : 'settings',
-                    title : 'Settings panel',
-                    button : null
-                }
-            );
-        }
 
         for (let id = 0; id < sidebarPanels.length; id++) {
             let sidebarPanel = sidebarPanels[id];
