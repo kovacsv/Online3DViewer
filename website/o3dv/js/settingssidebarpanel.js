@@ -52,7 +52,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             comparison : false,
             default : '#' + OV.ColorToHexString (defaultValue),
             components : {
-                preview : true,
+                preview : false,
                 opacity : false,
                 hue : true,
                 interaction: {
