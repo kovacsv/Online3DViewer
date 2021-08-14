@@ -254,6 +254,17 @@ OV.IsSolid = function (element)
     return true;
 };
 
+OV.HasDefaultMaterial = function (model)
+{
+    for (let i = 0; i < model.MaterialCount (); i++) {
+        let material = model.GetMaterial (i);
+        if (material.isDefault) {
+            return true;
+        }
+    }
+    return false;
+};
+
 OV.ReplaceDefaultMaterialColor = function (model, color)
 {
     for (let i = 0; i < model.MaterialCount (); i++) {

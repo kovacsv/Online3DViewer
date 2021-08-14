@@ -57,6 +57,13 @@ OV.Sidebar = class
         return null;
     }
 
+    HidePopups ()
+    {
+        for (let id = 0; id < this.panels.length; id++) {
+            this.panels[id].HidePopups ();
+        }
+    }
+    
     Resize ()
     {
         for (let id = 0; id < this.panels.length; id++) {

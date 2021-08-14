@@ -29,6 +29,7 @@
 		"globals": {
 			"OV": "writable",
 			"$": "readonly",
+			"Pickr": "readonly",
 			"THREE": "readonly",
 			"DracoDecoderModule": "readonly",
 			"rhino3dm": "readonly",

@@ -51,4 +51,9 @@ OV.SidebarPanel = class
     {
         this.contentDiv.empty ();
     }
+
+    HidePopups ()
+    {
+        
+    }
 };

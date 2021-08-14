@@ -287,7 +287,8 @@ div.ov_sidebar_title img.ov_sidebar_title_img
 
 div.ov_sidebar_subtitle
 {
-
+	font-weight: bold;
+	overflow: auto;
 }
 
 div.ov_sidebar_content
@@ -297,33 +298,34 @@ div.ov_sidebar_content
 
 div.ov_sidebar_content div.ov_sidebar_settings_content
 {
-	margin: 10px 0px;
+	margin-bottom: 20px;
 	overflow: auto;
 }
 
-div.ov_sidebar_content div.ov_sidebar_small_column
+div.ov_sidebar_content div.ov_sidebar_settings_description
 {
-	width: 50px;
-	float: left;
+	color: #838383;
+	margin: 10px 0px 0px 43px;
 }
 
-div.ov_sidebar_content div.ov_sidebar_column
-{
-	width: 250px;
-	float: left;
-}
-
-div.ov_sidebar_content input.ov_sidebar_color
+div.ov_sidebar_content button.pcr-button
 {
 	width: 30px;
-	height: 18px;
+	height: 15px;
+	margin: 3px 10px 3px 3px;
+	border: 1px solid #cccccc;
+	outline: none;
+	float: left;
 }
 
 div.ov_sidebar_content div.ov_sidebar_settings_button
 {
 	color: #3393bd;
-	text-align: right;
-	margin-top: 25px;
+	background: transparent;
+	text-align: center;
+	padding: 3px;
+	border: 1px solid #3393bd;
+	border-radius: 5px;
 	cursor: pointer;
 }
 

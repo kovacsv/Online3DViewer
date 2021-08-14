@@ -106,15 +106,21 @@ OV.Website = class
 
     ClearModel ()
     {
-        if (this.dialog !== null) {
-            this.dialog.Hide ();
-            this.dialog = null;
-        }
+        this.HidePopups ();
         this.model = null;
         this.parameters.introDiv.hide ();
         this.ShowViewer (false);
         this.viewer.Clear ();
         this.navigator.Clear ();
+    }
+
+    HidePopups ()
+    {
+        if (this.dialog !== null) {
+            this.dialog.Hide ();
+            this.dialog = null;
+        }
+        this.sidebar.HidePopups ();
     }
     
     OnModelFinished (importResult, threeMeshes)
@@ -548,7 +554,7 @@ OV.Website = class
                     ShowSidebar (this.sidebar, this.cookieHandler, sidebarPanels, null);
                     this.Resize ();
                 }
-            });            
+            });
         }
 
         let defaultSettings = new OV.WebsiteSettings ();
