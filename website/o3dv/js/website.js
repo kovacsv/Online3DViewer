@@ -520,7 +520,10 @@ OV.Website = class
         }
 
         this.detailsPanel = new OV.DetailsSidebarPanel (this.parameters.sidebarDiv);
-        let settingsPanel = new OV.SettingsSidebarPanel (this.parameters.sidebarDiv);
+        let settingsPanel = null;
+        if (OV.FeatureSet.ColorSettings) {
+            settingsPanel = new OV.SettingsSidebarPanel (this.parameters.sidebarDiv);
+        }
 
         let sidebarPanels = [
             {
@@ -529,15 +532,17 @@ OV.Website = class
                 image : 'details',
                 title : 'Details panel',
                 button : null
-            },
-            {
+            }
+        ];
+        if (OV.FeatureSet.ColorSettings) {
+            sidebarPanels.push ({
                 panelId : null,
                 panel : settingsPanel,
                 image : 'settings',
                 title : 'Settings panel',
                 button : null
-            }
-        ];
+            });
+        }
 
         for (let id = 0; id < sidebarPanels.length; id++) {
             let sidebarPanel = sidebarPanels[id];
@@ -554,27 +559,29 @@ OV.Website = class
             });
         }
 
-        let defaultSettings = new OV.WebsiteSettings ();
-        settingsPanel.InitSettings (
-            this.settings,
-            defaultSettings,
-            {
-                onBackgroundColorChange : (newVal) => {
-                    this.settings.backgroundColor = newVal;
-                    this.settings.SaveToCookies (this.cookieHandler);
-                    this.viewer.SetBackgroundColor (newVal);
-                },
-                onDefaultColorChange : (newVal) => {
-                    this.settings.defaultColor = newVal;
-                    this.settings.SaveToCookies (this.cookieHandler);
-                    if (this.modelLoader.defaultMaterial !== null) {
-                        OV.ReplaceDefaultMaterialColor (this.model, newVal);
-                        this.modelLoader.ReplaceDefaultMaterialColor (newVal);
+        if (OV.FeatureSet.ColorSettings) {
+            let defaultSettings = new OV.WebsiteSettings ();
+            settingsPanel.InitSettings (
+                this.settings,
+                defaultSettings,
+                {
+                    onBackgroundColorChange : (newVal) => {
+                        this.settings.backgroundColor = newVal;
+                        this.settings.SaveToCookies (this.cookieHandler);
+                        this.viewer.SetBackgroundColor (newVal);
+                    },
+                    onDefaultColorChange : (newVal) => {
+                        this.settings.defaultColor = newVal;
+                        this.settings.SaveToCookies (this.cookieHandler);
+                        if (this.modelLoader.defaultMaterial !== null) {
+                            OV.ReplaceDefaultMaterialColor (this.model, newVal);
+                            this.modelLoader.ReplaceDefaultMaterialColor (newVal);
+                        }
+                        this.viewer.Render ();
                     }
-                    this.viewer.Render ();
                 }
-            }
-        );
+            );
+        }
 
         let show = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
         ShowSidebar (this.sidebar, this.cookieHandler, sidebarPanels, show ? sidebarPanels[0].panelId : null);

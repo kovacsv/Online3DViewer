@@ -23,8 +23,8 @@ OV.ShowSharingDialog = function (importer, settings, camera)
         let builder = OV.CreateUrlBuilder ();
         builder.AddModelUrls (params.files);
         builder.AddCamera (params.camera);
-        builder.AddBackground (params.background);
-        builder.AddColor (params.color);
+        builder.AddBackground (params.backgroundColor);
+        builder.AddColor (params.defaultColor);
         let hashParameters = builder.GetParameterList ();
 
         let embeddingCode = '';
@@ -79,14 +79,19 @@ OV.ShowSharingDialog = function (importer, settings, camera)
             embeddingCodeParams.camera = checked ? camera : null;
             embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
         });
-        AddCheckboxLine (optionsSection, 'Use overridden background color', 'embed_background', (checked) => {
-            embeddingCodeParams.background = checked ? settings.backgroundColor : null;
-            embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
-        });
-        AddCheckboxLine (optionsSection, 'Use overridden default color', 'embed_color', (checked) => {
-            embeddingCodeParams.color = checked ? settings.defaultColor : null;
-            embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
-        });
+        if (OV.FeatureSet.ColorSettings) {
+            AddCheckboxLine (optionsSection, 'Use overridden background color', 'embed_background', (checked) => {
+                embeddingCodeParams.backgroundColor = checked ? settings.backgroundColor : null;
+                embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
+            });
+            AddCheckboxLine (optionsSection, 'Use overridden default color', 'embed_color', (checked) => {
+                embeddingCodeParams.defaultColor = checked ? settings.defaultColor : null;
+                embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
+            });
+        } else {
+            embeddingCodeParams.backgroundColor = null;
+            embeddingCodeParams.defaultColor = null;
+        }
         embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
     }
 
@@ -112,8 +117,8 @@ OV.ShowSharingDialog = function (importer, settings, camera)
     let embeddingCodeParams = {
         files : modelFiles,
         camera : camera,
-        background : settings.backgroundColor,
-        color : settings.defaultColor
+        backgroundColor : settings.backgroundColor,
+        defaultColor : settings.defaultColor
     };
 
     let dialog = new OV.ButtonDialog ();
