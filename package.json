@@ -14,6 +14,7 @@
 		"svgo": "^2.3.1"
 	},
 	"scripts": {
+		"start": "http-server",
 		"test": "mocha test",
 		"build": "node tools/run_python.js tools/build.py",
 		"update": "node tools/run_python.js tools/update.py",
