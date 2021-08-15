@@ -99,6 +99,7 @@ OV.Website = class
     {
         if (show) {
             this.parameters.mainDiv.show ();
+            this.Resize ();
         } else {
             this.parameters.mainDiv.hide ();
         }
@@ -133,7 +134,6 @@ OV.Website = class
         this.viewer.SetUpVector (importResult.upVector, false);
         this.navigator.FillTree (importResult);
         this.FitModelToWindow (true);
-        this.Resize ();
     }
 
     OnModelClicked (button, isCtrlPressed, mouseCoordinates)
