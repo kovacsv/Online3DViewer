@@ -44,11 +44,11 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         $('<div>').addClass ('ov_sidebar_settings_description').html (description).appendTo (contentDiv);
         let colorInput = $('<div>').addClass ('color-picker').addClass ('ov_sidebar_color').appendTo (titleDiv);
         $('<span>').html (title).appendTo (titleDiv);
-        // TODO: pop up to the left
         const pickr = Pickr.create ({
             el : colorInput.get (0),
             theme : 'monolith',
             appClass : 'ov_sidebar_color',
+            position : 'left-start',
             swatches : predefinedColors,
             comparison : false,
             default : '#' + OV.ColorToHexString (defaultValue),
