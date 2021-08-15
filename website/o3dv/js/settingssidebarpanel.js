@@ -82,7 +82,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
 
     AddResetToDefaultsButton (defaultSettings, callbacks)
     {
-        let resetToDefaultsButton = $('<div>').addClass ('ov_button').addClass ('outline').html ('Reset to Default').appendTo (this.contentDiv);
+        let resetToDefaultsButton = $('<div>').addClass ('ov_button').addClass ('outline').addClass ('ov_sidebar_button').html ('Reset to Default').appendTo (this.contentDiv);
         resetToDefaultsButton.click (() => {
             this.backgroundColorInput.setColor ('#' + OV.ColorToHexString (defaultSettings.backgroundColor));
             this.defaultColorInput.setColor ('#' + OV.ColorToHexString (defaultSettings.defaultColor));
