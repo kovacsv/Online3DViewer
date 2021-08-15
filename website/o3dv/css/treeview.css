@@ -1,0 +1,64 @@
+div.ov_tree_view
+{
+	user-select: none;
+}
+
+div.ov_tree_view div.ov_tree_item
+{
+	overflow: auto;
+	border-radius: 5px;
+	padding-right: 5px;
+}
+
+div.ov_tree_view div.ov_tree_item.selected
+{
+	background: #eeeeee;
+	font-weight: bold;;
+}
+
+div.ov_tree_view div.ov_tree_item.clickable
+{
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+div.ov_tree_view div.ov_tree_item_button_container
+{
+	float: right;
+}
+
+div.ov_tree_view img.ov_tree_item_button
+{
+	padding: 5px;
+	float: left;
+	cursor: pointer;
+}
+
+div.ov_tree_view img.ov_tree_item_icon
+{
+	padding: 5px;
+	float: left;
+}
+
+div.ov_tree_view div.ov_tree_item_name
+{
+	padding: 4px 5px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+div.ov_tree_view div.ov_tree_view_children
+{
+	margin-left: 28px;
+}
+
+@media (hover)
+{
+
+div.ov_tree_view div.ov_tree_item.clickable:hover
+{
+	background: #e4f4ff;
+}
+
+}

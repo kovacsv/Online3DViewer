@@ -108,7 +108,7 @@ OV.ExportDialog = class
         this.formatParameters.formatSettingsDiv = $('<div>').addClass ('ov_dialog_section').height (optionsHeight).appendTo (contentDiv);
         for (let i = 0; i < this.exportFormats.length; i++) {
             let exportFormat = this.exportFormats[i];
-            let exportFormatButton = $('<div>').addClass ('ov_dialog_select_option').html (exportFormat.name).width (buttonWidth).appendTo (exportFormatSelect);
+            let exportFormatButton = $('<div>').addClass ('ov_button').addClass ('outline').addClass ('ov_dialog_select_option').html (exportFormat.name).width (buttonWidth).appendTo (exportFormatSelect);
             this.formatParameters.exportFormatButtonDivs.push (exportFormatButton);
             exportFormatButton.click (() => {
                 this.OnExportFormatSelect (i);
@@ -126,9 +126,9 @@ OV.ExportDialog = class
         for (let i = 0; i < this.formatParameters.exportFormatButtonDivs.length; i++) {
             let exportFormatButtonDiv = this.formatParameters.exportFormatButtonDivs[i];
             if (i === exportFormatIndex) {
-                exportFormatButtonDiv.addClass ('selected');
+                exportFormatButtonDiv.removeClass ('outline');
             } else {
-                exportFormatButtonDiv.removeClass ('selected');
+                exportFormatButtonDiv.addClass ('outline');
             }
         }
 

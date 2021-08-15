@@ -42,7 +42,7 @@ OV.ShowSharingDialog = function (importer, settings, camera)
         let copiedText = 'copied';
         let container = $('<div>').addClass ('ov_dialog_copyable_input').appendTo (parentDiv);
         let input = $('<input>').prop ('readonly', true).appendTo (container);
-        let button = $('<div>').addClass ('button').html (copyText).appendTo (container);
+        let button = $('<div>').addClass ('ov_button').addClass ('outline').addClass ('ov_dialog_copyable_input_button').html (copyText).appendTo (container);
         button.click (() => {
             OV.CopyToClipboard (getText ());
             button.fadeOut (200, () => {

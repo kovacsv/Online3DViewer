@@ -1,0 +1,50 @@
+img.ov_svg_icon
+{
+	width: 18px;
+	height: 18px;
+}
+
+div.ov_thin_scrollbar
+{
+	scrollbar-color: #cccccc transparent;
+	scrollbar-width: thin;
+}
+
+div.ov_thin_scrollbar::-webkit-scrollbar
+{
+	width: 3px;
+	height: 3px;
+}
+
+div.ov_thin_scrollbar::-webkit-scrollbar-thumb
+{
+	background: #cccccc;
+}
+
+div.ov_button
+{
+	color: var(--ov_primary_text_color);
+	background: var(--ov_primary_color);
+	text-align: center;
+	padding: 3px;
+	border: 1px solid var(--ov_primary_color);
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+div.ov_button.outline
+{
+	color: var(--ov_primary_color);
+	background: transparent;
+}
+
+div.ov_tooltip
+{
+	color: var(--ov_foreground_color);
+	background: var(--ov_background_color);
+	border: 1px solid #dddddd;
+	padding: 5px 10px;
+	border-radius: 5px;
+	position: absolute;
+	box-shadow: 0px 0px 3px #cccccc;
+}

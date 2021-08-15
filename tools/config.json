@@ -90,6 +90,11 @@
 		"website/o3dv/js/embed.js"
 	],
 	"website_files_css" : [
-		"website/o3dv/css/website.css"
+		"website/o3dv/css/core.css",
+		"website/o3dv/css/controls.css",
+		"website/o3dv/css/dialogs.css",
+		"website/o3dv/css/treeview.css",
+		"website/o3dv/css/website.css",
+		"website/o3dv/css/embed.css"
 	]
 }

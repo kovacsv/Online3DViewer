@@ -15,7 +15,7 @@ html, body
 
 a
 {
-	color: #3393bd;
+	color: var(--ov_primary_color);
 	text-decoration: none;
 }
 

@@ -44,6 +44,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         $('<div>').addClass ('ov_sidebar_settings_description').html (description).appendTo (contentDiv);
         let colorInput = $('<div>').addClass ('color-picker').addClass ('ov_sidebar_color').appendTo (titleDiv);
         $('<span>').html (title).appendTo (titleDiv);
+        // TODO: pop up to the left
         const pickr = Pickr.create ({
             el : colorInput.get (0),
             theme : 'monolith',
@@ -81,7 +82,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
 
     AddResetToDefaultsButton (defaultSettings, callbacks)
     {
-        let resetToDefaultsButton = $('<div>').addClass ('ov_sidebar_settings_button').html ('Reset to Default').appendTo (this.contentDiv);
+        let resetToDefaultsButton = $('<div>').addClass ('ov_button').addClass ('outline').html ('Reset to Default').appendTo (this.contentDiv);
         resetToDefaultsButton.click (() => {
             this.backgroundColorInput.setColor ('#' + OV.ColorToHexString (defaultSettings.backgroundColor));
             this.defaultColorInput.setColor ('#' + OV.ColorToHexString (defaultSettings.defaultColor));

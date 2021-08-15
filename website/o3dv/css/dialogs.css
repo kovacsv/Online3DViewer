@@ -1,0 +1,253 @@
+
+div.ov_modal_overlay
+{
+	position: absolute;
+}
+
+div.ov_dialog
+{
+	color: var(--ov_foreground_color);
+	background: var(--ov_background_color);
+	width: 400px;
+	padding: 20px;
+	box-shadow: 0px 0px 10px #cccccc;
+	border-radius: 5px;
+}
+
+div.ov_dialog div.ov_dialog_title
+{
+	font-size: 19px;
+	font-weight: bold;
+}
+
+div.ov_dialog div.ov_dialog_inner_title
+{
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+
+div.ov_dialog div.ov_dialog_content
+{
+	padding: 20px 0px;
+	overflow: auto;
+}
+
+div.ov_dialog div.ov_dialog_section
+{
+	margin: 10px 0px;
+	overflow: auto;
+}
+
+div.ov_dialog div.ov_dialog_buttons
+{
+	overflow: auto;
+}
+
+div.ov_dialog div.ov_dialog_buttons_inner
+{
+	float: right;
+	overflow: auto;
+}
+
+div.ov_dialog div.ov_dialog_buttons div.ov_dialog_button
+{
+	margin-left: 10px;
+	width: 80px;
+	float: left;
+}
+
+div.ov_dialog div.ov_dialog_message
+{
+	overflow: auto;
+}
+
+div.ov_dialog div.ov_dialog_submessage
+{
+	margin-top: 10px;
+	font-size: 14px;
+}
+
+div.ov_dialog textarea.ov_dialog_textarea
+{
+	margin: 10px 0px;
+	width: 100%;
+	height: 120px;
+	border: 1px solid #cccccc;
+	outline: none;
+	box-sizing: border-box;
+}
+
+div.ov_dialog div.ov_dialog_select
+{
+	margin: 20px 0px;
+	overflow: auto;
+}
+
+div.ov_dialog div.ov_dialog_select div.ov_dialog_select_option
+{
+	margin-right: 5px;
+	float: left;
+}
+
+div.ov_dialog div.ov_dialog_file_list
+{
+	max-height: 105px;
+	overflow: auto;
+}
+
+div.ov_dialog a.ov_dialog_file_link
+{
+	padding: 5px;
+	display: block;
+	overflow: auto;
+	border-radius: 5px;
+}
+
+div.ov_dialog img.ov_dialog_file_link_icon
+{
+	margin-right: 10px;
+	float: left;
+}
+
+div.ov_dialog div.ov_dialog_file_link_text
+{
+	float: left;
+}
+
+div.ov_dialog div.ov_dialog_copyable_input
+{
+	padding: 3px;
+	border: 1px solid #dddddd;
+	border-radius: 5px;
+	overflow: auto;
+}
+
+div.ov_dialog div.ov_dialog_copyable_input input
+{
+	color: #666666;
+	width: 70%;
+	margin-top: 6px;
+	box-sizing: border-box;
+	outline: none;
+	float: left;
+	border: 0px;
+	box-sizing: border-box;
+}
+
+div.ov_dialog div.ov_dialog_copyable_input div.ov_dialog_copyable_input_button
+{
+	width: 28%;
+	margin-left: 0px;
+	box-sizing: border-box;
+	cursor: pointer;
+	float: right;
+}
+
+div.ov_dialog div.ov_dialog_row
+{
+	padding: 2px 0px;
+	overflow: auto;
+}
+
+div.ov_dialog input.ov_dialog_checkradio
+{
+	margin-right: 10px;
+}
+
+div.ov_popup
+{
+	color: var(--ov_foreground_color);
+	background: var(--ov_background_color);
+	width: 200px;
+	padding: 10px;
+	box-shadow: 0px 0px 10px #cccccc;
+	border-radius: 5px;
+}
+
+div.ov_popup div.ov_popup_list
+{
+	max-height: 200px;
+	overflow: auto;
+}
+
+div.ov_popup div.ov_popup_list_item
+{
+	padding: 10px;
+	border-radius: 5px;
+	cursor: pointer;
+	overflow: auto;
+}
+
+div.ov_popup img.ov_popup_list_item_icon
+{
+	margin-right: 10px;
+	margin-top: 2px;
+	float: left;
+}
+
+div.ov_popup div.ov_popup_list_item_icon
+{
+	float: left;
+}
+
+div.ov_popup div.ov_popup_list_item_name
+{
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+div.ov_progress
+{
+	color: var(--ov_foreground_color);
+	background: var(--ov_background_color);
+	text-align: center;
+	width: 400px;
+	padding: 20px;
+	box-shadow: 0px 0px 10px #cccccc;
+	border-radius: 5px;
+}
+
+div.ov_progress img.ov_progress_img
+{
+	height: 80px;
+	margin-bottom: 10px;
+	display: inline;
+}
+
+div.ov_progress div.ov_progress_text
+{
+	font-size: 19px;
+	text-align: center;
+}
+
+
+@media (hover)
+{
+
+div.ov_dialog a.ov_dialog_file_link:hover
+{
+	background: #e4f4ff;
+}
+
+div.ov_popup div.ov_popup_list_item:hover
+{
+	background: #e4f4ff;
+}
+
+}
+
+@media only screen and (max-width: 700px)
+{
+
+div.ov_dialog
+{
+	max-width: 80%;
+}
+
+div.ov_progress
+{
+	max-width: 80%;
+}
+
+}

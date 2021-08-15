@@ -1,39 +1,3 @@
-@font-face
-{
-	font-family: Quicksand;
-	src: url('Quicksand/Quicksand-Regular.ttf');
-}
-
-html, body
-{
-	color: #000000;
-	background: #ffffff;
-	font-size: 16px;
-	font-family: Quicksand, Helvetica, sans-serif;
-	width: 100%;
-	height: 100%;
-	margin: 0px;
-	padding: 0px;
-	overflow: hidden;
-}
-
-a
-{
-	color: #3393bd;
-	text-decoration: none;
-}
-
-img
-{
-	display: block;
-}
-
-img.ov_svg_icon
-{
-	width: 18px;
-	height: 18px;
-}
-
 div.ov_color_circle
 {
 	background: #ffffff;
@@ -72,7 +36,6 @@ div.title div.logo_text
 {
 	font-size: 16px;
 	font-weight: bold;
-	color: #000000;
 	padding: 10px;
 	float: left;
 }
@@ -131,7 +94,7 @@ div.intro div.intro_big_text
 
 div.main
 {
-
+	overflow: auto;
 }
 
 div.main_navigator
@@ -161,30 +124,6 @@ div.main_viewer canvas
 	border: 1px solid #dddddd;
 	outline: none;
 	display: block;
-}
-
-div.embed_viewer
-{
-
-}
-
-div.embed_viewer img.embed_logo
-{
-	height: 40px;
-	position: absolute;
-	right: 10px;
-	bottom: 10px;
-}
-
-div.ov_tooltip
-{
-	color: #000000;
-	background: #ffffff;
-	border: 1px solid #dddddd;
-	padding: 5px 10px;
-	border-radius: 5px;
-	position: absolute;
-	box-shadow: 0px 0px 3px #cccccc;
 }
 
 div.ov_toolbar
@@ -317,323 +256,9 @@ div.ov_sidebar_content button.pcr-button
 	float: left;
 }
 
-div.ov_sidebar_content div.ov_sidebar_settings_button
-{
-	color: #3393bd;
-	background: transparent;
-	text-align: center;
-	padding: 3px;
-	border: 1px solid #3393bd;
-	border-radius: 5px;
-	cursor: pointer;
-}
-
-div.ov_tree_view
-{
-	user-select: none;
-}
-
-div.ov_tree_view div.ov_tree_item
-{
-	overflow: auto;
-	border-radius: 5px;
-	padding-right: 5px;
-}
-
-div.ov_tree_view div.ov_tree_item.selected
-{
-	background: #eeeeee;
-	font-weight: bold;;
-}
-
-div.ov_tree_view div.ov_tree_item.clickable
-{
-	cursor: pointer;
-	border-radius: 5px;
-}
-
-div.ov_tree_view div.ov_tree_item_button_container
-{
-	float: right;
-}
-
-div.ov_tree_view img.ov_tree_item_button
-{
-	padding: 5px;
-	float: left;
-	cursor: pointer;
-}
-
-div.ov_tree_view img.ov_tree_item_icon
-{
-	padding: 5px;
-	float: left;
-}
-
-div.ov_tree_view div.ov_tree_item_name
-{
-	padding: 4px 5px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-div.ov_tree_view div.ov_tree_view_children
-{
-	margin-left: 28px;
-}
-
-div.ov_modal_overlay
-{
-	
-}
-
-div.ov_dialog
-{
-	background: #ffffff;
-	width: 400px;
-	padding: 20px;
-	box-shadow: 0px 0px 10px #cccccc;
-	border-radius: 5px;
-}
-
-div.ov_dialog div.ov_dialog_title
-{
-	font-size: 19px;
-	font-weight: bold;
-}
-
-div.ov_dialog div.ov_dialog_inner_title
-{
-	font-weight: bold;
-	margin-bottom: 10px;
-}
-
-div.ov_dialog div.ov_dialog_content
-{
-	padding: 20px 0px;
-	overflow: auto;
-}
-
-div.ov_dialog div.ov_dialog_section
-{
-	margin: 10px 0px;
-	overflow: auto;
-}
-
-div.ov_dialog div.ov_dialog_buttons
-{
-	overflow: auto;
-}
-
-div.ov_dialog div.ov_dialog_buttons_inner
-{
-	float: right;
-	overflow: auto;
-}
-
-div.ov_dialog div.ov_dialog_button
-{
-	color: #ffffff;
-	background: #3393bd;
-	text-align: center;
-	margin-left: 10px;
-	padding: 3px;
-	width: 80px;
-	border: 1px solid #3393bd;
-	border-radius: 5px;
-	cursor: pointer;
-	float: left;
-}
-
-div.ov_dialog div.ov_dialog_button.outline
-{
-	color: #3393bd;
-	background: transparent;
-}
-
-div.ov_dialog div.ov_dialog_message
-{
-
-}
-
-div.ov_dialog div.ov_dialog_submessage
-{
-	margin-top: 10px;
-	font-size: 14px;
-}
-
-div.ov_dialog textarea.ov_dialog_textarea
-{
-	margin: 10px 0px;
-	width: 100%;
-	height: 120px;
-	border: 1px solid #cccccc;
-	outline: none;
-	box-sizing: border-box;
-}
-
-div.ov_dialog div.ov_dialog_select
-{
-	margin: 20px 0px;
-	overflow: auto;
-}
-
-div.ov_dialog div.ov_dialog_select_option
-{
-	color: #3393bd;
-	text-align: center;
-	padding: 3px;
-	margin-right: 5px;
-	border: 1px solid #3393bd;
-	border-radius: 5px;
-	cursor: pointer;
-	float: left;
-}
-
-div.ov_dialog div.ov_dialog_select_option.selected
-{
-	color: #ffffff;
-	background: #3393bd;
-}
-
-div.ov_dialog div.ov_dialog_file_list
-{
-	max-height: 105px;
-	overflow: auto;
-}
-
-div.ov_dialog a.ov_dialog_file_link
-{
-	padding: 5px;
-	display: block;
-	overflow: auto;
-	border-radius: 5px;
-}
-
-div.ov_dialog img.ov_dialog_file_link_icon
-{
-	margin-right: 10px;
-	float: left;
-}
-
-div.ov_dialog div.ov_dialog_file_link_text
-{
-	float: left;
-}
-
-div.ov_dialog div.ov_dialog_copyable_input
-{
-	padding: 3px;
-	border: 1px solid #dddddd;
-	border-radius: 5px;
-	overflow: auto;
-}
-
-div.ov_dialog div.ov_dialog_copyable_input input
-{
-	color: #666666;
-	width: 70%;
-	margin-top: 6px;
-	box-sizing: border-box;
-	outline: none;
-	float: left;
-	border: 0px;
-	box-sizing: border-box;
-}
-
-div.ov_dialog div.ov_dialog_copyable_input div.button
-{
-	color: #3393bd;
-	width: 28%;
-	text-align: center;
-	padding: 3px;
-	border: 1px solid #3393bd;
-	border-radius: 5px;
-	box-sizing: border-box;
-	cursor: pointer;
-	float: right;
-}
-
-div.ov_dialog div.ov_dialog_row
-{
-	padding: 2px 0px;
-	overflow: auto;
-}
-
-div.ov_dialog input.ov_dialog_checkradio
-{
-	margin-right: 10px;
-}
-
-div.ov_popup
-{
-	background: #ffffff;
-	width: 200px;
-	padding: 10px;
-	box-shadow: 0px 0px 10px #cccccc;
-	border-radius: 5px;
-}
-
-div.ov_popup div.ov_popup_list
-{
-	max-height: 200px;
-	overflow: auto;
-}
-
-div.ov_popup div.ov_popup_list_item
-{
-	padding: 10px;
-	border-radius: 5px;
-	cursor: pointer;
-	overflow: auto;
-}
-
-div.ov_popup img.ov_popup_list_item_icon
-{
-	margin-right: 10px;
-	margin-top: 2px;
-	float: left;
-}
-
-div.ov_popup div.ov_popup_list_item_icon
-{
-	float: left;
-}
-
-div.ov_popup div.ov_popup_list_item_name
-{
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	overflow: hidden;
-}
-
-div.ov_progress
-{
-	background: #ffffff;
-	text-align: center;
-	width: 400px;
-	padding: 20px;
-	box-shadow: 0px 0px 10px #cccccc;
-	border-radius: 5px;
-}
-
-div.ov_progress img.ov_progress_img
-{
-	height: 80px;
-	margin-bottom: 10px;
-	display: inline;
-}
-
-div.ov_progress div.ov_progress_text
-{
-	font-size: 19px;
-	text-align: center;
-}
-
 div.ov_property_table
 {
-	
+	overflow: auto;
 }
 
 div.ov_property_table_custom
@@ -670,11 +295,6 @@ div.ov_property_table div.ov_property_table_cell
 	box-sizing: border-box;
 }
 
-div.ov_property_table_custom div.ov_property_table_cell
-{
-	
-}
-
 div.ov_property_table div.ov_property_table_name
 {
 	width: 49%;
@@ -691,56 +311,19 @@ div.ov_property_table div.ov_property_table_value
 
 div.ov_property_table div.ov_property_table_button
 {
-	color: #3393bd;
+	color: var(--ov_primary_color);
 	cursor: pointer;
-}
-
-div.ov_thin_scrollbar
-{
-	scrollbar-color: #cccccc transparent;
-	scrollbar-width: thin;
-}
-
-div.ov_thin_scrollbar::-webkit-scrollbar
-{
-	width: 3px;
-	height: 3px;
-}
-
-div.ov_thin_scrollbar::-webkit-scrollbar-thumb
-{
-	background: #cccccc;
 }
 
 @media (hover)
 {
-
-a:hover
-{
-	text-decoration: underline;
-}
 
 div.ov_toolbar div.ov_toolbar_button:hover
 {
 	background: #c9e5f8;
 }
 
-div.ov_tree_view div.ov_tree_item.clickable:hover
-{
-	background: #e4f4ff;
-}
-
 div.ov_navigator_info_panel div.ov_navigator_info_panel_title:hover
-{
-	background: #e4f4ff;
-}
-
-div.ov_dialog a.ov_dialog_file_link:hover
-{
-	background: #e4f4ff;
-}
-
-div.ov_popup div.ov_popup_list_item:hover
 {
 	background: #e4f4ff;
 }
@@ -754,11 +337,6 @@ div.ov_navigator_info_panel div.ov_navigator_info_button:hover
 
 @media only screen and (max-width: 700px)
 {
-
-.only_full_width
-{
-	display: none;
-}
 
 div.intro div.intro_section
 {
@@ -792,11 +370,6 @@ div.ov_progress
 
 @media only screen and (max-height: 700px)
 {
-
-.only_full_height
-{
-	display: none;
-}
 
 div.intro div.intro_section
 {

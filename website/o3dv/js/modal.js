@@ -36,7 +36,7 @@ OV.Modal = class
         let windowObj = $(window);
         let bodyObj = $(document.body);
 
-        this.overlayDiv = $('<div>').addClass ('ov_modal_overlay').css ('position', 'absolute').appendTo (bodyObj);
+        this.overlayDiv = $('<div>').addClass ('ov_modal_overlay').appendTo (bodyObj);
         this.modalDiv.appendTo (bodyObj);
 
         this.resizeHandler = this.Resize.bind (this);
@@ -181,7 +181,7 @@ OV.ButtonDialog = class extends OV.Dialog
     {
         function AddButton (button, buttonsDiv)
         {
-            let buttonDiv = $('<div>').addClass ('ov_dialog_button').html (button.name).appendTo (buttonsDiv);
+            let buttonDiv = $('<div>').addClass ('ov_button').addClass ('ov_dialog_button').html (button.name).appendTo (buttonsDiv);
             if (button.subClass) {
                 buttonDiv.addClass (button.subClass);
             }

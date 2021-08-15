@@ -1,0 +1,12 @@
+div.embed_viewer
+{
+    overflow: auto;
+}
+
+div.embed_viewer img.embed_logo
+{
+	height: 40px;
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+}
