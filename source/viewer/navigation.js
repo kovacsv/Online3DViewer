@@ -388,8 +388,6 @@ OV.Navigation = class
 
 	OnMouseMove (ev)
 	{
-		ev.preventDefault ();
-
 		this.mouse.Move (this.canvas, ev);
 		this.clickDetector.Move ();
 		if (!this.mouse.IsButtonDown ()) {
@@ -412,8 +410,6 @@ OV.Navigation = class
 
 	OnMouseUp (ev)
 	{
-		ev.preventDefault ();
-		
 		this.mouse.Up (this.canvas, ev);
 		this.clickDetector.Up (ev);
 		if (this.clickDetector.IsClick ()) {
@@ -424,8 +420,6 @@ OV.Navigation = class
 
 	OnMouseLeave (ev)
 	{
-		ev.preventDefault ();
-
 		this.mouse.Leave (this.canvas, ev);
 		this.clickDetector.Leave ();
 	}
