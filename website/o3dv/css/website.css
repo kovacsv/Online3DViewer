@@ -325,12 +325,12 @@ div.ov_toolbar div.ov_toolbar_button:hover
 
 div.ov_navigator_info_panel div.ov_navigator_info_panel_title:hover
 {
-	background: #e4f4ff;
+	background: var(--ov_secondary_hover_color);
 }
 
 div.ov_navigator_info_panel div.ov_navigator_info_button:hover
 {
-	background: #e4f4ff;
+	background: var(--ov_secondary_hover_color);
 }
 
 }

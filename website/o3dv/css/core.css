@@ -2,8 +2,10 @@
 {
     --ov_foreground_color: #000000;
     --ov_background_color: #ffffff;
-    --ov_primary_text_color: #ffffff;
     --ov_primary_color: #3393bd;
+    --ov_primary_hover_color: #146a8f;
+    --ov_secondary_color: #ffffff;
+    --ov_secondary_hover_color: #e4f4ff;
 }
 
 @font-face
@@ -45,7 +47,6 @@ a:hover
 }
 
 }
-
 
 @media only screen and (max-width: 700px)
 {

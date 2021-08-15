@@ -23,7 +23,7 @@ div.ov_thin_scrollbar::-webkit-scrollbar-thumb
 
 div.ov_button
 {
-	color: var(--ov_primary_text_color);
+	color: var(--ov_secondary_color);
 	background: var(--ov_primary_color);
 	text-align: center;
 	padding: 3px;
@@ -47,4 +47,20 @@ div.ov_tooltip
 	border-radius: 5px;
 	position: absolute;
 	box-shadow: 0px 0px 3px #cccccc;
+}
+
+@media (hover)
+{
+
+div.ov_button:hover
+{
+	background: var(--ov_primary_hover_color);
+    border: 1px solid var(--ov_primary_hover_color);
+}
+
+div.ov_button.outline:hover
+{
+	background: var(--ov_secondary_hover_color);
+}
+
 }

@@ -227,12 +227,12 @@ div.ov_progress div.ov_progress_text
 
 div.ov_dialog a.ov_dialog_file_link:hover
 {
-	background: #e4f4ff;
+	background: var(--ov_secondary_hover_color);
 }
 
 div.ov_popup div.ov_popup_list_item:hover
 {
-	background: #e4f4ff;
+	background: var(--ov_secondary_hover_color);
 }
 
 }

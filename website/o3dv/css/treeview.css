@@ -58,7 +58,7 @@ div.ov_tree_view div.ov_tree_view_children
 
 div.ov_tree_view div.ov_tree_item.clickable:hover
 {
-	background: #e4f4ff;
+	background: var(--ov_secondary_hover_color);
 }
 
 }
