@@ -98,7 +98,7 @@ OV.ImporterBase = class
         return this.error;
     }
 
-    GetMessage ()
+    GetErrorMessage ()
     {
         return this.message;
     }

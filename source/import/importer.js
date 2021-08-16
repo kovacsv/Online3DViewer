@@ -349,7 +349,7 @@ OV.Importer = class
                 callbacks.onSuccess (result);
             },
             onError : () => {
-                let message = importer.GetMessage ();
+                let message = importer.GetErrorMessage ();
                 callbacks.onError (new OV.ImportError (OV.ImportErrorCode.ImportFailed, message));
             },
             onComplete : () => {
