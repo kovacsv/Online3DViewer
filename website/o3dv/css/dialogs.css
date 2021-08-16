@@ -1,4 +1,3 @@
-
 div.ov_modal_overlay
 {
 	position: absolute;
@@ -103,12 +102,6 @@ div.ov_dialog a.ov_dialog_file_link
 	border-radius: 5px;
 }
 
-div.ov_dialog img.ov_dialog_file_link_icon
-{
-	margin-right: 10px;
-	float: left;
-}
-
 div.ov_dialog div.ov_dialog_file_link_text
 {
 	float: left;
@@ -176,13 +169,6 @@ div.ov_popup div.ov_popup_list_item
 	border-radius: 5px;
 	cursor: pointer;
 	overflow: auto;
-}
-
-div.ov_popup img.ov_popup_list_item_icon
-{
-	margin-right: 10px;
-	margin-top: 2px;
-	float: left;
 }
 
 div.ov_popup div.ov_popup_list_item_icon
