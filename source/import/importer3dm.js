@@ -57,14 +57,12 @@ OV.Importer3dm = class extends OV.ImporterBase
 	{
 		let rhinoDoc = this.rhino.File3dm.fromByteArray (fileContent);
 		if (rhinoDoc === null) {
-			this.SetError ();
-			this.SetMessage ('Failed to read Rhino file.');
+			this.SetError ('Failed to read Rhino file.');
 			return;
 		}
 		this.ImportRhinoDocument (rhinoDoc);
         if (OV.IsModelEmpty (this.model)) {
-			this.SetError ();
-			this.SetMessage ('The model doesn\'t contain any 3D meshes. Try to save the model while you are in shaded view in Rhino.');
+			this.SetError ('The model doesn\'t contain any 3D meshes. Try to save the model while you are in shaded view in Rhino.');
         }
 	}
 

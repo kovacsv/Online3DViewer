@@ -42,7 +42,7 @@ OV.ImporterStl = class extends OV.ImporterBase
         } else {
             let textContent = OV.ArrayBufferToUtf8String (fileContent);
             OV.ReadLines (textContent, (line) => {
-                if (!this.IsError ()) {
+                if (!this.WasError ()) {
                     this.ProcessLine (line);
                 }    
             });

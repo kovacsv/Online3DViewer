@@ -56,7 +56,7 @@ OV.ImporterObj = class extends OV.ImporterBase
     ImportContent (fileContent, onFinish)
     {
         OV.ReadLines (fileContent, (line) => {
-            if (!this.IsError ()) {
+            if (!this.WasError ()) {
                 this.ProcessLine (line);
             }
         });
@@ -213,7 +213,7 @@ OV.ImporterObj = class extends OV.ImporterBase
             let fileBuffer = this.callbacks.getFileBuffer (fileName);
             if (fileBuffer !== null) {
                 OV.ReadLines (fileBuffer, (line) => {
-                    if (!this.IsError ()) {
+                    if (!this.WasError ()) {
                         this.ProcessLine (line);
                     }
                 });
@@ -354,8 +354,7 @@ OV.ImporterObj = class extends OV.ImporterBase
             let v1 = GetLocalVertexIndex (this, this.currentMesh, vertices[i + 1]);
             let v2 = GetLocalVertexIndex (this, this.currentMesh, vertices[i + 2]);
             if (v0 === null || v1 === null || v2 === null) {
-                this.SetError ();
-                this.SetMessage ('Invalid vertex index.');
+                this.SetError ('Invalid vertex index.');
                 break;
             }
             let triangle = new OV.Triangle (v0, v1, v2);
@@ -364,8 +363,7 @@ OV.ImporterObj = class extends OV.ImporterBase
                 let n1 = GetLocalNormalIndex (this, this.currentMesh, normals[i + 1]);
                 let n2 = GetLocalNormalIndex (this, this.currentMesh, normals[i + 2]);
                 if (n0 === null || n1 === null || n2 === null) {
-                    this.SetError ();
-                    this.SetMessage ('Invalid normal index.');
+                    this.SetError ('Invalid normal index.');
                     break;
                 }
                 triangle.SetNormals (n0, n1, n2);
@@ -375,8 +373,7 @@ OV.ImporterObj = class extends OV.ImporterBase
                 let u1 = GetLocalUVIndex (this, this.currentMesh, uvs[i + 1]);
                 let u2 = GetLocalUVIndex (this, this.currentMesh, uvs[i + 2]);
                 if (u0 === null || u1 === null || u2 === null) {
-                    this.SetError ();
-                    this.SetMessage ('Invalid uv index.');
+                    this.SetError ('Invalid uv index.');
                     break;
                 }
                 triangle.SetTextureUVs (u0, u1, u2);

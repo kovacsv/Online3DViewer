@@ -343,8 +343,7 @@ OV.ThreeImporter = class extends OV.ImporterBase
             () => {
             },
             (err) => {
-                this.SetError ();
-                this.SetMessage (err);
+                this.SetError (err);
                 onFinish ();
             }
         );

@@ -85,19 +85,17 @@ OV.ImporterBase = class
         return this.model;
     }
 
-    SetError ()
+    SetError (message)
     {
         this.error = true;
+        if (message !== undefined && message !== null) {
+            this.message = message;
+        }
     }
 
-    IsError ()
+    WasError ()
     {
         return this.error;
-    }
-
-    SetMessage (message)
-    {
-        this.message = message;
     }
 
     GetMessage ()

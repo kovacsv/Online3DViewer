@@ -522,8 +522,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
     {
         let gltf = JSON.parse (fileContent);
         if (gltf.asset.version !== '2.0') {
-            this.SetError ();
-            this.SetMessage ('Invalid glTF version.');
+            this.SetError ('Invalid glTF version.');
             onFinish ();
             return;
         }
@@ -541,8 +540,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
                 }
             }
             if (buffer === null) {
-                this.SetError ();
-                this.SetMessage ('One  of the requested buffers is missing.');
+                this.SetError ('One  of the requested buffers is missing.');
                 onFinish ();
                 return;
             }
@@ -568,22 +566,19 @@ OV.ImporterGltf = class extends OV.ImporterBase
         let reader = new OV.BinaryReader (fileContent, true);
         let magic = reader.ReadUnsignedInteger32 ();
         if (magic !== OV.GltfConstants.GLTF_STRING) {
-            this.SetError ();
-            this.SetMessage ('Invalid glTF file.');
+            this.SetError ('Invalid glTF file.');
             onFinish ();
             return;
         }
         let version = reader.ReadUnsignedInteger32 ();
         if (version !== 2) {
-            this.SetError ();
-            this.SetMessage ('Invalid glTF version.');
+            this.SetError ('Invalid glTF version.');
             onFinish ();
             return;
         }
         let length = reader.ReadUnsignedInteger32 ();
         if (length !== reader.GetByteLength ()) {
-            this.SetError ();
-            this.SetMessage ('Invalid glTF file.');
+            this.SetError ('Invalid glTF file.');
             onFinish ();
             return;
         }
@@ -608,8 +603,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
     {
         let unsupportedExtensions = this.gltfExtensions.GetUnsupportedExtensions (gltf.extensionsRequired);
         if (unsupportedExtensions.length > 0) {
-            this.SetError ();
-            this.SetMessage ('Unsupported extension: ' + unsupportedExtensions.join (', ') + '.');
+            this.SetError ('Unsupported extension: ' + unsupportedExtensions.join (', ') + '.');
             onFinish ();
             return;
         }
@@ -620,8 +614,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
                 onFinish ();
             },
             onError : () => {
-                this.SetError ();
-                this.SetMessage ('Failed to load draco decoder.');
+                this.SetError ('Failed to load draco decoder.');
                 onFinish ();
             }
         });
@@ -631,8 +624,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
     {
         let defaultScene = this.GetDefaultScene (gltf);
         if (defaultScene === null) {
-            this.SetError ();
-            this.SetMessage ('No default scene found.');
+            this.SetError ('No default scene found.');
             return;
         }
 

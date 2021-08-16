@@ -1,3 +1,11 @@
+OV.PlyHeaderCheckResult =
+{
+    Ok : 1,
+    NoVertices : 2,
+    NoFaces : 3,
+    UnknownError : 4
+};
+
 OV.PlyHeader = class
 {
     constructor ()
@@ -61,26 +69,26 @@ OV.PlyHeader = class
     {
         let vertex = this.GetElement ('vertex');
         if (vertex === null || vertex.length === 0 || vertex.format.length < 3) {
-            return false;
+            return OV.PlyHeaderCheckResult.NoVertices;
         }
         
         let face = this.GetElement ('face');
         if (this.format === 'ascii') {
             if (face === null || face.count === 0 || face.format.length < 0) {
-                return false;
+                return OV.PlyHeaderCheckResult.NoFaces;
             }
         } else if (this.format === 'binary_little_endian' || this.format === 'binary_big_endian') {
             let triStrips = this.GetElement ('tristrips');
             let hasFaces = (face !== null && face.count > 0 && face.format.length > 0);
             let hasTriStrips = (triStrips !== null && triStrips.count > 0 && triStrips.format.length > 0);
             if (!hasFaces && !hasTriStrips) {
-                return false;
+                return OV.PlyHeaderCheckResult.NoFaces;
             }
         } else {
-            return false;
+            return OV.PlyHeaderCheckResult.UnknownError;
         }
 
-        return true;
+        return OV.PlyHeaderCheckResult.Ok;
     }
 };
 
@@ -183,7 +191,8 @@ OV.ImporterPly = class extends OV.ImporterBase
     {
         let headerString = this.GetHeaderContent (fileContent);
         let header = this.ReadHeader (headerString);
-        if (header.Check ()) {
+        let checkResult = header.Check ();
+        if (checkResult === OV.PlyHeaderCheckResult.Ok) {
             if (header.format === 'ascii') {
                 let contentString = OV.ArrayBufferToUtf8String (fileContent);
                 contentString = contentString.substr (headerString.length);
@@ -192,8 +201,13 @@ OV.ImporterPly = class extends OV.ImporterBase
                 this.ReadBinaryContent (header, fileContent, headerString.length);
             }
         } else {
-            this.SetError ();
-            this.SetMessage ('Invalid header information.');
+            if (checkResult === OV.PlyHeaderCheckResult.NoVertices) {
+                this.SetError ('The model contains no vertices.');
+            } else if (checkResult === OV.PlyHeaderCheckResult.NoFaces) {
+                this.SetError ('The model contains no faces.');
+            } else {
+                this.SetError ('Invalid header information.');
+            }
         }
         onFinish ();
     }
@@ -255,7 +269,7 @@ OV.ImporterPly = class extends OV.ImporterBase
         let foundVertex = 0;
         let foundFace = 0;
         OV.ReadLines (fileContent, (line) => {
-            if (this.IsError ()) {
+            if (this.WasError ()) {
                 return;
             }
             

@@ -43,7 +43,7 @@ OV.ImporterOff = class extends OV.ImporterBase
     ImportContent (fileContent, onFinish)
     {
         OV.ReadLines (fileContent, (line) => {
-            if (!this.IsError ()) {
+            if (!this.WasError ()) {
                 this.ProcessLine (line);
             }
         });
