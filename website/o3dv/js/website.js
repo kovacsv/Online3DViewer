@@ -138,18 +138,14 @@ OV.Website = class
         this.FitModelToWindow (true);
     }
 
-    OnModelClicked (button, isCtrlPressed, mouseCoordinates)
+    OnModelClicked (button, mouseCoordinates)
     {
         if (button === 1) {
             let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
             if (meshUserData === null) {
                 this.navigator.SetSelection (null);
             } else {
-                if (isCtrlPressed) {
-                    this.navigator.IsolateMesh (meshUserData.originalMeshIndex);
-                } else {
-                    this.navigator.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshUserData.originalMeshIndex));
-                }
+                this.navigator.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshUserData.originalMeshIndex));
             }
         }
     }

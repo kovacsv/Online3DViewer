@@ -63,11 +63,7 @@ OV.MeshData = class
 
         this.showHideButton = new OV.TreeViewButton ('assets/images/navigator/visible.svg');
         this.showHideButton.OnClick ((ev) => {
-            if (ev.ctrlKey || ev.metaKey) {
-                callbacks.onIsolate (this.originalIndex);
-            } else {
-                callbacks.onShowHide (this.originalIndex);
-            }
+            callbacks.onShowHide (this.originalIndex);
         });
         this.menuItem.AddButton (this.showHideButton);
 

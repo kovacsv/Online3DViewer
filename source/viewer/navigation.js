@@ -413,8 +413,7 @@ OV.Navigation = class
 		this.mouse.Up (this.canvas, ev);
 		this.clickDetector.Up (ev);
 		if (this.clickDetector.IsClick ()) {
-			let isCtrlPressed = (ev.ctrlKey || ev.metaKey);
-			this.Click (ev.which, isCtrlPressed, ev.clientX, ev.clientY);
+			this.Click (ev.which, ev.clientX, ev.clientY);
 		}
 	}
 
@@ -551,11 +550,11 @@ OV.Navigation = class
 		}
 	}
 
-	Click (button, isCtrlPressed, clientX, clientY)
+	Click (button, clientX, clientY)
 	{
 		if (this.onClick) {
 			let mouseCoords = OV.GetClientCoordinates (this.canvas, clientX, clientY);
-			this.onClick (button, isCtrlPressed, mouseCoords);
+			this.onClick (button, mouseCoords);
 		}
 	}
 
