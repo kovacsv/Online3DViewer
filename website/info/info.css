@@ -94,6 +94,7 @@ ol, ul
 li
 {
 	margin: 10px 0px;
+	line-height: 25px;
 }
 
 table
