@@ -23,7 +23,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
     {
         this.backgroundColorInput = this.AddColorParameter (
             'Background Color',
-            'Changing the background color affects only the visualization.',
+            'Background color affects only the visualization of the model.',
             null,
             ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'],
             settings.backgroundColor,
@@ -31,8 +31,8 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         );
         this.defaultColorInput = this.AddColorParameter (
             'Default Color',
-            'Default color is used when no material was defined in the file.',
-            'This setting has no effect on the currently loaded model.',
+            'Default color appears when the model doesn\'t contain materials.',
+            'This setting has no effect on the currently loaded file.',
             ['#ffffff', '#e3e3e3', '#cc3333', '#fac832', '#4caf50', '#3393bd', '#9b27b0', '#fda4b8'],
             settings.defaultColor,
             callbacks.onDefaultColorChange
