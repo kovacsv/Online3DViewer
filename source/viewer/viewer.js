@@ -113,8 +113,26 @@ OV.ViewerGeometry = class
             enumerator (mesh);
         }
     }
-
+    
     GetModelMeshUnderMouse (mouseCoords, camera, width, height)
+    {
+        let intersection = this.GetModelIntersectionUnderMouse (mouseCoords, camera, width, height);
+        if (intersection === null) {
+            return null;
+        }
+        return intersection.object;
+    }
+
+    GetModelPointUnderMouse (mouseCoords, camera, width, height)
+    {
+        let intersection = this.GetModelIntersectionUnderMouse (mouseCoords, camera, width, height);
+        if (intersection === null) {
+            return null;
+        }
+        return new OV.Coord3D (intersection.point.x, intersection.point.y, intersection.point.z);
+    }
+
+    GetModelIntersectionUnderMouse (mouseCoords, camera, width, height)
     {
         let raycaster = new THREE.Raycaster ();
         let mousePos = new THREE.Vector2 ();
@@ -125,11 +143,11 @@ OV.ViewerGeometry = class
         for (let i = 0; i < iSectObjects.length; i++) {
             let iSectObject = iSectObjects[i];
             if (iSectObject.object.type === 'Mesh' && iSectObject.object.visible) {
-                return iSectObject.object;
+                return iSectObject;
             }
         }
         return null;
-    }    
+    }
 };
 
 OV.Viewer = class
