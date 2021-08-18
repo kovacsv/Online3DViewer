@@ -94,7 +94,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         let warningDiv = null;
         if (warningText !== null) {
             warningDiv = $('<div>').addClass ('ov_sidebar_settings_description').appendTo (contentDiv);
-            OV.CreateSvgIcon (warningDiv, 'assets/images/sidebar/warning.svg', 'left_inline');
+            OV.CreateSvgIcon (warningDiv, 'warning', 'ov_sidebar_settings_warning_img');
             $('<div>').addClass ('ov_sidebar_settings_warning').html (warningText).appendTo (warningDiv);
         }
         return {

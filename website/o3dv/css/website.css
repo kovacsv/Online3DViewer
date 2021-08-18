@@ -249,6 +249,13 @@ div.ov_sidebar_content div.ov_sidebar_settings_warning
 	margin-left: 30px;
 }
 
+div.ov_sidebar_content div.ov_sidebar_settings_warning_img
+{
+	color: #838383;
+	margin-top: 2px;
+	float: left;
+}
+
 div.ov_sidebar_content button.pcr-button
 {
 	width: 30px;
