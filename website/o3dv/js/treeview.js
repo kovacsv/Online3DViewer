@@ -18,7 +18,7 @@ OV.TreeViewButton = class
     SetImage (imagePath)
     {
         this.imagePath = imagePath;
-        this.domElement.attr ('src', this.imagePath);
+        OV.SetSvgIconImage (this.domElement, this.imagePath);
     }
 
     OnClick (clickHandler)
@@ -147,8 +147,8 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
         this.childrenDiv = null;
         this.showChildren = false;
         this.openCloseButton = null;
-        this.openButtonPath = 'assets/images/navigator/arrow_down.svg';
-        this.closeButtonPath = 'assets/images/navigator/arrow_up.svg';
+        this.openButtonIcon = 'arrow_down';
+        this.closeButtonIcon = 'arrow_up';
         this.animated = true;
         this.openCloseHandler = null;
     }
@@ -180,7 +180,7 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
             return;
         }
         if (show) {
-            this.openCloseButton.attr ('src', this.openButtonPath);
+            OV.SetSvgIconImage (this.openCloseButton, this.openButtonIcon);
             if (this.animated) {
                 this.childrenDiv.slideDown (400, onComplete);
             } else {
@@ -190,7 +190,7 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
                 }
             }
         } else {
-            this.openCloseButton.attr ('src', this.closeButtonPath);
+            OV.SetSvgIconImage (this.openCloseButton, this.closeButtonIcon);
             if (this.animated) {
                 this.childrenDiv.slideUp (400, onComplete);
             } else {
@@ -236,7 +236,7 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
         this.CreateMainElement (parentDiv);
         OV.CreateSvgIcon (this.mainElement, this.iconPath, 'ov_tree_item_icon');
         let buttonContainer = $('<div>').addClass ('ov_tree_item_button_container').appendTo (this.mainElement);
-        this.openCloseButton = OV.CreateSvgIcon (buttonContainer, this.openButtonPath, 'ov_tree_item_button');
+        this.openCloseButton = OV.CreateSvgIcon (buttonContainer, this.openButtonIcon, 'ov_tree_item_button');
         this.CreateNameElement ();
     }
 };

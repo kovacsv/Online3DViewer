@@ -1,20 +1,27 @@
-img.ov_svg_icon
+div.ov_svg_icon
 {
+	color: var(--ov_icon_color);
+	font-size: 18px;
 	width: 18px;
 	height: 18px;
 }
 
-img.ov_svg_icon.left
+div.ov_svg_icon.left
 {
 	margin-right: 10px;
 	float: left;
 }
 
-img.ov_svg_icon.left_inline
+div.ov_svg_icon.left_inline
 {
 	margin-right: 10px;
 	margin-top: 2px;
 	float: left;
+}
+
+div.ov_svg_icon.selected
+{
+	color: var(--ov_primary_color);
 }
 
 div.ov_thin_scrollbar

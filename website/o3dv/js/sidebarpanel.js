@@ -14,7 +14,7 @@ OV.SidebarPanel = class
         this.titleDiv = $('<div>').addClass ('ov_sidebar_title').appendTo (this.panelDiv);
         this.contentDiv = $('<div>').addClass ('ov_sidebar_content').addClass ('ov_thin_scrollbar').appendTo (this.panelDiv);
         $('<div>').addClass ('ov_sidebar_title_text').html (this.GetTitle ()).appendTo (this.titleDiv);
-        let titleImg = OV.CreateSvgIcon (this.titleDiv, 'assets/images/sidebar/close.svg', 'ov_sidebar_title_img');
+        let titleImg = OV.CreateSvgIcon (this.titleDiv, 'close', 'ov_sidebar_title_img');
         titleImg.click (() => {
             callbacks.onClose ();
         });

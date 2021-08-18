@@ -92,6 +92,11 @@ def ReplaceInFile (filePath, begToken, endToken, newContent):
 	content = content.replace (content[begPosition : endPosition + len (endToken)], newContent)
 	WriteContentToFile (filePath, content)
 
+def ReplaceStringInFile (filePath, oldString, newString):
+	content = GetFileContent (filePath)
+	content = content.replace (oldString, newString)
+	WriteContentToFile (filePath, content)
+
 def CreateFileLinks (fileUrls, linePrefix, eolChar):
 	result = ''
 	for fileUrl in fileUrls:

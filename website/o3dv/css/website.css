@@ -50,12 +50,7 @@ div.title_right a
 	padding: 11px 5px;
 	display: block;
 	float: left;
-}
-
-div.title_right img
-{
-	width: 18px;
-	height: 18px;
+	text-decoration: none;
 }
 
 div.toolbar
@@ -196,8 +191,9 @@ div.ov_navigator_info_panel div.ov_navigator_info_button_text
 	float: left;
 }
 
-div.ov_navigator_info_panel img.ov_navigator_info_button_icon
+div.ov_navigator_info_panel div.ov_navigator_info_button_icon
 {
+	color: #838383;
 	padding: 6px;
 	float: right;
 }
@@ -218,8 +214,9 @@ div.ov_sidebar_title div.ov_sidebar_title_text
 	float: left;
 }
 
-div.ov_sidebar_title img.ov_sidebar_title_img
+div.ov_sidebar_title div.ov_sidebar_title_img
 {
+	color: #838383;
 	float: right;
 	cursor: pointer;
 }
@@ -323,6 +320,11 @@ div.ov_property_table div.ov_property_table_button
 
 @media (hover)
 {
+
+div.title_right div.header_button:hover
+{
+	color: var(--ov_primary_color);
+}
 
 div.ov_toolbar div.ov_toolbar_button:hover
 {

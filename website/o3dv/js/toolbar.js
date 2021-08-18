@@ -13,8 +13,7 @@ OV.ToolbarButton = class
     CreateDomElement (parentDiv)
     {
         this.buttonDiv = $('<div>').addClass ('ov_toolbar_button').appendTo (parentDiv);
-        this.buttonImg = OV.CreateSvgIcon (this.buttonDiv);
-        this.buttonImg.attr ('src', this.image);
+        this.buttonImg = OV.CreateSvgIcon (this.buttonDiv, this.image);
         if (this.onClick !== null) {
             this.buttonDiv.click (this.onClick);
         }
@@ -27,6 +26,21 @@ OV.ToolbarButton = class
         this.buttonDiv.addClass (className);
     }
 
+    RemoveClass (className)
+    {
+        this.buttonDiv.removeClass (className);
+    }
+
+    AddImageClass (className)
+    {
+        this.buttonImg.addClass (className);
+    }
+
+    RemoveImageClass (className)
+    {
+        this.buttonImg.removeClass (className);
+    }
+
     SetSelected (selected)
     {
         this.selected = selected;
@@ -35,12 +49,6 @@ OV.ToolbarButton = class
         } else {
             this.buttonDiv.addClass ('selected');
         }        
-    }
-
-    SetImage (image)
-    {
-        this.image = image;
-        this.buttonImg.attr ('src', this.image);
     }
 };
 

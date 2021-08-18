@@ -116,36 +116,30 @@ OV.DownloadArrayBufferAsFile = function (arrayBuffer, fileName)
     OV.DownloadUrlAsFile (url, fileName);
 };
 
-OV.CreateSvgIcon = function (parent, sourceImage, extraClass)
+OV.CreateSvgIcon = function (parent, iconName, extraClass)
 {
-    let img = $('<img>').addClass ('ov_svg_icon').appendTo (parent);
-    if (sourceImage !== undefined && sourceImage !== null) {
-        img.attr ('src', sourceImage);
-    }
+    let div = $('<div>').addClass ('ov_svg_icon').appendTo (parent);
+    $('<i>').addClass ('icon').addClass ('icon-' + iconName).appendTo (div);
     if (extraClass !== undefined && extraClass !== null) {
-        img.addClass (extraClass);
+        div.addClass (extraClass);
     }
-    return img;
+    return div;
 };
 
-OV.CreateHeaderButton = function (iconName, hoverIconName, title, link)
+OV.SetSvgIconImage = function (icon, iconName)
+{
+    icon.empty ();
+    $('<i>').addClass ('icon').addClass ('icon-' + iconName).appendTo (icon);
+};
+
+OV.CreateHeaderButton = function (iconName, title, link)
 {
     let buttonLink = $('<a>');
     buttonLink.attr ('href', link);
     buttonLink.attr ('target', '_blank');
     buttonLink.attr ('rel', 'noopener noreferrer');
     OV.InstallTooltip (buttonLink, title);
-    let imgElem = $('<img>').attr ('src', iconName).appendTo (buttonLink);
-    if (hoverIconName !== null && OV.IsHoverEnabled ()) {
-        buttonLink.hover (
-            () => {
-                imgElem.attr ('src', hoverIconName);
-            },
-            () => {
-                imgElem.attr ('src', iconName);
-            }
-        );
-    }
+    OV.CreateSvgIcon (buttonLink, iconName, 'header_button');
     return buttonLink;
 };
 

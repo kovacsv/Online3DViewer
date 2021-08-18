@@ -102,6 +102,13 @@ div.ov_dialog a.ov_dialog_file_link
 	border-radius: 5px;
 }
 
+div.ov_dialog div.ov_file_link_img
+{
+	color: var(--ov_primary_color);
+	margin-right: 10px;
+	float: left;
+}
+
 div.ov_dialog div.ov_dialog_file_link_text
 {
 	float: left;

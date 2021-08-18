@@ -27,14 +27,15 @@ div.ov_tree_view div.ov_tree_item_button_container
 	float: right;
 }
 
-div.ov_tree_view img.ov_tree_item_button
+div.ov_tree_view div.ov_tree_item_button
 {
+	color: #838383;
 	padding: 5px;
 	float: left;
 	cursor: pointer;
 }
 
-div.ov_tree_view img.ov_tree_item_icon
+div.ov_tree_view div.ov_tree_item_icon
 {
 	padding: 5px;
 	float: left;

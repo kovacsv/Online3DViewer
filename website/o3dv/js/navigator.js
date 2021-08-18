@@ -94,7 +94,7 @@ OV.NavigatorInfoPanel = class
     {
         let button = $('<div>').addClass ('ov_navigator_info_button').appendTo (parentDiv);
         $('<div>').addClass ('ov_navigator_info_button_text').html (buttonText).appendTo (button);
-        OV.CreateSvgIcon (button, 'assets/images/navigator/arrow_right.svg', 'ov_navigator_info_button_icon');
+        OV.CreateSvgIcon (button, 'arrow_right', 'ov_navigator_info_button_icon');
         button.click (() => {
             onClick (button);
         });
@@ -147,7 +147,7 @@ OV.Navigator = class
         let usedFiles = importResult.usedFiles;
         let missingFiles = importResult.missingFiles;
 
-        let filesItem = new OV.TreeViewGroupItem ('Files', 'assets/images/navigator/files.svg');
+        let filesItem = new OV.TreeViewGroupItem ('Files', 'files');
         this.treeView.AddItem (filesItem);
         for (let i = 0; i < usedFiles.length; i++) {
             let file = usedFiles[i];
@@ -156,12 +156,12 @@ OV.Navigator = class
         }
 
         if (missingFiles.length > 0) {
-            let missingFilesItem = new OV.TreeViewGroupItem ('Missing Files', 'assets/images/navigator/missing_files.svg');
+            let missingFilesItem = new OV.TreeViewGroupItem ('Missing Files', 'missing_files');
             this.treeView.AddItem (missingFilesItem);
             for (let i = 0; i < missingFiles.length; i++) {
                 let file = missingFiles[i];
                 let item = new OV.TreeViewButtonItem (file);
-                let browseButton = new OV.TreeViewButton ('assets/images/navigator/open.svg');
+                let browseButton = new OV.TreeViewButton ('open');
                 browseButton.OnClick (() => {
                     this.callbacks.openFileBrowserDialog ();
                 });
@@ -170,7 +170,7 @@ OV.Navigator = class
             }
         }
 
-        let materialsItem = new OV.TreeViewGroupItem ('Materials', 'assets/images/navigator/materials.svg');
+        let materialsItem = new OV.TreeViewGroupItem ('Materials', 'materials');
         this.treeView.AddItem (materialsItem);
         for (let i = 0; i < model.MaterialCount (); i++) {
             let material = model.GetMaterial (i);
@@ -185,7 +185,7 @@ OV.Navigator = class
             materialsItem.AddChild (materialItem);
         }
 
-        let meshesItem = new OV.TreeViewGroupItem ('Meshes', 'assets/images/navigator/meshes.svg');
+        let meshesItem = new OV.TreeViewGroupItem ('Meshes', 'meshes');
         this.treeView.AddItem (meshesItem);
         meshesItem.ShowChildren (true, null);
         for (let i = 0; i < model.MeshCount (); i++) {

@@ -7,9 +7,11 @@
 	"devDependencies": {
 		"clean-css-cli": "^5.3.3",
 		"eslint": "^7.30.0",
+		"fantasticon": "^1.2.2",
 		"google-closure-compiler": "^20210302.0.0",
 		"http-server": "^0.12.3",
 		"mocha": "^8.3.2",
+		"oslllo-svg-fixer": "^1.4.0",
 		"rewire": "^5.0.0",
 		"svgo": "^2.3.1"
 	},

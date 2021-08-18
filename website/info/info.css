@@ -1,7 +1,7 @@
 @font-face
 {
 	font-family: Quicksand;
-	src: url('../assets/fonts/Quicksand/Quicksand-Regular.ttf');
+	src: url('../o3dv/css/Quicksand/Quicksand-Regular.ttf');
 }
 
 html, body
@@ -24,13 +24,28 @@ a:hover
 	text-decoration: underline;
 }
 
-img.inline
+div.inline
 {
+	background: red;
+	font-size: 18px;
 	width: 18px;
 	height: 18px;
 	display: inline-block;
 	margin-left: 3px;
 	margin-right: 3px;
+	margin-bottom: -4px;
+	line-height: inherit;
+}
+
+i
+{
+	width: 18px;
+	height: 18px;
+	display: block;
+}
+
+i[class^="icon-"]:before, i[class*=" icon-"]:before {
+    height:18px;
 	margin-bottom: -4px;
 }
 

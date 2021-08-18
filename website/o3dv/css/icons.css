@@ -1,0 +1,109 @@
+@font-face {
+    font-family: "O3DVIcons";
+    src: url("O3DVIcons/O3DVIcons.woff?635260a48b8099b02c71a5bd51ded212") format("woff");
+}
+
+i[class^="icon-"]:before, i[class*=" icon-"]:before {
+    font-family: O3DVIcons !important;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-arrow_down:before {
+    content: "\f101";
+}
+.icon-arrow_right:before {
+    content: "\f102";
+}
+.icon-arrow_up:before {
+    content: "\f103";
+}
+.icon-close:before {
+    content: "\f104";
+}
+.icon-deisolate:before {
+    content: "\f105";
+}
+.icon-details:before {
+    content: "\f106";
+}
+.icon-donate:before {
+    content: "\f107";
+}
+.icon-export:before {
+    content: "\f108";
+}
+.icon-feedback:before {
+    content: "\f109";
+}
+.icon-file_download:before {
+    content: "\f10a";
+}
+.icon-files:before {
+    content: "\f10b";
+}
+.icon-fit:before {
+    content: "\f10c";
+}
+.icon-fix_up_off:before {
+    content: "\f10d";
+}
+.icon-fix_up_on:before {
+    content: "\f10e";
+}
+.icon-flip:before {
+    content: "\f10f";
+}
+.icon-github:before {
+    content: "\f110";
+}
+.icon-hidden:before {
+    content: "\f111";
+}
+.icon-info:before {
+    content: "\f112";
+}
+.icon-isolate:before {
+    content: "\f113";
+}
+.icon-materials:before {
+    content: "\f114";
+}
+.icon-meshes:before {
+    content: "\f115";
+}
+.icon-missing_files:before {
+    content: "\f116";
+}
+.icon-model:before {
+    content: "\f117";
+}
+.icon-open_url:before {
+    content: "\f118";
+}
+.icon-open:before {
+    content: "\f119";
+}
+.icon-settings:before {
+    content: "\f11a";
+}
+.icon-share:before {
+    content: "\f11b";
+}
+.icon-up_y:before {
+    content: "\f11c";
+}
+.icon-up_z:before {
+    content: "\f11d";
+}
+.icon-visible:before {
+    content: "\f11e";
+}
+.icon-warning:before {
+    content: "\f11f";
+}

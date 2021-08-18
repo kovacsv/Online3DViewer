@@ -157,7 +157,7 @@ OV.Website = class
         if (meshUserData === null) {
             items.push ({
                 name : 'Fit model to window',
-                icon : 'assets/images/context/fit.svg',
+                icon : 'fit',
                 onClick : () => {
                     this.FitModelToWindow (false);
                 }
@@ -165,7 +165,7 @@ OV.Website = class
             if (this.navigator.HasHiddenMesh ()) {
                 items.push ({
                     name : 'Show all meshes',
-                    icon : 'assets/images/context/show.svg',
+                    icon : 'visible',
                     onClick : () => {
                         this.navigator.ShowAllMeshes ();
                     }
@@ -175,14 +175,14 @@ OV.Website = class
             let meshIndex = meshUserData.originalMeshIndex;
             items.push ({
                 name : 'Hide mesh',
-                icon : 'assets/images/context/hide.svg',
+                icon : 'hidden',
                 onClick : () => {
                     this.navigator.ToggleMeshVisibility (meshIndex);
                 }
             });
             items.push ({
                 name : 'Fit mesh to window',
-                icon : 'assets/images/context/fit.svg',
+                icon : 'fit',
                 onClick : () => {
                     this.navigator.FitMeshToWindow (meshIndex);
                 }
@@ -191,7 +191,7 @@ OV.Website = class
                 let isMeshIsolated = this.navigator.IsMeshIsolated (meshIndex);
                 items.push ({
                     name : isMeshIsolated ? 'Remove isolation' : 'Isolate mesh',
-                    icon : isMeshIsolated ? 'assets/images/context/deisolate.svg' : 'assets/images/context/isolate.svg',
+                    icon : isMeshIsolated ? 'deisolate' : 'isolate',
                     onClick : () => {
                         this.navigator.IsolateMesh (meshIndex);
                     }
@@ -317,8 +317,7 @@ OV.Website = class
     {
         function AddButton (toolbar, eventHandler, imageName, imageTitle, onlyFullWidth, onClick)
         {
-            let image = 'assets/images/toolbar/' + imageName + '.svg';
-            let button = toolbar.AddImageButton (image, imageTitle, () => {
+            let button = toolbar.AddImageButton (imageName, imageTitle, () => {
                 eventHandler.HandleEvent ('toolbar_clicked', { item : imageName });
                 onClick ();
             });
@@ -335,7 +334,7 @@ OV.Website = class
                 let imageName = imageNames[i];
                 let imageTitle = imageTitles[i];
                 imageData.push ({
-                    image : 'assets/images/toolbar/' + imageName + '.svg',
+                    image : imageName,
                     title : imageTitle
                 });
             }
@@ -476,8 +475,7 @@ OV.Website = class
     {
         function AddSidebarButton (toolbar, eventHandler, sidebarPanel, onClick)
         {
-            let image = 'assets/images/toolbar/' + sidebarPanel.image + '.svg';
-            let button = toolbar.AddImageButton (image, sidebarPanel.title, () => {
+            let button = toolbar.AddImageButton (sidebarPanel.image, sidebarPanel.title, () => {
                 eventHandler.HandleEvent ('sidebar_clicked', { item : sidebarPanel.image });
                 onClick ();
             });
@@ -492,11 +490,9 @@ OV.Website = class
             for (let i = 0; i < sidebarPanels.length; i++) {
                 let sidebarPanel = sidebarPanels[i];
                 if (sidebarPanel.panelId === visiblePanelId) {
-                    let image = 'assets/images/toolbar/' + sidebarPanel.image + '_active.svg';
-                    sidebarPanel.button.SetImage (image);
+                    sidebarPanel.button.AddImageClass ('selected');
                 } else {
-                    let image = 'assets/images/toolbar/' + sidebarPanel.image + '.svg';
-                    sidebarPanel.button.SetImage (image);
+                    sidebarPanel.button.RemoveImageClass ('selected');
                 }
             }
         }
