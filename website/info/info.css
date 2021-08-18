@@ -56,7 +56,7 @@ h1
 	margin-top: 30px;
 	margin-bottom: 20px;
 	padding: 10px 0px;
-	border-bottom: 1px solid #dddddd;
+	border-bottom: 1px solid var(--ov_light_border_color);
 }
 
 h1 a
@@ -76,7 +76,7 @@ h2
 	margin-top: 30px;
 	margin-bottom: 20px;
 	padding: 10px 0px;
-	border-bottom: 1px solid #dddddd;
+	border-bottom: 1px solid var(--ov_light_border_color);
 }
 
 h3
@@ -120,7 +120,7 @@ table
 table td, th
 {
 	padding: 10px;
-	border: 1px solid #dddddd;
+	border: 1px solid var(--ov_light_border_color);
 }
 
 table th

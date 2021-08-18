@@ -55,7 +55,7 @@ div.title_right a
 
 div.toolbar
 {
-	background: #f5f5f5;
+	background: var(--ov_toolbar_background_color);
 }
 
 div.intro
@@ -63,7 +63,7 @@ div.intro
 	margin: 10px;
 	padding: 10px;
 	text-align: center;
-	border: 2px dashed #cccccc;
+	border: 2px dashed var(--ov_border_color);
 	display: none;
 	overflow: auto;
 }
@@ -116,7 +116,7 @@ div.main_sidebar
 div.main_viewer canvas
 {
 	margin: 10px;
-	border: 1px solid #dddddd;
+	border: 1px solid var(--ov_light_border_color);
 	outline: none;
 	display: block;
 }
@@ -141,7 +141,7 @@ div.ov_toolbar div.ov_toolbar_button.right
 
 div.ov_toolbar div.ov_toolbar_button.selected
 {
-	background: #e1e1e1;
+	background: var(--ov_toolbar_selected_background_color);
 }
 
 div.ov_toolbar div.ov_toolbar_separator
@@ -161,7 +161,7 @@ div.ov_navigator_tree_title
 	overflow: hidden;
 	padding-bottom: 10px;
 	margin-bottom: 10px;
-	border-bottom: 1px solid #dddddd;
+	border-bottom: 1px solid var(--ov_light_border_color);
 }
 
 div.ov_navigator_tree_panel
@@ -173,14 +173,14 @@ div.ov_navigator_tree_panel
 div.ov_navigator_info_panel
 {
 	overflow: auto;
-	border-top: 1px solid #dddddd;
+	border-top: 1px solid var(--ov_light_border_color);
 }
 
 div.ov_navigator_info_panel div.ov_navigator_info_button
 {
 	cursor: pointer;
 	margin-top: 10px;
-	border: 1px solid #dddddd;
+	border: 1px solid var(--ov_light_border_color);
 	border-radius: 5px;
 	overflow: auto;
 }
@@ -206,7 +206,7 @@ div.ov_sidebar_title
 	overflow: hidden;
 	padding-bottom: 10px;
 	margin-bottom: 10px;
-	border-bottom: 1px solid #dddddd;
+	border-bottom: 1px solid var(--ov_light_border_color);
 }
 
 div.ov_sidebar_title div.ov_sidebar_title_text
@@ -254,7 +254,7 @@ div.ov_sidebar_content button.pcr-button
 	width: 30px;
 	height: 15px;
 	margin: 3px 10px 3px 3px;
-	border: 1px solid #cccccc;
+	border: 1px solid var(--ov_border_color);
 	outline: none;
 	float: left;
 }
@@ -268,7 +268,7 @@ div.ov_property_table_custom
 {
 	margin-top: 8px;
 	padding-top: 8px;
-	border-top: 1px solid #dddddd;
+	border-top: 1px solid var(--ov_light_border_color);
 }
 
 div.ov_property_table div.ov_property_table_row
