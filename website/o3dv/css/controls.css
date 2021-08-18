@@ -19,6 +19,11 @@ div.ov_svg_icon.left_inline
 	float: left;
 }
 
+div.ov_svg_icon.light
+{
+	color: var(--ov_light_icon_color);
+}
+
 div.ov_svg_icon.selected
 {
 	color: var(--ov_primary_color);

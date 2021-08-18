@@ -29,7 +29,7 @@ div.ov_tree_view div.ov_tree_item_button_container
 
 div.ov_tree_view div.ov_tree_item_button
 {
-	color: #838383;
+	color: var(--ov_light_icon_color);
 	padding: 5px;
 	float: left;
 	cursor: pointer;

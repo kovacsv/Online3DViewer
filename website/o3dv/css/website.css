@@ -193,7 +193,7 @@ div.ov_navigator_info_panel div.ov_navigator_info_button_text
 
 div.ov_navigator_info_panel div.ov_navigator_info_button_icon
 {
-	color: #838383;
+	color: var(--ov_light_icon_color);
 	padding: 6px;
 	float: right;
 }
@@ -216,7 +216,7 @@ div.ov_sidebar_title div.ov_sidebar_title_text
 
 div.ov_sidebar_title div.ov_sidebar_title_img
 {
-	color: #838383;
+	color: var(--ov_light_icon_color);
 	float: right;
 	cursor: pointer;
 }
@@ -239,7 +239,7 @@ div.ov_sidebar_content div.ov_sidebar_settings_content
 
 div.ov_sidebar_content div.ov_sidebar_settings_description
 {
-	color: #838383;
+	color: var(--ov_light_icon_color);
 	margin: 10px 0px 0px 43px;
 	float: left;
 }
@@ -247,13 +247,6 @@ div.ov_sidebar_content div.ov_sidebar_settings_description
 div.ov_sidebar_content div.ov_sidebar_settings_warning
 {
 	margin-left: 30px;
-}
-
-div.ov_sidebar_content div.ov_sidebar_settings_warning_img
-{
-	color: #838383;
-	margin-top: 2px;
-	float: left;
 }
 
 div.ov_sidebar_content button.pcr-button
