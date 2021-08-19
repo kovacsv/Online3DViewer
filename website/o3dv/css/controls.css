@@ -71,7 +71,7 @@ div.ov_tooltip
 	padding: 5px 10px;
 	border-radius: 5px;
 	position: absolute;
-	box-shadow: 0px 0px 3px #cccccc;
+	box-shadow: var(--ov_small_shadow);
 }
 
 @media (hover)

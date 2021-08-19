@@ -146,7 +146,7 @@ div.ov_toolbar div.ov_toolbar_button.selected
 
 div.ov_toolbar div.ov_toolbar_separator
 {
-	background: #cccccc;
+	background: var(--ov_border_color);
 	width: 1px;
 	height: 28px;
 	margin: 5px 8px;

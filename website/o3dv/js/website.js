@@ -65,6 +65,9 @@ OV.Website = class
         $(window).on ('resize', () => {
 			this.Resize ();
 		});
+
+        let themeHandler = new OV.ThemeHandler ();
+        themeHandler.SwitchTheme ('dark');
     }
 
     Resize ()

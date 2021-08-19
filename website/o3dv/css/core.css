@@ -12,6 +12,8 @@
 	--ov_toolbar_selected_background_color: #e1e1e1;
 	--ov_border_color: #cccccc;
 	--ov_light_border_color: #dddddd;
+	--ov_shadow: 0px 0px 10px #cccccc;
+	--ov_small_shadow: 0px 0px 3px #cccccc;
 }
 
 @font-face
