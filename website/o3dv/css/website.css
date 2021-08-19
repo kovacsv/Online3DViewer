@@ -255,6 +255,7 @@ div.ov_sidebar_content button.pcr-button
 	height: 15px;
 	margin: 3px 10px 3px 3px;
 	border: 1px solid var(--ov_border_color);
+	box-shadow: none;
 	outline: none;
 	float: left;
 }
