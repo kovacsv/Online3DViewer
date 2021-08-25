@@ -240,7 +240,7 @@ div.ov_sidebar_content div.ov_sidebar_settings_content
 div.ov_sidebar_content div.ov_sidebar_settings_description
 {
 	color: var(--ov_light_icon_color);
-	margin: 10px 0px 0px 43px;
+	margin: 10px 0px 0px 40px;
 	float: left;
 }
 
@@ -253,8 +253,9 @@ div.ov_sidebar_content button.pcr-button
 {
 	width: 30px;
 	height: 15px;
-	margin: 3px 10px 3px 3px;
+	margin: 3px 10px 3px 0px;
 	border: 1px solid var(--ov_border_color);
+	box-shadow: none;
 	outline: none;
 	float: left;
 }
