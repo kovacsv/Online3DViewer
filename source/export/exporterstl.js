@@ -42,7 +42,7 @@ OV.ExporterStl = class extends OV.ExporterBase
 		});		
 		stlWriter.WriteLine ('endsolid Model');
 
-		stlFile.SetContent (stlWriter.GetText ());		
+		stlFile.SetTextContent (stlWriter.GetText ());		
 	}
 
 	ExportBinary (model, files)
@@ -80,6 +80,6 @@ OV.ExporterStl = class extends OV.ExporterBase
 			stlWriter.WriteUnsignedInteger16 (0);
 		});
 
-		stlFile.SetContent (stlWriter.GetBuffer ());
+		stlFile.SetBufferContent (stlWriter.GetBuffer ());
 	}	
 };

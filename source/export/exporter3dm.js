@@ -93,7 +93,7 @@ OV.Exporter3dm = class extends OV.ExporterBase
         writeOptions.version = 6;
         let rhinoDocBuffer = rhinoDoc.toByteArray (writeOptions);
 
-        rhinoFile.SetContent (rhinoDocBuffer);
+        rhinoFile.SetBufferContent (rhinoDocBuffer);
 		onFinish ();
     }
 };

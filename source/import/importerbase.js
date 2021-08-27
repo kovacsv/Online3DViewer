@@ -55,11 +55,6 @@ OV.ImporterBase = class
         return false;
     }
 
-    GetKnownFileFormats ()
-    {
-        return {};
-    }
-
     GetUpDirection ()
     {
         return OV.Direction.Z;

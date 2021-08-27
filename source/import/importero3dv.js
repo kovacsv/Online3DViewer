@@ -9,14 +9,7 @@ OV.ImporterO3dv = class extends OV.ImporterBase
     {
         return extension === 'o3dv';
     }
-    
-    GetKnownFileFormats ()
-    {
-        return {
-            'o3dv' : OV.FileFormat.Text
-        };
-    }
-    
+
     GetUpDirection ()
     {
         return OV.Direction.Z;
@@ -34,7 +27,8 @@ OV.ImporterO3dv = class extends OV.ImporterBase
 
     ImportContent (fileContent, onFinish)
     {
-        let content = JSON.parse (fileContent);
+        let textContent = OV.ArrayBufferToUtf8String (fileContent);
+        let content = JSON.parse (textContent);
         if (content.materials !== undefined) {
             for (let i = 0; i < content.materials.length; i++) {
                 const materialContent = content.materials[i];

@@ -9,14 +9,7 @@ OV.ImporterOff = class extends OV.ImporterBase
     {
         return extension === 'off';
     }
-    
-    GetKnownFileFormats ()
-    {
-        return {
-            'off' : OV.FileFormat.Text
-        };
-    }
-    
+
     GetUpDirection ()
     {
         return OV.Direction.Y;
@@ -42,7 +35,8 @@ OV.ImporterOff = class extends OV.ImporterBase
 
     ImportContent (fileContent, onFinish)
     {
-        OV.ReadLines (fileContent, (line) => {
+        let textContent = OV.ArrayBufferToUtf8String (fileContent);
+        OV.ReadLines (textContent, (line) => {
             if (!this.WasError ()) {
                 this.ProcessLine (line);
             }

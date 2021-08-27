@@ -10,13 +10,6 @@ OV.ImporterStl = class extends OV.ImporterBase
         return extension === 'stl';
     }
 
-    GetKnownFileFormats ()
-    {
-        return {
-            'stl' : OV.FileFormat.Binary
-        };
-    }
-    
     GetUpDirection ()
     {
         return OV.Direction.Z;

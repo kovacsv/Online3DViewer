@@ -483,15 +483,6 @@ OV.ImporterGltf = class extends OV.ImporterBase
         return extension === 'gltf' || extension === 'glb';
     }
 
-    GetKnownFileFormats ()
-    {
-        return {
-            'gltf' : OV.FileFormat.Text,
-            'glb' : OV.FileFormat.Binary,
-            'bin' : OV.FileFormat.Binary
-        };
-    }
-
     GetUpDirection ()
     {
         return OV.Direction.Y;
@@ -520,7 +511,8 @@ OV.ImporterGltf = class extends OV.ImporterBase
 
     ProcessGltf (fileContent, onFinish)
     {
-        let gltf = JSON.parse (fileContent);
+        let textContent = OV.ArrayBufferToUtf8String (fileContent);
+        let gltf = JSON.parse (textContent);
         if (gltf.asset.version !== '2.0') {
             this.SetError ('Invalid glTF version.');
             onFinish ();

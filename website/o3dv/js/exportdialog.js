@@ -171,7 +171,7 @@ OV.ExportDialog = class
                         } else if (files.length === 1) {
                             progressDialog.Hide ();
                             let file = files[0];
-                            OV.DownloadArrayBufferAsFile (file.GetContent (), file.GetName ());
+                            OV.DownloadArrayBufferAsFile (file.GetBufferContent (), file.GetName ());
                         } else if (files.length > 1) {
                             progressDialog.Hide ();
                             this.ShowExportedFiles (files);
@@ -211,7 +211,7 @@ OV.ExportDialog = class
         
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
-            let url = OV.CreateObjectUrl (file.GetContent ());
+            let url = OV.CreateObjectUrl (file.GetBufferContent ());
             let fileLink = $('<a>').addClass ('ov_dialog_file_link').appendTo (fileList);
             fileLink.attr ('href', url);
             fileLink.attr ('download', file.GetName ());

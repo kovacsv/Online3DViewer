@@ -41,7 +41,7 @@ OV.ExporterPly = class extends OV.ExporterBase
 			}
 		});
 
-		plyFile.SetContent (plyWriter.GetText ());
+		plyFile.SetTextContent (plyWriter.GetText ());
 	}
 
 	ExportBinary (model, files)
@@ -75,7 +75,7 @@ OV.ExporterPly = class extends OV.ExporterBase
 			}
 		});
 
-		plyFile.SetContent (plyWriter.GetBuffer ());
+		plyFile.SetBufferContent (plyWriter.GetBuffer ());
 	}
 
 	GetHeaderText (format, vertexCount, triangleCount)

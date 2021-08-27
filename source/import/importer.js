@@ -14,13 +14,11 @@ OV.File = class
             this.name = OV.GetFileName (file.name);
             this.extension = OV.GetFileExtension (file.name);
         }
-        this.format = null;
         this.content = null;
     }
 
-    SetContent (format, content)
+    SetContent (content)
     {
-        this.format = format;
         this.content = content;
     }
 };
@@ -141,35 +139,21 @@ OV.FileList = class
             complete ();
             return;
         }
-        let format = this.GetFileFormat (file);
         let loaderPromise = null;
         if (file.source === OV.FileSource.Url) {
-            loaderPromise = OV.RequestUrl (file.fileUrl, format);
+            loaderPromise = OV.RequestUrl (file.fileUrl, OV.FileFormat.Binary);
         } else if (file.source === OV.FileSource.File) {
-            loaderPromise = OV.ReadFile (file.fileObject, format);
+            loaderPromise = OV.ReadFile (file.fileObject, OV.FileFormat.Binary);
         } else {
             complete ();
             return;
         }
         loaderPromise.then ((content) => {
-            file.SetContent (format, content);
+            file.SetContent (content);
         }).catch (() => {
         }).finally (() => {
             complete ();
         });
-    }
-    
-    GetFileFormat (file)
-    {
-        for (let importerIndex = 0; importerIndex < this.importers.length; importerIndex++) {
-            let importer = this.importers[importerIndex];
-            let extension = file.extension;
-            let knownFormats = importer.GetKnownFileFormats ();
-            if (knownFormats[extension] !== undefined) {
-                return knownFormats[extension];
-            }
-        }
-        return OV.FileFormat.Binary;
     }
 
     FindImporter (file)
