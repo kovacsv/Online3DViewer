@@ -56,13 +56,6 @@ OV.Importer3ds = class extends OV.ImporterBase
         return extension === '3ds';
     }
 
-    GetKnownFileFormats ()
-    {
-        return {
-            '3ds' : OV.FileFormat.Binary
-        };
-    }
-    
     GetUpDirection ()
     {
         return OV.Direction.Z;

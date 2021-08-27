@@ -25,7 +25,7 @@ OV.ExporterObj = class extends OV.ExporterBase
             });
             if (fileIndex === -1) {
                 let textureFile = new OV.ExportedFile (fileName);
-                textureFile.SetContent (texture.buffer);
+                textureFile.SetBufferContent (texture.buffer);
                 files.push (textureFile);
             }
         }
@@ -50,7 +50,7 @@ OV.ExporterObj = class extends OV.ExporterBase
             WriteTexture (mtlWriter, 'map_Ks', material.specularMap, files);
             WriteTexture (mtlWriter, 'bump', material.bumpMap, files);
         }
-        mtlFile.SetContent (mtlWriter.GetText ());
+        mtlFile.SetTextContent (mtlWriter.GetText ());
 
         let objWriter = new OV.TextWriter ();
         objWriter.WriteLine (this.GetHeaderText ());
@@ -105,7 +105,7 @@ OV.ExporterObj = class extends OV.ExporterBase
             uvOffset += mesh.TextureUVCount ();
         }
 
-        objFile.SetContent (objWriter.GetText ());
+        objFile.SetTextContent (objWriter.GetText ());
         onFinish ();  
     }
 

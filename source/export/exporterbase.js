@@ -16,12 +16,24 @@ OV.ExportedFile = class
 		this.name = name;
 	}
 
-	GetContent ()
+	GetTextContent ()
+	{
+		let text = OV.ArrayBufferToUtf8String (this.content);
+		return text;
+	}
+
+	GetBufferContent ()
 	{
 		return this.content;
 	}
 
-	SetContent (content)
+	SetTextContent (content)
+	{
+		let buffer = OV.Utf8StringToArrayBuffer (content);
+		this.content = buffer;
+	}
+
+	SetBufferContent (content)
 	{
 		this.content = content;
 	}

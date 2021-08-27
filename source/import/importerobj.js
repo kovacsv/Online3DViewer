@@ -9,14 +9,6 @@ OV.ImporterObj = class extends OV.ImporterBase
     {
         return extension === 'obj';
     }
-    
-    GetKnownFileFormats ()
-    {
-        return {
-            'obj' : OV.FileFormat.Text,
-            'mtl' : OV.FileFormat.Text
-        };
-    }
 
     GetUpDirection ()
     {
@@ -55,7 +47,8 @@ OV.ImporterObj = class extends OV.ImporterBase
     
     ImportContent (fileContent, onFinish)
     {
-        OV.ReadLines (fileContent, (line) => {
+        let textContent = OV.ArrayBufferToUtf8String (fileContent);
+        OV.ReadLines (textContent, (line) => {
             if (!this.WasError ()) {
                 this.ProcessLine (line);
             }
@@ -212,7 +205,8 @@ OV.ImporterObj = class extends OV.ImporterBase
             let fileName = OV.NameFromLine (line, keyword.length, '#');
             let fileBuffer = this.callbacks.getFileBuffer (fileName);
             if (fileBuffer !== null) {
-                OV.ReadLines (fileBuffer, (line) => {
+                let textContent = OV.ArrayBufferToUtf8String (fileBuffer);
+                OV.ReadLines (textContent, (line) => {
                     if (!this.WasError ()) {
                         this.ProcessLine (line);
                     }

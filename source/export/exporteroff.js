@@ -28,7 +28,7 @@ OV.ExporterOff = class extends OV.ExporterBase
 			}
 		});
 
-		offFile.SetContent (offWriter.GetText ());
+		offFile.SetTextContent (offWriter.GetText ());
 		onFinish ();
 	}   
 };

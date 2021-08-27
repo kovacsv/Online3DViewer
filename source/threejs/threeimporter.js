@@ -231,16 +231,6 @@ OV.ThreeImporter = class extends OV.ImporterBase
         return false;
     }
 
-    GetKnownFileFormats ()
-    {
-        let result = {};
-        for (let i = 0; i < this.loaders.length; i++)  {
-            let loader = this.loaders[i];
-            result[loader.GetExtension ()] = OV.FileFormat.Binary;
-        }
-        return result;
-    }
-    
     GetUpDirection ()
     {
         return this.loader.GetUpDirection ();

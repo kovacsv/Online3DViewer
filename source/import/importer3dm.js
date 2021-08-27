@@ -10,14 +10,7 @@ OV.Importer3dm = class extends OV.ImporterBase
     {
         return extension === '3dm';
     }
-    
-    GetKnownFileFormats ()
-    {
-        return {
-			'3dm' : OV.FileFormat.Binary
-        };
-    }
-    
+
     GetUpDirection ()
     {
         return OV.Direction.Z;

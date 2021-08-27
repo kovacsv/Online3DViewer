@@ -164,13 +164,6 @@ OV.ImporterPly = class extends OV.ImporterBase
         return extension === 'ply';
     }
     
-    GetKnownFileFormats ()
-    {
-        return {
-            'ply' : OV.FileFormat.Binary
-        };
-    }
-    
     GetUpDirection ()
     {
         return OV.Direction.Y;

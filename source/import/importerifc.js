@@ -11,13 +11,6 @@ OV.ImporterIfc = class extends OV.ImporterBase
         return extension === 'ifc';
     }
     
-    GetKnownFileFormats ()
-    {
-        return {
-            'ifc' : OV.FileFormat.Binary
-        };
-    }
-    
     GetUpDirection ()
     {
         return OV.Direction.Y;

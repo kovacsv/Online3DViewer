@@ -90,7 +90,7 @@ describe ('Exporter', function () {
 
             let mtlFile = result[0];
             assert.strictEqual (mtlFile.GetName (), 'model.mtl');
-            assert.strictEqual (mtlFile.GetContent (),
+            assert.strictEqual (mtlFile.GetTextContent (),
             [
                 '# exported by https://3dviewer.net',
                 'newmtl TestMaterial1',
@@ -112,7 +112,7 @@ describe ('Exporter', function () {
             ].join ('\n'));
             let objFile = result[1];
             assert.strictEqual (objFile.GetName (), 'model.obj');
-            assert.strictEqual (objFile.GetContent (),
+            assert.strictEqual (objFile.GetTextContent (),
             [
                 '# exported by https://3dviewer.net',
                 'mtllib model.mtl',
@@ -141,15 +141,15 @@ describe ('Exporter', function () {
     
             let textureFile1 = result[2];
             assert.strictEqual (textureFile1.GetName (), 'texture1.png');
-            assert.strictEqual (textureFile1.GetContent ().byteLength, 1);
+            assert.strictEqual (textureFile1.GetBufferContent ().byteLength, 1);
     
             let textureFile2 = result[3];
             assert.strictEqual (textureFile2.GetName (), 'texture2.png');
-            assert.strictEqual (textureFile2.GetContent ().byteLength, 2);
+            assert.strictEqual (textureFile2.GetBufferContent ().byteLength, 2);
     
             let textureFile3 = result[4];
             assert.strictEqual (textureFile3.GetName (), 'texture3.png');
-            assert.strictEqual (textureFile3.GetContent ().byteLength, 3);
+            assert.strictEqual (textureFile3.GetBufferContent ().byteLength, 3);
             
             done ();
         });
@@ -162,7 +162,7 @@ describe ('Exporter', function () {
 
             let stlFile = result[0];
             assert.strictEqual (stlFile.GetName (), 'model.stl');
-            assert.strictEqual (stlFile.GetContent (),
+            assert.strictEqual (stlFile.GetTextContent (),
             [
                 'solid Model',
                 'facet normal 0 0 1',
@@ -208,9 +208,9 @@ describe ('Exporter', function () {
 
             let stlFile = result[0];
             assert.strictEqual (stlFile.GetName (), 'model.stl');
-            assert.strictEqual (stlFile.GetContent ().byteLength, 284);
+            assert.strictEqual (stlFile.GetBufferContent ().byteLength, 284);
             
-            let contentBuffer = stlFile.GetContent ();
+            let contentBuffer = stlFile.GetBufferContent ();
             let importer = new OV.ImporterStl ();
             importer.Import (contentBuffer, 'stl', {
                 getDefaultMaterial () {
@@ -235,7 +235,7 @@ describe ('Exporter', function () {
 
             let offFile = result[0];
             assert.strictEqual (offFile.GetName (), 'model.off');
-            assert.strictEqual (offFile.GetContent (),
+            assert.strictEqual (offFile.GetTextContent (),
             [
                 'OFF',
                 '8 4 0',
@@ -265,7 +265,7 @@ describe ('Exporter', function () {
 
             let plyFile = result[0];
             assert.strictEqual (plyFile.GetName (), 'model.ply');
-            assert.strictEqual (plyFile.GetContent (),
+            assert.strictEqual (plyFile.GetTextContent (),
             [
                 'ply',
                 'format ascii 1.0',
@@ -302,9 +302,9 @@ describe ('Exporter', function () {
 
             let plyFile = result[0];
             assert.strictEqual (plyFile.GetName (), 'model.ply');
-            assert.strictEqual (plyFile.GetContent ().byteLength, 315);
+            assert.strictEqual (plyFile.GetBufferContent ().byteLength, 315);
             
-            let contentBuffer = plyFile.GetContent ();
+            let contentBuffer = plyFile.GetBufferContent ();
             let importer = new OV.ImporterPly ();
             importer.Import (contentBuffer, 'ply', {
                 getDefaultMaterial () {
@@ -332,9 +332,9 @@ describe ('Exporter', function () {
             assert.strictEqual (binFile.GetName (), 'model.bin');
       
             assert.strictEqual (textureFile.GetName (), 'texture1.png');
-            assert.strictEqual (textureFile.GetContent ().byteLength, 1);
+            assert.strictEqual (textureFile.GetBufferContent ().byteLength, 1);
       
-            let contentBuffer = gltfFile.GetContent ();
+            let contentBuffer = gltfFile.GetBufferContent ();
             let importer = new OV.ImporterGltf ();
             importer.Import (contentBuffer, 'gltf', {
                 getDefaultMaterial () {
@@ -342,7 +342,7 @@ describe ('Exporter', function () {
                 },
                 getFileBuffer (filePath) {
                     if (filePath == 'model.bin') {
-                        return binFile.GetContent ();
+                        return binFile.GetBufferContent ();
                     }
                     return null;
                 },
@@ -372,7 +372,7 @@ describe ('Exporter', function () {
             let glbFile = result[0];
             assert.strictEqual (glbFile.GetName (), 'model.glb');
 
-            let contentBuffer = glbFile.GetContent ();
+            let contentBuffer = glbFile.GetBufferContent ();
             let importer = new OV.ImporterGltf ();
             importer.Import (contentBuffer, 'glb', {
                 getDefaultMaterial () {

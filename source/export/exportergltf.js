@@ -51,7 +51,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
             let textureIndex = fileNameToIndex[fileName];
             if (textureIndex === undefined) {
                 let textureFile = new OV.ExportedFile (fileName);
-                textureFile.SetContent (texture.buffer);
+                textureFile.SetBufferContent (texture.buffer);
                 files.push (textureFile);
 
                 textureIndex = mainJson.textures.length;
@@ -67,8 +67,8 @@ OV.ExporterGltf = class extends OV.ExporterBase
             return textureIndex;
         });
 
-        gltfFile.SetContent (JSON.stringify (mainJson, null, 4));
-        binFile.SetContent (mainBuffer);        
+        gltfFile.SetTextContent (JSON.stringify (mainJson, null, 4));
+        binFile.SetBufferContent (mainBuffer);        
     }
 
     ExportBinaryContent (model, files)
@@ -164,7 +164,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
         }
         WriteCharacters (glbWriter, 0, mainBinaryBufferAlignedLength - mainBinaryBufferLength);
 
-        glbFile.SetContent (glbWriter.GetBuffer ());
+        glbFile.SetBufferContent (glbWriter.GetBuffer ());
     }
 
     GetMeshData (model)
