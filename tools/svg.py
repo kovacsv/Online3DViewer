@@ -25,7 +25,6 @@ def Main (argv):
 		'-s', iconsDir,
 		'-d', fixedIconsDir
 	])
-	imagesPath = os.path.abspath (os.path.join ('website', 'assets', 'images'))
 	Tools.RunCommand ('svgo', [fixedIconsDir])
 	Tools.RunCommand ('fantasticon', [
 		fixedIconsDir,
