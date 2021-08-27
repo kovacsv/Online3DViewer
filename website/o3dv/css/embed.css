@@ -3,10 +3,12 @@ div.embed_viewer
     overflow: auto;
 }
 
-div.embed_viewer img.embed_logo
+div.embed_viewer svg.embed_logo
 {
+	width: 40px;
 	height: 40px;
 	position: absolute;
 	right: 10px;
 	bottom: 10px;
+	display: block;
 }

@@ -32,11 +32,19 @@ div.title img.logo_image
 	float: left;
 }
 
+div.title svg.logo_image
+{
+	width: 190px;
+	height: 40px;
+	float: left;
+}
+
 div.title div.logo_text
 {
-	font-size: 16px;
+	color: var(--ov_foreground_color);
+	font-size: 18px;
 	font-weight: bold;
-	padding: 10px;
+	padding: 9px;
 	float: left;
 }
 
@@ -68,9 +76,10 @@ div.intro
 	overflow: auto;
 }
 
-div.intro img.intro_logo
+div.intro svg.intro_logo
 {
 	display: inline;
+	width: 140px;
 	height: 140px;
 	max-width: 80%;
 }
@@ -258,6 +267,18 @@ div.ov_sidebar_content button.pcr-button
 	box-shadow: none;
 	outline: none;
 	float: left;
+}
+
+div.pcr-app
+{
+	color: var(--ov_dialog_foreground_color);
+	background: var(--ov_dialog_background_color);
+}
+
+div.pcr-app input.pcr-result
+{
+	color: var(--ov_foreground_color) !important;
+	background: var(--ov_background_color) !important;
 }
 
 div.ov_property_table

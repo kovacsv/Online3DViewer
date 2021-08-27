@@ -149,7 +149,6 @@ OV.ProgressDialog = class extends OV.Dialog
     {
         super ();
         this.modal.SetCloseable (false);
-        this.imageDiv = null;
         this.textDiv = null;
     }
 
@@ -158,9 +157,9 @@ OV.ProgressDialog = class extends OV.Dialog
         let contentDiv = this.modal.GetContentDiv ();
         contentDiv.addClass ('ov_progress');
 
-        this.imageDiv = $('<img>').addClass ('ov_progress_img').attr ('src', 'assets/images/3dviewer_net_logo.svg').appendTo (contentDiv);
+        $('<svg><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>').addClass ('ov_progress_img').appendTo (contentDiv);
+        console.log (contentDiv.html ());
         this.textDiv = $('<div>').addClass ('ov_progress_text').appendTo (contentDiv);
-        
         this.SetText (text);
     }
 

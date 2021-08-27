@@ -5,8 +5,8 @@ div.ov_modal_overlay
 
 div.ov_dialog
 {
-	color: var(--ov_foreground_color);
-	background: var(--ov_background_color);
+	color: var(--ov_dialog_foreground_color);
+	background: var(--ov_dialog_background_color);
 	width: 400px;
 	padding: 20px;
 	box-shadow: var(--ov_shadow);
@@ -124,8 +124,8 @@ div.ov_dialog div.ov_dialog_copyable_input
 
 div.ov_dialog div.ov_dialog_copyable_input input
 {
-	color: var(--ov_foreground_color);
-	background: var(--ov_background_color);
+	color: var(--ov_dialog_foreground_color);
+	background: var(--ov_dialog_background_color);
 	width: 70%;
 	margin-top: 6px;
 	box-sizing: border-box;
@@ -157,8 +157,8 @@ div.ov_dialog input.ov_dialog_checkradio
 
 div.ov_popup
 {
-	color: var(--ov_foreground_color);
-	background: var(--ov_background_color);
+	color: var(--ov_dialog_foreground_color);
+	background: var(--ov_dialog_background_color);
 	width: 200px;
 	padding: 10px;
 	box-shadow: var(--ov_shadow);
@@ -193,8 +193,8 @@ div.ov_popup div.ov_popup_list_item_name
 
 div.ov_progress
 {
-	color: var(--ov_foreground_color);
-	background: var(--ov_background_color);
+	color: var(--ov_dialog_foreground_color);
+	background: var(--ov_dialog_background_color);
 	text-align: center;
 	width: 400px;
 	padding: 20px;
@@ -202,11 +202,12 @@ div.ov_progress
 	border-radius: 5px;
 }
 
-div.ov_progress img.ov_progress_img
+div.ov_progress svg.ov_progress_img
 {
+	width: 80px;
 	height: 80px;
 	margin-bottom: 10px;
-	display: inline;
+	display: inline-block;
 }
 
 div.ov_progress div.ov_progress_text
@@ -214,7 +215,6 @@ div.ov_progress div.ov_progress_text
 	font-size: 19px;
 	text-align: center;
 }
-
 
 @media (hover)
 {

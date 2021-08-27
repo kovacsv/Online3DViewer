@@ -37,6 +37,7 @@ OV.Website = class
             color : 0x8ec9f0,
             side : THREE.DoubleSide
         });
+        this.themeHandler = new OV.ThemeHandler ();
         this.detailsPanel = null;
         this.settingsPanel = null;
         this.model = null;
@@ -66,8 +67,7 @@ OV.Website = class
 			this.Resize ();
 		});
 
-        let themeHandler = new OV.ThemeHandler ();
-        themeHandler.SwitchTheme ('dark');
+        this.themeHandler.SwitchTheme ('dark');
     }
 
     Resize ()
@@ -404,6 +404,17 @@ OV.Website = class
         AddButton (this.toolbar, this.eventHandler, 'share', 'Share model', true, () => {
             this.dialog = OV.ShowSharingDialog (importer, this.settings, this.viewer.GetCamera ());
         });
+
+        // TODO: remove
+        let theme = 'dark';
+        AddButton (this.toolbar, this.eventHandler, 'share', 'Dark Mode', true, () => {
+            if (theme === 'dark') {
+                theme = 'light'
+            } else {
+                theme = 'dark';
+            }
+            this.themeHandler.SwitchTheme (theme);
+        });        
 
         this.parameters.fileInput.on ('change', (ev) => {
             if (ev.target.files.length > 0) {

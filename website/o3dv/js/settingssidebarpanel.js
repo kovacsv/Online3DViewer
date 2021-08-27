@@ -55,12 +55,11 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
     {
         let contentDiv = $('<div>').addClass ('ov_sidebar_settings_content').appendTo (this.contentDiv);
         let titleDiv = $('<div>').addClass ('ov_sidebar_subtitle').appendTo (contentDiv);
-        let colorInput = $('<div>').addClass ('color-picker').addClass ('ov_sidebar_color').appendTo (titleDiv);
+        let colorInput = $('<div>').addClass ('color-picker').appendTo (titleDiv);
         $('<span>').html (title).appendTo (titleDiv);
         const pickr = Pickr.create ({
             el : colorInput.get (0),
             theme : 'monolith',
-            appClass : 'ov_sidebar_color',
             position : 'left-start',
             swatches : predefinedColors,
             comparison : false,

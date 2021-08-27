@@ -8,8 +8,12 @@
     --ov_secondary_hover_color: #e4f4ff;
 	--ov_icon_color: #263238;
 	--ov_light_icon_color: #838383;
+	--ov_logo_text_color: #15334a;
+	--ov_logo_border_color: #000000;
 	--ov_toolbar_background_color: #f5f5f5;
 	--ov_toolbar_selected_background_color: #e1e1e1;
+    --ov_dialog_foreground_color: #000000;
+    --ov_dialog_background_color: #ffffff;
 	--ov_border_color: #cccccc;
 	--ov_light_border_color: #dddddd;
 	--ov_shadow: 0px 0px 10px #cccccc;
