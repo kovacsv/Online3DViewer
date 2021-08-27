@@ -409,7 +409,7 @@ OV.Website = class
         let theme = 'dark';
         AddButton (this.toolbar, this.eventHandler, 'share', 'Dark Mode', true, () => {
             if (theme === 'dark') {
-                theme = 'light'
+                theme = 'light';
             } else {
                 theme = 'dark';
             }
