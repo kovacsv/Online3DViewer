@@ -38,8 +38,8 @@ OV.ShowSharingDialog = function (importer, settings, camera)
 
     function AddCopyableTextInput (parentDiv, getText)
     {
-        let copyText = 'copy';
-        let copiedText = 'copied';
+        let copyText = 'Copy';
+        let copiedText = 'Copied';
         let container = $('<div>').addClass ('ov_dialog_copyable_input').appendTo (parentDiv);
         let input = $('<input>').prop ('readonly', true).appendTo (container);
         let button = $('<div>').addClass ('ov_button').addClass ('outline').addClass ('ov_dialog_copyable_input_button').html (copyText).appendTo (container);
