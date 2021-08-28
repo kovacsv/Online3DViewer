@@ -43,8 +43,8 @@ OV.ThemeHandler = class {
                     '--ov_dialog_foreground_color': '#fafafa',
                     '--ov_dialog_background_color': '#333333',
                     '--ov_border_color': '#444444',
-                    '--ov_shadow': 'none',
-                    '--ov_small_shadow': 'none'
+                    '--ov_shadow': '0px 0px 10px #000000',
+                    '--ov_small_shadow': '0px 0px 5px #000000'
                 }
             }
         };
