@@ -125,7 +125,7 @@ div.main_sidebar
 div.main_viewer canvas
 {
 	margin: 10px;
-	border: 1px solid var(--ov_light_border_color);
+	border: 1px solid var(--ov_border_color);
 	outline: none;
 	display: block;
 }
@@ -150,12 +150,12 @@ div.ov_toolbar div.ov_toolbar_button.right
 
 div.ov_toolbar div.ov_toolbar_button.selected
 {
-	background: var(--ov_toolbar_selected_background_color);
+	background: var(--ov_toolbar_selected_color);
 }
 
 div.ov_toolbar div.ov_toolbar_separator
 {
-	background: var(--ov_border_color);
+	background: var(--ov_toolbar_separator_color);
 	width: 1px;
 	height: 28px;
 	margin: 5px 8px;
@@ -170,7 +170,7 @@ div.ov_navigator_tree_title
 	overflow: hidden;
 	padding-bottom: 10px;
 	margin-bottom: 10px;
-	border-bottom: 1px solid var(--ov_light_border_color);
+	border-bottom: 1px solid var(--ov_border_color);
 }
 
 div.ov_navigator_tree_panel
@@ -182,14 +182,14 @@ div.ov_navigator_tree_panel
 div.ov_navigator_info_panel
 {
 	overflow: auto;
-	border-top: 1px solid var(--ov_light_border_color);
+	border-top: 1px solid var(--ov_border_color);
 }
 
 div.ov_navigator_info_panel div.ov_navigator_info_button
 {
 	cursor: pointer;
 	margin-top: 10px;
-	border: 1px solid var(--ov_light_border_color);
+	border: 1px solid var(--ov_border_color);
 	border-radius: 5px;
 	overflow: auto;
 }
@@ -215,7 +215,7 @@ div.ov_sidebar_title
 	overflow: hidden;
 	padding-bottom: 10px;
 	margin-bottom: 10px;
-	border-bottom: 1px solid var(--ov_light_border_color);
+	border-bottom: 1px solid var(--ov_border_color);
 }
 
 div.ov_sidebar_title div.ov_sidebar_title_text
@@ -290,7 +290,7 @@ div.ov_property_table_custom
 {
 	margin-top: 8px;
 	padding-top: 8px;
-	border-top: 1px solid var(--ov_light_border_color);
+	border-top: 1px solid var(--ov_border_color);
 }
 
 div.ov_property_table div.ov_property_table_row
@@ -336,7 +336,7 @@ div.ov_property_table div.ov_property_table_value
 
 div.ov_property_table div.ov_property_table_button
 {
-	color: var(--ov_primary_color);
+	color: var(--ov_button_color);
 	cursor: pointer;
 }
 
@@ -345,22 +345,22 @@ div.ov_property_table div.ov_property_table_button
 
 div.title_right div.header_button:hover
 {
-	color: var(--ov_primary_color);
+	color: var(--ov_button_color);
 }
 
 div.ov_toolbar div.ov_toolbar_button:hover
 {
-	background: #c9e5f8;
+	background: var(--ov_hover_color);
 }
 
 div.ov_navigator_info_panel div.ov_navigator_info_panel_title:hover
 {
-	background: var(--ov_secondary_hover_color);
+	background: var(--ov_hover_color);
 }
 
 div.ov_navigator_info_panel div.ov_navigator_info_button:hover
 {
-	background: var(--ov_secondary_hover_color);
+	background: var(--ov_hover_color);
 }
 
 }

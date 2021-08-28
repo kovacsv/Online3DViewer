@@ -26,7 +26,7 @@ div.ov_svg_icon.light
 
 div.ov_svg_icon.selected
 {
-	color: var(--ov_primary_color);
+	color: var(--ov_button_color);
 }
 
 div.ov_thin_scrollbar
@@ -48,18 +48,18 @@ div.ov_thin_scrollbar::-webkit-scrollbar-thumb
 
 div.ov_button
 {
-	color: var(--ov_secondary_color);
-	background: var(--ov_primary_color);
+	color: var(--ov_button_text_color);
+	background: var(--ov_button_color);
 	text-align: center;
 	padding: 3px;
-	border: 1px solid var(--ov_primary_color);
+	border: 1px solid var(--ov_button_color);
 	border-radius: 5px;
 	cursor: pointer;
 }
 
 div.ov_button.outline
 {
-	color: var(--ov_primary_color);
+	color: var(--ov_button_color);
 	background: transparent;
 }
 
@@ -67,7 +67,7 @@ div.ov_tooltip
 {
 	color: var(--ov_foreground_color);
 	background: var(--ov_background_color);
-	border: 1px solid var(--ov_light_border_color);
+	border: 1px solid var(--ov_border_color);
 	padding: 5px 10px;
 	border-radius: 5px;
 	position: absolute;
@@ -79,14 +79,14 @@ div.ov_tooltip
 
 div.ov_button:hover
 {
-	background: var(--ov_primary_hover_color);
-    border: 1px solid var(--ov_primary_hover_color);
+	background: var(--ov_button_hover_color);
+    border: 1px solid var(--ov_button_hover_color);
 }
 
 div.ov_button.outline:hover
 {
-	background: var(--ov_secondary_hover_color);
-	border: 1px solid var(--ov_primary_color);
+	background: var(--ov_hover_color);
+	border: 1px solid var(--ov_button_color);
 }
 
 }

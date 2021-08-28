@@ -12,8 +12,8 @@ div.ov_tree_view div.ov_tree_item
 
 div.ov_tree_view div.ov_tree_item.selected
 {
-	background: #eeeeee;
-	font-weight: bold;;
+	background: var(--ov_treeview_selected_color);
+	font-weight: bold;
 }
 
 div.ov_tree_view div.ov_tree_item.clickable
@@ -59,7 +59,7 @@ div.ov_tree_view div.ov_tree_view_children
 
 div.ov_tree_view div.ov_tree_item.clickable:hover
 {
-	background: var(--ov_secondary_hover_color);
+	background: var(--ov_hover_color);
 }
 
 }
