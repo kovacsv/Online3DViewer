@@ -20,8 +20,7 @@ OV.ThemeHandler = class {
                     '--ov_dialog_foreground_color': '#000000',
                     '--ov_dialog_background_color': '#ffffff',
                     '--ov_border_color': '#dddddd',
-                    '--ov_shadow': '0px 0px 10px #cccccc',
-                    '--ov_small_shadow': '0px 0px 3px #cccccc'
+                    '--ov_shadow': '0px 0px 10px #cccccc'
                 }
             },
             'dark' : {
@@ -35,7 +34,7 @@ OV.ThemeHandler = class {
                     '--ov_hover_color': '#667c86',
                     '--ov_light_icon_color': '#dadada',
                     '--ov_logo_text_color': '#fafafa',
-                    '--ov_logo_border_color': '#fafafa',                
+                    '--ov_logo_border_color': '#2a2b2e',                
                     '--ov_toolbar_background_color': '#3d3e42',
                     '--ov_toolbar_selected_color': '#272727',
                     '--ov_toolbar_separator_color': '#888888',
@@ -43,8 +42,7 @@ OV.ThemeHandler = class {
                     '--ov_dialog_foreground_color': '#fafafa',
                     '--ov_dialog_background_color': '#333333',
                     '--ov_border_color': '#444444',
-                    '--ov_shadow': '0px 0px 10px #000000',
-                    '--ov_small_shadow': '0px 0px 5px #000000'
+                    '--ov_shadow': '0px 0px 10px #111111'
                 }
             }
         };
