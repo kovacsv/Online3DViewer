@@ -17,7 +17,7 @@ OV.CookieHandler = class
 		document.cookie = key + '=' + value + '; expires=' + date.toUTCString () + ';';
     }
 
-    GetStringVal (key)
+    GetStringVal (key, defVal)
     {
 		let cookie = decodeURIComponent (document.cookie);
         let cookieParts = cookie.split (';');
@@ -27,12 +27,12 @@ OV.CookieHandler = class
                 return currentCookie.substr (key.length + 1);
             }
         }
-        return null;
+        return defVal;
     }
 
     GetBoolVal (key, defVal)
     {
-        let stringVal = this.GetStringVal (key);
+        let stringVal = this.GetStringVal (key, null);
         if (stringVal === null) {
             return defVal;
         }
@@ -46,7 +46,7 @@ OV.CookieHandler = class
 
     GetColorVal (key, defVal)
     {
-        let stringVal = this.GetStringVal (key);
+        let stringVal = this.GetStringVal (key, null);
         if (stringVal === null) {
             return defVal;
         }

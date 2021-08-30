@@ -4,18 +4,21 @@ OV.WebsiteSettings = class
     {
         this.backgroundColor = new OV.Color (255, 255, 255);
         this.defaultColor = new OV.Color (200, 200, 200);
+        this.themeName = 'light';
     }
 
     LoadFromCookies (cookieHandler)
     {
         this.backgroundColor = cookieHandler.GetColorVal ('ov_background_color', new OV.Color (255, 255, 255));
         this.defaultColor = cookieHandler.GetColorVal ('ov_default_color', new OV.Color (200, 200, 200));
+        this.themeName = cookieHandler.GetStringVal ('ov_theme_name', 'light');
     }
 
     SaveToCookies (cookieHandler)
     {
         cookieHandler.SetColorVal ('ov_background_color', this.backgroundColor);
         cookieHandler.SetColorVal ('ov_default_color', this.defaultColor);
+        cookieHandler.SetStringVal ('ov_theme_name', this.themeName);
     }
 };
 
@@ -46,8 +49,8 @@ OV.Website = class
 
     Load ()
     {
-        this.themeHandler.SwitchTheme ('dark');
         this.settings.LoadFromCookies (this.cookieHandler);
+        this.SwitchTheme (this.settings.themeName);
 
         this.InitViewer ();
         this.InitToolbar ();
@@ -209,6 +212,27 @@ OV.Website = class
         });
     }
 
+    OnHashChange ()
+    {
+        if (this.hashHandler.HasHash ()) {
+            let urls = this.hashHandler.GetModelFilesFromHash ();
+            if (urls === null) {
+                return;
+            }
+            let importSettings = new OV.ImportSettings ();
+            importSettings.defaultColor = this.settings.defaultColor;
+            let defaultColor = this.hashHandler.GetDefaultColorFromHash ();
+            if (defaultColor !== null) {
+                importSettings.defaultColor = defaultColor;
+            }
+            this.eventHandler.HandleEvent ('model_load_started', { source : 'hash' });
+            this.LoadModelFromUrlList (urls, importSettings);
+        } else {
+            this.ClearModel ();
+            this.parameters.introDiv.show ();
+        }
+    }
+
     OpenFileBrowserDialog ()
     {
         this.parameters.fileInput.trigger ('click');
@@ -276,25 +300,11 @@ OV.Website = class
         }
     }
 
-    OnHashChange ()
+    SwitchTheme (newThemeName)
     {
-        if (this.hashHandler.HasHash ()) {
-            let urls = this.hashHandler.GetModelFilesFromHash ();
-            if (urls === null) {
-                return;
-            }
-            let importSettings = new OV.ImportSettings ();
-            importSettings.defaultColor = this.settings.defaultColor;
-            let defaultColor = this.hashHandler.GetDefaultColorFromHash ();
-            if (defaultColor !== null) {
-                importSettings.defaultColor = defaultColor;
-            }
-            this.eventHandler.HandleEvent ('model_load_started', { source : 'hash' });
-            this.LoadModelFromUrlList (urls, importSettings);
-        } else {
-            this.ClearModel ();
-            this.parameters.introDiv.show ();
-        }
+        this.settings.themeName = newThemeName;
+        this.themeHandler.SwitchTheme (newThemeName);
+        this.settings.SaveToCookies (this.cookieHandler);
     }
 
     InitViewer ()
@@ -405,14 +415,14 @@ OV.Website = class
         });
 
         // TODO: remove
-        let theme = 'dark';
         AddButton (this.toolbar, this.eventHandler, 'share', 'Dark Mode', true, () => {
-            if (theme === 'dark') {
+            let theme = 'light';
+            if (this.settings.themeName === 'dark') {
                 theme = 'light';
             } else {
                 theme = 'dark';
             }
-            this.themeHandler.SwitchTheme (theme);
+            this.SwitchTheme (theme);
         });        
 
         this.parameters.fileInput.on ('change', (ev) => {

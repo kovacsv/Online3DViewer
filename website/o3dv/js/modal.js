@@ -158,7 +158,6 @@ OV.ProgressDialog = class extends OV.Dialog
         contentDiv.addClass ('ov_progress');
 
         $('<svg><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>').addClass ('ov_progress_img').appendTo (contentDiv);
-        console.log (contentDiv.html ());
         this.textDiv = $('<div>').addClass ('ov_progress_text').appendTo (contentDiv);
         this.SetText (text);
     }
