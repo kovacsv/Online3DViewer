@@ -1,6 +1,7 @@
 OV.ThemeHandler = class {
     constructor () {
         this.themes = {
+            // TODO: this should be filled from the css
             'light' : {
                 'css' : {
                     '--ov_foreground_color': '#000000',
