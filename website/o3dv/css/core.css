@@ -5,6 +5,9 @@
     --ov_button_color: #3393bd;
     --ov_button_hover_color: #146a8f;
     --ov_button_text_color: #ffffff;
+    --ov_outline_button_color: #3393bd;
+    --ov_outline_button_hover_color: #c9e5f8;
+    --ov_outline_button_text_color: #3393bd;
 	--ov_icon_color: #263238;
 	--ov_hover_color: #c9e5f8;
 	--ov_light_icon_color: #838383;

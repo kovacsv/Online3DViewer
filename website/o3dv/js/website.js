@@ -46,6 +46,7 @@ OV.Website = class
 
     Load ()
     {
+        this.themeHandler.SwitchTheme ('dark');
         this.settings.LoadFromCookies (this.cookieHandler);
 
         this.InitViewer ();
@@ -66,8 +67,6 @@ OV.Website = class
         $(window).on ('resize', () => {
 			this.Resize ();
 		});
-
-        this.themeHandler.SwitchTheme ('dark');
     }
 
     Resize ()
