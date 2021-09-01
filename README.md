@@ -6,7 +6,7 @@ Online 3D Viewer (https://3dviewer.net) is a free and open source web solution t
 [![Build status](https://github.com/kovacsv/Online3DViewer/actions/workflows/build.yml/badge.svg)](https://github.com/kovacsv/Online3DViewer/actions/workflows/build.yml)
 [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/kovacsv/Online3DViewer.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/kovacsv/Online3DViewer/context:javascript)
 
-![Start Page](website/assets/images/3dviewer_net_start_page.png?raw=true)
+![Start Page](assets/images/3dviewer_net_start_page.png?raw=true)
 
 [Check the live version!](https://3dviewer.net/#model=https://raw.githubusercontent.com/kovacsv/Online3DViewer/dev/test/testfiles/gltf/DamagedHelmet/glTF-Binary/DamagedHelmet.glb)
 
