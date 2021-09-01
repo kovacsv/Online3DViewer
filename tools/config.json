@@ -92,6 +92,7 @@
 	],
 	"website_files_css" : [
 		"website/o3dv/css/icons.css",
+		"website/o3dv/css/themes.css",
 		"website/o3dv/css/core.css",
 		"website/o3dv/css/controls.css",
 		"website/o3dv/css/dialogs.css",
