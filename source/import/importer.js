@@ -25,10 +25,9 @@ OV.File = class
 
 OV.FileList = class
 {
-    constructor (importers)
+    constructor ()
     {
         this.files = [];
-        this.importers = importers;
     }
 
     FillFromFileUrls (fileList)
@@ -84,26 +83,6 @@ OV.FileList = class
         return null;
     }
 
-    HasMainFile ()
-    {
-        return this.GetMainFile () !== null;
-    }
-
-    GetMainFile ()
-    {
-        for (let fileIndex = 0; fileIndex < this.files.length; fileIndex++) {
-            let file = this.files[fileIndex];
-            let importer = this.FindImporter (file);
-            if (importer !== null) {
-                return {
-                    file : file,
-                    importer : importer
-                };
-            }
-        }
-        return null;
-    }
-
     IsOnlySource (source)
     {
         if (this.files.length === 0) {
@@ -154,17 +133,6 @@ OV.FileList = class
         }).finally (() => {
             complete ();
         });
-    }
-
-    FindImporter (file)
-    {
-        for (let importerIndex = 0; importerIndex < this.importers.length; importerIndex++) {
-            let importer = this.importers[importerIndex];
-            if (importer.CanImportExtension (file.extension)) {
-                return importer;
-            }
-        }
-        return null;
     }
 };
 
@@ -259,7 +227,7 @@ OV.Importer = class
             new OV.Importer3dm (),
             new OV.ImporterIfc ()
         ];
-        this.fileList = new OV.FileList (this.importers);
+        this.fileList = new OV.FileList ();
         this.model = null;
         this.usedFiles = [];
         this.missingFiles = [];
@@ -282,7 +250,7 @@ OV.Importer = class
 
     Import (settings, callbacks)
     {
-        let mainFile = this.fileList.GetMainFile ();
+        let mainFile = this.GetMainFile (this.fileList);
         if (mainFile === null || mainFile.file === null || mainFile.file.content === null) {
             callbacks.onError (new OV.ImportError (OV.ImportErrorCode.NoImportableFile, null));
             return;
@@ -351,7 +319,7 @@ OV.Importer = class
             newFileList.FillFromFileObjects (fileList);
         }
         let reset = false;
-        if (newFileList.HasMainFile ()) {
+        if (this.HasMainFile (newFileList)) {
             reset = true;
         } else {
             let foundMissingFile = false;
@@ -385,6 +353,38 @@ OV.Importer = class
     IsOnlyFileSource (source)
     {
         return this.fileList.IsOnlySource (source);
+    }
+
+    HasMainFile (fileList)
+    {
+        return this.GetMainFile (fileList) !== null;
+    }
+
+    GetMainFile (fileList)
+    {
+        let files = fileList.GetFiles ();
+        for (let fileIndex = 0; fileIndex < files.length; fileIndex++) {
+            let file = files[fileIndex];
+            let importer = this.FindImporter (file);
+            if (importer !== null) {
+                return {
+                    file : file,
+                    importer : importer
+                };
+            }
+        }
+        return null;
+    }
+
+    FindImporter (file)
+    {
+        for (let importerIndex = 0; importerIndex < this.importers.length; importerIndex++) {
+            let importer = this.importers[importerIndex];
+            if (importer.CanImportExtension (file.extension)) {
+                return importer;
+            }
+        }
+        return null;
     }
 
     RevokeModelUrls ()
