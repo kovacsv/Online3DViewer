@@ -33,12 +33,21 @@ OV.ThemeHandler = class {
         }
     }
 
-    SwitchTheme (name)
+    SwitchTheme (themeId)
     {
+        let themeName = null;
+        if (themeId === OV.Theme.Light) {
+            themeName = 'light';
+        } else if (themeId === OV.Theme.Dark) {
+            themeName = 'dark';
+        } else {
+            return;
+        }
+
         let root = document.querySelector (':root');
         for (let property in this.css) {
             if (Object.prototype.hasOwnProperty.call (this.css, property)) {
-                let value = this.css[property][name];
+                let value = this.css[property][themeName];
                 if (value !== undefined) {
                     root.style.setProperty (property, value);
                 }

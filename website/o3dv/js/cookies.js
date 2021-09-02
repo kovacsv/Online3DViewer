@@ -42,6 +42,20 @@ OV.CookieHandler = class
     SetBoolVal (key, value)
     {
         this.SetStringVal (key, value ? 'true' : 'false');
+    }    
+
+    GetIntVal (key, defVal)
+    {
+        let stringVal = this.GetStringVal (key, null);
+        if (stringVal === null) {
+            return defVal;
+        }
+        return parseInt (stringVal, 10);
+    }
+
+    SetIntVal (key, value)
+    {
+        this.SetStringVal (key, value.toString ());
     }
 
     GetColorVal (key, defVal)

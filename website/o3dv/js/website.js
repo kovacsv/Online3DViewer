@@ -1,27 +1,3 @@
-OV.WebsiteSettings = class
-{
-    constructor ()
-    {
-        this.backgroundColor = new OV.Color (255, 255, 255);
-        this.defaultColor = new OV.Color (200, 200, 200);
-        this.themeName = 'light';
-    }
-
-    LoadFromCookies (cookieHandler)
-    {
-        this.backgroundColor = cookieHandler.GetColorVal ('ov_background_color', new OV.Color (255, 255, 255));
-        this.defaultColor = cookieHandler.GetColorVal ('ov_default_color', new OV.Color (200, 200, 200));
-        this.themeName = cookieHandler.GetStringVal ('ov_theme_name', 'light');
-    }
-
-    SaveToCookies (cookieHandler)
-    {
-        cookieHandler.SetColorVal ('ov_background_color', this.backgroundColor);
-        cookieHandler.SetColorVal ('ov_default_color', this.defaultColor);
-        cookieHandler.SetStringVal ('ov_theme_name', this.themeName);
-    }
-};
-
 OV.Website = class
 {
     constructor (parameters)
@@ -34,7 +10,7 @@ OV.Website = class
         this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv);
         this.navigator = new OV.Navigator (this.parameters.navigatorDiv);
         this.eventHandler = new OV.EventHandler (this.parameters.eventHandler);
-        this.settings = new OV.WebsiteSettings ();
+        this.settings = new OV.Settings ();
         this.modelLoader = new OV.ThreeModelLoader ();
         this.highlightMaterial = new THREE.MeshPhongMaterial ({
             color : 0x8ec9f0,
@@ -50,7 +26,7 @@ OV.Website = class
     Load ()
     {
         this.settings.LoadFromCookies (this.cookieHandler);
-        this.SwitchTheme (this.settings.themeName);
+        this.SwitchTheme (this.settings.themeId, false);
 
         this.InitViewer ();
         this.InitToolbar ();
@@ -300,11 +276,33 @@ OV.Website = class
         }
     }
 
-    SwitchTheme (newThemeName)
+    SwitchTheme (newThemeId, resetColors)
     {
-        this.settings.themeName = newThemeName;
-        this.themeHandler.SwitchTheme (newThemeName);
+        this.settings.themeId = newThemeId;
+        let calculatedTheme = this.settings.GetTheme ();
+
+        this.themeHandler.SwitchTheme (calculatedTheme);
         this.settings.SaveToCookies (this.cookieHandler);
+        if (resetColors) {
+            if (calculatedTheme === OV.Theme.Light) {
+                this.settings.backgroundColor = new OV.Color (255, 255, 255);
+                this.settings.defaultColor = new OV.Color (200, 200, 200);
+            } else if (calculatedTheme === OV.Theme.Dark) {
+                this.settings.backgroundColor = new OV.Color (0, 0, 0);
+                this.settings.defaultColor = new OV.Color (200, 200, 200);
+            } else {
+                return;
+            }
+            this.settings.SaveToCookies (this.cookieHandler);
+            this.viewer.SetBackgroundColor (this.settings.backgroundColor);
+            if (this.modelLoader.defaultMaterial !== null) {
+                OV.ReplaceDefaultMaterialColor (this.model, this.settings.defaultColor);
+                this.modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
+            }            
+            if (this.settingsPanel !== null) {
+                this.settingsPanel.UpdateSettings (this.settings);
+            }
+        }
     }
 
     InitViewer ()
@@ -416,13 +414,13 @@ OV.Website = class
 
         // TODO: remove
         AddButton (this.toolbar, this.eventHandler, 'share', 'Dark Mode', true, () => {
-            let theme = 'light';
-            if (this.settings.themeName === 'dark') {
-                theme = 'light';
+            let themeId = OV.Theme.Light;
+            if (this.settings.themeId === OV.Theme.Dark) {
+                themeId = OV.Theme.Light;
             } else {
-                theme = 'dark';
+                themeId = OV.Theme.Dark;
             }
-            this.SwitchTheme (theme);
+            this.SwitchTheme (themeId, true);
         });        
 
         this.parameters.fileInput.on ('change', (ev) => {
@@ -571,7 +569,7 @@ OV.Website = class
             });
         }
 
-        let defaultSettings = new OV.WebsiteSettings ();
+        let defaultSettings = new OV.Settings ();
         this.settingsPanel.InitSettings (
             this.settings,
             defaultSettings,

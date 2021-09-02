@@ -40,6 +40,12 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         this.AddResetToDefaultsButton (defaultSettings, callbacks);
     }
 
+    UpdateSettings (settings)
+    {
+        this.backgroundColorInput.pickr.setColor ('#' + OV.ColorToHexString (settings.backgroundColor));
+        this.defaultColorInput.pickr.setColor ('#' + OV.ColorToHexString (settings.defaultColor));
+    }
+
     Update (model)
     {
         let hasDefaultMaterial = OV.HasDefaultMaterial (model);

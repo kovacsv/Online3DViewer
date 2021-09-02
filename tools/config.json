@@ -70,6 +70,7 @@
 		"website/o3dv/js/eventhandler.js",
 		"website/o3dv/js/utils.js",
 		"website/o3dv/js/cookies.js",
+		"website/o3dv/js/settings.js",
 		"website/o3dv/js/toolbar.js",
 		"website/o3dv/js/treeview.js",
 		"website/o3dv/js/modal.js",
