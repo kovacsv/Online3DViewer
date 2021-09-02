@@ -6,6 +6,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         this.backgroundColorInput = null;
         this.defaultColorInput = null;
         this.defaultColorWarning = null;
+        this.themeInput = null;        
     }
 
     GetTitle ()
@@ -37,7 +38,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             settings.defaultColor,
             callbacks.onDefaultColorChange
         );
-        this.AddThemeParameter (settings.themeId, callbacks.onThemeChange);
+        this.themeInput = this.AddThemeParameter (settings.themeId, callbacks.onThemeChange);
         this.AddResetToDefaultsButton (defaultSettings, callbacks);
     }
 
@@ -111,37 +112,53 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
 
     AddThemeParameter (defaultValue, onChange)
     {
-        function AddRadioButton (contentDiv, defaultValue, themeId, themeName, onChange)
+        function AddRadioButton (contentDiv, themeId, themeName, onChange)
         {
             let row = $('<div>').addClass ('ov_sidebar_settings_row').appendTo (contentDiv);
-            let radio = $('<input>').addClass ('ov_radio_button').attr ('type', 'radio').attr ('id', themeId).attr ('name', 'theme').appendTo (row);
-            $('<label>').attr ('for', themeId).html (themeName).appendTo (row);
-            radio.prop ('checked', themeId === defaultValue);
+            let radio = $('<input>').addClass ('ov_radio_button').attr ('type', 'radio').attr ('id', themeId.toString ()).attr ('name', 'theme').appendTo (row);
+            $('<label>').attr ('for', themeId.toString ()).html (themeName).appendTo (row);
             radio.change (() => {
                 onChange (themeId);
             });
+            return radio;
+        }
+
+        function Select (radioButtons, defaultValue)
+        {
+            for (let i = 0; i < radioButtons.length; i++) {
+                let radioButton = radioButtons[i];
+                radioButton.prop ('checked', radioButton.attr ('id') === defaultValue.toString ());
+            }
         }
 
         let contentDiv = $('<div>').addClass ('ov_sidebar_settings_content').appendTo (this.contentDiv);
         // TODO: icon
         let titleDiv = $('<div>').addClass ('ov_sidebar_subtitle').html ('Appearance').appendTo (contentDiv);
         let buttonsDiv = $('<div>').addClass ('ov_sidebar_settings_padded').appendTo (contentDiv);
-        AddRadioButton (buttonsDiv, defaultValue, OV.Theme.Light, 'Light', onChange);
-        AddRadioButton (buttonsDiv, defaultValue, OV.Theme.Dark, 'Dark', onChange);
-        AddRadioButton (buttonsDiv, defaultValue, OV.Theme.System, 'System', onChange);
-        return;
+        let result = {
+            buttons : [],
+            select: (value) => {
+                Select (result.buttons, value);
+            }
+        };
+        result.buttons.push (AddRadioButton (buttonsDiv, OV.Theme.Light, 'Light', onChange));
+        result.buttons.push (AddRadioButton (buttonsDiv, OV.Theme.Dark, 'Dark', onChange));
+        result.buttons.push (AddRadioButton (buttonsDiv, OV.Theme.System, 'System', onChange));
+        Select (result.buttons, defaultValue);
+        return result;
 
     }
 
     AddResetToDefaultsButton (defaultSettings, callbacks)
     {
-        // TODO: reset appearance
         let resetToDefaultsButton = $('<div>').addClass ('ov_button').addClass ('outline').addClass ('ov_sidebar_button').html ('Reset to Default').appendTo (this.contentDiv);
         resetToDefaultsButton.click (() => {
             this.backgroundColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.backgroundColor));
             this.defaultColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.defaultColor));
+            this.themeInput.select (defaultSettings.themeId);
             callbacks.onBackgroundColorChange (defaultSettings.backgroundColor);
             callbacks.onDefaultColorChange (defaultSettings.defaultColor);
+            callbacks.onThemeChange (defaultSettings.themeId);
         });
     }
 };
