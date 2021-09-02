@@ -288,7 +288,7 @@ OV.Website = class
                 this.settings.backgroundColor = new OV.Color (255, 255, 255);
                 this.settings.defaultColor = new OV.Color (200, 200, 200);
             } else if (calculatedTheme === OV.Theme.Dark) {
-                this.settings.backgroundColor = new OV.Color (0, 0, 0);
+                this.settings.backgroundColor = new OV.Color (42, 43, 46);
                 this.settings.defaultColor = new OV.Color (200, 200, 200);
             } else {
                 return;
@@ -411,17 +411,6 @@ OV.Website = class
         AddButton (this.toolbar, this.eventHandler, 'share', 'Share model', true, () => {
             this.dialog = OV.ShowSharingDialog (importer, this.settings, this.viewer.GetCamera ());
         });
-
-        // TODO: remove
-        AddButton (this.toolbar, this.eventHandler, 'share', 'Dark Mode', true, () => {
-            let themeId = OV.Theme.Light;
-            if (this.settings.themeId === OV.Theme.Dark) {
-                themeId = OV.Theme.Light;
-            } else {
-                themeId = OV.Theme.Dark;
-            }
-            this.SwitchTheme (themeId, true);
-        });        
 
         this.parameters.fileInput.on ('change', (ev) => {
             if (ev.target.files.length > 0) {
@@ -587,6 +576,9 @@ OV.Website = class
                         this.modelLoader.ReplaceDefaultMaterialColor (newVal);
                     }
                     this.viewer.Render ();
+                },
+                onThemeChange : (newVal) => {
+                    this.SwitchTheme (newVal, true);
                 }
             }
         );

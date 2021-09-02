@@ -150,11 +150,6 @@ div.ov_dialog div.ov_dialog_row
 	overflow: auto;
 }
 
-div.ov_dialog input.ov_dialog_checkradio
-{
-	margin-right: 10px;
-}
-
 div.ov_popup
 {
 	color: var(--ov_dialog_foreground_color);

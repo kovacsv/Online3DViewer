@@ -74,6 +74,16 @@ div.ov_tooltip
 	box-shadow: var(--ov_shadow);
 }
 
+input.ov_radio_button
+{
+	margin-right: 10px;
+}
+
+input.ov_checkbox
+{
+	margin-right: 10px;
+}
+
 @media (hover)
 {
 

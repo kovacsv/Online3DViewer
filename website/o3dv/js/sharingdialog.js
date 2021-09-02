@@ -3,7 +3,7 @@ OV.ShowSharingDialog = function (importer, settings, camera)
     function AddCheckboxLine (parentDiv, text, id, onChange)
     {
         let line = $('<div>').addClass ('ov_dialog_row').appendTo (parentDiv);
-        let check = $('<input>').attr ('type', 'checkbox').attr ('checked', 'true').addClass ('ov_dialog_checkradio').attr ('id', id).appendTo (line);
+        let check = $('<input>').attr ('type', 'checkbox').attr ('checked', 'true').addClass ('ov_checkbox').attr ('id', id).appendTo (line);
         $('<label>').attr ('for', id).html (text).appendTo (line);
         check.change (() => {
             onChange (check.prop ('checked'));

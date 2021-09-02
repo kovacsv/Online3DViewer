@@ -37,6 +37,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             settings.defaultColor,
             callbacks.onDefaultColorChange
         );
+        this.AddThemeParameter (settings.themeId, callbacks.onThemeChange);
         this.AddResetToDefaultsButton (defaultSettings, callbacks);
     }
 
@@ -95,10 +96,10 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             );
             onChange (ovColor);
         });
-        $('<div>').addClass ('ov_sidebar_settings_description').html (description).appendTo (contentDiv);
+        $('<div>').addClass ('ov_sidebar_settings_padded').html (description).appendTo (contentDiv);
         let warningDiv = null;
         if (warningText !== null) {
-            warningDiv = $('<div>').addClass ('ov_sidebar_settings_description').appendTo (contentDiv);
+            warningDiv = $('<div>').addClass ('ov_sidebar_settings_padded').appendTo (contentDiv);
             OV.CreateSvgIcon (warningDiv, 'warning', 'left_inline light');
             $('<div>').addClass ('ov_sidebar_settings_warning').html (warningText).appendTo (warningDiv);
         }
@@ -108,8 +109,33 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         };
     }
 
+    AddThemeParameter (defaultValue, onChange)
+    {
+        function AddRadioButton (contentDiv, defaultValue, themeId, themeName, onChange)
+        {
+            let row = $('<div>').addClass ('ov_sidebar_settings_row').appendTo (contentDiv);
+            let radio = $('<input>').addClass ('ov_radio_button').attr ('type', 'radio').attr ('id', themeId).attr ('name', 'theme').appendTo (row);
+            $('<label>').attr ('for', themeId).html (themeName).appendTo (row);
+            radio.prop ('checked', themeId === defaultValue);
+            radio.change (() => {
+                onChange (themeId);
+            });
+        }
+
+        let contentDiv = $('<div>').addClass ('ov_sidebar_settings_content').appendTo (this.contentDiv);
+        // TODO: icon
+        let titleDiv = $('<div>').addClass ('ov_sidebar_subtitle').html ('Appearance').appendTo (contentDiv);
+        let buttonsDiv = $('<div>').addClass ('ov_sidebar_settings_padded').appendTo (contentDiv);
+        AddRadioButton (buttonsDiv, defaultValue, OV.Theme.Light, 'Light', onChange);
+        AddRadioButton (buttonsDiv, defaultValue, OV.Theme.Dark, 'Dark', onChange);
+        AddRadioButton (buttonsDiv, defaultValue, OV.Theme.System, 'System', onChange);
+        return;
+
+    }
+
     AddResetToDefaultsButton (defaultSettings, callbacks)
     {
+        // TODO: reset appearance
         let resetToDefaultsButton = $('<div>').addClass ('ov_button').addClass ('outline').addClass ('ov_sidebar_button').html ('Reset to Default').appendTo (this.contentDiv);
         resetToDefaultsButton.click (() => {
             this.backgroundColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.backgroundColor));

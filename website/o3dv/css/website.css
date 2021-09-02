@@ -246,7 +246,13 @@ div.ov_sidebar_content div.ov_sidebar_settings_content
 	overflow: auto;
 }
 
-div.ov_sidebar_content div.ov_sidebar_settings_description
+div.ov_sidebar_content div.ov_sidebar_settings_row
+{
+	margin: 5px 0px;
+	overflow: auto;
+}
+
+div.ov_sidebar_content div.ov_sidebar_settings_padded
 {
 	color: var(--ov_light_icon_color);
 	margin: 10px 0px 0px 40px;
