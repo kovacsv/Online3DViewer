@@ -38,7 +38,9 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             settings.defaultColor,
             callbacks.onDefaultColorChange
         );
-        this.themeInput = this.AddThemeParameter (settings.themeId, callbacks.onThemeChange);
+        if (OV.FeatureSet.DarkMode) {
+            this.themeInput = this.AddThemeParameter (settings.themeId, callbacks.onThemeChange);
+        }
         this.AddResetToDefaultsButton (defaultSettings, callbacks);
     }
 
@@ -153,11 +155,13 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         let resetToDefaultsButton = $('<div>').addClass ('ov_button').addClass ('outline').addClass ('ov_sidebar_button').html ('Reset to Default').appendTo (this.contentDiv);
         resetToDefaultsButton.click (() => {
             this.backgroundColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.backgroundColor));
-            this.defaultColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.defaultColor));
-            this.themeInput.select (defaultSettings.themeId);
             callbacks.onBackgroundColorChange (defaultSettings.backgroundColor);
+            this.defaultColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.defaultColor));
             callbacks.onDefaultColorChange (defaultSettings.defaultColor);
-            callbacks.onThemeChange (defaultSettings.themeId);
+            if (this.themeInput !== null) {
+                this.themeInput.select (defaultSettings.themeId);
+                callbacks.onThemeChange (defaultSettings.themeId);
+            }
         });
     }
 };
