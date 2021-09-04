@@ -143,7 +143,6 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         };
         result.buttons.push (AddRadioButton (buttonsDiv, OV.Theme.Light, 'Light', onChange));
         result.buttons.push (AddRadioButton (buttonsDiv, OV.Theme.Dark, 'Dark', onChange));
-        result.buttons.push (AddRadioButton (buttonsDiv, OV.Theme.System, 'System', onChange));
         Select (result.buttons, defaultValue);
         return result;
 

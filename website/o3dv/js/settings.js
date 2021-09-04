@@ -1,7 +1,6 @@
 OV.Theme = {
     Light : 1,
-    Dark : 2,
-    System : 3
+    Dark : 2
 };
 
 OV.Settings = class
@@ -25,18 +24,5 @@ OV.Settings = class
         cookieHandler.SetColorVal ('ov_background_color', this.backgroundColor);
         cookieHandler.SetColorVal ('ov_default_color', this.defaultColor);
         cookieHandler.SetStringVal ('ov_theme_id', this.themeId);
-    }
-
-    GetTheme ()
-    {
-        if (this.themeId === OV.Theme.System) {
-            if (window.matchMedia && window.matchMedia ('(prefers-color-scheme: dark)').matches) {
-                return OV.Theme.Dark;
-            } else {
-                return OV.Theme.Light;
-            }
-        } else {
-            return this.themeId;
-        }
     }
 };

@@ -279,15 +279,13 @@ OV.Website = class
     SwitchTheme (newThemeId, resetColors)
     {
         this.settings.themeId = newThemeId;
-        let calculatedTheme = this.settings.GetTheme ();
-
-        this.themeHandler.SwitchTheme (calculatedTheme);
+        this.themeHandler.SwitchTheme (this.settings.themeId);
         this.settings.SaveToCookies (this.cookieHandler);
         if (resetColors) {
-            if (calculatedTheme === OV.Theme.Light) {
+            if (this.settings.themeId === OV.Theme.Light) {
                 this.settings.backgroundColor = new OV.Color (255, 255, 255);
                 this.settings.defaultColor = new OV.Color (200, 200, 200);
-            } else if (calculatedTheme === OV.Theme.Dark) {
+            } else if (this.settings.themeId === OV.Theme.Dark) {
                 this.settings.backgroundColor = new OV.Color (42, 43, 46);
                 this.settings.defaultColor = new OV.Color (200, 200, 200);
             } else {
