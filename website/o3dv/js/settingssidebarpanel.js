@@ -135,7 +135,9 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
 
         let contentDiv = $('<div>').addClass ('ov_sidebar_settings_content').appendTo (this.contentDiv);
         // TODO: icon
-        let titleDiv = $('<div>').addClass ('ov_sidebar_subtitle').html ('Appearance').appendTo (contentDiv);
+        let titleDiv = $('<div>').addClass ('ov_sidebar_subtitle').appendTo (contentDiv);
+        OV.CreateSvgIcon (titleDiv, 'theme', 'ov_sidebar_subtitle_icon');
+        $('<div>').html ('Appearance').appendTo (titleDiv);
         let buttonsDiv = $('<div>').addClass ('ov_sidebar_settings_padded').appendTo (contentDiv);
         let result = {
             buttons : [],

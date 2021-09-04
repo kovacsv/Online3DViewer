@@ -230,9 +230,13 @@ div.ov_sidebar_title div.ov_sidebar_title_img
 	cursor: pointer;
 }
 
-div.ov_sidebar_subtitle
+div.ov_sidebar_subtitle_icon
 {
-	overflow: auto;
+	width: 30px;
+	height: 18px;
+	margin-top: 2px;
+	margin-right: 10px;
+	float: left;
 }
 
 div.ov_sidebar_content
