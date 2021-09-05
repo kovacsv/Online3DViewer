@@ -207,7 +207,7 @@ OV.ThreeLoader3mf = class extends OV.ThreeLoader
     }
 };
 
-OV.ThreeImporter = class extends OV.ImporterBase
+OV.ImporterThree = class extends OV.ImporterBase
 {
     constructor ()
     {

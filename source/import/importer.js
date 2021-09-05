@@ -225,7 +225,8 @@ OV.Importer = class
             new OV.ImporterGltf (),
             new OV.ImporterO3dv (),
             new OV.Importer3dm (),
-            new OV.ImporterIfc ()
+            new OV.ImporterIfc (),
+            new OV.ImporterThree ()
         ];
         this.fileList = new OV.FileList ();
         this.model = null;
