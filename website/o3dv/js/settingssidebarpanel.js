@@ -117,8 +117,9 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         function AddRadioButton (contentDiv, themeId, themeName, onChange)
         {
             let row = $('<div>').addClass ('ov_sidebar_settings_row').appendTo (contentDiv);
-            let radio = $('<input>').addClass ('ov_radio_button').attr ('type', 'radio').attr ('id', themeId.toString ()).attr ('name', 'theme').appendTo (row);
-            $('<label>').attr ('for', themeId.toString ()).html (themeName).appendTo (row);
+            let label = $('<label>').attr ('for', themeId.toString ()).appendTo (row);
+            let radio = $('<input>').addClass ('ov_radio_button').attr ('type', 'radio').attr ('id', themeId.toString ()).attr ('name', 'theme').appendTo (label);
+            $('<span>').html (themeName).appendTo (label);
             radio.change (() => {
                 onChange (themeId);
             });
