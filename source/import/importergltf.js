@@ -638,18 +638,31 @@ OV.ImporterGltf = class extends OV.ImporterBase
 
     ImportModelProperties (gltf)
     {
-        let propertyGroup = new OV.PropertyGroup ('Asset properties');
-        for (let propertyName in gltf.asset) {
-            if (Object.prototype.hasOwnProperty.call (gltf.asset, propertyName)) {
-                if (typeof gltf.asset[propertyName] === 'string') {
-                    const property = new OV.Property (OV.PropertyType.Text, propertyName, gltf.asset[propertyName]);
+        let propertyGroup = this.ImportModelPropertiesHelper('Asset properties', gltf.asset);
+        if (propertyGroup.PropertyCount() > 0) {
+            this.model.AddPropertyGroup (propertyGroup);
+        }
+
+        if (gltf.asset['extras']) {
+            let extraPropertyGroup = this.ImportModelPropertiesHelper('Extras', gltf.asset['extras']);
+            if (extraPropertyGroup.PropertyCount() > 0) {
+                this.model.AddPropertyGroup (extraPropertyGroup);
+            }
+        }
+    }
+
+    ImportModelPropertiesHelper (propertyGroupName, propertyObject) 
+    {
+        let propertyGroup = new OV.PropertyGroup (propertyGroupName);
+        for (let propertyName in propertyObject) {
+            if (Object.prototype.hasOwnProperty.call (propertyObject, propertyName)) {
+                if (typeof propertyObject[propertyName] === 'string') {
+                    const property = new OV.Property (OV.PropertyType.Text, propertyName, propertyObject[propertyName]);
                     propertyGroup.AddProperty (property);
                 }
             }
         }
-        if (propertyGroup.PropertyCount () > 0) {
-            this.model.AddPropertyGroup (propertyGroup);
-        }
+        return propertyGroup;
     }
 
     GetDefaultScene (gltf)
