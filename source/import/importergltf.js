@@ -638,31 +638,27 @@ OV.ImporterGltf = class extends OV.ImporterBase
 
     ImportModelProperties (gltf)
     {
-        let propertyGroup = this.ImportModelPropertiesHelper('Asset properties', gltf.asset);
-        if (propertyGroup.PropertyCount() > 0) {
-            this.model.AddPropertyGroup (propertyGroup);
-        }
-
-        if (gltf.asset['extras']) {
-            let extraPropertyGroup = this.ImportModelPropertiesHelper('Extras', gltf.asset['extras']);
-            if (extraPropertyGroup.PropertyCount() > 0) {
-                this.model.AddPropertyGroup (extraPropertyGroup);
-            }
-        }
-    }
-
-    ImportModelPropertiesHelper (propertyGroupName, propertyObject) 
-    {
-        let propertyGroup = new OV.PropertyGroup (propertyGroupName);
-        for (let propertyName in propertyObject) {
-            if (Object.prototype.hasOwnProperty.call (propertyObject, propertyName)) {
-                if (typeof propertyObject[propertyName] === 'string') {
-                    const property = new OV.Property (OV.PropertyType.Text, propertyName, propertyObject[propertyName]);
-                    propertyGroup.AddProperty (property);
+        function ImportProperties (model, propertyGroupName, propertyObject)
+        {
+            let propertyGroup = new OV.PropertyGroup (propertyGroupName);
+            for (let propertyName in propertyObject) {
+                if (Object.prototype.hasOwnProperty.call (propertyObject, propertyName)) {
+                    if (typeof propertyObject[propertyName] === 'string') {
+                        const property = new OV.Property (OV.PropertyType.Text, propertyName, propertyObject[propertyName]);
+                        propertyGroup.AddProperty (property);
+                    }
                 }
             }
+            if (propertyGroup.PropertyCount () > 0) {
+                model.AddPropertyGroup (propertyGroup);
+            }
+            return propertyGroup;
         }
-        return propertyGroup;
+
+        ImportProperties (this.model, 'Asset properties', gltf.asset);
+        if (gltf.asset['extras']) {
+            ImportProperties (this.model, 'Extras', gltf.asset['extras']);
+        }
     }
 
     GetDefaultScene (gltf)
