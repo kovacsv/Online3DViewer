@@ -13,6 +13,11 @@ OV.File = class
             this.fileObject = file;
             this.name = OV.GetFileName (file.name);
             this.extension = OV.GetFileExtension (file.name);
+        } else if (source === OV.FileSource.Decompressed) {
+            this.fileUrl = null;
+            this.fileObject = null;
+            this.name = OV.GetFileName (file);
+            this.extension = OV.GetFileExtension (file);
         }
         this.content = null;
     }
@@ -90,7 +95,7 @@ OV.FileList = class
         }
         for (let i = 0; i < this.files.length; i++) {
             let file = this.files[i];
-            if (file.source === OV.FileSource.File) {
+            if (file.source !== OV.FileSource.Url && file.source !== OV.FileSource.Decompressed) {
                 return false;
             }
         }

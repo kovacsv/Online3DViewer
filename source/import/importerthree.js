@@ -46,7 +46,7 @@ OV.ThreeLoaderFbx = class extends OV.ThreeLoader
     GetExternalLibraries ()
     {
         return [
-            'three_loaders/fflate.min.js',
+            'loaders/fflate.min.js',
             'three_loaders/TGALoader.js',
             'three_loaders/FBXLoader.js'
         ];
@@ -182,7 +182,7 @@ OV.ThreeLoader3mf = class extends OV.ThreeLoader
     GetExternalLibraries ()
     {
         return [
-            'three_loaders/fflate.min.js',
+            'loaders/fflate.min.js',
             'three_loaders/3MFLoader.js'
         ];
     }

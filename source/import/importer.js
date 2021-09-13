@@ -204,6 +204,39 @@ OV.Importer = class
             this.fileList = newFileList;
         }
         this.fileList.GetContent (() => {
+            this.DecompressArchives (this.fileList, () => {
+                onReady ();
+            });
+        });
+    }
+
+    DecompressArchives (fileList, onReady)
+    {
+        let files = fileList.GetFiles ();
+        let archives = [];
+        for (let file of files) {
+            if (file.extension === 'zip') {
+                archives.push (file);
+            }
+        }
+        if (archives.length === 0) {
+            onReady ();
+            return;
+        }
+        OV.LoadExternalLibrary ('loaders/fflate.min.js').then (() => {
+            for (let i = 0; i < archives.length; i++) {
+                const archiveBuffer = new Uint8Array (archives[0].content);
+                const decompressed = fflate.unzipSync (archiveBuffer);
+                for (const fileName in decompressed) {
+                    if (Object.prototype.hasOwnProperty.call (decompressed, fileName)) {
+                        let file = new OV.File (fileName, OV.FileSource.Decompressed);
+                        file.SetContent (decompressed[fileName].buffer);
+                        fileList.AddFile (file);
+                    }
+                }    
+            }
+            onReady ();
+        }).catch (() => {
             onReady ();
         });
     }

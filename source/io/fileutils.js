@@ -1,7 +1,8 @@
 OV.FileSource =
 {
     Url : 1,
-    File : 2
+    File : 2,
+	Decompressed : 3
 };
 
 OV.FileFormat =
