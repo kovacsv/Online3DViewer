@@ -51,7 +51,7 @@ describe ('Importer Test', function () {
         });
     });
 
-    it ('Not imprtable file', function (done) {
+    it ('Not importable file', function (done) {
         let files = [
             new FileObject ('', 'wrong.ext')
         ];
