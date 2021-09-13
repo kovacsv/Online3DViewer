@@ -165,6 +165,7 @@ OV.Viewer = class
         this.settings = {
             animationSteps : 40
         };
+        this.isWireframeEnabled = false;
     }
     
     Init (canvas)
@@ -315,6 +316,23 @@ OV.Viewer = class
         let newCamera = this.upVector.Flip (oldCamera);
         this.navigation.MoveCamera (newCamera, 0);
         this.Render ();
+    }
+
+    ToggleWireframe () {
+        this.isWireframeEnabled = this.scene.getObjectByName('wireframe')? true : false;
+        this.geometry.EnumerateModelMeshes((mesh)=>{
+            if (!this.isWireframeEnabled) {
+                let geo = new THREE.EdgesGeometry( mesh.geometry ); // or WireframeGeometry
+                let mat = new THREE.LineBasicMaterial( { color: 0xffffff } );
+                let wireframe = new THREE.LineSegments( geo, mat );
+                wireframe.name = 'wireframe';
+                mesh.add( wireframe );
+            } else {
+                mesh.remove(mesh.getObjectByName('wireframe'));
+            }
+        });
+        this.isWireframeEnabled = this.scene.getObjectByName('wireframe')? true : false;
+        this.Render();
     }
 
     Render ()

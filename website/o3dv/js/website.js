@@ -133,6 +133,13 @@ OV.Website = class
     {
         let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
         let items = [];
+        items.push({
+            name : 'Toggle Wireframe',
+            icon : '',
+            onClick : () => {
+                this.viewer.ToggleWireframe();
+            }
+        });
         if (meshUserData === null) {
             items.push ({
                 name : 'Fit model to window',
