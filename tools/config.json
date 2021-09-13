@@ -47,6 +47,7 @@
 		"source/import/importerthree.js",
 		"source/import/importer3dm.js",
 		"source/import/importerifc.js",
+		"source/import/filelist.js",
 		"source/import/importer.js",
 		"source/export/exporterbase.js",
 		"source/export/exporterobj.js",

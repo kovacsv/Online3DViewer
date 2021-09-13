@@ -90,7 +90,7 @@ OV.ShowSharingDialog = function (importer, settings, camera)
         embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
     }
 
-    if (!importer.IsOnlyFileSource (OV.FileSource.Url)) {
+    if (!importer.GetFileList ().IsOnlyUrlSource ()) {
         return OV.ShowMessageDialog (
             'Sharing Failed',
             'Sharing works only if you load files by url. Please upload your model files to a web server, open them by url, and try embedding again.',

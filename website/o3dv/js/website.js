@@ -269,7 +269,7 @@ OV.Website = class
     ClearHashIfNotOnlyUrlList ()
     {
         let importer = this.modelLoader.GetImporter ();
-        let isOnlyUrl = importer.IsOnlyFileSource (OV.FileSource.Url);
+        let isOnlyUrl = importer.GetFileList ().IsOnlyUrlSource ();
         if (!isOnlyUrl && this.hashHandler.HasHash ()) {
             this.hashHandler.SkipNextEventHandler ();
             this.hashHandler.ClearHash ();
