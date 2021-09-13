@@ -246,6 +246,67 @@ OV.Viewer = class
         this.Render ();
     }
 
+    ImplodeModel () 
+    {
+        this.ExplodeModel(false);
+    }
+
+    ExplodeModel (explode = true)
+    {
+        // Calculate center of each part
+        let centers = [];
+        this.geometry.EnumerateModelMeshes ((mesh) => {
+            mesh.geometry.computeBoundingSphere();
+            centers.push(mesh.geometry.boundingSphere.center);
+        });
+
+        // Average the centers of the various parts to find the center of them all together
+        let center = new THREE.Vector3(0, 0, 0);
+        centers.forEach((vec) => {
+            center = center.add(vec);
+        });
+        center.x /= centers.length;
+        center.y /= centers.length;
+        center.z /= centers.length;
+
+        let distanceToMove = 2;
+
+        // Go through each part and move them away from the center
+        this.geometry.EnumerateModelMeshes ((mesh) => {
+            // Finding the vector between the center and the part and normalising it
+            // let center = new THREE.Vector3(0, 0, 0);
+            let childCenter = mesh.geometry.boundingSphere.center;
+            let direction = childCenter.sub(center).normalize().multiplyScalar(distanceToMove);
+
+            if (explode) {
+                // Moving the part in the direction
+                mesh.position.x += direction.x;
+                mesh.position.y += direction.y;
+                mesh.position.z += direction.z;
+            } else {
+                // Moving the part in the direction
+                mesh.position.x -= direction.x;
+                mesh.position.y -= direction.y;
+                mesh.position.z -= direction.z;
+            }
+        });
+
+        // let center = new THREE.Vector3(0, 0, 0);
+
+        // this.geometry.EnumerateModelMeshes((mesh) => {
+        //     let meshPosition = mesh.position;
+
+        //     let direction = meshPosition.sub(center).normalize();
+
+        //     let moveThisFar = direction.multiplyScalar(distanceToMove);
+
+        //     // mesh.position.add(moveThisFar);
+        //     mesh.position.x += moveThisFar.x;
+        //     mesh.position.y += moveThisFar.y;
+        //     mesh.position.z += moveThisFar.z;
+        // });
+    }
+
     FitSphereToWindow (boundingSphere, animation)
     {
         if (boundingSphere === null) {

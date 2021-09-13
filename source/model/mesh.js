@@ -5,6 +5,7 @@ OV.Mesh = class extends OV.Element
         super ();
         this.vertices = [];
         this.normals = [];
+        this.averageNormals = [];
         this.uvs = [];
         this.triangles = [];
     }
@@ -17,6 +18,11 @@ OV.Mesh = class extends OV.Element
     NormalCount ()
     {
         return this.normals.length;
+    }
+    
+    AverageNormalCount ()
+    {
+        return this.averageNormals.length;
     }
     
     TextureUVCount ()
@@ -105,5 +111,20 @@ OV.Mesh = class extends OV.Element
             let v2 = this.vertices[triangle.v2];
             onTriangle (v0, v1, v2);
         }
-    }      
+    }
+    
+    EnumerateNormalVertices (onNormalVertex)
+    {
+        for (let vertexIndex = 0; vertexIndex < this.normals.length; vertexIndex++) {
+            let vertex = this.normals[vertexIndex];
+            onNormalVertex (vertex);
+        }
+    }
+
+    GetAverageVertexNormals () 
+    {
+        for (let i = 0; i < this.normals.length; i++) {
+            this.averageNormals[i].DivideScalar(this.normals[i]);
+        }
+    }
 };

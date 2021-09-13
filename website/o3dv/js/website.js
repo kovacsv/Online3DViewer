@@ -133,6 +133,22 @@ OV.Website = class
     {
         let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
         let items = [];
+        items.push ({
+            name : 'Explode',
+            icon : '',
+            onClick : () => {
+                this.viewer.ExplodeModel();
+                this.FitModelToWindow(true);
+            }
+        });
+        items.push ({
+            name : 'Implode',
+            icon : '',
+            onClick : () => {
+                this.viewer.ImplodeModel();
+                this.FitModelToWindow(true);
+            }
+        });
         if (meshUserData === null) {
             items.push ({
                 name : 'Fit model to window',

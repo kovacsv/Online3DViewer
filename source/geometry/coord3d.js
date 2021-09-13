@@ -11,7 +11,54 @@ OV.Coord3D = class
 	{
 		return Math.sqrt (this.x * this.x + this.y * this.y + this.z * this.z);
 	}
+
+	Add(t, e) {
+		return void 0 !== e ? (console.warn('THREE.Vector3: .add() now only accepts one argument. Use .addVectors( a, b ) instead.'),
+		this.addVectors(t, e)) : (this.x += t.x,
+		this.y += t.y,
+		this.z += t.z,
+		this);
+	}
+
+	AddVectors(t, e) {
+		return this.x = t.x + e.x,
+		this.y = t.y + e.y,
+		this.z = t.z + e.z,
+		this;
+	}
+
+	DivideScalar (scalar) 
+	{
+		if ( scalar !== 0 ) {
+			let invScalar = 1 / scalar;
+
+			this.x *= invScalar;
+			this.y *= invScalar;
+			this.z *= invScalar;
+		} else {
+			this.x = 0;
+			this.y = 0;
+			this.z = 0;
+		}
+
+		return this;
+	}
 	
+	Sub(t, e) {
+		return void 0 !== e ? (console.warn('THREE.Vector3: .sub() now only accepts one argument. Use .subVectors( a, b ) instead.'),
+		this.SubVectors(t, e)) : (this.x -= t.x,
+		this.y -= t.y,
+		this.z -= t.z,
+		this);
+	}
+	
+	SubVectors(t, e) {
+		return this.x = t.x - e.x,
+		this.y = t.y - e.y,
+		this.z = t.z - e.z,
+		this;
+	}
+
 	MultiplyScalar (scalar)
 	{
 		this.x *= scalar;
