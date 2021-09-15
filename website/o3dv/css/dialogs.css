@@ -13,6 +13,18 @@ div.ov_dialog
 	border-radius: 5px;
 }
 
+div.ov_dialog input
+{
+	color: var(--ov_dialog_foreground_color);
+	background: var(--ov_dialog_background_color);
+}
+
+div.ov_dialog textarea
+{
+	color: var(--ov_dialog_foreground_color);
+	background: var(--ov_dialog_background_color);
+}
+
 div.ov_dialog div.ov_dialog_title
 {
 	font-size: 19px;
@@ -124,8 +136,6 @@ div.ov_dialog div.ov_dialog_copyable_input
 
 div.ov_dialog div.ov_dialog_copyable_input input
 {
-	color: var(--ov_dialog_foreground_color);
-	background: var(--ov_dialog_background_color);
 	width: 70%;
 	margin-top: 6px;
 	box-sizing: border-box;
