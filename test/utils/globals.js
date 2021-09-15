@@ -69,6 +69,9 @@ global.document = {
                 if (element.src.indexOf ('draco') !== -1) {
                     global.DracoDecoderModule = require (element.src);
                     element.onload ();
+                } else if (element.src.indexOf ('fflate') !== -1) {
+                    global.fflate = require (element.src);
+                    element.onload ();
                 } else {
                     element.onerror ();
                 }

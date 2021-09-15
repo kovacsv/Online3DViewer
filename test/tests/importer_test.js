@@ -51,7 +51,7 @@ describe ('Importer Test', function () {
         });
     });
 
-    it ('Not imprtable file', function (done) {
+    it ('Not importable file', function (done) {
         let files = [
             new FileObject ('', 'wrong.ext')
         ];
@@ -267,6 +267,40 @@ describe ('Importer Test', function () {
                     assert.fail ();
                 }
             });
+        });
+    });
+
+    it ('Zip file', function (done) {
+        let files = [
+            new FileObject ('zip', 'cube_four_instances.zip')
+        ];
+        ImportFiles (files, {
+            success : function (importer, importResult) {
+                assert (!OV.IsModelEmpty (importResult.model));
+                assert.deepStrictEqual (importResult.usedFiles, ['cube_four_instances.3ds', 'texture.png']);
+                assert.deepStrictEqual (importResult.missingFiles, []);
+                done ();
+            },
+            error : function (importer, importError) {
+                assert.fail ();
+            }
+        });
+    });    
+
+    it ('Zip file with Folders', function (done) {
+        let files = [
+            new FileObject ('zip', 'cube_four_instances_folders.zip')
+        ];
+        ImportFiles (files, {
+            success : function (importer, importResult) {
+                assert (!OV.IsModelEmpty (importResult.model));
+                assert.deepStrictEqual (importResult.usedFiles, ['cube_four_instances.3ds', 'texture.png']);
+                assert.deepStrictEqual (importResult.missingFiles, []);
+                done ();
+            },
+            error : function (importer, importError) {
+                assert.fail ();
+            }
         });
     });    
 });
