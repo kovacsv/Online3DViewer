@@ -225,7 +225,8 @@ OV.Importer = class
         }
         OV.LoadExternalLibrary ('loaders/fflate.min.js').then (() => {
             for (let i = 0; i < archives.length; i++) {
-                const archiveBuffer = new Uint8Array (archives[0].content);
+                const archiveFile = archives[i];
+                const archiveBuffer = new Uint8Array (archiveFile.content);
                 const decompressed = fflate.unzipSync (archiveBuffer);
                 for (const fileName in decompressed) {
                     if (Object.prototype.hasOwnProperty.call (decompressed, fileName)) {
