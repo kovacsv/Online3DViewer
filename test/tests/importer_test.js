@@ -302,5 +302,24 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });
-    });    
+    });
+
+    it ('Multiple Zip Files', function (done) {
+        let files = [
+            new FileObject ('zip', 'cube_with_materials_notexture.zip'),
+            new FileObject ('zip', 'textures.zip')
+        ];
+        ImportFiles (files, {
+            success : function (importer, importResult) {
+                assert (!OV.IsModelEmpty (importResult.model));
+                console.log (importResult.usedFiles);
+                assert.deepStrictEqual (importResult.usedFiles, ['cube_with_materials.obj', 'cube_with_materials.mtl', 'cube_texture.png']);
+                assert.deepStrictEqual (importResult.missingFiles, []);
+                done ();
+            },
+            error : function (importer, importError) {
+                assert.fail ();
+            }
+        });
+    });     
 });
