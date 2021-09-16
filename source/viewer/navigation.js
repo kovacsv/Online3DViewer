@@ -398,12 +398,14 @@ OV.Navigation = class
 		let mouseButton = this.mouse.GetButton ();
 		if (mouseButton === 1 && ev.ctrlKey) {
 			let params = ev || window.event;
-			let delta = -params.movementY / 40;
-			let ratio = 0.01;
-			if (delta < 0) {
-				ratio = ratio * -1.0;
+			if (params.movementX === 0) {
+				let delta = -params.movementY / 40;
+				let ratio = 0.02;
+				if (delta < 0) {
+					ratio = ratio * -1.0;
+				}
+				this.Zoom(ratio);
 			}
-			this.Zoom(ratio);
 		} else if (mouseButton === 1) {
 			let orbitRatio = 0.5;
 			this.Orbit (moveDiff.x * orbitRatio, moveDiff.y * orbitRatio);
