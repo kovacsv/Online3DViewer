@@ -230,6 +230,14 @@ OV.ClickDetector = class
 	}
 };
 
+OV.NavigationType =
+{
+	None : 0,
+	Orbit : 1,
+	Pan : 2,
+	Zoom : 3
+};
+
 OV.Navigation = class
 {
 	constructor (canvas, camera)
@@ -396,18 +404,30 @@ OV.Navigation = class
 
 		let moveDiff = this.mouse.GetMoveDiff ();
 		let mouseButton = this.mouse.GetButton ();
+
+		let navigationType = OV.NavigationType.None;
 		if (mouseButton === 1) {
 			if (ev.ctrlKey) {
-				let zoomRatio = 0.005;
-				this.Zoom (-moveDiff.y * zoomRatio);
+				navigationType = OV.NavigationType.Zoom;
+			} else if (ev.shiftKey) {
+				navigationType = OV.NavigationType.Pan;
 			} else {
-				let orbitRatio = 0.5;
-				this.Orbit (moveDiff.x * orbitRatio, moveDiff.y * orbitRatio);
+				navigationType = OV.NavigationType.Orbit;
 			}
 		} else if (mouseButton === 2 || mouseButton === 3) {
+			navigationType = OV.NavigationType.Pan;
+		}
+
+		if (navigationType === OV.NavigationType.Orbit) {
+			let orbitRatio = 0.5;
+			this.Orbit (moveDiff.x * orbitRatio, moveDiff.y * orbitRatio);
+		} else if (navigationType === OV.NavigationType.Pan) {
 			let eyeCenterDistance = OV.CoordDistance3D (this.camera.eye, this.camera.center);
 			let panRatio = 0.001 * eyeCenterDistance;
 			this.Pan (moveDiff.x * panRatio, moveDiff.y * panRatio);
+		} else if (navigationType === OV.NavigationType.Zoom) {
+			let zoomRatio = 0.005;
+			this.Zoom (-moveDiff.y * zoomRatio);
 		}
 
 		this.Update ();
