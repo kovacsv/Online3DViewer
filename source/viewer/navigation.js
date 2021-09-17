@@ -396,19 +396,14 @@ OV.Navigation = class
 
 		let moveDiff = this.mouse.GetMoveDiff ();
 		let mouseButton = this.mouse.GetButton ();
-		if (mouseButton === 1 && ev.ctrlKey) {
-			let params = ev || window.event;
-			if (params.movementX === 0) {
-				let delta = -params.movementY / 40;
-				let ratio = 0.02;
-				if (delta < 0) {
-					ratio = ratio * -1.0;
-				}
-				this.Zoom(ratio);
+		if (mouseButton === 1) {
+			if (ev.ctrlKey) {
+				let zoomRatio = 0.001;
+				this.Zoom (-moveDiff.y * zoomRatio);
+			} else {
+				let orbitRatio = 0.5;
+				this.Orbit (moveDiff.x * orbitRatio, moveDiff.y * orbitRatio);
 			}
-		} else if (mouseButton === 1) {
-			let orbitRatio = 0.5;
-			this.Orbit (moveDiff.x * orbitRatio, moveDiff.y * orbitRatio);
 		} else if (mouseButton === 2 || mouseButton === 3) {
 			let eyeCenterDistance = OV.CoordDistance3D (this.camera.eye, this.camera.center);
 			let panRatio = 0.001 * eyeCenterDistance;
