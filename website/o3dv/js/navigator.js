@@ -141,11 +141,12 @@ OV.Navigator = class
 
     FillTree (importResult)
     {
-        this.titleDiv.html (importResult.mainFile).attr ('title', importResult.mainFile);
+        const model = importResult.model;
+        const mainFile = importResult.mainFile;
+        const usedFiles = importResult.usedFiles;
+        const missingFiles = importResult.missingFiles;
 
-        let model = importResult.model;
-        let usedFiles = importResult.usedFiles;
-        let missingFiles = importResult.missingFiles;
+        this.titleDiv.html (mainFile).attr ('title', mainFile);
 
         let filesItem = new OV.TreeViewGroupItem ('Files', 'files');
         this.treeView.AddItem (filesItem);

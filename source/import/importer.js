@@ -139,7 +139,7 @@ OV.Importer = class
             return fileBuffer;
         });
 
-        importer.Import (mainFile.file.content, mainFile.file.extension, {
+        importer.Import (mainFile.file.name, mainFile.file.extension, mainFile.file.content, {
             getDefaultMaterial : () => {
                 let material = new OV.Material (OV.MaterialType.Phong);
                 material.color = settings.defaultColor;
@@ -152,12 +152,9 @@ OV.Importer = class
                 return buffers.GetTextureBuffer (filePath);
             },
             onSuccess : () => {
-                this.model = importer.GetModel ();
-                this.model.SetName (mainFile.file.name);
-        
                 let result = new OV.ImportResult ();
                 result.mainFile = mainFile.file.name;
-                result.model = this.model;
+                result.model = importer.GetModel ();
                 result.usedFiles = this.usedFiles;
                 result.missingFiles = this.missingFiles;
                 result.upVector = importer.GetUpDirection ();

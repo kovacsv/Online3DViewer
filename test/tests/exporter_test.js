@@ -212,7 +212,7 @@ describe ('Exporter', function () {
             
             let contentBuffer = stlFile.GetBufferContent ();
             let importer = new OV.ImporterStl ();
-            importer.Import (contentBuffer, 'stl', {
+            importer.Import (stlFile.GetName (), 'stl', contentBuffer, {
                 getDefaultMaterial () {
                     return new OV.Material (OV.MaterialType.Phong);
                 },
@@ -306,7 +306,7 @@ describe ('Exporter', function () {
             
             let contentBuffer = plyFile.GetBufferContent ();
             let importer = new OV.ImporterPly ();
-            importer.Import (contentBuffer, 'ply', {
+            importer.Import (plyFile.GetName (), 'ply', contentBuffer, {
                 getDefaultMaterial () {
                     return new OV.Material (OV.MaterialType.Phong);
                 },
@@ -336,7 +336,7 @@ describe ('Exporter', function () {
       
             let contentBuffer = gltfFile.GetBufferContent ();
             let importer = new OV.ImporterGltf ();
-            importer.Import (contentBuffer, 'gltf', {
+            importer.Import (gltfFile.GetName (), 'gltf', contentBuffer, {
                 getDefaultMaterial () {
                     return new OV.Material (OV.MaterialType.Phong);
                 },
@@ -374,7 +374,7 @@ describe ('Exporter', function () {
 
             let contentBuffer = glbFile.GetBufferContent ();
             let importer = new OV.ImporterGltf ();
-            importer.Import (contentBuffer, 'glb', {
+            importer.Import (glbFile.GetName (), 'glb', contentBuffer, {
                 getDefaultMaterial () {
                     return new OV.Material (OV.MaterialType.Phong);
                 },

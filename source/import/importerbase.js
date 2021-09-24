@@ -5,10 +5,11 @@ OV.ImporterBase = class
         
     }
     
-    Import (content, extension, callbacks)
+    Import (name, extension, content, callbacks)
     {
         this.Clear ();
 
+        this.name = name;
         this.extension = extension;
         this.callbacks = callbacks;
         this.model = new OV.Model ();
@@ -22,6 +23,7 @@ OV.ImporterBase = class
 
     Clear ()
     {
+        this.name = null;
         this.extension = null;
         this.callbacks = null;
         this.model = null;
@@ -46,6 +48,7 @@ OV.ImporterBase = class
         }
 
         OV.FinalizeModel (this.model, this.callbacks.getDefaultMaterial);
+
         callbacks.onSuccess ();
         callbacks.onComplete ();
     }

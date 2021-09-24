@@ -52,7 +52,7 @@ module.exports =
             let fileContent = testUtils.GetArrayBufferFileContent (folder, filePath);
             return fileContent;
         });
-        importer.Import (content, extension, {
+        importer.Import (fileName, extension, content, {
             getDefaultMaterial : function () {
                 var material = new OV.Material (OV.MaterialType.Phong);
                 return material;
