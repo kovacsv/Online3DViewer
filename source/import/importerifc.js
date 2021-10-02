@@ -55,7 +55,9 @@ OV.ImporterIfc = class extends OV.ImporterBase
         const ifcMeshes = this.ifc.LoadAllGeometry (modelID);
         for (let meshIndex = 0; meshIndex < ifcMeshes.size (); meshIndex++) {
             const ifcMesh = ifcMeshes.get (meshIndex);
-            this.ImportIfcMesh (modelID, ifcMesh);
+            if (ifcMesh.geometries.size () > 0) {
+                this.ImportIfcMesh (modelID, ifcMesh);
+            }
         }
         this.ImportProperties (modelID);
         this.ifc.CloseModel (modelID);
@@ -113,6 +115,9 @@ OV.ImporterIfc = class extends OV.ImporterBase
         for (let i = 0; i < lines.size (); i++) {
             const relID = lines.get (i);
             const rel = this.ifc.GetLine (modelID, relID);
+            if (Array.isArray (rel.RelatingPropertyDefinition)) {
+                continue;
+            }
             rel.RelatedObjects.forEach ((objectRelID) => {
                 let element = this.expressIDToMesh[objectRelID.value];
                 if (element === undefined) {
@@ -122,9 +127,6 @@ OV.ImporterIfc = class extends OV.ImporterBase
                     } else {
                         return;
                     }
-                }
-                if (Array.isArray (rel.RelatingPropertyDefinition)) {
-                    return;
                 }
                 let propSetDef = rel.RelatingPropertyDefinition;
                 let propSet = this.ifc.GetLine (modelID, propSetDef.value, true);
