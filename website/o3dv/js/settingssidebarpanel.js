@@ -99,10 +99,10 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             );
             onChange (ovColor);
         });
-        $('<div>').addClass ('ov_sidebar_settings_padded').html (description).appendTo (contentDiv);
+        $('<div>').addClass ('ov_sidebar_settings_comment').html (description).appendTo (contentDiv);
         let warningDiv = null;
         if (warningText !== null) {
-            warningDiv = $('<div>').addClass ('ov_sidebar_settings_padded').appendTo (contentDiv);
+            warningDiv = $('<div>').addClass ('ov_sidebar_settings_comment').appendTo (contentDiv);
             OV.CreateSvgIcon (warningDiv, 'warning', 'left_inline light');
             $('<div>').addClass ('ov_sidebar_settings_warning').html (warningText).appendTo (warningDiv);
         }

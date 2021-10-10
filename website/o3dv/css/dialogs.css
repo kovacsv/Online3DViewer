@@ -13,12 +13,6 @@ div.ov_dialog
 	border-radius: 5px;
 }
 
-div.ov_dialog input
-{
-	color: var(--ov_dialog_foreground_color);
-	background: var(--ov_dialog_background_color);
-}
-
 div.ov_dialog textarea
 {
 	color: var(--ov_dialog_foreground_color);

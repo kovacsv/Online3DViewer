@@ -3,8 +3,9 @@ OV.ShowSharingDialog = function (importer, settings, camera)
     function AddCheckboxLine (parentDiv, text, id, onChange)
     {
         let line = $('<div>').addClass ('ov_dialog_row').appendTo (parentDiv);
-        let check = $('<input>').attr ('type', 'checkbox').attr ('checked', 'true').addClass ('ov_checkbox').attr ('id', id).appendTo (line);
-        $('<label>').attr ('for', id).html (text).appendTo (line);
+        let label = $('<label>').attr ('for', id).appendTo (line);
+        let check = $('<input>').attr ('type', 'checkbox').attr ('checked', 'true').addClass ('ov_checkbox').attr ('id', id).appendTo (label);
+        $('<span>').html (text).appendTo (label);
         check.change (() => {
             onChange (check.prop ('checked'));
         });
@@ -41,7 +42,7 @@ OV.ShowSharingDialog = function (importer, settings, camera)
         let copyText = 'Copy';
         let copiedText = 'Copied';
         let container = $('<div>').addClass ('ov_dialog_copyable_input').appendTo (parentDiv);
-        let input = $('<input>').prop ('readonly', true).appendTo (container);
+        let input = $('<input>').addClass ('ov_dialog_text').prop ('readonly', true).appendTo (container);
         let button = $('<div>').addClass ('ov_button').addClass ('outline').addClass ('ov_dialog_copyable_input_button').html (copyText).appendTo (container);
         button.click (() => {
             OV.CopyToClipboard (getText ());
