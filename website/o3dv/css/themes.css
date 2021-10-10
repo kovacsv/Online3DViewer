@@ -10,6 +10,7 @@
     --ov_outline_button_text_color: #3393bd;
 	--ov_icon_color: #263238;
 	--ov_hover_color: #c9e5f8;
+	--ov_hover_text_color: #3393bd;
 	--ov_light_icon_color: #838383;
 	--ov_logo_text_color: #15334a;
 	--ov_logo_border_color: #000000;
@@ -28,10 +29,11 @@
     --ov_button_hover_color_dark: #146a8f;
     --ov_button_text_color_dark: #ffffff;
     --ov_outline_button_color_dark: #c9e5f8;
-    --ov_outline_button_hover_color_dark: #2a2b2e;
+    --ov_outline_button_hover_color_dark: #2f6984;
     --ov_outline_button_text_color_dark: #c9e5f8;
 	--ov_icon_color_dark: #fafafa;
 	--ov_hover_color_dark: #667c86;
+	--ov_hover_text_color_dark: #fafafa;
 	--ov_light_icon_color_dark: #dadada;
 	--ov_logo_text_color_dark: #fafafa;
 	--ov_logo_border_color_dark: #2a2b2e;

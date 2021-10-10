@@ -131,6 +131,11 @@ input.ov_checkbox:checked
 @media (hover)
 {
 
+div.ov_svg_icon.selected:hover
+{
+	color: var(--ov_hover_text_color);
+}
+
 div.ov_button:hover
 {
 	background: var(--ov_button_hover_color);

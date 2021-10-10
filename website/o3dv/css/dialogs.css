@@ -108,14 +108,14 @@ div.ov_dialog a.ov_dialog_file_link
 	border-radius: 5px;
 }
 
-div.ov_dialog div.ov_file_link_img
+div.ov_dialog a.ov_dialog_file_link div.ov_file_link_img
 {
 	color: var(--ov_button_color);
 	margin-right: 10px;
 	float: left;
 }
 
-div.ov_dialog div.ov_dialog_file_link_text
+div.ov_dialog a.ov_dialog_file_link div.ov_dialog_file_link_text
 {
 	float: left;
 }
@@ -220,7 +220,13 @@ div.ov_progress div.ov_progress_text
 
 div.ov_dialog a.ov_dialog_file_link:hover
 {
+	color: var(--ov_hover_text_color);
 	background: var(--ov_hover_color);
+}
+
+div.ov_dialog a.ov_dialog_file_link:hover div.ov_file_link_img
+{
+	color: var(--ov_hover_text_color);
 }
 
 div.ov_popup div.ov_popup_list_item:hover

@@ -11,6 +11,7 @@ OV.ThemeHandler = class {
             '--ov_outline_button_text_color': {},
             '--ov_icon_color': {},
             '--ov_hover_color': {},
+            '--ov_hover_text_color': {},
             '--ov_light_icon_color': {},
             '--ov_logo_text_color': {},
             '--ov_logo_border_color': {},
