@@ -38,9 +38,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             settings.defaultColor,
             callbacks.onDefaultColorChange
         );
-        if (OV.FeatureSet.DarkMode) {
-            this.themeInput = this.AddThemeParameter (settings.themeId, callbacks.onThemeChange);
-        }
+        this.themeInput = this.AddThemeParameter (settings.themeId, callbacks.onThemeChange);
         this.AddResetToDefaultsButton (defaultSettings, callbacks);
     }
 
