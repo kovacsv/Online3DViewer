@@ -46,11 +46,11 @@ OV.Node = class
         return this.meshIndices;
     }
 
-    Enumerate (processor)
+    EnumerateChildren (processor)
     {
-        processor (this);
         for (const childNode of this.childNodes) {
-            childNode.Enumerate (processor);
+            processor (childNode);
+            childNode.EnumerateChildren (processor);
         }
     }
 };

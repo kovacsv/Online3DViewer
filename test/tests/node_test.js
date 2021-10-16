@@ -51,10 +51,10 @@ describe ('Node', function() {
         child1.AddChildNode (child12);
 
         let enumerated = [];
-        node.Enumerate ((child) => {
+        node.EnumerateChildren ((child) => {
             enumerated.push (child);
         });
 
-        assert.deepStrictEqual (enumerated, [node, child1, child11, child12, child2]);
+        assert.deepStrictEqual (enumerated, [child1, child11, child12, child2]);
     });    
 });
