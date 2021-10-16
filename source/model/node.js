@@ -53,4 +53,14 @@ OV.Node = class
             childNode.EnumerateChildren (processor);
         }
     }
+
+    EnumerateMeshIndices (processor)
+    {
+        for (const meshIndex of this.meshIndices) {
+            processor (meshIndex);
+        }
+        for (const childNode of this.childNodes) {
+            childNode.EnumerateMeshIndices (processor);
+        }
+    }
 };
