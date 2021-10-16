@@ -86,19 +86,15 @@ OV.Website = class
 
     SetUIState (uiState)
     {
-        let onlyOnModel = $('.only_on_model');
         if (uiState === OV.WebsiteUIState.Intro) {
             this.parameters.introDiv.show ();
             this.parameters.mainDiv.hide ();
-            onlyOnModel.hide ();
         } else if (uiState === OV.WebsiteUIState.Model) {
             this.parameters.introDiv.hide ();
             this.parameters.mainDiv.show ();
-            onlyOnModel.show ();
         } else if (uiState === OV.WebsiteUIState.Loading) {
             this.parameters.introDiv.hide ();
             this.parameters.mainDiv.hide ();
-            onlyOnModel.hide ();
         }
         this.Resize ();
     }
