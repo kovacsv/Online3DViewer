@@ -2,7 +2,7 @@ OV.WebsiteUIState =
 {
     Intro : 1,
     Model : 2,
-	Loading : 3
+    Loading : 3
 };
 
 OV.Website = class
