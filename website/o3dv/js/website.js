@@ -1,3 +1,10 @@
+OV.WebsiteUIState =
+{
+    Intro : 1,
+    Model : 2,
+	Loading : 3
+};
+
 OV.Website = class
 {
     constructor (parameters)
@@ -77,22 +84,29 @@ OV.Website = class
         this.viewer.Resize (contentWidth, contentHeight);
     }
 
-    ShowViewer (show)
+    SetUIState (uiState)
     {
-        if (show) {
-            this.parameters.mainDiv.show ();
-            this.Resize ();
-        } else {
+        let onlyOnModel = $('.only_on_model');
+        if (uiState === OV.WebsiteUIState.Intro) {
+            this.parameters.introDiv.show ();
             this.parameters.mainDiv.hide ();
+            onlyOnModel.hide ();
+        } else if (uiState === OV.WebsiteUIState.Model) {
+            this.parameters.introDiv.hide ();
+            this.parameters.mainDiv.show ();
+            onlyOnModel.show ();
+        } else if (uiState === OV.WebsiteUIState.Loading) {
+            this.parameters.introDiv.hide ();
+            this.parameters.mainDiv.hide ();
+            onlyOnModel.hide ();
         }
+        this.Resize ();
     }
 
     ClearModel ()
     {
         this.HidePopups ();
         this.model = null;
-        this.parameters.introDiv.hide ();
-        this.ShowViewer (false);
         this.viewer.Clear ();
         this.navigator.Clear ();
     }
@@ -109,7 +123,6 @@ OV.Website = class
     OnModelFinished (importResult, threeMeshes)
     {
         this.model = importResult.model;
-        this.ShowViewer (true);
         this.viewer.AddMeshes (threeMeshes);
         this.viewer.SetUpVector (importResult.upVector, false);
         this.navigator.FillTree (importResult);
@@ -205,7 +218,7 @@ OV.Website = class
             this.LoadModelFromUrlList (urls, importSettings);
         } else {
             this.ClearModel ();
-            this.parameters.introDiv.show ();
+            this.SetUIState (OV.WebsiteUIState.Intro);
         }
     }
 
@@ -316,24 +329,24 @@ OV.Website = class
             'assets/envmaps/fishermans_bastion/posz.jpg',
             'assets/envmaps/fishermans_bastion/negz.jpg'
         ]);
-        this.ShowViewer (false);
+        this.SetUIState (OV.WebsiteUIState.Intro);
     }
 
     InitToolbar ()
     {
-        function AddButton (toolbar, eventHandler, imageName, imageTitle, onlyFullWidth, onClick)
+        function AddButton (toolbar, eventHandler, imageName, imageTitle, extraClass, onClick)
         {
             let button = toolbar.AddImageButton (imageName, imageTitle, () => {
                 eventHandler.HandleEvent ('toolbar_clicked', { item : imageName });
                 onClick ();
             });
-            if (onlyFullWidth) {
-                button.AddClass ('only_full_width');
+            if (extraClass !== null) {
+                button.AddClass (extraClass);
             }
             return button;
         }
 
-        function AddRadioButton (toolbar, eventHandler, imageNames, imageTitles, selectedIndex, onlyFullWidth, onClick)
+        function AddRadioButton (toolbar, eventHandler, imageNames, imageTitles, selectedIndex, extraClass, onClick)
         {
             let imageData = [];
             for (let i = 0; i < imageNames.length; i++) {
@@ -348,57 +361,57 @@ OV.Website = class
                 eventHandler.HandleEvent ('toolbar_clicked', { item : imageNames[buttonIndex] });
                 onClick (buttonIndex);
             });
-            if (onlyFullWidth) {
+            if (extraClass !== null) {
                 for (let i = 0; i < buttons.length; i++) {
                     let button = buttons[i];
-                    button.AddClass ('only_full_width');
+                    button.AddClass (extraClass);
                 }
             }
         }
 
-        function AddSeparator (toolbar, onlyFullWidth)
+        function AddSeparator (toolbar, extraClass)
         {
             let separator = toolbar.AddSeparator ();
-            if (onlyFullWidth) {
-                separator.addClass ('only_full_width');
+            if (extraClass) {
+                separator.addClass (extraClass);
             }
         }
 
         let importer = this.modelLoader.GetImporter ();
 
-        AddButton (this.toolbar, this.eventHandler, 'open', 'Open model from your device', false, () => {
+        AddButton (this.toolbar, this.eventHandler, 'open', 'Open model from your device', null, () => {
             this.OpenFileBrowserDialog ();
         });
-        AddButton (this.toolbar, this.eventHandler, 'open_url', 'Open model from a url', false, () => {
+        AddButton (this.toolbar, this.eventHandler, 'open_url', 'Open model from a url', null, () => {
             this.dialog = OV.ShowOpenUrlDialog ((urls) => {
                 if (urls.length > 0) {
                     this.hashHandler.SetModelFilesToHash (urls);
                 }
             });
         });
-        AddSeparator (this.toolbar);
-        AddButton (this.toolbar, this.eventHandler, 'fit', 'Fit model to window', false, () => {
+        AddSeparator (this.toolbar, 'only_on_model');
+        AddButton (this.toolbar, this.eventHandler, 'fit', 'Fit model to window', 'only_on_model', () => {
             this.FitModelToWindow (false);
         });
-        AddButton (this.toolbar, this.eventHandler, 'up_y', 'Set Y axis as up vector', false, () => {
+        AddButton (this.toolbar, this.eventHandler, 'up_y', 'Set Y axis as up vector', 'only_on_model', () => {
             this.viewer.SetUpVector (OV.Direction.Y, true);
         });
-        AddButton (this.toolbar, this.eventHandler, 'up_z', 'Set Z axis as up vector', false, () => {
+        AddButton (this.toolbar, this.eventHandler, 'up_z', 'Set Z axis as up vector', 'only_on_model', () => {
             this.viewer.SetUpVector (OV.Direction.Z, true);
         });
-        AddButton (this.toolbar, this.eventHandler, 'flip', 'Flip up vector', false, () => {
+        AddButton (this.toolbar, this.eventHandler, 'flip', 'Flip up vector', 'only_on_model', () => {
             this.viewer.FlipUpVector ();
         });
-        AddSeparator (this.toolbar);
-        AddRadioButton (this.toolbar, this.eventHandler, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, false, (buttonIndex) => {
+        AddSeparator (this.toolbar, 'only_on_model');
+        AddRadioButton (this.toolbar, this.eventHandler, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, 'only_on_model', (buttonIndex) => {
             if (buttonIndex === 0) {
                 this.viewer.SetFixUpVector (true);
             } else if (buttonIndex === 1) {
                 this.viewer.SetFixUpVector (false);
             }
         });
-        AddSeparator (this.toolbar, true);
-        AddButton (this.toolbar, this.eventHandler, 'export', 'Export model', true, () => {
+        AddSeparator (this.toolbar, 'only_full_width only_on_model');
+        AddButton (this.toolbar, this.eventHandler, 'export', 'Export model', 'only_full_width only_on_model', () => {
             let exportDialog = new OV.ExportDialog ({
                 onDialog : (dialog) => {
                     this.dialog = dialog;
@@ -406,7 +419,7 @@ OV.Website = class
             });
             exportDialog.Show (this.model, this.viewer);
         });
-        AddButton (this.toolbar, this.eventHandler, 'share', 'Share model', true, () => {
+        AddButton (this.toolbar, this.eventHandler, 'share', 'Share model', 'only_full_width only_on_model', () => {
             this.dialog = OV.ShowSharingDialog (importer, this.settings, this.viewer.GetCamera ());
         });
 
@@ -446,12 +459,14 @@ OV.Website = class
             onStart : () =>
             {
                 this.ClearModel ();
+                this.SetUIState (OV.WebsiteUIState.Loading);
             },
             onFinish : (importResult, threeMeshes) =>
             {
                 this.OnModelFinished (importResult, threeMeshes);
                 let importedExtension = OV.GetFileExtension (importResult.mainFile);
                 this.eventHandler.HandleEvent ('model_loaded', { extension : importedExtension });
+                this.SetUIState (OV.WebsiteUIState.Model);
             },
             onRender : () =>
             {
@@ -475,6 +490,7 @@ OV.Website = class
                     reason : reason,
                     extensions : extensions
                 });
+                this.SetUIState (OV.WebsiteUIState.Intro);
             }
         });
     }
@@ -487,8 +503,7 @@ OV.Website = class
                 eventHandler.HandleEvent ('sidebar_clicked', { item : sidebarPanel.image });
                 onClick ();
             });
-            button.AddClass ('only_full_width');
-            button.AddClass ('right');
+            button.AddClass ('only_full_width only_on_model right');
             return button;
         }
 
