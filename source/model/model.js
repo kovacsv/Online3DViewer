@@ -85,20 +85,32 @@ OV.Model = class extends OV.Element
     {
         return this.meshes[index];
     }
+
+    EnumerateMeshes (onMesh)
+    {
+        for (const mesh of this.meshes) {
+            onMesh (mesh);
+        }
+    }
     
     EnumerateVertices (onVertex)
     {
-        for (let meshIndex = 0; meshIndex < this.meshes.length; meshIndex++) {
-            let mesh = this.meshes[meshIndex];
+        for (const mesh of this.meshes) {
             mesh.EnumerateVertices (onVertex);
         }
     }
 
     EnumerateTriangles (onTriangle)
     {
-        for (let meshIndex = 0; meshIndex < this.meshes.length; meshIndex++) {
-            let mesh = this.meshes[meshIndex];
+        for (const mesh of this.meshes) {
             mesh.EnumerateTriangles (onTriangle);
         }
     }
+
+    EnumerateTriangleVertices (onTriangleVertices)
+    {
+        for (const mesh of this.meshes) {
+            mesh.EnumerateTriangleVertices (onTriangleVertices);
+        }
+    }    
 };

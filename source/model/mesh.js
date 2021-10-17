@@ -90,20 +90,25 @@ OV.Mesh = class extends OV.Element
 
     EnumerateVertices (onVertex)
     {
-        for (let vertexIndex = 0; vertexIndex < this.vertices.length; vertexIndex++) {
-            let vertex = this.vertices[vertexIndex];
+        for (const vertex of this.vertices) {
             onVertex (vertex);
         }
     }
 
     EnumerateTriangles (onTriangle)
     {
-        for (let triangleIndex = 0; triangleIndex < this.triangles.length; triangleIndex++) {
-            let triangle = this.triangles[triangleIndex];
+        for (const triangle of this.triangles) {
+            onTriangle (triangle);
+        }
+    }
+
+    EnumerateTriangleVertices (onTriangleVertices)
+    {
+        for (const triangle of this.triangles) {
             let v0 = this.vertices[triangle.v0];
             let v1 = this.vertices[triangle.v1];
             let v2 = this.vertices[triangle.v2];
-            onTriangle (v0, v1, v2);
+            onTriangleVertices (v0, v1, v2);
         }
-    }      
+    }     
 };

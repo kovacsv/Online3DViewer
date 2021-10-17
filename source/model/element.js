@@ -60,5 +60,10 @@ OV.Element = class
     EnumerateTriangles (onTriangle)
     {
 
-    }    
+    }
+
+    EnumerateTriangleVertices (onTriangleVertices)
+    {
+
+    }
 };

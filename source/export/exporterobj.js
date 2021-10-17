@@ -59,8 +59,7 @@ OV.ExporterObj = class extends OV.ExporterBase
         let normalOffset = 0;
         let uvOffset = 0;
         let usedMaterialName = null;
-        for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
-            let mesh = model.GetMesh (meshIndex);
+        model.EnumerateMeshes ((mesh) => {
             objWriter.WriteArrayLine (['g', this.GetExportedMeshName (mesh.GetName ())]);
             for (let vertexIndex = 0; vertexIndex < mesh.VertexCount (); vertexIndex++) {
                 let vertex = mesh.GetVertex (vertexIndex);
@@ -103,7 +102,7 @@ OV.ExporterObj = class extends OV.ExporterBase
             vertexOffset += mesh.VertexCount ();
             normalOffset += mesh.NormalCount ();
             uvOffset += mesh.TextureUVCount ();
-        }
+        });
 
         objFile.SetTextContent (objWriter.GetText ());
         onFinish ();  

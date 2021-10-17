@@ -150,27 +150,24 @@ OV.CreateMergedModel = function (model)
 
 OV.EnumerateModelVerticesAndTriangles = function (model, callbacks)
 {
-    for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
-        let mesh = model.GetMesh (meshIndex);
+    model.EnumerateMeshes ((mesh) => {
         for (let vertexIndex = 0; vertexIndex < mesh.VertexCount (); vertexIndex++) {
             let vertex = mesh.GetVertex (vertexIndex);
             callbacks.onVertex (vertex.x, vertex.y, vertex.z);
         }
-    }
+    });
     let vertexOffset = 0;
-    for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
-        let mesh = model.GetMesh (meshIndex);
-        for (let triangleIndex = 0; triangleIndex < mesh.TriangleCount (); triangleIndex++) {
-            let triangle = mesh.GetTriangle (triangleIndex);
+    model.EnumerateMeshes ((mesh) => {
+        mesh.EnumerateTriangles ((triangle) => {
             callbacks.onTriangle (triangle.v0 + vertexOffset, triangle.v1 + vertexOffset, triangle.v2 + vertexOffset);
-        }
+        });
         vertexOffset += mesh.VertexCount ();
-    }
+    });
 };
 
 OV.EnumerateTrianglesWithNormals = function (element, onTriangle)
 {
-    element.EnumerateTriangles ((v0, v1, v2) => {
+    element.EnumerateTriangleVertices ((v0, v1, v2) => {
         let normal = OV.CalculateTriangleNormal (v0, v1, v2);
         onTriangle (v0, v1, v2, normal);
     });
@@ -201,7 +198,7 @@ OV.GetTopology = function (element)
     let octree = new OV.Octree (boundingBox);
     let topology = new OV.Topology ();
     
-    element.EnumerateTriangles ((v0, v1, v2) => {
+    element.EnumerateTriangleVertices ((v0, v1, v2) => {
         let v0Index = GetVertexIndex (v0, octree, topology);
         let v1Index = GetVertexIndex (v1, octree, topology);
         let v2Index = GetVertexIndex (v2, octree, topology);
