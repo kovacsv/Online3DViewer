@@ -18,29 +18,17 @@ OV.GetMaterialName = function (originalName)
 
 OV.IsHoverEnabled = function ()
 {
-    if (window.matchMedia ('(hover : hover)').matches) {
-        return true;
-    } else {
-        return false;
-    }
+    return window.matchMedia ('(hover: hover)').matches;
 };
 
 OV.IsSmallWidth = function ()
 {
-    if (window.matchMedia ('(max-width : 700px)').matches) {
-        return true;
-    } else {
-        return false;
-    }
+    return window.matchMedia ('(max-width: 700px)').matches;
 };
 
 OV.IsSmallHeight = function ()
 {
-    if (window.matchMedia ('(max-height : 700px)').matches) {
-        return true;
-    } else {
-        return false;
-    }
+    return window.matchMedia ('(max-height: 700px)').matches;
 };
 
 OV.InstallTooltip = function (item, text)

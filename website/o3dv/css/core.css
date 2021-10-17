@@ -1,3 +1,8 @@
+:root
+{
+	--ov_only_on_model_display: inherit;
+}
+
 @font-face
 {
 	font-family: Quicksand;
@@ -26,6 +31,11 @@ a
 img
 {
 	display: block;
+}
+
+.only_on_model
+{
+	display: var(--ov_only_on_model_display);
 }
 
 @media (hover)

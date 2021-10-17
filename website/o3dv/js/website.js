@@ -84,18 +84,33 @@ OV.Website = class
         this.viewer.Resize (contentWidth, contentHeight);
     }
 
+    HasLoadedModel ()
+    {
+        return this.model !== null;
+    }
+
     SetUIState (uiState)
     {
+        function ShowOnlyOnModelElements (show)
+        {
+            let root = document.querySelector (':root');
+            root.style.setProperty ('--ov_only_on_model_display', show ? 'inherit' : 'none');
+        }
+        
         if (uiState === OV.WebsiteUIState.Intro) {
             this.parameters.introDiv.show ();
             this.parameters.mainDiv.hide ();
+            ShowOnlyOnModelElements (false);
         } else if (uiState === OV.WebsiteUIState.Model) {
             this.parameters.introDiv.hide ();
             this.parameters.mainDiv.show ();
+            ShowOnlyOnModelElements (true);
         } else if (uiState === OV.WebsiteUIState.Loading) {
             this.parameters.introDiv.hide ();
             this.parameters.mainDiv.hide ();
+            ShowOnlyOnModelElements (false);
         }
+
         this.Resize ();
     }
 
