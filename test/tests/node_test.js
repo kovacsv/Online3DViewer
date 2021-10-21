@@ -51,11 +51,16 @@ describe ('Node', function() {
         child1.AddChildNode (child12);
 
         let enumerated = [];
-        node.EnumerateChildren ((child) => {
+        node.Enumerate ((child) => {
             enumerated.push (child);
         });
+        assert.deepStrictEqual (enumerated, [node, child1, child11, child12, child2]);
 
-        assert.deepStrictEqual (enumerated, [child1, child11, child12, child2]);
+        let enumeratedChildren = [];
+        node.EnumerateChildren ((child) => {
+            enumeratedChildren.push (child);
+        });
+        assert.deepStrictEqual (enumeratedChildren, [child1, child11, child12, child2]);
     });    
 
     it ('Recursive Mesh Index Enumeration', function () {
