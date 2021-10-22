@@ -1,6 +1,6 @@
 var assert = require ('assert');
 
-describe ('Model', function() {
+describe ('Model', function () {
     it ('Default Initialization', function () {
         var model = new OV.Model ();
         assert.strictEqual (model.MaterialCount (), 0);
@@ -100,7 +100,7 @@ describe ('Model', function() {
     });    
 });
 
-describe ('Model Finalization', function() {
+describe ('Model Finalization', function () {
     it ('Calculate Normal', function () {
         var mesh = new OV.Mesh ();
         var v0 = mesh.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
@@ -184,7 +184,7 @@ describe ('Model Finalization', function() {
     });    
 });
 
-describe ('Color Conversion', function() {
+describe ('Color Conversion', function () {
     it ('Color equality check', function () {
         assert (OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (10, 20, 30)));
         assert (!OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (11, 20, 30)));
@@ -197,5 +197,207 @@ describe ('Color Conversion', function() {
         let hexString = '0a141e';
         assert.strictEqual (OV.ColorToHexString (color), hexString);
         assert.deepStrictEqual (OV.HexStringToColor (hexString), color);
+    });
+});
+
+function CreateHierarchicModel ()
+{
+    /*
+        + <Root>
+            + Node 1
+                + Node 3
+                    Mesh 5
+                    Mesh 6
+                + Node 4
+                    Mesh 7
+                Mesh 3
+                Mesh 4
+            + Node 2
+            Mesh 1
+            Mesh 2
+    */
+
+    let model = new OV.Model ();
+    let root = model.GetRootNode ();
+
+    let node1 = new OV.Node ();
+    node1.SetName ('Node 1');
+
+    let node2 = new OV.Node ();
+    node2.SetName ('Node 2');
+
+    let node3 = new OV.Node ();
+    node3.SetName ('Node 3');
+
+    let node4 = new OV.Node ();
+    node4.SetName ('Node 4');
+
+    root.AddChildNode (node1);
+    root.AddChildNode (node2);
+    node1.AddChildNode (node3);
+    node1.AddChildNode (node4);
+
+    let mesh1 = new OV.Mesh ();
+    mesh1.SetName ('Mesh 1');
+
+    let mesh2 = new OV.Mesh ();
+    mesh2.SetName ('Mesh 2');
+
+    let mesh3 = new OV.Mesh ();
+    mesh3.SetName ('Mesh 3');
+
+    let mesh4 = new OV.Mesh ();
+    mesh4.SetName ('Mesh 4');
+
+    let mesh5 = new OV.Mesh ();
+    mesh5.SetName ('Mesh 5');
+
+    let mesh6 = new OV.Mesh ();
+    mesh6.SetName ('Mesh 6');
+
+    let mesh7 = new OV.Mesh ();
+    mesh7.SetName ('Mesh 7');
+
+    let mesh1Ind = model.AddMesh (mesh1);
+    let mesh2Ind = model.AddMesh (mesh2);
+    let mesh3Ind = model.AddMesh (mesh3);
+    let mesh4Ind = model.AddMesh (mesh4);
+    let mesh5Ind = model.AddMesh (mesh5);
+    let mesh6Ind = model.AddMesh (mesh6);
+    let mesh7Ind = model.AddMesh (mesh7);
+
+    root.AddMeshIndex (mesh1Ind);
+    root.AddMeshIndex (mesh2Ind);
+    node1.AddMeshIndex (mesh3Ind);
+    node1.AddMeshIndex (mesh4Ind);
+    node3.AddMeshIndex (mesh5Ind);
+    node3.AddMeshIndex (mesh6Ind);
+    node4.AddMeshIndex (mesh7Ind);
+
+    return model;
+}
+
+function GetModelTree (model)
+{
+    function AddNodeToModelTree (model, node, modelTree)
+    {
+        modelTree.name = node.HasParent () ? node.GetName () : '<Root>';
+        modelTree.childNodes = [];
+        for (const childNode of node.GetChildNodes ()) {
+            let childTree = {};
+            AddNodeToModelTree (model, childNode, childTree);
+            modelTree.childNodes.push (childTree);
+        }
+        modelTree.meshNames = [];
+        for (const meshIndex of node.GetMeshIndices ()) {
+            modelTree.meshNames.push (model.GetMesh (meshIndex).GetName ());
+        }
+    }
+
+    let modelTree = {};
+    let root = model.GetRootNode ();
+    AddNodeToModelTree (model, root, modelTree);
+    return modelTree;
+}
+
+describe ('Node Hierarchy', function () {
+    it ('Enumerate hierarchy', function () {
+        let model = CreateHierarchicModel ();
+        let modelTree = GetModelTree (model);
+        assert.deepStrictEqual (modelTree, {
+            name : '<Root>',
+            childNodes : [
+                {
+                    name : 'Node 1',
+                    childNodes : [
+                        {
+                            name : 'Node 3',
+                            childNodes : [],
+                            meshNames : ['Mesh 5', 'Mesh 6']
+                        },
+                        {
+                            name : 'Node 4',
+                            childNodes : [],
+                            meshNames : ['Mesh 7']
+                        }
+                    ],
+                    meshNames : ['Mesh 3', 'Mesh 4']
+                },
+                {
+                    name : 'Node 2',
+                    childNodes : [],
+                    meshNames : []
+                }                
+            ],
+            meshNames : ['Mesh 1', 'Mesh 2']
+        });
+    });
+
+    it ('Remove mesh', function () {
+        let model = CreateHierarchicModel ();
+        model.RemoveMesh (2);
+        let modelTree = GetModelTree (model);
+        assert.deepStrictEqual (modelTree, {
+            name : '<Root>',
+            childNodes : [
+                {
+                    name : 'Node 1',
+                    childNodes : [
+                        {
+                            name : 'Node 3',
+                            childNodes : [],
+                            meshNames : ['Mesh 5', 'Mesh 6']
+                        },
+                        {
+                            name : 'Node 4',
+                            childNodes : [],
+                            meshNames : ['Mesh 7']
+                        }
+                    ],
+                    meshNames : ['Mesh 4']
+                },
+                {
+                    name : 'Node 2',
+                    childNodes : [],
+                    meshNames : []
+                }                
+            ],
+            meshNames : ['Mesh 1', 'Mesh 2']
+        });
+    });
+
+    it ('Add mesh to index', function () {
+        let model = CreateHierarchicModel ();
+        let mesh = new OV.Mesh ();
+        mesh.SetName ('Mesh 8');
+        model.AddMeshToIndex (mesh, 3);
+        let modelTree = GetModelTree (model);
+        assert.deepStrictEqual (modelTree, {
+            name : '<Root>',
+            childNodes : [
+                {
+                    name : 'Node 1',
+                    childNodes : [
+                        {
+                            name : 'Node 3',
+                            childNodes : [],
+                            meshNames : ['Mesh 5', 'Mesh 6']
+                        },
+                        {
+                            name : 'Node 4',
+                            childNodes : [],
+                            meshNames : ['Mesh 7']
+                        }
+                    ],
+                    meshNames : ['Mesh 3', 'Mesh 4']
+                },
+                {
+                    name : 'Node 2',
+                    childNodes : [],
+                    meshNames : []
+                }                
+            ],
+            meshNames : ['Mesh 1', 'Mesh 2']
+        });
     });
 });

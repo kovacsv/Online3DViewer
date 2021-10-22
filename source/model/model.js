@@ -3,8 +3,14 @@ OV.Model = class extends OV.Element
     constructor ()
     {
         super ();
+        this.root = new OV.Node ();
         this.materials = [];
         this.meshes = [];
+    }
+
+    GetRootNode ()
+    {
+        return this.root;
     }
 
     MaterialCount ()
@@ -73,12 +79,29 @@ OV.Model = class extends OV.Element
     AddMeshToIndex (mesh, index)
     {
         this.meshes.splice (index, 0, mesh);
+        this.root.Enumerate ((node) => {
+            for (let i = 0; i < node.meshIndices.length; i++) {
+                if (node.meshIndices[i] >= index) {
+                    node.meshIndices[i] += 1;
+                }
+            }
+        });        
         return index;
     }
 
     RemoveMesh (index)
     {
         this.meshes.splice (index, 1);
+        this.root.Enumerate ((node) => {
+            for (let i = 0; i < node.meshIndices.length; i++) {
+                if (node.meshIndices[i] === index) {
+                    node.meshIndices.splice (i, 1);
+                    i -= 1;
+                } else if (node.meshIndices[i] > index) {
+                    node.meshIndices[i] -= 1;
+                }
+            }
+        });
     }
 
     GetMesh (index)
@@ -92,7 +115,7 @@ OV.Model = class extends OV.Element
             onMesh (mesh);
         }
     }
-    
+
     EnumerateVertices (onVertex)
     {
         for (const mesh of this.meshes) {

@@ -2,10 +2,15 @@ OV.Node = class
 {
     constructor ()
     {
-        this.parent = null;
         this.name = '';
+        this.parent = null;
         this.childNodes = [];
         this.meshIndices = [];
+    }
+
+    HasParent ()
+    {
+        return this.parent !== null;
     }
 
     GetParent ()
