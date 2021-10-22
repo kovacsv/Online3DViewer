@@ -672,27 +672,25 @@ OV.ImporterGltf = class extends OV.ImporterBase
 
     CollectMeshNodesForScene (gltf, scene)
     {
-        function CollectMeshNodeIndices (gltf, parentIndex, nodeIndex, nodeTree, meshNodes)
+        function CollectMeshNodeIndices (gltf, parentIndex, nodeIndex, nodeTree)
         {
             let node = gltf.nodes[nodeIndex];
             if (node.mesh !== undefined) {
                 nodeTree.AddMeshNode (nodeIndex);
-                meshNodes.push (nodeIndex);
             }
             nodeTree.AddNodeParent (nodeIndex, parentIndex);
             if (node.children !== undefined) {
                 for (let i = 0; i < node.children.length; i++) {
                     let childNodeIndex = node.children[i];
-                    CollectMeshNodeIndices (gltf, nodeIndex, childNodeIndex, nodeTree, meshNodes);
+                    CollectMeshNodeIndices (gltf, nodeIndex, childNodeIndex, nodeTree);
                 }
             }
         }
 
         let nodeTree = new OV.GltfNodeTree ();
-        let meshNodes = [];
         for (let i = 0; i < scene.nodes.length; i++) {
             let nodeIndex = scene.nodes[i];
-            CollectMeshNodeIndices (gltf, -1, nodeIndex, nodeTree, meshNodes);
+            CollectMeshNodeIndices (gltf, -1, nodeIndex, nodeTree);
         }
         return nodeTree;
     }
