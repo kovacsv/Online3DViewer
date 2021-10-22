@@ -1,0 +1,117 @@
+{
+	"root" : {
+		"children" : [
+			{
+				"name" : "Cubes",
+				"transformation" : {
+					"translation" : [0.0, 0.0, 2.0]
+				},
+				"children" : [
+					{
+						"name" : "Cube 01",
+						"transformation" : {
+							"translation" : [0.0, 0.0, 0.0]
+						},
+						"meshes" : [0]
+					},
+					{
+						"name" : "Cube 02",
+						"transformation" : {
+							"translation" : [2.0, 0.0, 0.0]
+						},
+						"meshes" : [0]
+					},
+					{
+						"name" : "Cube 03",
+						"transformation" : {
+							"translation" : [2.0, 2.0, 0.0]
+						},
+						"meshes" : [0]
+					},
+					{
+						"name" : "Cube 04",
+						"transformation" : {
+							"translation" : [0.0, 2.0, 0.0]
+						},
+						"meshes" : [0]
+					}
+				]
+			},
+			{
+				"name" : "Spheres",
+				"transformation" : {
+					"translation" : [0.0, 0.0, 4.0]
+				},
+				"children" : [
+					{
+						"name" : "Spheres 01",
+						"transformation" : {
+							"translation" : [0.0, 0.0, 0.0]
+						},
+						"meshes" : [1]
+					},
+					{
+						"name" : "Spheres 02",
+						"transformation" : {
+							"translation" : [2.0, 0.0, 0.0]
+						},
+						"meshes" : [1]
+					},
+					{
+						"name" : "Spheres 03",
+						"transformation" : {
+							"translation" : [2.0, 2.0, 0.0]
+						},
+						"meshes" : [1]
+					},
+					{
+						"name" : "Spheres 04",
+						"transformation" : {
+							"translation" : [0.0, 2.0, 0.0]
+						},
+						"meshes" : [1]
+					}
+				]
+			},
+			{
+				"name" : "Cube and Sphere",
+				"transformation" : {
+					"translation" : [0.0, 0.0, 6.0]
+				},
+				"children" : [
+					{
+						"name" : "Cube 01",
+						"transformation" : {
+							"translation" : [0.0, 0.0, 0.0]
+						},
+						"meshes" : [1]
+					},
+					{
+						"name" : "Sphere 01",
+						"transformation" : {
+							"translation" : [2.0, 0.0, 0.0]
+						},
+						"meshes" : [1]
+					}
+				]
+			}			
+		],
+		"meshes" : [0, 1]
+	},
+	"meshes" : [
+		{
+			"type" : "cuboid",
+			"parameters" : {
+				"size_x" : 1.0,
+				"size_y" : 1.0,
+				"size_z" : 1.0
+			}
+		},
+		{
+			"type" : "sphere",
+			"parameters" : {
+				"radius" : 0.5
+			}
+		}
+	]
+}

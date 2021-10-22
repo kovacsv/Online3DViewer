@@ -89,34 +89,34 @@ OV.ImporterO3dv = class extends OV.ImporterBase
             return;
         }
 
+        let mesh = null;
         if (meshContent.type === 'cuboid') {
             if (parameters.size_x === undefined || parameters.size_y === undefined || parameters.size_z === undefined) {
                 return;
             }
-            const mesh = OV.GenerateCuboid (genParams, parameters.size_x, parameters.size_y, parameters.size_z);
-            this.model.AddMesh (mesh);
+            mesh = OV.GenerateCuboid (genParams, parameters.size_x, parameters.size_y, parameters.size_z);
         } else if (meshContent.type === 'cylinder') {
             if (parameters.radius === undefined || parameters.height === undefined) {
                 return;
             }
             let segments = OV.ValueOrDefault (parameters.segments, 25);
             let smooth = OV.ValueOrDefault (parameters.smooth, true);
-            const mesh = OV.GenerateCylinder (genParams, parameters.radius, parameters.height, segments, smooth);
-            this.model.AddMesh (mesh);
+            mesh = OV.GenerateCylinder (genParams, parameters.radius, parameters.height, segments, smooth);
         } else if (meshContent.type === 'sphere') {
             if (parameters.radius === undefined) {
                 return;
             }
             let segments = OV.ValueOrDefault (parameters.segments, 20);
             let smooth = OV.ValueOrDefault (parameters.smooth, true);
-            const mesh = OV.GenerateSphere (genParams, parameters.radius, segments, smooth);
-            this.model.AddMesh (mesh);
+            mesh = OV.GenerateSphere (genParams, parameters.radius, segments, smooth);
         } else if (meshContent.type === 'platonic') {
             if (parameters.solid_type === undefined) {
                 return;
             }
             let radius = OV.ValueOrDefault (parameters.radius, 1.0);
-            const mesh = OV.GeneratePlatonicSolid (genParams, parameters.solid_type, radius);
+            mesh = OV.GeneratePlatonicSolid (genParams, parameters.solid_type, radius);
+        }
+        if (mesh !== null) {
             this.model.AddMesh (mesh);
         }
     }
