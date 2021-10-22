@@ -41,6 +41,9 @@ OV.ImporterO3dv = class extends OV.ImporterBase
                 this.ImportMesh (meshContent);
             }
         }
+        if (content.root !== undefined) {
+            this.ImportNode (content.root, this.model.GetRootNode ());
+        }
         onFinish ();
     }
 
@@ -68,6 +71,7 @@ OV.ImporterO3dv = class extends OV.ImporterBase
         if (meshContent.material !== undefined) {
             genParams.SetMaterial (meshContent.material);
         }
+        // TODO: remove transformation from mesh, and from generator
         if (meshContent.transformation !== undefined) {
             let translation = new OV.Coord3D (0.0, 0.0, 0.0);
             let rotation = new OV.Quaternion (0.0, 0.0, 0.0, 1.0);
@@ -119,5 +123,46 @@ OV.ImporterO3dv = class extends OV.ImporterBase
         if (mesh !== null) {
             this.model.AddMesh (mesh);
         }
+    }
+
+    ImportNode (node, meshNode)
+    {
+        if (node.name !== undefined) {
+            meshNode.SetName (node.name);
+        }
+        if (node.transformation !== undefined) {
+            const nodeTransformation = this.GetTransformation (node.transformation);
+            meshNode.SetTransformation (nodeTransformation);
+        }
+        if (node.meshes !== undefined) {
+            for (const meshIndex of node.meshes) {
+                meshNode.AddMeshIndex (meshIndex);
+            }
+        }
+        if (node.children !== undefined) {
+            for (const child of node.children) {
+                let childMeshNode = new OV.Node ();
+                meshNode.AddChildNode (childMeshNode);
+                this.ImportNode (child, childMeshNode);
+            }
+        }
+    }
+
+    GetTransformation (contentTransformation)
+    {
+        let translation = new OV.Coord3D (0.0, 0.0, 0.0);
+        let rotation = new OV.Quaternion (0.0, 0.0, 0.0, 1.0);
+        let scale = new OV.Coord3D (1.0, 1.0, 1.0);
+        if (contentTransformation.translation !== undefined) {
+            translation = OV.ArrayToCoord3D (contentTransformation.translation);
+        }
+        if (contentTransformation.rotation !== undefined) {
+            rotation = OV.ArrayToQuaternion (contentTransformation.rotation);
+        }
+        if (contentTransformation.scale !== undefined) {
+            scale = OV.ArrayToCoord3D (contentTransformation.scale);
+        }
+        const matrix = new OV.Matrix ().ComposeTRS (translation, rotation, scale);
+        return new OV.Transformation (matrix);
     }
 };

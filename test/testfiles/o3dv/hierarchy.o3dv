@@ -100,6 +100,7 @@
 	},
 	"meshes" : [
 		{
+			"name" : "Cube",
 			"type" : "cuboid",
 			"parameters" : {
 				"size_x" : 1.0,
@@ -108,6 +109,7 @@
 			}
 		},
 		{
+			"name" : "Sphere",
 			"type" : "sphere",
 			"parameters" : {
 				"radius" : 0.5

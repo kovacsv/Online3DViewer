@@ -4,8 +4,19 @@ OV.Node = class
     {
         this.name = '';
         this.parent = null;
+        this.transformation = new OV.Transformation ();
         this.childNodes = [];
         this.meshIndices = [];
+    }
+
+    GetName ()
+    {
+        return this.name;
+    }
+    
+    SetName (name)
+    {
+        this.name = name;
     }
 
     HasParent ()
@@ -18,14 +29,14 @@ OV.Node = class
         return this.parent;
     }
 
-    GetName ()
+    GetTransformation ()
     {
-        return this.name;
+        return this.transformation;
     }
-    
-    SetName (name)
+
+    SetTransformation (transformation)
     {
-        this.name = name;
+        this.transformation = transformation; 
     }
 
     AddChildNode (node)

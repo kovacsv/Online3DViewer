@@ -14,6 +14,14 @@ describe ('Node', function() {
         assert.strictEqual (node.GetName (), 'New Name');
     });
     
+    it ('Set Transformation', function () {
+        let node = new OV.Node ();
+        assert (node.GetTransformation ().IsIdentity ());
+        let tr = new OV.Transformation (new OV.Matrix ().CreateScale (3.0, 4.0, 5.0));
+        node.SetTransformation (tr);
+        assert (!node.GetTransformation ().IsIdentity ());
+    });
+
     it ('Add Mesh Indices', function () {
         let node = new OV.Node ();
         node.AddMeshIndex (0);
