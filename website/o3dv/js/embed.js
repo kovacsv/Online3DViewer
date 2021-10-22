@@ -47,9 +47,9 @@ OV.Embed = class
         this.viewer.Resize (windowWidth, windowHeight);
     }
 
-    OnModelFinished (importResult, threeMeshes)
+    OnModelFinished (importResult, threeObject)
     {
-        this.viewer.AddMeshes (threeMeshes);
+        this.viewer.SetMainObject (threeObject);
         let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
             return true;
         });
@@ -83,9 +83,9 @@ OV.Embed = class
             {
                 
             },
-            onFinish : (importResult, threeMeshes) =>
+            onFinish : (importResult, threeObject) =>
             {
-                this.OnModelFinished (importResult, threeMeshes);
+                this.OnModelFinished (importResult, threeObject);
             },
             onRender : () =>
             {

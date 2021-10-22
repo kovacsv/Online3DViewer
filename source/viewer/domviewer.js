@@ -29,10 +29,10 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, parameters)
         onVisualizationStart : () => {
             progressDiv.innerHTML = 'Visualizing model...';
         },
-        onModelFinished : (importResult, threeMeshes) => {
+        onModelFinished : (importResult, threeObject) => {
             parentDiv.removeChild (progressDiv);
             canvas.style.display = 'inherit';
-            viewer.AddMeshes (threeMeshes);
+            viewer.SetMainObject (threeObject);
             let boundingSphere = viewer.GetBoundingSphere ((meshUserData) => {
                 return true;
             });

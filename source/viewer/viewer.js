@@ -79,57 +79,56 @@ OV.ViewerGeometry = class
     constructor (scene)
     {
         this.scene = scene;
-        this.modelMeshes = [];
+        this.mainObject = null;
     }
 
-    AddModelMeshes (meshes)
+    SetMainObject (mainObject)
     {
-        for (let i = 0; i < meshes.length; i++) {
-            let mesh = meshes[i];
-            this.modelMeshes.push (mesh);
-            this.scene.add (mesh);
+        this.mainObject = mainObject;
+        this.scene.add (this.mainObject);
+    }
+
+    ClearMainObject ()
+    {
+        if (this.mainObject !== null) {
+            this.EnumerateMeshes ((mesh) => {
+                mesh.geometry.dispose ();
+            });
+            this.scene.remove (this.mainObject);
+            this.mainObject = null;
         }
     }
 
-    GetModelMeshes ()
+    EnumerateMeshes (enumerator)
     {
-        return this.modelMeshes;
-    }
-
-    ClearModelMeshes ()
-    {
-        for (let i = 0; i < this.modelMeshes.length; i++) {
-            let mesh = this.modelMeshes[i];
-            mesh.geometry.dispose ();
-            this.scene.remove (mesh);
+        if (this.mainObject === null) {
+            return;
         }
-        this.modelMeshes = [];
-    }
-
-    EnumerateModelMeshes (enumerator)
-    {
-        for (let i = 0; i < this.modelMeshes.length; i++) {
-            let mesh = this.modelMeshes[i];
-            enumerator (mesh);
-        }
+        this.mainObject.traverse ((obj) => {
+            if (obj.isMesh) {
+                enumerator (obj);
+            }
+        });
     }
     
     GetModelMeshUnderMouse (mouseCoords, camera, width, height)
     {
-        let intersection = this.GetModelIntersectionUnderMouse (mouseCoords, camera, width, height);
-        if (intersection === null) {
+        if (this.mainObject === null) {
             return null;
         }
-        return intersection.object;
-    }
-
-    GetModelPointUnderMouse (mouseCoords, camera, width, height)
-    {
-        let intersection = this.GetModelIntersectionUnderMouse (mouseCoords, camera, width, height);
-        if (intersection === null) {
-            return null;
+        let raycaster = new THREE.Raycaster ();
+        let mousePos = new THREE.Vector2 ();
+        mousePos.x = (mouseCoords.x / width) * 2 - 1;
+        mousePos.y = -(mouseCoords.y / height) * 2 + 1;
+        raycaster.setFromCamera (mousePos, camera);
+        let iSectObjects = raycaster.intersectObject (this.mainObject, true);
+        for (let i = 0; i < iSectObjects.length; i++) {
+            let iSectObject = iSectObjects[i];
+            if (iSectObject.object.type === 'Mesh' && iSectObject.object.visible) {
+                return iSectObject.object;
+            }
         }
-        return new OV.Coord3D (intersection.point.x, intersection.point.y, intersection.point.z);
+        return null;
     }
 
     GetModelIntersectionUnderMouse (mouseCoords, camera, width, height)
@@ -329,21 +328,21 @@ OV.Viewer = class
         this.renderer.render (this.scene, this.camera);
     }
 
-    AddMeshes (meshes)
+    SetMainObject (object)
     {
-        this.geometry.AddModelMeshes (meshes);
+        this.geometry.SetMainObject (object);
         this.Render ();
     }
 
     Clear ()
     {
-        this.geometry.ClearModelMeshes ();
+        this.geometry.ClearMainObject ();
         this.Render ();
     }
 
     SetMeshesVisibility (isVisible)
     {
-        this.geometry.EnumerateModelMeshes ((mesh) => {
+        this.geometry.EnumerateMeshes ((mesh) => {
             let visible = isVisible (mesh.userData);
             if (mesh.visible !== visible) {
                 mesh.visible = visible;
@@ -363,7 +362,7 @@ OV.Viewer = class
             return highlightMaterials;
         }
 
-        this.geometry.EnumerateModelMeshes ((mesh) => {
+        this.geometry.EnumerateMeshes ((mesh) => {
             let highlighted = isHighlighted (mesh.userData);
             if (highlighted) {
                 if (mesh.userData.threeMaterials === null) {
@@ -399,7 +398,7 @@ OV.Viewer = class
     {
         let hasMesh = false;
         let boundingBox = new THREE.Box3 ();
-        this.geometry.EnumerateModelMeshes ((mesh) => {
+        this.geometry.EnumerateMeshes ((mesh) => {
             if (needToProcess (mesh.userData)) {
                 boundingBox.union (new THREE.Box3 ().setFromObject (mesh));
                 hasMesh = true;
@@ -426,7 +425,7 @@ OV.Viewer = class
 
     EnumerateMeshesUserData (enumerator)
     {
-        this.geometry.EnumerateModelMeshes ((mesh) => {
+        this.geometry.EnumerateMeshes ((mesh) => {
             enumerator (mesh.userData);
         });
     }

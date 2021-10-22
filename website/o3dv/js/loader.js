@@ -47,9 +47,9 @@ OV.InitModelLoader = function (modelLoader, callbacks)
         onVisualizationStart : () => {
             progressDialog.SetText ('Visualizing Model');
         },
-        onModelFinished : (importResult, threeMeshes) => {
+        onModelFinished : (importResult, threeObject) => {
             progressDialog.Hide ();
-            callbacks.onFinish (importResult, threeMeshes);
+            callbacks.onFinish (importResult, threeObject);
         },
         onTextureLoaded : () => {
             callbacks.onRender ();

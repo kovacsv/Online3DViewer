@@ -131,10 +131,10 @@ OV.Website = class
         this.sidebar.HidePopups ();
     }
     
-    OnModelFinished (importResult, threeMeshes)
+    OnModelFinished (importResult, threeObject)
     {
         this.model = importResult.model;
-        this.viewer.AddMeshes (threeMeshes);
+        this.viewer.SetMainObject (threeObject);
         this.viewer.SetUpVector (importResult.upVector, false);
         this.navigator.FillTree (importResult);
         this.settingsPanel.Update (this.model);
@@ -472,9 +472,9 @@ OV.Website = class
                 this.ClearModel ();
                 this.SetUIState (OV.WebsiteUIState.Loading);
             },
-            onFinish : (importResult, threeMeshes) =>
+            onFinish : (importResult, threeObject) =>
             {
-                this.OnModelFinished (importResult, threeMeshes);
+                this.OnModelFinished (importResult, threeObject);
                 let importedExtension = OV.GetFileExtension (importResult.mainFile);
                 this.eventHandler.HandleEvent ('model_loaded', { extension : importedExtension });
                 this.SetUIState (OV.WebsiteUIState.Model);

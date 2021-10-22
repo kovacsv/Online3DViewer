@@ -21,7 +21,7 @@ OV.ThreeConversionStateHandler = class
 		this.callbacks = callbacks;
 		this.texturesNeeded = 0;
 		this.texturesLoaded = 0;
-		this.threeMeshes = null;
+		this.threeObject = null;
 	}
 
 	OnTextureNeeded ()
@@ -36,21 +36,21 @@ OV.ThreeConversionStateHandler = class
 		this.Finish ();
 	}
 
-	OnModelLoaded (threeMeshes)
+	OnModelLoaded (threeObject)
 	{
-		this.threeMeshes = threeMeshes;
+		this.threeObject = threeObject;
 		this.Finish ();
 	}
 
 	Finish ()
 	{
-		if (this.threeMeshes !== null && this.texturesNeeded === this.texturesLoaded) {
-			this.callbacks.onModelLoaded (this.threeMeshes);
+		if (this.threeObject !== null && this.texturesNeeded === this.texturesLoaded) {
+			this.callbacks.onModelLoaded (this.threeObject);
 		}
 	}
 };
 
-OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
+OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 {
 	function CreateThreeMaterial (stateHandler, model, materialIndex, params, output)
 	{
@@ -255,7 +255,7 @@ OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 		modelThreeMaterials.push (threeMaterial);
 	}
 
-	let threeMeshes = [];
+	let threeObject = new THREE.Object3D ();
 	let taskRunner = new OV.TaskRunner ();
 	taskRunner.RunBatch (model.MeshCount (), 100, {
 		runTask : (firstIndex, lastIndex, ready) => {
@@ -263,13 +263,13 @@ OV.ConvertModelToThreeMeshes = function (model, params, output, callbacks)
 				let mesh = model.GetMesh (meshIndex);
 				if (mesh.TriangleCount () > 0) {
 					let threeMesh = CreateThreeMesh (model, meshIndex, modelThreeMaterials);
-					threeMeshes.push (threeMesh);
+					threeObject.add (threeMesh);
 				}
 			}
 			ready ();
 		},
 		onReady : () => {
-			stateHandler.OnModelLoaded (threeMeshes);
+			stateHandler.OnModelLoaded (threeObject);
 		}
 	});
 };
