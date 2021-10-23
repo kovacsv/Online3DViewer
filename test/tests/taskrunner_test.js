@@ -31,7 +31,7 @@ describe ('Task Runner', function () {
 
     it ('Run task batched', function (done) {
         var indices = [];
-        OV.RunTaskBatch (10, 3, {
+        OV.RunTasksBatch (10, 3, {
             runTask : function (firstIndex, lastIndex, ready) {
                 indices.push ([firstIndex, lastIndex]);
                 ready ();
@@ -45,7 +45,7 @@ describe ('Task Runner', function () {
 
     it ('Run task batched zero times', function (done) {
         var indices = [];
-        OV.RunTaskBatch (0, 3, {
+        OV.RunTasksBatch (0, 3, {
             runTask : function (firstIndex, lastIndex, ready) {
                 indices.push ([firstIndex, lastIndex]);
                 ready ();

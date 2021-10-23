@@ -68,7 +68,7 @@ OV.RunTasks = function (count, callbacks)
     taskRunner.Run (count, callbacks);
 };
 
-OV.RunTaskBatch = function (count, batchCount, callbacks)
+OV.RunTasksBatch = function (count, batchCount, callbacks)
 {
     let taskRunner = new OV.TaskRunner ();
     taskRunner.RunBatch (count, batchCount, callbacks);

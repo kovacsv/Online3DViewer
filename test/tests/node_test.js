@@ -8,6 +8,18 @@ describe ('Node', function() {
         assert.deepStrictEqual (node.GetMeshIndices (), []);
     });
 
+    it ('Is Empty', function () {
+        let node = new OV.Node ();
+        assert (node.IsEmpty ());
+        node.AddMeshIndex (0);
+        assert (!node.IsEmpty ());
+
+        let node2 = new OV.Node ();
+        assert (node2.IsEmpty ());
+        node2.AddChildNode (new OV.Node ());
+        assert (!node2.IsEmpty ());        
+    });
+
     it ('Set Name', function () {
         let node = new OV.Node ();
         node.SetName ('New Name');

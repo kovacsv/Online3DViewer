@@ -9,6 +9,11 @@ OV.Node = class
         this.meshIndices = [];
     }
 
+    IsEmpty ()
+    {
+        return this.childNodes.length === 0 && this.meshIndices.length === 0;
+    }
+
     GetName ()
     {
         return this.name;
@@ -55,6 +60,16 @@ OV.Node = class
     {
         this.meshIndices.push (index);
         return this.meshIndices.length - 1;
+    }
+
+    MeshIndexCount ()
+    {
+        return this.meshIndices.length;
+    }
+
+    GetMeshIndex (index)
+    {
+        return this.meshIndices[index];
     }
 
     GetMeshIndices ()

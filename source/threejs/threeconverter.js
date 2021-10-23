@@ -247,6 +247,25 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 		return threeMesh;
 	}
 
+	function ConvertMeshList (threeObject, model, modelThreeMaterials, stateHandler)
+	{
+		OV.RunTasksBatch (model.MeshCount (), 100, {
+			runTask : (firstIndex, lastIndex, ready) => {
+				for (let meshIndex = firstIndex; meshIndex <= lastIndex; meshIndex++) {
+					let mesh = model.GetMesh (meshIndex);
+					if (mesh.TriangleCount () > 0) {
+						let threeMesh = CreateThreeMesh (model, meshIndex, modelThreeMaterials);
+						threeObject.add (threeMesh);
+					}
+				}
+				ready ();
+			},
+			onReady : () => {
+				stateHandler.OnModelLoaded (threeObject);
+			}
+		});
+	}
+
 	let stateHandler = new OV.ThreeConversionStateHandler (callbacks);
 
 	let modelThreeMaterials = [];
@@ -256,19 +275,5 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 	}
 
 	let threeObject = new THREE.Object3D ();
-	OV.RunTaskBatch (model.MeshCount (), 100, {
-		runTask : (firstIndex, lastIndex, ready) => {
-			for (let meshIndex = firstIndex; meshIndex <= lastIndex; meshIndex++) {
-				let mesh = model.GetMesh (meshIndex);
-				if (mesh.TriangleCount () > 0) {
-					let threeMesh = CreateThreeMesh (model, meshIndex, modelThreeMaterials);
-					threeObject.add (threeMesh);
-				}
-			}
-			ready ();
-		},
-		onReady : () => {
-			stateHandler.OnModelLoaded (threeObject);
-		}
-	});
+	ConvertMeshList (threeObject, model, modelThreeMaterials, stateHandler);
 };
