@@ -56,6 +56,16 @@ OV.Node = class
         return this.childNodes;
     }
 
+    ChildNodeCount ()
+    {
+        return this.childNodes.length;
+    }
+
+    GetChildNode (index)
+    {
+        return this.childNodes[index];
+    }
+
     AddMeshIndex (index)
     {
         this.meshIndices.push (index);

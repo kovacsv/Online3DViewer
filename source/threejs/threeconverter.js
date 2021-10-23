@@ -50,6 +50,39 @@ OV.ThreeConversionStateHandler = class
 	}
 };
 
+OV.ThreeNodeTree = class
+{
+	constructor (rootNode, threeRootNode)
+	{
+		this.nodes = [];
+		this.AddNode (rootNode, threeRootNode);
+	}
+
+	AddNode (node, threeNode)
+	{
+		this.nodes.push ({
+			node : node,
+			threeNode : threeNode
+		});
+
+		let matrix = node.GetTransformation ().GetMatrix ();
+		let threeMatrix = new THREE.Matrix4 ().fromArray (matrix.Get ());
+		threeNode.applyMatrix4 (threeMatrix);
+		
+		const nodeIndex = this.nodes.length - 1;
+		for (let childNode of node.GetChildNodes ()) {
+			let threeChildNode = new THREE.Object3D ();
+			this.nodes[nodeIndex].threeNode.add (threeChildNode);
+			this.AddNode (childNode, threeChildNode);
+		}
+	}
+
+	GetNodes ()
+	{
+		return this.nodes;
+	}
+};
+
 OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 {
 	function CreateThreeMaterial (stateHandler, model, materialIndex, params, output)
@@ -247,16 +280,50 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 		return threeMesh;
 	}
 
+	function ConvertMesh (threeObject, model, meshIndex, modelThreeMaterials)
+	{
+		let mesh = model.GetMesh (meshIndex);
+		if (mesh.TriangleCount () > 0) {
+			let threeMesh = CreateThreeMesh (model, meshIndex, modelThreeMaterials);
+			threeObject.add (threeMesh);
+		}
+	}
+
+	function ConvertNodeHierarchy (threeRootNode, model, modelThreeMaterials, stateHandler)
+	{
+		let rootNode = model.GetRootNode ();
+		let nodeTree = new OV.ThreeNodeTree (rootNode, threeRootNode);
+		let nodes = nodeTree.GetNodes ();
+		OV.RunTasks (nodes.length, {
+			runTask : (nodeIndex, nodeReady) => {
+				let treeNode = nodes[nodeIndex];
+				let node = treeNode.node;
+				let threeNode = treeNode.threeNode;
+				OV.RunTasksBatch (node.MeshIndexCount (), 100, {
+					runTask : (firstNodeMeshIndex, lastNodeMeshIndex, ready) => {
+						for (let nodeMeshIndex = firstNodeMeshIndex; nodeMeshIndex <= lastNodeMeshIndex; nodeMeshIndex++) {
+							let meshIndex = node.GetMeshIndex (nodeMeshIndex);
+							ConvertMesh (threeNode, model, meshIndex, modelThreeMaterials);
+						}
+						ready ();
+					},
+					onReady : () => {
+						nodeReady ();
+					}
+				});
+			},
+			onReady : () => {
+				stateHandler.OnModelLoaded (threeRootNode);
+			}
+		});
+	}
+
 	function ConvertMeshList (threeObject, model, modelThreeMaterials, stateHandler)
 	{
 		OV.RunTasksBatch (model.MeshCount (), 100, {
 			runTask : (firstIndex, lastIndex, ready) => {
 				for (let meshIndex = firstIndex; meshIndex <= lastIndex; meshIndex++) {
-					let mesh = model.GetMesh (meshIndex);
-					if (mesh.TriangleCount () > 0) {
-						let threeMesh = CreateThreeMesh (model, meshIndex, modelThreeMaterials);
-						threeObject.add (threeMesh);
-					}
+					ConvertMesh (threeObject, model, meshIndex, modelThreeMaterials);
 				}
 				ready ();
 			},
@@ -275,5 +342,10 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 	}
 
 	let threeObject = new THREE.Object3D ();
-	ConvertMeshList (threeObject, model, modelThreeMaterials, stateHandler);
+	let rootNode = model.GetRootNode ();
+	if (!rootNode.IsEmpty ()) {
+		ConvertNodeHierarchy (threeObject, model, modelThreeMaterials, stateHandler);
+	} else {
+		ConvertMeshList (threeObject, model, modelThreeMaterials, stateHandler);
+	}
 };

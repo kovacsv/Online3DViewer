@@ -82,14 +82,16 @@
 					{
 						"name" : "Cube 01",
 						"transformation" : {
-							"translation" : [0.0, 0.0, 0.0]
+							"translation" : [0.0, 0.0, 0.0],
+							"scale" : [0.8, 0.8, 0.8]
 						},
-						"meshes" : [1]
+						"meshes" : [0]
 					},
 					{
 						"name" : "Sphere 01",
 						"transformation" : {
-							"translation" : [2.0, 0.0, 0.0]
+							"translation" : [2.0, 0.0, 0.0],
+							"scale" : [0.8, 0.8, 0.8]
 						},
 						"meshes" : [1]
 					}
@@ -98,10 +100,21 @@
 		],
 		"meshes" : [0, 1]
 	},
+	"materials" : [
+		{
+			"name" : "Green",
+			"color" : [0, 200, 0]
+		},
+		{
+			"name" : "Blue",
+			"color" : [0, 0, 200]
+		}
+	],	
 	"meshes" : [
 		{
 			"name" : "Cube",
 			"type" : "cuboid",
+			"material" : 0,
 			"parameters" : {
 				"size_x" : 1.0,
 				"size_y" : 1.0,
@@ -111,6 +124,7 @@
 		{
 			"name" : "Sphere",
 			"type" : "sphere",
+			"material" : 1,
 			"parameters" : {
 				"radius" : 0.5
 			}
