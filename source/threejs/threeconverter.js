@@ -184,7 +184,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 		return threeMaterial;
 	}
 
-	function CreateThreeMesh (model, meshIndex, modelThreeMaterials)
+	function CreateThreeMesh (model, nodeId, meshIndex, modelThreeMaterials)
 	{
 		let mesh = model.GetMesh (meshIndex);
 		let triangleCount = mesh.TriangleCount ();
@@ -272,6 +272,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 
 		let threeMesh = new THREE.Mesh (threeGeometry, meshThreeMaterials);
 		threeMesh.userData = {
+			originalNodeId : nodeId,
 			originalMeshIndex : meshIndex,
 			originalMaterials : meshOriginalMaterials,
 			threeMaterials : null
@@ -280,11 +281,11 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 		return threeMesh;
 	}
 
-	function ConvertMesh (threeObject, model, meshIndex, modelThreeMaterials)
+	function ConvertMesh (threeObject, model, nodeId, meshIndex, modelThreeMaterials)
 	{
 		let mesh = model.GetMesh (meshIndex);
 		if (mesh.TriangleCount () > 0) {
-			let threeMesh = CreateThreeMesh (model, meshIndex, modelThreeMaterials);
+			let threeMesh = CreateThreeMesh (model, nodeId, meshIndex, modelThreeMaterials);
 			threeObject.add (threeMesh);
 		}
 	}
@@ -302,8 +303,9 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 				OV.RunTasksBatch (node.MeshIndexCount (), 100, {
 					runTask : (firstNodeMeshIndex, lastNodeMeshIndex, ready) => {
 						for (let nodeMeshIndex = firstNodeMeshIndex; nodeMeshIndex <= lastNodeMeshIndex; nodeMeshIndex++) {
-							let meshIndex = node.GetMeshIndex (nodeMeshIndex);
-							ConvertMesh (threeNode, model, meshIndex, modelThreeMaterials);
+							const nodeId = node.GetId ();
+							const meshIndex = node.GetMeshIndex (nodeMeshIndex);
+							ConvertMesh (threeNode, model, nodeId, meshIndex, modelThreeMaterials);
 						}
 						ready ();
 					},
@@ -323,7 +325,8 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 		OV.RunTasksBatch (model.MeshCount (), 100, {
 			runTask : (firstIndex, lastIndex, ready) => {
 				for (let meshIndex = firstIndex; meshIndex <= lastIndex; meshIndex++) {
-					ConvertMesh (threeObject, model, meshIndex, modelThreeMaterials);
+					let nodeId = -1;
+					ConvertMesh (threeObject, model, nodeId, meshIndex, modelThreeMaterials);
 				}
 				ready ();
 			},

@@ -1,3 +1,18 @@
+OV.NodeIdGenerator = class
+{
+    constructor ()
+    {
+        this.nextId = 0;
+    }
+
+    GenerateId ()
+    {
+        const id = this.nextId;
+        this.nextId += 1;
+        return id;
+    }
+};
+
 OV.Node = class
 {
     constructor ()
@@ -5,13 +20,22 @@ OV.Node = class
         this.name = '';
         this.parent = null;
         this.transformation = new OV.Transformation ();
+
         this.childNodes = [];
         this.meshIndices = [];
+
+        this.idGenerator = new OV.NodeIdGenerator ();
+        this.id = this.idGenerator.GenerateId ();
     }
 
     IsEmpty ()
     {
         return this.childNodes.length === 0 && this.meshIndices.length === 0;
+    }
+
+    GetId ()
+    {
+        return this.id;
     }
 
     GetName ()
@@ -47,6 +71,8 @@ OV.Node = class
     AddChildNode (node)
     {
         node.parent = this;
+        node.idGenerator = this.idGenerator;
+        node.id = node.idGenerator.GenerateId ();
         this.childNodes.push (node);
         return this.childNodes.length - 1;
     }

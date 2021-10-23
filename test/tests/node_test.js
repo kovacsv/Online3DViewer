@@ -109,5 +109,26 @@ describe ('Node', function() {
         });
 
         assert.deepStrictEqual (enumerated, [1, 2, 3, 5, 6, 4]);
-    });    
+    });
+
+    it ('Id Generator', function () {
+        let node1 = new OV.Node ();
+        let node2 = new OV.Node ();
+        let node3 = new OV.Node ();
+        let node4 = new OV.Node ();
+        
+        assert.strictEqual (node1.GetId (), 0);
+        assert.strictEqual (node2.GetId (), 0);
+        assert.strictEqual (node3.GetId (), 0);
+        assert.strictEqual (node4.GetId (), 0);
+        
+        node1.AddChildNode (node2);
+        assert.strictEqual (node2.GetId (), 1);
+
+        node2.AddChildNode (node3);
+        assert.strictEqual (node3.GetId (), 2);
+
+        node1.AddChildNode (node4);
+        assert.strictEqual (node4.GetId (), 3);
+    });
 });
