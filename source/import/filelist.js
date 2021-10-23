@@ -62,8 +62,7 @@ OV.FileList = class
 
     GetContent (onReady)
     {
-        let taskRunner = new OV.TaskRunner ();
-        taskRunner.Run (this.files.length, {
+        OV.RunTasks (this.files.length, {
             runTask : (index, complete) => {
                 this.GetFileContent (this.files[index], complete);
             },

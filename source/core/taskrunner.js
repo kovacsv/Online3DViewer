@@ -61,3 +61,15 @@ OV.RunTaskAsync = function (task)
         task ();
     }, 0);
 };
+
+OV.RunTasks = function (count, callbacks)
+{
+    let taskRunner = new OV.TaskRunner ();
+    taskRunner.Run (count, callbacks);
+};
+
+OV.RunTaskBatch = function (count, batchCount, callbacks)
+{
+    let taskRunner = new OV.TaskRunner ();
+    taskRunner.RunBatch (count, batchCount, callbacks);
+};

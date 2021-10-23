@@ -256,8 +256,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 	}
 
 	let threeObject = new THREE.Object3D ();
-	let taskRunner = new OV.TaskRunner ();
-	taskRunner.RunBatch (model.MeshCount (), 100, {
+	OV.RunTaskBatch (model.MeshCount (), 100, {
 		runTask : (firstIndex, lastIndex, ready) => {
 			for (let meshIndex = firstIndex; meshIndex <= lastIndex; meshIndex++) {
 				let mesh = model.GetMesh (meshIndex);

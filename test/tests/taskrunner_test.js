@@ -2,9 +2,8 @@ var assert = require ('assert');
 
 describe ('Task Runner', function () {
     it ('Run task zero times', function (done) {
-        var tr = new OV.TaskRunner ();
         var numbers = [];
-        tr.Run (0, {
+        OV.RunTasks (0, {
             runTask : function (index, ready) {
                 numbers.push (index);
                 ready ();
@@ -17,9 +16,8 @@ describe ('Task Runner', function () {
     });
 
     it ('Run task three times', function (done) {
-        var tr = new OV.TaskRunner ();
         var numbers = [];
-        tr.Run (3, {
+        OV.RunTasks (3, {
             runTask : function (index, ready) {
                 numbers.push (index);
                 ready ();
@@ -32,9 +30,8 @@ describe ('Task Runner', function () {
     });
 
     it ('Run task batched', function (done) {
-        var tr = new OV.TaskRunner ();
         var indices = [];
-        tr.RunBatch (10, 3, {
+        OV.RunTaskBatch (10, 3, {
             runTask : function (firstIndex, lastIndex, ready) {
                 indices.push ([firstIndex, lastIndex]);
                 ready ();
@@ -47,9 +44,8 @@ describe ('Task Runner', function () {
     });
 
     it ('Run task batched zero times', function (done) {
-        var tr = new OV.TaskRunner ();
         var indices = [];
-        tr.RunBatch (0, 3, {
+        OV.RunTaskBatch (0, 3, {
             runTask : function (firstIndex, lastIndex, ready) {
                 indices.push ([firstIndex, lastIndex]);
                 ready ();
