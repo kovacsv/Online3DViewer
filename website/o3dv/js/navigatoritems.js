@@ -36,6 +36,11 @@ OV.MeshItem = class extends OV.TreeViewButtonItem
         });        
     }
 
+    GetMeshIndex ()
+    {
+        return this.originalIndex;
+    }
+
     IsVisible ()
     {
         return this.visible;
@@ -56,43 +61,42 @@ OV.NavigatorItems = class
 {
     constructor ()
     {
-        this.meshItems = [];
-        this.materialItems = [];
+        this.materialIndexToItem = {};
+        this.meshIndexToItem = {};
     }
 
-    MaterialCount ()
+    GetMaterialItem (materialIndex)
     {
-        return this.materialItems.length;
+        return this.materialIndexToItem[materialIndex];
     }
 
-    GetMaterialItem (index)
+    AddMaterialItem (materialIndex, materialItem)
     {
-        return this.materialItems[index];
+        this.materialIndexToItem[materialIndex] = materialItem;
     }
 
-    AddMaterialItem (materialItem)
+    GetMeshItem (meshIndex)
     {
-        this.materialItems.push (materialItem);
+        return this.meshIndexToItem[meshIndex];
     }
 
-    MeshCount ()
+    AddMeshItem (meshIndex, meshItem)
     {
-        return this.meshItems.length;
+        this.meshIndexToItem[meshIndex] = meshItem;
     }
 
-    GetMeshItem (index)
+    EnumerateMeshItems (processor)
     {
-        return this.meshItems[index];
-    }
-
-    AddMeshItem (meshItem)
-    {
-        this.meshItems.push (meshItem);
+        for (const meshItem of Object.values (this.meshIndexToItem)) {
+            if (!processor (meshItem)) {
+                break;
+            }
+        }
     }
 
     Clear ()
     {
-        this.meshItems = [];
-        this.materialItems = [];
+        this.materialItems = {};
+        this.meshItems = {};
     }
 };

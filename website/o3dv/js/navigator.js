@@ -173,39 +173,39 @@ OV.Navigator = class
 
         let materialsItem = new OV.TreeViewGroupItem ('Materials', 'materials');
         this.treeView.AddItem (materialsItem);
-        for (let i = 0; i < model.MaterialCount (); i++) {
-            let material = model.GetMaterial (i);
+        for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
+            let material = model.GetMaterial (materialIndex);
             let materialName = OV.GetMaterialName (material.name);
-            let materialItem = new OV.MaterialItem (materialName, i, {
+            let materialItem = new OV.MaterialItem (materialName, materialIndex, {
                 onSelected : (materialIndex) => {
                     this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                 }
             });
-            this.navigatorItems.AddMaterialItem (materialItem);
+            this.navigatorItems.AddMaterialItem (materialIndex, materialItem);
             materialsItem.AddChild (materialItem);
         }
 
         let meshesItem = new OV.TreeViewGroupItem ('Meshes', 'meshes');
         this.treeView.AddItem (meshesItem);
         meshesItem.ShowChildren (true, null);
-        for (let i = 0; i < model.MeshCount (); i++) {
-            let mesh = model.GetMesh (i);
+        for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
+            let mesh = model.GetMesh (meshIndex);
             let meshName = OV.GetMeshName (mesh.GetName ());
-            let meshItem = new OV.MeshItem (meshName, i, {
-                onShowHide : (meshIndex) => {
-                    this.ToggleMeshVisibility (meshIndex);
+            let meshItem = new OV.MeshItem (meshName, meshIndex, {
+                onShowHide : (selectedMeshIndex) => {
+                    this.ToggleMeshVisibility (selectedMeshIndex);
                 },
-                onIsolate : (meshIndex) => {
-                    this.IsolateMesh (meshIndex);
+                onIsolate : (selectedMeshIndex) => {
+                    this.IsolateMesh (selectedMeshIndex);
                 },                
-                onFitToWindow : (meshIndex) => {
-                    this.FitMeshToWindow (meshIndex);
+                onFitToWindow : (selectedMeshIndex) => {
+                    this.FitMeshToWindow (selectedMeshIndex);
                 },
-                onSelected : (meshIndex) => {
-                    this.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshIndex));
+                onSelected : (selectedMeshIndex) => {
+                    this.SetSelection (new OV.Selection (OV.SelectionType.Mesh, selectedMeshIndex));
                 }
             });
-            this.navigatorItems.AddMeshItem (meshItem);
+            this.navigatorItems.AddMeshItem (meshIndex, meshItem);
             meshesItem.AddChild (meshItem);
         }
 
@@ -213,11 +213,6 @@ OV.Navigator = class
         this.Resize ();
     }
 
-    MeshCount ()
-    {
-        return this.navigatorItems.MeshCount ();
-    }
-    
     IsMeshVisible (meshIndex)
     {
         let meshItem = this.navigatorItems.GetMeshItem (meshIndex);
@@ -226,21 +221,23 @@ OV.Navigator = class
 
     HasHiddenMesh ()
     {
-        for (let i = 0; i < this.navigatorItems.MeshCount (); i++) {
-            let meshItem = this.navigatorItems.GetMeshItem (i);
+        let hasHiddenMesh = false;
+        this.navigatorItems.EnumerateMeshItems ((meshItem) => {
             if (!meshItem.IsVisible ()) {
-                return true;
+                hasHiddenMesh = true;
+                return false;
             }
-        }
-        return false;
+            return true;
+        });
+        return hasHiddenMesh;
     }
 
     ShowAllMeshes ()
     {
-        for (let i = 0; i < this.navigatorItems.MeshCount (); i++) {
-            let meshItem = this.navigatorItems.GetMeshItem (i);
+        this.navigatorItems.EnumerateMeshItems ((meshItem) => {
             meshItem.SetVisible (true);
-        }
+            return true;
+        });
         this.callbacks.updateMeshesVisibility ();
     }
 
@@ -253,26 +250,28 @@ OV.Navigator = class
 
     IsMeshIsolated (meshIndex)
     {
-        for (let i = 0; i < this.navigatorItems.MeshCount (); i++) {
-            let meshItem = this.navigatorItems.GetMeshItem (i);
-            if (i !== meshIndex && meshItem.IsVisible ()) {
+        let isIsolated = true;
+        this.navigatorItems.EnumerateMeshItems ((meshItem) => {
+            if (meshItem.GetMeshIndex () !== meshIndex && meshItem.IsVisible ()) {
+                isIsolated = false;
                 return false;
             }
-        }
-        return true;
+            return true;
+        });
+        return isIsolated;
     }
 
     IsolateMesh (meshIndex)
     {
         let isIsolated = this.IsMeshIsolated (meshIndex);
-        for (let i = 0; i < this.navigatorItems.MeshCount (); i++) {
-            let meshItem = this.navigatorItems.GetMeshItem (i);
-            if (i === meshIndex || isIsolated) {
+        this.navigatorItems.EnumerateMeshItems ((meshItem) => {
+            if (meshItem.GetMeshIndex () === meshIndex || isIsolated) {
                 meshItem.SetVisible (true);
             } else {
                 meshItem.SetVisible (false);
             }
-        }
+            return true;
+        });
         this.callbacks.updateMeshesVisibility ();
     }
 
