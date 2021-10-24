@@ -10,4 +10,9 @@ OV.MeshInstanceId = class
     {
         return this.nodeId === rhs.nodeId && this.meshIndex === rhs.meshIndex;
     }
+
+    GetKey ()
+    {
+        return this.nodeId.toString () + ':' + this.meshIndex.toString ();
+    }
 };
