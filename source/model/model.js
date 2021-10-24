@@ -1,3 +1,17 @@
+OV.MeshInstanceId = class
+{
+    constructor (nodeId, meshIndex)
+    {
+        this.nodeId = nodeId;
+        this.meshIndex = meshIndex;
+    }
+
+    IsEqual (rhs)
+    {
+        return this.nodeId === rhs.nodeId && this.meshIndex === rhs.meshIndex;
+    }
+};
+
 OV.Model = class extends OV.Element
 {
     constructor ()

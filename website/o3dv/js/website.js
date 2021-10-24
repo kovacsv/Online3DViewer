@@ -148,7 +148,7 @@ OV.Website = class
             if (meshUserData === null) {
                 this.navigator.SetSelection (null);
             } else {
-                this.navigator.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshUserData.originalMeshIndex));
+                this.navigator.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshUserData.originalMeshId.meshIndex));
             }
         }
     }
@@ -175,7 +175,7 @@ OV.Website = class
                 });
             }
         } else {
-            let meshIndex = meshUserData.originalMeshIndex;
+            let meshIndex = meshUserData.originalMeshId.meshIndex;
             items.push ({
                 name : 'Hide mesh',
                 icon : 'hidden',
@@ -242,7 +242,7 @@ OV.Website = class
     {
         let animation = !onLoad;
         let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
-            return this.navigator.IsMeshVisible (meshUserData.originalMeshIndex);
+            return this.navigator.IsMeshVisible (meshUserData.originalMeshId.meshIndex);
         });
         if (onLoad) {
             this.viewer.AdjustClippingPlanesToSphere (boundingSphere);
@@ -253,7 +253,7 @@ OV.Website = class
     FitMeshToWindow (meshIndex)
     {
         let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
-            return meshUserData.originalMeshIndex === meshIndex;
+            return meshUserData.originalMeshId.meshIndex === meshIndex;
         });        
         this.viewer.FitSphereToWindow (boundingSphere, true);
     }
@@ -261,7 +261,7 @@ OV.Website = class
     UpdateMeshesVisibility ()
     {
         this.viewer.SetMeshesVisibility ((meshUserData) => {
-            return this.navigator.IsMeshVisible (meshUserData.originalMeshIndex);
+            return this.navigator.IsMeshVisible (meshUserData.originalMeshId.meshIndex);
         });
     }
 
@@ -269,7 +269,7 @@ OV.Website = class
     {
         let selectedMeshIndex = this.navigator.GetSelectedMeshIndex ();
         this.viewer.SetMeshesHighlight (this.highlightMaterial, (meshUserData) => {
-            if (meshUserData.originalMeshIndex === selectedMeshIndex) {
+            if (meshUserData.originalMeshId.meshIndex === selectedMeshIndex) {
                 return true;
             }
             return false;
@@ -617,7 +617,7 @@ OV.Website = class
         {
             let userData = null;
             viewer.EnumerateMeshesUserData ((meshUserData) => {
-                if (meshUserData.originalMeshIndex === meshIndex) {
+                if (meshUserData.originalMeshId.meshIndex === meshIndex) {
                     userData = meshUserData;
                 }
             });
@@ -629,9 +629,9 @@ OV.Website = class
             let usedByMeshes = [];
             viewer.EnumerateMeshesUserData ((meshUserData) => {
                 if (meshUserData.originalMaterials.indexOf (materialIndex) !== -1) {
-                    const mesh = model.GetMesh (meshUserData.originalMeshIndex);
+                    const mesh = model.GetMesh (meshUserData.originalMeshId.meshIndex);
                     usedByMeshes.push ({
-                        index : meshUserData.originalMeshIndex,
+                        index : meshUserData.originalMeshId.meshIndex,
                         name : mesh.GetName ()
                     });
                 }
