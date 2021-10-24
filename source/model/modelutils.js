@@ -1,3 +1,17 @@
+OV.MeshInstanceId = class
+{
+    constructor (nodeId, meshIndex)
+    {
+        this.nodeId = nodeId;
+        this.meshIndex = meshIndex;
+    }
+
+    IsEqual (rhs)
+    {
+        return this.nodeId === rhs.nodeId && this.meshIndex === rhs.meshIndex;
+    }
+};
+
 OV.CalculateTriangleNormal = function (v0, v1, v2)
 {
     let v = OV.SubCoord3D (v1, v0);
