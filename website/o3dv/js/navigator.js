@@ -121,7 +121,7 @@ OV.Navigator = class
         this.infoDiv = $('<div>').addClass ('ov_navigator_info_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
         this.treeView = new OV.TreeView (this.treeDiv);
         this.infoPanel = new OV.NavigatorInfoPanel (this.infoDiv);
-        this.navigatorTree = new OV.NavigatorTree ();
+        this.navigatorItems = new OV.NavigatorItems ();
         this.selection = null;
         this.tempSelectedMeshIndex = null;
     }
@@ -181,7 +181,7 @@ OV.Navigator = class
                     this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                 }
             });
-            this.navigatorTree.AddMaterialItem (materialItem);
+            this.navigatorItems.AddMaterialItem (materialItem);
             materialsItem.AddChild (materialItem);
         }
 
@@ -205,7 +205,7 @@ OV.Navigator = class
                     this.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshIndex));
                 }
             });
-            this.navigatorTree.AddMeshItem (meshItem);
+            this.navigatorItems.AddMeshItem (meshItem);
             meshesItem.AddChild (meshItem);
         }
 
@@ -215,19 +215,19 @@ OV.Navigator = class
 
     MeshCount ()
     {
-        return this.navigatorTree.MeshCount ();
+        return this.navigatorItems.MeshCount ();
     }
     
     IsMeshVisible (meshIndex)
     {
-        let meshItem = this.navigatorTree.GetMeshItem (meshIndex);
+        let meshItem = this.navigatorItems.GetMeshItem (meshIndex);
         return meshItem.IsVisible ();
     }
 
     HasHiddenMesh ()
     {
-        for (let i = 0; i < this.navigatorTree.MeshCount (); i++) {
-            let meshItem = this.navigatorTree.GetMeshItem (i);
+        for (let i = 0; i < this.navigatorItems.MeshCount (); i++) {
+            let meshItem = this.navigatorItems.GetMeshItem (i);
             if (!meshItem.IsVisible ()) {
                 return true;
             }
@@ -237,8 +237,8 @@ OV.Navigator = class
 
     ShowAllMeshes ()
     {
-        for (let i = 0; i < this.navigatorTree.MeshCount (); i++) {
-            let meshItem = this.navigatorTree.GetMeshItem (i);
+        for (let i = 0; i < this.navigatorItems.MeshCount (); i++) {
+            let meshItem = this.navigatorItems.GetMeshItem (i);
             meshItem.SetVisible (true);
         }
         this.callbacks.updateMeshesVisibility ();
@@ -246,15 +246,15 @@ OV.Navigator = class
 
     ToggleMeshVisibility (meshIndex)
     {
-        let meshItem = this.navigatorTree.GetMeshItem (meshIndex);
+        let meshItem = this.navigatorItems.GetMeshItem (meshIndex);
         meshItem.SetVisible (!meshItem.IsVisible ());
         this.callbacks.updateMeshesVisibility ();
     }
 
     IsMeshIsolated (meshIndex)
     {
-        for (let i = 0; i < this.navigatorTree.MeshCount (); i++) {
-            let meshItem = this.navigatorTree.GetMeshItem (i);
+        for (let i = 0; i < this.navigatorItems.MeshCount (); i++) {
+            let meshItem = this.navigatorItems.GetMeshItem (i);
             if (i !== meshIndex && meshItem.IsVisible ()) {
                 return false;
             }
@@ -265,8 +265,8 @@ OV.Navigator = class
     IsolateMesh (meshIndex)
     {
         let isIsolated = this.IsMeshIsolated (meshIndex);
-        for (let i = 0; i < this.navigatorTree.MeshCount (); i++) {
-            let meshItem = this.navigatorTree.GetMeshItem (i);
+        for (let i = 0; i < this.navigatorItems.MeshCount (); i++) {
+            let meshItem = this.navigatorItems.GetMeshItem (i);
             if (i === meshIndex || isIsolated) {
                 meshItem.SetVisible (true);
             } else {
@@ -298,9 +298,9 @@ OV.Navigator = class
         function SetEntitySelection (obj, selection, select)
         {
             if (selection.type === OV.SelectionType.Material) {
-                obj.navigatorTree.GetMaterialItem (selection.index).SetSelected (select);
+                obj.navigatorItems.GetMaterialItem (selection.index).SetSelected (select);
             } else if (selection.type === OV.SelectionType.Mesh) {
-                obj.navigatorTree.GetMeshItem (selection.index).SetSelected (select);
+                obj.navigatorItems.GetMeshItem (selection.index).SetSelected (select);
             }           
         }
 
@@ -375,7 +375,7 @@ OV.Navigator = class
         this.titleDiv.empty ();
         this.treeView.Clear ();
         this.infoPanel.Clear ();
-        this.navigatorTree.Clear ();
+        this.navigatorItems.Clear ();
         this.selection = null;
     }
 };

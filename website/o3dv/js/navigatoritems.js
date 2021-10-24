@@ -52,7 +52,7 @@ OV.MeshItem = class extends OV.TreeViewButtonItem
     }
 };
 
-OV.NavigatorTree = class
+OV.NavigatorItems = class
 {
     constructor ()
     {
