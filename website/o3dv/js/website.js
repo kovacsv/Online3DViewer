@@ -695,10 +695,10 @@ OV.Website = class
                 return GetMaterialsForModel (this.model);
             },
             onModelSelected : () => {
-                this.detailsPanel.AddElementProperties (this.model);
+                this.detailsPanel.AddObject3DProperties (this.model);
             },
             onMeshSelected : (meshIndex) => {
-                this.detailsPanel.AddElementProperties (this.model.GetMesh (meshIndex));
+                this.detailsPanel.AddObject3DProperties (this.model.GetMesh (meshIndex));
             },
             onMaterialSelected : (materialIndex) => {
                 this.detailsPanel.AddMaterialProperties (this.model.GetMaterial (materialIndex));

@@ -86,6 +86,15 @@ describe ('Model Utils', function () {
         assert (OV.CoordIsEqual3D (cubeBounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
     });
 
+    it ('Mesh Instance Bounding Box', function () {
+        let cube = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
+        let transformation = new OV.Transformation (new OV.Matrix ().CreateTranslation (2.0, 0.0, 0.0));
+        let cubeInstance = new OV.MeshInstance (cube, transformation);
+        let cubeInstanceBounds = OV.GetBoundingBox (cubeInstance);
+        assert (OV.CoordIsEqual3D (cubeInstanceBounds.min, new OV.Coord3D (2.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (cubeInstanceBounds.max, new OV.Coord3D (3.0, 1.0, 1.0)));
+    });    
+
     it ('Model Bounding Box', function () {
         var model = new OV.Model ();
         

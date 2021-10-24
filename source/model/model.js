@@ -12,7 +12,7 @@ OV.MeshInstanceId = class
     }
 };
 
-OV.Model = class extends OV.Element
+OV.Model = class extends OV.ModelObject3D
 {
     constructor ()
     {

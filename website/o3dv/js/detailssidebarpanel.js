@@ -10,35 +10,35 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
         return 'Details';
     }
 
-    AddElementProperties (element)
+    AddObject3DProperties (object3D)
     {
         this.Clear ();
         let table = $('<div>').addClass ('ov_property_table').appendTo (this.contentDiv);
-        let boundingBox = OV.GetBoundingBox (element);
+        let boundingBox = OV.GetBoundingBox (object3D);
         let size = OV.SubCoord3D (boundingBox.max, boundingBox.min);
-        this.AddProperty (table, new OV.Property (OV.PropertyType.Integer, 'Vertex Count', element.VertexCount ()));
-        this.AddProperty (table, new OV.Property (OV.PropertyType.Integer, 'Triangle Count', element.TriangleCount ()));
+        this.AddProperty (table, new OV.Property (OV.PropertyType.Integer, 'Vertex Count', object3D.VertexCount ()));
+        this.AddProperty (table, new OV.Property (OV.PropertyType.Integer, 'Triangle Count', object3D.TriangleCount ()));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Number, 'Size X', size.x));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Number, 'Size Y', size.y));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Number, 'Size Z', size.z));
         this.AddCalculatedProperty (table, 'Volume', () => {
-            const volume = OV.CalculateVolume (element);
+            const volume = OV.CalculateVolume (object3D);
             if (volume === null) {
                 return null;
             }
             return new OV.Property (OV.PropertyType.Number, null, volume);
         });
         this.AddCalculatedProperty (table, 'Surface Area', () => {
-            const volume = OV.CalculateSurfaceArea (element);
+            const volume = OV.CalculateSurfaceArea (object3D);
             if (volume === null) {
                 return null;
             }
             return new OV.Property (OV.PropertyType.Number, null, volume);
         });
-        if (element.PropertyGroupCount () > 0) {
+        if (object3D.PropertyGroupCount () > 0) {
             let customTable = $('<div>').addClass ('ov_property_table ov_property_table_custom').appendTo (this.contentDiv);
-            for (let i = 0; i < element.PropertyGroupCount (); i++) {
-                const propertyGroup = element.GetPropertyGroup (i);
+            for (let i = 0; i < object3D.PropertyGroupCount (); i++) {
+                const propertyGroup = object3D.GetPropertyGroup (i);
                 this.AddPropertyGroup (customTable, propertyGroup);
                 for (let j = 0; j < propertyGroup.PropertyCount (); j++) {
                     const property = propertyGroup.GetProperty (j);

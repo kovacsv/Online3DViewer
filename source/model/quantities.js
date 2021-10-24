@@ -16,22 +16,22 @@ OV.GetTetrahedronSignedVolume = function (v0, v1, v2)
     return OV.DotVector3D (v0, OV.CrossVector3D (v1, v2)) / 6.0;
 };
 
-OV.CalculateVolume = function (element)
+OV.CalculateVolume = function (object3D)
 {
-    if (!OV.IsSolid (element)) {
+    if (!OV.IsSolid (object3D)) {
         return null;
     }
     let volume = 0.0;
-    element.EnumerateTriangleVertices ((v0, v1, v2) => {
+    object3D.EnumerateTriangleVertices ((v0, v1, v2) => {
         volume += OV.GetTetrahedronSignedVolume (v0, v1, v2);
     });
     return volume;
 };
 
-OV.CalculateSurfaceArea = function (element)
+OV.CalculateSurfaceArea = function (object3D)
 {
     let surface = 0.0;
-    element.EnumerateTriangleVertices ((v0, v1, v2) => {
+    object3D.EnumerateTriangleVertices ((v0, v1, v2) => {
         surface += OV.GetTriangleArea (v0, v1, v2);
     });
     return surface;

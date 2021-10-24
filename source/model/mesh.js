@@ -1,4 +1,4 @@
-OV.Mesh = class extends OV.Element
+OV.Mesh = class extends OV.ModelObject3D
 {
     constructor ()
     {
