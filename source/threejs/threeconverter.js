@@ -302,7 +302,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 				OV.RunTasksBatch (node.MeshIndexCount (), 100, {
 					runTask : (firstNodeMeshIndex, lastNodeMeshIndex, ready) => {
 						for (let nodeMeshIndex = firstNodeMeshIndex; nodeMeshIndex <= lastNodeMeshIndex; nodeMeshIndex++) {
-							let meshInstanceId = new OV.MeshInstanceId (node.GetId (), node.GetMeshIndex (lastNodeMeshIndex));
+							let meshInstanceId = new OV.MeshInstanceId (node.GetId (), node.GetMeshIndex (nodeMeshIndex));
 							ConvertMesh (threeNode, model, meshInstanceId, modelThreeMaterials);
 						}
 						ready ();
