@@ -37,6 +37,7 @@
 		"source/model/modelfinalization.js",
 		"source/model/quantities.js",
 		"source/model/generator.js",
+		"source/model/meshinstanceid.js",
 		"source/import/importerutils.js",
 		"source/import/importerbase.js",
 		"source/import/importerobj.js",
