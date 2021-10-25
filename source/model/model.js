@@ -116,6 +116,37 @@ OV.Model = class extends OV.ModelObject3D
         }
     }
 
+    EnumerateMeshInstances (onMeshInstance)
+    {
+        function EnumerateNodeMeshInstances (model, node, transformation, onMeshInstance)
+        {
+            let nodeTransformation = node.GetTransformation ().Clone ();
+            nodeTransformation.Append (transformation);
+
+            for (let childNode of node.GetChildNodes ()) {
+                EnumerateNodeMeshInstances (model, childNode, nodeTransformation, onMeshInstance);
+            }
+
+            for (let meshIndex of node.GetMeshIndices ()) {
+                let mesh = model.GetMesh (meshIndex);
+                let meshInstance = new OV.MeshInstance (mesh, nodeTransformation);
+                onMeshInstance (meshInstance);
+            }
+        }
+
+        let transformation = new OV.Transformation ();
+        EnumerateNodeMeshInstances (this, this.root, transformation, onMeshInstance);
+    }
+
+    EnumerateTransformedMeshInstances (onMesh)
+    {
+        this.EnumerateMeshInstances ((meshInstance) => {
+            const mesh = OV.CloneMesh (meshInstance.mesh);
+            OV.TransformMesh (mesh, meshInstance.transformation);
+            onMesh (mesh);
+        });
+    }
+
     EnumerateVertices (onVertex)
     {
         for (const mesh of this.meshes) {
@@ -123,10 +154,10 @@ OV.Model = class extends OV.ModelObject3D
         }
     }
 
-    EnumerateTriangles (onTriangle)
+    EnumerateTriangleVertexIndices (onTriangleVertexIndices)
     {
         for (const mesh of this.meshes) {
-            mesh.EnumerateTriangles (onTriangle);
+            mesh.EnumerateTriangleVertexIndices (onTriangleVertexIndices);
         }
     }
 
@@ -135,5 +166,5 @@ OV.Model = class extends OV.ModelObject3D
         for (const mesh of this.meshes) {
             mesh.EnumerateTriangleVertices (onTriangleVertices);
         }
-    }    
+    }
 };

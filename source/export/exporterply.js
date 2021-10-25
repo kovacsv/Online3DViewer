@@ -49,7 +49,6 @@ OV.ExporterPly = class extends OV.ExporterBase
 		let plyFile = new OV.ExportedFile ('model.ply');
 		files.push (plyFile);
 
-
 		let vertexCount = model.VertexCount ();
 		let triangleCount = model.TriangleCount ();
 		let headerText = this.GetHeaderText ('binary_little_endian', vertexCount, triangleCount);

@@ -279,6 +279,48 @@ function CreateHierarchicalModel ()
     return model;
 }
 
+function CreateTranslatedRotatedCubesModel ()
+{
+    /*
+        + <Root>
+            + Translated
+                Cube
+            + Rotated
+                + Translated and Rotated
+                    Cube
+            Cube
+    */
+
+    let model = new OV.Model ();
+
+    let mesh = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
+    mesh.SetName ('Cube');
+    let meshIndex = model.AddMesh (mesh);
+
+    let root = model.GetRootNode ();
+    root.AddMeshIndex (0);
+
+    let translatedNode = new OV.Node ();
+    translatedNode.SetName ('Translated');
+    translatedNode.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateTranslation (2.0, 0.0, 0.0)));
+    translatedNode.AddMeshIndex (0);
+
+    let rotatedNode = new OV.Node ();
+    rotatedNode.SetName ('Rotated');
+    rotatedNode.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateRotation (0.0, 0.0, 0.7071067811865475, 0.7071067811865476)));
+
+    let translatedRotatedNode = new OV.Node ();
+    translatedRotatedNode.SetName ('Translated and Rotated');
+    translatedRotatedNode.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateTranslation (2.0, 0.0, 0.0)));
+    translatedRotatedNode.AddMeshIndex (0);
+
+    root.AddChildNode (translatedNode);
+    root.AddChildNode (rotatedNode);
+    rotatedNode.AddChildNode (translatedRotatedNode);
+
+    return model;
+}
+
 function GetModelTree (model)
 {
     function AddNodeToModelTree (model, node, modelTree)
@@ -401,5 +443,99 @@ describe ('Node Hierarchy', function () {
             ],
             meshNames : ['Mesh 1', 'Mesh 2']
         });
-    });  
+    });
+
+    it ('Enumerate mesh instances', function () {
+        let model = CreateTranslatedRotatedCubesModel ();
+        let modelTree = GetModelTree (model);
+        assert.deepStrictEqual (modelTree, {
+            name : '<Root>',
+            childNodes : [
+                {
+                    name : 'Translated',
+                    childNodes : [],
+                    meshNames : ['Cube']
+                },
+                {
+                    name : 'Rotated',
+                    childNodes : [
+                        {
+                            name : 'Translated and Rotated',
+                            childNodes : [],
+                            meshNames : ['Cube']
+                        }
+                    ],
+                    meshNames : []
+                }                
+            ],
+            meshNames : ['Cube']
+        });
+
+        let meshInstances = [];
+        model.EnumerateMeshInstances ((meshInstance) => {
+            meshInstances.push (meshInstance);
+        });
+
+        assert.strictEqual (meshInstances.length, 3);
+
+        let boundingBox1 = OV.GetBoundingBox (meshInstances[0]);
+        let boundingBox2 = OV.GetBoundingBox (meshInstances[1]);
+        let boundingBox3 = OV.GetBoundingBox (meshInstances[2]);
+
+        assert (OV.CoordIsEqual3D (boundingBox1.min, new OV.Coord3D (2.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox1.max, new OV.Coord3D (3.0, 1.0, 1.0)));
+
+        assert (OV.CoordIsEqual3D (boundingBox2.min, new OV.Coord3D (-1.0, 2.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox2.max, new OV.Coord3D (0.0, 3.0, 1.0)));
+
+        assert (OV.CoordIsEqual3D (boundingBox3.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox3.max, new OV.Coord3D (1.0, 1.0, 1.0)));
+    });
+
+    it ('Enumerate transformed mesh instances', function () {
+        let model = CreateTranslatedRotatedCubesModel ();
+        let modelTree = GetModelTree (model);
+        assert.deepStrictEqual (modelTree, {
+            name : '<Root>',
+            childNodes : [
+                {
+                    name : 'Translated',
+                    childNodes : [],
+                    meshNames : ['Cube']
+                },
+                {
+                    name : 'Rotated',
+                    childNodes : [
+                        {
+                            name : 'Translated and Rotated',
+                            childNodes : [],
+                            meshNames : ['Cube']
+                        }
+                    ],
+                    meshNames : []
+                }                
+            ],
+            meshNames : ['Cube']
+        });
+
+        let meshes = [];
+        model.EnumerateTransformedMeshInstances ((mesh) => {
+            meshes.push (mesh);
+        });
+
+        assert.strictEqual (meshes.length, 3);
+
+        let boundingBox1 = OV.GetBoundingBox (meshes[0]);
+        let boundingBox2 = OV.GetBoundingBox (meshes[1]);
+        let boundingBox3 = OV.GetBoundingBox (meshes[2]);
+
+        assert (OV.CoordIsEqual3D (boundingBox1.min, new OV.Coord3D (2.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox1.max, new OV.Coord3D (3.0, 1.0, 1.0)));
+
+        assert (OV.CoordIsEqual3D (boundingBox2.min, new OV.Coord3D (-1.0, 2.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox2.max, new OV.Coord3D (0.0, 3.0, 1.0)));
+
+        assert (OV.CoordIsEqual3D (boundingBox3.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox3.max, new OV.Coord3D (1.0, 1.0, 1.0)));
+    });    
 });

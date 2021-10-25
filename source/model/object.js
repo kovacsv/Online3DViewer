@@ -30,7 +30,7 @@ OV.Object3D = class
 
     }
 
-    EnumerateTriangles (onTriangle)
+    EnumerateTriangleVertexIndices (onTriangleVertexIndices)
     {
 
     }

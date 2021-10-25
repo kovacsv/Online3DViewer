@@ -95,10 +95,10 @@ OV.Mesh = class extends OV.ModelObject3D
         }
     }
 
-    EnumerateTriangles (onTriangle)
+    EnumerateTriangleVertexIndices (onTriangleVertexIndices)
     {
         for (const triangle of this.triangles) {
-            onTriangle (triangle);
+            onTriangleVertexIndices (triangle.v0, triangle.v1, triangle.v2);
         }
     }
 

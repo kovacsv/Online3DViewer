@@ -29,24 +29,32 @@ OV.MeshInstance = class extends OV.Object3D
 
     EnumerateVertices (onVertex)
     {
-        this.mesh.EnumerateVertices ((vertex) => {
-            const transformed = this.transformation.TransformCoord3D (vertex);
-            onVertex (transformed);
-        });
+        if (this.transformation.IsIdentity ()) {
+            this.mesh.EnumerateVertices (onVertex);
+        } else {
+            this.mesh.EnumerateVertices ((vertex) => {
+                const transformed = this.transformation.TransformCoord3D (vertex);
+                onVertex (transformed);
+            });
+        }
     }
 
-    EnumerateTriangles (onTriangle)
+    EnumerateTriangleVertexIndices (onTriangleVertexIndices)
     {
-        this.mesh.EnumerateTriangles (onTriangle);
+        this.mesh.EnumerateTriangleVertexIndices (onTriangleVertexIndices);
     }
 
     EnumerateTriangleVertices (onTriangleVertices)
     {
-        this.mesh.EnumerateTriangleVertices ((v0, v1, v2) => {
-            const v0Transformed = this.transformation.TransformCoord3D (v0);
-            const v1Transformed = this.transformation.TransformCoord3D (v1);
-            const v2Transformed = this.transformation.TransformCoord3D (v2);
-            onTriangleVertices (v0Transformed, v1Transformed, v2Transformed);
-        });
+        if (this.transformation.IsIdentity ()) {
+            this.mesh.EnumerateTriangleVertices (onTriangleVertices);
+        } else {
+            this.mesh.EnumerateTriangleVertices ((v0, v1, v2) => {
+                const v0Transformed = this.transformation.TransformCoord3D (v0);
+                const v1Transformed = this.transformation.TransformCoord3D (v1);
+                const v2Transformed = this.transformation.TransformCoord3D (v2);
+                onTriangleVertices (v0Transformed, v1Transformed, v2Transformed);
+            });
+        }
     }
 };

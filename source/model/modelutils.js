@@ -158,8 +158,8 @@ OV.EnumerateModelVerticesAndTriangles = function (model, callbacks)
     });
     let vertexOffset = 0;
     model.EnumerateMeshes ((mesh) => {
-        mesh.EnumerateTriangles ((triangle) => {
-            callbacks.onTriangle (triangle.v0 + vertexOffset, triangle.v1 + vertexOffset, triangle.v2 + vertexOffset);
+        mesh.EnumerateTriangleVertexIndices ((v0, v1, v2) => {
+            callbacks.onTriangle (v0 + vertexOffset, v1 + vertexOffset, v2 + vertexOffset);
         });
         vertexOffset += mesh.VertexCount ();
     });
