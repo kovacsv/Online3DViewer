@@ -13,22 +13,22 @@ OV.Mesh = class extends OV.ModelObject3D
     {
         return this.vertices.length;
     }
-    
+
     NormalCount ()
     {
         return this.normals.length;
     }
-    
+
     TextureUVCount ()
     {
         return this.uvs.length;
     }
-    
+
     TriangleCount ()
     {
         return this.triangles.length;
     }
-    
+
     AddVertex (vertex)
     {
         this.vertices.push (vertex);
@@ -39,12 +39,12 @@ OV.Mesh = class extends OV.ModelObject3D
     {
         this.vertices[index] = vertex;
     }
-    
+
     GetVertex (index)
     {
         return this.vertices[index];
     }
-    
+
     AddNormal (normal)
     {
         this.normals.push (normal);
@@ -60,7 +60,7 @@ OV.Mesh = class extends OV.ModelObject3D
     {
         return this.normals[index];
     }
-    
+
     AddTextureUV (uv)
     {
         this.uvs.push (uv);
@@ -71,18 +71,18 @@ OV.Mesh = class extends OV.ModelObject3D
     {
         this.uvs[index] = uv;
     }
-    
+
     GetTextureUV (index)
     {
         return this.uvs[index];
     }
-    
+
     AddTriangle (triangle)
     {
         this.triangles.push (triangle);
         return this.triangles.length - 1;
     }
-    
+
     GetTriangle (index)
     {
         return this.triangles[index];
@@ -110,5 +110,5 @@ OV.Mesh = class extends OV.ModelObject3D
             let v2 = this.vertices[triangle.v2];
             onTriangleVertices (v0, v1, v2);
         }
-    }     
+    }
 };

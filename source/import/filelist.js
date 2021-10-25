@@ -115,7 +115,7 @@ OV.FileList = class
     {
         this.files.push (file);
     }
-    
+
     GetFileContent (file, complete)
     {
         if (file.content !== null) {

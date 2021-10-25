@@ -12,7 +12,7 @@ OV.TransformMesh = function (mesh, transformation)
     if (transformation.IsIdentity ()) {
         return;
     }
-    
+
     for (let i = 0; i < mesh.VertexCount (); i++) {
         let vertex = mesh.GetVertex (i);
         let transformed = transformation.TransformCoord3D (vertex);
@@ -80,7 +80,7 @@ OV.CloneMesh = function (mesh)
     for (let i = 0; i < mesh.TriangleCount (); i++) {
         let triangle = mesh.GetTriangle (i);
         cloned.AddTriangle (triangle.Clone ());
-    }  
+    }
 
     return cloned;
 };
@@ -197,7 +197,7 @@ OV.GetTopology = function (object3D)
     let boundingBox = OV.GetBoundingBox (object3D);
     let octree = new OV.Octree (boundingBox);
     let topology = new OV.Topology ();
-    
+
     object3D.EnumerateTriangleVertices ((v0, v1, v2) => {
         let v0Index = GetVertexIndex (v0, octree, topology);
         let v1Index = GetVertexIndex (v1, octree, topology);

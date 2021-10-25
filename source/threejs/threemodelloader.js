@@ -26,7 +26,7 @@ OV.ThreeModelLoader = class
             this.OnFilesLoaded (settings);
         });
     }
-    
+
     LoadFromFileList (files, settings)
     {
         if (this.inProgress) {
@@ -39,7 +39,7 @@ OV.ThreeModelLoader = class
             this.OnFilesLoaded (settings);
         });
     }
-    
+
     OnFilesLoaded (settings)
     {
         this.callbacks.onImportStart ();

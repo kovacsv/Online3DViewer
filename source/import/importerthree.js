@@ -22,7 +22,7 @@ OV.ThreeLoader = class
 
     EnumerateMeshes (loadedObject, processor)
     {
-        
+
     }
 
     GetUpDirection ()
@@ -234,8 +234,8 @@ OV.ImporterThree = class extends OV.ImporterBase
     GetUpDirection ()
     {
         return this.loader.GetUpDirection ();
-    }    
-    
+    }
+
     ClearContent ()
     {
         this.loader = null;
@@ -265,7 +265,7 @@ OV.ImporterThree = class extends OV.ImporterBase
             onFinish ();
             return;
         }
-        
+
         const libraries = this.loader.GetExternalLibraries ();
         if (libraries === null) {
             onFinish ();
@@ -273,7 +273,7 @@ OV.ImporterThree = class extends OV.ImporterBase
         }
 
         LoadLibraries (libraries, () => {
-            this.LoadModel (fileContent, onFinish);    
+            this.LoadModel (fileContent, onFinish);
         }, () => {
             onFinish ();
         });
@@ -351,7 +351,7 @@ OV.ImporterThree = class extends OV.ImporterBase
                     parseInt (threeColor.b * 255.0, 10)
                 );
             }
-        
+
             function CreateTexture (threeMap, externalFileNames)
             {
                 function GetDataUrl (img)
@@ -361,7 +361,7 @@ OV.ImporterThree = class extends OV.ImporterBase
                         let imageSize = img.width * img.height * 4;
                         for (let i = 0; i < imageSize; i++) {
                             imageData.data[i] = img.data[i];
-                        }                        
+                        }
                         return THREE.ImageUtils.getDataURL (imageData);
                     } else {
                         return THREE.ImageUtils.getDataURL (threeMap.image);

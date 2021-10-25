@@ -59,13 +59,13 @@ OV.Importer3ds = class extends OV.ImporterBase
     GetUpDirection ()
     {
         return OV.Direction.Z;
-    }    
+    }
 
     ClearContent ()
     {
         this.materialNameToIndex = null;
         this.meshNameToIndex = null;
-    
+
         this.meshTransformations = null;
         this.defaultMaterialIndex = null;
     }
@@ -95,7 +95,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             } else {
                 this.SkipChunk (reader, chunkLength);
             }
-        });        
+        });
     }
 
     ReadMainChunk (reader, length)
@@ -191,7 +191,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             }
         });
         return texture;
-    }    
+    }
 
     ReadColorChunk (reader, length)
     {
@@ -355,7 +355,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             }
         }
     }
-    
+
     ReadFaceSmoothingGroupsChunk (mesh, faceCount, reader)
     {
         for (let i = 0; i < faceCount; i++) {
@@ -412,7 +412,7 @@ OV.Importer3ds = class extends OV.ImporterBase
                 }
                 return node.positions[0];
             }
-        
+
             function GetNodeRotation (node)
             {
                 function GetQuaternionFromAxisAndAngle (rotation)
@@ -430,7 +430,7 @@ OV.Importer3ds = class extends OV.ImporterBase
                 if (node.rotations.length === 0) {
                     return [0.0, 0.0, 0.0, 1.0];
                 }
-                
+
                 let rotation = node.rotations[0];
                 return GetQuaternionFromAxisAndAngle (rotation);
             }
@@ -442,11 +442,11 @@ OV.Importer3ds = class extends OV.ImporterBase
                 }
                 return node.scales[0];
             }
-            
+
             if (node.matrix !== null) {
                 return node.matrix;
             }
-            
+
             let matrix = new OV.Matrix ();
             matrix.ComposeTRS (
                 OV.ArrayToCoord3D (GetNodePosition (node)),
@@ -462,7 +462,7 @@ OV.Importer3ds = class extends OV.ImporterBase
                     matrix = matrix.MultiplyMatrix (parentMatrix);
                 }
             }
-            
+
             node.matrix = matrix;
             return matrix;
         }
@@ -499,7 +499,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             if (invMeshMatrix === null) {
                 return;
             }
-            
+
             let pivotPoint = GetNodePivotPoint (node);
             let pivotMatrix = new OV.Matrix ().CreateTranslation (-pivotPoint[0], -pivotPoint[1], -pivotPoint[2]);
 
@@ -551,7 +551,7 @@ OV.Importer3ds = class extends OV.ImporterBase
         {
             let result = [];
             reader.Skip (10);
-            
+
             let keyNum = reader.ReadInteger32 ();
             for (let i = 0; i < keyNum; i++) {
                 reader.ReadInteger32 ();
@@ -559,7 +559,7 @@ OV.Importer3ds = class extends OV.ImporterBase
                 if (flags !== 0) {
                     reader.ReadFloat32 ();
                 }
-                
+
                 let current = null;
                 if (type === OV.CHUNK3DS.OBJECT_ROTATION) {
                     let tmp = reader.ReadFloat32 ();
@@ -573,7 +573,7 @@ OV.Importer3ds = class extends OV.ImporterBase
 
             return result;
         }
-    
+
         let objectNode = {
             name : '',
             instanceName : '',
@@ -586,7 +586,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             scales : [],
             matrix : null
         };
-        
+
         let endByte = this.GetChunkEnd (reader, length);
         this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.OBJECT_HIERARCHY) {
@@ -622,7 +622,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             }
             nodeHierarchy.meshIndexToNodes[meshIndex].push (objectNode);
         }
-    }    
+    }
 
     ReadName (reader)
     {
@@ -658,7 +658,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             onChunk (chunkId, chunkLength);
         }
     }
-    
+
     GetChunkEnd (reader, length)
     {
         return reader.GetPosition () + length - 6;
@@ -667,5 +667,5 @@ OV.Importer3ds = class extends OV.ImporterBase
     SkipChunk (reader, length)
     {
         reader.Skip (length - 6);
-    }    
+    }
 };

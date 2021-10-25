@@ -11,7 +11,7 @@ OV.Coord3D = class
 	{
 		return Math.sqrt (this.x * this.x + this.y * this.y + this.z * this.z);
 	}
-	
+
 	MultiplyScalar (scalar)
 	{
 		this.x *= scalar;
@@ -19,7 +19,7 @@ OV.Coord3D = class
 		this.z *= scalar;
 		return this;
 	}
-	
+
 	Normalize ()
 	{
 		let length = this.Length ();
@@ -28,7 +28,7 @@ OV.Coord3D = class
 		}
 		return this;
 	}
-	
+
 	Offset (direction, distance)
 	{
 		let normal = direction.Clone ().Normalize ();
@@ -37,31 +37,31 @@ OV.Coord3D = class
 		this.z += normal.z * distance;
 		return this;
 	}
-	
+
 	Rotate (axis, angle, origo)
 	{
 		let normal = axis.Clone ().Normalize ();
-	
+
 		let u = normal.x;
 		let v = normal.y;
 		let w = normal.z;
-	
+
 		let x = this.x - origo.x;
 		let y = this.y - origo.y;
 		let z = this.z - origo.z;
-	
+
 		let si = Math.sin (angle);
 		let co = Math.cos (angle);
 		this.x = - u * (- u * x - v * y - w * z) * (1.0 - co) + x * co + (- w * y + v * z) * si;
 		this.y = - v * (- u * x - v * y - w * z) * (1.0 - co) + y * co + (w * x - u * z) * si;
 		this.z = - w * (- u * x - v * y - w * z) * (1.0 - co) + z * co + (- v * x + u * y) * si;
-		
+
 		this.x += origo.x;
 		this.y += origo.y;
 		this.z += origo.z;
 		return this;
 	}
-	
+
 	Clone ()
 	{
 		return new OV.Coord3D (this.x, this.y, this.z);

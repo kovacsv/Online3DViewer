@@ -9,7 +9,7 @@ OV.ExporterStl = class extends OV.ExporterBase
     {
         return (format === OV.FileFormat.Text || format === OV.FileFormat.Binary) && extension === 'stl';
     }
-    
+
 	ExportContent (model, format, files, onFinish)
 	{
 		if (format === OV.FileFormat.Text) {
@@ -39,10 +39,10 @@ OV.ExporterStl = class extends OV.ExporterBase
 			stlWriter.WriteLine ('endloop');
 			stlWriter.Indent (-1);
 			stlWriter.WriteLine ('endfacet');
-		});		
+		});
 		stlWriter.WriteLine ('endsolid Model');
 
-		stlFile.SetTextContent (stlWriter.GetText ());		
+		stlFile.SetTextContent (stlWriter.GetText ());
 	}
 
 	ExportBinary (model, files)
@@ -81,5 +81,5 @@ OV.ExporterStl = class extends OV.ExporterBase
 		});
 
 		stlFile.SetBufferContent (stlWriter.GetBuffer ());
-	}	
+	}
 };

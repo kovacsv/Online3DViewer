@@ -68,7 +68,7 @@ OV.ThreeNodeTree = class
 		let matrix = node.GetTransformation ().GetMatrix ();
 		let threeMatrix = new THREE.Matrix4 ().fromArray (matrix.Get ());
 		threeNode.applyMatrix4 (threeMatrix);
-		
+
 		const nodeIndex = this.nodes.length - 1;
 		for (let childNode of node.GetChildNodes ()) {
 			let threeChildNode = new THREE.Object3D ();
@@ -145,7 +145,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 			threeMaterial.shininess = material.shininess * 100.0;
 			LoadTexture (stateHandler, threeMaterial, material.specularMap, (threeTexture) => {
 				threeMaterial.specularMap = threeTexture;
-			});			
+			});
 		} else if (material.type === OV.MaterialType.Physical) {
 			threeMaterial = new THREE.MeshStandardMaterial (materialParams);
 			threeMaterial.metalness = material.metalness;
@@ -276,7 +276,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 			originalMaterials : meshOriginalMaterials,
 			threeMaterials : null
 		};
-		
+
 		return threeMesh;
 	}
 

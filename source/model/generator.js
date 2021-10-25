@@ -115,7 +115,7 @@ OV.Generator = class
                 vertices[vertexIndex + 2]
             );
         }
-    }    
+    }
 };
 
 OV.GeneratorHelper = class
@@ -171,7 +171,7 @@ OV.GeneratorHelper = class
                 startIndices[nextIndex]
             );
         }
-    }    
+    }
 };
 
 OV.GenerateCuboid = function (genParams, xSize, ySize, zSize)
@@ -211,7 +211,7 @@ OV.GenerateCylinder = function (genParams, radius, height, segments, smooth)
 	}
     let helper = new OV.GeneratorHelper (generator);
     helper.GenerateExtrude (baseVertices, height, smooth ? 1 : null);
-    return generator.GetMesh ();    
+    return generator.GetMesh ();
 };
 
 OV.GenerateSphere = function (genParams, radius, segments, smooth)
@@ -256,10 +256,10 @@ OV.GenerateSphere = function (genParams, radius, segments, smooth)
     let bottomVertex = generator.AddVertex (0.0, 0.0, -radius);
     helper.GenerateTriangleFan (allLevelVertices[0].slice ().reverse (), topVertex);
     helper.GenerateTriangleFan (allLevelVertices[allLevelVertices.length - 1], bottomVertex);
-    
+
     generator.ResetCurve ();
 
-    return generator.GetMesh ();    
+    return generator.GetMesh ();
 };
 
 OV.GeneratePlatonicSolid = function (genParams, type, radius)

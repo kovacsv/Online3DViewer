@@ -113,7 +113,7 @@ OV.Matrix = class
         let qw = rotation.w;
         let sx = scale.x;
         let sy = scale.y;
-        let sz = scale.z;     
+        let sz = scale.z;
 
         let x2 = qx + qx;
         let y2 = qy + qy;
@@ -134,7 +134,7 @@ OV.Matrix = class
             (xz + wy) * sz, (yz - wx) * sz, (1.0 - (xx + yy)) * sz, 0.0,
             tx, ty, tz, 1.0
         ];
-        return this;        
+        return this;
     }
 
     DecomposeTRS ()
@@ -167,7 +167,7 @@ OV.Matrix = class
         // http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
         let rotation = null;
         let tr = m00 + m11 + m22;
-        if (tr > 0.0) { 
+        if (tr > 0.0) {
             let s = Math.sqrt (tr + 1.0) * 2.0;
             rotation = new OV.Quaternion (
                 (m21 - m12) / s,
@@ -175,7 +175,7 @@ OV.Matrix = class
                 (m10 - m01) / s,
                 0.25 * s
             );
-        } else if ((m00 > m11) && (m00 > m22)) { 
+        } else if ((m00 > m11) && (m00 > m22)) {
             let s = Math.sqrt (1.0 + m00 - m11 - m22) * 2.0;
             rotation = new OV.Quaternion (
                 0.25 * s,
@@ -183,7 +183,7 @@ OV.Matrix = class
                 (m02 + m20) / s,
                 (m21 - m12) / s
             );
-        } else if (m11 > m22) { 
+        } else if (m11 > m22) {
             let s = Math.sqrt (1.0 + m11 - m00 - m22) * 2.0;
             rotation = new OV.Quaternion (
                 (m01 + m10) / s,
@@ -191,7 +191,7 @@ OV.Matrix = class
                 (m12 + m21) / s,
                 (m02 - m20) / s
             );
-        } else { 
+        } else {
             let s = Math.sqrt (1.0 + m22 - m00 - m11) * 2.0;
             rotation = new OV.Quaternion (
                 (m02 + m20) / s,
@@ -226,7 +226,7 @@ OV.Matrix = class
         let a31 = this.matrix[13];
         let a32 = this.matrix[14];
         let a33 = this.matrix[15];
-    
+
         let b00 = a00 * a11 - a01 * a10;
         let b01 = a00 * a12 - a02 * a10;
         let b02 = a00 * a13 - a03 * a10;
@@ -239,7 +239,7 @@ OV.Matrix = class
         let b09 = a21 * a32 - a22 * a31;
         let b10 = a21 * a33 - a23 * a31;
         let b11 = a22 * a33 - a23 * a32;
-        
+
         let determinant = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
         return determinant;
     }
@@ -275,7 +275,7 @@ OV.Matrix = class
         let b09 = a21 * a32 - a22 * a31;
         let b10 = a21 * a33 - a23 * a31;
         let b11 = a22 * a33 - a23 * a32;
-        
+
         let determinant = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
         if (OV.IsEqual (determinant, 0.0)) {
             return null;
@@ -299,7 +299,7 @@ OV.Matrix = class
             (a31 * b01 - a30 * b03 - a32 * b00) / determinant,
             (a20 * b03 - a21 * b01 + a22 * b00) / determinant
         ];
-        
+
         return new OV.Matrix (result);
     }
 
@@ -309,7 +309,7 @@ OV.Matrix = class
         let a01 = vector[1];
         let a02 = vector[2];
         let a03 = vector[3];
-        
+
         let b00 = this.matrix[0];
         let b01 = this.matrix[1];
         let b02 = this.matrix[2];
@@ -326,7 +326,7 @@ OV.Matrix = class
         let b31 = this.matrix[13];
         let b32 = this.matrix[14];
         let b33 = this.matrix[15];
-    
+
         let result = [
             a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30,
             a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31,
@@ -354,7 +354,7 @@ OV.Matrix = class
         let a31 = this.matrix[13];
         let a32 = this.matrix[14];
         let a33 = this.matrix[15];
-        
+
         let b00 = matrix.matrix[0];
         let b01 = matrix.matrix[1];
         let b02 = matrix.matrix[2];
@@ -371,7 +371,7 @@ OV.Matrix = class
         let b31 = matrix.matrix[13];
         let b32 = matrix.matrix[14];
         let b33 = matrix.matrix[15];
-            
+
         let result = [
             a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30,
             a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31,
@@ -388,9 +388,9 @@ OV.Matrix = class
             a30 * b00 + a31 * b10 + a32 * b20 + a33 * b30,
             a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31,
             a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32,
-            a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33	
+            a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33
         ];
-    
+
         return new OV.Matrix (result);
     }
 };

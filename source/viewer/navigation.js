@@ -250,7 +250,7 @@ OV.Navigation = class
 		this.mouse = new OV.MouseInteraction ();
 		this.touch = new OV.TouchInteraction ();
 		this.clickDetector = new OV.ClickDetector ();
-		
+
 		this.onUpdate = null;
 		this.onClick = null;
 		this.onContext = null;
@@ -267,7 +267,7 @@ OV.Navigation = class
 			document.addEventListener ('mousemove', this.OnMouseMove.bind (this));
 			document.addEventListener ('mouseup', this.OnMouseUp.bind (this));
 			document.addEventListener ('mouseleave', this.OnMouseLeave.bind (this));
-		}		
+		}
 	}
 
 	SetUpdateHandler (onUpdate)
@@ -324,7 +324,7 @@ OV.Navigation = class
 		if (newCamera === null) {
 			return;
 		}
-		
+
 		if (stepCount === 0) {
 			this.SetCamera (newCamera);
 			return;
@@ -336,7 +336,7 @@ OV.Navigation = class
 		{
 			return;
 		}
-		
+
 		let tweenFunc = OV.ParabolicTweenFunction;
 		let steps = {
 			eye : OV.TweenCoord3D (this.camera.eye, newCamera.eye, stepCount, tweenFunc),
@@ -354,7 +354,7 @@ OV.Navigation = class
 		if (OV.IsZero (radius)) {
 			return;
 		}
-		
+
 		let fitCamera = this.GetFitToSphereCamera (center, radius, fov);
 		this.camera = fitCamera;
 
@@ -367,20 +367,20 @@ OV.Navigation = class
 		if (OV.IsZero (radius)) {
 			return null;
 		}
-		
+
 		let fitCamera = this.camera.Clone ();
 
 		let offsetToOrigo = OV.SubCoord3D (fitCamera.center, center);
 		fitCamera.eye = OV.SubCoord3D (fitCamera.eye, offsetToOrigo);
 		fitCamera.center = center.Clone ();
-		
+
 		let centerEyeDirection = OV.SubCoord3D (fitCamera.eye, fitCamera.center).Normalize ();
 		let fieldOfView = fov / 2.0;
 		if (this.canvas.width < this.canvas.height) {
 			fieldOfView = fieldOfView * this.canvas.width / this.canvas.height;
 		}
 		let distance = radius / Math.sin (fieldOfView * OV.DegRad);
-		
+
 		fitCamera.eye = fitCamera.center.Clone ().Offset (centerEyeDirection, distance);
 		this.orbitCenter = fitCamera.center.Clone ();
 		return fitCamera;
@@ -492,7 +492,7 @@ OV.Navigation = class
 		ev.preventDefault ();
 
 		let params = ev || window.event;
-		
+
 		let delta = -params.deltaY / 40;
 		let ratio = 0.1;
 		if (delta < 0) {
@@ -506,7 +506,7 @@ OV.Navigation = class
 	OnContextMenu (ev)
 	{
 		ev.preventDefault ();
-		
+
 		this.clickDetector.Up (ev);
 		if (this.clickDetector.IsClick ()) {
 			this.Context (ev.clientX, ev.clientY);
@@ -517,11 +517,11 @@ OV.Navigation = class
 	{
 		let radAngleX = angleX * OV.DegRad;
 		let radAngleY = angleY * OV.DegRad;
-		
+
 		let viewDirection = OV.SubCoord3D (this.camera.center, this.camera.eye).Normalize ();
 		let horizontalDirection = OV.CrossVector3D (viewDirection, this.camera.up).Normalize ();
 		let differentCenter = !OV.CoordIsEqual3D (this.orbitCenter, this.camera.center);
-		
+
 		if (this.fixUpVector) {
 			let originalAngle = OV.VectorAngle3D (viewDirection, this.camera.up);
 			let newAngle = originalAngle + radAngleY;
@@ -552,10 +552,10 @@ OV.Navigation = class
 		let viewDirection = OV.SubCoord3D (this.camera.center, this.camera.eye).Normalize ();
 		let horizontalDirection = OV.CrossVector3D (viewDirection, this.camera.up).Normalize ();
 		let verticalDirection = OV.CrossVector3D (horizontalDirection, viewDirection).Normalize ();
-		
+
 		this.camera.eye.Offset (horizontalDirection, -moveX);
 		this.camera.center.Offset (horizontalDirection, -moveX);
-	
+
 		this.camera.eye.Offset (verticalDirection, moveY);
 		this.camera.center.Offset (verticalDirection, moveY);
 	}

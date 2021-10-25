@@ -5,12 +5,12 @@ OV.ImporterIfc = class extends OV.ImporterBase
         super ();
         this.ifc = null;
     }
-	
+
     CanImportExtension (extension)
     {
         return extension === 'ifc';
     }
-    
+
     GetUpDirection ()
     {
         return OV.Direction.Y;
@@ -198,13 +198,13 @@ OV.ImporterIfc = class extends OV.ImporterBase
             parseInt (ifcColor.y * 255.0, 10),
             parseInt (ifcColor.z * 255.0, 10)
         );
-    
+
         const materialName = 'Color ' +
             OV.IntegerToHexString (color.r) +
             OV.IntegerToHexString (color.g) +
             OV.IntegerToHexString (color.b) +
             OV.IntegerToHexString (parseInt (ifcColor.w * 255.0, 10));
-        
+
         let materialIndex = this.materialNameToIndex[materialName];
         if (materialIndex === undefined) {
 			let material = new OV.Material (OV.MaterialType.Phong);

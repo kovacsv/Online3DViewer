@@ -9,17 +9,17 @@ OV.Object3D = class
     {
         return 0;
     }
-    
+
     NormalCount ()
     {
         return 0;
     }
-    
+
     TextureUVCount ()
     {
         return 0;
     }
-    
+
     TriangleCount ()
     {
         return 0;
@@ -54,7 +54,7 @@ OV.ModelObject3D = class extends OV.Object3D
     {
         return this.name;
     }
-    
+
     SetName (name)
     {
         this.name = name;

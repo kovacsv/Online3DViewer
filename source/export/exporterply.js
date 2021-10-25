@@ -9,7 +9,7 @@ OV.ExporterPly = class extends OV.ExporterBase
     {
         return (format === OV.FileFormat.Text || format === OV.FileFormat.Binary) && extension === 'ply';
     }
-    
+
 	ExportContent (model, format, files, onFinish)
 	{
 		if (format === OV.FileFormat.Text) {
@@ -28,7 +28,7 @@ OV.ExporterPly = class extends OV.ExporterBase
 		let plyWriter = new OV.TextWriter ();
 
 		let vertexCount = model.VertexCount ();
-		let triangleCount = model.TriangleCount ();		
+		let triangleCount = model.TriangleCount ();
 		let headerText = this.GetHeaderText ('ascii', vertexCount, triangleCount);
 		plyWriter.Write (headerText);
 

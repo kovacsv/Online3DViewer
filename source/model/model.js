@@ -85,7 +85,7 @@ OV.Model = class extends OV.ModelObject3D
                     node.meshIndices[i] += 1;
                 }
             }
-        });        
+        });
         return index;
     }
 

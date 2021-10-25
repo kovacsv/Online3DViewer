@@ -71,7 +71,7 @@ OV.PlyHeader = class
         if (vertex === null || vertex.length === 0 || vertex.format.length < 3) {
             return OV.PlyHeaderCheckResult.NoVertices;
         }
-        
+
         let face = this.GetElement ('face');
         if (this.format === 'ascii') {
             if (face === null || face.count === 0 || face.format.length < 0) {
@@ -136,7 +136,7 @@ OV.PlyMaterialHandler = class
             OV.IntegerToHexString (color[1]) +
             OV.IntegerToHexString (color[2]) +
             OV.IntegerToHexString (color[3]);
-        
+
         let materialIndex = this.colorToMaterial[materialName];
         if (materialIndex === undefined) {
             let material = new OV.Material (OV.MaterialType.Phong);
@@ -158,17 +158,17 @@ OV.ImporterPly = class extends OV.ImporterBase
     {
         super ();
     }
-    
+
     CanImportExtension (extension)
     {
         return extension === 'ply';
     }
-    
+
     GetUpDirection ()
     {
         return OV.Direction.Y;
     }
-    
+
     ClearContent ()
     {
         this.mesh = null;
@@ -236,7 +236,7 @@ OV.ImporterPly = class extends OV.ImporterBase
             if (parameters.length === 0 || parameters[0] === 'comment') {
                 return;
             }
-    
+
             if (parameters[0] === 'ply') {
                 return;
             } else if (parameters[0] === 'format' && parameters.length >= 2) {
@@ -265,12 +265,12 @@ OV.ImporterPly = class extends OV.ImporterBase
             if (this.WasError ()) {
                 return;
             }
-            
+
             let parameters = OV.ParametersFromLine (line, null);
             if (parameters.length === 0 || parameters[0] === 'comment') {
                 return;
             }
-    
+
             if (foundVertex < vertex.count) {
                 if (parameters.length >= 3) {
                     this.mesh.AddVertex (new OV.Coord3D (
@@ -282,7 +282,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                 }
                 return;
             }
-    
+
             if (foundFace < face.count) {
                 if (parameters.length >= 4) {
                     let vertexCount = parseInt (parameters[0], 10);
@@ -328,7 +328,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                 }
                 return null;
             }
-    
+
             if (format.isSingle) {
                 return ReadType (reader, format.elemType);
             } else {
@@ -347,7 +347,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                 ReadByFormat (reader, format[i]);
             }
         }
-    
+
         function SkipAndGetColor (reader, format, startIndex)
         {
             let r = null;
@@ -441,7 +441,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                         let triangle = new OV.Triangle (v0, v1, v2);
                         this.mesh.AddTriangle (triangle);
                     }
-                }              
+                }
             } else {
                 SkipFormat (reader, element.format, 0);
             }

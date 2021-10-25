@@ -320,5 +320,5 @@ OV.EnumerateMaterialTextureMaps = function (material, enumerator)
     }
     if (material.metalnessMap !== null) {
         enumerator (material.metalnessMap);
-    }        
+    }
 };

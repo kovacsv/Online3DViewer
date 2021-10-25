@@ -58,7 +58,7 @@ OV.MeshBuffer = class
             byteLength += primitive.GetByteLength (indexTypeSize, numberTypeSize);
         }
         return byteLength;
-    }    
+    }
 };
 
 OV.ConvertMeshToMeshBuffer = function (mesh)
@@ -95,7 +95,7 @@ OV.ConvertMeshToMeshBuffer = function (mesh)
                 uv : uv
             };
         }
-        
+
         function FindMatchingPrimitiveVertex (mesh, primitiveVertices, normalIndex, uvIndex)
         {
             for (let i = 0; i < primitiveVertices.length; i++) {
@@ -112,7 +112,7 @@ OV.ConvertMeshToMeshBuffer = function (mesh)
                 if (equalNormal && equalUv) {
                     return primitiveVertex;
                 }
-            }            
+            }
             return null;
         }
 

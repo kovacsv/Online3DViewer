@@ -12,7 +12,7 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
                         let current = array[i];
                         if (OV.CoordIsEqual3D (current, normal)) {
                             return true;
-                        }                        
+                        }
                     }
                     return false;
                 }
@@ -41,11 +41,11 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
 
             let triangleNormals = [];
             let vertexToTriangles = {};
-        
+
             for (let vertexIndex = 0; vertexIndex < mesh.VertexCount (); vertexIndex++) {
                 vertexToTriangles[vertexIndex] = [];
             }
-            
+
             for (let triangleIndex = 0; triangleIndex < mesh.TriangleCount (); triangleIndex++) {
                 let triangle = mesh.GetTriangle (triangleIndex);
                 let v0 = mesh.GetVertex (triangle.v0);
@@ -66,7 +66,7 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
                     let n2 = AddAverageNormal (mesh, triangle, triangle.v2, triangleNormals, vertexToTriangles);
                     triangle.SetNormals (n0, n1, n2);
                 }
-            }            
+            }
         }
 
         function FinalizeTriangle (mesh, triangle, status)
@@ -90,7 +90,7 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
                 triangle.curve = 0;
             }
         }
-        
+
         let status = {
             getDefaultMaterialIndex : getDefaultMaterialIndex,
             calculateCurveNormals : false
@@ -146,7 +146,7 @@ OV.CheckModel = function (model)
             return false;
         }
         return true;
-    }            
+    }
 
     function IsCorrectIndex (val, count)
     {
@@ -157,8 +157,8 @@ OV.CheckModel = function (model)
             return false;
         }
         return true;
-    }    
-    
+    }
+
     function CheckMesh (model, mesh)
     {
         function CheckTriangle (model, mesh, triangle)
@@ -180,7 +180,7 @@ OV.CheckModel = function (model)
             }
             if (!IsCorrectIndex (triangle.n2, mesh.NormalCount ())) {
                 return false;
-            }            
+            }
             if (triangle.HasTextureUVs ()) {
                 if (!IsCorrectIndex (triangle.u0, mesh.TextureUVCount ())) {
                     return false;
@@ -201,7 +201,7 @@ OV.CheckModel = function (model)
 
             return true;
         }
-        
+
         for (let i = 0; i < mesh.VertexCount (); i++) {
             let vertex = mesh.GetVertex (i);
             if (!IsCorrectNumber (vertex.x)) {
@@ -236,7 +236,7 @@ OV.CheckModel = function (model)
             if (!IsCorrectNumber (uv.y)) {
                 return false;
             }
-        }        
+        }
 
         for (let i = 0; i < mesh.TriangleCount (); i++) {
             let triangle = mesh.GetTriangle (i);

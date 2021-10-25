@@ -13,8 +13,8 @@ OV.ImporterStl = class extends OV.ImporterBase
     GetUpDirection ()
     {
         return OV.Direction.Z;
-    }    
-    
+    }
+
     ClearContent ()
     {
         this.mesh = null;
@@ -37,7 +37,7 @@ OV.ImporterStl = class extends OV.ImporterBase
             OV.ReadLines (textContent, (line) => {
                 if (!this.WasError ()) {
                     this.ProcessLine (line);
-                }    
+                }
             });
         }
         onFinish ();
@@ -49,16 +49,16 @@ OV.ImporterStl = class extends OV.ImporterBase
         if (byteLength < 84) {
             return false;
         }
-        
+
         let reader = new OV.BinaryReader (fileContent, true);
         reader.Skip (80);
-        
+
         let triangleCount = reader.ReadUnsignedInteger32 ();
         if (byteLength !== triangleCount * 50 + 84) {
             return false;
         }
-        
-        return true;        
+
+        return true;
     }
 
     ProcessLine (line)
@@ -71,7 +71,7 @@ OV.ImporterStl = class extends OV.ImporterBase
         if (parameters.length === 0) {
             return;
         }
-        
+
         let keyword = parameters[0];
         if (keyword === 'solid') {
             if (parameters.length > 1) {
@@ -161,5 +161,5 @@ OV.ImporterStl = class extends OV.ImporterBase
             }
             this.mesh.AddTriangle (triangle);
         }
-    }    
+    }
 };

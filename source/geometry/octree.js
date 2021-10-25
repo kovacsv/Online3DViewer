@@ -101,7 +101,7 @@ OV.OctreeNode = class
         let sizeX = (this.boundingBox.max.x - this.boundingBox.min.x) / 2.0;
         let sizeY = (this.boundingBox.max.y - this.boundingBox.min.y) / 2.0;
         let sizeZ = (this.boundingBox.max.z - this.boundingBox.min.z) / 2.0;
-        
+
         AddChildNode (this, min.x, min.y, min.z, sizeX, sizeY, sizeZ);
         AddChildNode (this, center.x, min.y, min.z, sizeX, sizeY, sizeZ);
         AddChildNode (this, min.x, center.y, min.z, sizeX, sizeY, sizeZ);

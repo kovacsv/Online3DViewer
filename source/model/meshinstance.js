@@ -11,17 +11,17 @@ OV.MeshInstance = class extends OV.Object3D
     {
         return this.mesh.VertexCount ();
     }
-    
+
     NormalCount ()
     {
         return this.mesh.NormalCount ();
     }
-    
+
     TextureUVCount ()
     {
         return this.mesh.TextureUVCount ();
     }
-    
+
     TriangleCount ()
     {
         return this.mesh.TriangleCount ();

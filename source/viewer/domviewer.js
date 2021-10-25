@@ -3,7 +3,7 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, parameters)
     if (!parameters) {
         parameters = {};
     }
-    
+
     let canvas = document.createElement ('canvas');
     parentDiv.appendChild (canvas);
 
@@ -42,7 +42,7 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, parameters)
             } else {
                 viewer.SetUpVector (importResult.upVector, false);
             }
-            viewer.FitSphereToWindow (boundingSphere, false);                                
+            viewer.FitSphereToWindow (boundingSphere, false);
         },
         onTextureLoaded : () => {
             viewer.Render ();
@@ -112,7 +112,7 @@ OV.Init3DViewerElements = function (onReady)
         if (environmentMapParams) {
             let environmentMapParts = environmentMapParams.split (',');
             if (environmentMapParts.length === 6) {
-                environmentMap = environmentMapParts; 
+                environmentMap = environmentMapParts;
             }
         }
 
@@ -141,14 +141,14 @@ OV.Init3DViewerElements = function (onReady)
         if (onReady !== undefined && onReady !== null) {
             onReady (viewerElements);
         }
-    }); 
+    });
 
     window.addEventListener ('resize', () => {
         for (let i = 0; i < viewerElements.length; i++) {
             let viewerElement = viewerElements[i];
             let width = viewerElement.element.clientWidth;
             let height = viewerElement.element.clientHeight;
-            viewerElement.viewer.Resize (width, height);    
+            viewerElement.viewer.Resize (width, height);
         }
     });
 };
