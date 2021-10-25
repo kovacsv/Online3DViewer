@@ -190,7 +190,7 @@ OV.Website = class
                     this.navigator.FitMeshToWindow (meshIndex);
                 }
             });
-            if (this.model.MeshCount () > 1) {
+            if (this.navigator.MeshItemCount () > 1) {
                 let isMeshIsolated = this.navigator.IsMeshIsolated (meshIndex);
                 items.push ({
                     name : isMeshIsolated ? 'Remove isolation' : 'Isolate mesh',

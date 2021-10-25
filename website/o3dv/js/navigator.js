@@ -213,6 +213,11 @@ OV.Navigator = class
         this.Resize ();
     }
 
+    MeshItemCount ()
+    {
+        return this.navigatorItems.MeshItemCount ();
+    }
+
     IsMeshVisible (meshIndex)
     {
         let meshItem = this.navigatorItems.GetMeshItem (meshIndex);

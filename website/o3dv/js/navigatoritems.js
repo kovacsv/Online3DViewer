@@ -65,6 +65,11 @@ OV.NavigatorItems = class
         this.meshIndexToItem = {};
     }
 
+    MaterialItemCount ()
+    {
+        return Object.keys (this.materialIndexToItem).length;
+    }
+
     GetMaterialItem (materialIndex)
     {
         return this.materialIndexToItem[materialIndex];
@@ -73,6 +78,11 @@ OV.NavigatorItems = class
     AddMaterialItem (materialIndex, materialItem)
     {
         this.materialIndexToItem[materialIndex] = materialItem;
+    }
+
+    MeshItemCount ()
+    {
+        return Object.keys (this.meshIndexToItem).length; 
     }
 
     GetMeshItem (meshIndex)
