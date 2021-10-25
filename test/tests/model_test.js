@@ -200,7 +200,7 @@ describe ('Color Conversion', function () {
     });
 });
 
-function CreateHierarchicModel ()
+function CreateHierarchicalModel ()
 {
     /*
         + <Root>
@@ -208,6 +208,7 @@ function CreateHierarchicModel ()
                 + Node 3
                     Mesh 5
                     Mesh 6
+                    Mesh 7
                 + Node 4
                     Mesh 7
                 Mesh 3
@@ -272,6 +273,7 @@ function CreateHierarchicModel ()
     node1.AddMeshIndex (mesh4Ind);
     node3.AddMeshIndex (mesh5Ind);
     node3.AddMeshIndex (mesh6Ind);
+    node3.AddMeshIndex (mesh7Ind);
     node4.AddMeshIndex (mesh7Ind);
 
     return model;
@@ -302,7 +304,7 @@ function GetModelTree (model)
 
 describe ('Node Hierarchy', function () {
     it ('Enumerate hierarchy', function () {
-        let model = CreateHierarchicModel ();
+        let model = CreateHierarchicalModel ();
         let modelTree = GetModelTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
@@ -313,7 +315,7 @@ describe ('Node Hierarchy', function () {
                         {
                             name : 'Node 3',
                             childNodes : [],
-                            meshNames : ['Mesh 5', 'Mesh 6']
+                            meshNames : ['Mesh 5', 'Mesh 6', 'Mesh 7']
                         },
                         {
                             name : 'Node 4',
@@ -334,7 +336,7 @@ describe ('Node Hierarchy', function () {
     });
 
     it ('Remove mesh', function () {
-        let model = CreateHierarchicModel ();
+        let model = CreateHierarchicalModel ();
         model.RemoveMesh (2);
         let modelTree = GetModelTree (model);
         assert.deepStrictEqual (modelTree, {
@@ -346,7 +348,7 @@ describe ('Node Hierarchy', function () {
                         {
                             name : 'Node 3',
                             childNodes : [],
-                            meshNames : ['Mesh 5', 'Mesh 6']
+                            meshNames : ['Mesh 5', 'Mesh 6', 'Mesh 7']
                         },
                         {
                             name : 'Node 4',
@@ -367,7 +369,7 @@ describe ('Node Hierarchy', function () {
     });
 
     it ('Add mesh to index', function () {
-        let model = CreateHierarchicModel ();
+        let model = CreateHierarchicalModel ();
         let mesh = new OV.Mesh ();
         mesh.SetName ('Mesh 8');
         model.AddMeshToIndex (mesh, 3);
@@ -381,7 +383,7 @@ describe ('Node Hierarchy', function () {
                         {
                             name : 'Node 3',
                             childNodes : [],
-                            meshNames : ['Mesh 5', 'Mesh 6']
+                            meshNames : ['Mesh 5', 'Mesh 6', 'Mesh 7']
                         },
                         {
                             name : 'Node 4',
@@ -399,5 +401,5 @@ describe ('Node Hierarchy', function () {
             ],
             meshNames : ['Mesh 1', 'Mesh 2']
         });
-    });
+    });  
 });

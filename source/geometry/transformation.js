@@ -32,10 +32,22 @@ OV.Transformation = class
         return this;
     }
 
+    Append (transformation)
+    {
+        this.AppendMatrix (transformation.GetMatrix ());
+        return this;
+    }
+
     TransformCoord3D (coord)
     {
         let resultVector = this.matrix.MultiplyVector ([coord.x, coord.y, coord.z, 1.0]);
         let result = new OV.Coord3D (resultVector[0], resultVector[1], resultVector[2]);
         return result;
+    }
+
+    Clone ()
+    {
+        const clonedMatrix = this.matrix.Clone ();
+        return new OV.Transformation (clonedMatrix);
     }
 };

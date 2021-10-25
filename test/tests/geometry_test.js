@@ -115,6 +115,19 @@ describe ('Transformation', function() {
         assert (OV.CoordIsEqual3D (tr2.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
     });
 
+    it ('Append Test', function () {
+        let coord = new OV.Coord3D (1.0, 2.0, 3.0);
+
+        let tr = new OV.Transformation ();
+        assert (tr.IsIdentity ());
+        assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (1.0, 2.0, 3.0)));
+
+        let tr2 = new OV.Transformation (new OV.Matrix ().CreateScale (3.0, 4.0, 5.0));
+        tr.Append (tr2);
+        assert (!tr.IsIdentity ());
+        assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (3.0, 8.0, 15.0)));
+    });
+
     it ('TRS Compose Test', function () {
         let rotation = CreateYRot90Quaternion ();
         let coord = new OV.Coord3D (1.0, 2.0, 3.0);
@@ -144,7 +157,14 @@ describe ('Transformation', function() {
         let tr = new OV.Transformation ();
         tr.SetMatrix (new OV.Matrix ().CreateRotation (0.0, 0.0, 0.0, 1.0));
         assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), coord));
-    });        
+    });
+    
+    it ('Clone Test', function () {
+        let tr = new OV.Transformation ();
+        let cloned = tr.Clone ();
+        tr.matrix.matrix[0] = 5.0;
+        assert.strictEqual (cloned.matrix.matrix[0], 1.0);
+    });
 });
 
 describe ('Tween', function() {
