@@ -116,6 +116,26 @@ OV.Model = class extends OV.ModelObject3D
         return this.meshes[index];
     }
 
+    GetMeshInstance (instanceId)
+    {
+        let foundNode = null;
+        this.root.Enumerate ((node) => {
+            if (node.GetId () === instanceId.nodeId) {
+                foundNode = node;
+            }
+        });
+        if (foundNode === null) {
+            return null;
+        }
+        // TODO: check it when every model is hierarchical
+        // const nodeMeshIndices = foundNode.GetMeshIndices ();
+        // if (nodeMeshIndices.indexOf (instanceId.meshIndex) === -1) {
+        //     return null;
+        // }
+        let foundMesh = this.GetMesh (instanceId.meshIndex);
+        return new OV.MeshInstance (foundNode, foundMesh);
+    }
+
     EnumerateMeshes (onMesh)
     {
         for (const mesh of this.meshes) {

@@ -17,7 +17,7 @@ OV.MeshInstanceId = class
     }
 };
 
-OV.MeshInstance = class extends OV.Object3D
+OV.MeshInstance = class extends OV.ModelObject3D
 {
     constructor (node, mesh)
     {
@@ -77,6 +77,21 @@ OV.MeshInstance = class extends OV.Object3D
                 onTriangleVertices (v0Transformed, v1Transformed, v2Transformed);
             });
         }
+    }
+
+    PropertyGroupCount ()
+    {
+        return this.mesh.PropertyGroupCount ();
+    }
+
+    AddPropertyGroup (propertyGroup)
+    {
+        return this.mesh.AddPropertyGroup (propertyGroup);
+    }
+
+    GetPropertyGroup (index)
+    {
+        return this.mesh.GetPropertyGroup (index);
     }
 
     GetTransformedMesh ()

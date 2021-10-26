@@ -66,9 +66,13 @@ OV.TreeViewSingleItem = class extends OV.TreeViewItem
         this.selected = selected;
         if (this.selected) {
             this.mainElement.addClass ('selected');
-            this.parent.ShowChildren (true, () => {
-                OV.ScrollToView (this.mainElement);
-            });
+            let parent = this.parent;
+            while (parent !== null) {
+                parent.ShowChildren (true, () => {
+                    OV.ScrollToView (this.mainElement);
+                });
+                parent = parent.parent;
+            }
         } else {
             this.mainElement.removeClass ('selected');
         }

@@ -697,7 +697,8 @@ OV.Website = class
                 this.detailsPanel.AddObject3DProperties (this.model);
             },
             onMeshSelected : (meshInstanceId) => {
-                this.detailsPanel.AddObject3DProperties (this.model.GetMesh (meshInstanceId.meshIndex));
+                let meshInstance = this.model.GetMeshInstance (meshInstanceId);
+                this.detailsPanel.AddObject3DProperties (meshInstance);
             },
             onMaterialSelected : (materialIndex) => {
                 this.detailsPanel.AddMaterialProperties (this.model.GetMaterial (materialIndex));
