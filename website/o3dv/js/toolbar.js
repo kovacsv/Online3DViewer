@@ -4,21 +4,21 @@ OV.ToolbarButton = class
     {
         this.image = image;
         this.imageTitle = imageTitle;
-        this.onClick = onClick;
-        this.selected = false;
-        this.buttonDiv = null;
-        this.buttonImg = null;
-    }
 
-    CreateDomElement (parentDiv)
-    {
-        this.buttonDiv = $('<div>').addClass ('ov_toolbar_button').appendTo (parentDiv);
-        this.buttonImg = OV.CreateSvgIcon (this.buttonDiv, this.image);
-        if (this.onClick !== null) {
-            this.buttonDiv.click (this.onClick);
+        this.selected = false;
+        this.buttonDiv = $('<div>').addClass ('ov_toolbar_button');
+        this.buttonImg = OV.AddSvgIcon (this.buttonDiv, this.image);
+        if (onClick !== null) {
+            this.buttonDiv.click (onClick);
         }
+
         this.buttonDiv.attr ('alt', this.imageTitle);
         OV.InstallTooltip (this.buttonDiv, this.imageTitle);
+    }
+
+    AddDomElements (parentDiv)
+    {
+        this.buttonDiv.appendTo (parentDiv);
     }
 
     AddClass (className)
@@ -48,7 +48,7 @@ OV.ToolbarButton = class
             this.buttonDiv.removeClass ('selected');
         } else {
             this.buttonDiv.addClass ('selected');
-        }        
+        }
     }
 };
 
@@ -62,7 +62,7 @@ OV.Toolbar = class
     AddImageButton (image, imageTitle, onClick)
     {
         let button = new OV.ToolbarButton (image, imageTitle, onClick);
-        button.CreateDomElement (this.mainDiv);
+        button.AddDomElements (this.mainDiv);
         return button;
     }
 

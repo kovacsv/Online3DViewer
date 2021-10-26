@@ -111,7 +111,7 @@ OV.Dialog = class
     {
         this.modal = new OV.Modal ();
     }
-    
+
     GetContentDiv ()
     {
         return this.modal.GetContentDiv ();
@@ -140,7 +140,7 @@ OV.Dialog = class
     Hide ()
     {
         this.modal.Close ();
-    }    
+    }
 };
 
 OV.ProgressDialog = class extends OV.Dialog
@@ -198,7 +198,7 @@ OV.ButtonDialog = class extends OV.Dialog
         for (let i = 0; i < buttons.length; i++) {
             AddButton (buttons[i], buttonsInnerDiv);
         }
-        
+
         return dialogContentDiv;
     }
 };
@@ -238,7 +238,7 @@ OV.ListPopup = class extends OV.PopupDialog
     {
         let listItemDiv = $('<div>').addClass ('ov_popup_list_item').appendTo (this.listDiv);
         if (item.icon) {
-            OV.CreateSvgIcon (listItemDiv, item.icon, 'left_inline');
+            OV.AddSvgIcon (listItemDiv, item.icon, 'left_inline');
         }
         if (item.color) {
             let iconDiv = $('<div>').addClass ('ov_popup_list_item_icon').appendTo (listItemDiv);

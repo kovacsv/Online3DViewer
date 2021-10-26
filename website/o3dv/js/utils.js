@@ -42,7 +42,7 @@ OV.InstallTooltip = function (item, text)
         let itemWidth = item.outerWidth (true);
         let itemHeight = item.outerHeight (true);
         let tooltipWidth = tooltip.outerWidth (true);
-        
+
         let tooltipMargin = 10;
         let left = itemOffset.left + itemWidth / 2 - tooltipWidth / 2;
         if (left + tooltipWidth > windowWidth - tooltipMargin) {
@@ -61,7 +61,7 @@ OV.InstallTooltip = function (item, text)
     if (!OV.IsHoverEnabled ()) {
         return;
     }
-    
+
     let bodyObj = $(document.body);
     let tooltip = null;
     item.hover (
@@ -104,13 +104,20 @@ OV.DownloadArrayBufferAsFile = function (arrayBuffer, fileName)
     OV.DownloadUrlAsFile (url, fileName);
 };
 
-OV.CreateSvgIcon = function (parent, iconName, extraClass)
+OV.CreateSvgIcon = function (iconName, extraClass)
 {
-    let div = $('<div>').addClass ('ov_svg_icon').appendTo (parent);
+    let div = $('<div>').addClass ('ov_svg_icon');
     $('<i>').addClass ('icon').addClass ('icon-' + iconName).appendTo (div);
     if (extraClass !== undefined && extraClass !== null) {
         div.addClass (extraClass);
     }
+    return div;
+};
+
+OV.AddSvgIcon = function (parent, iconName, extraClass)
+{
+    let div = OV.CreateSvgIcon (iconName, extraClass);
+    div.appendTo (parent);
     return div;
 };
 
@@ -127,7 +134,7 @@ OV.CreateHeaderButton = function (iconName, title, link)
     buttonLink.attr ('target', '_blank');
     buttonLink.attr ('rel', 'noopener noreferrer');
     OV.InstallTooltip (buttonLink, title);
-    OV.CreateSvgIcon (buttonLink, iconName, 'header_button');
+    OV.AddSvgIcon (buttonLink, iconName, 'header_button');
     return buttonLink;
 };
 

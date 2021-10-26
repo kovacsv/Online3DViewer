@@ -112,7 +112,7 @@ OV.NavigatorInfoPanel = class
     {
         let button = $('<div>').addClass ('ov_navigator_info_button').appendTo (parentDiv);
         $('<div>').addClass ('ov_navigator_info_button_text').html (buttonText).appendTo (button);
-        OV.CreateSvgIcon (button, 'arrow_right', 'ov_navigator_info_button_icon');
+        OV.AddSvgIcon (button, 'arrow_right', 'ov_navigator_info_button_icon');
         button.click (() => {
             onClick (button);
         });

@@ -1,4 +1,4 @@
-OV.ExportType = 
+OV.ExportType =
 {
     Model : 1,
     Image : 2
@@ -62,7 +62,7 @@ OV.ExportDialog = class
             exportFormatButtonDivs : [],
             formatSettingsDiv : null,
             selectedFormat : null
-        };        
+        };
     }
 
     Show (model, viewer)
@@ -72,7 +72,7 @@ OV.ExportDialog = class
                 'Export Failed',
                 'Please load a model before exporting.',
                 null
-            );            
+            );
             this.callbacks.onDialog (messageDialog);
             return;
         }
@@ -98,10 +98,10 @@ OV.ExportDialog = class
                 }
             }
         ]);
-        
+
         let text = 'Select a format from the below list to export your model. Please note that the export can take several second.';
         $('<div>').html (text).addClass ('ov_dialog_section').appendTo (contentDiv);
- 
+
         let buttonWidth = 40;
         let optionsHeight = 50;
         let exportFormatSelect = $('<div>').addClass ('ov_dialog_select').appendTo (contentDiv);
@@ -115,7 +115,7 @@ OV.ExportDialog = class
             });
         }
         this.OnExportFormatSelect (0);
-     
+
         mainDialog.Show ();
         this.callbacks.onDialog (mainDialog);
     }
@@ -146,7 +146,7 @@ OV.ExportDialog = class
             formatInput.change (() => {
                 this.formatParameters.selectedFormat = format;
             });
-        }        
+        }
     }
 
     ExportFormat (model, viewer)
@@ -206,21 +206,21 @@ OV.ExportDialog = class
 
         let text = 'You can download your exported files here.';
         $('<div>').html (text).addClass ('ov_dialog_section').appendTo (contentDiv);
-        
+
         let fileListSection = $('<div>').addClass ('ov_dialog_section').appendTo (contentDiv);
-        let fileList = $('<div>').addClass ('ov_dialog_file_list').addClass ('ov_thin_scrollbar').appendTo (fileListSection);        
-        
+        let fileList = $('<div>').addClass ('ov_dialog_file_list').addClass ('ov_thin_scrollbar').appendTo (fileListSection);
+
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
             let url = OV.CreateObjectUrl (file.GetBufferContent ());
             let fileLink = $('<a>').addClass ('ov_dialog_file_link').appendTo (fileList);
             fileLink.attr ('href', url);
             fileLink.attr ('download', file.GetName ());
-            OV.CreateSvgIcon (fileLink, 'file_download', 'ov_file_link_img');
+            OV.AddSvgIcon (fileLink, 'file_download', 'ov_file_link_img');
             $('<div>').addClass ('ov_dialog_file_link_text').html (file.GetName ()).appendTo (fileLink);
         }
 
         dialog.Show ();
         this.callbacks.onDialog (dialog);
-    }    
+    }
 };

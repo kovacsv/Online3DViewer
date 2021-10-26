@@ -6,7 +6,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         this.backgroundColorInput = null;
         this.defaultColorInput = null;
         this.defaultColorWarning = null;
-        this.themeInput = null;        
+        this.themeInput = null;
     }
 
     GetTitle ()
@@ -101,7 +101,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         let warningDiv = null;
         if (warningText !== null) {
             warningDiv = $('<div>').addClass ('ov_sidebar_settings_padded').appendTo (contentDiv);
-            OV.CreateSvgIcon (warningDiv, 'warning', 'left_inline light');
+            OV.AddSvgIcon (warningDiv, 'warning', 'left_inline light');
             $('<div>').addClass ('ov_sidebar_settings_warning').html (warningText).appendTo (warningDiv);
         }
         return {
@@ -133,9 +133,8 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         }
 
         let contentDiv = $('<div>').addClass ('ov_sidebar_settings_content').appendTo (this.contentDiv);
-        // TODO: icon
         let titleDiv = $('<div>').addClass ('ov_sidebar_subtitle').appendTo (contentDiv);
-        OV.CreateSvgIcon (titleDiv, 'theme', 'ov_sidebar_subtitle_icon');
+        OV.AddSvgIcon (titleDiv, 'theme', 'ov_sidebar_subtitle_icon');
         $('<div>').html ('Appearance').appendTo (titleDiv);
         let buttonsDiv = $('<div>').addClass ('ov_sidebar_settings_padded').appendTo (contentDiv);
         let result = {
