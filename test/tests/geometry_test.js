@@ -6,21 +6,6 @@ function SeededRandom (from, to, seed)
 	return random * (to - from) + from;
 }
 
-function CreateYRot90Quaternion ()
-{
-    let angle = Math.PI / 2.0;
-    let rotX = 0.0;
-    let rotY = 1.0;
-    let rotZ = 0.0;
-    let quaternion = new OV.Quaternion (
-        Math.sin (angle / 2.0) * rotX,
-        Math.sin (angle / 2.0) * rotY,
-        Math.sin (angle / 2.0) * rotZ,
-        Math.cos (angle / 2.0)
-    );
-    return quaternion;
-}
-
 describe ('Comparison', function () {
     it ('IsEqual', function () {
         assert (OV.IsEqual (1.0, 1.0));
@@ -32,7 +17,7 @@ describe ('Comparison', function () {
         assert (OV.IsGreater (1.0, 0.0));
         assert (OV.IsGreater (1.0001, 1.0));
         assert (!OV.IsGreater (1.000000001, 1.0));
-        
+
         assert (OV.IsGreaterOrEqual (1.0001, 1.0));
         assert (OV.IsGreaterOrEqual (1.000000001, 1.0));
         assert (OV.IsGreaterOrEqual (0.999999999, 1.0));
@@ -47,7 +32,7 @@ describe ('Comparison', function () {
         assert (OV.IsLowerOrEqual (1.0, 1.0001));
         assert (OV.IsLowerOrEqual (1.0, 1.000000001));
         assert (OV.IsLowerOrEqual (1.0, 0.999999999));
-        assert (!OV.IsLowerOrEqual (1.0, 0.999));        
+        assert (!OV.IsLowerOrEqual (1.0, 0.999));
     });
 });
 
@@ -57,22 +42,22 @@ describe ('Coord', function () {
         var c = new OV.Coord3D (2.0, 0.0, 0.0);
         assert.strictEqual (c.Length (), 2.0);
     });
-    
+
     it ('Multiply Scalar', function () {
         var c = new OV.Coord3D (2.0, 0.0, 0.0);
         c.MultiplyScalar (3.0);
         assert.strictEqual (c.x, 6.0);
         assert.strictEqual (c.y, 0.0);
         assert.strictEqual (c.z, 0.0);
-    });        
-    
+    });
+
     it ('Normalize', function () {
         var c = new OV.Coord3D (2.0, 0.0, 0.0);
         c.Normalize ();
         assert.strictEqual (c.x, 1.0);
         assert.strictEqual (c.y, 0.0);
         assert.strictEqual (c.z, 0.0);
-    });    
+    });
 });
 
 describe ('Triangle', function() {
@@ -90,7 +75,7 @@ describe ('Triangle', function() {
 
 describe ('Transformation', function() {
     it ('Basic Test', function () {
-        let rotation = CreateYRot90Quaternion ();
+        let rotation = OV.QuaternionFromAxisAngle (new OV.Coord3D (0.0, 1.0, 0.0), Math.PI / 2.0);
 
         let coord = new OV.Coord3D (1.0, 2.0, 3.0);
 
@@ -105,7 +90,7 @@ describe ('Transformation', function() {
         tr.AppendMatrix (new OV.Matrix ().CreateRotation (rotation.x, rotation.y, rotation.z, rotation.w));
         assert (!tr.IsIdentity ());
         assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (15.0, 8.0, -3.0)));
-        
+
         tr.AppendMatrix (new OV.Matrix ().CreateTranslation (4.0, 5.0, 6.0));
         assert (!tr.IsIdentity ());
         assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
@@ -129,16 +114,16 @@ describe ('Transformation', function() {
     });
 
     it ('TRS Compose Test', function () {
-        let rotation = CreateYRot90Quaternion ();
+        let rotation = OV.QuaternionFromAxisAngle (new OV.Coord3D (0.0, 1.0, 0.0), Math.PI / 2.0);
         let coord = new OV.Coord3D (1.0, 2.0, 3.0);
 
         let tr = new OV.Transformation ();
         tr.SetMatrix (new OV.Matrix ().ComposeTRS (new OV.Coord3D (4.0, 5.0, 6.0), rotation, new OV.Coord3D (3.0, 4.0, 5.0)));
         assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
-    });    
+    });
 
     it ('TRS Compose Test 2', function () {
-        let rotation = CreateYRot90Quaternion ();
+        let rotation = OV.QuaternionFromAxisAngle (new OV.Coord3D (0.0, 1.0, 0.0), Math.PI / 2.0);
         let coord = new OV.Coord3D (1.0, 2.0, 3.0);
 
         let tr = new OV.Transformation ();
@@ -158,7 +143,7 @@ describe ('Transformation', function() {
         tr.SetMatrix (new OV.Matrix ().CreateRotation (0.0, 0.0, 0.0, 1.0));
         assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), coord));
     });
-    
+
     it ('Clone Test', function () {
         let tr = new OV.Transformation ();
         let cloned = tr.Clone ();
@@ -188,7 +173,7 @@ describe ('Tween', function() {
         assert (OV.IsEqual (OV.ParabolicTweenFunction (10.0, 0, 10), 0.0));
         assert (OV.IsEqual (OV.ParabolicTweenFunction (10.0, 5, 10), 5.0));
         assert (OV.IsEqual (OV.ParabolicTweenFunction (10.0, 10, 10), 10.0));
-    });    
+    });
 
     it ('Linear Tween Coordinates', function () {
         let beg = new OV.Coord3D (0.0, 0.0, 0.0);
@@ -276,7 +261,7 @@ describe ('Octree', function() {
             new OV.Coord3D (-10.0, -10.0, -10.0),
             new OV.Coord3D (10.0, 10.0, 10.0)
         );
-        
+
         let octree = new OV.Octree (box);
 
         let count = 1000;

@@ -9,7 +9,7 @@ describe ('Mesh', function() {
         assert.strictEqual (mesh.TextureUVCount (), 0);
         assert.strictEqual (mesh.TriangleCount (), 0);
     });
-    
+
     it ('Set Name', function () {
         var mesh = new OV.Mesh ();
         mesh.SetName ('example');
@@ -37,7 +37,7 @@ describe ('Mesh', function() {
         assert.strictEqual (normal.y, 2.0);
         assert.strictEqual (normal.z, 3.0);
     });
-    
+
     it ('Add Texture UV', function () {
         var mesh = new OV.Mesh ();
         var index = mesh.AddTextureUV (new OV.Coord2D (1.0, 2.0))
@@ -47,7 +47,7 @@ describe ('Mesh', function() {
         assert.strictEqual (uv.x, 1.0);
         assert.strictEqual (uv.y, 2.0);
     });
-    
+
     it ('Add Triangle', function () {
         var mesh = new OV.Mesh ();
         var triangle = new OV.Triangle (1, 2, 3);
@@ -84,26 +84,15 @@ describe ('Mesh', function() {
         triangle.SetTextureUVs (0, 1, 2);
         mesh.AddTriangle (triangle);
 
-        let angle = -Math.PI / 2.0;
-        let rotX = 0.0;
-        let rotY = 1.0;
-        let rotZ = 0.0;
-
-        let rotation = [
-            Math.sin (angle / 2.0) * rotX,
-            Math.sin (angle / 2.0) * rotY,
-            Math.sin (angle / 2.0) * rotZ,
-            Math.cos (angle / 2.0)
-        ];
-
+        let rotation = OV.QuaternionFromAxisAngle (new OV.Coord3D (0.0, 1.0, 0.0), -Math.PI / 2.0);
         let transformation = new OV.Transformation ();
         transformation.AppendMatrix (new OV.Matrix ().CreateScale (2.0, 1.0, 1.0));
-        transformation.AppendMatrix (new OV.Matrix ().CreateRotation (rotation[0], rotation[1], rotation[2], rotation[3]));
+        transformation.AppendMatrix (new OV.Matrix ().CreateRotation (rotation.x, rotation.y, rotation.z, rotation.w));
         transformation.AppendMatrix (new OV.Matrix ().CreateTranslation (0.0, 0.0, 1.0));
         OV.TransformMesh (mesh, transformation);
         assert (OV.CoordIsEqual3D (mesh.GetVertex (0), new OV.Coord3D (0.0, 0.0, 1.0)));
         assert (OV.CoordIsEqual3D (mesh.GetVertex (1), new OV.Coord3D (0.0, 0.0, 3.0)));
         assert (OV.CoordIsEqual3D (mesh.GetVertex (2), new OV.Coord3D (0.0, 1.0, 3.0)));
         assert (OV.CoordIsEqual3D (mesh.GetNormal (0), new OV.Coord3D (-1.0, 0.0, 0.0)));
-    });        
+    });
 });

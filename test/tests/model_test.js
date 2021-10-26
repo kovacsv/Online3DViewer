@@ -69,7 +69,7 @@ describe ('Model', function () {
 
     it ('Remove Mesh', function () {
         var model = new OV.Model ();
-        
+
         let mesh1 = new OV.Mesh ();
         mesh1.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
         mesh1.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
@@ -97,7 +97,7 @@ describe ('Model', function () {
         assert.strictEqual (model.MeshCount (), 0);
         assert.strictEqual (model.VertexCount (), 0);
         assert.strictEqual (model.TriangleCount (), 0);
-    });    
+    });
 });
 
 describe ('Model Finalization', function () {
@@ -140,10 +140,10 @@ describe ('Model Finalization', function () {
         var meshIndex = model.AddMesh (mesh);
 
         OV.FinalizeModel (model, function () { return new OV.Material (OV.MaterialType.Phong) });
-        
+
         var theMesh = model.GetMesh (meshIndex);
         assert.strictEqual (theMesh.NormalCount (), 6);
-        
+
         var normal = theMesh.GetNormal (0);
         assert.strictEqual (normal.x, 0.0);
         assert.strictEqual (normal.y, -0.7071067811865475);
@@ -173,15 +173,15 @@ describe ('Model Finalization', function () {
         var meshIndex = model.AddMesh (mesh);
 
         OV.FinalizeModel (model, function () { return new OV.Material (OV.MaterialType.Phong) });
-        
+
         var theMesh = model.GetMesh (meshIndex);
         assert.strictEqual (theMesh.NormalCount (), 9);
-        
+
         var normal = theMesh.GetNormal (0);
         assert.strictEqual (normal.x, 0.0);
         assert.strictEqual (normal.y, -0.7071067811865475);
         assert.strictEqual (normal.z, 0.7071067811865475);
-    });    
+    });
 });
 
 describe ('Color Conversion', function () {
@@ -307,7 +307,9 @@ function CreateTranslatedRotatedCubesModel ()
 
     let rotatedNode = new OV.Node ();
     rotatedNode.SetName ('Rotated');
-    rotatedNode.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateRotation (0.0, 0.0, 0.7071067811865475, 0.7071067811865476)));
+
+    let rotation = OV.QuaternionFromAxisAngle (new OV.Coord3D (0.0, 0.0, 1.0), Math.PI / 2.0);
+    rotatedNode.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateRotation (rotation.x, rotation.y, rotation.z, rotation.w)));
 
     let translatedRotatedNode = new OV.Node ();
     translatedRotatedNode.SetName ('Translated and Rotated');
@@ -371,7 +373,7 @@ describe ('Node Hierarchy', function () {
                     name : 'Node 2',
                     childNodes : [],
                     meshNames : []
-                }                
+                }
             ],
             meshNames : ['Mesh 1', 'Mesh 2']
         });
@@ -404,7 +406,7 @@ describe ('Node Hierarchy', function () {
                     name : 'Node 2',
                     childNodes : [],
                     meshNames : []
-                }                
+                }
             ],
             meshNames : ['Mesh 1', 'Mesh 2']
         });
@@ -439,7 +441,7 @@ describe ('Node Hierarchy', function () {
                     name : 'Node 2',
                     childNodes : [],
                     meshNames : []
-                }                
+                }
             ],
             meshNames : ['Mesh 1', 'Mesh 2']
         });
@@ -466,7 +468,7 @@ describe ('Node Hierarchy', function () {
                         }
                     ],
                     meshNames : []
-                }                
+                }
             ],
             meshNames : ['Cube']
         });
@@ -513,7 +515,7 @@ describe ('Node Hierarchy', function () {
                         }
                     ],
                     meshNames : []
-                }                
+                }
             ],
             meshNames : ['Cube']
         });
@@ -537,5 +539,5 @@ describe ('Node Hierarchy', function () {
 
         assert (OV.CoordIsEqual3D (boundingBox3.min, new OV.Coord3D (0.0, 0.0, 0.0)));
         assert (OV.CoordIsEqual3D (boundingBox3.max, new OV.Coord3D (1.0, 1.0, 1.0)));
-    });    
+    });
 });
