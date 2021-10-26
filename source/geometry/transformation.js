@@ -51,3 +51,8 @@ OV.Transformation = class
         return new OV.Transformation (clonedMatrix);
     }
 };
+
+OV.TransformationIsEqual = function (a, b)
+{
+    return OV.MatrixIsEqual (a.GetMatrix (), b.GetMatrix ());
+};

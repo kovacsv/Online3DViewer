@@ -394,3 +394,15 @@ OV.Matrix = class
         return new OV.Matrix (result);
     }
 };
+
+OV.MatrixIsEqual = function (a, b)
+{
+    const aMatrix = a.Get ();
+    const bMatrix = b.Get ();
+	for (let i = 0; i < 16; i++) {
+        if (!OV.IsEqual (aMatrix[i], bMatrix[i])) {
+            return false;
+        }
+    }
+    return true;
+};

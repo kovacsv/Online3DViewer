@@ -17,7 +17,7 @@ describe ('Node', function() {
         let node2 = new OV.Node ();
         assert (node2.IsEmpty ());
         node2.AddChildNode (new OV.Node ());
-        assert (!node2.IsEmpty ());        
+        assert (!node2.IsEmpty ());
     });
 
     it ('Set Name', function () {
@@ -25,7 +25,7 @@ describe ('Node', function() {
         node.SetName ('New Name');
         assert.strictEqual (node.GetName (), 'New Name');
     });
-    
+
     it ('Set Transformation', function () {
         let node = new OV.Node ();
         assert (node.GetTransformation ().IsIdentity ());
@@ -81,7 +81,7 @@ describe ('Node', function() {
             enumeratedChildren.push (child);
         });
         assert.deepStrictEqual (enumeratedChildren, [child1, child11, child12, child2]);
-    });    
+    });
 
     it ('Recursive Mesh Index Enumeration', function () {
         let node = new OV.Node ();
@@ -111,17 +111,45 @@ describe ('Node', function() {
         assert.deepStrictEqual (enumerated, [1, 2, 3, 5, 6, 4]);
     });
 
+    it ('World Transformation', function () {
+
+        let rotation = OV.QuaternionFromAxisAngle (new OV.Coord3D (0.0, 0.0, 1.0), Math.PI / 2.0);
+        let tr1 = new OV.Transformation (new OV.Matrix ().CreateTranslation (2.0, 0.0, 0.0));
+        let tr2 = new OV.Transformation (new OV.Matrix ().CreateRotation (rotation.x, rotation.y, rotation.z, rotation.w));
+        let tr3 = new OV.Transformation (new OV.Matrix ().CreateTranslation (0.0, 0.0, 2.0));
+
+        let refTr = new OV.Transformation ().Append (tr1).Append (tr2).Append (tr3);
+
+        let node1 = new OV.Node ();
+        node1.SetTransformation (tr1);
+
+        let node2 = new OV.Node ();
+        node2.SetTransformation (tr2);
+
+        let node3 = new OV.Node ();
+        node3.SetTransformation (tr3);
+
+        node1.AddChildNode (node2);
+        node2.AddChildNode (node3);
+
+        let nodeTr = node3.GetWorldTransformation ();
+        assert (OV.TransformationIsEqual (node1.GetTransformation (), tr1));
+        assert (OV.TransformationIsEqual (node2.GetTransformation (), tr2));
+        assert (OV.TransformationIsEqual (node3.GetTransformation (), tr3));
+        assert (OV.TransformationIsEqual (nodeTr, refTr));
+    });
+
     it ('Id Generator', function () {
         let node1 = new OV.Node ();
         let node2 = new OV.Node ();
         let node3 = new OV.Node ();
         let node4 = new OV.Node ();
-        
+
         assert.strictEqual (node1.GetId (), 0);
         assert.strictEqual (node2.GetId (), 0);
         assert.strictEqual (node3.GetId (), 0);
         assert.strictEqual (node4.GetId (), 0);
-        
+
         node1.AddChildNode (node2);
         assert.strictEqual (node2.GetId (), 1);
 

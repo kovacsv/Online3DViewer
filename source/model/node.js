@@ -42,7 +42,7 @@ OV.Node = class
     {
         return this.name;
     }
-    
+
     SetName (name)
     {
         this.name = name;
@@ -63,9 +63,21 @@ OV.Node = class
         return this.transformation;
     }
 
+    GetWorldTransformation ()
+    {
+        let transformation = this.transformation.Clone ();
+        let parent = this.parent;
+        while (parent !== null) {
+            const parentTransformation = parent.transformation.Clone ();
+            transformation = parentTransformation.Append (transformation);
+            parent = parent.parent;
+        }
+        return transformation;
+    }
+
     SetTransformation (transformation)
     {
-        this.transformation = transformation; 
+        this.transformation = transformation;
     }
 
     AddChildNode (node)
