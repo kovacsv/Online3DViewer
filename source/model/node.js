@@ -68,8 +68,7 @@ OV.Node = class
         let transformation = this.transformation.Clone ();
         let parent = this.parent;
         while (parent !== null) {
-            const parentTransformation = parent.transformation.Clone ();
-            transformation = parentTransformation.Append (transformation);
+            transformation.Append (parent.transformation);
             parent = parent.parent;
         }
         return transformation;

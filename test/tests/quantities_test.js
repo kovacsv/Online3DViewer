@@ -18,7 +18,7 @@ describe ('Quantities', function () {
     it ('Two Cubes Connecting in One Vertex Volume Calculation', function () {
         const model = testUtils.GetTwoCubesConnectingInOneVertexModel ();
         assert (OV.IsEqual (OV.CalculateVolume (model), 2.0));
-    });  
+    });
 
     it ('Two Cubes Connecting in One Edge Volume Calculation', function () {
         const model = testUtils.GetTwoCubesConnectingInOneEdgeModel ();
@@ -28,7 +28,7 @@ describe ('Quantities', function () {
     it ('Two Cubes Connecting in One Face Volume Calculation', function () {
         const model = testUtils.GetTwoCubesConnectingInOneFaceModel ();
         assert (OV.IsEqual (OV.CalculateVolume (model), 2.0));
-    });  
+    });
 
     it ('Cube with Wrongly Oriented Triangle Volume Calculation', function () {
         var mesh = new OV.Mesh ();
@@ -90,8 +90,10 @@ describe ('Quantities', function () {
     it ('Cube Scaled Volume and Area Calculation', function () {
         const mesh = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         const transformation = new OV.Transformation (new OV.Matrix ().CreateScale (2.0, 2.0, 2.0));
-        const meshInstance = new OV.MeshInstance (mesh, transformation);
+        let node = new OV.Node ();
+        node.SetTransformation (transformation);
+        const meshInstance = new OV.MeshInstance (node, mesh);
         assert (OV.IsEqual (OV.CalculateVolume (meshInstance), 8.0));
         assert (OV.IsEqual (OV.CalculateSurfaceArea (meshInstance), 24.0));
-    });    
+    });
 });

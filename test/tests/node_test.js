@@ -118,7 +118,7 @@ describe ('Node', function() {
         let tr2 = new OV.Transformation (new OV.Matrix ().CreateRotation (rotation.x, rotation.y, rotation.z, rotation.w));
         let tr3 = new OV.Transformation (new OV.Matrix ().CreateTranslation (0.0, 0.0, 2.0));
 
-        let refTr = new OV.Transformation ().Append (tr1).Append (tr2).Append (tr3);
+        let refTr = new OV.Transformation ().Append (tr3).Append (tr2).Append (tr1);
 
         let node1 = new OV.Node ();
         node1.SetTransformation (tr1);

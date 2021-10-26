@@ -4,7 +4,7 @@ var testUtils = require ('../utils/testutils.js');
 describe ('Model Utils', function () {
     it ('Create Merged Model', function () {
         var model = new OV.Model ();
-        
+
         var mesh1 = new OV.Mesh ();
         mesh1.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
         mesh1.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
@@ -72,11 +72,11 @@ describe ('Model Utils', function () {
                             normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
                             uvs : [],
                             mat : 0
-                        }                        
+                        }
                     ]
                 }
             ]
-        });        
+        });
     });
 
     it ('Mesh Bounding Box', function () {
@@ -89,15 +89,17 @@ describe ('Model Utils', function () {
     it ('Mesh Instance Bounding Box', function () {
         let cube = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         let transformation = new OV.Transformation (new OV.Matrix ().CreateTranslation (2.0, 0.0, 0.0));
-        let cubeInstance = new OV.MeshInstance (cube, transformation);
+        let node = new OV.Node ();
+        node.SetTransformation (transformation);
+        let cubeInstance = new OV.MeshInstance (node, cube);
         let cubeInstanceBounds = OV.GetBoundingBox (cubeInstance);
         assert (OV.CoordIsEqual3D (cubeInstanceBounds.min, new OV.Coord3D (2.0, 0.0, 0.0)));
         assert (OV.CoordIsEqual3D (cubeInstanceBounds.max, new OV.Coord3D (3.0, 1.0, 1.0)));
-    });    
+    });
 
     it ('Model Bounding Box', function () {
         var model = new OV.Model ();
-        
+
         var mesh1 = new OV.Mesh ();
         mesh1.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
         mesh1.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
@@ -138,7 +140,7 @@ describe ('Model Utils', function () {
         for (let i = 0; i < topology.edges.length; i++) {
             assert.strictEqual (topology.edges[i].triangles.length, 2);
         }
-    });  
+    });
 
     it ('Cube Topology Calculation', function () {
         let cube = testUtils.GetModelWithOneMesh (OV.GenerateCuboid (null, 1.0, 1.0, 1.0));
@@ -181,7 +183,7 @@ describe ('Model Utils', function () {
         let topology = OV.GetTopology (model);
         assert.strictEqual (topology.vertices.length, 15);
         assert (OV.IsSolid (model));
-    });  
+    });
 
     it ('Two Cubes Connecting in One Edge Topology Calculation', function () {
         const model = testUtils.GetTwoCubesConnectingInOneEdgeModel ();
@@ -195,5 +197,5 @@ describe ('Model Utils', function () {
         let topology = OV.GetTopology (model);
         assert.strictEqual (topology.vertices.length, 12);
         assert (OV.IsSolid (model));
-    });     
+    });
 });

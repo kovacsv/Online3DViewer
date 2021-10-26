@@ -309,7 +309,7 @@ function CreateTranslatedRotatedCubesModel ()
     rotatedNode.SetName ('Rotated');
 
     let rotation = OV.QuaternionFromAxisAngle (new OV.Coord3D (0.0, 0.0, 1.0), Math.PI / 2.0);
-    rotatedNode.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateRotation (rotation.x, rotation.y, rotation.z, rotation.w)));
+    rotatedNode.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateRotation (0.0, 0.0, 0.7071067811865475, 0.7071067811865476)));
 
     let translatedRotatedNode = new OV.Node ();
     translatedRotatedNode.SetName ('Translated and Rotated');
@@ -484,14 +484,14 @@ describe ('Node Hierarchy', function () {
         let boundingBox2 = OV.GetBoundingBox (meshInstances[1]);
         let boundingBox3 = OV.GetBoundingBox (meshInstances[2]);
 
-        assert (OV.CoordIsEqual3D (boundingBox1.min, new OV.Coord3D (2.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox1.max, new OV.Coord3D (3.0, 1.0, 1.0)));
+        assert (OV.CoordIsEqual3D (boundingBox1.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox1.max, new OV.Coord3D (1.0, 1.0, 1.0)));
 
-        assert (OV.CoordIsEqual3D (boundingBox2.min, new OV.Coord3D (-1.0, 2.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox2.max, new OV.Coord3D (0.0, 3.0, 1.0)));
+        assert (OV.CoordIsEqual3D (boundingBox2.min, new OV.Coord3D (2.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox2.max, new OV.Coord3D (3.0, 1.0, 1.0)));
 
-        assert (OV.CoordIsEqual3D (boundingBox3.min, new OV.Coord3D (0.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox3.max, new OV.Coord3D (1.0, 1.0, 1.0)));
+        assert (OV.CoordIsEqual3D (boundingBox3.min, new OV.Coord3D (-1.0, 2.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox3.max, new OV.Coord3D (0.0, 3.0, 1.0)));
     });
 
     it ('Enumerate transformed mesh instances', function () {
@@ -531,13 +531,13 @@ describe ('Node Hierarchy', function () {
         let boundingBox2 = OV.GetBoundingBox (meshes[1]);
         let boundingBox3 = OV.GetBoundingBox (meshes[2]);
 
-        assert (OV.CoordIsEqual3D (boundingBox1.min, new OV.Coord3D (2.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox1.max, new OV.Coord3D (3.0, 1.0, 1.0)));
+        assert (OV.CoordIsEqual3D (boundingBox1.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox1.max, new OV.Coord3D (1.0, 1.0, 1.0)));
 
-        assert (OV.CoordIsEqual3D (boundingBox2.min, new OV.Coord3D (-1.0, 2.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox2.max, new OV.Coord3D (0.0, 3.0, 1.0)));
+        assert (OV.CoordIsEqual3D (boundingBox2.min, new OV.Coord3D (2.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox2.max, new OV.Coord3D (3.0, 1.0, 1.0)));
 
-        assert (OV.CoordIsEqual3D (boundingBox3.min, new OV.Coord3D (0.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox3.max, new OV.Coord3D (1.0, 1.0, 1.0)));
+        assert (OV.CoordIsEqual3D (boundingBox3.min, new OV.Coord3D (-1.0, 2.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox3.max, new OV.Coord3D (0.0, 3.0, 1.0)));
     });
 });

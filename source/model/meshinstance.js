@@ -1,10 +1,29 @@
+OV.MeshInstanceId = class
+{
+    constructor (nodeId, meshIndex)
+    {
+        this.nodeId = nodeId;
+        this.meshIndex = meshIndex;
+    }
+
+    IsEqual (rhs)
+    {
+        return this.nodeId === rhs.nodeId && this.meshIndex === rhs.meshIndex;
+    }
+
+    GetKey ()
+    {
+        return this.nodeId.toString () + ':' + this.meshIndex.toString ();
+    }
+};
+
 OV.MeshInstance = class extends OV.Object3D
 {
-    constructor (mesh, transformation)
+    constructor (node, mesh)
     {
         super ();
+        this.node = node;
         this.mesh = mesh;
-        this.transformation = transformation;
     }
 
     VertexCount ()
@@ -29,11 +48,12 @@ OV.MeshInstance = class extends OV.Object3D
 
     EnumerateVertices (onVertex)
     {
-        if (this.transformation.IsIdentity ()) {
+        let transformation = this.node.GetWorldTransformation ();
+        if (transformation.IsIdentity ()) {
             this.mesh.EnumerateVertices (onVertex);
         } else {
             this.mesh.EnumerateVertices ((vertex) => {
-                const transformed = this.transformation.TransformCoord3D (vertex);
+                const transformed = transformation.TransformCoord3D (vertex);
                 onVertex (transformed);
             });
         }
@@ -46,15 +66,24 @@ OV.MeshInstance = class extends OV.Object3D
 
     EnumerateTriangleVertices (onTriangleVertices)
     {
-        if (this.transformation.IsIdentity ()) {
+        let transformation = this.node.GetWorldTransformation ();
+        if (transformation.IsIdentity ()) {
             this.mesh.EnumerateTriangleVertices (onTriangleVertices);
         } else {
             this.mesh.EnumerateTriangleVertices ((v0, v1, v2) => {
-                const v0Transformed = this.transformation.TransformCoord3D (v0);
-                const v1Transformed = this.transformation.TransformCoord3D (v1);
-                const v2Transformed = this.transformation.TransformCoord3D (v2);
+                const v0Transformed = transformation.TransformCoord3D (v0);
+                const v1Transformed = transformation.TransformCoord3D (v1);
+                const v2Transformed = transformation.TransformCoord3D (v2);
                 onTriangleVertices (v0Transformed, v1Transformed, v2Transformed);
             });
         }
+    }
+
+    GetTransformedMesh ()
+    {
+        let transformation = this.node.GetWorldTransformation ();
+        const transformed = OV.CloneMesh (this.mesh);
+        OV.TransformMesh (transformed, transformation);
+        return transformed;
     }
 };
