@@ -182,6 +182,50 @@ describe ('Model Finalization', function () {
         assert.strictEqual (normal.y, -0.7071067811865475);
         assert.strictEqual (normal.z, 0.7071067811865475);
     });
+
+    it ('Remove Empty Meshes and Nodes', function () {
+        let mesh = new OV.Mesh ();
+        let emptyMesh = new OV.Mesh ();
+
+        let v0 = mesh.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
+        let v1 = mesh.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
+        let v2 = mesh.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
+        mesh.AddTriangle (new OV.Triangle (v0, v1, v2));
+
+        let model = new OV.Model ()
+        let meshIndex = model.AddMesh (mesh);
+        let emptyMeshIndex = model.AddMesh (emptyMesh);
+
+        let rootNode = model.GetRootNode ();
+
+        let node1 = new OV.Node ();
+        rootNode.AddChildNode (node1);
+        node1.AddMeshIndex (meshIndex);
+        node1.AddMeshIndex (emptyMeshIndex);
+
+        let node2 = new OV.Node ();
+        rootNode.AddChildNode (node2);
+
+        let node3 = new OV.Node ();
+        rootNode.AddChildNode (node3);
+        node3.AddMeshIndex (meshIndex);
+        node3.AddMeshIndex (emptyMeshIndex);
+
+        OV.FinalizeModel (model, function () { return new OV.Material (OV.MaterialType.Phong) });
+        assert.strictEqual (model.MeshCount (), 1);
+
+        let meshInstances = [];
+        model.EnumerateMeshInstances ((meshInstance) => {
+            meshInstances.push (meshInstance);
+        });
+        assert.strictEqual (meshInstances.length, 2);
+
+        let nodeCount = 0;
+        rootNode.Enumerate ((node) => {
+            nodeCount += 1;
+        });
+        assert.strictEqual (nodeCount, 3);
+    });
 });
 
 describe ('Color Conversion', function () {

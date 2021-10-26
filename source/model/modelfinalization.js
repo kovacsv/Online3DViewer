@@ -125,6 +125,18 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
         }
         FinalizeMesh (mesh, getDefaultMaterialIndex);
     }
+
+    let rootNode = model.GetRootNode ();
+    let emptyNodes = [];
+    rootNode.EnumerateChildren ((node) => {
+        if (node.IsEmpty ()) {
+            emptyNodes.push (node);
+        }
+    });
+    for (let node of emptyNodes) {
+        let parentNode = node.GetParent ();
+        parentNode.RemoveChildNode (node);
+    }
 };
 
 OV.CheckModel = function (model)

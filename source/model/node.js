@@ -90,6 +90,12 @@ OV.Node = class
         return this.childNodes.length - 1;
     }
 
+    RemoveChildNode (node)
+    {
+        let index = this.childNodes.indexOf (node);
+        this.childNodes.splice (index, 1);
+    }
+
     GetChildNodes ()
     {
         return this.childNodes;
