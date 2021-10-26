@@ -1,44 +1,44 @@
 OV.MaterialItem = class extends OV.TreeViewButtonItem
 {
-    constructor (name, originalIndex, callbacks)
+    constructor (name, materialIndex, callbacks)
     {
         super (name);
-        this.originalIndex = originalIndex;
+        this.materialIndex = materialIndex;
         this.OnNameClick (() => {
-            callbacks.onSelected (this.originalIndex);
+            callbacks.onSelected (this.materialIndex);
         });
     }
 };
 
 OV.MeshItem = class extends OV.TreeViewButtonItem
 {
-    constructor (name, originalIndex, callbacks)
+    constructor (name, meshInstanceId, callbacks)
     {
         super (name);
-        
-        this.originalIndex = originalIndex;
+
+        this.meshInstanceId = meshInstanceId;
         this.visible = true;
 
         this.fitToWindowButton = new OV.TreeViewButton ('fit');
         this.fitToWindowButton.OnClick (() => {
-            callbacks.onFitToWindow (this.originalIndex);
+            callbacks.onFitToWindow (this.meshInstanceId);
         });
         this.AddButton (this.fitToWindowButton);
 
         this.showHideButton = new OV.TreeViewButton ('visible');
         this.showHideButton.OnClick ((ev) => {
-            callbacks.onShowHide (this.originalIndex);
+            callbacks.onShowHide (this.meshInstanceId);
         });
         this.AddButton (this.showHideButton);
 
         this.OnNameClick (() => {
-            callbacks.onSelected (this.originalIndex);
-        });        
+            callbacks.onSelected (this.meshInstanceId);
+        });
     }
 
-    GetMeshIndex ()
+    GetMeshInstanceId ()
     {
-        return this.originalIndex;
+        return this.meshInstanceId;
     }
 
     IsVisible ()
@@ -62,7 +62,7 @@ OV.NavigatorItems = class
     constructor ()
     {
         this.materialIndexToItem = {};
-        this.meshIndexToItem = {};
+        this.meshInstanceIdToItem = {};
     }
 
     MaterialItemCount ()
@@ -82,22 +82,22 @@ OV.NavigatorItems = class
 
     MeshItemCount ()
     {
-        return Object.keys (this.meshIndexToItem).length; 
+        return Object.keys (this.meshInstanceIdToItem).length;
     }
 
-    GetMeshItem (meshIndex)
+    GetMeshItem (meshInstanceId)
     {
-        return this.meshIndexToItem[meshIndex];
+        return this.meshInstanceIdToItem[meshInstanceId.GetKey ()];
     }
 
-    AddMeshItem (meshIndex, meshItem)
+    AddMeshItem (meshInstanceId, meshItem)
     {
-        this.meshIndexToItem[meshIndex] = meshItem;
+        this.meshInstanceIdToItem[meshInstanceId.GetKey ()] = meshItem;
     }
 
     EnumerateMeshItems (processor)
     {
-        for (const meshItem of Object.values (this.meshIndexToItem)) {
+        for (const meshItem of Object.values (this.meshInstanceIdToItem)) {
             if (!processor (meshItem)) {
                 break;
             }
@@ -106,7 +106,7 @@ OV.NavigatorItems = class
 
     Clear ()
     {
-        this.materialItems = {};
-        this.meshItems = {};
+        this.materialIndexToItem = {};
+        this.meshInstanceIdToItem = {};
     }
 };

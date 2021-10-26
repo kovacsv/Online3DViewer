@@ -6,10 +6,28 @@ OV.SelectionType =
 
 OV.Selection = class
 {
-    constructor (type, index)
+    constructor (type, data)
     {
         this.type = type;
-        this.index = index;
+        this.materialIndex = null;
+        this.meshInstanceId = null;
+        if (this.type === OV.SelectionType.Material) {
+            this.materialIndex = data;
+        } else if (this.type === OV.SelectionType.Mesh) {
+            this.meshInstanceId = data;
+        }
+    }
+
+    IsEqual (rhs)
+    {
+        if (this.type !== rhs.type) {
+            return false;
+        }
+        if (this.type === OV.SelectionType.Material) {
+            return this.materialIndex === rhs.materialIndex;
+        } else if (this.type === OV.SelectionType.Mesh) {
+            return this.meshInstanceId.IsEqual (rhs.meshInstanceId);
+        }
     }
 };
 
@@ -46,15 +64,15 @@ OV.NavigatorInfoPanel = class
                     return OV.CalculatePopupPositionToElementBottomRight (button, contentDiv);
                 },
                 onHoverStart : (index) => {
-                    const meshItem = usedByMeshes[index];
-                    callbacks.onMeshHover (meshItem.index);
+                    const meshData = usedByMeshes[index];
+                    callbacks.onMeshHover (meshData.meshId);
                 },
                 onHoverStop : (index) => {
                     callbacks.onMeshHover (null);
                 },
                 onClick : (index) => {
-                    const meshItem = usedByMeshes[index];
-                    callbacks.onMeshSelect (meshItem.index);
+                    const meshData = usedByMeshes[index];
+                    callbacks.onMeshSelect (meshData.meshId);
                 }
             });
         });
@@ -105,7 +123,7 @@ OV.NavigatorInfoPanel = class
         if (this.popup !== null) {
             this.popup.Hide ();
             this.popup = null;
-        }        
+        }
         this.parentDiv.empty ();
     }
 };
@@ -123,7 +141,7 @@ OV.Navigator = class
         this.infoPanel = new OV.NavigatorInfoPanel (this.infoDiv);
         this.navigatorItems = new OV.NavigatorItems ();
         this.selection = null;
-        this.tempSelectedMeshIndex = null;
+        this.tempSelectedMeshId = null;
     }
 
     Init (callbacks)
@@ -191,21 +209,19 @@ OV.Navigator = class
         for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
             let mesh = model.GetMesh (meshIndex);
             let meshName = OV.GetMeshName (mesh.GetName ());
-            let meshItem = new OV.MeshItem (meshName, meshIndex, {
-                onShowHide : (selectedMeshIndex) => {
-                    this.ToggleMeshVisibility (selectedMeshIndex);
+            let meshInstanceId = new OV.MeshInstanceId (OV.InvalidNodeId, meshIndex);
+            let meshItem = new OV.MeshItem (meshName, meshInstanceId, {
+                onShowHide : (selectedMeshId) => {
+                    this.ToggleMeshVisibility (selectedMeshId);
                 },
-                onIsolate : (selectedMeshIndex) => {
-                    this.IsolateMesh (selectedMeshIndex);
-                },                
-                onFitToWindow : (selectedMeshIndex) => {
-                    this.FitMeshToWindow (selectedMeshIndex);
+                onFitToWindow : (selectedMeshId) => {
+                    this.FitMeshToWindow (selectedMeshId);
                 },
-                onSelected : (selectedMeshIndex) => {
-                    this.SetSelection (new OV.Selection (OV.SelectionType.Mesh, selectedMeshIndex));
+                onSelected : (selectedMeshId) => {
+                    this.SetSelection (new OV.Selection (OV.SelectionType.Mesh, selectedMeshId));
                 }
             });
-            this.navigatorItems.AddMeshItem (meshIndex, meshItem);
+            this.navigatorItems.AddMeshItem (meshInstanceId, meshItem);
             meshesItem.AddChild (meshItem);
         }
 
@@ -218,9 +234,9 @@ OV.Navigator = class
         return this.navigatorItems.MeshItemCount ();
     }
 
-    IsMeshVisible (meshIndex)
+    IsMeshVisible (meshInstanceId)
     {
-        let meshItem = this.navigatorItems.GetMeshItem (meshIndex);
+        let meshItem = this.navigatorItems.GetMeshItem (meshInstanceId);
         return meshItem.IsVisible ();
     }
 
@@ -246,18 +262,18 @@ OV.Navigator = class
         this.callbacks.updateMeshesVisibility ();
     }
 
-    ToggleMeshVisibility (meshIndex)
+    ToggleMeshVisibility (meshInstanceId)
     {
-        let meshItem = this.navigatorItems.GetMeshItem (meshIndex);
+        let meshItem = this.navigatorItems.GetMeshItem (meshInstanceId);
         meshItem.SetVisible (!meshItem.IsVisible ());
         this.callbacks.updateMeshesVisibility ();
     }
 
-    IsMeshIsolated (meshIndex)
+    IsMeshIsolated (meshInstanceId)
     {
         let isIsolated = true;
         this.navigatorItems.EnumerateMeshItems ((meshItem) => {
-            if (meshItem.GetMeshIndex () !== meshIndex && meshItem.IsVisible ()) {
+            if (!meshItem.GetMeshInstanceId ().IsEqual (meshInstanceId) && meshItem.IsVisible ()) {
                 isIsolated = false;
                 return false;
             }
@@ -266,11 +282,11 @@ OV.Navigator = class
         return isIsolated;
     }
 
-    IsolateMesh (meshIndex)
+    IsolateMesh (meshInstanceId)
     {
-        let isIsolated = this.IsMeshIsolated (meshIndex);
+        let isIsolated = this.IsMeshIsolated (meshInstanceId);
         this.navigatorItems.EnumerateMeshItems ((meshItem) => {
-            if (meshItem.GetMeshIndex () === meshIndex || isIsolated) {
+            if (meshItem.GetMeshInstanceId ().IsEqual (meshInstanceId) || isIsolated) {
                 meshItem.SetVisible (true);
             } else {
                 meshItem.SetVisible (false);
@@ -280,21 +296,15 @@ OV.Navigator = class
         this.callbacks.updateMeshesVisibility ();
     }
 
-    GetSelectedMeshIndex ()
+    GetSelectedMeshId ()
     {
-        if (this.tempSelectedMeshIndex !== null) {
-            return this.tempSelectedMeshIndex;
+        if (this.tempSelectedMeshId !== null) {
+            return this.tempSelectedMeshId;
         }
         if (this.selection === null || this.selection.type !== OV.SelectionType.Mesh) {
             return null;
         }
-        return this.selection.index;
-    }
-
-    SetTempSelectedMeshIndex (tempSelectedMeshIndex)
-    {
-        this.tempSelectedMeshIndex = tempSelectedMeshIndex;
-        this.callbacks.updateMeshesSelection ();
+        return this.selection.meshInstanceId;
     }
 
     SetSelection (selection)
@@ -302,10 +312,10 @@ OV.Navigator = class
         function SetEntitySelection (obj, selection, select)
         {
             if (selection.type === OV.SelectionType.Material) {
-                obj.navigatorItems.GetMaterialItem (selection.index).SetSelected (select);
+                obj.navigatorItems.GetMaterialItem (selection.materialIndex).SetSelected (select);
             } else if (selection.type === OV.SelectionType.Mesh) {
-                obj.navigatorItems.GetMeshItem (selection.index).SetSelected (select);
-            }           
+                obj.navigatorItems.GetMeshItem (selection.meshInstanceId).SetSelected (select);
+            }
         }
 
         function SetCurrentSelection (obj, selection)
@@ -320,10 +330,10 @@ OV.Navigator = class
         }
 
         SetCurrentSelection (this, selection);
-        this.tempSelectedMeshIndex = null;
+        this.tempSelectedMeshId = null;
 
         if (this.selection !== null) {
-            if (oldSelection !== null && this.selection.type === oldSelection.type && this.selection.index === oldSelection.index) {
+            if (oldSelection !== null && oldSelection.IsEqual (this.selection)) {
                 SetEntitySelection (this, this.selection, false);
                 SetCurrentSelection (this, null);
             } else {
@@ -334,9 +344,9 @@ OV.Navigator = class
         this.callbacks.updateMeshesSelection ();
     }
 
-    FitMeshToWindow (meshIndex)
+    FitMeshToWindow (meshInstanceId)
     {
-        this.callbacks.fitMeshToWindow (meshIndex);
+        this.callbacks.fitMeshToWindow (meshInstanceId);
     }
 
     UpdateInfoPanel ()
@@ -351,29 +361,30 @@ OV.Navigator = class
             this.callbacks.onModelSelected ();
         } else {
             if (this.selection.type === OV.SelectionType.Material) {
-                let usedByMeshes = this.callbacks.getMeshesForMaterial (this.selection.index);
+                let usedByMeshes = this.callbacks.getMeshesForMaterial (this.selection.materialIndex);
                 this.infoPanel.FillWithMaterialInfo (usedByMeshes, {
-                    onMeshHover : (meshIndex) => {
-                        this.SetTempSelectedMeshIndex (meshIndex);
+                    onMeshHover : (meshInstanceId) => {
+                        this.tempSelectedMeshId = meshInstanceId;
+                        this.callbacks.updateMeshesSelection ();
                     },
-                    onMeshSelect : (meshIndex) => {
-                        this.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshIndex));
+                    onMeshSelect : (meshInstanceId) => {
+                        this.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshInstanceId));
                     }
                 });
-                this.callbacks.onMaterialSelected (this.selection.index);
+                this.callbacks.onMaterialSelected (this.selection.materialIndex);
             } else if (this.selection.type === OV.SelectionType.Mesh) {
-                let usedMaterials = this.callbacks.getMaterialsForMesh (this.selection.index);
+                let usedMaterials = this.callbacks.getMaterialsForMesh (this.selection.meshInstanceId);
                 this.infoPanel.FillWithModelInfo (usedMaterials, {
                     onMaterialSelect : (materialIndex) => {
                         this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
                     }
                 });
-                this.callbacks.onMeshSelected (this.selection.index);
+                this.callbacks.onMeshSelected (this.selection.meshInstanceId);
             }
         }
         this.Resize ();
     }
-    
+
     Clear ()
     {
         this.titleDiv.empty ();

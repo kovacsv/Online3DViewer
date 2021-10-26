@@ -1,3 +1,5 @@
+OV.InvalidNodeId = -1;
+
 OV.NodeIdGenerator = class
 {
     constructor ()
