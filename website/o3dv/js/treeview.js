@@ -37,6 +37,7 @@ OV.TreeViewItem = class
     constructor (name)
     {
         this.name = name;
+        this.parent = null;
         this.mainElement = $('<div>').addClass ('ov_tree_item').attr ('title', this.name);
         this.nameElement = $('<div>').addClass ('ov_tree_item_name').html (this.name).appendTo (this.mainElement);
     }
@@ -45,6 +46,11 @@ OV.TreeViewItem = class
     {
         this.mainElement.appendTo (parentDiv);
     }
+
+    SetParent (parent)
+    {
+        this.parent = parent;
+    }
 };
 
 OV.TreeViewSingleItem = class extends OV.TreeViewItem
@@ -52,7 +58,6 @@ OV.TreeViewSingleItem = class extends OV.TreeViewItem
     constructor (name)
     {
         super (name);
-        this.parent = null;
         this.selected = false;
     }
 
@@ -67,11 +72,6 @@ OV.TreeViewSingleItem = class extends OV.TreeViewItem
         } else {
             this.mainElement.removeClass ('selected');
         }
-    }
-
-    SetParent (parent)
-    {
-        this.parent = parent;
     }
 };
 

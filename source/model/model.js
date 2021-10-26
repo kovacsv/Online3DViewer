@@ -76,6 +76,13 @@ OV.Model = class extends OV.ModelObject3D
         return this.meshes.length - 1;
     }
 
+    AddMeshToRootNode (mesh)
+    {
+        const meshIndex = this.AddMesh (mesh);
+        this.root.AddMeshIndex (meshIndex);
+        return meshIndex;
+    }
+
     AddMeshToIndex (mesh, index)
     {
         this.meshes.splice (index, 0, mesh);

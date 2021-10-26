@@ -302,7 +302,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 				OV.RunTasksBatch (node.MeshIndexCount (), 100, {
 					runTask : (firstNodeMeshIndex, lastNodeMeshIndex, ready) => {
 						for (let nodeMeshIndex = firstNodeMeshIndex; nodeMeshIndex <= lastNodeMeshIndex; nodeMeshIndex++) {
-							let meshInstanceId = new OV.MeshInstanceId (OV.InvalidNodeId, node.GetMeshIndex (nodeMeshIndex));
+							let meshInstanceId = new OV.MeshInstanceId (node.GetId (), node.GetMeshIndex (nodeMeshIndex));
 							ConvertMesh (threeNode, model, meshInstanceId, modelThreeMaterials);
 						}
 						ready ();
@@ -323,7 +323,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 		OV.RunTasksBatch (model.MeshCount (), 100, {
 			runTask : (firstIndex, lastIndex, ready) => {
 				for (let meshIndex = firstIndex; meshIndex <= lastIndex; meshIndex++) {
-					let meshInstanceId = new OV.MeshInstanceId (OV.InvalidNodeId, meshIndex);
+					let meshInstanceId = new OV.MeshInstanceId (model.GetRootNode ().GetId (), meshIndex);
 					ConvertMesh (threeObject, model, meshInstanceId, modelThreeMaterials);
 				}
 				ready ();
@@ -347,6 +347,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 	if (!rootNode.IsEmpty ()) {
 		ConvertNodeHierarchy (threeObject, model, modelThreeMaterials, stateHandler);
 	} else {
+		// TODO: remove
 		ConvertMeshList (threeObject, model, modelThreeMaterials, stateHandler);
 	}
 };

@@ -203,30 +203,61 @@ OV.Navigator = class
             materialsItem.AddChild (materialItem);
         }
 
-        let meshesItem = new OV.TreeViewGroupItem ('Meshes', 'meshes');
-        this.treeView.AddItem (meshesItem);
-        meshesItem.ShowChildren (true, null);
-        for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
-            let mesh = model.GetMesh (meshIndex);
-            let meshName = OV.GetMeshName (mesh.GetName ());
-            let meshInstanceId = new OV.MeshInstanceId (OV.InvalidNodeId, meshIndex);
-            let meshItem = new OV.MeshItem (meshName, meshInstanceId, {
-                onShowHide : (selectedMeshId) => {
-                    this.ToggleMeshVisibility (selectedMeshId);
-                },
-                onFitToWindow : (selectedMeshId) => {
-                    this.FitMeshToWindow (selectedMeshId);
-                },
-                onSelected : (selectedMeshId) => {
-                    this.SetSelection (new OV.Selection (OV.SelectionType.Mesh, selectedMeshId));
-                }
-            });
-            this.navigatorItems.AddMeshItem (meshInstanceId, meshItem);
-            meshesItem.AddChild (meshItem);
-        }
+        this.FillMeshTree (model);
 
         this.UpdateInfoPanel ();
         this.Resize ();
+    }
+
+    FillMeshTree (model)
+    {
+        function AddMeshToNodeTree (navigator, model, node, meshIndex, parentItem)
+        {
+            let mesh = model.GetMesh (meshIndex);
+            let meshName = OV.GetMeshName (mesh.GetName ());
+            let meshInstanceId = new OV.MeshInstanceId (node.GetId (), meshIndex);
+            let meshItem = new OV.MeshItem (meshName, meshInstanceId, {
+                onShowHide : (selectedMeshId) => {
+                    navigator.ToggleMeshVisibility (selectedMeshId);
+                },
+                onFitToWindow : (selectedMeshId) => {
+                    navigator.FitMeshToWindow (selectedMeshId);
+                },
+                onSelected : (selectedMeshId) => {
+                    navigator.SetSelection (new OV.Selection (OV.SelectionType.Mesh, selectedMeshId));
+                }
+            });
+            navigator.navigatorItems.AddMeshItem (meshInstanceId, meshItem);
+            parentItem.AddChild (meshItem);
+        }
+
+        function AddModelNodeToTree (navigator, model, node, parentItem)
+        {
+            for (let childNode of node.GetChildNodes ()) {
+                let nodeItem = new OV.TreeViewGroupItem (OV.GetNodeName (childNode.GetName ()), 'meshes');
+                parentItem.AddChild (nodeItem);
+                nodeItem.ShowChildren (true, null);
+                AddModelNodeToTree (navigator, model, childNode, nodeItem);
+            }
+
+            for (let meshIndex of node.GetMeshIndices ()) {
+                AddMeshToNodeTree (navigator, model, node, meshIndex, parentItem);
+            }
+        }
+
+        let meshesItem = new OV.TreeViewGroupItem ('Meshes', 'meshes');
+        this.treeView.AddItem (meshesItem);
+        meshesItem.ShowChildren (true, null);
+
+        let rootNode = model.GetRootNode ();
+        if (!rootNode.IsEmpty ()) {
+            AddModelNodeToTree (this, model, rootNode, meshesItem);
+        } else {
+            // TODO: remove
+            for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
+                AddMeshToNodeTree (this, model, rootNode, meshIndex, meshesItem);
+            }
+        }
     }
 
     MeshItemCount ()

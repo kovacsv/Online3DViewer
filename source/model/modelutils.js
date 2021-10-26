@@ -85,69 +85,6 @@ OV.CloneMesh = function (mesh)
     return cloned;
 };
 
-OV.CreateMergedModel = function (model)
-{
-    function MergeMesh (mesh, mergedMesh)
-    {
-        let vertexOffset = mergedMesh.VertexCount ();
-        let normalOffset = mergedMesh.NormalCount ();
-        let uvOffset = mergedMesh.TextureUVCount ();
-
-        for (let i = 0; i < mesh.VertexCount (); i++) {
-            let vertex = mesh.GetVertex (i);
-            mergedMesh.AddVertex (vertex.Clone ());
-        }
-        for (let i = 0; i < mesh.NormalCount (); i++) {
-            let normal = mesh.GetNormal (i);
-            mergedMesh.AddNormal (normal.Clone ());
-        }
-        for (let i = 0; i < mesh.TextureUVCount (); i++) {
-            let uv = mesh.GetTextureUV (i);
-            mergedMesh.AddTextureUV (uv.Clone ());
-        }
-
-        for (let i = 0; i < mesh.TriangleCount (); i++) {
-            let triangle = mesh.GetTriangle (i);
-            let newTriangle = triangle.Clone ();
-            newTriangle.SetVertices (
-                triangle.v0 + vertexOffset,
-                triangle.v1 + vertexOffset,
-                triangle.v2 + vertexOffset
-            );
-            newTriangle.SetNormals (
-                triangle.n0 + normalOffset,
-                triangle.n1 + normalOffset,
-                triangle.n2 + normalOffset
-            );
-            if (newTriangle.HasTextureUVs ()) {
-                newTriangle.SetTextureUVs (
-                    triangle.u0 + uvOffset,
-                    triangle.u1 + uvOffset,
-                    triangle.u2 + uvOffset
-                );
-            }
-            mergedMesh.AddTriangle (newTriangle);
-        }
-    }
-
-    let mergedModel = new OV.Model ();
-    mergedModel.SetName (model.GetName ());
-
-    for (let i = 0; i < model.MaterialCount (); i++) {
-        let material = model.GetMaterial (i);
-        mergedModel.AddMaterial (material.Clone ());
-    }
-
-    let mergedMesh = new OV.Mesh ();
-    for (let i = 0; i < model.MeshCount (); i++) {
-        let mesh = model.GetMesh (i);
-        MergeMesh (mesh, mergedMesh);
-    }
-
-    mergedModel.AddMesh (mergedMesh);
-    return mergedModel;
-};
-
 OV.EnumerateModelVerticesAndTriangles = function (model, callbacks)
 {
     model.EnumerateMeshes ((mesh) => {

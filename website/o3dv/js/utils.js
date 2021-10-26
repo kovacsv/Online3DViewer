@@ -6,6 +6,11 @@ OV.GetNameOrDefault = function (originalName, defaultName)
     return defaultName;
 };
 
+OV.GetNodeName = function (originalName)
+{
+    return OV.GetNameOrDefault (originalName, 'No Name');
+};
+
 OV.GetMeshName = function (originalName)
 {
     return OV.GetNameOrDefault (originalName, 'No Name');
