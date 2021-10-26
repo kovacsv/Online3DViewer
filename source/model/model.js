@@ -121,8 +121,7 @@ OV.Model = class extends OV.ModelObject3D
         this.root.Enumerate ((node) => {
             for (let meshIndex of node.GetMeshIndices ()) {
                 let mesh = this.GetMesh (meshIndex);
-                let instanceId = new OV.MeshInstanceId (node.GetId (), meshIndex);
-                let meshInstance = new OV.MeshInstance (instanceId, node, mesh);
+                let meshInstance = new OV.MeshInstance (node, mesh);
                 onMeshInstance (meshInstance);
             }
         });

@@ -91,7 +91,7 @@ describe ('Model Utils', function () {
         let transformation = new OV.Transformation (new OV.Matrix ().CreateTranslation (2.0, 0.0, 0.0));
         let node = new OV.Node ();
         node.SetTransformation (transformation);
-        let cubeInstance = new OV.MeshInstance (new OV.MeshInstanceId (-1, -1), node, cube);
+        let cubeInstance = new OV.MeshInstance (node, cube);
         let cubeInstanceBounds = OV.GetBoundingBox (cubeInstance);
         assert (OV.CoordIsEqual3D (cubeInstanceBounds.min, new OV.Coord3D (2.0, 0.0, 0.0)));
         assert (OV.CoordIsEqual3D (cubeInstanceBounds.max, new OV.Coord3D (3.0, 1.0, 1.0)));

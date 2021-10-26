@@ -19,17 +19,11 @@ OV.MeshInstanceId = class
 
 OV.MeshInstance = class extends OV.Object3D
 {
-    constructor (id, node, mesh)
+    constructor (node, mesh)
     {
         super ();
-        this.id = id;
         this.node = node;
         this.mesh = mesh;
-    }
-
-    GetId ()
-    {
-        return this.id;
     }
 
     VertexCount ()
