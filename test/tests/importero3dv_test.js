@@ -48,10 +48,12 @@ describe ('O3dv Importer', function () {
                     }
                 ]
             });
+
             assert.strictEqual (model.MeshInstanceCount (), 3);
             let boundingBox = OV.GetBoundingBox (model);
             assert (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (-1.0, 0.0, 0.0)));
             assert (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (3.0, 3.0, 1.0)));
+
             done ();
         });
     });
