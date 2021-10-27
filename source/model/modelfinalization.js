@@ -133,9 +133,16 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
             emptyNodes.push (node);
         }
     });
-    for (let node of emptyNodes) {
+    for (let nodeIndex = 0; nodeIndex < emptyNodes.length; nodeIndex++) {
+        let node = emptyNodes[nodeIndex];
         let parentNode = node.GetParent ();
+        if (parentNode === null) {
+            continue;
+        }
         parentNode.RemoveChildNode (node);
+        if (parentNode.IsEmpty ()) {
+            emptyNodes.push (parentNode);
+        }
     }
 };
 

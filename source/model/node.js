@@ -92,6 +92,7 @@ OV.Node = class
 
     RemoveChildNode (node)
     {
+        node.parent = null;
         let index = this.childNodes.indexOf (node);
         this.childNodes.splice (index, 1);
     }
