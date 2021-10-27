@@ -78,7 +78,7 @@ OV.GltfNodeTree = class
             return null;
         }
         return matrix;
-    }    
+    }
 };
 
 OV.GltfBufferReader = class
@@ -139,7 +139,7 @@ OV.GltfBufferReader = class
     {
         return this.reader.ReadArrayBuffer (byteLength);
     }
-    
+
     GetDataCount ()
     {
         return this.dataCount;
@@ -249,7 +249,7 @@ OV.GltfBufferReader = class
             return 4;
         }
         return 0;
-    }    
+    }
 };
 
 OV.GltfExtensions = class
@@ -269,7 +269,7 @@ OV.GltfExtensions = class
         if (extensionsRequired === undefined) {
             callbacks.onSuccess ();
             return;
-        }        
+        }
         if (this.draco === null && extensionsRequired.indexOf ('KHR_draco_mesh_compression') !== -1) {
 			OV.LoadExternalLibrary ('loaders/draco_decoder.js').then (() => {
                 DracoDecoderModule ().then ((draco) => {
@@ -336,7 +336,7 @@ OV.GltfExtensions = class
             let specularTexture = khrSpecularGlossiness.specularGlossinessTexture;
             if (specularTexture !== undefined) {
                 material.specularMap = imporTextureFn (specularTexture);
-            }            
+            }
             let glossiness = khrSpecularGlossiness.glossinessFactor;
             if (glossiness !== undefined) {
                 material.shininess = glossiness;
@@ -487,7 +487,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
     {
         return OV.Direction.Y;
     }
-    
+
     ClearContent ()
     {
         this.bufferContents = null;
@@ -626,7 +626,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
         if (materials !== undefined) {
             for (let i = 0; i < materials.length; i++) {
                 this.ImportMaterial (gltf, i);
-            }          
+            }
         }
 
         let nodeTree = this.CollectMeshNodesForScene (gltf, defaultScene);
@@ -814,7 +814,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
         texture.name = textureParams.name;
         texture.url = textureParams.url;
         texture.buffer = textureParams.buffer;
-    
+
         this.gltfExtensions.ProcessTexture (gltfTextureRef, texture);
         return texture;
     }
@@ -849,7 +849,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
                     scale = node.scale;
                     hasTransformation = true;
                 }
-                
+
                 if (hasTransformation) {
                     matrix.ComposeTRS (
                         OV.ArrayToCoord3D (translation),
@@ -866,7 +866,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
             }
 
             nodeTree.AddNodeMatrix (nodeIndex, matrix);
-            return matrix;            
+            return matrix;
         }
 
         let gltfNode = gltf.nodes[nodeIndex];
@@ -874,7 +874,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
         let gltfMesh = gltf.meshes[gltfMeshIndex];
 
         let mesh = new OV.Mesh ();
-        this.model.AddMesh (mesh);
+        this.model.AddMeshToRootNode (mesh);
         if (gltfMesh.name !== undefined) {
             mesh.SetName (gltfMesh.name);
         } else if (gltfNode.name !== undefined) {
@@ -889,7 +889,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
         let matrix = GetNodeTransformation (gltf, nodeIndex, nodeTree);
         let transformation = new OV.Transformation (matrix);
         OV.TransformMesh (mesh, transformation);
-    }    
+    }
 
     ImportPrimitive (gltf, primitive, mesh)
     {
@@ -963,7 +963,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
             }
             reader.EnumerateData ((data) => {
                 vertexIndices.push (data);
-            });          
+            });
         } else {
             for (let i = 0; i < mesh.VertexCount (); i++) {
                 vertexIndices.push (i);
@@ -1020,7 +1020,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
             triangle.mat = primitive.material;
         }
         mesh.AddTriangle (triangle);
-    }    
+    }
 
     GetReaderFromBufferView (bufferView)
     {
@@ -1075,7 +1075,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
         if (reader === null) {
             return null;
         }
-        
+
         reader.SetComponentType (componentType);
         reader.SetDataType (type);
         reader.SetDataCount (count);

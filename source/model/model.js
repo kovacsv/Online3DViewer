@@ -23,39 +23,48 @@ OV.Model = class extends OV.ModelObject3D
         return this.meshes.length;
     }
 
+    MeshInstanceCount ()
+    {
+        let count = 0;
+        this.EnumerateMeshInstances ((meshInstance) => {
+            count += 1;
+        });
+        return count;
+    }
+
     VertexCount ()
     {
         let count = 0;
-        for (let i = 0; i < this.meshes.length; i++) {
-            count += this.meshes[i].VertexCount ();
-        }
+        this.EnumerateMeshInstances ((meshInstance) => {
+            count += meshInstance.VertexCount ();
+        });
         return count;
     }
 
     NormalCount ()
     {
         let count = 0;
-        for (let i = 0; i < this.meshes.length; i++) {
-            count += this.meshes[i].NormalCount ();
-        }
+        this.EnumerateMeshInstances ((meshInstance) => {
+            count += meshInstance.NormalCount ();
+        });
         return count;
     }
 
     TextureUVCount ()
     {
         let count = 0;
-        for (let i = 0; i < this.meshes.length; i++) {
-            count += this.meshes[i].TextureUVCount ();
-        }
+        this.EnumerateMeshInstances ((meshInstance) => {
+            count += meshInstance.TextureUVCount ();
+        });
         return count;
     }
 
     TriangleCount ()
     {
         let count = 0;
-        for (let i = 0; i < this.meshes.length; i++) {
-            count += this.meshes[i].TriangleCount ();
-        }
+        this.EnumerateMeshInstances ((meshInstance) => {
+            count += meshInstance.TriangleCount ();
+        });
         return count;
     }
 
@@ -127,11 +136,10 @@ OV.Model = class extends OV.ModelObject3D
         if (foundNode === null) {
             return null;
         }
-        // TODO: check it when every model is hierarchical
-        // const nodeMeshIndices = foundNode.GetMeshIndices ();
-        // if (nodeMeshIndices.indexOf (instanceId.meshIndex) === -1) {
-        //     return null;
-        // }
+        const nodeMeshIndices = foundNode.GetMeshIndices ();
+        if (nodeMeshIndices.indexOf (instanceId.meshIndex) === -1) {
+            return null;
+        }
         let foundMesh = this.GetMesh (instanceId.meshIndex);
         return new OV.MeshInstance (foundNode, foundMesh);
     }
@@ -164,22 +172,22 @@ OV.Model = class extends OV.ModelObject3D
 
     EnumerateVertices (onVertex)
     {
-        for (const mesh of this.meshes) {
-            mesh.EnumerateVertices (onVertex);
-        }
+        this.EnumerateMeshInstances ((meshInstance) => {
+            meshInstance.EnumerateVertices (onVertex);
+        });
     }
 
     EnumerateTriangleVertexIndices (onTriangleVertexIndices)
     {
-        for (const mesh of this.meshes) {
-            mesh.EnumerateTriangleVertexIndices (onTriangleVertexIndices);
-        }
+        this.EnumerateMeshInstances ((meshInstance) => {
+            meshInstance.EnumerateTriangleVertexIndices (onTriangleVertexIndices);
+        });
     }
 
     EnumerateTriangleVertices (onTriangleVertices)
     {
-        for (const mesh of this.meshes) {
-            mesh.EnumerateTriangleVertices (onTriangleVertices);
-        }
+        this.EnumerateMeshInstances ((meshInstance) => {
+            meshInstance.EnumerateTriangleVertices (onTriangleVertices);
+        });
     }
 };

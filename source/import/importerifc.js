@@ -104,7 +104,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
         }
 
         this.expressIDToMesh[ifcMesh.expressID] = mesh;
-        this.model.AddMesh (mesh);
+        this.model.AddMeshToRootNode (mesh);
     }
 
     ImportProperties (modelID)

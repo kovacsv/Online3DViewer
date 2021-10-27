@@ -10,7 +10,7 @@ OV.Exporter3dm = class extends OV.ExporterBase
     {
         return format === OV.FileFormat.Binary && extension === '3dm';
     }
-    
+
 	ExportContent (model, format, files, onFinish)
 	{
 		if (this.rhino === null) {
@@ -43,8 +43,7 @@ OV.Exporter3dm = class extends OV.ExporterBase
 		files.push (rhinoFile);
 
         let rhinoDoc = new this.rhino.File3dm ();
-        for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
-            let mesh = model.GetMesh (meshIndex);
+        model.EnumerateTransformedMeshInstances ((mesh) => {
             let meshBuffer = OV.ConvertMeshToMeshBuffer (mesh);
             for (let primitiveIndex = 0; primitiveIndex < meshBuffer.PrimitiveCount (); primitiveIndex++) {
                 let primitive = meshBuffer.GetPrimitive (primitiveIndex);
@@ -87,7 +86,7 @@ OV.Exporter3dm = class extends OV.ExporterBase
                 rhinoAttributes.materialIndex = rhinoMaterialIndex;
                 rhinoDoc.objects ().add (rhinoMesh, rhinoAttributes);
             }
-        }
+        });
 
         let writeOptions = new this.rhino.File3dmWriteOptions ();
         writeOptions.version = 6;

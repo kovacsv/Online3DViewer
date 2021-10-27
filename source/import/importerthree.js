@@ -465,7 +465,7 @@ OV.ImporterThree = class extends OV.ImporterBase
                     OV.FlipMeshTrianglesOrientation (mesh);
                 }
             }
-            this.model.AddMesh (mesh);
+            this.model.AddMeshToRootNode (mesh);
             child.geometry.dispose ();
         });
 

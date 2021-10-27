@@ -19,7 +19,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
     {
         return (format === OV.FileFormat.Text && extension === 'gltf') || (format === OV.FileFormat.Binary && extension === 'glb');
     }
-    
+
 	ExportContent (model, format, files, onFinish)
 	{
         if (format === OV.FileFormat.Text) {
@@ -56,7 +56,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
 
                 textureIndex = mainJson.textures.length;
                 fileNameToIndex[fileName] = textureIndex;
-                
+
                 mainJson.images.push ({
                     uri : fileName
                 });
@@ -68,7 +68,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
         });
 
         gltfFile.SetTextContent (JSON.stringify (mainJson, null, 4));
-        binFile.SetBufferContent (mainBuffer);        
+        binFile.SetBufferContent (mainBuffer);
     }
 
     ExportBinaryContent (model, files)
@@ -88,7 +88,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
                 writer.WriteUnsignedCharacter8 (char);
             }
         }
-        
+
         let glbFile = new OV.ExportedFile ('model.glb');
         files.push (glbFile);
 
@@ -144,7 +144,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
 
         let glbSize = 12 + 8 + mainJsonBufferAlignedLength + 8 + mainBinaryBufferAlignedLength;
         let glbWriter = new OV.BinaryWriter (glbSize, true);
-        
+
         glbWriter.WriteUnsignedInteger32 (0x46546C67);
         glbWriter.WriteUnsignedInteger32 (2);
         glbWriter.WriteUnsignedInteger32 (glbSize);
@@ -171,8 +171,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
     {
         let meshDataArr = [];
 
-        for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
-            let mesh = model.GetMesh (meshIndex);
+        model.EnumerateTransformedMeshInstances ((mesh) => {
             let buffer = OV.ConvertMeshToMeshBuffer (mesh);
             meshDataArr.push ({
                 name : mesh.GetName (),
@@ -180,7 +179,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
                 offsets : [],
                 sizes : []
             });
-        }
+        });
 
         return meshDataArr;
     }
@@ -294,7 +293,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
                     mode : 4,
                     material : primitive.material
                 };
-                
+
                 let bounds = primitive.GetBounds ();
                 mainJson.accessors.push ({
                     bufferView : bufferViewIndex,
@@ -424,18 +423,18 @@ OV.ExporterGltf = class extends OV.ExporterBase
             }
             let metallicTexture = GetTextureParams (mainJson, material.metalnessMap, addTexture);
             if (metallicTexture !== null) {
-                jsonMaterial.pbrMetallicRoughness.metallicRoughnessTexture = metallicTexture; 
+                jsonMaterial.pbrMetallicRoughness.metallicRoughnessTexture = metallicTexture;
             } else {
                 jsonMaterial.pbrMetallicRoughness.metallicFactor = material.metalness;
                 jsonMaterial.pbrMetallicRoughness.roughnessFactor = material.roughness;
             }
             let normalTexture = GetTextureParams (mainJson, material.normalMap, addTexture);
             if (normalTexture !== null) {
-                jsonMaterial.normalTexture = normalTexture; 
+                jsonMaterial.normalTexture = normalTexture;
             }
             let emissiveTexture = GetTextureParams (mainJson, material.emissiveMap, addTexture);
             if (emissiveTexture !== null) {
-                jsonMaterial.emissiveTexture = emissiveTexture; 
+                jsonMaterial.emissiveTexture = emissiveTexture;
             }
 
             mainJson.materials.push (jsonMaterial);

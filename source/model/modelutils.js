@@ -87,18 +87,17 @@ OV.CloneMesh = function (mesh)
 
 OV.EnumerateModelVerticesAndTriangles = function (model, callbacks)
 {
-    model.EnumerateMeshes ((mesh) => {
-        for (let vertexIndex = 0; vertexIndex < mesh.VertexCount (); vertexIndex++) {
-            let vertex = mesh.GetVertex (vertexIndex);
+    model.EnumerateMeshInstances ((meshInstance) => {
+        meshInstance.EnumerateVertices ((vertex) => {
             callbacks.onVertex (vertex.x, vertex.y, vertex.z);
-        }
+        });
     });
     let vertexOffset = 0;
-    model.EnumerateMeshes ((mesh) => {
-        mesh.EnumerateTriangleVertexIndices ((v0, v1, v2) => {
+    model.EnumerateMeshInstances ((meshInstance) => {
+        meshInstance.EnumerateTriangleVertexIndices ((v0, v1, v2) => {
             callbacks.onTriangle (v0 + vertexOffset, v1 + vertexOffset, v2 + vertexOffset);
         });
-        vertexOffset += mesh.VertexCount ();
+        vertexOffset += meshInstance.VertexCount ();
     });
 };
 

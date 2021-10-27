@@ -293,7 +293,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             }
         }
 
-        let meshIndex = this.model.AddMesh (mesh);
+        let meshIndex = this.model.AddMeshToRootNode (mesh);
         this.meshNameToIndex[mesh.GetName ()] = meshIndex;
         this.meshTransformations.push (new OV.Matrix (transformation));
     }
@@ -519,6 +519,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             let mesh = model.GetMesh (meshIndex);
             let clonedMesh = OV.CloneMesh (mesh);
             let clonedMeshIndex = model.AddMeshToIndex (clonedMesh, toIndex);
+            model.GetRootNode ().AddMeshIndexToIndex (clonedMeshIndex, toIndex);
             return clonedMeshIndex;
         }
 

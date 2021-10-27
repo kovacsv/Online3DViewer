@@ -28,14 +28,14 @@ describe ('Model Utils', function () {
         mesh1.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
         mesh1.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
         mesh1.AddTriangle (new OV.Triangle (0, 1, 2));
-        model.AddMesh (mesh1);
+        model.AddMeshToRootNode (mesh1);
 
         var mesh2 = new OV.Mesh ();
         mesh2.AddVertex (new OV.Coord3D (0.0, 0.0, 1.0));
         mesh2.AddVertex (new OV.Coord3D (1.0, 0.0, 1.0));
         mesh2.AddVertex (new OV.Coord3D (1.0, 1.0, 1.0));
         mesh2.AddTriangle (new OV.Triangle (0, 1, 2));
-        model.AddMesh (mesh2);
+        model.AddMeshToRootNode (mesh2);
 
         OV.FinalizeModel (model, function () { return new OV.Material (OV.MaterialType.Phong); });
 
@@ -46,6 +46,10 @@ describe ('Model Utils', function () {
         let mesh2Bounds = OV.GetBoundingBox (model.GetMesh (1));
         assert (OV.CoordIsEqual3D (mesh2Bounds.min, new OV.Coord3D (0.0, 0.0, 1.0)));
         assert (OV.CoordIsEqual3D (mesh2Bounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
+
+        let modelBounds = OV.GetBoundingBox (model);
+        assert (OV.CoordIsEqual3D (modelBounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (modelBounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
     });
 
     it ('Tetrahedron Topology Calculation', function () {

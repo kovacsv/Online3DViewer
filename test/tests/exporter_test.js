@@ -38,7 +38,7 @@ function CreateTestModel ()
     let triangle1 = new OV.Triangle (0, 1, 2);
     triangle1.mat = 0;
     mesh1.AddTriangle (triangle1);
-    model.AddMesh (mesh1);
+    model.AddMeshToRootNode (mesh1);
 
     let mesh2 = new OV.Mesh ();
     mesh2.SetName ('TestMesh2');
@@ -56,8 +56,8 @@ function CreateTestModel ()
     mesh2.AddTriangle (triangle2);
     mesh2.AddTriangle (triangle3);
     mesh2.AddTriangle (triangle4);
-    model.AddMesh (mesh2);
-    
+    model.AddMeshToRootNode (mesh2);
+
     OV.FinalizeModel (model, null);
     return model;
 }
@@ -138,19 +138,19 @@ describe ('Exporter', function () {
                 'f 4//4 8//4 6//4',
                 ''
             ].join ('\n'));
-    
+
             let textureFile1 = result[2];
             assert.strictEqual (textureFile1.GetName (), 'texture1.png');
             assert.strictEqual (textureFile1.GetBufferContent ().byteLength, 1);
-    
+
             let textureFile2 = result[3];
             assert.strictEqual (textureFile2.GetName (), 'texture2.png');
             assert.strictEqual (textureFile2.GetBufferContent ().byteLength, 2);
-    
+
             let textureFile3 = result[4];
             assert.strictEqual (textureFile3.GetName (), 'texture3.png');
             assert.strictEqual (textureFile3.GetBufferContent ().byteLength, 3);
-            
+
             done ();
         });
     });
@@ -197,7 +197,7 @@ describe ('Exporter', function () {
                 ''
             ].join ('\n'));
 
-            done ();            
+            done ();
         });
     });
 
@@ -209,7 +209,7 @@ describe ('Exporter', function () {
             let stlFile = result[0];
             assert.strictEqual (stlFile.GetName (), 'model.stl');
             assert.strictEqual (stlFile.GetBufferContent ().byteLength, 284);
-            
+
             let contentBuffer = stlFile.GetBufferContent ();
             let importer = new OV.ImporterStl ();
             importer.Import (stlFile.GetName (), 'stl', contentBuffer, {
@@ -223,7 +223,7 @@ describe ('Exporter', function () {
                     done ();
                 }
             });
-            
+
             done ();
         });
     });
@@ -253,7 +253,7 @@ describe ('Exporter', function () {
                 '3 3 7 5',
                 ''
             ].join ('\n'));
-            
+
             done ();
         });
     });
@@ -290,7 +290,7 @@ describe ('Exporter', function () {
                 '3 3 7 5',
                 ''
             ].join ('\n'));
-            
+
             done ();
         });
     });
@@ -303,7 +303,7 @@ describe ('Exporter', function () {
             let plyFile = result[0];
             assert.strictEqual (plyFile.GetName (), 'model.ply');
             assert.strictEqual (plyFile.GetBufferContent ().byteLength, 315);
-            
+
             let contentBuffer = plyFile.GetBufferContent ();
             let importer = new OV.ImporterPly ();
             importer.Import (plyFile.GetName (), 'ply', contentBuffer, {
@@ -316,7 +316,7 @@ describe ('Exporter', function () {
                     assert.strictEqual (importedModel.TriangleCount (), 4);
                     done ();
                 }
-            });            
+            });
         });
     });
 
@@ -324,16 +324,16 @@ describe ('Exporter', function () {
         let model = CreateTestModel ();
         Export (model, OV.FileFormat.Text, 'gltf', function (result) {
             assert.strictEqual (result.length, 3);
-  
+
             let gltfFile = result[0];
             let binFile = result[1];
             let textureFile = result[2];
             assert.strictEqual (gltfFile.GetName (), 'model.gltf');
             assert.strictEqual (binFile.GetName (), 'model.bin');
-      
+
             assert.strictEqual (textureFile.GetName (), 'texture1.png');
             assert.strictEqual (textureFile.GetBufferContent ().byteLength, 1);
-      
+
             let contentBuffer = gltfFile.GetBufferContent ();
             let importer = new OV.ImporterGltf ();
             importer.Import (gltfFile.GetName (), 'gltf', contentBuffer, {
@@ -360,7 +360,7 @@ describe ('Exporter', function () {
                     assert.strictEqual (importedModel.TriangleCount (), 4);
                     done ();
                 }
-            });            
+            });
         });
     });
 
@@ -397,5 +397,5 @@ describe ('Exporter', function () {
                 }
             });
         });
-    });   
+    });
 });

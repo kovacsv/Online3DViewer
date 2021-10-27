@@ -9,7 +9,7 @@ OV.ExporterObj = class extends OV.ExporterBase
     {
         return format === OV.FileFormat.Text && extension === 'obj';
     }
-    
+
     ExportContent (model, format, files, onFinish)
     {
         function WriteTexture (mtlWriter, keyword, texture, files)
@@ -59,7 +59,7 @@ OV.ExporterObj = class extends OV.ExporterBase
         let normalOffset = 0;
         let uvOffset = 0;
         let usedMaterialName = null;
-        model.EnumerateMeshes ((mesh) => {
+        model.EnumerateTransformedMeshInstances ((mesh) => {
             objWriter.WriteArrayLine (['g', this.GetExportedMeshName (mesh.GetName ())]);
             for (let vertexIndex = 0; vertexIndex < mesh.VertexCount (); vertexIndex++) {
                 let vertex = mesh.GetVertex (vertexIndex);
@@ -95,7 +95,7 @@ OV.ExporterObj = class extends OV.ExporterBase
                 if (triangle.HasTextureUVs ()) {
                     u0 = triangle.u0 + uvOffset + 1;
                     u1 = triangle.u1 + uvOffset + 1;
-                    u2 = triangle.u2 + uvOffset + 1;                    
+                    u2 = triangle.u2 + uvOffset + 1;
                 }
                 objWriter.WriteArrayLine (['f', [v0, u0, n0].join ('/'), [v1, u1, n1].join ('/'), [v2, u2, n2].join ('/')]);
             }
@@ -105,11 +105,11 @@ OV.ExporterObj = class extends OV.ExporterBase
         });
 
         objFile.SetTextContent (objWriter.GetText ());
-        onFinish ();  
+        onFinish ();
     }
 
     GetHeaderText ()
     {
         return '# exported by https://3dviewer.net';
-    }    
+    }
 };

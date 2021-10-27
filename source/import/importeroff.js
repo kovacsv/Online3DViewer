@@ -4,7 +4,7 @@ OV.ImporterOff = class extends OV.ImporterBase
     {
         super ();
     }
-    
+
     CanImportExtension (extension)
     {
         return extension === 'off';
@@ -14,7 +14,7 @@ OV.ImporterOff = class extends OV.ImporterBase
     {
         return OV.Direction.Y;
     }
-    
+
     ClearContent ()
     {
         this.mesh = null;
@@ -24,7 +24,7 @@ OV.ImporterOff = class extends OV.ImporterBase
     ResetContent ()
     {
         this.mesh = new OV.Mesh ();
-        this.model.AddMesh (this.mesh);
+        this.model.AddMeshToRootNode (this.mesh);
         this.status = {
             vertexCount : 0,
             faceCount : 0,
@@ -43,7 +43,7 @@ OV.ImporterOff = class extends OV.ImporterBase
         });
         onFinish ();
     }
-    
+
     ProcessLine (line)
     {
         if (line[0] === '#') {
@@ -54,7 +54,7 @@ OV.ImporterOff = class extends OV.ImporterBase
         if (parameters.length === 0) {
             return;
         }
-        
+
         if (parameters[0] === 'OFF') {
             return;
         }
@@ -72,7 +72,7 @@ OV.ImporterOff = class extends OV.ImporterBase
                 this.mesh.AddVertex (new OV.Coord3D (
                     parseFloat (parameters[0]),
                     parseFloat (parameters[1]),
-                    parseFloat (parameters[2])                    
+                    parseFloat (parameters[2])
                 ));
                 this.status.foundVertex += 1;
             }

@@ -5,7 +5,7 @@ OV.Importer3dm = class extends OV.ImporterBase
         super ();
 		this.rhino = null;
     }
-	
+
     CanImportExtension (extension)
     {
         return extension === '3dm';
@@ -101,7 +101,7 @@ OV.Importer3dm = class extends OV.ImporterBase
 		let rhinoObjects = rhinoDoc.objects ();
 		for (let i = 0; i < rhinoObjects.count; i++) {
 			let rhinoObject = rhinoObjects.get (i);
-			this.ImportRhinoGeometryObject (rhinoDoc, rhinoObject, []);		
+			this.ImportRhinoGeometryObject (rhinoDoc, rhinoObject, []);
 		}
 	}
 
@@ -113,8 +113,8 @@ OV.Importer3dm = class extends OV.ImporterBase
 		let objectType = rhinoGeometry.objectType;
 		if (rhinoAttributes.isInstanceDefinitionObject && rhinoInstanceReferences.length === 0) {
 			return;
-		}		
-		
+		}
+
 		let rhinoMesh = null;
 		let deleteMesh = false;
 
@@ -145,7 +145,7 @@ OV.Importer3dm = class extends OV.ImporterBase
 			deleteMesh = true;
 		} else if (objectType === this.rhino.ObjectType.InstanceReference) {
 			let parentDefinitionId = rhinoGeometry.parentIdefId;
-			let instanceDefinition = this.instanceDefinitions[parentDefinitionId]; 
+			let instanceDefinition = this.instanceDefinitions[parentDefinitionId];
 			if (instanceDefinition !== undefined) {
 				let instanceObjectIds = instanceDefinition.getObjectIds ();
 				for (let i = 0; i < instanceObjectIds.length; i++) {
@@ -199,7 +199,7 @@ OV.Importer3dm = class extends OV.ImporterBase
 			let transformation = new OV.Transformation (matrix);
 			OV.TransformMesh (mesh, transformation);
 		}
-		this.model.AddMesh (mesh);
+		this.model.AddMeshToRootNode (mesh);
 	}
 
 	GetMaterialIndex (rhinoDoc, rhinoObject, rhinoInstanceReferences)

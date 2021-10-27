@@ -14,18 +14,18 @@ OV.ImporterObj = class extends OV.ImporterBase
     {
         return OV.Direction.Y;
     }
-    
+
     ClearContent ()
     {
         this.globalVertices = null;
         this.globalNormals = null;
         this.globalUvs = null;
-    
+
         this.currentMesh = null;
         this.currentMeshData = null;
         this.currentMaterial = null;
         this.currentMaterialIndex = null;
-    
+
         this.meshNameToMeshData = null;
         this.materialNameToIndex = null;
     }
@@ -39,12 +39,12 @@ OV.ImporterObj = class extends OV.ImporterBase
         this.currentMesh = null;
         this.currentMeshData = null;
         this.currentMaterial = null;
-        this.currentMaterialIndex = null;        
+        this.currentMaterialIndex = null;
 
         this.meshNameToMeshData = {};
         this.materialNameToIndex = {};
     }
-    
+
     ImportContent (fileContent, onFinish)
     {
         let textContent = OV.ArrayBufferToUtf8String (fileContent);
@@ -55,7 +55,7 @@ OV.ImporterObj = class extends OV.ImporterBase
         });
         onFinish ();
     }
-    
+
     ProcessLine (line)
     {
         if (line[0] === '#') {
@@ -66,7 +66,7 @@ OV.ImporterObj = class extends OV.ImporterBase
         if (parameters.length === 0) {
             return;
         }
-        
+
         let keyword = parameters[0].toLowerCase ();
         parameters.shift ();
 
@@ -78,7 +78,7 @@ OV.ImporterObj = class extends OV.ImporterBase
             return;
         }
     }
-    
+
     AddNewMesh (name)
     {
         let meshData = this.meshNameToMeshData[name];
@@ -87,7 +87,7 @@ OV.ImporterObj = class extends OV.ImporterBase
             if (name !== null) {
                 mesh.SetName (name);
             }
-            this.model.AddMesh (mesh);
+            this.model.AddMeshToRootNode (mesh);
             meshData = {
                 mesh : mesh,
                 data : {
@@ -179,7 +179,7 @@ OV.ImporterObj = class extends OV.ImporterBase
             if (parameters.length === 0) {
                 return true;
             }
-            
+
             let material = new OV.Material (OV.MaterialType.Phong);
             let materialName = OV.NameFromLine (line, keyword.length, '#');
             let materialIndex = this.model.AddMaterial (material);
@@ -191,7 +191,7 @@ OV.ImporterObj = class extends OV.ImporterBase
             if (parameters.length === 0) {
                 return true;
             }
-            
+
             let materialName = OV.NameFromLine (line, keyword.length, '#');
             let materialIndex = this.materialNameToIndex[materialName];
             if (materialIndex !== undefined) {
@@ -272,7 +272,7 @@ OV.ImporterObj = class extends OV.ImporterBase
             return true;
         }
 
-        return false;    
+        return false;
     }
 
     ProcessFace (parameters)
@@ -285,7 +285,7 @@ OV.ImporterObj = class extends OV.ImporterBase
                 return count + index;
             }
         }
-    
+
         function GetLocalIndex (globalValueArray, globalToCurrentIndices, globalIndex, valueAdderFunc)
         {
             if (isNaN (globalIndex) || globalIndex < 0 || globalIndex >= globalValueArray.length) {
@@ -302,32 +302,32 @@ OV.ImporterObj = class extends OV.ImporterBase
             }
             return result;
         }
-        
+
         function GetLocalVertexIndex (obj, mesh, globalIndex)
         {
             return GetLocalIndex (obj.globalVertices, obj.currentMeshData.globalToCurrentVertices, globalIndex, (val) => {
                 return mesh.AddVertex (new OV.Coord3D (val.x, val.y, val.z));
             });
         }
-        
+
         function GetLocalNormalIndex (obj, mesh, globalIndex)
         {
             return GetLocalIndex (obj.globalNormals, obj.currentMeshData.globalToCurrentNormals, globalIndex, (val) => {
                 return mesh.AddNormal (new OV.Coord3D (val.x, val.y, val.z));
             });
         }
-        
+
         function GetLocalUVIndex (obj, mesh, globalIndex)
         {
             return GetLocalIndex (obj.globalUvs, obj.currentMeshData.globalToCurrentUvs, globalIndex, (val) => {
                 return mesh.AddTextureUV (new OV.Coord2D (val.x, val.y));
             });
-        }        
-        
+        }
+
         let vertices = [];
         let normals = [];
         let uvs = [];
-        
+
         for (let i = 0; i < parameters.length; i++) {
             let vertexParams = parameters[i].split ('/');
             vertices.push (GetRelativeIndex (parseInt (vertexParams[0], 10), this.globalVertices.length));
@@ -338,11 +338,11 @@ OV.ImporterObj = class extends OV.ImporterBase
                 normals.push (GetRelativeIndex (parseInt (vertexParams[2], 10), this.globalNormals.length));
             }
         }
-        
+
         if (this.currentMesh === null) {
             this.AddNewMesh ('');
         }
-        
+
         for (let i = 0; i < vertices.length - 2; i++) {
             let v0 = GetLocalVertexIndex (this, this.currentMesh, vertices[0]);
             let v1 = GetLocalVertexIndex (this, this.currentMesh, vertices[i + 1]);

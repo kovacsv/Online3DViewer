@@ -250,14 +250,7 @@ OV.Navigator = class
         meshesItem.ShowChildren (true, null);
 
         let rootNode = model.GetRootNode ();
-        if (!rootNode.IsEmpty ()) {
-            AddModelNodeToTree (this, model, rootNode, meshesItem);
-        } else {
-            // TODO: remove
-            for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
-                AddMeshToNodeTree (this, model, rootNode, meshIndex, meshesItem);
-            }
-        }
+        AddModelNodeToTree (this, model, rootNode, meshesItem);
     }
 
     MeshItemCount ()

@@ -1,4 +1,5 @@
 var assert = require ('assert');
+var testUtils = require ('../utils/testutils.js');
 
 describe ('Model', function () {
     it ('Default Initialization', function () {
@@ -60,7 +61,7 @@ describe ('Model', function () {
         mesh.AddTriangle (new OV.Triangle (0, 1, 2));
         mesh.AddTriangle (new OV.Triangle (0, 1, 2));
         mesh.AddTriangle (new OV.Triangle (0, 1, 2));
-        model.AddMesh (mesh);
+        model.AddMeshToRootNode (mesh);
         assert.strictEqual (model.VertexCount (), 3);
         assert.strictEqual (model.NormalCount (), 2);
         assert.strictEqual (model.TextureUVCount (), 1);
@@ -75,14 +76,14 @@ describe ('Model', function () {
         mesh1.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
         mesh1.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
         mesh1.AddTriangle (new OV.Triangle (0, 1, 2));
-        model.AddMesh (mesh1);
+        model.AddMeshToRootNode (mesh1);
 
         let mesh2 = new OV.Mesh ();
         mesh2.AddVertex (new OV.Coord3D (0.0, 0.0, 1.0));
         mesh2.AddVertex (new OV.Coord3D (1.0, 0.0, 1.0));
         mesh2.AddVertex (new OV.Coord3D (1.0, 1.0, 1.0));
         mesh2.AddTriangle (new OV.Triangle (0, 1, 2));
-        model.AddMesh (mesh2);
+        model.AddMeshToRootNode (mesh2);
 
         assert.strictEqual (model.MeshCount (), 2);
         assert.strictEqual (model.VertexCount (), 6);
@@ -244,129 +245,6 @@ describe ('Color Conversion', function () {
     });
 });
 
-function CreateHierarchicalModel ()
-{
-    /*
-        + <Root>
-            + Node 1
-                + Node 3
-                    Mesh 5
-                    Mesh 6
-                    Mesh 7
-                + Node 4
-                    Mesh 7
-                Mesh 3
-                Mesh 4
-            + Node 2
-            Mesh 1
-            Mesh 2
-    */
-
-    let model = new OV.Model ();
-    let root = model.GetRootNode ();
-
-    let node1 = new OV.Node ();
-    node1.SetName ('Node 1');
-
-    let node2 = new OV.Node ();
-    node2.SetName ('Node 2');
-
-    let node3 = new OV.Node ();
-    node3.SetName ('Node 3');
-
-    let node4 = new OV.Node ();
-    node4.SetName ('Node 4');
-
-    root.AddChildNode (node1);
-    root.AddChildNode (node2);
-    node1.AddChildNode (node3);
-    node1.AddChildNode (node4);
-
-    let mesh1 = new OV.Mesh ();
-    mesh1.SetName ('Mesh 1');
-
-    let mesh2 = new OV.Mesh ();
-    mesh2.SetName ('Mesh 2');
-
-    let mesh3 = new OV.Mesh ();
-    mesh3.SetName ('Mesh 3');
-
-    let mesh4 = new OV.Mesh ();
-    mesh4.SetName ('Mesh 4');
-
-    let mesh5 = new OV.Mesh ();
-    mesh5.SetName ('Mesh 5');
-
-    let mesh6 = new OV.Mesh ();
-    mesh6.SetName ('Mesh 6');
-
-    let mesh7 = new OV.Mesh ();
-    mesh7.SetName ('Mesh 7');
-
-    let mesh1Ind = model.AddMesh (mesh1);
-    let mesh2Ind = model.AddMesh (mesh2);
-    let mesh3Ind = model.AddMesh (mesh3);
-    let mesh4Ind = model.AddMesh (mesh4);
-    let mesh5Ind = model.AddMesh (mesh5);
-    let mesh6Ind = model.AddMesh (mesh6);
-    let mesh7Ind = model.AddMesh (mesh7);
-
-    root.AddMeshIndex (mesh1Ind);
-    root.AddMeshIndex (mesh2Ind);
-    node1.AddMeshIndex (mesh3Ind);
-    node1.AddMeshIndex (mesh4Ind);
-    node3.AddMeshIndex (mesh5Ind);
-    node3.AddMeshIndex (mesh6Ind);
-    node3.AddMeshIndex (mesh7Ind);
-    node4.AddMeshIndex (mesh7Ind);
-
-    return model;
-}
-
-function CreateTranslatedRotatedCubesModel ()
-{
-    /*
-        + <Root>
-            + Translated
-                Cube
-            + Rotated
-                + Translated and Rotated
-                    Cube
-            Cube
-    */
-
-    let model = new OV.Model ();
-
-    let mesh = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
-    mesh.SetName ('Cube');
-    let meshIndex = model.AddMesh (mesh);
-
-    let root = model.GetRootNode ();
-    root.AddMeshIndex (0);
-
-    let translatedNode = new OV.Node ();
-    translatedNode.SetName ('Translated');
-    translatedNode.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateTranslation (2.0, 0.0, 0.0)));
-    translatedNode.AddMeshIndex (0);
-
-    let rotatedNode = new OV.Node ();
-    rotatedNode.SetName ('Rotated');
-
-    let rotation = OV.QuaternionFromAxisAngle (new OV.Coord3D (0.0, 0.0, 1.0), Math.PI / 2.0);
-    rotatedNode.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateRotation (0.0, 0.0, 0.7071067811865475, 0.7071067811865476)));
-
-    let translatedRotatedNode = new OV.Node ();
-    translatedRotatedNode.SetName ('Translated and Rotated');
-    translatedRotatedNode.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateTranslation (2.0, 0.0, 0.0)));
-    translatedRotatedNode.AddMeshIndex (0);
-
-    root.AddChildNode (translatedNode);
-    root.AddChildNode (rotatedNode);
-    rotatedNode.AddChildNode (translatedRotatedNode);
-
-    return model;
-}
-
 function GetModelTree (model)
 {
     function AddNodeToModelTree (model, node, modelTree)
@@ -392,7 +270,7 @@ function GetModelTree (model)
 
 describe ('Node Hierarchy', function () {
     it ('Enumerate hierarchy', function () {
-        let model = CreateHierarchicalModel ();
+        let model = testUtils.GetHierarchicalModel ();
         let modelTree = GetModelTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
@@ -424,7 +302,7 @@ describe ('Node Hierarchy', function () {
     });
 
     it ('Remove mesh', function () {
-        let model = CreateHierarchicalModel ();
+        let model = testUtils.GetHierarchicalModel ();
         model.RemoveMesh (2);
         let modelTree = GetModelTree (model);
         assert.deepStrictEqual (modelTree, {
@@ -457,7 +335,7 @@ describe ('Node Hierarchy', function () {
     });
 
     it ('Add mesh to index', function () {
-        let model = CreateHierarchicalModel ();
+        let model = testUtils.GetHierarchicalModel ();
         let mesh = new OV.Mesh ();
         mesh.SetName ('Mesh 8');
         model.AddMeshToIndex (mesh, 3);
@@ -492,7 +370,7 @@ describe ('Node Hierarchy', function () {
     });
 
     it ('Enumerate mesh instances', function () {
-        let model = CreateTranslatedRotatedCubesModel ();
+        let model = testUtils.GetTranslatedRotatedCubesModel ();
         let modelTree = GetModelTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
@@ -539,7 +417,7 @@ describe ('Node Hierarchy', function () {
     });
 
     it ('Enumerate transformed mesh instances', function () {
-        let model = CreateTranslatedRotatedCubesModel ();
+        let model = testUtils.GetTranslatedRotatedCubesModel ();
         let modelTree = GetModelTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
@@ -583,5 +461,16 @@ describe ('Node Hierarchy', function () {
 
         assert (OV.CoordIsEqual3D (boundingBox3.min, new OV.Coord3D (-1.0, 2.0, 0.0)));
         assert (OV.CoordIsEqual3D (boundingBox3.max, new OV.Coord3D (0.0, 3.0, 1.0)));
+    });
+
+    it ('Instance counters', function () {
+        let model = testUtils.GetTranslatedRotatedCubesModel ();
+        OV.FinalizeModel (model, function () { return new OV.Material (OV.MaterialType.Phong) });
+        assert.strictEqual (model.MeshCount (), 1);
+        assert.strictEqual (model.MeshInstanceCount (), 3);
+        assert.strictEqual (model.VertexCount (), 8 * 3);
+        assert.strictEqual (model.NormalCount (), 12 * 3);
+        assert.strictEqual (model.TextureUVCount (), 0);
+        assert.strictEqual (model.TriangleCount (), 12 * 3);
     });
 });

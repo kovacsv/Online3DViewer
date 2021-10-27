@@ -24,7 +24,7 @@ OV.ImporterStl = class extends OV.ImporterBase
     ResetContent ()
     {
         this.mesh = new OV.Mesh ();
-        this.model.AddMesh (this.mesh);
+        this.model.AddMeshToRootNode (this.mesh);
         this.triangle = null;
     }
 
