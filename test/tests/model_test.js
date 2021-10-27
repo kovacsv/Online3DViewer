@@ -227,6 +227,14 @@ describe ('Model Finalization', function () {
         });
         assert.strictEqual (nodeCount, 3);
     });
+
+    it ('Remove Empty Nodes Recursively', function () {
+        let model = testUtils.GetHierarchicalModelNoFinalization ();
+        OV.FinalizeModel (model, function () { return new OV.Material (OV.MaterialType.Phong) });
+        assert.strictEqual (model.MeshCount (), 0);
+        assert.strictEqual (model.MeshInstanceCount (), 0);
+        assert (model.GetRootNode ().IsEmpty ());
+    });
 });
 
 describe ('Color Conversion', function () {
@@ -270,7 +278,7 @@ function GetModelTree (model)
 
 describe ('Node Hierarchy', function () {
     it ('Enumerate hierarchy', function () {
-        let model = testUtils.GetHierarchicalModel ();
+        let model = testUtils.GetHierarchicalModelNoFinalization ();
         let modelTree = GetModelTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
@@ -302,7 +310,7 @@ describe ('Node Hierarchy', function () {
     });
 
     it ('Remove mesh', function () {
-        let model = testUtils.GetHierarchicalModel ();
+        let model = testUtils.GetHierarchicalModelNoFinalization ();
         model.RemoveMesh (2);
         let modelTree = GetModelTree (model);
         assert.deepStrictEqual (modelTree, {
@@ -335,7 +343,7 @@ describe ('Node Hierarchy', function () {
     });
 
     it ('Add mesh to index', function () {
-        let model = testUtils.GetHierarchicalModel ();
+        let model = testUtils.GetHierarchicalModelNoFinalization ();
         let mesh = new OV.Mesh ();
         mesh.SetName ('Mesh 8');
         model.AddMeshToIndex (mesh, 3);

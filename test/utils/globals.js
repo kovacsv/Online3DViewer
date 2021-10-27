@@ -16,15 +16,19 @@ global.URL = {
         return 'ObjectUrl:' + objectUrlCounter.toString ();
     },
     revokeObjectURL : function () {
-        
+
     }
 };
 
-global.FileObject = function (folderName, fileName)
+global.FileObject = function (folderName, fileName, fileContent)
 {
+    this.name = path.join (folderName, fileName);
     this.folderName = folderName;
     this.fileName = fileName;
-    this.name = path.join (folderName, fileName);
+    this.fileContent = null;
+    if (fileContent !== undefined) {
+        this.fileContent = fileContent;
+    }
 };
 
 global.FileReader = class
@@ -48,6 +52,16 @@ global.FileReader = class
 
     readAsArrayBuffer (fileObject)
     {
+        if (fileObject.fileContent !== null) {
+            this.onloadend ({
+                target : {
+                    readyState : FileReader.DONE,
+                    result : fileObject.fileContent
+                }
+            });
+            return;
+        }
+
         let content = testUtils.GetArrayBufferFileContent (fileObject.folderName, fileObject.fileName);
         if (content !== null) {
             this.onloadend ({

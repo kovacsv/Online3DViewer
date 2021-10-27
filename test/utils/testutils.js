@@ -231,7 +231,7 @@ module.exports =
         return model;
     },
 
-    GetHierarchicalModel ()
+    GetHierarchicalModelNoFinalization ()
     {
         /*
             + <Root>
@@ -351,6 +351,7 @@ module.exports =
         root.AddChildNode (rotatedNode);
         rotatedNode.AddChildNode (translatedRotatedNode);
 
+        OV.FinalizeModel (model, function () { return new OV.Material (OV.MaterialType.Phong) });
         return model;
     }
 }
