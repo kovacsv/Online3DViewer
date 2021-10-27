@@ -47,13 +47,13 @@ OV.FlipMeshTrianglesOrientation = function (mesh)
 
 OV.IsModelEmpty = function (model)
 {
-    for (let i = 0; i < model.MeshCount (); i++) {
-        let mesh = model.GetMesh (i);
-        if (mesh.TriangleCount () > 0) {
-            return false;
+    let isEmpty = true;
+    model.EnumerateMeshInstances ((meshInstance) => {
+        if (meshInstance.TriangleCount () > 0) {
+            isEmpty = false;
         }
-    }
-    return true;
+    });
+    return isEmpty;
 };
 
 OV.CloneMesh = function (mesh)
