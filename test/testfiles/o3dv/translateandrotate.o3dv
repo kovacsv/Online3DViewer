@@ -16,7 +16,7 @@
 				},
 				"children" : [
 					{
-						"name" : "Translated",
+						"name" : "Translated and Rotated",
 						"transformation" : {
 							"translation" : [2.0, 0.0, 0.0]
 						},

@@ -3,94 +3,36 @@ var testFiles = require ('../utils/testfiles.js');
 var testUtils = require ('../utils/testutils.js');
 
 describe ('O3dv Importer', function () {
-    it ('cube.o3dv', function (done) {
-        testFiles.ImportO3dvFile ('cube.o3dv', function (model) {
+    it ('translateandrotate.o3dv', function (done) {
+        testFiles.ImportO3dvFile ('translateandrotate.o3dv', function (model) {
             assert (OV.CheckModel (model));
-            assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
-                name : '',
-                materials : [
-                    { name : '' }
-                ],
-                meshes : [
+            assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+                name : '<Root>',
+                childNodes : [
                     {
-                        name : '',
-                        vertexCount : 8,
-                        normalCount : 12,
-                        uvCount : 0,
-                        triangleCount : 12,
-                        boundingBox : {
-                            min : [0, 0, 0],
-                            max : [1, 1, 1]
-                        }
-                    }
-                ]
-            });
-            done ();
-        });
-    });
-
-    it ('cylinder.o3dv', function (done) {
-        testFiles.ImportO3dvFile ('cylinder.o3dv', function (model) {
-            assert (OV.CheckModel (model));
-            assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
-                name : '',
-                materials : [
-                    { name : '' }
-                ],
-                meshes : [
+                        name : 'Translated',
+                        childNodes : [],
+                        meshNames : ['Cube']
+                    },
                     {
-                        name : '',
-                        vertexCount : 50,
-                        normalCount : 196,
-                        uvCount : 0,
-                        triangleCount : 96,
-                        boundingBox : {
-                            min : [-0.49605735065723894, -0.4990133642141358, 0],
-                            max : [0.5, 0.4990133642141358, 1]
-                        }
+                        name : 'Rotated',
+                        childNodes : [
+                            {
+                                name : 'Translated and Rotated',
+                                childNodes : [],
+                                meshNames : ['Cube']
+                            }
+                        ],
+                        meshNames : []
                     }
-                ]
-            });
-            done ();
-        });
-    });
-
-    it ('sphere.o3dv', function (done) {
-        testFiles.ImportO3dvFile ('sphere.o3dv', function (model) {
-            assert (OV.CheckModel (model));
-            assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
-                name : '',
-                materials : [
-                    { name : '' }
                 ],
-                meshes : [
-                    {
-                        name : '',
-                        vertexCount : 382,
-                        normalCount : 2280,
-                        uvCount : 0,
-                        triangleCount : 760,
-                        boundingBox : {
-                            min : [-0.5, -0.5, -0.5],
-                            max : [0.5, 0.5, 0.5]
-                        }
-                    }
-                ]
+                meshNames : ['Cube']
             });
-            done ();
-        });
-    });
 
-    it ('transformation.o3dv', function (done) {
-        testFiles.ImportO3dvFile ('transformation.o3dv', function (model) {
-            assert (OV.CheckModel (model));
             assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
                 name : '',
                 materials : [
-                    { name : 'Material 1' },
-                    { name : 'Material 2' },
-                    { name : 'Material 3' },
-                    { name : 'Material 4' }
+                    { name : 'Green' }
                 ],
                 meshes : [
                     {
@@ -103,42 +45,13 @@ describe ('O3dv Importer', function () {
                             min : [0, 0, 0],
                             max : [1, 1, 1]
                         }
-                    },
-                    {
-                        name : 'Cube T',
-                        vertexCount : 8,
-                        normalCount : 12,
-                        uvCount : 0,
-                        triangleCount : 12,
-                        boundingBox : {
-                            min : [2, 0, 0],
-                            max : [3, 1, 1]
-                        }
-                    },
-                    {
-                        name : 'Cube TR',
-                        vertexCount : 8,
-                        normalCount : 12,
-                        uvCount : 0,
-                        triangleCount : 12,
-                        boundingBox : {
-                            min : [3.2928932188134525, 0, 0],
-                            max : [4.707106781186548, 1.414213562373095, 1]
-                        }
-                    },
-                    {
-                        name : 'Cube TRS',
-                        vertexCount : 8,
-                        normalCount : 12,
-                        uvCount : 0,
-                        triangleCount : 12,
-                        boundingBox : {
-                            min : [4.585786437626905, 0, 0],
-                            max : [7.060660171779821, 2.4748737341529163, 2.5]
-                        }
-                    }                    
+                    }
                 ]
             });
+            assert.strictEqual (model.MeshInstanceCount (), 3);
+            let boundingBox = OV.GetBoundingBox (model);
+            assert (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (-1.0, 0.0, 0.0)));
+            assert (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (3.0, 3.0, 1.0)));
             done ();
         });
     });

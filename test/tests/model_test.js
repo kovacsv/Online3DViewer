@@ -253,33 +253,10 @@ describe ('Color Conversion', function () {
     });
 });
 
-function GetModelTree (model)
-{
-    function AddNodeToModelTree (model, node, modelTree)
-    {
-        modelTree.name = node.HasParent () ? node.GetName () : '<Root>';
-        modelTree.childNodes = [];
-        for (const childNode of node.GetChildNodes ()) {
-            let childTree = {};
-            AddNodeToModelTree (model, childNode, childTree);
-            modelTree.childNodes.push (childTree);
-        }
-        modelTree.meshNames = [];
-        for (const meshIndex of node.GetMeshIndices ()) {
-            modelTree.meshNames.push (model.GetMesh (meshIndex).GetName ());
-        }
-    }
-
-    let modelTree = {};
-    let root = model.GetRootNode ();
-    AddNodeToModelTree (model, root, modelTree);
-    return modelTree;
-}
-
 describe ('Node Hierarchy', function () {
     it ('Enumerate hierarchy', function () {
         let model = testUtils.GetHierarchicalModelNoFinalization ();
-        let modelTree = GetModelTree (model);
+        let modelTree = testUtils.ModelNodesToTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
             childNodes : [
@@ -312,7 +289,7 @@ describe ('Node Hierarchy', function () {
     it ('Remove mesh', function () {
         let model = testUtils.GetHierarchicalModelNoFinalization ();
         model.RemoveMesh (2);
-        let modelTree = GetModelTree (model);
+        let modelTree = testUtils.ModelNodesToTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
             childNodes : [
@@ -347,7 +324,7 @@ describe ('Node Hierarchy', function () {
         let mesh = new OV.Mesh ();
         mesh.SetName ('Mesh 8');
         model.AddMeshToIndex (mesh, 3);
-        let modelTree = GetModelTree (model);
+        let modelTree = testUtils.ModelNodesToTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
             childNodes : [
@@ -379,7 +356,7 @@ describe ('Node Hierarchy', function () {
 
     it ('Enumerate mesh instances', function () {
         let model = testUtils.GetTranslatedRotatedCubesModel ();
-        let modelTree = GetModelTree (model);
+        let modelTree = testUtils.ModelNodesToTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
             childNodes : [
@@ -426,7 +403,7 @@ describe ('Node Hierarchy', function () {
 
     it ('Enumerate transformed mesh instances', function () {
         let model = testUtils.GetTranslatedRotatedCubesModel ();
-        let modelTree = GetModelTree (model);
+        let modelTree = testUtils.ModelNodesToTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
             childNodes : [

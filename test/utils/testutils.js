@@ -25,6 +25,29 @@ module.exports =
         return arrayBuffer
     },
 
+    ModelNodesToTree : function (model)
+    {
+        function AddNodeToModelTree (model, node, modelTree)
+        {
+            modelTree.name = node.HasParent () ? node.GetName () : '<Root>';
+            modelTree.childNodes = [];
+            for (const childNode of node.GetChildNodes ()) {
+                let childTree = {};
+                AddNodeToModelTree (model, childNode, childTree);
+                modelTree.childNodes.push (childTree);
+            }
+            modelTree.meshNames = [];
+            for (const meshIndex of node.GetMeshIndices ()) {
+                modelTree.meshNames.push (model.GetMesh (meshIndex).GetName ());
+            }
+        }
+
+        let modelTree = {};
+        let root = model.GetRootNode ();
+        AddNodeToModelTree (model, root, modelTree);
+        return modelTree;
+    },
+
     ModelToObject : function (model)
     {
         var obj = {
@@ -137,7 +160,7 @@ module.exports =
         return obj;
     },
 
-    GetTwoCubesConnectingInOneVertexModel ()
+    GetTwoCubesConnectingInOneVertexModel : function ()
     {
         let model = new OV.Model ();
 
@@ -152,7 +175,7 @@ module.exports =
         return model;
     },
 
-    GetTwoCubesConnectingInOneEdgeModel ()
+    GetTwoCubesConnectingInOneEdgeModel : function ()
     {
         let model = new OV.Model ();
 
