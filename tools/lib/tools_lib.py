@@ -1,5 +1,6 @@
-import codecs
 import os
+import re
+import codecs
 
 def GetFileContent (filePath):
 	fileObject = codecs.open (filePath, 'r', 'utf-8')
@@ -50,7 +51,7 @@ class TokenReplacer:
 				fileLinks.append (linePrefix + '<link rel="stylesheet" type="text/css" href="' + fileSourceUrl + '">')
 		newContent = self.eolChar.join (fileLinks)
 		self.ReplaceContent (begToken, endToken, begPosition, endPosition + len (endToken), linePrefix, newContent)
-		
+
 	def WriteToFile (self, filePath):
 		WriteContentToFile (filePath, self.fileContent)
 
@@ -62,7 +63,7 @@ class TokenReplacer:
 	def ReplaceString (self, oldString, newString):
 		self.fileContent = self.fileContent.replace (oldString, newString)
 
-	def GetTokenBegPosition (self, begToken):	
+	def GetTokenBegPosition (self, begToken):
 		begPosition = self.fileContent.find (begToken)
 		linePrefix = ''
 		if begPosition == -1:
@@ -74,7 +75,7 @@ class TokenReplacer:
 			linePrefix = self.fileContent[begPosition] + linePrefix
 		return begPosition, linePrefix
 
-	def GetTokenEndPosition (self, endToken):	
+	def GetTokenEndPosition (self, endToken):
 		return self.fileContent.find (endToken)
 
 	def GetEOLChar (self):
@@ -95,6 +96,11 @@ def ReplaceInFile (filePath, begToken, endToken, newContent):
 def ReplaceStringInFile (filePath, oldString, newString):
 	content = GetFileContent (filePath)
 	content = content.replace (oldString, newString)
+	WriteContentToFile (filePath, content)
+
+def ReplaceRegexInFile (filePath, oldRegex, newRegex):
+	content = GetFileContent (filePath)
+	content = re.sub (oldRegex, newRegex, content)
 	WriteContentToFile (filePath, content)
 
 def CreateFileLinks (fileUrls, linePrefix, eolChar):

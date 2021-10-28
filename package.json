@@ -20,6 +20,7 @@
 		"test": "mocha test",
 		"build": "node tools/run_python.js tools/build.py",
 		"update": "node tools/run_python.js tools/update.py",
+		"updatelibs": "node tools/run_python.js tools/updatelibs.py && npm run update",
 		"svg": "node tools/run_python.js tools/svg.py"
 	},
 	"dependencies": {},
