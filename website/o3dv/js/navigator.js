@@ -234,10 +234,23 @@ OV.Navigator = class
         function AddModelNodeToTree (navigator, model, node, parentItem)
         {
             for (let childNode of node.GetChildNodes ()) {
-                let nodeItem = new OV.TreeViewGroupItem (OV.GetNodeName (childNode.GetName ()), 'meshes');
-                parentItem.AddChild (nodeItem);
-                nodeItem.ShowChildren (true, null);
-                AddModelNodeToTree (navigator, model, childNode, nodeItem);
+                if (OV.FeatureSet.NavigatorTree) {
+                    const nodeName = OV.GetNodeName (childNode.GetName ());
+                    const nodeId = childNode.GetId ();
+                    let nodeItem = new OV.NodeItem (nodeName, nodeId, {
+                        onShowHide : (selectedNodeId) => {
+                            console.log ('sh');
+                        },
+                        onFitToWindow : (selectedNodeId) => {
+                            console.log ('fit');
+                        }
+                    });
+                    parentItem.AddChild (nodeItem);
+                    nodeItem.ShowChildren (true, null);
+                    AddModelNodeToTree (navigator, model, childNode, nodeItem);
+                } else {
+                    AddModelNodeToTree (navigator, model, childNode, parentItem);
+                }
             }
 
             for (let meshIndex of node.GetMeshIndices ()) {

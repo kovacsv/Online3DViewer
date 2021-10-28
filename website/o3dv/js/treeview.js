@@ -23,7 +23,10 @@ OV.TreeViewButton = class
 
     OnClick (clickHandler)
     {
-        this.mainElement.click (clickHandler);
+        this.mainElement.click ((ev) => {
+            ev.stopPropagation ();
+            clickHandler (ev);
+        });
     }
 
     AddDomElements (parentDiv)
@@ -42,14 +45,20 @@ OV.TreeViewItem = class
         this.nameElement = $('<div>').addClass ('ov_tree_item_name').html (this.name).appendTo (this.mainElement);
     }
 
-    AddDomElements (parentDiv)
+    OnClick (onClick)
     {
-        this.mainElement.appendTo (parentDiv);
+        this.mainElement.css ('cursor', 'pointer');
+        this.mainElement.click (onClick);
     }
 
     SetParent (parent)
     {
         this.parent = parent;
+    }
+
+    AddDomElements (parentDiv)
+    {
+        this.mainElement.appendTo (parentDiv);
     }
 };
 
@@ -84,16 +93,8 @@ OV.TreeViewButtonItem = class extends OV.TreeViewSingleItem
     constructor (name)
     {
         super (name);
-        this.onNameClick = null;
-
         this.mainElement.addClass ('clickable');
         this.buttonsDiv = $('<div>').addClass ('ov_tree_item_button_container').insertBefore (this.nameElement);
-    }
-
-    OnNameClick (onNameClick)
-    {
-        this.nameElement.css ('cursor', 'pointer');
-        this.nameElement.click (onNameClick);
     }
 
     AddButton (button)
@@ -107,16 +108,16 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
     constructor (name, iconPath)
     {
         super (name);
-        this.iconPath = iconPath;
         this.showChildren = false;
 
         this.childrenDiv = null;
         this.openButtonIcon = 'arrow_down';
         this.closeButtonIcon = 'arrow_up';
 
-        OV.CreateSvgIcon (this.iconPath, 'ov_tree_item_icon').insertBefore (this.nameElement);
-        let buttonContainer = $('<div>').addClass ('ov_tree_item_button_container').insertBefore (this.nameElement);
-        this.openCloseButton = OV.AddSvgIcon (buttonContainer, this.openButtonIcon, 'ov_tree_item_button');
+        this.openCloseButton = OV.CreateSvgIcon (this.openButtonIcon, 'ov_tree_item_icon').insertBefore (this.nameElement);
+        if (OV.IsDefined (iconPath)) {
+            OV.CreateSvgIcon (iconPath, 'ov_tree_item_icon').insertBefore (this.nameElement);
+        }
     }
 
     ShowChildren (show, onComplete)
@@ -140,7 +141,7 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
             this.childrenDiv = $('<div>').addClass ('ov_tree_view_children').insertAfter (this.mainElement);
             this.mainElement.addClass ('clickable');
             this.ShowChildren (this.showChildren, null);
-            this.mainElement.click ((ev) => {
+            this.OnClick ((ev) => {
                 this.showChildren = !this.showChildren;
                 this.ShowChildren (this.showChildren, null);
             });
@@ -153,6 +154,20 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
         this.CreateChildrenDiv ();
         child.SetParent (this);
         child.AddDomElements (this.childrenDiv);
+    }
+};
+
+OV.TreeViewGroupButtonItem = class extends OV.TreeViewGroupItem
+{
+    constructor (name, iconPath)
+    {
+        super (name, iconPath);
+        this.buttonsDiv = $('<div>').addClass ('ov_tree_item_button_container').insertBefore (this.nameElement);
+    }
+
+    AddButton (button)
+    {
+        button.AddDomElements (this.buttonsDiv);
     }
 };
 

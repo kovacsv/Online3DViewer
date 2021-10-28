@@ -3,9 +3,8 @@ OV.MaterialItem = class extends OV.TreeViewButtonItem
     constructor (name, materialIndex, callbacks)
     {
         super (name);
-        this.materialIndex = materialIndex;
-        this.OnNameClick (() => {
-            callbacks.onSelected (this.materialIndex);
+        this.OnClick (() => {
+            callbacks.onSelected (materialIndex);
         });
     }
 };
@@ -31,7 +30,7 @@ OV.MeshItem = class extends OV.TreeViewButtonItem
         });
         this.AddButton (this.showHideButton);
 
-        this.OnNameClick (() => {
+        this.OnClick (() => {
             callbacks.onSelected (this.meshInstanceId);
         });
     }
@@ -54,6 +53,26 @@ OV.MeshItem = class extends OV.TreeViewButtonItem
         } else {
             this.showHideButton.SetImage ('hidden');
         }
+    }
+};
+
+OV.NodeItem = class extends OV.TreeViewGroupButtonItem
+{
+    constructor (name, nodeId, callbacks)
+    {
+        super (name, null);
+
+        this.fitToWindowButton = new OV.TreeViewButton ('fit');
+        this.fitToWindowButton.OnClick (() => {
+            callbacks.onFitToWindow (nodeId);
+        });
+        this.AddButton (this.fitToWindowButton);
+
+        this.showHideButton = new OV.TreeViewButton ('visible');
+        this.showHideButton.OnClick (() => {
+            callbacks.onShowHide (nodeId);
+        });
+        this.AddButton (this.showHideButton);
     }
 };
 
