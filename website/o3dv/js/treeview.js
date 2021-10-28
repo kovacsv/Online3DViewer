@@ -112,7 +112,7 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
 
         this.childrenDiv = null;
         this.openButtonIcon = 'arrow_down';
-        this.closeButtonIcon = 'arrow_up';
+        this.closeButtonIcon = 'arrow_right';
 
         this.openCloseButton = OV.CreateSvgIcon (this.openButtonIcon, 'ov_tree_item_icon').insertBefore (this.nameElement);
         if (OV.IsDefined (iconPath)) {
