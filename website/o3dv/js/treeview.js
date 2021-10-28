@@ -47,6 +47,7 @@ OV.TreeViewItem = class
 
     OnClick (onClick)
     {
+        this.mainElement.addClass ('clickable');
         this.mainElement.css ('cursor', 'pointer');
         this.mainElement.click (onClick);
     }
@@ -93,7 +94,6 @@ OV.TreeViewButtonItem = class extends OV.TreeViewSingleItem
     constructor (name)
     {
         super (name);
-        this.mainElement.addClass ('clickable');
         this.buttonsDiv = $('<div>').addClass ('ov_tree_item_button_container').insertBefore (this.nameElement);
     }
 
@@ -139,7 +139,6 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
     {
         if (this.childrenDiv === null) {
             this.childrenDiv = $('<div>').addClass ('ov_tree_view_children').insertAfter (this.mainElement);
-            this.mainElement.addClass ('clickable');
             this.ShowChildren (this.showChildren, null);
             this.OnClick ((ev) => {
                 this.showChildren = !this.showChildren;
