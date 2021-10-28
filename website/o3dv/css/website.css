@@ -109,6 +109,14 @@ div.main_navigator
 	float: left;
 }
 
+div.main_navigator_splitter
+{
+	width: 10px;
+	overflow: none;
+	float: left;
+	cursor: col-resize;
+}
+
 div.main_viewer
 {
 	float: left;
@@ -124,7 +132,7 @@ div.main_sidebar
 
 div.main_viewer canvas
 {
-	margin: 10px;
+	margin: 10px 10px 10px 0px;
 	border: 1px solid var(--ov_border_color);
 	outline: none;
 	display: block;
@@ -316,7 +324,7 @@ div.ov_property_table div.ov_property_table_row.group
 	padding: 4px 0px;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	overflow: hidden;	
+	overflow: hidden;
 }
 
 div.ov_property_table div.ov_property_table_row.ingroup
@@ -378,7 +386,7 @@ div.ov_navigator_info_panel div.ov_navigator_info_button:hover
 
 }
 
-@media only screen and (max-width: 700px)
+@media only screen and (max-width: 800px)
 {
 
 div.intro div.intro_section

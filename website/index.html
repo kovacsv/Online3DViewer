@@ -14,7 +14,7 @@
 	<script type="text/javascript" src="../libs/pickr.es5.min-1.8.2.js"></script>
 	<script type="text/javascript" src="../libs/three.min-129.js"></script>
 	<!-- libs end -->
-	
+
 	<!-- meta start -->
 	<!-- meta end -->
 
@@ -81,7 +81,7 @@
 	<script type="text/javascript" src="../source/viewer/viewer.js"></script>
 	<script type="text/javascript" src="../source/viewer/domviewer.js"></script>
 	<!-- engine end -->
-	
+
 	<!-- website start -->
 	<link rel="stylesheet" type="text/css" href="o3dv/css/icons.css">
 	<link rel="stylesheet" type="text/css" href="o3dv/css/themes.css">
@@ -98,6 +98,7 @@
 	<script type="text/javascript" src="o3dv/js/settings.js"></script>
 	<script type="text/javascript" src="o3dv/js/toolbar.js"></script>
 	<script type="text/javascript" src="o3dv/js/treeview.js"></script>
+	<script type="text/javascript" src="o3dv/js/splitter.js"></script>
 	<script type="text/javascript" src="o3dv/js/modal.js"></script>
 	<script type="text/javascript" src="o3dv/js/dialogs.js"></script>
 	<script type="text/javascript" src="o3dv/js/openurldialog.js"></script>
@@ -134,6 +135,7 @@
 				mainDiv : $('#main'),
 				introDiv : $('#intro'),
 				navigatorDiv : $('#main_navigator'),
+				navigatorSplitterDiv : $('#main_navigator_splitter'),
 				sidebarDiv : $('#main_sidebar'),
 				viewerDiv : $('#main_viewer'),
 				fileInput : $('#open_file'),
@@ -164,6 +166,8 @@
 	</div>
 	<div class="main" id="main">
 		<div class="main_navigator only_full_width" id="main_navigator">
+		</div>
+		<div class="main_navigator_splitter only_full_width" id="main_navigator_splitter">
 		</div>
 		<div class="main_viewer" id="main_viewer">
 		</div>

@@ -28,12 +28,12 @@ OV.IsHoverEnabled = function ()
 
 OV.IsSmallWidth = function ()
 {
-    return window.matchMedia ('(max-width: 700px)').matches;
+    return window.matchMedia ('(max-width: 800px)').matches;
 };
 
 OV.IsSmallHeight = function ()
 {
-    return window.matchMedia ('(max-height: 700px)').matches;
+    return window.matchMedia ('(max-height: 800px)').matches;
 };
 
 OV.InstallTooltip = function (item, text)

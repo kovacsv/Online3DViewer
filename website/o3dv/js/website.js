@@ -24,6 +24,7 @@ OV.Website = class
             side : THREE.DoubleSide
         });
         this.themeHandler = new OV.ThemeHandler ();
+        this.navigatorSplitter = null;
         this.detailsPanel = null;
         this.settingsPanel = null;
         this.model = null;
@@ -65,7 +66,8 @@ OV.Website = class
         let sidebarWidth = 0;
         let safetyMargin = 0;
         if (!OV.IsSmallWidth ()) {
-            navigatorWidth = parseInt (this.parameters.navigatorDiv.outerWidth (true), 10);
+            let navigatorSplitterWidth = parseInt (this.parameters.navigatorSplitterDiv.outerWidth (true), 10);
+            navigatorWidth = parseInt (this.parameters.navigatorDiv.outerWidth (true), 10) + navigatorSplitterWidth;
             if (this.sidebar.IsVisible ()) {
                 sidebarWidth = parseInt (this.parameters.sidebarDiv.outerWidth (true), 10);
             }
@@ -76,6 +78,7 @@ OV.Website = class
         let contentHeight = windowHeight - headerHeight - safetyMargin;
 
         this.parameters.navigatorDiv.outerHeight (contentHeight, true);
+        this.parameters.navigatorSplitterDiv.outerHeight (contentHeight, true);
         this.parameters.sidebarDiv.outerHeight (contentHeight, true);
         this.parameters.introDiv.outerHeight (contentHeight, true);
 
@@ -670,6 +673,21 @@ OV.Website = class
             }
             return usedMaterials;
         }
+
+        let navigatorOriginalWidth = null;
+        this.navigatorSplitter = new OV.VerticalSplitter (this.parameters.navigatorSplitterDiv, {
+            onSplitStart : () => {
+                navigatorOriginalWidth = this.parameters.navigatorDiv.outerWidth (true);
+            },
+            onSplit : (xDiff) => {
+                const newWidth = navigatorOriginalWidth + xDiff;
+                if (newWidth < 250 || newWidth > 450) {
+                    return;
+                }
+                this.parameters.navigatorDiv.outerWidth (newWidth, true);
+                this.Resize ();
+            }
+        });
 
         this.navigator.Init ({
             openFileBrowserDialog : () => {

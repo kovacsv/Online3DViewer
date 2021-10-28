@@ -76,6 +76,7 @@
 		"website/o3dv/js/settings.js",
 		"website/o3dv/js/toolbar.js",
 		"website/o3dv/js/treeview.js",
+		"website/o3dv/js/splitter.js",
 		"website/o3dv/js/modal.js",
 		"website/o3dv/js/dialogs.js",
 		"website/o3dv/js/openurldialog.js",
