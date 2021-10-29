@@ -58,9 +58,9 @@ def UpdateThreeJs (rootDir, tempDir):
 
     PrintInfo ('Replacing file name')
     configFilePath = os.path.join (rootDir, 'tools', 'config.json')
-    Tools.ReplaceRegexInFile (configFilePath, 'three.min-r[0-9]+.js', 'three.min-' + threeJsTagName + '.js')
+    Tools.ReplaceRegexInFile (configFilePath, 'three.min-r?[0-9]+.js', 'three.min-' + threeJsTagName + '.js')
     buildScriptPath = os.path.join (rootDir, 'tools', 'build.py')
-    Tools.ReplaceRegexInFile (buildScriptPath, 'three.min-r[0-9]+.js', 'three.min-' + threeJsTagName + '.js')
+    Tools.ReplaceRegexInFile (buildScriptPath, 'three.min-r?[0-9]+.js', 'three.min-' + threeJsTagName + '.js')
 
 def Main (argv):
     toolsDir = os.path.dirname (os.path.abspath (__file__))
