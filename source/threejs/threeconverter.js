@@ -85,7 +85,7 @@ OV.ThreeNodeTree = class
 
 OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 {
-	function CreateThreeMaterial (stateHandler, model, materialIndex, params, output)
+	function CreateThreeMaterial (stateHandler, model, materialIndex, materialType, params, output)
 	{
 		function SetTextureParameters (texture, threeTexture)
 		{
@@ -135,7 +135,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 		}
 
 		let threeMaterial = null;
-		if (material.type === OV.MaterialType.Phong) {
+		if (materialType === OV.MaterialType.Phong) {
 			threeMaterial = new THREE.MeshPhongMaterial (materialParams);
 			let specularColor = new THREE.Color (material.specular.r / 255.0, material.specular.g / 255.0, material.specular.b / 255.0);
 			if (OV.IsEqual (material.shininess, 0.0)) {
@@ -146,7 +146,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 			LoadTexture (stateHandler, threeMaterial, material.specularMap, (threeTexture) => {
 				threeMaterial.specularMap = threeTexture;
 			});
-		} else if (material.type === OV.MaterialType.Physical) {
+		} else if (materialType === OV.MaterialType.Physical) {
 			threeMaterial = new THREE.MeshStandardMaterial (materialParams);
 			threeMaterial.metalness = material.metalness;
 			threeMaterial.roughness = material.roughness;
@@ -319,10 +319,11 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 	}
 
 	let stateHandler = new OV.ThreeConversionStateHandler (callbacks);
+	let materialType = OV.GetRepresentativeMaterialType (model);
 
 	let modelThreeMaterials = [];
 	for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
-		let threeMaterial = CreateThreeMaterial (stateHandler, model, materialIndex, params, output);
+		let threeMaterial = CreateThreeMaterial (stateHandler, model, materialIndex, materialType, params, output);
 		modelThreeMaterials.push (threeMaterial);
 	}
 

@@ -207,3 +207,23 @@ OV.ReplaceDefaultMaterialColor = function (model, color)
         }
     }
 };
+
+OV.GetRepresentativeMaterialType = function (model)
+{
+    let maxType = OV.MaterialType.Phong;
+    let maxCount = 0;
+    let materialTypeToIndex = new Map ();
+    for (let i = 0; i < model.MaterialCount (); i++) {
+        let material = model.GetMaterial (i);
+        if (!materialTypeToIndex.has (material.type)) {
+            materialTypeToIndex.set (material.type, 0);
+        }
+        let typeCount = materialTypeToIndex.get (material.type) + 1;
+        materialTypeToIndex.set (material.type, typeCount);
+        if (typeCount > maxCount) {
+            maxType = material.type;
+            maxCount = typeCount;
+        }
+    }
+    return maxType;
+};

@@ -1,3 +1,9 @@
+OV.ShadingModelType =
+{
+    Phong : 1,
+    Physical : 2
+};
+
 OV.GetDefaultCamera = function (direction)
 {
     if (direction === OV.Direction.X) {
@@ -20,6 +26,27 @@ OV.GetDefaultCamera = function (direction)
         );
     }
     return null;
+};
+
+OV.GetShadingTypeOfObject = function (mainObject)
+{
+    let shadingType = null;
+    mainObject.traverse ((obj) => {
+        if (shadingType !== null) {
+            return;
+        }
+        if (obj.isMesh) {
+            for (const material of obj.material) {
+                if (material.type === 'MeshPhongMaterial') {
+                    shadingType = OV.ShadingModelType.Phong;
+                } else if (material.type === 'MeshStandardMaterial') {
+                    shadingType = OV.ShadingModelType.Physical;
+                }
+                break;
+            }
+        }
+    });
+    return shadingType;
 };
 
 OV.UpVector = class
@@ -149,18 +176,13 @@ OV.ViewerGeometry = class
     }
 };
 
-OV.ShadingModelType =
-{
-    Phong : 1,
-    Physical : 2
-};
-
 OV.ShadingModel = class
 {
     constructor (scene)
     {
         this.scene = scene;
 
+        this.type = OV.ShadingModelType.Phong;
         this.ambientLight = new THREE.AmbientLight (0x888888);
         this.directionalLight = new THREE.DirectionalLight (0x888888);
         this.environment = null;
@@ -171,9 +193,10 @@ OV.ShadingModel = class
 
     SetType (type)
     {
-        if (type === OV.ShadingModelType.Phong) {
+        this.type = type;
+        if (this.type === OV.ShadingModelType.Phong) {
             this.scene.environment = null;
-        } else if (type === OV.ShadingModelType.Physical) {
+        } else if (this.type === OV.ShadingModelType.Physical) {
             this.scene.environment = this.environment;
         }
     }
@@ -372,8 +395,9 @@ OV.Viewer = class
 
     SetMainObject (object)
     {
+        const shadingType = OV.GetShadingTypeOfObject (object);
         this.geometry.SetMainObject (object);
-        this.shading.SetType (OV.ShadingModelType.Physical);
+        this.shading.SetType (shadingType);
         this.Render ();
     }
 
@@ -399,7 +423,7 @@ OV.Viewer = class
         function CreateHighlightMaterials (originalMaterials, highlightColor)
         {
             const highlightMaterial = new THREE.MeshPhongMaterial ({
-                color : 0x8ec9f0,
+                color : highlightColor,
                 side : THREE.DoubleSide
             });
             let highlightMaterials = [];
