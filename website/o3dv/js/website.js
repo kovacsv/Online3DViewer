@@ -19,11 +19,8 @@ OV.Website = class
         this.eventHandler = new OV.EventHandler (this.parameters.eventHandler);
         this.settings = new OV.Settings ();
         this.modelLoader = new OV.ThreeModelLoader ();
-        this.highlightMaterial = new THREE.MeshPhongMaterial ({
-            color : 0x8ec9f0,
-            side : THREE.DoubleSide
-        });
         this.themeHandler = new OV.ThemeHandler ();
+        this.highlightColor = new THREE.Color (0x8ec9f0);
         this.navigatorSplitter = null;
         this.detailsPanel = null;
         this.settingsPanel = null;
@@ -270,7 +267,7 @@ OV.Website = class
     UpdateMeshesSelection ()
     {
         let selectedMeshId = this.navigator.GetSelectedMeshId ();
-        this.viewer.SetMeshesHighlight (this.highlightMaterial, (meshUserData) => {
+        this.viewer.SetMeshesHighlight (this.highlightColor, (meshUserData) => {
             if (selectedMeshId !== null && meshUserData.originalMeshId.IsEqual (selectedMeshId)) {
                 return true;
             }

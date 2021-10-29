@@ -5,13 +5,13 @@ OV.GetDefaultCamera = function (direction)
             new OV.Coord3D (2.0, -3.0, 1.5),
             new OV.Coord3D (0.0, 0.0, 0.0),
             new OV.Coord3D (1.0, 0.0, 0.0)
-        );    
+        );
     } else if (direction === OV.Direction.Y) {
         return new OV.Camera (
             new OV.Coord3D (-1.5, 2.0, 3.0),
             new OV.Coord3D (0.0, 0.0, 0.0),
             new OV.Coord3D (0.0, 1.0, 0.0)
-        );    
+        );
     } else if (direction === OV.Direction.Z) {
         return new OV.Camera (
             new OV.Coord3D (-1.5, -3.0, 2.0),
@@ -110,7 +110,7 @@ OV.ViewerGeometry = class
             }
         });
     }
-    
+
     GetModelMeshUnderMouse (mouseCoords, camera, width, height)
     {
         if (this.mainObject === null) {
@@ -149,6 +149,50 @@ OV.ViewerGeometry = class
     }
 };
 
+OV.ShadingModelType =
+{
+    Phong : 1,
+    Physical : 2
+};
+
+OV.ShadingModel = class
+{
+    constructor (scene)
+    {
+        this.scene = scene;
+
+        this.ambientLight = new THREE.AmbientLight (0x888888);
+        this.directionalLight = new THREE.DirectionalLight (0x888888);
+        this.environment = null;
+
+        this.scene.add (this.ambientLight);
+        this.scene.add (this.directionalLight);
+    }
+
+    SetType (type)
+    {
+        if (type === OV.ShadingModelType.Phong) {
+            this.scene.environment = null;
+        } else if (type === OV.ShadingModelType.Physical) {
+            this.scene.environment = this.environment;
+        }
+    }
+
+    SetEnvironment (textures, onLoaded)
+    {
+        let loader = new THREE.CubeTextureLoader ();
+        this.environment = loader.load (textures, () => {
+            onLoaded ();
+        });
+    }
+
+    UpdateByCamera (camera)
+    {
+        const lightDir = OV.SubCoord3D (camera.eye, camera.center);
+        this.directionalLight.position.set (lightDir.x, lightDir.y, lightDir.z);
+    }
+};
+
 OV.Viewer = class
 {
     constructor ()
@@ -158,14 +202,14 @@ OV.Viewer = class
         this.scene = null;
         this.geometry = null;
         this.camera = null;
-        this.light = null;
+        this.shading = null;
         this.navigation = null;
         this.upVector = null;
         this.settings = {
             animationSteps : 40
         };
     }
-    
+
     Init (canvas)
     {
         this.canvas = canvas;
@@ -175,19 +219,19 @@ OV.Viewer = class
             canvas : this.canvas,
             antialias : true
         };
-        
+
         this.renderer = new THREE.WebGLRenderer (parameters);
         if (window.devicePixelRatio) {
             this.renderer.setPixelRatio (window.devicePixelRatio);
         }
         this.renderer.setClearColor ('#ffffff', 1.0);
         this.renderer.setSize (this.canvas.width, this.canvas.height);
-        
+
         this.scene = new THREE.Scene ();
         this.geometry = new OV.ViewerGeometry (this.scene);
 
         this.InitCamera ();
-        this.InitLights ();
+        this.InitShading ();
 
         this.Render ();
     }
@@ -211,8 +255,7 @@ OV.Viewer = class
 
     SetEnvironmentMap (textures)
     {
-        let loader = new THREE.CubeTextureLoader ();
-        this.scene.environment = loader.load (textures, () => {
+        this.shading.SetEnvironment (textures, () => {
             this.Render ();
         });
     }
@@ -221,7 +264,7 @@ OV.Viewer = class
     {
         return this.navigation.GetCamera ();
     }
-    
+
     SetCamera (camera)
     {
         this.navigation.SetCamera (camera);
@@ -241,7 +284,7 @@ OV.Viewer = class
         }
         this.camera.aspect = width / height;
         this.camera.updateProjectionMatrix ();
-        this.renderer.setSize (width, height);    
+        this.renderer.setSize (width, height);
         this.Render ();
     }
 
@@ -265,7 +308,7 @@ OV.Viewer = class
     {
         if (boundingSphere === null) {
             return;
-        }        
+        }
         if (boundingSphere.radius < 10.0) {
             this.camera.near = 0.01;
             this.camera.far = 100.0;
@@ -274,7 +317,7 @@ OV.Viewer = class
             this.camera.far = 1000.0;
         } else if (boundingSphere.radius < 1000.0) {
             this.camera.near = 10.0;
-            this.camera.far = 10000.0;            
+            this.camera.far = 10000.0;
         } else {
             this.camera.near = 100.0;
             this.camera.far = 1000000.0;
@@ -286,7 +329,7 @@ OV.Viewer = class
     IsFixUpVector ()
     {
         return this.navigation.IsFixUpVector ();
-    }    
+    }
 
     SetFixUpVector (fixUpVector)
     {
@@ -322,15 +365,15 @@ OV.Viewer = class
         this.camera.position.set (navigationCamera.eye.x, navigationCamera.eye.y, navigationCamera.eye.z);
         this.camera.up.set (navigationCamera.up.x, navigationCamera.up.y, navigationCamera.up.z);
         this.camera.lookAt (new THREE.Vector3 (navigationCamera.center.x, navigationCamera.center.y, navigationCamera.center.z));
-    
-        let lightDir = OV.SubCoord3D (navigationCamera.eye, navigationCamera.center);
-        this.light.position.set (lightDir.x, lightDir.y, lightDir.z);    
+
+        this.shading.UpdateByCamera (navigationCamera);
         this.renderer.render (this.scene, this.camera);
     }
 
     SetMainObject (object)
     {
         this.geometry.SetMainObject (object);
+        this.shading.SetType (OV.ShadingModelType.Physical);
         this.Render ();
     }
 
@@ -351,10 +394,14 @@ OV.Viewer = class
         this.Render ();
     }
 
-    SetMeshesHighlight (highlightMaterial, isHighlighted)
+    SetMeshesHighlight (highlightColor, isHighlighted)
     {
-        function CreateHighlightMaterials (originalMaterials, highlightMaterial)
+        function CreateHighlightMaterials (originalMaterials, highlightColor)
         {
+            const highlightMaterial = new THREE.MeshPhongMaterial ({
+                color : 0x8ec9f0,
+                side : THREE.DoubleSide
+            });
             let highlightMaterials = [];
             for (let i = 0; i < originalMaterials.length; i++) {
                 highlightMaterials.push (highlightMaterial);
@@ -367,7 +414,7 @@ OV.Viewer = class
             if (highlighted) {
                 if (mesh.userData.threeMaterials === null) {
                     mesh.userData.threeMaterials = mesh.material;
-                    mesh.material = CreateHighlightMaterials (mesh.material, highlightMaterial);
+                    mesh.material = CreateHighlightMaterials (mesh.material, highlightColor);
                 }
             } else {
                 if (mesh.userData.threeMaterials !== null) {
@@ -376,8 +423,9 @@ OV.Viewer = class
                 }
             }
         });
+
         this.Render ();
-    }    
+    }
 
     GetMeshUserDataUnderMouse (mouseCoords)
     {
@@ -446,13 +494,9 @@ OV.Viewer = class
         this.upVector = new OV.UpVector ();
     }
 
-    InitLights  ()
+    InitShading  ()
     {
-        let ambientLight = new THREE.AmbientLight (0x888888);
-        this.scene.add (ambientLight);
-    
-        this.light = new THREE.DirectionalLight (0x888888);
-        this.scene.add (this.light);
+        this.shading = new OV.ShadingModel (this.scene);
     }
 
     GetImageSize ()
