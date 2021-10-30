@@ -28,7 +28,7 @@ OV.Embed = class
             let defaultColor = this.hashHandler.GetDefaultColorFromHash ();
             if (defaultColor !== null) {
                 settings.defaultColor = defaultColor;
-            }            
+            }
             this.modelLoader.LoadFromUrlList (urls, settings);
             let hashParameters = OV.CreateModelUrlParameters (urls);
             let websiteUrl = this.parameters.websiteLinkDiv.attr ('href') + '#' + hashParameters;
@@ -60,19 +60,19 @@ OV.Embed = class
         } else {
             this.viewer.SetUpVector (importResult.upVector, false);
         }
-        this.viewer.FitSphereToWindow (boundingSphere, false);        
-    }    
+        this.viewer.FitSphereToWindow (boundingSphere, false);
+    }
 
     InitViewer (canvas)
     {
         this.viewer.Init (canvas.get (0));
         this.viewer.SetEnvironmentMap ([
-            'assets/envmaps/fishermans_bastion/posx.jpg',
-            'assets/envmaps/fishermans_bastion/negx.jpg',
-            'assets/envmaps/fishermans_bastion/posy.jpg',
-            'assets/envmaps/fishermans_bastion/negy.jpg',
-            'assets/envmaps/fishermans_bastion/posz.jpg',
-            'assets/envmaps/fishermans_bastion/negz.jpg'
+            'assets/envmaps/forest/posx.jpg',
+            'assets/envmaps/forest/negx.jpg',
+            'assets/envmaps/forest/posy.jpg',
+            'assets/envmaps/forest/negy.jpg',
+            'assets/envmaps/forest/posz.jpg',
+            'assets/envmaps/forest/negz.jpg'
         ]);
     }
 
@@ -81,7 +81,7 @@ OV.Embed = class
         OV.InitModelLoader (this.modelLoader, {
             onStart : () =>
             {
-                
+
             },
             onFinish : (importResult, threeObject) =>
             {
@@ -93,8 +93,8 @@ OV.Embed = class
             },
             onError : (importError) =>
             {
-                
+
             }
         });
-    } 
+    }
 };
