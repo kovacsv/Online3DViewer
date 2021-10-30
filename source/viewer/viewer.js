@@ -211,7 +211,7 @@ OV.ShadingModel = class
             this.scene.environment = null;
         } else if (this.type === OV.ShadingModelType.Physical) {
             this.ambientLight.color.set (0x000000);
-            this.directionalLight.color.set (0x555555);
+            this.directionalLight.color.set (0x666666);
             this.scene.environment = this.environment;
         }
     }
