@@ -138,11 +138,6 @@ OV.NavigatorItems = class
         this.meshInstanceIdToItem = new Map ();
     }
 
-    MaterialItemCount ()
-    {
-        return Object.keys (this.materialIndexToItem).length;
-    }
-
     GetMaterialItem (materialIndex)
     {
         return this.materialIndexToItem.get (materialIndex);
@@ -155,7 +150,7 @@ OV.NavigatorItems = class
 
     MeshItemCount ()
     {
-        return Object.keys (this.meshInstanceIdToItem).length;
+        return this.meshInstanceIdToItem.size;
     }
 
     GetNodeItem (nodeId)
@@ -180,7 +175,7 @@ OV.NavigatorItems = class
 
     EnumerateMeshItems (processor)
     {
-        for (const meshItem of Object.values (this.meshInstanceIdToItem)) {
+        for (const meshItem of this.meshInstanceIdToItem.values ()) {
             if (!processor (meshItem)) {
                 break;
             }
