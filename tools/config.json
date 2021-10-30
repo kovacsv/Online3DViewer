@@ -3,7 +3,7 @@
 		"libs/jquery-3.5.1.min.js",
 		"libs/pickr.monolith.min-1.8.2.css",
 		"libs/pickr.es5.min-1.8.2.js",
-		"libs/three.min-129.js"
+		"libs/three.min-r134.js"
 	],
 	"engine_files" : [
 		"source/core/core.js",

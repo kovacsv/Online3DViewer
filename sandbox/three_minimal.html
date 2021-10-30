@@ -7,7 +7,7 @@
 
 	<title>Online 3D Viewer</title>
 
-	<script type="text/javascript" src="../../libs/three.min-129.js"></script>
+	<script type="text/javascript" src="../../libs/three.min-r134.js"></script>
 	<script type='text/javascript'>
 		function Sandbox3D ()
 		{
@@ -17,20 +17,20 @@
 				canvas : canvas,
 				antialias : true
 			};
-		
+
 			let width = 800;
 			let height = 600;
 			let renderer = new THREE.WebGLRenderer (parameters);
 			renderer.setClearColor ('#ffffff', 1);
 			renderer.setSize (width, height);
-		
+
 			let scene = new THREE.Scene ();
 
 			let ambientLight = new THREE.AmbientLight (0x888888);
 			scene.add (ambientLight);
-		
+
 			let light = new THREE.DirectionalLight (0x888888);
-			light.position.set (3.0, -1.5, 2.0);	
+			light.position.set (3.0, -1.5, 2.0);
 			scene.add (light);
 
 			let camera = new THREE.PerspectiveCamera (45.0, width / height, 0.1, 1000.0);
@@ -49,7 +49,7 @@
 			scene.add (mesh);
 			renderer.render (scene, camera);
 		}
-	
+
 		window.onload = function () {
 			Sandbox3D ();
 		};

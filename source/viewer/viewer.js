@@ -28,13 +28,23 @@ OV.GetDefaultCamera = function (direction)
     return null;
 };
 
+OV.TraverseThreeObject = function (object, processor)
+{
+    if (!processor (object)) {
+        return false;
+    }
+    for (let child of object.children) {
+        if (!OV.TraverseThreeObject (child, processor)) {
+            return false;
+        }
+    }
+    return true;
+};
+
 OV.GetShadingTypeOfObject = function (mainObject)
 {
     let shadingType = null;
-    mainObject.traverse ((obj) => {
-        if (shadingType !== null) {
-            return;
-        }
+    OV.TraverseThreeObject (mainObject, (obj) => {
         if (obj.isMesh) {
             for (const material of obj.material) {
                 if (material.type === 'MeshPhongMaterial') {
@@ -42,9 +52,10 @@ OV.GetShadingTypeOfObject = function (mainObject)
                 } else if (material.type === 'MeshStandardMaterial') {
                     shadingType = OV.ShadingModelType.Physical;
                 }
-                break;
+                return false;
             }
         }
+        return true;
     });
     return shadingType;
 };
@@ -195,8 +206,12 @@ OV.ShadingModel = class
     {
         this.type = type;
         if (this.type === OV.ShadingModelType.Phong) {
+            this.ambientLight.color.set (0x888888);
+            this.directionalLight.color.set (0x888888);
             this.scene.environment = null;
         } else if (this.type === OV.ShadingModelType.Physical) {
+            this.ambientLight.color.set (0x000000);
+            this.directionalLight.color.set (0x555555);
             this.scene.environment = this.environment;
         }
     }
@@ -213,6 +228,22 @@ OV.ShadingModel = class
     {
         const lightDir = OV.SubCoord3D (camera.eye, camera.center);
         this.directionalLight.position.set (lightDir.x, lightDir.y, lightDir.z);
+    }
+
+    CreateHighlightMaterial (highlightColor)
+    {
+        if (this.type === OV.ShadingModelType.Phong) {
+            return new THREE.MeshPhongMaterial ({
+                color : highlightColor,
+                side : THREE.DoubleSide
+            });
+        } else if (this.type === OV.ShadingModelType.Physical) {
+            return new THREE.MeshStandardMaterial ({
+                color : highlightColor,
+                side : THREE.DoubleSide
+            });
+        }
+        return null;
     }
 };
 
@@ -420,12 +451,8 @@ OV.Viewer = class
 
     SetMeshesHighlight (highlightColor, isHighlighted)
     {
-        function CreateHighlightMaterials (originalMaterials, highlightColor)
+        function CreateHighlightMaterials (originalMaterials, highlightMaterial)
         {
-            const highlightMaterial = new THREE.MeshPhongMaterial ({
-                color : highlightColor,
-                side : THREE.DoubleSide
-            });
             let highlightMaterials = [];
             for (let i = 0; i < originalMaterials.length; i++) {
                 highlightMaterials.push (highlightMaterial);
@@ -433,12 +460,13 @@ OV.Viewer = class
             return highlightMaterials;
         }
 
+        const highlightMaterial = this.shading.CreateHighlightMaterial (highlightColor);
         this.geometry.EnumerateMeshes ((mesh) => {
             let highlighted = isHighlighted (mesh.userData);
             if (highlighted) {
                 if (mesh.userData.threeMaterials === null) {
                     mesh.userData.threeMaterials = mesh.material;
-                    mesh.material = CreateHighlightMaterials (mesh.material, highlightColor);
+                    mesh.material = CreateHighlightMaterials (mesh.material, highlightMaterial);
                 }
             } else {
                 if (mesh.userData.threeMaterials !== null) {
