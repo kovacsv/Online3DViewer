@@ -239,7 +239,7 @@ OV.Navigator = class
                     const nodeId = childNode.GetId ();
                     let nodeItem = new OV.NodeItem (nodeName, nodeId, {
                         onShowHide : (selectedNodeId) => {
-                            console.log ('sh');
+                            navigator.ToggleNodeVisibility (selectedNodeId);
                         },
                         onFitToWindow : (selectedNodeId) => {
                             navigator.FitNodeToWindow (selectedNodeId);
@@ -297,6 +297,13 @@ OV.Navigator = class
             meshItem.SetVisible (true);
             return true;
         });
+        this.callbacks.updateMeshesVisibility ();
+    }
+
+    ToggleNodeVisibility (nodeId)
+    {
+        let nodeItem = this.navigatorItems.GetNodeItem (nodeId);
+        nodeItem.SetVisible (!nodeItem.IsVisible ());
         this.callbacks.updateMeshesVisibility ();
     }
 

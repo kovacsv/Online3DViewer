@@ -25,7 +25,7 @@ OV.MeshItem = class extends OV.TreeViewButtonItem
         this.AddButton (this.fitToWindowButton);
 
         this.showHideButton = new OV.TreeViewButton ('visible');
-        this.showHideButton.OnClick ((ev) => {
+        this.showHideButton.OnClick (() => {
             callbacks.onShowHide (this.meshInstanceId);
         });
         this.AddButton (this.showHideButton);
@@ -53,6 +53,9 @@ OV.MeshItem = class extends OV.TreeViewButtonItem
         } else {
             this.showHideButton.SetImage ('hidden');
         }
+        if (this.parent instanceof OV.NodeItem) {
+            this.parent.UpdateVisibleStatus ();
+        }
     }
 };
 
@@ -75,6 +78,27 @@ OV.NodeItem = class extends OV.TreeViewGroupButtonItem
         this.AddButton (this.showHideButton);
     }
 
+    IsVisible ()
+    {
+        let isVisible = false;
+        this.EnumerateMeshItems ((meshItem) => {
+            if (meshItem.IsVisible ()) {
+                isVisible = true;
+            }
+        });
+        return isVisible;
+    }
+
+    SetVisible (visible)
+    {
+        this.UpdateVisibleIcon (visible);
+        for (let child of this.children) {
+            if (child instanceof OV.NodeItem || child instanceof OV.MeshItem) {
+                child.SetVisible (visible);
+            }
+        }
+    }
+
     EnumerateMeshItems (processor)
     {
         for (let child of this.children) {
@@ -83,6 +107,24 @@ OV.NodeItem = class extends OV.TreeViewGroupButtonItem
             } else if (child instanceof OV.MeshItem) {
                 processor (child);
             }
+        }
+    }
+
+    UpdateVisibleStatus ()
+    {
+        let visible = this.IsVisible ();
+        this.UpdateVisibleIcon (visible);
+        if (this.parent instanceof OV.NodeItem) {
+            this.parent.UpdateVisibleStatus ();
+        }
+    }
+
+    UpdateVisibleIcon (visible)
+    {
+        if (visible) {
+            this.showHideButton.SetImage ('visible');
+        } else {
+            this.showHideButton.SetImage ('hidden');
         }
     }
 };
