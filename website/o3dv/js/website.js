@@ -257,6 +257,18 @@ OV.Website = class
         this.viewer.FitSphereToWindow (boundingSphere, true);
     }
 
+    FitMeshesToWindow (meshInstanceIdSet)
+    {
+        let meshInstanceIdKeys = new Set ();
+        for (let meshInstanceId of meshInstanceIdSet) {
+            meshInstanceIdKeys.add (meshInstanceId.GetKey ());
+        }
+        let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
+            return meshInstanceIdKeys.has (meshUserData.originalMeshId.GetKey ());
+        });
+        this.viewer.FitSphereToWindow (boundingSphere, true);
+    }
+
     UpdateMeshesVisibility ()
     {
         this.viewer.SetMeshesVisibility ((meshUserData) => {
@@ -698,6 +710,9 @@ OV.Website = class
             },
             fitMeshToWindow : (meshInstanceId) => {
                 this.FitMeshToWindow (meshInstanceId);
+            },
+            fitMeshesToWindow : (meshInstanceIdSet) => {
+                this.FitMeshesToWindow (meshInstanceIdSet);
             },
             getMeshesForMaterial : (materialIndex) => {
                 return GetMeshesForMaterial (this.viewer, this.model, materialIndex);

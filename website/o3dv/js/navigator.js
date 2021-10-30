@@ -242,9 +242,10 @@ OV.Navigator = class
                             console.log ('sh');
                         },
                         onFitToWindow : (selectedNodeId) => {
-                            console.log ('fit');
+                            navigator.FitNodeToWindow (selectedNodeId);
                         }
                     });
+                    navigator.navigatorItems.AddNodeItem (nodeId, nodeItem);
                     parentItem.AddChild (nodeItem);
                     nodeItem.ShowChildren (true, null);
                     AddModelNodeToTree (navigator, model, childNode, nodeItem);
@@ -379,6 +380,16 @@ OV.Navigator = class
         }
 
         this.callbacks.updateMeshesSelection ();
+    }
+
+    FitNodeToWindow (nodeId)
+    {
+        let meshInstanceIdSet = new Set ();
+        let nodeItem = this.navigatorItems.GetNodeItem (nodeId);
+        nodeItem.EnumerateMeshItems ((meshItem) => {
+            meshInstanceIdSet.add (meshItem.GetMeshInstanceId ());
+        });
+        this.callbacks.fitMeshesToWindow (meshInstanceIdSet);
     }
 
     FitMeshToWindow (meshInstanceId)

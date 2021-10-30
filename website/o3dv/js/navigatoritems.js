@@ -74,14 +74,26 @@ OV.NodeItem = class extends OV.TreeViewGroupButtonItem
         });
         this.AddButton (this.showHideButton);
     }
+
+    EnumerateMeshItems (processor)
+    {
+        for (let child of this.children) {
+            if (child instanceof OV.NodeItem) {
+                child.EnumerateMeshItems (processor);
+            } else if (child instanceof OV.MeshItem) {
+                processor (child);
+            }
+        }
+    }
 };
 
 OV.NavigatorItems = class
 {
     constructor ()
     {
-        this.materialIndexToItem = {};
-        this.meshInstanceIdToItem = {};
+        this.materialIndexToItem = new Map ();
+        this.nodeIdToItem = new Map ();
+        this.meshInstanceIdToItem = new Map ();
     }
 
     MaterialItemCount ()
@@ -91,12 +103,12 @@ OV.NavigatorItems = class
 
     GetMaterialItem (materialIndex)
     {
-        return this.materialIndexToItem[materialIndex];
+        return this.materialIndexToItem.get (materialIndex);
     }
 
     AddMaterialItem (materialIndex, materialItem)
     {
-        this.materialIndexToItem[materialIndex] = materialItem;
+        this.materialIndexToItem.set (materialIndex, materialItem);
     }
 
     MeshItemCount ()
@@ -104,14 +116,24 @@ OV.NavigatorItems = class
         return Object.keys (this.meshInstanceIdToItem).length;
     }
 
+    GetNodeItem (nodeId)
+    {
+        return this.nodeIdToItem.get (nodeId);
+    }
+
+    AddNodeItem (nodeId, meshItem)
+    {
+        this.nodeIdToItem.set (nodeId, meshItem);
+    }
+
     GetMeshItem (meshInstanceId)
     {
-        return this.meshInstanceIdToItem[meshInstanceId.GetKey ()];
+        return this.meshInstanceIdToItem.get (meshInstanceId.GetKey ());
     }
 
     AddMeshItem (meshInstanceId, meshItem)
     {
-        this.meshInstanceIdToItem[meshInstanceId.GetKey ()] = meshItem;
+        this.meshInstanceIdToItem.set (meshInstanceId.GetKey (), meshItem);
     }
 
     EnumerateMeshItems (processor)
@@ -125,7 +147,8 @@ OV.NavigatorItems = class
 
     Clear ()
     {
-        this.materialIndexToItem = {};
-        this.meshInstanceIdToItem = {};
+        this.materialIndexToItem = new Map ();
+        this.nodeIdToItem = new Map ();
+        this.meshInstanceIdToItem = new Map ();
     }
 };

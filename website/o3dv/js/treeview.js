@@ -52,6 +52,11 @@ OV.TreeViewItem = class
         this.mainElement.click (onClick);
     }
 
+    IsGroup ()
+    {
+        return false;
+    }
+
     SetParent (parent)
     {
         this.parent = parent;
@@ -108,6 +113,7 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
     constructor (name, iconPath)
     {
         super (name);
+        this.children = [];
         this.showChildren = false;
 
         this.childrenDiv = null;
@@ -118,6 +124,19 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
         if (OV.IsDefined (iconPath)) {
             OV.CreateSvgIcon (iconPath, 'ov_tree_item_icon').insertBefore (this.nameElement);
         }
+    }
+
+    IsGroup ()
+    {
+        return true;
+    }
+
+    AddChild (child)
+    {
+        this.CreateChildrenDiv ();
+        this.children.push (child);
+        child.SetParent (this);
+        child.AddDomElements (this.childrenDiv);
     }
 
     ShowChildren (show, onComplete)
@@ -146,13 +165,6 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
             });
         }
         return this.childrenDiv;
-    }
-
-    AddChild (child)
-    {
-        this.CreateChildrenDiv ();
-        child.SetParent (this);
-        child.AddDomElements (this.childrenDiv);
     }
 };
 
