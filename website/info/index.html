@@ -24,7 +24,7 @@
 		<p>
 			This is the user manual for the <a href="https://3dviewer.net">3dviewer.net</a> website.
 			The website can open several 3D file formats and visualize the model in your browser.
-			Supported file formats: obj, 3ds, stl, ply, gltf, glb, 3dm, fbx, and off.
+			It supports obj, 3ds, stl, ply, gltf, glb, off, 3dm, fbx, and more.
 		</p>
 		<p>
 			<ol>
@@ -56,6 +56,7 @@
 					<th colspan="2">Format</th>
 					<th>Import</th>
 					<th>Export</th>
+					<th>Source</th>
 					<th>Comment</th>
 				</tr>
 				<tr>
@@ -63,59 +64,83 @@
 					<td>text</td>
 					<td class="center green">&#x2713</td>
 					<td class="center green">&#x2713</td>
-					<td>with mtl and texture support</td>
+					<td>Native</td>
+					<td></td>
 				</tr>
 				<tr>
 					<td>3ds</td>
 					<td>binary</td>
 					<td class="center green">&#x2713</td>
 					<td class="center red">&#x2717</td>
-					<td>with texture support</td>
+					<td>Native</td>
+					<td></td>
 				</tr>
 				<tr>
 					<td rowspan="2">stl</td>
 					<td>text</td>
 					<td class="center green">&#x2713</td>
 					<td class="center green">&#x2713</td>
-					<td>binary version is preferred</td>
+					<td>Native</td>
+					<td></td>
 				</tr>
 				<tr>
 					<td>binary</td>
 					<td class="center green">&#x2713</td>
 					<td class="center green">&#x2713</td>
-					<td>-</td>
+					<td>Native</td>
+					<td></td>
 				</tr>
 				<tr>
 					<td rowspan="2">ply</td>
 					<td>text</td>
 					<td class="center green">&#x2713</td>
 					<td class="center green">&#x2713</td>
-					<td>binary version is preferred</td>
+					<td>Native</td>
+					<td></td>
 				</tr>
 				<tr>
 					<td>binary</td>
 					<td class="center green">&#x2713</td>
 					<td class="center green">&#x2713</td>
-					<td>with vertex and face color support</td>
+					<td>Native</td>
+					<td></td>
 				</tr>
 				<tr>
 					<td rowspan="2">gltf</td>
 					<td>text (.gltf)</td>
 					<td class="center green">&#x2713</td>
 					<td class="center green">&#x2713</td>
-					<td>version 2.0</td>
+					<td>Native</td>
+					<td></td>
 				</tr>
 				<tr>
 					<td>binary (.glb)</td>
 					<td class="center green">&#x2713</td>
 					<td class="center green">&#x2713</td>
-					<td>version 2.0</td>
-				</tr>				
+					<td>Native</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td rowspan="2">off</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
+					<td class="center green">&#x2713</td>
+					<td>Native</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>binary</td>
+					<td class="center red">&#x2717</td>
+					<td class="center red">&#x2717</td>
+					<td>Native</td>
+					<td></td>
+				</tr>
 				<tr>
 					<td>3dm</td>
 					<td>binary</td>
 					<td class="center green">&#x2713</td>
 					<td class="center green">&#x2713</td>
+					<td><a href="https://github.com/mcneel/rhino3dm">rhino3dm</a></td>
 					<td>experimental</td>
 				</tr>
 				<tr>
@@ -123,30 +148,51 @@
 					<td>text</td>
 					<td class="center green">&#x2713</td>
 					<td class="center red">&#x2717</td>
-					<td>experimental with <a href="https://threejs.org">three.js</a> loader</td>
+					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
+					<td>experimental</td>
 				</tr>
 				<tr>
 					<td>binary</td>
 					<td class="center green">&#x2713</td>
 					<td class="center red">&#x2717</td>
-					<td>experimental with <a href="https://threejs.org">three.js</a> loader</td>
-				</tr>				
+					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
+					<td>experimental</td>
+				</tr>
 				<tr>
-					<td rowspan="2">off</td>
+					<td>dae</td>
 					<td>text</td>
 					<td class="center green">&#x2713</td>
-					<td class="center green">&#x2713</td>
-					<td>-</td>
+					<td class="center red">&#x2717</td>
+					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
+					<td>experimental</td>
 				</tr>
 				<tr>
-					<td>binary</td>
+					<td>wrl</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
 					<td class="center red">&#x2717</td>
+					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
+					<td>experimental</td>
+				</tr>
+				<tr>
+					<td>3mf</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
 					<td class="center red">&#x2717</td>
-					<td>-</td>
+					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
+					<td>experimental</td>
+				</tr>
+				<tr>
+					<td>ifc</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td><a href="https://github.com/tomvandig/web-ifc">web-ifc</a></td>
+					<td>highly experimental</td>
 				</tr>
 			</table>
 		</p>
-		
+
 		<h2 id="loading_models">Loading models</h2>
 		<p>
 			There are several ways to load models. You can use files from your computer or load files hosted on an external web server.
@@ -171,7 +217,7 @@
 				<li>Drag and drop all the relevant files into the browser window.</li>
 			</ol>
 		</p>
-	
+
 		<h3 id="loading_models_server">Loading models hosted on a web server</h3>
 		<p>
 			You can load models by url with the open url button on the toolbar.
@@ -217,7 +263,7 @@
 				</li>
 				<li>Click on OK.</li>
 			</ol>
-		</p>		
+		</p>
 
 		<h3 id="loading_models_missing_files">Missing files</h3>
 		<p>
@@ -255,7 +301,7 @@
 			In this case you should self-host the viewer code and the models as well.
 			See the <a href="https://github.com/kovacsv/Online3DViewer/wiki">developer documentation</a> for details.
 		</p>
-		
+
 		<h2 id="cookies_policy">Cookies policy</h2>
 		<p>
 			You can check the policy at the <a href="cookies.html">Cookies Policy</a> page.
