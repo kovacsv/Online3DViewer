@@ -67,12 +67,12 @@ OV.Embed = class
     {
         this.viewer.Init (canvas.get (0));
         this.viewer.SetEnvironmentMap ([
-            'assets/envmaps/forest/posx.jpg',
-            'assets/envmaps/forest/negx.jpg',
-            'assets/envmaps/forest/posy.jpg',
-            'assets/envmaps/forest/negy.jpg',
-            'assets/envmaps/forest/posz.jpg',
-            'assets/envmaps/forest/negz.jpg'
+            'assets/envmaps/grayclouds/posx.jpg',
+            'assets/envmaps/grayclouds/negx.jpg',
+            'assets/envmaps/grayclouds/posy.jpg',
+            'assets/envmaps/grayclouds/negy.jpg',
+            'assets/envmaps/grayclouds/posz.jpg',
+            'assets/envmaps/grayclouds/negz.jpg'
         ]);
     }
 
