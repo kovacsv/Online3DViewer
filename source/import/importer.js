@@ -88,14 +88,17 @@ OV.Importer = class
             new OV.ImporterO3dv (),
             new OV.Importer3dm (),
             new OV.ImporterIfc (),
-            new OV.ImporterThree ()
+            new OV.ImporterThreeFbx (),
+            new OV.ImporterThreeDae (),
+            new OV.ImporterThreeWrl (),
+            new OV.ImporterThree3mf ()
         ];
         this.fileList = new OV.FileList ();
         this.model = null;
         this.usedFiles = [];
         this.missingFiles = [];
     }
-    
+
 	AddImporter (importer)
 	{
 		this.importers.push (importer);
@@ -231,7 +234,7 @@ OV.Importer = class
                         file.SetContent (decompressed[fileName].buffer);
                         fileList.AddFile (file);
                     }
-                }    
+                }
             }
             onReady ();
         }).catch (() => {

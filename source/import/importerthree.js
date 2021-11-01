@@ -1,13 +1,8 @@
-OV.ThreeLoader = class
+OV.ImporterThreeBase = class extends OV.ImporterBase
 {
     constructor ()
     {
-
-    }
-
-    GetExtension ()
-    {
-        return null;
+        super ();
     }
 
     GetExternalLibraries ()
@@ -23,217 +18,6 @@ OV.ThreeLoader = class
     EnumerateMeshes (loadedObject, processor)
     {
 
-    }
-
-    GetUpDirection ()
-    {
-        return null;
-    }
-};
-
-OV.ThreeLoaderFbx = class extends OV.ThreeLoader
-{
-    constructor ()
-    {
-        super ();
-    }
-
-    GetExtension ()
-    {
-        return 'fbx';
-    }
-
-    GetExternalLibraries ()
-    {
-        return [
-            'loaders/fflate.min.js',
-            'three_loaders/TGALoader.js',
-            'three_loaders/FBXLoader.js'
-        ];
-    }
-
-    CreateLoader (manager)
-    {
-        manager.addHandler (/\.tga$/i, new THREE.TGALoader (manager));
-        return new THREE.FBXLoader (manager);
-    }
-
-    EnumerateMeshes (loadedObject, processor)
-    {
-        loadedObject.traverse ((child) => {
-            if (child.isMesh) {
-                processor (child);
-            }
-        });
-    }
-
-    GetUpDirection ()
-    {
-        return OV.Direction.Y;
-    }
-};
-
-OV.ThreeLoaderDae = class extends OV.ThreeLoader
-{
-    constructor ()
-    {
-        super ();
-    }
-
-    GetExtension ()
-    {
-        return 'dae';
-    }
-
-    GetExternalLibraries ()
-    {
-        return [
-            'three_loaders/TGALoader.js',
-            'three_loaders/ColladaLoader.js'
-        ];
-    }
-
-    CreateLoader (manager)
-    {
-        manager.addHandler (/\.tga$/i, new THREE.TGALoader (manager));
-        return new THREE.ColladaLoader (manager);
-    }
-
-    EnumerateMeshes (loadedObject, processor)
-    {
-        loadedObject.scene.traverse ((child) => {
-            if (child.isMesh) {
-                processor (child);
-            }
-        });
-    }
-
-    GetUpDirection ()
-    {
-        return OV.Direction.Y;
-    }
-};
-
-OV.ThreeLoaderVrml = class extends OV.ThreeLoader
-{
-    constructor ()
-    {
-        super ();
-    }
-
-    GetExtension ()
-    {
-        return 'wrl';
-    }
-
-    GetExternalLibraries ()
-    {
-        return [
-            'three_loaders/chevrotain.min.js',
-            'three_loaders/VRMLLoader.js'
-        ];
-    }
-
-    CreateLoader (manager)
-    {
-        return new THREE.VRMLLoader (manager);
-    }
-
-    EnumerateMeshes (loadedObject, processor)
-    {
-        loadedObject.traverse ((child) => {
-            if (child.isMesh) {
-                let needToProcess = true;
-                if (Array.isArray (child.material)) {
-                    for (let i = 0; i < child.material.length; i++) {
-                        if (child.material[i].side === THREE.BackSide) {
-                            needToProcess = false;
-                            break;
-                        }
-                    }
-                } else {
-                    needToProcess = (child.material.side !== THREE.BackSide);
-                }
-                if (needToProcess) {
-                    processor (child);
-                }
-            }
-        });
-    }
-
-    GetUpDirection ()
-    {
-        return OV.Direction.Y;
-    }
-};
-
-OV.ThreeLoader3mf = class extends OV.ThreeLoader
-{
-    constructor ()
-    {
-        super ();
-    }
-
-    GetExtension ()
-    {
-        return '3mf';
-    }
-
-    GetExternalLibraries ()
-    {
-        return [
-            'loaders/fflate.min.js',
-            'three_loaders/3MFLoader.js'
-        ];
-    }
-
-    CreateLoader (manager)
-    {
-        return new THREE.ThreeMFLoader (manager);
-    }
-
-    EnumerateMeshes (loadedObject, processor)
-    {
-        loadedObject.traverse ((child) => {
-            if (child.isMesh) {
-                processor (child);
-            }
-        });
-    }
-
-    GetUpDirection ()
-    {
-        return OV.Direction.Z;
-    }
-};
-
-OV.ImporterThree = class extends OV.ImporterBase
-{
-    constructor ()
-    {
-        super ();
-        this.loaders = [
-            new OV.ThreeLoaderFbx (),
-            new OV.ThreeLoaderDae (),
-            new OV.ThreeLoaderVrml (),
-            new OV.ThreeLoader3mf ()
-        ];
-    }
-
-    CanImportExtension (extension)
-    {
-        for (let i = 0; i < this.loaders.length; i++)  {
-            let loader = this.loaders[i];
-            if (loader.GetExtension () === extension) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    GetUpDirection ()
-    {
-        return this.loader.GetUpDirection ();
     }
 
     ClearContent ()
@@ -260,13 +44,7 @@ OV.ImporterThree = class extends OV.ImporterBase
             onFinish ();
         }
 
-        this.loader = this.FindLoader ();
-        if (this.loader === null) {
-            onFinish ();
-            return;
-        }
-
-        const libraries = this.loader.GetExternalLibraries ();
+        const libraries = this.GetExternalLibraries ();
         if (libraries === null) {
             onFinish ();
             return;
@@ -277,17 +55,6 @@ OV.ImporterThree = class extends OV.ImporterBase
         }, () => {
             onFinish ();
         });
-    }
-
-    FindLoader ()
-    {
-        for (let i = 0; i < this.loaders.length; i++)  {
-            let loader = this.loaders[i];
-            if (loader.GetExtension () === this.extension) {
-                return loader;
-            }
-        }
-        return null;
     }
 
     LoadModel (fileContent, onFinish)
@@ -320,7 +87,7 @@ OV.ImporterThree = class extends OV.ImporterBase
             return url;
         });
 
-        const threeLoader = this.loader.CreateLoader (loadingManager);
+        const threeLoader = this.CreateLoader (loadingManager);
         if (threeLoader === null) {
             onFinish ();
             return;
@@ -428,7 +195,7 @@ OV.ImporterThree = class extends OV.ImporterBase
         }
 
         let materialIdToIndex = {};
-        this.loader.EnumerateMeshes (loadedObject, (child) => {
+        this.EnumerateMeshes (loadedObject, (child) => {
             let materialIndex = null;
             let mesh = null;
             if (Array.isArray (child.material)) {
@@ -470,5 +237,181 @@ OV.ImporterThree = class extends OV.ImporterBase
         });
 
         onFinish ();
+    }
+};
+
+OV.ImporterThreeFbx = class extends OV.ImporterThreeBase
+{
+    constructor ()
+    {
+        super ();
+    }
+
+    CanImportExtension (extension)
+    {
+        return extension === 'fbx';
+    }
+
+    GetUpDirection ()
+    {
+        return OV.Direction.Y;
+    }
+
+    GetExternalLibraries ()
+    {
+        return [
+            'loaders/fflate.min.js',
+            'three_loaders/TGALoader.js',
+            'three_loaders/FBXLoader.js'
+        ];
+    }
+
+    CreateLoader (manager)
+    {
+        manager.addHandler (/\.tga$/i, new THREE.TGALoader (manager));
+        return new THREE.FBXLoader (manager);
+    }
+
+    EnumerateMeshes (loadedObject, processor)
+    {
+        loadedObject.traverse ((child) => {
+            if (child.isMesh) {
+                processor (child);
+            }
+        });
+    }
+};
+
+OV.ImporterThreeDae = class extends OV.ImporterThreeBase
+{
+    constructor ()
+    {
+        super ();
+    }
+
+    CanImportExtension (extension)
+    {
+        return extension === 'dae';
+    }
+
+    GetUpDirection ()
+    {
+        return OV.Direction.Y;
+    }
+
+    GetExternalLibraries ()
+    {
+        return [
+            'three_loaders/TGALoader.js',
+            'three_loaders/ColladaLoader.js'
+        ];
+    }
+
+    CreateLoader (manager)
+    {
+        manager.addHandler (/\.tga$/i, new THREE.TGALoader (manager));
+        return new THREE.ColladaLoader (manager);
+    }
+
+    EnumerateMeshes (loadedObject, processor)
+    {
+        loadedObject.scene.traverse ((child) => {
+            if (child.isMesh) {
+                processor (child);
+            }
+        });
+    }
+};
+
+OV.ImporterThreeWrl = class extends OV.ImporterThreeBase
+{
+    constructor ()
+    {
+        super ();
+    }
+
+    CanImportExtension (extension)
+    {
+        return extension === 'wrl';
+    }
+
+    GetUpDirection ()
+    {
+        return OV.Direction.Y;
+    }
+
+    GetExternalLibraries ()
+    {
+        return [
+            'three_loaders/chevrotain.min.js',
+            'three_loaders/VRMLLoader.js'
+        ];
+    }
+
+    CreateLoader (manager)
+    {
+        return new THREE.VRMLLoader (manager);
+    }
+
+    EnumerateMeshes (loadedObject, processor)
+    {
+        loadedObject.traverse ((child) => {
+            if (child.isMesh) {
+                let needToProcess = true;
+                if (Array.isArray (child.material)) {
+                    for (let i = 0; i < child.material.length; i++) {
+                        if (child.material[i].side === THREE.BackSide) {
+                            needToProcess = false;
+                            break;
+                        }
+                    }
+                } else {
+                    needToProcess = (child.material.side !== THREE.BackSide);
+                }
+                if (needToProcess) {
+                    processor (child);
+                }
+            }
+        });
+    }
+};
+
+OV.ImporterThree3mf = class extends OV.ImporterThreeBase
+{
+    constructor ()
+    {
+        super ();
+    }
+
+    CanImportExtension (extension)
+    {
+        return extension === '3mf';
+    }
+
+    GetUpDirection ()
+    {
+        return OV.Direction.Z;
+    }
+
+    GetExternalLibraries ()
+    {
+        return [
+            'loaders/fflate.min.js',
+            'three_loaders/3MFLoader.js'
+        ];
+    }
+
+    CreateLoader (manager)
+    {
+        return new THREE.ThreeMFLoader (manager);
+    }
+
+    EnumerateMeshes (loadedObject, processor)
+    {
+        loadedObject.traverse ((child) => {
+            if (child.isMesh) {
+                processor (child);
+            }
+        });
     }
 };
