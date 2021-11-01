@@ -689,9 +689,13 @@ OV.Website = class
                 navigatorOriginalWidth = this.parameters.navigatorDiv.outerWidth (true);
             },
             onSplit : (xDiff) => {
-                const newWidth = navigatorOriginalWidth + xDiff;
-                if (newWidth < 250 || newWidth > 450) {
-                    return;
+                const minWidth = 250;
+                const maxWidth = 450;
+                let newWidth = navigatorOriginalWidth + xDiff;
+                if (newWidth < minWidth) {
+                    newWidth = minWidth;
+                } else if (newWidth > maxWidth)  {
+                    newWidth = maxWidth;
                 }
                 this.parameters.navigatorDiv.outerWidth (newWidth, true);
                 this.Resize ();
