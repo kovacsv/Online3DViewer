@@ -54,32 +54,33 @@ OV.ThreeNodeTree = class
 {
 	constructor (rootNode, threeRootNode)
 	{
-		this.nodes = [];
+		this.meshInstances = [];
 		this.AddNode (rootNode, threeRootNode);
 	}
 
 	AddNode (node, threeNode)
 	{
-		this.nodes.push ({
-			node : node,
-			threeNode : threeNode
-		});
-
 		let matrix = node.GetTransformation ().GetMatrix ();
 		let threeMatrix = new THREE.Matrix4 ().fromArray (matrix.Get ());
 		threeNode.applyMatrix4 (threeMatrix);
 
-		const nodeIndex = this.nodes.length - 1;
 		for (let childNode of node.GetChildNodes ()) {
 			let threeChildNode = new THREE.Object3D ();
-			this.nodes[nodeIndex].threeNode.add (threeChildNode);
+			threeNode.add (threeChildNode);
 			this.AddNode (childNode, threeChildNode);
+		}
+		for (let meshIndex of node.GetMeshIndices ()) {
+			this.meshInstances.push ({
+				node : node,
+				threeNode : threeNode,
+				meshIndex : meshIndex
+			});
 		}
 	}
 
-	GetNodes ()
+	GetMeshInstances ()
 	{
-		return this.nodes;
+		return this.meshInstances;
 	}
 };
 
@@ -293,24 +294,18 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 	{
 		let rootNode = model.GetRootNode ();
 		let nodeTree = new OV.ThreeNodeTree (rootNode, threeRootNode);
-		let nodes = nodeTree.GetNodes ();
-		OV.RunTasks (nodes.length, {
-			runTask : (nodeIndex, nodeReady) => {
-				let treeNode = nodes[nodeIndex];
-				let node = treeNode.node;
-				let threeNode = treeNode.threeNode;
-				OV.RunTasksBatch (node.MeshIndexCount (), 100, {
-					runTask : (firstNodeMeshIndex, lastNodeMeshIndex, ready) => {
-						for (let nodeMeshIndex = firstNodeMeshIndex; nodeMeshIndex <= lastNodeMeshIndex; nodeMeshIndex++) {
-							let meshInstanceId = new OV.MeshInstanceId (node.GetId (), node.GetMeshIndex (nodeMeshIndex));
-							ConvertMesh (threeNode, model, meshInstanceId, modelThreeMaterials);
-						}
-						ready ();
-					},
-					onReady : () => {
-						nodeReady ();
-					}
-				});
+		let meshInstances = nodeTree.GetMeshInstances ();
+
+		OV.RunTasksBatch (meshInstances.length, 100, {
+			runTask : (firstMeshInstanceIndex, lastMeshInstanceIndex, onReady) => {
+				for (let meshInstanceIndex = firstMeshInstanceIndex; meshInstanceIndex <= lastMeshInstanceIndex; meshInstanceIndex++) {
+					let meshInstance = meshInstances[meshInstanceIndex];
+					let node = meshInstance.node;
+					let threeNode = meshInstance.threeNode;
+					let meshInstanceId = new OV.MeshInstanceId (node.GetId (), meshInstance.meshIndex);
+					ConvertMesh (threeNode, model, meshInstanceId, modelThreeMaterials);
+				}
+				onReady ();
 			},
 			onReady : () => {
 				stateHandler.OnModelLoaded (threeRootNode);
