@@ -219,7 +219,7 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
                     }
                     return THREE.ImageUtils.getDataURL (imageData);
                 } else {
-                    return THREE.ImageUtils.getDataURL (threeMap.image);
+                    return THREE.ImageUtils.getDataURL (img);
                 }
             }
 
