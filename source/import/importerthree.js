@@ -15,19 +15,28 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
         return null;
     }
 
-    EnumerateMeshes (loadedObject, processor)
+    GetMainObject (loadedObject)
     {
+        return loadedObject;
+    }
 
+    IsMeshVisible (mesh)
+    {
+        return true;
     }
 
     ClearContent ()
     {
         this.loader = null;
+        this.materialIdToIndex = null;
+        this.objectUrlToFileName = null;
     }
 
     ResetContent ()
     {
         this.loader = null;
+        this.materialIdToIndex = new Map ();
+        this.objectUrlToFileName = new Map ();
     }
 
     ImportContent (fileContent, onFinish)
@@ -60,10 +69,9 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
     LoadModel (fileContent, onFinish)
     {
         let loadedObject = null;
-        let externalFileNames = {};
         let loadingManager = new THREE.LoadingManager (() => {
             if (loadedObject !== null) {
-                this.OnThreeObjectsLoaded (loadedObject, externalFileNames, onFinish);
+                this.OnThreeObjectsLoaded (loadedObject, onFinish);
             }
         });
 
@@ -79,7 +87,7 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
                     const buffer = this.callbacks.getFileBuffer (url);
                     if (buffer !== null) {
                         let objectUrl = OV.CreateObjectUrl (buffer);
-                        externalFileNames[objectUrl] = name;
+                        this.objectUrlToFileName.set (objectUrl, name);
                         return objectUrl;
                     }
                 }
@@ -106,137 +114,162 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
         );
     }
 
-    OnThreeObjectsLoaded (loadedObject, externalFileNames, onFinish)
+    OnThreeObjectsLoaded (loadedObject, onFinish)
     {
-        function ConvertThreeMaterialToMaterial (threeMaterial, externalFileNames)
+        function GetObjectTransformation (threeObject)
         {
-            function SetColor (color, threeColor)
-            {
-                color.Set (
-                    parseInt (threeColor.r * 255.0, 10),
-                    parseInt (threeColor.g * 255.0, 10),
-                    parseInt (threeColor.b * 255.0, 10)
-                );
+            let matrix = new OV.Matrix ().CreateIdentity ();
+            threeObject.updateMatrix ();
+            if (threeObject.matrix !== undefined && threeObject.matrix !== null) {
+                matrix.Set (threeObject.matrix.elements);
             }
-
-            function CreateTexture (threeMap, externalFileNames)
-            {
-                function GetDataUrl (img)
-                {
-                    if (img.data !== undefined && img.data !== null) {
-                        let imageData = new ImageData (img.width, img.height);
-                        let imageSize = img.width * img.height * 4;
-                        for (let i = 0; i < imageSize; i++) {
-                            imageData.data[i] = img.data[i];
-                        }
-                        return THREE.ImageUtils.getDataURL (imageData);
-                    } else {
-                        return THREE.ImageUtils.getDataURL (threeMap.image);
-                    }
-                }
-
-                if (threeMap === undefined || threeMap === null) {
-                    return null;
-                }
-
-                if (threeMap.image === undefined || threeMap.image === null) {
-                    return null;
-                }
-
-                try {
-                    const dataUrl = GetDataUrl (threeMap.image);
-                    const base64Buffer = OV.Base64DataURIToArrayBuffer (dataUrl);
-                    let texture = new OV.TextureMap ();
-                    let textureName = externalFileNames[threeMap.image.src];
-                    if (textureName === undefined) {
-                        textureName = 'Embedded_' + threeMap.id.toString () + '.' + OV.GetFileExtensionFromMimeType (base64Buffer.mimeType);
-                    }
-                    texture.name = textureName;
-                    texture.url = dataUrl;
-                    texture.buffer = base64Buffer.buffer;
-                    texture.rotation = threeMap.rotation;
-                    texture.offset.x = threeMap.offset.x;
-                    texture.offset.y = threeMap.offset.y;
-                    texture.scale.x = threeMap.repeat.x;
-                    texture.scale.y = threeMap.repeat.y;
-                    return texture;
-                } catch (err) {
-                    return null;
-                }
-            }
-
-            let material = new OV.Material (OV.MaterialType.Phong);
-            material.name = threeMaterial.name;
-            SetColor (material.color, threeMaterial.color);
-            material.opacity = threeMaterial.opacity;
-            material.transparent = threeMaterial.transparent;
-            material.alphaTest = threeMaterial.alphaTest;
-            if (threeMaterial.type === 'MeshPhongMaterial') {
-                SetColor (material.specular, threeMaterial.specular);
-                material.shininess = threeMaterial.shininess / 100.0;
-            }
-            material.diffuseMap = CreateTexture (threeMaterial.map, externalFileNames);
-            material.normalMap = CreateTexture (threeMaterial.normalMap, externalFileNames);
-            material.bumpMap = CreateTexture (threeMaterial.bumpMap, externalFileNames);
-
-            return material;
+            return new OV.Transformation (matrix);
         }
 
-        function FindMatchingMaterialIndex (model, threeMaterial, materialIdToIndex, externalFileNames)
+        function AddObject (importer, model, threeObject, parentNode)
         {
-            let index = materialIdToIndex[threeMaterial.id];
-            if (index !== undefined) {
-                return index;
+            let node = new OV.Node ();
+            if (threeObject.name !== undefined) {
+                node.SetName (threeObject.name);
             }
-            let material = ConvertThreeMaterialToMaterial (threeMaterial, externalFileNames);
-            index = model.AddMaterial (material);
-            materialIdToIndex[threeMaterial.id] = index;
-            return index;
+            node.SetTransformation (GetObjectTransformation (threeObject));
+            parentNode.AddChildNode (node);
+
+            for (let childObject of threeObject.children) {
+                AddObject (importer, model, childObject, node);
+            }
+            if (threeObject.isMesh && importer.IsMeshVisible (threeObject)) {
+                let mesh = importer.ConvertThreeMesh (threeObject);
+                let meshIndex = model.AddMesh (mesh);
+                node.AddMeshIndex (meshIndex);
+            }
         }
 
-        let materialIdToIndex = {};
-        this.EnumerateMeshes (loadedObject, (child) => {
-            let materialIndex = null;
-            let mesh = null;
-            if (Array.isArray (child.material)) {
-                mesh = OV.ConvertThreeGeometryToMesh (child.geometry, null);
-                if (child.geometry.attributes.color === undefined || child.geometry.attributes.color === null) {
-                    let materialIndices = [];
-                    for (let i = 0; i < child.material.length; i++) {
-                        let material = child.material[i];
-                        materialIndices.push (FindMatchingMaterialIndex (this.model, material, materialIdToIndex, externalFileNames));
-                    }
-                    for (let i = 0; i < child.geometry.groups.length; i++) {
-                        let group = child.geometry.groups[i];
-                        for (let j = group.start / 3; j < group.start / 3 + group.count / 3; j++) {
-                            let triangle = mesh.GetTriangle (j);
-                            triangle.SetMaterial (materialIndices[group.materialIndex]);
-                        }
-                    }
-                }
-            } else {
-                materialIndex = FindMatchingMaterialIndex (this.model, child.material, materialIdToIndex, externalFileNames);
-                mesh = OV.ConvertThreeGeometryToMesh (child.geometry, materialIndex);
-            }
-            if (child.name !== undefined && child.name !== null) {
-                mesh.SetName (child.name);
-            }
-            child.updateWorldMatrix (true, true);
-            if (child.matrixWorld !== undefined && child.matrixWorld !== null) {
-                const matrix = new OV.Matrix (child.matrixWorld.elements);
-                const transformation = new OV.Transformation (matrix);
-                const determinant = matrix.Determinant ();
-                const mirrorByX = OV.IsNegative (determinant);
-                OV.TransformMesh (mesh, transformation);
-                if (mirrorByX) {
-                    OV.FlipMeshTrianglesOrientation (mesh);
-                }
-            }
-            this.model.AddMeshToRootNode (mesh);
-            child.geometry.dispose ();
-        });
+        let mainObject = this.GetMainObject (loadedObject);
+        let rootNode = this.model.GetRootNode ();
+        rootNode.SetTransformation (GetObjectTransformation (mainObject));
+        for (let childObject of mainObject.children) {
+            AddObject (this, this.model, childObject, rootNode);
+        }
 
         onFinish ();
+    }
+
+    ConvertThreeMesh (threeMesh)
+    {
+        let mesh = null;
+        if (Array.isArray (threeMesh.material)) {
+            mesh = OV.ConvertThreeGeometryToMesh (threeMesh.geometry, null);
+            if (threeMesh.geometry.attributes.color === undefined || threeMesh.geometry.attributes.color === null) {
+                let materialIndices = [];
+                for (let i = 0; i < threeMesh.material.length; i++) {
+                    const material = threeMesh.material[i];
+                    const materialIndex = this.FindOrCreateMaterial (material);
+                    materialIndices.push (materialIndex);
+                }
+                for (let i = 0; i < threeMesh.geometry.groups.length; i++) {
+                    let group = threeMesh.geometry.groups[i];
+                    for (let j = group.start / 3; j < group.start / 3 + group.count / 3; j++) {
+                        let triangle = mesh.GetTriangle (j);
+                        triangle.SetMaterial (materialIndices[group.materialIndex]);
+                    }
+                }
+            }
+        } else {
+            const materialIndex = this.FindOrCreateMaterial (threeMesh.material);
+            mesh = OV.ConvertThreeGeometryToMesh (threeMesh.geometry, materialIndex);
+        }
+        if (threeMesh.name !== undefined && threeMesh.name !== null) {
+            mesh.SetName (threeMesh.name);
+        }
+        return mesh;
+    }
+
+    FindOrCreateMaterial (threeMaterial)
+    {
+        if (this.materialIdToIndex.has (threeMaterial.id)) {
+            return this.materialIdToIndex.get (threeMaterial.id);
+        }
+        let material = this.ConvertThreeMaterial (threeMaterial);
+        let materialIndex = this.model.AddMaterial (material);
+        this.materialIdToIndex.set (threeMaterial.id, materialIndex);
+        return materialIndex;
+    }
+
+    ConvertThreeMaterial (threeMaterial)
+    {
+        function SetColor (color, threeColor)
+        {
+            color.Set (
+                parseInt (threeColor.r * 255.0, 10),
+                parseInt (threeColor.g * 255.0, 10),
+                parseInt (threeColor.b * 255.0, 10)
+            );
+        }
+
+        function CreateTexture (threeMap, objectUrlToFileName)
+        {
+            function GetDataUrl (img)
+            {
+                if (img.data !== undefined && img.data !== null) {
+                    let imageData = new ImageData (img.width, img.height);
+                    let imageSize = img.width * img.height * 4;
+                    for (let i = 0; i < imageSize; i++) {
+                        imageData.data[i] = img.data[i];
+                    }
+                    return THREE.ImageUtils.getDataURL (imageData);
+                } else {
+                    return THREE.ImageUtils.getDataURL (threeMap.image);
+                }
+            }
+
+            if (threeMap === undefined || threeMap === null) {
+                return null;
+            }
+
+            if (threeMap.image === undefined || threeMap.image === null) {
+                return null;
+            }
+
+            try {
+                const dataUrl = GetDataUrl (threeMap.image);
+                const base64Buffer = OV.Base64DataURIToArrayBuffer (dataUrl);
+                let texture = new OV.TextureMap ();
+                let textureName = null;
+                if (objectUrlToFileName.has (threeMap.image.src)) {
+                    textureName = objectUrlToFileName.get (threeMap.image.src);
+                } else {
+                    textureName = 'Embedded_' + threeMap.id.toString () + '.' + OV.GetFileExtensionFromMimeType (base64Buffer.mimeType);
+                }
+                texture.name = textureName;
+                texture.url = dataUrl;
+                texture.buffer = base64Buffer.buffer;
+                texture.rotation = threeMap.rotation;
+                texture.offset.x = threeMap.offset.x;
+                texture.offset.y = threeMap.offset.y;
+                texture.scale.x = threeMap.repeat.x;
+                texture.scale.y = threeMap.repeat.y;
+                return texture;
+            } catch (err) {
+                return null;
+            }
+        }
+
+        let material = new OV.Material (OV.MaterialType.Phong);
+        material.name = threeMaterial.name;
+        SetColor (material.color, threeMaterial.color);
+        material.opacity = threeMaterial.opacity;
+        material.transparent = threeMaterial.transparent;
+        material.alphaTest = threeMaterial.alphaTest;
+        if (threeMaterial.type === 'MeshPhongMaterial') {
+            SetColor (material.specular, threeMaterial.specular);
+            material.shininess = threeMaterial.shininess / 100.0;
+        }
+        material.diffuseMap = CreateTexture (threeMaterial.map, this.objectUrlToFileName);
+        material.normalMap = CreateTexture (threeMaterial.normalMap, this.objectUrlToFileName);
+        material.bumpMap = CreateTexture (threeMaterial.bumpMap, this.objectUrlToFileName);
+
+        return material;
     }
 };
 
@@ -272,13 +305,9 @@ OV.ImporterThreeFbx = class extends OV.ImporterThreeBase
         return new THREE.FBXLoader (manager);
     }
 
-    EnumerateMeshes (loadedObject, processor)
+    GetMainObject (loadedObject)
     {
-        loadedObject.traverse ((child) => {
-            if (child.isMesh) {
-                processor (child);
-            }
-        });
+        return loadedObject;
     }
 };
 
@@ -313,13 +342,9 @@ OV.ImporterThreeDae = class extends OV.ImporterThreeBase
         return new THREE.ColladaLoader (manager);
     }
 
-    EnumerateMeshes (loadedObject, processor)
+    GetMainObject (loadedObject)
     {
-        loadedObject.scene.traverse ((child) => {
-            if (child.isMesh) {
-                processor (child);
-            }
-        });
+        return loadedObject.scene;
     }
 };
 
@@ -353,26 +378,25 @@ OV.ImporterThreeWrl = class extends OV.ImporterThreeBase
         return new THREE.VRMLLoader (manager);
     }
 
-    EnumerateMeshes (loadedObject, processor)
+    GetMainObject (loadedObject)
     {
-        loadedObject.traverse ((child) => {
-            if (child.isMesh) {
-                let needToProcess = true;
-                if (Array.isArray (child.material)) {
-                    for (let i = 0; i < child.material.length; i++) {
-                        if (child.material[i].side === THREE.BackSide) {
-                            needToProcess = false;
-                            break;
-                        }
-                    }
-                } else {
-                    needToProcess = (child.material.side !== THREE.BackSide);
-                }
-                if (needToProcess) {
-                    processor (child);
+        return loadedObject;
+    }
+
+    IsMeshVisible (mesh)
+    {
+        let isVisible = true;
+        if (Array.isArray (mesh.material)) {
+            for (let i = 0; i < mesh.material.length; i++) {
+                if (mesh.material[i].side === THREE.BackSide) {
+                    isVisible = false;
+                    break;
                 }
             }
-        });
+        } else {
+            isVisible = (mesh.material.side !== THREE.BackSide);
+        }
+        return isVisible;
     }
 };
 
@@ -406,12 +430,8 @@ OV.ImporterThree3mf = class extends OV.ImporterThreeBase
         return new THREE.ThreeMFLoader (manager);
     }
 
-    EnumerateMeshes (loadedObject, processor)
+    GetMainObject (loadedObject)
     {
-        loadedObject.traverse ((child) => {
-            if (child.isMesh) {
-                processor (child);
-            }
-        });
+        return loadedObject;
     }
 };
