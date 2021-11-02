@@ -1,4 +1,4 @@
 OV.FeatureSet =
 {
-    NavigatorTree : true
+    NavigatorTree : false
 };

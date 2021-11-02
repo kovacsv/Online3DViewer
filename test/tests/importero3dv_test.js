@@ -29,26 +29,6 @@ describe ('O3dv Importer', function () {
                 meshNames : ['Cube']
             });
 
-            assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
-                name : '',
-                materials : [
-                    { name : 'Green' }
-                ],
-                meshes : [
-                    {
-                        name : 'Cube',
-                        vertexCount : 8,
-                        normalCount : 12,
-                        uvCount : 0,
-                        triangleCount : 12,
-                        boundingBox : {
-                            min : [0, 0, 0],
-                            max : [1, 1, 1]
-                        }
-                    }
-                ]
-            });
-
             assert.strictEqual (model.MeshInstanceCount (), 3);
             let boundingBox = OV.GetBoundingBox (model);
             assert (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (-1.0, 0.0, 0.0)));

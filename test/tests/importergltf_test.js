@@ -18,6 +18,17 @@ describe ('Gltf Importer', function () {
             let testFile = testFileList[i];
             testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
                 assert (OV.CheckModel (model));
+                assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+                    name : '<Root>',
+                    childNodes : [
+                        {
+                            name : '',
+                            childNodes : [],
+                            meshNames : ['']
+                        }
+                    ],
+                    meshNames : []
+                });
                 assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
                     name : '',
                     materials : [
@@ -57,6 +68,23 @@ describe ('Gltf Importer', function () {
             let testFile = testFileList[i];
             testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
                 assert (OV.CheckModel (model));
+                assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+                    name : '<Root>',
+                    childNodes : [
+                        {
+                            name : '',
+                            childNodes : [
+                                {
+                                name : '',
+                                childNodes : [],
+                                meshNames : ['Mesh']
+                                }
+                            ],
+                            meshNames : []
+                        }
+                    ],
+                    meshNames : []
+                });
                 assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
                     name : '',
                     materials : [
@@ -75,15 +103,15 @@ describe ('Gltf Importer', function () {
                             }
                         }
                     ]
-                });  
+                });
                 processed += 1;
                 if (processed == testFileList.length) {
                     done ();
                 }
-            });      
+            });
         }
     });
-    
+
     it ('BoxInterleaved', function (done) {
         let testFileList = [
             ['BoxInterleaved/glTF', 'BoxInterleaved.gltf'],
@@ -95,6 +123,23 @@ describe ('Gltf Importer', function () {
             let testFile = testFileList[i];
             testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
                 assert (OV.CheckModel (model));
+                assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+                    name : '<Root>',
+                    childNodes : [
+                        {
+                            name : '',
+                            childNodes : [
+                                {
+                                name : '',
+                                childNodes : [],
+                                meshNames : ['Mesh']
+                                }
+                            ],
+                            meshNames : []
+                        }
+                    ],
+                    meshNames : []
+                });
                 assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
                     name : '',
                     materials : [
@@ -113,12 +158,12 @@ describe ('Gltf Importer', function () {
                             }
                         }
                     ]
-                });  
+                });
                 processed += 1;
                 if (processed == testFileList.length) {
                     done ();
                 }
-            });      
+            });
         }
     });
 
@@ -133,6 +178,23 @@ describe ('Gltf Importer', function () {
             let testFile = testFileList[i];
             testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
                 assert (OV.CheckModel (model));
+                assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+                    name : '<Root>',
+                    childNodes : [
+                        {
+                            name : '',
+                            childNodes : [
+                                {
+                                name : '',
+                                childNodes : [],
+                                meshNames : ['Mesh']
+                                }
+                            ],
+                            meshNames : []
+                        }
+                    ],
+                    meshNames : []
+                });
                 assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
                     name : '',
                     materials : [
@@ -151,7 +213,7 @@ describe ('Gltf Importer', function () {
                             }
                         }
                     ]
-                });  
+                });
                 processed += 1;
                 if (processed == testFileList.length) {
                     done ();
@@ -170,6 +232,22 @@ describe ('Gltf Importer', function () {
             let testFile = testFileList[i];
             testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
                 assert (OV.CheckModel (model));
+                assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+                    name : '<Root>',
+                    childNodes : [
+                        {
+                            name : '',
+                            childNodes : [],
+                            meshNames : ['']
+                        },
+                        {
+                            name : '',
+                            childNodes : [],
+                            meshNames : ['']
+                        }
+                    ],
+                    meshNames : []
+                });
                 assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
                     name : '',
                     materials : [
@@ -199,7 +277,7 @@ describe ('Gltf Importer', function () {
                             }
                         }
                     ]
-                });  
+                });
                 processed += 1;
                 if (processed == testFileList.length) {
                     done ();
@@ -207,7 +285,7 @@ describe ('Gltf Importer', function () {
             });
         }
     });
-    
+
     it ('OrientationTest', function (done) {
         let testFileList = [
             ['OrientationTest/glTF', 'OrientationTest.gltf'],
@@ -380,7 +458,7 @@ describe ('Gltf Importer', function () {
                 if (processed == testFileList.length) {
                     done ();
                 }
-            });  
+            });
         }
     });
 
@@ -415,7 +493,7 @@ describe ('Gltf Importer', function () {
                             }
                         }
                     ]
-                }); 
+                });
                 processed += 1;
                 if (processed == testFileList.length) {
                     done ();
@@ -451,7 +529,7 @@ describe ('Gltf Importer', function () {
                             }
                         }
                     ]
-                }); 
+                });
                 processed += 1;
                 if (processed == testFileList.length) {
                     done ();
@@ -495,5 +573,5 @@ describe ('Gltf Importer', function () {
                 }
             });
         }
-    });    
+    });
 });

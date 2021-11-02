@@ -37,50 +37,6 @@ OV.GltfConstants =
     BINARY_CHUNK_TYPE : 0x004E4942
 };
 
-OV.GltfNodeTree = class
-{
-    constructor ()
-    {
-        this.nodes = [];
-        this.nodeToParent = {};
-        this.nodeMatrices = {};
-    }
-
-    AddMeshNode (nodeIndex)
-    {
-        this.nodes.push (nodeIndex);
-        return this.nodes.length - 1;
-    }
-
-    AddNodeParent (nodeIndex, parentIndex)
-    {
-        this.nodeToParent[nodeIndex] = parentIndex;
-    }
-
-    GetNodeParent (nodeIndex)
-    {
-        let parentIndex = this.nodeToParent[nodeIndex];
-        if (parentIndex === undefined || parentIndex === -1) {
-            return null;
-        }
-        return parentIndex;
-    }
-
-    AddNodeMatrix (nodeIndex, matrix)
-    {
-        this.nodeMatrices[nodeIndex] = matrix;
-    }
-
-    GetNodeMatrix (nodeIndex)
-    {
-        let matrix = this.nodeMatrices[nodeIndex];
-        if (matrix === undefined) {
-            return null;
-        }
-        return matrix;
-    }
-};
-
 OV.GltfBufferReader = class
 {
     constructor (buffer)
@@ -614,26 +570,22 @@ OV.ImporterGltf = class extends OV.ImporterBase
 
     ImportModel (gltf)
     {
-        let defaultScene = this.GetDefaultScene (gltf);
-        if (defaultScene === null) {
-            this.SetError ('No default scene found.');
-            return;
-        }
-
-        this.ImportModelProperties (gltf);
-
         let materials = gltf.materials;
         if (materials !== undefined) {
-            for (let i = 0; i < materials.length; i++) {
-                this.ImportMaterial (gltf, i);
+            for (let material of materials) {
+                this.ImportMaterial (gltf, material);
             }
         }
 
-        let nodeTree = this.CollectMeshNodesForScene (gltf, defaultScene);
-        for (let i = 0; i < nodeTree.nodes.length; i++) {
-            let nodeIndex = nodeTree.nodes[i];
-            this.ImportMeshNode (gltf, nodeIndex, nodeTree);
+        let meshes = gltf.meshes;
+        if (meshes !== undefined) {
+            for (let mesh of meshes) {
+                this.ImportMesh (gltf, mesh);
+            }
         }
+
+        this.ImportNodes (gltf);
+        this.ImportModelProperties (gltf);
     }
 
     ImportModelProperties (gltf)
@@ -670,39 +622,13 @@ OV.ImporterGltf = class extends OV.ImporterBase
         return gltf.scenes[defaultSceneIndex];
     }
 
-    CollectMeshNodesForScene (gltf, scene)
-    {
-        function CollectMeshNodeIndices (gltf, parentIndex, nodeIndex, nodeTree)
-        {
-            let node = gltf.nodes[nodeIndex];
-            if (node.mesh !== undefined) {
-                nodeTree.AddMeshNode (nodeIndex);
-            }
-            nodeTree.AddNodeParent (nodeIndex, parentIndex);
-            if (node.children !== undefined) {
-                for (let i = 0; i < node.children.length; i++) {
-                    let childNodeIndex = node.children[i];
-                    CollectMeshNodeIndices (gltf, nodeIndex, childNodeIndex, nodeTree);
-                }
-            }
-        }
-
-        let nodeTree = new OV.GltfNodeTree ();
-        for (let i = 0; i < scene.nodes.length; i++) {
-            let nodeIndex = scene.nodes[i];
-            CollectMeshNodeIndices (gltf, -1, nodeIndex, nodeTree);
-        }
-        return nodeTree;
-    }
-
-    ImportMaterial (gltf, materialIndex)
+    ImportMaterial (gltf, gltfMaterial)
     {
         function GetMaterialComponent (component)
         {
             return parseInt (Math.round (OV.LinearToSRGB (component) * 255.0), 10);
         }
 
-        let gltfMaterial = gltf.materials[materialIndex];
         let material = new OV.Material (OV.MaterialType.Physical);
         if (gltfMaterial.name !== undefined) {
             material.name = gltfMaterial.name;
@@ -819,76 +745,18 @@ OV.ImporterGltf = class extends OV.ImporterBase
         return texture;
     }
 
-    ImportMeshNode (gltf, nodeIndex, nodeTree)
+    ImportMesh (gltf, gltfMesh)
     {
-        function GetNodeTransformation (gltf, nodeIndex, nodeTree)
-        {
-            let node = gltf.nodes[nodeIndex];
-            let matrix = nodeTree.GetNodeMatrix (nodeIndex);
-            if (matrix !== null) {
-                return matrix;
-            }
-
-            matrix = new OV.Matrix ().CreateIdentity ();
-            if (node.matrix !== undefined) {
-                matrix.Set (node.matrix);
-            } else {
-                let hasTransformation = false;
-                let translation = [0.0, 0.0, 0.0];
-                let rotation = [0.0, 0.0, 0.0, 1.0];
-                let scale = [1.0, 1.0, 1.0];
-                if (node.translation !== undefined) {
-                    translation = node.translation;
-                    hasTransformation = true;
-                }
-                if (node.rotation !== undefined) {
-                    rotation = node.rotation;
-                    hasTransformation = true;
-                }
-                if (node.scale !== undefined) {
-                    scale = node.scale;
-                    hasTransformation = true;
-                }
-
-                if (hasTransformation) {
-                    matrix.ComposeTRS (
-                        OV.ArrayToCoord3D (translation),
-                        OV.ArrayToQuaternion (rotation),
-                        OV.ArrayToCoord3D (scale)
-                    );
-                }
-            }
-
-            let parentNodeIndex = nodeTree.GetNodeParent (nodeIndex);
-            if (parentNodeIndex !== null) {
-                let parentMatrix = GetNodeTransformation (gltf, parentNodeIndex, nodeTree);
-                matrix = matrix.MultiplyMatrix (parentMatrix);
-            }
-
-            nodeTree.AddNodeMatrix (nodeIndex, matrix);
-            return matrix;
-        }
-
-        let gltfNode = gltf.nodes[nodeIndex];
-        let gltfMeshIndex = gltfNode.mesh;
-        let gltfMesh = gltf.meshes[gltfMeshIndex];
-
         let mesh = new OV.Mesh ();
-        this.model.AddMeshToRootNode (mesh);
+        this.model.AddMesh (mesh);
         if (gltfMesh.name !== undefined) {
             mesh.SetName (gltfMesh.name);
-        } else if (gltfNode.name !== undefined) {
-            mesh.SetName (gltfNode.name);
         }
 
         for (let i = 0; i < gltfMesh.primitives.length; i++) {
             let primitive = gltfMesh.primitives[i];
             this.ImportPrimitive (gltf, primitive, mesh);
         }
-
-        let matrix = GetNodeTransformation (gltf, nodeIndex, nodeTree);
-        let transformation = new OV.Transformation (matrix);
-        OV.TransformMesh (mesh, transformation);
     }
 
     ImportPrimitive (gltf, primitive, mesh)
@@ -1020,6 +888,71 @@ OV.ImporterGltf = class extends OV.ImporterBase
             triangle.mat = primitive.material;
         }
         mesh.AddTriangle (triangle);
+    }
+
+    ImportNodes (gltf)
+    {
+        let scene = this.GetDefaultScene (gltf);
+        if (scene === null) {
+            return;
+        }
+        let rootNode = this.model.GetRootNode ();
+        for (let nodeIndex of scene.nodes) {
+            let gltfNode = gltf.nodes[nodeIndex];
+            this.ImportNode (gltf, gltfNode, rootNode);
+        }
+    }
+
+    ImportNode (gltf, gltfNode, parentNode)
+    {
+        function GetNodeTransformation (gltfNode)
+        {
+            let matrix = new OV.Matrix ().CreateIdentity ();
+            if (gltfNode.matrix !== undefined) {
+                matrix.Set (gltfNode.matrix);
+            } else {
+                let translation = [0.0, 0.0, 0.0];
+                let rotation = [0.0, 0.0, 0.0, 1.0];
+                let scale = [1.0, 1.0, 1.0];
+                if (gltfNode.translation !== undefined) {
+                    translation = gltfNode.translation;
+                }
+                if (gltfNode.rotation !== undefined) {
+                    rotation = gltfNode.rotation;
+                }
+                if (gltfNode.scale !== undefined) {
+                    scale = gltfNode.scale;
+                }
+                matrix.ComposeTRS (
+                    OV.ArrayToCoord3D (translation),
+                    OV.ArrayToQuaternion (rotation),
+                    OV.ArrayToCoord3D (scale)
+                );
+            }
+            return new OV.Transformation (matrix);
+        }
+
+        if (gltfNode.children === undefined && gltfNode.mesh === undefined) {
+            return;
+        }
+
+        let node = new OV.Node ();
+        if (gltfNode.name !== undefined) {
+            node.SetName (gltfNode.name);
+        }
+        node.SetTransformation (GetNodeTransformation (gltfNode));
+        parentNode.AddChildNode (node);
+
+        if (gltfNode.children !== undefined) {
+            for (let childIndex of gltfNode.children) {
+                let childGltfNode = gltf.nodes[childIndex];
+                this.ImportNode (gltf, childGltfNode, node);
+            }
+        }
+
+        if (gltfNode.mesh !== undefined) {
+            node.AddMeshIndex (gltfNode.mesh);
+        }
     }
 
     GetReaderFromBufferView (bufferView)
