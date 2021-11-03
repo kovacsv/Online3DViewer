@@ -19,8 +19,8 @@ The repository is separated into two parts. See more information in the [Develop
 
 ## Supported file formats
 
-* **Import**: obj, 3ds, stl, ply, gltf, off, 3dm, fbx, dae, wrl, 3mf, ifc
-* **Export**: obj, stl, ply, gltf, off, 3dm
+* **Import**: obj, 3ds, stl, ply, gltf, off, 3dm, fbx, dae, wrl, 3mf, ifc.
+* **Export**: obj, stl, ply, gltf, off, 3dm.
 
 ## Features
 
