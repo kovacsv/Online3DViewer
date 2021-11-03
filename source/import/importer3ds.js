@@ -525,7 +525,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             let nodeIdToModelNode = new Map ();
             for (let node3ds of this.nodeList.GetNodes ()) {
                 let node = new OV.Node ();
-                if (node3ds.name !== '$$$DUMMY') {
+                if (node3ds.name.length > 0 && node3ds.name !== '$$$DUMMY') {
                     node.SetName (node3ds.name);
                     if (node3ds.instanceName.length > 0) {
                         node.SetName (node.GetName () + ' ' + node3ds.instanceName);
