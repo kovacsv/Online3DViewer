@@ -238,6 +238,8 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
                 let textureName = null;
                 if (objectUrlToFileName.has (threeMap.image.src)) {
                     textureName = objectUrlToFileName.get (threeMap.image.src);
+                } else if (threeMap.name !== undefined && threeMap.name !== null) {
+                    textureName = threeMap.name + '.' + OV.GetFileExtensionFromMimeType (base64Buffer.mimeType);
                 } else {
                     textureName = 'Embedded_' + threeMap.id.toString () + '.' + OV.GetFileExtensionFromMimeType (base64Buffer.mimeType);
                 }
