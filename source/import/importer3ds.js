@@ -44,6 +44,47 @@ OV.CHUNK3DS =
     OBJECT_ID : 0xB030
 };
 
+OV.Importer3dsNode = class
+{
+    constructor ()
+    {
+        this.id = -1;
+        this.name = '';
+        this.flags = -1;
+        this.parentId = -1;
+        this.instanceName = '';
+        this.pivot = [0.0, 0.0, 0.0];
+        this.positions = [];
+        this.rotations = [];
+        this.scales = [];
+    }
+};
+
+OV.Importer3dsNodeList = class
+{
+    constructor ()
+    {
+        this.nodes = [];
+        this.nodeIdToNode = new Map ();
+    }
+
+    IsEmpty ()
+    {
+        return this.nodes.length === 0;
+    }
+
+    AddNode (node)
+    {
+        this.nodes.push (node);
+        this.nodeIdToNode.set (node.nodeId, node);
+    }
+
+    GetNodes ()
+    {
+        return this.nodes;
+    }
+};
+
 OV.Importer3ds = class extends OV.ImporterBase
 {
     constructor ()
@@ -65,18 +106,14 @@ OV.Importer3ds = class extends OV.ImporterBase
     {
         this.materialNameToIndex = null;
         this.meshNameToIndex = null;
-
-        this.meshTransformations = null;
-        this.defaultMaterialIndex = null;
+        this.nodeList = null;
     }
 
     ResetContent ()
     {
-        this.materialNameToIndex = {};
-        this.meshNameToIndex = {};
-
-        this.meshTransformations = [];
-        this.defaultMaterialIndex = null;
+        this.materialNameToIndex = new Map ();
+        this.meshNameToIndex = new Map ();
+        this.nodeList = new OV.Importer3dsNodeList ();
     }
 
     ImportContent (fileContent, onFinish)
@@ -110,6 +147,7 @@ OV.Importer3ds = class extends OV.ImporterBase
                 this.SkipChunk (reader, chunkLength);
             }
         });
+        this.BuildNodeHierarchy ();
     }
 
     ReadEditorChunk (reader, length)
@@ -160,7 +198,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             material.shininess = shininess * shininessStrength / 10.0;
         }
         let materialIndex = this.model.AddMaterial (material);
-        this.materialNameToIndex[material.name] = materialIndex;
+        this.materialNameToIndex.set (material.name, materialIndex);
     }
 
     ReadTextureMapChunk (reader, length)
@@ -263,11 +301,36 @@ OV.Importer3ds = class extends OV.ImporterBase
 
     ReadMeshChunk (reader, length, objectName)
     {
+        function ApplyMeshTransformation (mesh, meshMatrix)
+        {
+            if (!meshMatrix.IsValid ()) {
+                return;
+            }
+
+            let determinant = meshMatrix.Determinant ();
+            let mirrorByX = OV.IsNegative (determinant);
+            if (mirrorByX) {
+                let scaleMatrix = new OV.Matrix ().CreateScale (-1.0, 1.0, 1.0);
+                meshMatrix = scaleMatrix.MultiplyMatrix (meshMatrix);
+            }
+
+            let invMeshMatrix = meshMatrix.Invert ();
+            if (invMeshMatrix === null) {
+                return;
+            }
+
+            let transformation = new OV.Transformation (invMeshMatrix);
+            OV.TransformMesh (mesh, transformation);
+            if (mirrorByX) {
+                OV.FlipMeshTrianglesOrientation (mesh);
+            }
+        }
+
         let mesh = new OV.Mesh ();
         mesh.SetName (objectName);
 
         let endByte = this.GetChunkEnd (reader, length);
-        let transformation = null;
+        let matrixElements = null;
         this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.TRI_VERTEX) {
                 this.ReadVerticesChunk (mesh, reader);
@@ -276,7 +339,7 @@ OV.Importer3ds = class extends OV.ImporterBase
             } else if (chunkId === OV.CHUNK3DS.TRI_FACE) {
                 this.ReadFacesChunk (mesh, reader, chunkLength);
             } else if (chunkId === OV.CHUNK3DS.TRI_TRANSFORMATION) {
-                transformation = this.ReadTransformationChunk (reader);
+                matrixElements = this.ReadTransformationChunk (reader);
             } else {
                 this.SkipChunk (reader, chunkLength);
             }
@@ -293,9 +356,11 @@ OV.Importer3ds = class extends OV.ImporterBase
             }
         }
 
-        let meshIndex = this.model.AddMeshToRootNode (mesh);
-        this.meshNameToIndex[mesh.GetName ()] = meshIndex;
-        this.meshTransformations.push (new OV.Matrix (transformation));
+        let meshMatrix = new OV.Matrix (matrixElements);
+        ApplyMeshTransformation (mesh, meshMatrix);
+
+        let meshIndex = this.model.AddMesh (mesh);
+        this.meshNameToIndex.set (mesh.GetName (), meshIndex);
     }
 
     ReadVerticesChunk (mesh, reader)
@@ -345,7 +410,7 @@ OV.Importer3ds = class extends OV.ImporterBase
     ReadFaceMaterialsChunk (mesh, reader)
     {
         let materialName = this.ReadName (reader);
-        let materialIndex = this.materialNameToIndex[materialName];
+        let materialIndex = this.materialNameToIndex.get (materialName);
         let faceCount = reader.ReadUnsignedInteger16 ();
         for (let i = 0; i < faceCount; i++) {
             let faceIndex = reader.ReadUnsignedInteger16 ();
@@ -383,170 +448,106 @@ OV.Importer3ds = class extends OV.ImporterBase
 
     ReadKeyFrameChunk (reader, length)
     {
-        let nodeHierarchy = {
-            nodes : [],
-            idToIndex : {},
-            meshIndexToNodes : {}
-        };
-
         let endByte = this.GetChunkEnd (reader, length);
         this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.OBJECT_NODE) {
-                this.ReadObjectNodeChunk (nodeHierarchy, reader, chunkLength);
+                this.ReadObjectNodeChunk (reader, chunkLength);
             } else {
                 this.SkipChunk (reader, chunkLength);
             }
         });
-
-        this.ApplyModelTransformations (nodeHierarchy);
     }
 
-    ApplyModelTransformations (nodeHierarchy)
+    BuildNodeHierarchy ()
     {
-        function GetNodeTransformation (nodeHierarchy, node)
+        function GetNodeTransformation (node3ds, isMeshNode)
         {
-            function GetNodePosition (node)
+            function GetNodePosition (node3ds)
             {
-                if (node.positions.length === 0) {
+                if (node3ds.positions.length === 0) {
                     return [0.0, 0.0, 0.0];
                 }
-                return node.positions[0];
+                return node3ds.positions[0];
             }
 
-            function GetNodeRotation (node)
+            function GetNodeRotation (node3ds)
             {
-                function GetQuaternionFromAxisAndAngle (rotation)
+                function GetQuaternionFromAxisAndAngle (axisAngle)
                 {
                     let result = [0.0, 0.0, 0.0, 1.0];
-                    let length = Math.sqrt (rotation[0] * rotation[0] + rotation[1] * rotation[1] + rotation[2] * rotation[2]);
+                    let length = Math.sqrt (axisAngle[0] * axisAngle[0] + axisAngle[1] * axisAngle[1] + axisAngle[2] * axisAngle[2]);
                     if (length > 0.0) {
-                        let omega = rotation[3] * -0.5;
+                        let omega = axisAngle[3] * -0.5;
                         let si = Math.sin (omega) / length;
-                        result = [si * rotation[0], si * rotation[1], si * rotation[2], Math.cos (omega)];
+                        result = [si * axisAngle[0], si * axisAngle[1], si * axisAngle[2], Math.cos (omega)];
                     }
                     return result;
                 }
 
-                if (node.rotations.length === 0) {
+                if (node3ds.rotations.length === 0) {
                     return [0.0, 0.0, 0.0, 1.0];
                 }
 
-                let rotation = node.rotations[0];
+                let rotation = node3ds.rotations[0];
                 return GetQuaternionFromAxisAndAngle (rotation);
             }
 
-            function GetNodeScale (node)
+            function GetNodeScale (node3ds)
             {
-                if (node.scales.length === 0) {
+                if (node3ds.scales.length === 0) {
                     return [1.0, 1.0, 1.0];
                 }
-                return node.scales[0];
-            }
-
-            if (node.matrix !== null) {
-                return node.matrix;
+                return node3ds.scales[0];
             }
 
             let matrix = new OV.Matrix ();
             matrix.ComposeTRS (
-                OV.ArrayToCoord3D (GetNodePosition (node)),
-                OV.ArrayToQuaternion (GetNodeRotation (node)),
-                OV.ArrayToCoord3D (GetNodeScale (node))
+                OV.ArrayToCoord3D (GetNodePosition (node3ds)),
+                OV.ArrayToQuaternion (GetNodeRotation (node3ds)),
+                OV.ArrayToCoord3D (GetNodeScale (node3ds))
             );
 
-            if (node.userId !== 65535) {
-                let parentIndex = nodeHierarchy.idToIndex[node.userId];
-                if (parentIndex !== undefined) {
-                    let parentNode = nodeHierarchy.nodes[parentIndex];
-                    let parentMatrix = GetNodeTransformation (nodeHierarchy, parentNode);
-                    matrix = matrix.MultiplyMatrix (parentMatrix);
-                }
+            if (isMeshNode) {
+                let pivotPoint = node3ds.pivot;
+                let pivotMatrix = new OV.Matrix ().CreateTranslation (-pivotPoint[0], -pivotPoint[1], -pivotPoint[2]);
+                matrix = pivotMatrix.MultiplyMatrix (matrix);
             }
 
-            node.matrix = matrix;
-            return matrix;
+            return new OV.Transformation (matrix);
         }
 
-        function ApplyMeshTransformation (model, currentMeshIndex, meshMatrix, nodeHierarchy, node)
-        {
-            function GetNodePivotPoint (node)
-            {
-                if (node === null) {
-                    return [0.0, 0.0, 0.0];
-                }
-                return node.pivot;
+        let rootNode = this.model.GetRootNode ();
+        if (this.nodeList.IsEmpty ()) {
+            for (let meshIndex = 0; meshIndex < this.model.MeshCount (); meshIndex++) {
+                rootNode.AddMeshIndex (meshIndex);
             }
-
-            if (!meshMatrix.IsValid ()) {
-                return;
-            }
-
-            let nodeMatrix = meshMatrix;
-            if (node !== null) {
-                nodeMatrix = GetNodeTransformation (nodeHierarchy, node);
-            }
-
-            let mesh = model.GetMesh (currentMeshIndex);
-            let determinant = meshMatrix.Determinant ();
-            let mirrorByX = OV.IsNegative (determinant);
-            if (mirrorByX) {
-                // Mirror by x coordinates
-                let scaleMatrix = new OV.Matrix ().CreateScale (-1.0, 1.0, 1.0);
-                meshMatrix = scaleMatrix.MultiplyMatrix (meshMatrix);
-            }
-
-            let invMeshMatrix = meshMatrix.Invert ();
-            if (invMeshMatrix === null) {
-                return;
-            }
-
-            let pivotPoint = GetNodePivotPoint (node);
-            let pivotMatrix = new OV.Matrix ().CreateTranslation (-pivotPoint[0], -pivotPoint[1], -pivotPoint[2]);
-
-            let matrix = nodeMatrix.Clone ();
-            matrix = pivotMatrix.MultiplyMatrix (matrix);
-            matrix = invMeshMatrix.MultiplyMatrix (matrix);
-
-            let transformation = new OV.Transformation (matrix);
-            if (mirrorByX) {
-                OV.FlipMeshTrianglesOrientation (mesh);
-            }
-            OV.TransformMesh (mesh, transformation);
-        }
-
-        function AddDuplicatedMesh (model, meshIndex, toIndex)
-        {
-            let mesh = model.GetMesh (meshIndex);
-            let clonedMesh = OV.CloneMesh (mesh);
-            let clonedMeshIndex = model.AddMeshToIndex (clonedMesh, toIndex);
-            model.GetRootNode ().AddMeshIndexToIndex (clonedMeshIndex, toIndex);
-            return clonedMeshIndex;
-        }
-
-        let newToOldMeshIndexOffset = 0;
-        for (let meshIndex = 0; meshIndex < this.model.MeshCount (); meshIndex++) {
-            let currentMeshIndex = meshIndex;
-            let originalMeshIndex = currentMeshIndex - newToOldMeshIndexOffset;
-            let meshTransformation = this.meshTransformations[originalMeshIndex];
-            let meshNodes = nodeHierarchy.meshIndexToNodes[originalMeshIndex];
-            if (meshNodes === undefined) {
-                ApplyMeshTransformation (this.model, currentMeshIndex, meshTransformation, nodeHierarchy, null);
-            } else {
-                for (let nodeIndex = 0; nodeIndex < meshNodes.length; nodeIndex++) {
-                    let currentNode = meshNodes[nodeIndex];
-                    let transformedMeshIndex = currentMeshIndex;
-                    if (nodeIndex > 0) {
-                        transformedMeshIndex = AddDuplicatedMesh (this.model, currentMeshIndex, currentMeshIndex + nodeIndex);
-                        newToOldMeshIndexOffset += 1;
-                        meshIndex += 1;
+        } else {
+            let nodeIdToModelNode = new Map ();
+            for (let node3ds of this.nodeList.GetNodes ()) {
+                let node = new OV.Node ();
+                if (node3ds.name !== '$$$DUMMY') {
+                    node.SetName (node3ds.name);
+                    if (node3ds.instanceName.length > 0) {
+                        node.SetName (node.GetName () + ' ' + node3ds.instanceName);
                     }
-                    ApplyMeshTransformation (this.model, transformedMeshIndex, meshTransformation, nodeHierarchy, currentNode);
+                }
+                if (node3ds.parentId === 65535 || !nodeIdToModelNode.has (node3ds.parentId)) {
+                    rootNode.AddChildNode (node);
+                } else {
+                    let parentNode = nodeIdToModelNode.get (node3ds.parentId);
+                    parentNode.AddChildNode (node);
+                }
+                nodeIdToModelNode.set (node3ds.id, node);
+                let isMeshNode = this.meshNameToIndex.has (node3ds.name);
+                node.SetTransformation (GetNodeTransformation (node3ds, isMeshNode));
+                if (isMeshNode) {
+                    node.AddMeshIndex (this.meshNameToIndex.get (node3ds.name));
                 }
             }
         }
     }
 
-    ReadObjectNodeChunk (nodeHierarchy, reader, length)
+    ReadObjectNodeChunk (reader, length)
     {
         function ReadTrackVector (obj, reader, type)
         {
@@ -575,54 +576,31 @@ OV.Importer3ds = class extends OV.ImporterBase
             return result;
         }
 
-        let objectNode = {
-            name : '',
-            instanceName : '',
-            nodeId : -1,
-            flags : -1,
-            userId : -1,
-            pivot : [0.0, 0.0, 0.0],
-            positions : [],
-            rotations : [],
-            scales : [],
-            matrix : null
-        };
-
+        let node3ds = new OV.Importer3dsNode ();
         let endByte = this.GetChunkEnd (reader, length);
         this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === OV.CHUNK3DS.OBJECT_HIERARCHY) {
-                objectNode.name = this.ReadName (reader);
-                objectNode.flags = reader.ReadUnsignedInteger32 ();
-                objectNode.userId = reader.ReadUnsignedInteger16 ();
+                node3ds.name = this.ReadName (reader);
+                node3ds.flags = reader.ReadUnsignedInteger32 ();
+                node3ds.parentId = reader.ReadUnsignedInteger16 ();
             } else if (chunkId === OV.CHUNK3DS.OBJECT_INSTANCE_NAME) {
-                objectNode.instanceName = this.ReadName (reader);
+                node3ds.instanceName = this.ReadName (reader);
             } else if (chunkId === OV.CHUNK3DS.OBJECT_PIVOT) {
-                objectNode.pivot = this.ReadVector (reader);
+                node3ds.pivot = this.ReadVector (reader);
             } else if (chunkId === OV.CHUNK3DS.OBJECT_POSITION) {
-                objectNode.positions = ReadTrackVector (this, reader, OV.CHUNK3DS.OBJECT_POSITION);
+                node3ds.positions = ReadTrackVector (this, reader, OV.CHUNK3DS.OBJECT_POSITION);
             } else if (chunkId === OV.CHUNK3DS.OBJECT_ROTATION) {
-                objectNode.rotations = ReadTrackVector (this, reader, OV.CHUNK3DS.OBJECT_ROTATION);
+                node3ds.rotations = ReadTrackVector (this, reader, OV.CHUNK3DS.OBJECT_ROTATION);
             } else if (chunkId === OV.CHUNK3DS.OBJECT_SCALE) {
-                objectNode.scales = ReadTrackVector (this, reader, OV.CHUNK3DS.OBJECT_SCALE);
+                node3ds.scales = ReadTrackVector (this, reader, OV.CHUNK3DS.OBJECT_SCALE);
             } else if (chunkId === OV.CHUNK3DS.OBJECT_ID) {
-                objectNode.nodeId = reader.ReadUnsignedInteger16 ();
+                node3ds.id = reader.ReadUnsignedInteger16 ();
             } else {
                 this.SkipChunk (reader, chunkLength);
             }
         });
 
-        let nodeIndex = nodeHierarchy.nodes.length;
-        nodeHierarchy.nodes.push (objectNode);
-        nodeHierarchy.idToIndex[objectNode.nodeId] = nodeIndex;
-
-        let meshIndex = this.meshNameToIndex[objectNode.name];
-        if (meshIndex !== undefined) {
-            let meshNodes = nodeHierarchy.meshIndexToNodes[meshIndex];
-            if (meshNodes === undefined) {
-                nodeHierarchy.meshIndexToNodes[meshIndex] = [];
-            }
-            nodeHierarchy.meshIndexToNodes[meshIndex].push (objectNode);
-        }
+        this.nodeList.AddNode (node3ds);
     }
 
     ReadName (reader)
