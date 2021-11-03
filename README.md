@@ -19,25 +19,8 @@ The repository is separated into two parts. See more information in the [Develop
 
 ## Supported file formats
 
-### Import
-
-- obj (with mtl and texture)
-- 3ds (with texture)
-- stl (text and binary)
-- ply (text and binary)
-- gltf (text and binary)
-- 3dm (experimental)
-- fbx (experimental)
-- off (text only)
-
-### Export
-
-- obj (with mtl)
-- stl (text and binary)
-- ply (text and binary)
-- gltf (text and binary)
-- 3dm (experimental)
-- off (text only)
+* **Import**: obj, 3ds, stl, ply, gltf, off, 3dm, fbx, dae, wrl, 3mf, ifc
+* **Export**: obj, stl, ply, gltf, off, 3dm
 
 ## Features
 
