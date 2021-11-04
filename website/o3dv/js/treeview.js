@@ -29,9 +29,9 @@ OV.TreeViewButton = class
         });
     }
 
-    AddDomElements (parentDiv)
+    GetDomElement ()
     {
-        this.mainElement.appendTo (parentDiv);
+        return this.mainElement;
     }
 };
 
@@ -102,9 +102,14 @@ OV.TreeViewButtonItem = class extends OV.TreeViewSingleItem
         this.buttonsDiv = $('<div>').addClass ('ov_tree_item_button_container').insertBefore (this.nameElement);
     }
 
-    AddButton (button)
+    AppendButton (button)
     {
-        button.AddDomElements (this.buttonsDiv);
+        button.GetDomElement ().appendTo (this.buttonsDiv);
+    }
+
+    PrependButton (button)
+    {
+        button.GetDomElement ().prependTo (this.buttonsDiv);
     }
 };
 
@@ -176,9 +181,14 @@ OV.TreeViewGroupButtonItem = class extends OV.TreeViewGroupItem
         this.buttonsDiv = $('<div>').addClass ('ov_tree_item_button_container').insertBefore (this.nameElement);
     }
 
-    AddButton (button)
+    AppendButton (button)
     {
-        button.AddDomElements (this.buttonsDiv);
+        button.GetDomElement ().appendTo (this.buttonsDiv);
+    }
+
+    PrependButton (button)
+    {
+        button.GetDomElement ().prependTo (this.buttonsDiv);
     }
 };
 

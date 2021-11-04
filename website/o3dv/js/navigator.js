@@ -184,7 +184,7 @@ OV.Navigator = class
                 browseButton.OnClick (() => {
                     this.callbacks.openFileBrowserDialog ();
                 });
-                item.AddButton (browseButton);
+                item.AppendButton (browseButton);
                 missingFilesItem.AddChild (item);
             }
         }
@@ -203,13 +203,14 @@ OV.Navigator = class
             materialsItem.AddChild (materialItem);
         }
 
-        this.FillMeshTree (model);
+        const isFlat = !OV.FeatureSet.NavigatorTree;
+        this.FillMeshTree (model, isFlat);
 
         this.UpdateInfoPanel ();
         this.Resize ();
     }
 
-    FillMeshTree (model)
+    FillMeshTree (model, isFlat)
     {
         function AddMeshToNodeTree (navigator, model, node, meshIndex, parentItem)
         {
@@ -247,15 +248,15 @@ OV.Navigator = class
             return nodeItem;
         }
 
-        function AddModelNodeToTree (navigator, model, node, parentItem)
+        function AddModelNodeToTree (navigator, model, node, parentItem, isFlat)
         {
             for (let childNode of node.GetChildNodes ()) {
-                if (OV.FeatureSet.NavigatorTree) {
+                if (isFlat) {
+                    AddModelNodeToTree (navigator, model, childNode, parentItem, isFlat);
+                } else {
                     let nodeItem = CreateNodeItem (navigator, node.GetName (), null, childNode);
                     parentItem.AddChild (nodeItem);
-                    AddModelNodeToTree (navigator, model, childNode, nodeItem);
-                } else {
-                    AddModelNodeToTree (navigator, model, childNode, parentItem);
+                    AddModelNodeToTree (navigator, model, childNode, nodeItem, isFlat);
                 }
             }
 
@@ -269,7 +270,7 @@ OV.Navigator = class
         this.treeView.AddItem (meshesItem);
         meshesItem.ShowChildren (true, null);
 
-        AddModelNodeToTree (this, model, rootNode, meshesItem);
+        AddModelNodeToTree (this, model, rootNode, meshesItem, isFlat);
     }
 
     MeshItemCount ()

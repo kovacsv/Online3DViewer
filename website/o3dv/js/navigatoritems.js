@@ -22,13 +22,13 @@ OV.MeshItem = class extends OV.TreeViewButtonItem
         this.fitToWindowButton.OnClick (() => {
             callbacks.onFitToWindow (this.meshInstanceId);
         });
-        this.AddButton (this.fitToWindowButton);
+        this.AppendButton (this.fitToWindowButton);
 
         this.showHideButton = new OV.TreeViewButton ('visible');
         this.showHideButton.OnClick (() => {
             callbacks.onShowHide (this.meshInstanceId);
         });
-        this.AddButton (this.showHideButton);
+        this.AppendButton (this.showHideButton);
 
         this.OnClick (() => {
             callbacks.onSelected (this.meshInstanceId);
@@ -69,13 +69,13 @@ OV.NodeItem = class extends OV.TreeViewGroupButtonItem
         this.fitToWindowButton.OnClick (() => {
             callbacks.onFitToWindow (nodeId);
         });
-        this.AddButton (this.fitToWindowButton);
+        this.AppendButton (this.fitToWindowButton);
 
         this.showHideButton = new OV.TreeViewButton ('visible');
         this.showHideButton.OnClick (() => {
             callbacks.onShowHide (nodeId);
         });
-        this.AddButton (this.showHideButton);
+        this.AppendButton (this.showHideButton);
     }
 
     IsVisible ()
