@@ -231,23 +231,28 @@ OV.Navigator = class
             parentItem.AddChild (meshItem);
         }
 
+        function CreateNodeItem (navigator, name, icon, node)
+        {
+            const nodeName = OV.GetNodeName (name);
+            const nodeId = node.GetId ();
+            let nodeItem = new OV.NodeItem (nodeName, icon, nodeId, {
+                onShowHide : (selectedNodeId) => {
+                    navigator.ToggleNodeVisibility (selectedNodeId);
+                },
+                onFitToWindow : (selectedNodeId) => {
+                    navigator.FitNodeToWindow (selectedNodeId);
+                }
+            });
+            navigator.navigatorItems.AddNodeItem (nodeId, nodeItem);
+            return nodeItem;
+        }
+
         function AddModelNodeToTree (navigator, model, node, parentItem)
         {
             for (let childNode of node.GetChildNodes ()) {
                 if (OV.FeatureSet.NavigatorTree) {
-                    const nodeName = OV.GetNodeName (childNode.GetName ());
-                    const nodeId = childNode.GetId ();
-                    let nodeItem = new OV.NodeItem (nodeName, nodeId, {
-                        onShowHide : (selectedNodeId) => {
-                            navigator.ToggleNodeVisibility (selectedNodeId);
-                        },
-                        onFitToWindow : (selectedNodeId) => {
-                            navigator.FitNodeToWindow (selectedNodeId);
-                        }
-                    });
-                    navigator.navigatorItems.AddNodeItem (nodeId, nodeItem);
+                    let nodeItem = CreateNodeItem (navigator, node.GetName (), null, childNode);
                     parentItem.AddChild (nodeItem);
-                    nodeItem.ShowChildren (true, null);
                     AddModelNodeToTree (navigator, model, childNode, nodeItem);
                 } else {
                     AddModelNodeToTree (navigator, model, childNode, parentItem);
@@ -259,11 +264,11 @@ OV.Navigator = class
             }
         }
 
-        let meshesItem = new OV.TreeViewGroupItem ('Meshes', 'meshes');
+        let rootNode = model.GetRootNode ();
+        let meshesItem = CreateNodeItem (this, 'Meshes', 'meshes', rootNode);
         this.treeView.AddItem (meshesItem);
         meshesItem.ShowChildren (true, null);
 
-        let rootNode = model.GetRootNode ();
         AddModelNodeToTree (this, model, rootNode, meshesItem);
     }
 
