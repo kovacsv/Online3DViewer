@@ -3,8 +3,8 @@ OV.Panel = class
     constructor (parentDiv)
     {
         this.parentDiv = parentDiv;
-        this.panelDiv = $('<div>').appendTo (parentDiv);
-        this.visible = true;
+        this.panelDiv = $('<div>').appendTo (parentDiv).hide ();
+        this.visible = false;
     }
 
     GetIcon ()
@@ -15,6 +15,11 @@ OV.Panel = class
     GetPanelDiv ()
     {
         return this.panelDiv;
+    }
+
+    IsVisible ()
+    {
+        return this.visible;
     }
 
     Show (show)
@@ -44,7 +49,7 @@ OV.PanelSet = class
     {
         this.parentDiv = parentDiv;
         this.menuDiv = $('<div>').addClass ('ov_panel_set_menu').appendTo (parentDiv);
-        this.contentDiv = $('<div>').appendTo (parentDiv);
+        this.contentDiv = $('<div>').addClass ('ov_panel_set_content').appendTo (parentDiv);
         this.panels = [];
     }
 
@@ -69,6 +74,16 @@ OV.PanelSet = class
         }
         panel.Show (true);
         panel.Resize ();
+    }
+
+    GetVisiblePanel ()
+    {
+        for (let panel of this.panels) {
+            if (panel.IsVisible ()) {
+                return panel;
+            }
+        }
+        return null;
     }
 
     Resize ()

@@ -157,8 +157,14 @@ OV.Navigator = class
         {
             if (selection.type === OV.SelectionType.Material) {
                 navigator.materialsPanel.GetMaterialItem (selection.materialIndex).SetSelected (select);
+                if (select) {
+                    navigator.panelSet.ShowPanel (navigator.materialsPanel);
+                }
             } else if (selection.type === OV.SelectionType.Mesh) {
                 navigator.meshesPanel.GetMeshItem (selection.meshInstanceId).SetSelected (select);
+                if (select) {
+                    navigator.panelSet.ShowPanel (navigator.meshesPanel);
+                }
             }
         }
 

@@ -1,7 +1,5 @@
 div.ov_panel_set_menu
 {
-    margin-right: 10px;
-    border-right: 1px solid var(--ov_border_color);
 	float: left;
 }
 
@@ -9,6 +7,13 @@ div.ov_panel_set_menu div.ov_panel_set_menu_button
 {
 	padding: 6px;
     cursor: pointer;
+}
+
+div.ov_panel_set_content
+{
+    padding-left: 10px;
+    border-left: 1px solid var(--ov_border_color);
+    overflow: auto;
 }
 
 @media (hover)
