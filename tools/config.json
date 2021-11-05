@@ -83,7 +83,9 @@
 		"website/o3dv/js/exportdialog.js",
 		"website/o3dv/js/sharingdialog.js",
 		"website/o3dv/js/cookiedialog.js",
+		"website/o3dv/js/panelset.js",
 		"website/o3dv/js/navigatoritems.js",
+		"website/o3dv/js/navigatorpanels.js",
 		"website/o3dv/js/navigator.js",
 		"website/o3dv/js/sidebarpanel.js",
 		"website/o3dv/js/detailssidebarpanel.js",
@@ -102,6 +104,7 @@
 		"website/o3dv/css/controls.css",
 		"website/o3dv/css/dialogs.css",
 		"website/o3dv/css/treeview.css",
+		"website/o3dv/css/panelset.css",
 		"website/o3dv/css/website.css",
 		"website/o3dv/css/embed.css"
 	]

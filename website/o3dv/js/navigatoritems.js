@@ -1,4 +1,4 @@
-OV.MaterialItem = class extends OV.TreeViewButtonItem
+OV.MaterialItem = class extends OV.TreeViewSingleItem
 {
     constructor (name, materialIndex, callbacks)
     {

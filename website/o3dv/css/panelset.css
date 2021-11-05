@@ -1,0 +1,22 @@
+div.ov_panel_set_menu
+{
+    margin-right: 10px;
+    border-right: 1px solid var(--ov_border_color);
+	float: left;
+}
+
+div.ov_panel_set_menu div.ov_panel_set_menu_button
+{
+	padding: 6px;
+    cursor: pointer;
+}
+
+@media (hover)
+{
+
+div.ov_panel_set_menu div.ov_panel_set_menu_button:hover
+{
+	background: var(--ov_hover_color);
+}
+
+}

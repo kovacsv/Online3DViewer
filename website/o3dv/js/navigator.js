@@ -31,275 +31,89 @@ OV.Selection = class
     }
 };
 
-OV.NavigatorInfoPanel = class
-{
-    constructor (parentDiv)
-    {
-        this.parentDiv = parentDiv;
-        this.popup = null;
-    }
-
-    FillWithMaterialInfo (usedByMeshes, callbacks)
-    {
-        this.Clear ();
-        if (usedByMeshes === null) {
-            return;
-        }
-
-        let meshItems = [];
-        for (let i = 0; i < usedByMeshes.length; i++) {
-            let meshInfo = usedByMeshes[i];
-            meshItems.push ({
-                name : OV.GetMeshName (meshInfo.name)
-            });
-        }
-
-        let meshesText = 'Meshes (' + meshItems.length + ')';
-        this.CreateButton (this.parentDiv, meshesText, (button) => {
-            if (meshItems.length === 0) {
-                return;
-            }
-            this.popup = OV.ShowListPopup (meshItems, {
-                calculatePosition : (contentDiv) => {
-                    return OV.CalculatePopupPositionToElementBottomRight (button, contentDiv);
-                },
-                onHoverStart : (index) => {
-                    const meshData = usedByMeshes[index];
-                    callbacks.onMeshHover (meshData.meshId);
-                },
-                onHoverStop : (index) => {
-                    callbacks.onMeshHover (null);
-                },
-                onClick : (index) => {
-                    const meshData = usedByMeshes[index];
-                    callbacks.onMeshSelect (meshData.meshId);
-                }
-            });
-        });
-    }
-
-    FillWithModelInfo (usedMaterials, callbacks)
-    {
-        this.Clear ();
-        if (usedMaterials === null) {
-            return;
-        }
-
-        let materialItems = [];
-        for (let i = 0; i < usedMaterials.length; i++) {
-            let usedMaterial = usedMaterials[i];
-            materialItems.push ({
-                name : OV.GetMaterialName (usedMaterial.name),
-                color : usedMaterial.color
-            });
-        }
-
-        let materialsText = 'Materials (' + materialItems.length + ')';
-        this.CreateButton (this.parentDiv, materialsText, (button) => {
-            this.popup = OV.ShowListPopup (materialItems, {
-                calculatePosition : (contentDiv) => {
-                    return OV.CalculatePopupPositionToElementBottomRight (button, contentDiv);
-                },
-                onClick : (index) => {
-                    let usedMaterial = usedMaterials[index];
-                    callbacks.onMaterialSelect (usedMaterial.index);
-                }
-            });
-        });
-    }
-
-    CreateButton (parentDiv, buttonText, onClick)
-    {
-        let button = $('<div>').addClass ('ov_navigator_info_button').appendTo (parentDiv);
-        $('<div>').addClass ('ov_navigator_info_button_text').html (buttonText).appendTo (button);
-        OV.AddSvgIcon (button, 'arrow_right', 'ov_navigator_info_button_icon');
-        button.click (() => {
-            onClick (button);
-        });
-    }
-
-    Clear ()
-    {
-        if (this.popup !== null) {
-            this.popup.Hide ();
-            this.popup = null;
-        }
-        this.parentDiv.empty ();
-    }
-};
-
 OV.Navigator = class
 {
     constructor (parentDiv)
     {
         this.parentDiv = parentDiv;
+        this.panelSet = new OV.PanelSet (parentDiv);
         this.callbacks = null;
-        this.titleDiv = $('<div>').addClass ('ov_navigator_tree_title').appendTo (parentDiv);
-        this.treeDiv = $('<div>').addClass ('ov_navigator_tree_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
-        this.infoDiv = $('<div>').addClass ('ov_navigator_info_panel').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
-        this.treeView = new OV.TreeView (this.treeDiv);
-        this.infoPanel = new OV.NavigatorInfoPanel (this.infoDiv);
-        this.navigatorItems = new OV.NavigatorItems ();
         this.selection = null;
         this.tempSelectedMeshId = null;
+
+        this.filesPanel = new OV.NavigatorFilesPanel (this.panelSet.GetContentDiv ());
+        this.materialsPanel = new OV.NavigatorMaterialsPanel (this.panelSet.GetContentDiv ());
+        this.meshesPanel = new OV.NavigatorMeshesPanel (this.panelSet.GetContentDiv ());
+
+        this.panelSet.AddPanel (this.filesPanel);
+        this.panelSet.AddPanel (this.materialsPanel);
+        this.panelSet.AddPanel (this.meshesPanel);
+        this.panelSet.ShowPanel (2);
     }
 
     Init (callbacks)
     {
         this.callbacks = callbacks;
+        this.filesPanel.Init ({
+            onFileBrowseButtonClicked : () => {
+                this.callbacks.openFileBrowserDialog ();
+            }
+        });
+        this.materialsPanel.Init ({
+            onMaterialSelected : (materialIndex) => {
+                this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
+            }
+        });
+        this.meshesPanel.Init ({
+            onMeshSelected : (meshId) => {
+                this.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshId));
+            },
+            onMeshShowHide : (meshId) => {
+                this.ToggleMeshVisibility (meshId);
+            },
+            onMeshFitToWindow : (meshId) => {
+                this.FitMeshToWindow (meshId);
+            },
+            onNodeShowHide : (nodeId) => {
+                this.ToggleNodeVisibility (nodeId);
+            },
+            onNodeFitToWindow : (nodeId) => {
+                this.FitNodeToWindow (nodeId);
+            }
+        });
     }
 
     Resize ()
     {
-        let titleHeight = this.titleDiv.outerHeight (true);
-        let infoHeight = this.infoDiv.outerHeight (true);
-        let height = this.parentDiv.height ();
-        this.treeDiv.outerHeight (height - infoHeight - titleHeight, true);
+        this.panelSet.Resize ();
     }
 
     FillTree (importResult)
     {
-        const model = importResult.model;
-        const mainFile = importResult.mainFile;
-        const usedFiles = importResult.usedFiles;
-        const missingFiles = importResult.missingFiles;
-
-        this.titleDiv.html (mainFile).attr ('title', mainFile);
-
-        let filesItem = new OV.TreeViewGroupItem ('Files', 'files');
-        this.treeView.AddItem (filesItem);
-        for (let i = 0; i < usedFiles.length; i++) {
-            let file = usedFiles[i];
-            let item = new OV.TreeViewSingleItem (file);
-            filesItem.AddChild (item);
-        }
-
-        if (missingFiles.length > 0) {
-            let missingFilesItem = new OV.TreeViewGroupItem ('Missing Files', 'missing_files');
-            this.treeView.AddItem (missingFilesItem);
-            for (let i = 0; i < missingFiles.length; i++) {
-                let file = missingFiles[i];
-                let item = new OV.TreeViewButtonItem (file);
-                let browseButton = new OV.TreeViewButton ('open');
-                browseButton.OnClick (() => {
-                    this.callbacks.openFileBrowserDialog ();
-                });
-                item.AppendButton (browseButton);
-                missingFilesItem.AddChild (item);
-            }
-        }
-
-        let materialsItem = new OV.TreeViewGroupItem ('Materials', 'materials');
-        this.treeView.AddItem (materialsItem);
-        for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
-            let material = model.GetMaterial (materialIndex);
-            let materialName = OV.GetMaterialName (material.name);
-            let materialItem = new OV.MaterialItem (materialName, materialIndex, {
-                onSelected : (materialIndex) => {
-                    this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
-                }
-            });
-            this.navigatorItems.AddMaterialItem (materialIndex, materialItem);
-            materialsItem.AddChild (materialItem);
-        }
-
-        const isFlat = !OV.FeatureSet.NavigatorTree;
-        this.FillMeshTree (model, isFlat);
-
-        this.UpdateInfoPanel ();
-        this.Resize ();
-    }
-
-    FillMeshTree (model, isFlat)
-    {
-        function AddMeshToNodeTree (navigator, model, node, meshIndex, parentItem)
-        {
-            let mesh = model.GetMesh (meshIndex);
-            let meshName = OV.GetMeshName (mesh.GetName ());
-            let meshInstanceId = new OV.MeshInstanceId (node.GetId (), meshIndex);
-            let meshItem = new OV.MeshItem (meshName, meshInstanceId, {
-                onShowHide : (selectedMeshId) => {
-                    navigator.ToggleMeshVisibility (selectedMeshId);
-                },
-                onFitToWindow : (selectedMeshId) => {
-                    navigator.FitMeshToWindow (selectedMeshId);
-                },
-                onSelected : (selectedMeshId) => {
-                    navigator.SetSelection (new OV.Selection (OV.SelectionType.Mesh, selectedMeshId));
-                }
-            });
-            navigator.navigatorItems.AddMeshItem (meshInstanceId, meshItem);
-            parentItem.AddChild (meshItem);
-        }
-
-        function CreateNodeItem (navigator, name, icon, node)
-        {
-            const nodeName = OV.GetNodeName (name);
-            const nodeId = node.GetId ();
-            let nodeItem = new OV.NodeItem (nodeName, icon, nodeId, {
-                onShowHide : (selectedNodeId) => {
-                    navigator.ToggleNodeVisibility (selectedNodeId);
-                },
-                onFitToWindow : (selectedNodeId) => {
-                    navigator.FitNodeToWindow (selectedNodeId);
-                }
-            });
-            navigator.navigatorItems.AddNodeItem (nodeId, nodeItem);
-            return nodeItem;
-        }
-
-        function AddModelNodeToTree (navigator, model, node, parentItem, isFlat)
-        {
-            for (let childNode of node.GetChildNodes ()) {
-                if (isFlat) {
-                    AddModelNodeToTree (navigator, model, childNode, parentItem, isFlat);
-                } else {
-                    let nodeItem = CreateNodeItem (navigator, node.GetName (), null, childNode);
-                    parentItem.AddChild (nodeItem);
-                    AddModelNodeToTree (navigator, model, childNode, nodeItem, isFlat);
-                }
-            }
-
-            for (let meshIndex of node.GetMeshIndices ()) {
-                AddMeshToNodeTree (navigator, model, node, meshIndex, parentItem);
-            }
-        }
-
-        let rootNode = model.GetRootNode ();
-        let meshesItem = CreateNodeItem (this, 'Meshes', 'meshes', rootNode);
-        this.treeView.AddItem (meshesItem);
-        meshesItem.ShowChildren (true, null);
-
-        AddModelNodeToTree (this, model, rootNode, meshesItem, isFlat);
+        this.filesPanel.Fill (importResult);
+        this.materialsPanel.Fill (importResult);
+        this.meshesPanel.Fill (importResult);
+        this.OnSelectionChanged ();
     }
 
     MeshItemCount ()
     {
-        return this.navigatorItems.MeshItemCount ();
+        return this.meshesPanel.MeshItemCount ();
     }
 
     IsMeshVisible (meshInstanceId)
     {
-        let meshItem = this.navigatorItems.GetMeshItem (meshInstanceId);
-        return meshItem.IsVisible ();
+        return this.meshesPanel.IsMeshVisible (meshInstanceId);
     }
 
     HasHiddenMesh ()
     {
-        let hasHiddenMesh = false;
-        this.navigatorItems.EnumerateMeshItems ((meshItem) => {
-            if (!meshItem.IsVisible ()) {
-                hasHiddenMesh = true;
-                return false;
-            }
-            return true;
-        });
-        return hasHiddenMesh;
+        return this.meshesPanel.HasHiddenMesh ();
     }
 
     ShowAllMeshes ()
     {
-        this.navigatorItems.EnumerateMeshItems ((meshItem) => {
+        this.meshesPanel.navigatorItems.EnumerateMeshItems ((meshItem) => {
             meshItem.SetVisible (true);
             return true;
         });
@@ -308,43 +122,26 @@ OV.Navigator = class
 
     ToggleNodeVisibility (nodeId)
     {
-        let nodeItem = this.navigatorItems.GetNodeItem (nodeId);
+        let nodeItem = this.meshesPanel.navigatorItems.GetNodeItem (nodeId);
         nodeItem.SetVisible (!nodeItem.IsVisible ());
         this.callbacks.updateMeshesVisibility ();
     }
 
     ToggleMeshVisibility (meshInstanceId)
     {
-        let meshItem = this.navigatorItems.GetMeshItem (meshInstanceId);
+        let meshItem = this.meshesPanel.navigatorItems.GetMeshItem (meshInstanceId);
         meshItem.SetVisible (!meshItem.IsVisible ());
         this.callbacks.updateMeshesVisibility ();
     }
 
     IsMeshIsolated (meshInstanceId)
     {
-        let isIsolated = true;
-        this.navigatorItems.EnumerateMeshItems ((meshItem) => {
-            if (!meshItem.GetMeshInstanceId ().IsEqual (meshInstanceId) && meshItem.IsVisible ()) {
-                isIsolated = false;
-                return false;
-            }
-            return true;
-        });
-        return isIsolated;
+        return this.meshesPanel.IsMeshIsolated (meshInstanceId);
     }
 
     IsolateMesh (meshInstanceId)
     {
-        let isIsolated = this.IsMeshIsolated (meshInstanceId);
-        this.navigatorItems.EnumerateMeshItems ((meshItem) => {
-            if (meshItem.GetMeshInstanceId ().IsEqual (meshInstanceId) || isIsolated) {
-                meshItem.SetVisible (true);
-            } else {
-                meshItem.SetVisible (false);
-            }
-            return true;
-        });
-        this.callbacks.updateMeshesVisibility ();
+        this.meshesPanel.IsolateMesh (meshInstanceId);
     }
 
     GetSelectedMeshId ()
@@ -360,19 +157,19 @@ OV.Navigator = class
 
     SetSelection (selection)
     {
-        function SetEntitySelection (obj, selection, select)
+        function SetEntitySelection (navigator, selection, select)
         {
             if (selection.type === OV.SelectionType.Material) {
-                obj.navigatorItems.GetMaterialItem (selection.materialIndex).SetSelected (select);
+                navigator.materialsPanel.GetMaterialItem (selection.materialIndex).SetSelected (select);
             } else if (selection.type === OV.SelectionType.Mesh) {
-                obj.navigatorItems.GetMeshItem (selection.meshInstanceId).SetSelected (select);
+                navigator.meshesPanel.navigatorItems.GetMeshItem (selection.meshInstanceId).SetSelected (select);
             }
         }
 
-        function SetCurrentSelection (obj, selection)
+        function SetCurrentSelection (navigator, selection)
         {
-            obj.selection = selection;
-            obj.UpdateInfoPanel ();
+            navigator.selection = selection;
+            navigator.OnSelectionChanged ();
         }
 
         let oldSelection = this.selection;
@@ -395,10 +192,24 @@ OV.Navigator = class
         this.callbacks.updateMeshesSelection ();
     }
 
+    OnSelectionChanged ()
+    {
+        if (this.selection === null) {
+            this.callbacks.onModelSelected ();
+        } else {
+            if (this.selection.type === OV.SelectionType.Material) {
+                this.callbacks.onMaterialSelected (this.selection.materialIndex);
+            } else if (this.selection.type === OV.SelectionType.Mesh) {
+                this.callbacks.onMeshSelected (this.selection.meshInstanceId);
+            }
+        }
+        this.Resize ();
+    }
+
     FitNodeToWindow (nodeId)
     {
         let meshInstanceIdSet = new Set ();
-        let nodeItem = this.navigatorItems.GetNodeItem (nodeId);
+        let nodeItem = this.meshesPanel.navigatorItems.GetNodeItem (nodeId);
         nodeItem.EnumerateMeshItems ((meshItem) => {
             meshInstanceIdSet.add (meshItem.GetMeshInstanceId ());
         });
@@ -410,48 +221,9 @@ OV.Navigator = class
         this.callbacks.fitMeshToWindow (meshInstanceId);
     }
 
-    UpdateInfoPanel ()
-    {
-        if (this.selection === null) {
-            let usedMaterials = this.callbacks.getMaterialsForModel ();
-            this.infoPanel.FillWithModelInfo (usedMaterials, {
-                onMaterialSelect : (materialIndex) => {
-                    this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
-                }
-            });
-            this.callbacks.onModelSelected ();
-        } else {
-            if (this.selection.type === OV.SelectionType.Material) {
-                let usedByMeshes = this.callbacks.getMeshesForMaterial (this.selection.materialIndex);
-                this.infoPanel.FillWithMaterialInfo (usedByMeshes, {
-                    onMeshHover : (meshInstanceId) => {
-                        this.tempSelectedMeshId = meshInstanceId;
-                        this.callbacks.updateMeshesSelection ();
-                    },
-                    onMeshSelect : (meshInstanceId) => {
-                        this.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshInstanceId));
-                    }
-                });
-                this.callbacks.onMaterialSelected (this.selection.materialIndex);
-            } else if (this.selection.type === OV.SelectionType.Mesh) {
-                let usedMaterials = this.callbacks.getMaterialsForMesh (this.selection.meshInstanceId);
-                this.infoPanel.FillWithModelInfo (usedMaterials, {
-                    onMaterialSelect : (materialIndex) => {
-                        this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
-                    }
-                });
-                this.callbacks.onMeshSelected (this.selection.meshInstanceId);
-            }
-        }
-        this.Resize ();
-    }
-
     Clear ()
     {
-        this.titleDiv.empty ();
-        this.treeView.Clear ();
-        this.infoPanel.Clear ();
-        this.navigatorItems.Clear ();
+        this.panelSet.Clear ();
         this.selection = null;
     }
 };
