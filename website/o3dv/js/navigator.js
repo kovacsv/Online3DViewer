@@ -156,15 +156,15 @@ OV.Navigator = class
         function SetEntitySelection (navigator, selection, select)
         {
             if (selection.type === OV.SelectionType.Material) {
-                navigator.materialsPanel.GetMaterialItem (selection.materialIndex).SetSelected (select);
                 if (select) {
                     navigator.panelSet.ShowPanel (navigator.materialsPanel);
                 }
+                navigator.materialsPanel.GetMaterialItem (selection.materialIndex).SetSelected (select);
             } else if (selection.type === OV.SelectionType.Mesh) {
-                navigator.meshesPanel.GetMeshItem (selection.meshInstanceId).SetSelected (select);
                 if (select) {
                     navigator.panelSet.ShowPanel (navigator.meshesPanel);
                 }
+                navigator.meshesPanel.GetMeshItem (selection.meshInstanceId).SetSelected (select);
             }
         }
 

@@ -69,6 +69,9 @@ OV.PanelSet = class
 
     ShowPanel (panel)
     {
+        if (panel === this.GetVisiblePanel ()) {
+            return;
+        }
         for (let otherPanel of this.panels) {
             otherPanel.Show (false);
         }

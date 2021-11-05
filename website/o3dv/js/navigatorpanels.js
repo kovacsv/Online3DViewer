@@ -330,11 +330,11 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             parentItem.AddChild (meshItem);
         }
 
-        function CreateNodeItem (navigator, name, icon, node)
+        function CreateNodeItem (navigator, name, node)
         {
             const nodeName = OV.GetNodeName (name);
             const nodeId = node.GetId ();
-            let nodeItem = new OV.NodeItem (nodeName, icon, nodeId, {
+            let nodeItem = new OV.NodeItem (nodeName, nodeId, {
                 onShowHide : (selectedNodeId) => {
                     navigator.callbacks.onNodeShowHide (selectedNodeId);
                 },
@@ -352,7 +352,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
                 if (isFlat) {
                     AddModelNodeToTree (navigator, model, childNode, parentItem, isFlat);
                 } else {
-                    let nodeItem = CreateNodeItem (navigator, node.GetName (), null, childNode);
+                    let nodeItem = CreateNodeItem (navigator, node.GetName (), childNode);
                     parentItem.AddChild (nodeItem);
                     AddModelNodeToTree (navigator, model, childNode, nodeItem, isFlat);
                 }
@@ -364,7 +364,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         }
 
         let rootNode = model.GetRootNode ();
-        let meshesItem = CreateNodeItem (this, 'Meshes', 'meshes', rootNode);
+        let meshesItem = CreateNodeItem (this, 'Meshes', rootNode);
         this.treeView.AddItem (meshesItem);
         meshesItem.ShowChildren (true, null);
 

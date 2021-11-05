@@ -61,9 +61,9 @@ OV.MeshItem = class extends OV.TreeViewButtonItem
 
 OV.NodeItem = class extends OV.TreeViewGroupButtonItem
 {
-    constructor (name, icon, nodeId, callbacks)
+    constructor (name, nodeId, callbacks)
     {
-        super (name, icon);
+        super (name, null);
 
         this.fitToWindowButton = new OV.TreeViewButton ('fit');
         this.fitToWindowButton.OnClick (() => {
