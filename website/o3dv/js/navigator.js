@@ -48,7 +48,7 @@ OV.Navigator = class
         this.panelSet.AddPanel (this.filesPanel);
         this.panelSet.AddPanel (this.materialsPanel);
         this.panelSet.AddPanel (this.meshesPanel);
-        this.panelSet.ShowPanel (2);
+        this.panelSet.ShowPanel (this.meshesPanel);
     }
 
     Init (callbacks)
@@ -113,24 +113,19 @@ OV.Navigator = class
 
     ShowAllMeshes ()
     {
-        this.meshesPanel.navigatorItems.EnumerateMeshItems ((meshItem) => {
-            meshItem.SetVisible (true);
-            return true;
-        });
+        this.meshesPanel.ShowAllMeshes ();
         this.callbacks.updateMeshesVisibility ();
     }
 
     ToggleNodeVisibility (nodeId)
     {
-        let nodeItem = this.meshesPanel.navigatorItems.GetNodeItem (nodeId);
-        nodeItem.SetVisible (!nodeItem.IsVisible ());
+        this.meshesPanel.ToggleNodeVisibility (nodeId);
         this.callbacks.updateMeshesVisibility ();
     }
 
     ToggleMeshVisibility (meshInstanceId)
     {
-        let meshItem = this.meshesPanel.navigatorItems.GetMeshItem (meshInstanceId);
-        meshItem.SetVisible (!meshItem.IsVisible ());
+        this.meshesPanel.ToggleMeshVisibility (meshInstanceId);
         this.callbacks.updateMeshesVisibility ();
     }
 
@@ -142,6 +137,7 @@ OV.Navigator = class
     IsolateMesh (meshInstanceId)
     {
         this.meshesPanel.IsolateMesh (meshInstanceId);
+        this.callbacks.updateMeshesVisibility ();
     }
 
     GetSelectedMeshId ()
@@ -162,7 +158,7 @@ OV.Navigator = class
             if (selection.type === OV.SelectionType.Material) {
                 navigator.materialsPanel.GetMaterialItem (selection.materialIndex).SetSelected (select);
             } else if (selection.type === OV.SelectionType.Mesh) {
-                navigator.meshesPanel.navigatorItems.GetMeshItem (selection.meshInstanceId).SetSelected (select);
+                navigator.meshesPanel.GetMeshItem (selection.meshInstanceId).SetSelected (select);
             }
         }
 
@@ -209,7 +205,7 @@ OV.Navigator = class
     FitNodeToWindow (nodeId)
     {
         let meshInstanceIdSet = new Set ();
-        let nodeItem = this.meshesPanel.navigatorItems.GetNodeItem (nodeId);
+        let nodeItem = this.meshesPanel.GetNodeItem (nodeId);
         nodeItem.EnumerateMeshItems ((meshItem) => {
             meshInstanceIdSet.add (meshItem.GetMeshInstanceId ());
         });

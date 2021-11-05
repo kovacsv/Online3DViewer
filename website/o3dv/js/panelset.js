@@ -55,20 +55,18 @@ OV.PanelSet = class
 
     AddPanel (panel)
     {
-        let panelIndex = this.panels.length;
         this.panels.push (panel);
         let button = OV.AddSvgIcon (this.menuDiv, panel.GetIcon (), 'ov_panel_set_menu_button');
         button.click (() => {
-            this.ShowPanel (panelIndex);
+            this.ShowPanel (panel);
         });
     }
 
-    ShowPanel (panelIndex)
+    ShowPanel (panel)
     {
-        for (let panel of this.panels) {
-            panel.Show (false);
+        for (let otherPanel of this.panels) {
+            otherPanel.Show (false);
         }
-        let panel = this.panels[panelIndex];
         panel.Show (true);
         panel.Resize ();
     }

@@ -262,9 +262,10 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         super (parentDiv);
 
         this.callbacks = null;
+        this.nodeIdToItem = new Map ();
+        this.meshInstanceIdToItem = new Map ();
+
         this.treeView = new OV.TreeView (this.treeDiv);
-        // TODO: delete
-        this.navigatorItems = new OV.NavigatorItems ();
     }
 
     GetIcon ()
@@ -282,7 +283,8 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
     Clear ()
     {
         super.Clear ();
-        this.navigatorItems.Clear ();
+        this.nodeIdToItem = new Map ();
+        this.meshInstanceIdToItem = new Map ();
     }
 
     Init (callbacks)
@@ -324,7 +326,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
                     navigator.callbacks.onMeshSelected (selectedMeshId);
                 }
             });
-            navigator.navigatorItems.AddMeshItem (meshInstanceId, meshItem);
+            navigator.meshInstanceIdToItem.set (meshInstanceId.GetKey (), meshItem);
             parentItem.AddChild (meshItem);
         }
 
@@ -340,7 +342,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
                     navigator.callbacks.onNodeFitToWindow (selectedNodeId);
                 }
             });
-            navigator.navigatorItems.AddNodeItem (nodeId, nodeItem);
+            navigator.nodeIdToItem.set (nodeId, nodeItem);
             return nodeItem;
         }
 
@@ -369,21 +371,40 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         AddModelNodeToTree (this, model, rootNode, meshesItem, isFlat);
     }
 
+    GetNodeItem (nodeId)
+    {
+        return this.nodeIdToItem.get (nodeId);
+    }
+
     MeshItemCount ()
     {
-        return this.navigatorItems.MeshItemCount ();
+        return this.meshInstanceIdToItem.size;
+    }
+
+    GetMeshItem (meshInstanceId)
+    {
+        return this.meshInstanceIdToItem.get (meshInstanceId.GetKey ());
+    }
+
+    EnumerateMeshItems (processor)
+    {
+        for (const meshItem of this.meshInstanceIdToItem.values ()) {
+            if (!processor (meshItem)) {
+                break;
+            }
+        }
     }
 
     IsMeshVisible (meshInstanceId)
     {
-        let meshItem = this.navigatorItems.GetMeshItem (meshInstanceId);
+        let meshItem = this.GetMeshItem (meshInstanceId);
         return meshItem.IsVisible ();
     }
 
     HasHiddenMesh ()
     {
         let hasHiddenMesh = false;
-        this.navigatorItems.EnumerateMeshItems ((meshItem) => {
+        this.EnumerateMeshItems ((meshItem) => {
             if (!meshItem.IsVisible ()) {
                 hasHiddenMesh = true;
                 return false;
@@ -393,10 +414,30 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         return hasHiddenMesh;
     }
 
+    ShowAllMeshes ()
+    {
+        this.EnumerateMeshItems ((meshItem) => {
+            meshItem.SetVisible (true);
+            return true;
+        });
+    }
+
+    ToggleNodeVisibility (nodeId)
+    {
+        let nodeItem = this.GetNodeItem (nodeId);
+        nodeItem.SetVisible (!nodeItem.IsVisible ());
+    }
+
+    ToggleMeshVisibility (meshInstanceId)
+    {
+        let meshItem = this.GetMeshItem (meshInstanceId);
+        meshItem.SetVisible (!meshItem.IsVisible ());
+    }
+
     IsMeshIsolated (meshInstanceId)
     {
         let isIsolated = true;
-        this.navigatorItems.EnumerateMeshItems ((meshItem) => {
+        this.EnumerateMeshItems ((meshItem) => {
             if (!meshItem.GetMeshInstanceId ().IsEqual (meshInstanceId) && meshItem.IsVisible ()) {
                 isIsolated = false;
                 return false;
@@ -409,7 +450,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
     IsolateMesh (meshInstanceId)
     {
         let isIsolated = this.IsMeshIsolated (meshInstanceId);
-        this.navigatorItems.EnumerateMeshItems ((meshItem) => {
+        this.EnumerateMeshItems ((meshItem) => {
             if (meshItem.GetMeshInstanceId ().IsEqual (meshInstanceId) || isIsolated) {
                 meshItem.SetVisible (true);
             } else {
@@ -417,7 +458,6 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             }
             return true;
         });
-        this.callbacks.updateMeshesVisibility ();
     }
 
     UpdatePopupButton ()
