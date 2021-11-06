@@ -86,7 +86,7 @@ OV.Navigator = class
         });
 
         let originalWidth = null;
-        new OV.VerticalSplitter (this.splitterDiv, {
+        OV.CreateVerticalSplitter (this.splitterDiv, {
             onSplitStart : () => {
                 originalWidth = this.mainDiv.outerWidth (true);
             },

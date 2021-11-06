@@ -1,43 +1,26 @@
-OV.VerticalSplitter = class
+OV.CreateVerticalSplitter = function (splitterDiv, callbacks)
 {
-    constructor (splitterDiv, callbacks)
-    {
-        this.callbacks = callbacks;
-        this.mouseMoveHandler = (ev) => {
-            this.OnMouseMove (ev);
-        };
-        this.mouseUpHandler = () => {
-            this.OnMouseUp ();
-        };
-        splitterDiv.mousedown ((ev) => {
-            this.OnMouseDown (ev);
-        });
-        this.originalPosition = null;
-    }
+    let originalPosition = null;
 
-    OnMouseDown (ev)
-    {
-        this.originalPosition = ev.clientX;
-        this.callbacks.onSplitStart ();
-
-        document.addEventListener ('mousemove', this.mouseMoveHandler);
-        document.addEventListener ('mouseup', this.mouseUpHandler);
-        document.addEventListener ('mouseleave', this.mouseUpHandler);
-    }
-
-    OnMouseMove (ev)
-    {
+    let mouseMoveHandler = (ev) => {
         ev.preventDefault ();
-        const diff = ev.clientX - this.originalPosition;
-        this.callbacks.onSplit (diff);
-    }
+        const diff = ev.clientX - originalPosition;
+        callbacks.onSplit (diff);
+    };
 
-    OnMouseUp ()
-    {
-        document.removeEventListener ('mousemove', this.mouseMoveHandler);
-        document.removeEventListener ('mouseup', this.mouseUpHandler);
-        document.removeEventListener ('mouseleave', this.mouseUpHandler);
+    let mouseUpHandler = () => {
+        document.removeEventListener ('mousemove', mouseMoveHandler);
+        document.removeEventListener ('mouseup', mouseUpHandler);
+        document.removeEventListener ('mouseleave', mouseUpHandler);
+        originalPosition = null;
+    };
 
-        this.originalPosition = null;
-    }
+    splitterDiv.mousedown ((ev) => {
+        originalPosition = ev.clientX;
+        callbacks.onSplitStart ();
+
+        document.addEventListener ('mousemove', mouseMoveHandler);
+        document.addEventListener ('mouseup', mouseUpHandler);
+        document.addEventListener ('mouseleave', mouseUpHandler);
+    });
 };
