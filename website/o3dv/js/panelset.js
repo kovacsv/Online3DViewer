@@ -24,6 +24,10 @@ OV.Panel = class
 
     Show (show)
     {
+        if (this.visible === show) {
+            return;
+        }
+
         this.visible = show;
         if (this.visible) {
             this.panelDiv.show ();
@@ -51,6 +55,13 @@ OV.PanelSet = class
         this.menuDiv = $('<div>').addClass ('ov_panel_set_menu').appendTo (parentDiv);
         this.contentDiv = $('<div>').addClass ('ov_panel_set_content').appendTo (parentDiv);
         this.panels = [];
+        this.panelsVisible = true;
+        this.callbacks = null;
+    }
+
+    Init (callbacks)
+    {
+        this.callbacks = callbacks;
     }
 
     GetContentDiv ()
@@ -63,8 +74,28 @@ OV.PanelSet = class
         this.panels.push (panel);
         let button = OV.AddSvgIcon (this.menuDiv, panel.GetIcon (), 'ov_panel_set_menu_button');
         button.click (() => {
-            this.ShowPanel (panel);
+            if (panel === this.GetVisiblePanel ()) {
+                //this.ShowPanels (false);
+            } else {
+                //this.ShowPanels (true);
+                this.ShowPanel (panel);
+            }
         });
+    }
+
+    ShowPanels (show)
+    {
+        if (this.panelsVisible === show) {
+            return;
+        }
+
+        this.panelsVisible = show;
+        if (this.panelsVisible) {
+            this.contentDiv.show ();
+        } else {
+            this.contentDiv.hide ();
+            this.callbacks.onResize ();
+        }
     }
 
     ShowPanel (panel)
@@ -81,6 +112,9 @@ OV.PanelSet = class
 
     GetVisiblePanel ()
     {
+        if (!this.panelsVisible) {
+            return null;
+        }
         for (let panel of this.panels) {
             if (panel.IsVisible ()) {
                 return panel;

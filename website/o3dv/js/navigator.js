@@ -57,16 +57,24 @@ OV.Navigator = class
     {
         this.callbacks = callbacks;
 
+        this.panelSet.Init ({
+            onResize : () => {
+                this.callbacks.onResize ();
+            }
+        });
+
         this.filesPanel.Init ({
             onFileBrowseButtonClicked : () => {
                 this.callbacks.openFileBrowserDialog ();
             }
         });
+
         this.materialsPanel.Init ({
             onMaterialSelected : (materialIndex) => {
                 this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
             }
         });
+
         this.meshesPanel.Init ({
             onMeshSelected : (meshId) => {
                 this.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshId));
