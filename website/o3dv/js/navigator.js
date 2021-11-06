@@ -59,6 +59,11 @@ OV.Navigator = class
 
         this.panelSet.Init ({
             onResize : () => {
+                if (this.panelSet.IsPanelsVisible ()) {
+                    this.splitterDiv.show ();
+                } else {
+                    this.splitterDiv.hide ();
+                }
                 this.callbacks.onResize ();
             }
         });
@@ -116,7 +121,10 @@ OV.Navigator = class
     GetWidth ()
     {
         let navigatorWidth = parseInt (this.mainDiv.outerWidth (true), 10);
-        let splitterWidth = parseInt (this.splitterDiv.outerWidth (true), 10);
+        let splitterWidth = 0;
+        if (this.panelSet.IsPanelsVisible ()) {
+            splitterWidth = parseInt (this.splitterDiv.outerWidth (true), 10);
+        }
         return navigatorWidth + splitterWidth;
     }
 
