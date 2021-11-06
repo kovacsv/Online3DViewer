@@ -1,3 +1,144 @@
+OV.NavigatorPopupButton = class
+{
+    constructor (parentDiv)
+    {
+        this.parentDiv = parentDiv;
+        this.callbacks = null;
+        this.popup = null;
+
+        this.button = $('<div>').addClass ('ov_navigator_info_button').appendTo (this.parentDiv);
+        this.buttonText = $('<div>').addClass ('ov_navigator_info_button_text').appendTo (this.button);
+        OV.AddSvgIcon (this.button, 'arrow_right', 'ov_navigator_info_button_icon');
+        this.button.click (() => {
+            this.OnButtonClick ();
+        });
+    }
+
+    Init (callbacks)
+    {
+        this.callbacks = callbacks;
+    }
+
+    OnButtonClick ()
+    {
+
+    }
+
+    Clear ()
+    {
+        if (this.popup !== null) {
+            this.popup.Hide ();
+            this.popup = null;
+        }
+    }
+};
+
+OV.NavigatorMeshesPopupButton = class extends OV.NavigatorPopupButton
+{
+    constructor (parentDiv)
+    {
+        super (parentDiv);
+        this.meshInfoArray = null;
+    }
+
+    Update (meshInfoArray)
+    {
+        this.meshInfoArray = meshInfoArray;
+        if (this.meshInfoArray === null) {
+            return;
+        }
+
+        let meshesText = 'Meshes (' + this.meshInfoArray.length + ')';
+        this.buttonText.html (meshesText);
+    }
+
+    OnButtonClick ()
+    {
+        if (this.meshInfoArray === null) {
+            return;
+        }
+
+        let meshItems = [];
+        for (let i = 0; i < this.meshInfoArray.length; i++) {
+            let meshInfo = this.meshInfoArray[i];
+            meshItems.push ({
+                name : OV.GetMeshName (meshInfo.name)
+            });
+        }
+
+        if (meshItems.length === 0) {
+            return;
+        }
+
+        this.popup = OV.ShowListPopup (meshItems, {
+            calculatePosition : (contentDiv) => {
+                return OV.CalculatePopupPositionToElementBottomRight (this.button, contentDiv);
+            },
+            onHoverStart : (index) => {
+                const meshData = this.meshInfoArray[index];
+                this.callbacks.onMeshHover (meshData.meshId);
+            },
+            onHoverStop : (index) => {
+                this.callbacks.onMeshHover (null);
+            },
+            onClick : (index) => {
+                const meshData = this.meshInfoArray[index];
+                this.callbacks.onMeshSelected (meshData.meshId);
+            }
+        });
+    }
+};
+
+OV.NavigatorMaterialsPopupButton = class extends OV.NavigatorPopupButton
+{
+    constructor (parentDiv)
+    {
+        super (parentDiv);
+        this.materialInfoArray = null;
+    }
+
+    Update (materialInfoArray)
+    {
+        this.materialInfoArray = materialInfoArray;
+        if (this.materialInfoArray === null) {
+            return;
+        }
+
+        let materialsText = 'Materials (' + this.materialInfoArray.length + ')';
+        this.buttonText.html (materialsText);
+    }
+
+    OnButtonClick ()
+    {
+        if (this.materialInfoArray === null) {
+            return;
+        }
+
+        let materialItems = [];
+        for (let i = 0; i < this.materialInfoArray.length; i++) {
+            let usedMaterial = this.materialInfoArray[i];
+            materialItems.push ({
+                name : OV.GetMaterialName (usedMaterial.name),
+                color : usedMaterial.color
+            });
+        }
+
+        if (materialItems.length === 0) {
+            return;
+        }
+
+        this.popup = OV.ShowListPopup (materialItems, {
+            calculatePosition : (contentDiv) => {
+                return OV.CalculatePopupPositionToElementBottomRight (this.button, contentDiv);
+            },
+            onClick : (index) => {
+                let usedMaterial = this.materialInfoArray[index];
+                this.callbacks.onMaterialSelected (usedMaterial.index);
+            }
+        });
+    }
+};
+
 OV.NavigatorPanel = class extends OV.Panel
 {
     constructor (parentDiv)
@@ -47,7 +188,6 @@ OV.NavigatorFilesPanel = class extends OV.NavigatorPanel
 
     Resize ()
     {
-        // TODO: height is not ok
         let titleHeight = this.titleDiv.outerHeight (true);
         let height = this.parentDiv.height ();
         this.treeDiv.outerHeight (height - titleHeight, true);
@@ -103,6 +243,9 @@ OV.NavigatorMaterialsPanel = class extends OV.NavigatorPanel
         super (parentDiv);
         this.callbacks = null;
         this.materialIndexToItem = new Map ();
+
+        this.popupDiv = $('<div>').addClass ('ov_navigator_info_panel').addClass ('ov_thin_scrollbar').appendTo (this.panelDiv);
+        this.meshesButton = new OV.NavigatorMeshesPopupButton (this.popupDiv);
     }
 
     GetIcon ()
@@ -112,15 +255,16 @@ OV.NavigatorMaterialsPanel = class extends OV.NavigatorPanel
 
     Resize ()
     {
-        // TODO: height is not ok
         let titleHeight = this.titleDiv.outerHeight (true);
+        let popupHeight = this.popupDiv.outerHeight (true);
         let height = this.parentDiv.height ();
-        this.treeDiv.outerHeight (height - titleHeight, true);
+        this.treeDiv.outerHeight (height - titleHeight - popupHeight, true);
     }
 
     Clear ()
     {
         super.Clear ();
+        this.meshesButton.Clear ();
         this.materialIndexToItem = new Map ();
     }
 
@@ -132,6 +276,14 @@ OV.NavigatorMaterialsPanel = class extends OV.NavigatorPanel
     Init (callbacks)
     {
         super.Init (callbacks);
+        this.meshesButton.Init ({
+            onMeshHover : (meshInstanceId) => {
+                this.callbacks.onMeshTemporarySelected (meshInstanceId);
+            },
+            onMeshSelected : (meshInstanceId) => {
+                this.callbacks.onMeshSelected (meshInstanceId);
+            }
+        });
     }
 
     Fill (importResult)
@@ -155,103 +307,15 @@ OV.NavigatorMaterialsPanel = class extends OV.NavigatorPanel
     {
         return this.materialIndexToItem.get (materialIndex);
     }
-};
 
-// TODO: delete
-OV.NavigatorPopupButton = class
-{
-    constructor (parentDiv)
+    SelectMaterialItem (materialIndex, isSelected)
     {
-        this.parentDiv = parentDiv;
-        this.popup = null;
+        this.GetMaterialItem (materialIndex).SetSelected (isSelected);
     }
 
-    FillWithMaterialInfo (usedByMeshes, callbacks)
+    UpdateMeshList (meshInfoArray)
     {
-        this.Clear ();
-        if (usedByMeshes === null) {
-            return;
-        }
-
-        let meshItems = [];
-        for (let i = 0; i < usedByMeshes.length; i++) {
-            let meshInfo = usedByMeshes[i];
-            meshItems.push ({
-                name : OV.GetMeshName (meshInfo.name)
-            });
-        }
-
-        let meshesText = 'Meshes (' + meshItems.length + ')';
-        this.CreateButton (this.parentDiv, meshesText, (button) => {
-            if (meshItems.length === 0) {
-                return;
-            }
-            this.popup = OV.ShowListPopup (meshItems, {
-                calculatePosition : (contentDiv) => {
-                    return OV.CalculatePopupPositionToElementBottomRight (button, contentDiv);
-                },
-                onHoverStart : (index) => {
-                    const meshData = usedByMeshes[index];
-                    callbacks.onMeshHover (meshData.meshId);
-                },
-                onHoverStop : (index) => {
-                    callbacks.onMeshHover (null);
-                },
-                onClick : (index) => {
-                    const meshData = usedByMeshes[index];
-                    callbacks.onMeshSelect (meshData.meshId);
-                }
-            });
-        });
-    }
-
-    FillWithModelInfo (usedMaterials, callbacks)
-    {
-        this.Clear ();
-        if (usedMaterials === null) {
-            return;
-        }
-
-        let materialItems = [];
-        for (let i = 0; i < usedMaterials.length; i++) {
-            let usedMaterial = usedMaterials[i];
-            materialItems.push ({
-                name : OV.GetMaterialName (usedMaterial.name),
-                color : usedMaterial.color
-            });
-        }
-
-        let materialsText = 'Materials (' + materialItems.length + ')';
-        this.CreateButton (this.parentDiv, materialsText, (button) => {
-            this.popup = OV.ShowListPopup (materialItems, {
-                calculatePosition : (contentDiv) => {
-                    return OV.CalculatePopupPositionToElementBottomRight (button, contentDiv);
-                },
-                onClick : (index) => {
-                    let usedMaterial = usedMaterials[index];
-                    callbacks.onMaterialSelect (usedMaterial.index);
-                }
-            });
-        });
-    }
-
-    CreateButton (parentDiv, buttonText, onClick)
-    {
-        let button = $('<div>').addClass ('ov_navigator_info_button').appendTo (parentDiv);
-        $('<div>').addClass ('ov_navigator_info_button_text').html (buttonText).appendTo (button);
-        OV.AddSvgIcon (button, 'arrow_right', 'ov_navigator_info_button_icon');
-        button.click (() => {
-            onClick (button);
-        });
-    }
-
-    Clear ()
-    {
-        if (this.popup !== null) {
-            this.popup.Hide ();
-            this.popup = null;
-        }
-        this.parentDiv.empty ();
+        this.meshesButton.Update (meshInfoArray);
     }
 };
 
@@ -265,7 +329,8 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         this.nodeIdToItem = new Map ();
         this.meshInstanceIdToItem = new Map ();
 
-        this.treeView = new OV.TreeView (this.treeDiv);
+        this.popupDiv = $('<div>').addClass ('ov_navigator_info_panel').addClass ('ov_thin_scrollbar').appendTo (this.panelDiv);
+        this.materialsButton = new OV.NavigatorMaterialsPopupButton (this.popupDiv);
     }
 
     GetIcon ()
@@ -276,20 +341,33 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
     Resize ()
     {
         let titleHeight = this.titleDiv.outerHeight (true);
+        let popupHeight = this.popupDiv.outerHeight (true);
         let height = this.parentDiv.height ();
-        this.treeDiv.outerHeight (height - titleHeight, true);
+        this.treeDiv.outerHeight (height - titleHeight - popupHeight, true);
     }
 
     Clear ()
     {
         super.Clear ();
+        this.materialsButton.Clear ();
         this.nodeIdToItem = new Map ();
         this.meshInstanceIdToItem = new Map ();
     }
 
     Init (callbacks)
     {
-        this.callbacks = callbacks;
+        super.Init (callbacks);
+        this.materialsButton.Init ({
+            onMeshHover : (meshInstanceId) => {
+                this.callbacks.onMeshTemporarySelected (meshInstanceId);
+            },
+            onMeshSelected : (meshInstanceId) => {
+                this.callbacks.onMeshSelected (meshInstanceId);
+            },
+            onMaterialSelected : (materialIndex) => {
+                this.callbacks.onMaterialSelected (materialIndex);
+            }
+        });
     }
 
     GetName ()
@@ -369,6 +447,11 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         meshesItem.ShowChildren (true, null);
 
         AddModelNodeToTree (this, model, rootNode, meshesItem, isFlat);
+    }
+
+    UpdateMaterialList (materialInfoArray)
+    {
+        this.materialsButton.Update (materialInfoArray);
     }
 
     GetNodeItem (nodeId)

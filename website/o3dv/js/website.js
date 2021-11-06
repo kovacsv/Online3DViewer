@@ -635,7 +635,7 @@ OV.Website = class
         {
             let usedByMeshes = [];
             viewer.EnumerateMeshesUserData ((meshUserData) => {
-                if (meshUserData.originalMaterials.indexOf (materialIndex) !== -1) {
+                if (materialIndex === null || meshUserData.originalMaterials.indexOf (materialIndex) !== -1) {
                     const mesh = model.GetMesh (meshUserData.originalMeshId.meshIndex);
                     usedByMeshes.push ({
                         meshId : meshUserData.originalMeshId,
@@ -659,23 +659,20 @@ OV.Website = class
         function GetMaterialsForMesh (viewer, model, meshInstanceId)
         {
             let usedMaterials = [];
-            let userData = GetMeshUserData (viewer, meshInstanceId);
-            for (let i = 0; i < userData.originalMaterials.length; i++) {
-                const materialIndex = userData.originalMaterials[i];
-                usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
+            if (meshInstanceId === null) {
+                for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
+                    usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
+                }
+            } else {
+                let userData = GetMeshUserData (viewer, meshInstanceId);
+                for (let i = 0; i < userData.originalMaterials.length; i++) {
+                    const materialIndex = userData.originalMaterials[i];
+                    usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
+                }
             }
             usedMaterials.sort ((a, b) => {
                 return a.index - b.index;
             });
-            return usedMaterials;
-        }
-
-        function GetMaterialsForModel (model)
-        {
-            let usedMaterials = [];
-            for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
-                usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
-            }
             return usedMaterials;
         }
 
@@ -700,9 +697,6 @@ OV.Website = class
             },
             getMaterialsForMesh : (meshInstanceId) => {
                 return GetMaterialsForMesh (this.viewer, this.model, meshInstanceId);
-            },
-            getMaterialsForModel : () => {
-                return GetMaterialsForModel (this.model);
             },
             onModelSelected : () => {
                 this.detailsPanel.AddObject3DProperties (this.model);

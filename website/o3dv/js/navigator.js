@@ -77,6 +77,13 @@ OV.Navigator = class
         this.materialsPanel.Init ({
             onMaterialSelected : (materialIndex) => {
                 this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
+            },
+            onMeshTemporarySelected : (meshInstanceId) => {
+                this.tempSelectedMeshId = meshInstanceId;
+                this.callbacks.updateMeshesSelection ();
+            },
+            onMeshSelected : (meshInstanceId) => {
+                this.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshInstanceId));
             }
         });
 
@@ -95,6 +102,9 @@ OV.Navigator = class
             },
             onNodeFitToWindow : (nodeId) => {
                 this.FitNodeToWindow (nodeId);
+            },
+            onMaterialSelected : (materialIndex) => {
+                this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
             }
         });
 
@@ -206,7 +216,7 @@ OV.Navigator = class
                 if (select) {
                     navigator.panelSet.ShowPanel (navigator.materialsPanel);
                 }
-                navigator.materialsPanel.GetMaterialItem (selection.materialIndex).SetSelected (select);
+                navigator.materialsPanel.SelectMaterialItem (selection.materialIndex, select);
             } else if (selection.type === OV.SelectionType.Mesh) {
                 if (select) {
                     navigator.panelSet.ShowPanel (navigator.meshesPanel);
@@ -252,7 +262,27 @@ OV.Navigator = class
                 this.callbacks.onMeshSelected (this.selection.meshInstanceId);
             }
         }
+        this.UpdatePanels ();
         this.Resize ();
+    }
+
+    UpdatePanels ()
+    {
+        let materialIndex = null;
+        let meshInstanceId = null;
+        if (this.selection !== null) {
+            if (this.selection.type === OV.SelectionType.Material) {
+                materialIndex = this.selection.materialIndex;
+            } else if (this.selection.type === OV.SelectionType.Mesh) {
+                meshInstanceId = this.selection.meshInstanceId;
+            }
+        }
+
+        let usedByMeshes = this.callbacks.getMeshesForMaterial (materialIndex);
+        this.materialsPanel.UpdateMeshList (usedByMeshes);
+
+        let usedByMaterials = this.callbacks.getMaterialsForMesh (meshInstanceId);
+        this.meshesPanel.UpdateMaterialList (usedByMaterials);
     }
 
     FitNodeToWindow (nodeId)
