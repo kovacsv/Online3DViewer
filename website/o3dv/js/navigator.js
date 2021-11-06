@@ -33,10 +33,12 @@ OV.Selection = class
 
 OV.Navigator = class
 {
-    constructor (parentDiv)
+    constructor (mainDiv, splitterDiv)
     {
-        this.parentDiv = parentDiv;
-        this.panelSet = new OV.PanelSet (parentDiv);
+        this.mainDiv = mainDiv;
+        this.splitterDiv = splitterDiv;
+
+        this.panelSet = new OV.PanelSet (mainDiv);
         this.callbacks = null;
         this.selection = null;
         this.tempSelectedMeshId = null;
@@ -54,6 +56,7 @@ OV.Navigator = class
     Init (callbacks)
     {
         this.callbacks = callbacks;
+
         this.filesPanel.Init ({
             onFileBrowseButtonClicked : () => {
                 this.callbacks.openFileBrowserDialog ();
@@ -81,10 +84,38 @@ OV.Navigator = class
                 this.FitNodeToWindow (nodeId);
             }
         });
+
+        let originalWidth = null;
+        new OV.VerticalSplitter (this.splitterDiv, {
+            onSplitStart : () => {
+                originalWidth = this.mainDiv.outerWidth (true);
+            },
+            onSplit : (xDiff) => {
+                const minWidth = 250;
+                const maxWidth = 450;
+                let newWidth = originalWidth + xDiff;
+                if (newWidth < minWidth) {
+                    newWidth = minWidth;
+                } else if (newWidth > maxWidth)  {
+                    newWidth = maxWidth;
+                }
+                this.mainDiv.outerWidth (newWidth, true);
+                this.callbacks.onResize ();
+            }
+        });
     }
 
-    Resize ()
+    GetWidth ()
     {
+        let navigatorWidth = parseInt (this.mainDiv.outerWidth (true), 10);
+        let splitterWidth = parseInt (this.splitterDiv.outerWidth (true), 10);
+        return navigatorWidth + splitterWidth;
+    }
+
+    Resize (height)
+    {
+        this.mainDiv.outerHeight (height, true);
+        this.splitterDiv.outerHeight (height, true);
         this.panelSet.Resize ();
     }
 

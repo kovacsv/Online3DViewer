@@ -15,13 +15,12 @@ OV.Website = class
         this.cookieHandler = new OV.CookieHandler ();
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
         this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv);
-        this.navigator = new OV.Navigator (this.parameters.navigatorDiv);
+        this.navigator = new OV.Navigator (this.parameters.navigatorDiv, this.parameters.navigatorSplitterDiv);
         this.eventHandler = new OV.EventHandler (this.parameters.eventHandler);
         this.settings = new OV.Settings ();
         this.modelLoader = new OV.ThreeModelLoader ();
         this.themeHandler = new OV.ThemeHandler ();
         this.highlightColor = new THREE.Color (0x8ec9f0);
-        this.navigatorSplitter = null;
         this.detailsPanel = null;
         this.settingsPanel = null;
         this.model = null;
@@ -63,8 +62,7 @@ OV.Website = class
         let sidebarWidth = 0;
         let safetyMargin = 0;
         if (!OV.IsSmallWidth ()) {
-            let navigatorSplitterWidth = parseInt (this.parameters.navigatorSplitterDiv.outerWidth (true), 10);
-            navigatorWidth = parseInt (this.parameters.navigatorDiv.outerWidth (true), 10) + navigatorSplitterWidth;
+            navigatorWidth = this.navigator.GetWidth ();
             if (this.sidebar.IsVisible ()) {
                 sidebarWidth = parseInt (this.parameters.sidebarDiv.outerWidth (true), 10);
             }
@@ -74,12 +72,10 @@ OV.Website = class
         let contentWidth = windowWidth - navigatorWidth - sidebarWidth - safetyMargin;
         let contentHeight = windowHeight - headerHeight - safetyMargin;
 
-        this.parameters.navigatorDiv.outerHeight (contentHeight, true);
-        this.parameters.navigatorSplitterDiv.outerHeight (contentHeight, true);
         this.parameters.sidebarDiv.outerHeight (contentHeight, true);
         this.parameters.introDiv.outerHeight (contentHeight, true);
 
-        this.navigator.Resize ();
+        this.navigator.Resize (contentHeight);
         this.sidebar.Resize ();
         this.viewer.Resize (contentWidth, contentHeight);
     }
@@ -683,25 +679,6 @@ OV.Website = class
             return usedMaterials;
         }
 
-        let navigatorOriginalWidth = null;
-        this.navigatorSplitter = new OV.VerticalSplitter (this.parameters.navigatorSplitterDiv, {
-            onSplitStart : () => {
-                navigatorOriginalWidth = this.parameters.navigatorDiv.outerWidth (true);
-            },
-            onSplit : (xDiff) => {
-                const minWidth = 250;
-                const maxWidth = 450;
-                let newWidth = navigatorOriginalWidth + xDiff;
-                if (newWidth < minWidth) {
-                    newWidth = minWidth;
-                } else if (newWidth > maxWidth)  {
-                    newWidth = maxWidth;
-                }
-                this.parameters.navigatorDiv.outerWidth (newWidth, true);
-                this.Resize ();
-            }
-        });
-
         this.navigator.Init ({
             openFileBrowserDialog : () => {
                 this.OpenFileBrowserDialog ();
@@ -736,6 +713,9 @@ OV.Website = class
             },
             onMaterialSelected : (materialIndex) => {
                 this.detailsPanel.AddMaterialProperties (this.model.GetMaterial (materialIndex));
+            },
+            onResize : () => {
+                this.Resize ();
             }
         });
     }
