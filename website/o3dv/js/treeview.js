@@ -199,9 +199,9 @@ OV.TreeView = class
         this.mainDiv = $('<div>').addClass ('ov_tree_view').appendTo (parentDiv);
     }
 
-    AddItem (item)
+    AddChild (child)
     {
-        item.AddDomElements (this.mainDiv);
+        child.AddDomElements (this.mainDiv);
     }
 
     Clear ()

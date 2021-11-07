@@ -213,7 +213,7 @@ OV.NavigatorFilesPanel = class extends OV.NavigatorPanel
         if (missingFiles.length > 0) {
             let missingFilesItem = new OV.TreeViewGroupItem ('Missing Files', null);
             missingFilesItem.ShowChildren (true);
-            this.treeView.AddItem (missingFilesItem);
+            this.treeView.AddChild (missingFilesItem);
             for (let i = 0; i < missingFiles.length; i++) {
                 let file = missingFiles[i];
                 let item = new OV.TreeViewButtonItem (file);
@@ -226,7 +226,7 @@ OV.NavigatorFilesPanel = class extends OV.NavigatorPanel
             }
             let filesItem = new OV.TreeViewGroupItem ('Available Files', null);
             filesItem.ShowChildren (true);
-            this.treeView.AddItem (filesItem);
+            this.treeView.AddChild (filesItem);
             for (let i = 0; i < usedFiles.length; i++) {
                 let file = usedFiles[i];
                 let item = new OV.TreeViewSingleItem (file);
@@ -236,7 +236,7 @@ OV.NavigatorFilesPanel = class extends OV.NavigatorPanel
             for (let i = 0; i < usedFiles.length; i++) {
                 let file = usedFiles[i];
                 let item = new OV.TreeViewSingleItem (file);
-                this.treeView.AddItem (item);
+                this.treeView.AddChild (item);
             }
         }
     }
@@ -305,7 +305,7 @@ OV.NavigatorMaterialsPanel = class extends OV.NavigatorPanel
                 }
             });
             this.materialIndexToItem.set (materialIndex, materialItem);
-            this.treeView.AddItem (materialItem);
+            this.treeView.AddChild (materialItem);
         }
     }
 
@@ -448,11 +448,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         }
 
         let rootNode = model.GetRootNode ();
-        let meshesItem = CreateNodeItem (this, 'Meshes', rootNode);
-        this.treeView.AddItem (meshesItem);
-        meshesItem.ShowChildren (true, null);
-
-        AddModelNodeToTree (this, model, rootNode, meshesItem, isFlat);
+        AddModelNodeToTree (this, model, rootNode, this.treeView, isFlat);
     }
 
     UpdateMaterialList (materialInfoArray)
