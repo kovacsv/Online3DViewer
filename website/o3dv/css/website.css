@@ -188,13 +188,13 @@ div.ov_navigator_tree_title
 div.ov_navigator_tree_panel
 {
 	overflow: auto;
-	margin-bottom: 10px;
 }
 
 div.ov_navigator_info_panel
 {
-	overflow: auto;
+	margin-top: 10px;
 	border-top: 1px solid var(--ov_border_color);
+	overflow: auto;
 }
 
 div.ov_navigator_info_panel div.ov_navigator_info_button

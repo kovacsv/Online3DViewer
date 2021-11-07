@@ -210,17 +210,8 @@ OV.NavigatorFilesPanel = class extends OV.NavigatorPanel
         const usedFiles = importResult.usedFiles;
         const missingFiles = importResult.missingFiles;
 
-        let filesItem = new OV.TreeViewGroupItem ('Files', 'files');
-        filesItem.ShowChildren (true);
-        this.treeView.AddItem (filesItem);
-        for (let i = 0; i < usedFiles.length; i++) {
-            let file = usedFiles[i];
-            let item = new OV.TreeViewSingleItem (file);
-            filesItem.AddChild (item);
-        }
-
         if (missingFiles.length > 0) {
-            let missingFilesItem = new OV.TreeViewGroupItem ('Missing Files', 'missing_files');
+            let missingFilesItem = new OV.TreeViewGroupItem ('Missing Files', null);
             missingFilesItem.ShowChildren (true);
             this.treeView.AddItem (missingFilesItem);
             for (let i = 0; i < missingFiles.length; i++) {
@@ -232,6 +223,20 @@ OV.NavigatorFilesPanel = class extends OV.NavigatorPanel
                 });
                 item.AppendButton (browseButton);
                 missingFilesItem.AddChild (item);
+            }
+            let filesItem = new OV.TreeViewGroupItem ('Available Files', null);
+            filesItem.ShowChildren (true);
+            this.treeView.AddItem (filesItem);
+            for (let i = 0; i < usedFiles.length; i++) {
+                let file = usedFiles[i];
+                let item = new OV.TreeViewSingleItem (file);
+                filesItem.AddChild (item);
+            }
+        } else {
+            for (let i = 0; i < usedFiles.length; i++) {
+                let file = usedFiles[i];
+                let item = new OV.TreeViewSingleItem (file);
+                this.treeView.AddItem (item);
             }
         }
     }
