@@ -148,6 +148,11 @@ OV.Navigator = class
     FillTree (importResult)
     {
         this.filesPanel.Fill (importResult);
+        if (importResult.missingFiles.length === 0) {
+            this.panelSet.SetPanelIcon (this.filesPanel, 'files');
+        } else {
+            this.panelSet.SetPanelIcon (this.filesPanel, 'missing_files');
+        }
         this.materialsPanel.Fill (importResult);
         this.meshesPanel.Fill (importResult);
         this.OnSelectionChanged ();

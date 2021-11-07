@@ -55,6 +55,7 @@ OV.PanelSet = class
         this.menuDiv = $('<div>').addClass ('ov_panel_set_menu').appendTo (parentDiv);
         this.contentDiv = $('<div>').addClass ('ov_panel_set_content').appendTo (parentDiv);
         this.panels = [];
+        this.panelButtons = [];
         this.panelsVisible = true;
         this.panelsPrevWidth = null;
         this.callbacks = null;
@@ -74,6 +75,7 @@ OV.PanelSet = class
     {
         this.panels.push (panel);
         let button = OV.AddSvgIcon (this.menuDiv, panel.GetIcon (), 'ov_panel_set_menu_button');
+        this.panelButtons.push (button);
         button.click (() => {
             if (panel === this.GetVisiblePanel ()) {
                 this.ShowPanels (false);
@@ -131,6 +133,13 @@ OV.PanelSet = class
             }
         }
         return null;
+    }
+
+    SetPanelIcon (panel, icon)
+    {
+        const panelIndex = this.panels.indexOf (panel);
+        let panelButton = this.panelButtons[panelIndex];
+        OV.SetSvgIconImage (panelButton, icon);
     }
 
     Resize ()
