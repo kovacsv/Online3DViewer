@@ -109,7 +109,7 @@ div.main_navigator
 	float: left;
 }
 
-div.main_navigator_splitter
+div.main_splitter
 {
 	width: 10px;
 	overflow: none;
@@ -125,7 +125,7 @@ div.main_viewer
 div.main_sidebar
 {
 	width: 320px;
-	margin: 10px 0px 10px 10px;
+	margin: 10px 0px 10px 0px;
 	overflow: none;
 	float: right;
 }

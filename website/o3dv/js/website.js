@@ -15,7 +15,7 @@ OV.Website = class
         this.cookieHandler = new OV.CookieHandler ();
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
         this.navigator = new OV.Navigator (this.parameters.navigatorDiv, this.parameters.navigatorSplitterDiv);
-        this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv);
+        this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv, this.parameters.sidebarSplitterDiv);
         this.eventHandler = new OV.EventHandler (this.parameters.eventHandler);
         this.settings = new OV.Settings ();
         this.modelLoader = new OV.ThreeModelLoader ();
@@ -65,7 +65,12 @@ OV.Website = class
             sidebarWidth = this.sidebar.GetWidth ();
         }
 
+        const minContentWidth = 50;
         let contentWidth = windowWidth - navigatorWidth - sidebarWidth;
+        if (contentWidth < minContentWidth) {
+            this.sidebar.DecreaseWidth (minContentWidth - contentWidth);
+            contentWidth = minContentWidth;
+        }
         let contentHeight = windowHeight - headerHeight;
 
         this.parameters.sidebarDiv.outerHeight (contentHeight, true);

@@ -1,8 +1,9 @@
 OV.Sidebar = class
 {
-    constructor (mainDiv)
+    constructor (mainDiv, splitterDiv)
     {
         this.mainDiv = mainDiv;
+        this.splitterDiv = splitterDiv;
         this.panelSet = new OV.PanelSet (mainDiv);
 
         this.detailsPanel = new OV.DetailsSidebarPanel (this.panelSet.GetContentDiv ());
@@ -30,9 +31,9 @@ OV.Sidebar = class
         this.panelSet.Init ({
             onResize : () => {
                 if (this.panelSet.IsPanelsVisible ()) {
-                    //this.splitterDiv.show ();
+                    this.splitterDiv.show ();
                 } else {
-                    //this.splitterDiv.hide ();
+                    this.splitterDiv.hide ();
                 }
                 this.callbacks.onResize ();
             },
@@ -57,6 +58,25 @@ OV.Sidebar = class
                 }
             }
         );
+
+        let originalWidth = null;
+        OV.CreateVerticalSplitter (this.splitterDiv, {
+            onSplitStart : () => {
+                originalWidth = this.mainDiv.outerWidth (true);
+            },
+            onSplit : (xDiff) => {
+                const minWidth = 260;
+                const maxWidth = 450;
+                let newWidth = originalWidth - xDiff;
+                if (newWidth < minWidth) {
+                    newWidth = minWidth;
+                } else if (newWidth > maxWidth)  {
+                    newWidth = maxWidth;
+                }
+                this.mainDiv.outerWidth (newWidth, true);
+                this.callbacks.onResize ();
+            }
+        });
     }
 
     Update (model)
@@ -67,19 +87,24 @@ OV.Sidebar = class
     Resize (height)
     {
         this.mainDiv.outerHeight (height, true);
-        //this.splitterDiv.outerHeight (height, true);
+        this.splitterDiv.outerHeight (height, true);
         this.panelSet.Resize ();
     }
 
     GetWidth ()
     {
         let sidebarWidth = parseInt (this.mainDiv.outerWidth (true), 10);
-        // let splitterWidth = 0;
-        // if (this.panelSet.IsPanelsVisible ()) {
-        //     splitterWidth = parseInt (this.splitterDiv.outerWidth (true), 10);
-        // }
-        //return sidebarWidth + splitterWidth;
-        return sidebarWidth;
+        let splitterWidth = 0;
+        if (this.panelSet.IsPanelsVisible ()) {
+             splitterWidth = parseInt (this.splitterDiv.outerWidth (true), 10);
+        }
+        return sidebarWidth + splitterWidth;
+    }
+
+    DecreaseWidth (diff)
+    {
+        let oldWidth = this.mainDiv.outerWidth (true);
+        this.mainDiv.outerWidth (oldWidth - diff, true);
     }
 
     Clear ()
