@@ -155,11 +155,6 @@ div.ov_toolbar div.ov_toolbar_button div.ov_svg_icon
 	padding: 10px;
 }
 
-div.ov_toolbar div.ov_toolbar_button.right
-{
-	float: right;
-}
-
 div.ov_toolbar div.ov_toolbar_button.selected
 {
 	background: var(--ov_toolbar_selected_color);
