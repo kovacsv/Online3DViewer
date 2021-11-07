@@ -102,6 +102,9 @@ OV.PanelSet = class
             this.contentDiv.show ();
             this.parentDiv.outerWidth (this.menuDiv.outerWidth (true) + this.panelsPrevWidth, true);
         } else {
+            for (let otherPanelButton of this.panelButtons) {
+                otherPanelButton.removeClass ('selected');
+            }
             this.panelsPrevWidth = this.contentDiv.outerWidth (true);
             this.parentDiv.outerWidth (this.menuDiv.outerWidth (true), true);
             this.contentDiv.hide ();
@@ -113,12 +116,17 @@ OV.PanelSet = class
 
     ShowPanel (panel)
     {
-        if (panel === this.GetVisiblePanel ()) {
-            return;
-        }
         for (let otherPanel of this.panels) {
             otherPanel.Show (false);
         }
+
+        for (let otherPanelButton of this.panelButtons) {
+            otherPanelButton.removeClass ('selected');
+        }
+
+        let panelButton = this.GetPanelButton (panel);
+        panelButton.addClass ('selected');
+
         panel.Show (true);
         panel.Resize ();
     }
@@ -138,9 +146,14 @@ OV.PanelSet = class
 
     SetPanelIcon (panel, icon)
     {
-        const panelIndex = this.panels.indexOf (panel);
-        let panelButton = this.panelButtons[panelIndex];
+        let panelButton = this.GetPanelButton (panel);
         OV.SetSvgIconImage (panelButton, icon);
+    }
+
+    GetPanelButton (panel)
+    {
+        const panelIndex = this.panels.indexOf (panel);
+        return this.panelButtons[panelIndex];
     }
 
     Resize ()
