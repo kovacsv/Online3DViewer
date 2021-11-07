@@ -58,15 +58,13 @@ OV.Website = class
 
         let navigatorWidth = 0;
         let sidebarWidth = 0;
-        let safetyMargin = 0;
         if (!OV.IsSmallWidth ()) {
             navigatorWidth = this.navigator.GetWidth ();
             sidebarWidth = this.sidebar.GetWidth ();
-            safetyMargin = 1;
         }
 
-        let contentWidth = windowWidth - navigatorWidth - sidebarWidth - safetyMargin;
-        let contentHeight = windowHeight - headerHeight - safetyMargin;
+        let contentWidth = windowWidth - navigatorWidth - sidebarWidth;
+        let contentHeight = windowHeight - headerHeight;
 
         this.parameters.sidebarDiv.outerHeight (contentHeight, true);
         this.parameters.introDiv.outerHeight (contentHeight, true);
@@ -510,9 +508,6 @@ OV.Website = class
     {
         this.sidebar.Init (this.settings,
             {
-                onResize : () => {
-                    this.Resize ();
-                },
                 onBackgroundColorChange : (newVal) => {
                     this.settings.backgroundColor = newVal;
                     this.settings.SaveToCookies (this.cookieHandler);
@@ -529,6 +524,12 @@ OV.Website = class
                 },
                 onThemeChange : (newVal) => {
                     this.SwitchTheme (newVal, true);
+                },
+                onResize : () => {
+                    this.Resize ();
+                },
+                onShowHidePanels : (show) => {
+
                 }
             }
         );

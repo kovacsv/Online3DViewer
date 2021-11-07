@@ -101,13 +101,14 @@ OV.PanelSet = class
         if (this.panelsVisible) {
             this.contentDiv.show ();
             this.parentDiv.outerWidth (this.menuDiv.outerWidth (true) + this.panelsPrevWidth, true);
-            this.callbacks.onResize ();
         } else {
             this.panelsPrevWidth = this.contentDiv.outerWidth (true);
-            this.contentDiv.hide ();
             this.parentDiv.outerWidth (this.menuDiv.outerWidth (true), true);
-            this.callbacks.onResize ();
+            this.contentDiv.hide ();
         }
+
+        this.callbacks.onShowHidePanels (this.panelsVisible);
+        this.callbacks.onResize ();
     }
 
     ShowPanel (panel)

@@ -58,6 +58,9 @@ OV.Navigator = class
         this.callbacks = callbacks;
 
         this.panelSet.Init ({
+            onShowHidePanels : (show) => {
+
+            },
             onResize : () => {
                 if (this.panelSet.IsPanelsVisible ()) {
                     this.splitterDiv.show ();
