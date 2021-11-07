@@ -117,7 +117,7 @@ OV.Navigator = class
                 originalWidth = this.mainDiv.outerWidth (true);
             },
             onSplit : (xDiff) => {
-                const minWidth = 250;
+                const minWidth = 260;
                 const maxWidth = 450;
                 let newWidth = originalWidth + xDiff;
                 if (newWidth < minWidth) {

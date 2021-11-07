@@ -53,7 +53,7 @@ OV.PanelSet = class
     {
         this.parentDiv = parentDiv;
         this.menuDiv = $('<div>').addClass ('ov_panel_set_menu').appendTo (parentDiv);
-        this.contentDiv = $('<div>').addClass ('ov_panel_set_content').appendTo (parentDiv);
+        this.contentDiv = $('<div>').addClass ('ov_panel_set_content').addClass ('ov_thin_scrollbar').appendTo (parentDiv);
         this.panels = [];
         this.panelButtons = [];
         this.panelsVisible = true;
