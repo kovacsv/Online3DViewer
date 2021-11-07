@@ -53,14 +53,16 @@ OV.Navigator = class
         this.panelSet.ShowPanel (this.meshesPanel);
     }
 
+    ShowPanels (show)
+    {
+        this.panelSet.ShowPanels (show);
+    }
+
     Init (callbacks)
     {
         this.callbacks = callbacks;
 
         this.panelSet.Init ({
-            onShowHidePanels : (show) => {
-
-            },
             onResize : () => {
                 if (this.panelSet.IsPanelsVisible ()) {
                     this.splitterDiv.show ();
@@ -68,7 +70,10 @@ OV.Navigator = class
                     this.splitterDiv.hide ();
                 }
                 this.callbacks.onResize ();
-            }
+            },
+            onShowHidePanels : (show) => {
+                this.callbacks.onShowHidePanels (show);
+            },
         });
 
         this.filesPanel.Init ({

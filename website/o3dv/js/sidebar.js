@@ -28,9 +28,6 @@ OV.Sidebar = class
         this.callbacks = callbacks;
 
         this.panelSet.Init ({
-            onShowHidePanels : (show) => {
-                this.callbacks.onShowHidePanels (show);
-            },
             onResize : () => {
                 if (this.panelSet.IsPanelsVisible ()) {
                     //this.splitterDiv.show ();
@@ -38,6 +35,9 @@ OV.Sidebar = class
                     //this.splitterDiv.hide ();
                 }
                 this.callbacks.onResize ();
+            },
+            onShowHidePanels : (show) => {
+                this.callbacks.onShowHidePanels (show);
             }
         });
 

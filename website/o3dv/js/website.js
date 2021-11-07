@@ -40,7 +40,9 @@ OV.Website = class
 
         this.viewer.SetClickHandler (this.OnModelClicked.bind (this));
         this.viewer.SetContextMenuHandler (this.OnModelContextMenu.bind (this));
+
         this.Resize ();
+        this.SetUIState (OV.WebsiteUIState.Intro);
 
         this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
         this.OnHashChange ();
@@ -338,7 +340,6 @@ OV.Website = class
             'assets/envmaps/grayclouds/posz.jpg',
             'assets/envmaps/grayclouds/negz.jpg'
         ]);
-        this.SetUIState (OV.WebsiteUIState.Intro);
     }
 
     InitToolbar ()
@@ -529,10 +530,13 @@ OV.Website = class
                     this.Resize ();
                 },
                 onShowHidePanels : (show) => {
-
+                    this.cookieHandler.SetBoolVal ('ov_show_sidebar', show);
                 }
             }
         );
+
+        let showSidebar = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
+        this.sidebar.ShowPanels (showSidebar);
     }
 
     InitNavigator ()
@@ -627,8 +631,14 @@ OV.Website = class
             },
             onResize : () => {
                 this.Resize ();
+            },
+            onShowHidePanels : (show) => {
+                this.cookieHandler.SetBoolVal ('ov_show_navigator', show);
             }
         });
+
+        let showNavigator = this.cookieHandler.GetBoolVal ('ov_show_navigator', true);
+        this.navigator.ShowPanels (showNavigator);
     }
 
     InitCookieConsent ()
