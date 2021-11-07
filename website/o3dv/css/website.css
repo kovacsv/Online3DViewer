@@ -125,14 +125,14 @@ div.main_viewer
 div.main_sidebar
 {
 	width: 300px;
-	margin: 10px 10px 10px 0px;
+	margin: 10px 0px 10px 10px;
 	overflow: none;
 	float: right;
 }
 
 div.main_viewer canvas
 {
-	margin: 10px 10px 10px 0px;
+	margin: 10px 0px 10px 0px;
 	border: 1px solid var(--ov_border_color);
 	outline: none;
 	display: block;

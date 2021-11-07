@@ -1,73 +1,86 @@
 OV.Sidebar = class
 {
-    constructor (parentDiv)
+    constructor (mainDiv)
     {
-        this.parentDiv = parentDiv;
-        this.visible = true;
-        this.titleDiv = null;
-        this.contentDiv = null;
-        this.panels = [];
+        this.mainDiv = mainDiv;
+        this.panelSet = new OV.PanelSet (mainDiv);
+
+        this.detailsPanel = new OV.DetailsSidebarPanel (this.panelSet.GetContentDiv ());
+        this.settingsPanel = new OV.SettingsSidebarPanel (this.panelSet.GetContentDiv ());
+
+        this.panelSet.AddPanel (this.detailsPanel);
+        this.panelSet.AddPanel (this.settingsPanel);
+        this.panelSet.ShowPanel (this.detailsPanel);
     }
 
-    AddPanel (panel)
+    Init (settings, callbacks)
     {
-        this.panels.push (panel);
-        return this.panels.length - 1;
-    }
+        this.callbacks = callbacks;
 
-    GetPanel (id)
-    {
-        return this.panels[id];
-    }
-
-    Show (panelId)
-    {
-        if (panelId !== null) {
-            this.visible = true;
-            this.parentDiv.show ();
-            for (let id = 0; id < this.panels.length; id++) {
-                let panel = this.panels[id];
-                if (id === panelId) {
-                    panel.Show (true);
+        this.panelSet.Init ({
+            onResize : () => {
+                if (this.panelSet.IsPanelsVisible ()) {
+                    //this.splitterDiv.show ();
                 } else {
-                    panel.Show (false);
+                    //this.splitterDiv.hide ();
+                }
+                this.callbacks.onResize ();
+            }
+        });
+
+        let defaultSettings = new OV.Settings ();
+        this.settingsPanel.InitSettings (
+            settings,
+            defaultSettings,
+            {
+                onBackgroundColorChange : (newVal) => {
+                    this.callbacks.onBackgroundColorChange (newVal);
+                },
+                onDefaultColorChange : (newVal) => {
+                    this.callbacks.onDefaultColorChange (newVal);
+                },
+                onThemeChange : (newVal) => {
+                    this.callbacks.onThemeChange (newVal);
                 }
             }
-        } else {
-            this.visible = false;
-            this.parentDiv.hide ();
-        }
+        );
     }
 
-    IsVisible ()
+    Update (model)
     {
-        return this.visible;
+        this.settingsPanel.Update (model);
     }
 
-    GetVisiblePanelId ()
+    Resize (height)
     {
-        if (!this.visible) {
-            return null;
-        }
-        for (let id = 0; id < this.panels.length; id++) {
-            if (this.panels[id].IsVisible ()) {
-                return id;
-            }
-        }
-        return null;
+        this.mainDiv.outerHeight (height, true);
+        //this.splitterDiv.outerHeight (height, true);
+        this.panelSet.Resize ();
     }
 
-    HidePopups ()
+    GetWidth ()
     {
-        for (let id = 0; id < this.panels.length; id++) {
-            this.panels[id].HidePopups ();
-        }
+        let sidebarWidth = parseInt (this.mainDiv.outerWidth (true), 10);
+        // let splitterWidth = 0;
+        // if (this.panelSet.IsPanelsVisible ()) {
+        //     splitterWidth = parseInt (this.splitterDiv.outerWidth (true), 10);
+        // }
+        //return sidebarWidth + splitterWidth;
+        return sidebarWidth;
     }
-    
-    Resize ()
+
+    Clear ()
     {
-        for (let id = 0; id < this.panels.length; id++) {
-            this.panels[id].Resize ();
-        }
+        this.panelSet.Clear ();
+    }
+
+    AddObject3DProperties (object3D)
+    {
+        this.detailsPanel.AddObject3DProperties (object3D);
+    }
+
+    AddMaterialProperties (material)
+    {
+        this.detailsPanel.AddMaterialProperties (material);
     }
 };

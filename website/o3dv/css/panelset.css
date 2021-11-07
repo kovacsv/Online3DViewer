@@ -1,6 +1,11 @@
-div.ov_panel_set_menu
+div.ov_panel_set_container div.ov_panel_set_menu
 {
 	float: left;
+}
+
+div.ov_panel_set_right_container div.ov_panel_set_menu
+{
+	float: right;
 }
 
 div.ov_panel_set_menu div.ov_panel_set_menu_button
@@ -9,10 +14,17 @@ div.ov_panel_set_menu div.ov_panel_set_menu_button
     cursor: pointer;
 }
 
-div.ov_panel_set_content
+div.ov_panel_set_container div.ov_panel_set_content
 {
     padding-left: 10px;
     border-left: 1px solid var(--ov_border_color);
+    overflow: auto;
+}
+
+div.ov_panel_set_right_container div.ov_panel_set_content
+{
+    padding-right: 10px;
+    border-right: 1px solid var(--ov_border_color);
     overflow: auto;
 }
 

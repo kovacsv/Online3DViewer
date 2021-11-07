@@ -14,15 +14,13 @@ OV.Website = class
         this.hashHandler = new OV.HashHandler ();
         this.cookieHandler = new OV.CookieHandler ();
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
-        this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv);
         this.navigator = new OV.Navigator (this.parameters.navigatorDiv, this.parameters.navigatorSplitterDiv);
+        this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv);
         this.eventHandler = new OV.EventHandler (this.parameters.eventHandler);
         this.settings = new OV.Settings ();
         this.modelLoader = new OV.ThreeModelLoader ();
         this.themeHandler = new OV.ThemeHandler ();
         this.highlightColor = new THREE.Color (0x8ec9f0);
-        this.detailsPanel = null;
-        this.settingsPanel = null;
         this.model = null;
         this.dialog = null;
     }
@@ -63,9 +61,7 @@ OV.Website = class
         let safetyMargin = 0;
         if (!OV.IsSmallWidth ()) {
             navigatorWidth = this.navigator.GetWidth ();
-            if (this.sidebar.IsVisible ()) {
-                sidebarWidth = parseInt (this.parameters.sidebarDiv.outerWidth (true), 10);
-            }
+            sidebarWidth = this.sidebar.GetWidth ();
             safetyMargin = 1;
         }
 
@@ -76,7 +72,7 @@ OV.Website = class
         this.parameters.introDiv.outerHeight (contentHeight, true);
 
         this.navigator.Resize (contentHeight);
-        this.sidebar.Resize ();
+        this.sidebar.Resize (contentHeight);
         this.viewer.Resize (contentWidth, contentHeight);
     }
 
@@ -116,6 +112,7 @@ OV.Website = class
         this.model = null;
         this.viewer.Clear ();
         this.navigator.Clear ();
+        this.sidebar.Clear ();
     }
 
     HidePopups ()
@@ -124,7 +121,6 @@ OV.Website = class
             this.dialog.Hide ();
             this.dialog = null;
         }
-        this.sidebar.HidePopups ();
     }
 
     OnModelFinished (importResult, threeObject)
@@ -133,7 +129,7 @@ OV.Website = class
         this.viewer.SetMainObject (threeObject);
         this.viewer.SetUpVector (importResult.upVector, false);
         this.navigator.FillTree (importResult);
-        this.settingsPanel.Update (this.model);
+        this.sidebar.Update (this.model);
         this.FitModelToWindow (true);
     }
 
@@ -328,9 +324,6 @@ OV.Website = class
                 OV.ReplaceDefaultMaterialColor (this.model, this.settings.defaultColor);
                 this.modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
             }
-            if (this.settingsPanel !== null) {
-                this.settingsPanel.UpdateSettings (this.settings);
-            }
         }
     }
 
@@ -515,85 +508,11 @@ OV.Website = class
 
     InitSidebar ()
     {
-        function AddSidebarButton (toolbar, eventHandler, sidebarPanel, onClick)
-        {
-            let button = toolbar.AddImageButton (sidebarPanel.image, sidebarPanel.title, () => {
-                eventHandler.HandleEvent ('sidebar_clicked', { item : sidebarPanel.image });
-                onClick ();
-            });
-            button.AddClass ('only_full_width only_on_model right');
-            return button;
-        }
-
-        function UpdateSidebarButtons (sidebar, sidebarPanels)
-        {
-            const visiblePanelId = sidebar.GetVisiblePanelId ();
-            for (let i = 0; i < sidebarPanels.length; i++) {
-                let sidebarPanel = sidebarPanels[i];
-                if (sidebarPanel.panelId === visiblePanelId) {
-                    sidebarPanel.button.AddImageClass ('selected');
-                } else {
-                    sidebarPanel.button.RemoveImageClass ('selected');
-                }
-            }
-        }
-
-        function ShowSidebar (sidebar, cookieHandler, sidebarPanels, panelId)
-        {
-            sidebar.Show (panelId);
-            UpdateSidebarButtons (sidebar, sidebarPanels);
-            cookieHandler.SetBoolVal ('ov_show_sidebar', sidebar.IsVisible ());
-        }
-
-        function ToggleSidebar (sidebar, cookieHandler, sidebarPanels, panelId)
-        {
-            if (sidebar.GetVisiblePanelId () !== panelId) {
-                ShowSidebar (sidebar, cookieHandler, sidebarPanels, panelId);
-            } else {
-                ShowSidebar (sidebar, cookieHandler, sidebarPanels, null);
-            }
-        }
-
-        this.detailsPanel = new OV.DetailsSidebarPanel (this.parameters.sidebarDiv);
-        this.settingsPanel = new OV.SettingsSidebarPanel (this.parameters.sidebarDiv);
-
-        let sidebarPanels = [
+        this.sidebar.Init (this.settings,
             {
-                panelId : null,
-                panel : this.detailsPanel,
-                image : 'details',
-                title : 'Details panel',
-                button : null
-            },
-            {
-                panelId : null,
-                panel : this.settingsPanel,
-                image : 'settings',
-                title : 'Settings panel',
-                button : null
-            }
-        ];
-
-        for (let id = 0; id < sidebarPanels.length; id++) {
-            let sidebarPanel = sidebarPanels[id];
-            sidebarPanel.panelId = this.sidebar.AddPanel (sidebarPanel.panel);
-            sidebarPanel.button = AddSidebarButton (this.toolbar, this.eventHandler, sidebarPanel, () => {
-                ToggleSidebar (this.sidebar, this.cookieHandler, sidebarPanels, sidebarPanel.panelId);
-                this.Resize ();
-            });
-            sidebarPanel.panel.Init ({
-                onClose : () => {
-                    ShowSidebar (this.sidebar, this.cookieHandler, sidebarPanels, null);
+                onResize : () => {
                     this.Resize ();
-                }
-            });
-        }
-
-        let defaultSettings = new OV.Settings ();
-        this.settingsPanel.InitSettings (
-            this.settings,
-            defaultSettings,
-            {
+                },
                 onBackgroundColorChange : (newVal) => {
                     this.settings.backgroundColor = newVal;
                     this.settings.SaveToCookies (this.cookieHandler);
@@ -613,9 +532,6 @@ OV.Website = class
                 }
             }
         );
-
-        let show = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
-        ShowSidebar (this.sidebar, this.cookieHandler, sidebarPanels, show ? sidebarPanels[0].panelId : null);
     }
 
     InitNavigator ()
@@ -699,14 +615,14 @@ OV.Website = class
                 return GetMaterialsForMesh (this.viewer, this.model, meshInstanceId);
             },
             onModelSelected : () => {
-                this.detailsPanel.AddObject3DProperties (this.model);
+                this.sidebar.AddObject3DProperties (this.model);
             },
             onMeshSelected : (meshInstanceId) => {
                 let meshInstance = this.model.GetMeshInstance (meshInstanceId);
-                this.detailsPanel.AddObject3DProperties (meshInstance);
+                this.sidebar.AddObject3DProperties (meshInstance);
             },
             onMaterialSelected : (materialIndex) => {
-                this.detailsPanel.AddMaterialProperties (this.model.GetMaterial (materialIndex));
+                this.sidebar.AddMaterialProperties (this.model.GetMaterial (materialIndex));
             },
             onResize : () => {
                 this.Resize ();

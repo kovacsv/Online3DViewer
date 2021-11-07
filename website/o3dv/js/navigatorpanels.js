@@ -149,11 +149,13 @@ OV.NavigatorPanel = class extends OV.Panel
         this.titleDiv = $('<div>').addClass ('ov_navigator_tree_title').appendTo (this.panelDiv);
         this.treeDiv = $('<div>').addClass ('ov_navigator_tree_panel').addClass ('ov_thin_scrollbar').appendTo (this.panelDiv);
         this.treeView = new OV.TreeView (this.treeDiv);
+
+        let panelName = this.GetName ();
+        this.titleDiv.html (panelName).attr ('title', panelName);
     }
 
     Clear ()
     {
-        this.titleDiv.empty ();
         this.treeView.Clear ();
     }
 
@@ -169,8 +171,7 @@ OV.NavigatorPanel = class extends OV.Panel
 
     Fill (importResult)
     {
-        let panelName = this.GetName ();
-        this.titleDiv.html (panelName).attr ('title', panelName);
+
     }
 };
 
@@ -179,6 +180,11 @@ OV.NavigatorFilesPanel = class extends OV.NavigatorPanel
     constructor (parentDiv)
     {
         super (parentDiv);
+    }
+
+    GetName ()
+    {
+        return 'Files';
     }
 
     GetIcon ()
@@ -196,11 +202,6 @@ OV.NavigatorFilesPanel = class extends OV.NavigatorPanel
     Clear ()
     {
         super.Clear ();
-    }
-
-    GetName ()
-    {
-        return 'Files';
     }
 
     Fill (importResult)
@@ -248,6 +249,11 @@ OV.NavigatorMaterialsPanel = class extends OV.NavigatorPanel
         this.meshesButton = new OV.NavigatorMeshesPopupButton (this.popupDiv);
     }
 
+    GetName ()
+    {
+        return 'Materials';
+    }
+
     GetIcon ()
     {
         return 'materials';
@@ -266,11 +272,6 @@ OV.NavigatorMaterialsPanel = class extends OV.NavigatorPanel
         super.Clear ();
         this.meshesButton.Clear ();
         this.materialIndexToItem = new Map ();
-    }
-
-    GetName ()
-    {
-        return 'Materials';
     }
 
     Init (callbacks)
@@ -333,6 +334,11 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         this.materialsButton = new OV.NavigatorMaterialsPopupButton (this.popupDiv);
     }
 
+    GetName ()
+    {
+        return 'Meshes';
+    }
+
     GetIcon ()
     {
         return 'meshes';
@@ -368,11 +374,6 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
                 this.callbacks.onMaterialSelected (materialIndex);
             }
         });
-    }
-
-    GetName ()
-    {
-        return 'Meshes';
     }
 
     Fill (importResult)
@@ -541,41 +542,5 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             }
             return true;
         });
-    }
-
-    UpdatePopupButton ()
-    {
-        // if (this.selection === null) {
-        //     let usedMaterials = this.callbacks.getMaterialsForModel ();
-        //     this.popupButton.FillWithModelInfo (usedMaterials, {
-        //         onMaterialSelect : (materialIndex) => {
-        //             this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
-        //         }
-        //     });
-        //     this.callbacks.onModelSelected ();
-        // } else {
-        //     if (this.selection.type === OV.SelectionType.Material) {
-        //         let usedByMeshes = this.callbacks.getMeshesForMaterial (this.selection.materialIndex);
-        //         this.popupButton.FillWithMaterialInfo (usedByMeshes, {
-        //             onMeshHover : (meshInstanceId) => {
-        //                 this.tempSelectedMeshId = meshInstanceId;
-        //                 this.callbacks.updateMeshesSelection ();
-        //             },
-        //             onMeshSelect : (meshInstanceId) => {
-        //                 this.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshInstanceId));
-        //             }
-        //         });
-        //         this.callbacks.onMaterialSelected (this.selection.materialIndex);
-        //     } else if (this.selection.type === OV.SelectionType.Mesh) {
-        //         let usedMaterials = this.callbacks.getMaterialsForMesh (this.selection.meshInstanceId);
-        //         this.popupButton.FillWithModelInfo (usedMaterials, {
-        //             onMaterialSelect : (materialIndex) => {
-        //                 this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
-        //             }
-        //         });
-        //         this.callbacks.onMeshSelected (this.selection.meshInstanceId);
-        //     }
-        // }
-        // this.Resize ();
     }
 };
