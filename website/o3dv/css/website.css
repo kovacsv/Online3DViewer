@@ -169,7 +169,7 @@ div.ov_navigator_buttons
 {
 	border-bottom: 1px solid var(--ov_border_color);
 	margin-bottom: 10px;
-	padding: 5px;
+	padding: 5px 5px 5px 0px;
 	overflow: auto;
 }
 
