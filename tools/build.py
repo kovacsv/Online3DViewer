@@ -63,14 +63,14 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 	shutil.copytree (os.path.join (rootDir, 'website', 'o3dv', 'css', 'Quicksand'), os.path.join (websiteDir, 'o3dv', 'Quicksand'))
 	shutil.copytree (os.path.join (rootDir, 'website', 'o3dv', 'css', 'O3DVIcons'), os.path.join (websiteDir, 'o3dv', 'O3DVIcons'))
 	shutil.copytree (os.path.join (rootDir, 'website', 'info'), os.path.join (websiteDir, 'info'))
-	
+
 	libFiles = config['lib_files']
 	importerFiles = ['o3dv/o3dv.min.js']
 	websiteFiles = [
 		'o3dv/o3dv.website.min.css',
 		'o3dv/o3dv.website.min.js'
 	]
-	
+
 	htmlFileNames = [
 		'index.html',
 		'embed.html',
@@ -112,9 +112,9 @@ def CreatePackage (rootDir, websiteDir, packageDir, version):
 		zip.write (os.path.join (websiteDir, 'libs', 'loaders', lib), 'libs/loaders/' + lib)
 	for lib in os.listdir (os.path.join (websiteDir, 'libs', 'three_loaders')):
 		zip.write (os.path.join (websiteDir, 'libs', 'three_loaders', lib), 'libs/three_loaders/' + lib)
-	zip.write (os.path.join (websiteDir, 'libs', 'three.min-r134.js'), 'three.min-r134.js')
+	zip.write (os.path.join (websiteDir, 'libs', 'three.min.js'), 'three.min.js')
 	zip.write (os.path.join (websiteDir, 'libs', 'three.license.md'), 'three.license.md')
-	zip.write (os.path.join (websiteDir, 'o3dv', 'o3dv.min.js'), 'o3dv.min-' + version + '.js')
+	zip.write (os.path.join (websiteDir, 'o3dv', 'o3dv.min.js'), 'o3dv.min.js')
 	zip.write (os.path.join (rootDir, 'LICENSE.md'), 'o3dv.license.md')
 	zip.close ()
 	return True
@@ -123,7 +123,7 @@ def Main (argv):
 	toolsDir = os.path.dirname (os.path.abspath (__file__))
 	rootDir = os.path.dirname (toolsDir)
 	os.chdir (rootDir)
-	
+
 	testBuild = False
 	buildDir = os.path.join (rootDir, 'build', 'final')
 	if len (argv) >= 2 and argv[1] == 'test':
@@ -145,7 +145,7 @@ def Main (argv):
 	if not esLintResult:
 		PrintError ('ESLint importer sources failed.')
 		return 1
-	
+
 	PrintInfo ('ESLint website sources.')
 	esLintResult = ESLintFolder (os.path.join (rootDir, 'website', 'o3dv'))
 	if not esLintResult:
@@ -181,5 +181,5 @@ def Main (argv):
 		return 1
 
 	return 0
-	
+
 sys.exit (Main (sys.argv))
