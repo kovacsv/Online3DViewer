@@ -360,7 +360,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         let buttonsHeight = this.buttonsDiv.outerHeight (true);
         let popupHeight = this.popupDiv.outerHeight (true);
         let height = this.parentDiv.height ();
-        this.treeDiv.outerHeight (height - titleHeight - buttonsHeight - popupHeight, true);
+        this.treeDiv.outerHeight (height - titleHeight - buttonsHeight - popupHeight);
     }
 
     Clear ()
