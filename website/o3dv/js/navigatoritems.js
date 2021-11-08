@@ -64,18 +64,25 @@ OV.NodeItem = class extends OV.TreeViewGroupButtonItem
     constructor (name, nodeId, callbacks)
     {
         super (name, null);
+        this.nodeId = nodeId;
+        this.callbacks = callbacks;
 
         this.fitToWindowButton = new OV.TreeViewButton ('fit');
         this.fitToWindowButton.OnClick (() => {
-            callbacks.onFitToWindow (nodeId);
+            this.callbacks.onFitToWindow (nodeId);
         });
         this.AppendButton (this.fitToWindowButton);
 
         this.showHideButton = new OV.TreeViewButton ('visible');
         this.showHideButton.OnClick (() => {
-            callbacks.onShowHide (nodeId);
+            this.callbacks.onShowHide (nodeId);
         });
         this.AppendButton (this.showHideButton);
+    }
+
+    GetNodeId ()
+    {
+        return this.nodeId;
     }
 
     IsVisible ()
@@ -125,6 +132,9 @@ OV.NodeItem = class extends OV.TreeViewGroupButtonItem
             this.showHideButton.SetImage ('visible');
         } else {
             this.showHideButton.SetImage ('hidden');
+        }
+        if (OV.IsDefined (this.callbacks.onVisibilityChanged)) {
+            this.callbacks.onVisibilityChanged (visible);
         }
     }
 };

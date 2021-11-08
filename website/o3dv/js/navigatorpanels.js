@@ -334,6 +334,11 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         this.callbacks = null;
         this.nodeIdToItem = new Map ();
         this.meshInstanceIdToItem = new Map ();
+        this.rootItem = null;
+        this.showHideButton = null;
+        this.isHierarchical = false;
+
+        this.buttonsDiv = $('<div>').addClass ('ov_navigator_buttons').insertBefore (this.treeDiv);
 
         this.popupDiv = $('<div>').addClass ('ov_navigator_info_panel').addClass ('ov_thin_scrollbar').appendTo (this.panelDiv);
         this.materialsButton = new OV.NavigatorMaterialsPopupButton (this.popupDiv);
@@ -352,17 +357,26 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
     Resize ()
     {
         let titleHeight = this.titleDiv.outerHeight (true);
+        let buttonsHeight = this.buttonsDiv.outerHeight (true);
         let popupHeight = this.popupDiv.outerHeight (true);
         let height = this.parentDiv.height ();
-        this.treeDiv.outerHeight (height - titleHeight - popupHeight, true);
+        this.treeDiv.outerHeight (height - titleHeight - buttonsHeight - popupHeight, true);
     }
 
     Clear ()
+    {
+        this.ClearMeshTree ();
+        this.buttonsDiv.empty ();
+        this.showHideButton = null;
+    }
+
+    ClearMeshTree ()
     {
         super.Clear ();
         this.materialsButton.Clear ();
         this.nodeIdToItem = new Map ();
         this.meshInstanceIdToItem = new Map ();
+        this.rootItem = null;
     }
 
     Init (callbacks)
@@ -386,13 +400,67 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         super.Fill (importResult);
 
         const model = importResult.model;
-        const isFlat = !OV.FeatureSet.NavigatorTree;
-        this.FillMeshTree (model, isFlat);
+        this.FillButtons (importResult);
+        this.FillMeshTree (model);
 
         this.Resize ();
     }
 
-    FillMeshTree (model, isFlat)
+    FillButtons (importResult)
+    {
+        function CreateButton (parentDiv, tooltip, icon, extraClasses, onClick)
+        {
+            let button = $('<div>').addClass ('ov_navigator_button').attr ('title', tooltip).appendTo (parentDiv);
+            if (extraClasses !== null) {
+                button.addClass (extraClasses);
+            }
+            let buttonIcon = OV.AddSvgIcon (button, icon);
+            button.click (() => {
+                onClick ();
+            });
+            return buttonIcon;
+        }
+
+        CreateButton (this.buttonsDiv, 'Flat list', 'meshes', null, () => {
+            if (!this.isHierarchical) {
+                return;
+            }
+            this.isHierarchical = false;
+            this.ClearMeshTree ();
+            this.FillMeshTree (importResult.model);
+            this.callbacks.onSelectionRemoved ();
+        });
+
+        CreateButton (this.buttonsDiv, 'Tree view', 'meshes', null, () => {
+            if (this.isHierarchical) {
+                return;
+            }
+            this.isHierarchical = true;
+            this.ClearMeshTree ();
+            this.FillMeshTree (importResult.model);
+            this.callbacks.onSelectionRemoved ();
+        });
+
+        CreateButton (this.buttonsDiv, 'Expand all', 'meshes', null, () => {
+            this.rootItem.ExpandAll (true);
+        });
+
+        CreateButton (this.buttonsDiv, 'Collapse all', 'meshes', null, () => {
+            this.rootItem.ExpandAll (false);
+        });
+
+        this.showHideButton = CreateButton (this.buttonsDiv, 'Show/hide meshes', 'visible', 'right', () => {
+            let nodeId = this.rootItem.GetNodeId ();
+            this.callbacks.onNodeShowHide (nodeId);
+        });
+
+        CreateButton (this.buttonsDiv, 'Fit meshes to window', 'fit', 'right', () => {
+            let nodeId = this.rootItem.GetNodeId ();
+            this.callbacks.onNodeFitToWindow (nodeId);
+        });
+    }
+
+    FillMeshTree (model)
     {
         function AddMeshToNodeTree (navigator, model, node, meshIndex, parentItem)
         {
@@ -430,15 +498,34 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             return nodeItem;
         }
 
-        function AddModelNodeToTree (navigator, model, node, parentItem, isFlat)
+        function CreateDummyRootItem (navigator, node)
+        {
+            const nodeId = node.GetId ();
+            let rootItem = new OV.NodeItem (null, nodeId, {
+                onVisibilityChanged : (isVisible) => {
+                    if (isVisible) {
+                        OV.SetSvgIconImage (navigator.showHideButton, 'visible');
+                    } else {
+                        OV.SetSvgIconImage (navigator.showHideButton, 'hidden');
+                    }
+                }
+            });
+            rootItem.Show (false);
+            rootItem.ShowChildren (true);
+            navigator.treeView.AddChild (rootItem);
+            navigator.nodeIdToItem.set (nodeId, rootItem);
+            return rootItem;
+        }
+
+        function AddModelNodeToTree (navigator, model, node, parentItem, isHierarchical)
         {
             for (let childNode of node.GetChildNodes ()) {
-                if (isFlat) {
-                    AddModelNodeToTree (navigator, model, childNode, parentItem, isFlat);
-                } else {
+                if (isHierarchical) {
                     let nodeItem = CreateNodeItem (navigator, node.GetName (), childNode);
                     parentItem.AddChild (nodeItem);
-                    AddModelNodeToTree (navigator, model, childNode, nodeItem, isFlat);
+                    AddModelNodeToTree (navigator, model, childNode, nodeItem, isHierarchical);
+                } else {
+                    AddModelNodeToTree (navigator, model, childNode, parentItem, isHierarchical);
                 }
             }
 
@@ -448,7 +535,8 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         }
 
         let rootNode = model.GetRootNode ();
-        AddModelNodeToTree (this, model, rootNode, this.treeView, isFlat);
+        this.rootItem = CreateDummyRootItem (this, rootNode);
+        AddModelNodeToTree (this, model, rootNode, this.rootItem, this.isHierarchical);
     }
 
     UpdateMaterialList (materialInfoArray)

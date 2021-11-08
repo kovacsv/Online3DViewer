@@ -76,7 +76,7 @@ OV.PanelSet = class
     {
         this.panels.push (panel);
         let button = OV.AddSvgIcon (this.menuDiv, panel.GetIcon (), 'ov_panel_set_menu_button');
-        button.attr ('title', panel.GetName ());
+        button.attr ('alt', panel.GetName ()).attr ('title', panel.GetName ());
         this.panelButtons.push (button);
         button.click (() => {
             if (panel === this.GetVisiblePanel ()) {

@@ -52,11 +52,6 @@ OV.TreeViewItem = class
         this.mainElement.click (onClick);
     }
 
-    IsGroup ()
-    {
-        return false;
-    }
-
     SetParent (parent)
     {
         this.parent = parent;
@@ -123,7 +118,8 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
     {
         super (name);
         this.children = [];
-        this.showChildren = false;
+        this.isVisible = true;
+        this.isChildrenVisible = false;
 
         this.childrenDiv = null;
         this.openButtonIcon = 'arrow_down';
@@ -135,11 +131,6 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
         }
     }
 
-    IsGroup ()
-    {
-        return true;
-    }
-
     AddChild (child)
     {
         this.CreateChildrenDiv ();
@@ -148,9 +139,34 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
         child.AddDomElements (this.childrenDiv);
     }
 
+    ExpandAll (expand)
+    {
+        for (let child of this.children) {
+            if (child instanceof OV.TreeViewGroupItem) {
+                child.ShowChildren (expand);
+                child.ExpandAll (expand);
+            }
+        }
+    }
+
+    Show (show)
+    {
+        this.isVisible = show;
+        if (this.childrenDiv === null) {
+            return;
+        }
+        if (this.isVisible) {
+            this.mainElement.show ();
+            this.childrenDiv.addClass ('ov_tree_view_children');
+        } else {
+            this.mainElement.hide ();
+            this.childrenDiv.removeClass ('ov_tree_view_children');
+        }
+    }
+
     ShowChildren (show, onComplete)
     {
-        this.showChildren = show;
+        this.isChildrenVisible = show;
         if (this.childrenDiv === null) {
             return;
         }
@@ -167,10 +183,11 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
     {
         if (this.childrenDiv === null) {
             this.childrenDiv = $('<div>').addClass ('ov_tree_view_children').insertAfter (this.mainElement);
-            this.ShowChildren (this.showChildren, null);
+            this.Show (this.isVisible);
+            this.ShowChildren (this.isChildrenVisible, null);
             this.OnClick ((ev) => {
-                this.showChildren = !this.showChildren;
-                this.ShowChildren (this.showChildren, null);
+                this.isChildrenVisible = !this.isChildrenVisible;
+                this.ShowChildren (this.isChildrenVisible, null);
             });
         }
         return this.childrenDiv;
@@ -201,15 +218,18 @@ OV.TreeView = class
     constructor (parentDiv)
     {
         this.mainDiv = $('<div>').addClass ('ov_tree_view').appendTo (parentDiv);
+        this.children = [];
     }
 
     AddChild (child)
     {
         child.AddDomElements (this.mainDiv);
+        this.children.push (child);
     }
 
     Clear ()
     {
         this.mainDiv.empty ();
+        this.children = [];
     }
 };

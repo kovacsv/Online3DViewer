@@ -113,6 +113,9 @@ OV.Navigator = class
             },
             onMaterialSelected : (materialIndex) => {
                 this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
+            },
+            onSelectionRemoved : () => {
+                this.SetSelection (null);
             }
         });
 
