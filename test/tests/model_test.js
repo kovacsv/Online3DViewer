@@ -28,26 +28,6 @@ describe ('Model', function () {
         assert.strictEqual (theMesh.GetName (), 'example');
     });
 
-    it ('Add Mesh To Index', function () {
-        var model = new OV.Model ();
-        var mesh1 = new OV.Mesh ();
-        var mesh2 = new OV.Mesh ();
-        var mesh3 = new OV.Mesh ();
-        var mesh4 = new OV.Mesh ();
-        mesh1.SetName ('A');
-        mesh2.SetName ('B');
-        mesh3.SetName ('C');
-        mesh4.SetName ('D');
-        model.AddMesh (mesh1);
-        model.AddMesh (mesh2);
-        model.AddMeshToIndex (mesh3, 1);
-        model.AddMeshToIndex (mesh4, 3);
-        assert.strictEqual (model.GetMesh (0).GetName (), 'A');
-        assert.strictEqual (model.GetMesh (1).GetName (), 'C');
-        assert.strictEqual (model.GetMesh (2).GetName (), 'B');
-        assert.strictEqual (model.GetMesh (3).GetName (), 'D');
-    });
-
     it ('Counters', function () {
         var model = new OV.Model ();
         let mesh = new OV.Mesh ();
@@ -308,41 +288,6 @@ describe ('Node Hierarchy', function () {
                         }
                     ],
                     meshNames : ['Mesh 4']
-                },
-                {
-                    name : 'Node 2',
-                    childNodes : [],
-                    meshNames : []
-                }
-            ],
-            meshNames : ['Mesh 1', 'Mesh 2']
-        });
-    });
-
-    it ('Add mesh to index', function () {
-        let model = testUtils.GetHierarchicalModelNoFinalization ();
-        let mesh = new OV.Mesh ();
-        mesh.SetName ('Mesh 8');
-        model.AddMeshToIndex (mesh, 3);
-        let modelTree = testUtils.ModelNodesToTree (model);
-        assert.deepStrictEqual (modelTree, {
-            name : '<Root>',
-            childNodes : [
-                {
-                    name : 'Node 1',
-                    childNodes : [
-                        {
-                            name : 'Node 3',
-                            childNodes : [],
-                            meshNames : ['Mesh 5', 'Mesh 6', 'Mesh 7']
-                        },
-                        {
-                            name : 'Node 4',
-                            childNodes : [],
-                            meshNames : ['Mesh 7']
-                        }
-                    ],
-                    meshNames : ['Mesh 3', 'Mesh 4']
                 },
                 {
                     name : 'Node 2',

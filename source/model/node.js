@@ -118,11 +118,6 @@ OV.Node = class
         return this.meshIndices.length - 1;
     }
 
-    AddMeshIndexToIndex (index, toIndex)
-    {
-        this.meshIndices.splice (toIndex, 0, index);
-    }
-
     MeshIndexCount ()
     {
         return this.meshIndices.length;

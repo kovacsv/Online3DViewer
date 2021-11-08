@@ -92,19 +92,6 @@ OV.Model = class extends OV.ModelObject3D
         return meshIndex;
     }
 
-    AddMeshToIndex (mesh, index)
-    {
-        this.meshes.splice (index, 0, mesh);
-        this.root.Enumerate ((node) => {
-            for (let i = 0; i < node.meshIndices.length; i++) {
-                if (node.meshIndices[i] >= index) {
-                    node.meshIndices[i] += 1;
-                }
-            }
-        });
-        return index;
-    }
-
     RemoveMesh (index)
     {
         this.meshes.splice (index, 1);
