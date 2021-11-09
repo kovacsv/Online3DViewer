@@ -421,7 +421,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             return buttonIcon;
         }
 
-        CreateButton (this.buttonsDiv, 'Flat list', 'meshes', null, () => {
+        CreateButton (this.buttonsDiv, 'Flat list', 'flat_list', null, () => {
             if (!this.isHierarchical) {
                 return;
             }
@@ -431,7 +431,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             this.callbacks.onSelectionRemoved ();
         });
 
-        CreateButton (this.buttonsDiv, 'Tree view', 'meshes', null, () => {
+        CreateButton (this.buttonsDiv, 'Tree view', 'tree_view', null, () => {
             if (this.isHierarchical) {
                 return;
             }
@@ -441,11 +441,11 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             this.callbacks.onSelectionRemoved ();
         });
 
-        CreateButton (this.buttonsDiv, 'Expand all', 'meshes', null, () => {
+        CreateButton (this.buttonsDiv, 'Expand all', 'expand', null, () => {
             this.rootItem.ExpandAll (true);
         });
 
-        CreateButton (this.buttonsDiv, 'Collapse all', 'meshes', null, () => {
+        CreateButton (this.buttonsDiv, 'Collapse all', 'collapse', null, () => {
             this.rootItem.ExpandAll (false);
         });
 
