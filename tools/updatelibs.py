@@ -9,6 +9,7 @@ import urllib.request
 from lib import tools_lib as Tools
 
 threeJsFileMap = [
+    [os.path.join ('three', 'LICENSE'), os.path.join ('three.license.md')],
     [os.path.join ('three', 'build', 'three.min.js'), os.path.join ('three.min.js')],
     [os.path.join ('three', 'examples', 'js', 'libs', 'chevrotain.min.js'), os.path.join ('three_loaders', 'chevrotain.min.js')],
     [os.path.join ('three', 'examples', 'js', 'loaders', '3MFLoader.js'), os.path.join ('three_loaders', '3MFLoader.js')],
@@ -20,6 +21,11 @@ threeJsFileMap = [
 rhino3dmFileMap = [
     [os.path.join ('rhino3dm', 'rhino3dm.js'), os.path.join ('loaders', 'rhino3dm.min.js')],
     [os.path.join ('rhino3dm', 'rhino3dm.wasm'), os.path.join ('loaders', 'rhino3dm.wasm')],
+]
+
+fflateFileMap = [
+    [os.path.join ('fflate', 'LICENSE'), os.path.join ('loaders', 'fflate.license.md')],
+    [os.path.join ('fflate', 'umd', 'index.js'), os.path.join ('loaders', 'fflate.min.js')],
 ]
 
 def PrintInfo (message):
@@ -45,6 +51,7 @@ def Main (argv):
 
     UpdateModule (threeJsFileMap, nodeModulesDir, libsDir)
     UpdateModule (rhino3dmFileMap, nodeModulesDir, libsDir)
+    UpdateModule (fflateFileMap, nodeModulesDir, libsDir)
 
     return 0
 
