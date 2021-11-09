@@ -154,3 +154,30 @@ OV.CreateInlineColorCircle = function (color)
     let darkerColorHexString = '#' + OV.ColorToHexString (darkerColor);
     return $('<div>').addClass ('ov_color_circle').css ('background', hexString).css ('border', '1px solid ' + darkerColorHexString);
 };
+
+OV.InstallVerticalSplitter = function (splitterDiv, resizedDiv, flipped, onResize)
+{
+    let originalWidth = null;
+    OV.CreateVerticalSplitter (splitterDiv, {
+        onSplitStart : () => {
+            originalWidth = resizedDiv.outerWidth (true);
+        },
+        onSplit : (xDiff) => {
+            const minWidth = 280;
+            const maxWidth = 450;
+            let newWidth = 0;
+            if (flipped) {
+                newWidth = originalWidth - xDiff;
+            } else {
+                newWidth = originalWidth + xDiff;
+            }
+            if (newWidth < minWidth) {
+                newWidth = minWidth;
+            } else if (newWidth > maxWidth)  {
+                newWidth = maxWidth;
+            }
+            resizedDiv.outerWidth (newWidth, true);
+            onResize ();
+        }
+    });
+};

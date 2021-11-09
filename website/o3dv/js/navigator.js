@@ -119,23 +119,8 @@ OV.Navigator = class
             }
         });
 
-        let originalWidth = null;
-        OV.CreateVerticalSplitter (this.splitterDiv, {
-            onSplitStart : () => {
-                originalWidth = this.mainDiv.outerWidth (true);
-            },
-            onSplit : (xDiff) => {
-                const minWidth = 280;
-                const maxWidth = 450;
-                let newWidth = originalWidth + xDiff;
-                if (newWidth < minWidth) {
-                    newWidth = minWidth;
-                } else if (newWidth > maxWidth)  {
-                    newWidth = maxWidth;
-                }
-                this.mainDiv.outerWidth (newWidth, true);
-                this.callbacks.onResize ();
-            }
+        OV.InstallVerticalSplitter (this.splitterDiv, this.mainDiv, false, () => {
+            this.callbacks.onResize ();
         });
     }
 
