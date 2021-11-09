@@ -53,8 +53,8 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
         let table = $('<div>').addClass ('ov_property_table').appendTo (this.contentDiv);
         let boundingBox = OV.GetBoundingBox (object3D);
         let size = OV.SubCoord3D (boundingBox.max, boundingBox.min);
-        this.AddProperty (table, new OV.Property (OV.PropertyType.Integer, 'Vertex Count', object3D.VertexCount ()));
-        this.AddProperty (table, new OV.Property (OV.PropertyType.Integer, 'Triangle Count', object3D.TriangleCount ()));
+        this.AddProperty (table, new OV.Property (OV.PropertyType.Integer, 'Vertices', object3D.VertexCount ()));
+        this.AddProperty (table, new OV.Property (OV.PropertyType.Integer, 'Triangles', object3D.TriangleCount ()));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Number, 'Size X', size.x));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Number, 'Size Y', size.y));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Number, 'Size Z', size.z));
@@ -65,7 +65,7 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
             }
             return new OV.Property (OV.PropertyType.Number, null, volume);
         });
-        this.AddCalculatedProperty (table, 'Surface Area', () => {
+        this.AddCalculatedProperty (table, 'Surface', () => {
             const volume = OV.CalculateSurfaceArea (object3D);
             if (volume === null) {
                 return null;
@@ -230,7 +230,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         this.Init (callbacks);
         this.backgroundColorInput = this.AddColorParameter (
             'Background Color',
-            'Background color affects only the visualization of the model.',
+            'Affects only the visualization.',
             null,
             ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'],
             settings.backgroundColor,
@@ -238,8 +238,8 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         );
         this.defaultColorInput = this.AddColorParameter (
             'Default Color',
-            'Default color appears when the model doesn\'t contain materials.',
-            'This setting has no effect on the currently loaded file.',
+            'Appears when the model doesn\'t have materials.',
+            'Has no effect on the currently loaded file.',
             ['#ffffff', '#e3e3e3', '#cc3333', '#fac832', '#4caf50', '#3393bd', '#9b27b0', '#fda4b8'],
             settings.defaultColor,
             this.callbacks.onDefaultColorChange

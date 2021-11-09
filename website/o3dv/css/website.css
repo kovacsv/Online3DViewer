@@ -103,7 +103,7 @@ div.main
 
 div.main_navigator
 {
-	width: 250px;
+	width: 280px;
 	margin: 10px 0px 10px 0px;
 	overflow: none;
 	float: left;
@@ -124,7 +124,7 @@ div.main_viewer
 
 div.main_sidebar
 {
-	width: 320px;
+	width: 280px;
 	margin: 10px 0px 10px 0px;
 	overflow: none;
 	float: right;

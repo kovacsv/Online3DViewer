@@ -65,7 +65,7 @@ OV.Sidebar = class
                 originalWidth = this.mainDiv.outerWidth (true);
             },
             onSplit : (xDiff) => {
-                const minWidth = 320;
+                const minWidth = 280;
                 const maxWidth = 450;
                 let newWidth = originalWidth - xDiff;
                 if (newWidth < minWidth) {
