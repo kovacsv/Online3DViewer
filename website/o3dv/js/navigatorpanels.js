@@ -409,89 +409,111 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
 
     FillButtons (importResult)
     {
-        function CreateButton (parentDiv, name, icon, extraClasses, onClick)
+        function CreateButton (parentDiv, button, extraClasses, onClick)
         {
-            let button = $('<div>').addClass ('ov_navigator_button').attr ('alt', name).attr ('title', name).appendTo (parentDiv);
+            button.div = $('<div>').addClass ('ov_navigator_button').attr ('alt', button.name).attr ('title', button.name).appendTo (parentDiv);
             if (OV.IsDefined (extraClasses)) {
-                button.addClass (extraClasses);
+                button.div.addClass (extraClasses);
             }
-            let buttonIcon = OV.AddSvgIcon (button, icon);
-            button.click (() => {
+            button.iconDiv = OV.AddSvgIcon (button.div, button.icon);
+            button.div.click (() => {
                 onClick ();
             });
-            return buttonIcon;
         }
 
-        function CreateRadioButton (parentDiv, buttons, onClick)
+        function UpdateButtonsStatus (buttons, isHierarchical)
         {
-            function UpdateSelection (buttonDivs, selectedButtonDiv)
-            {
-                for (let buttonDiv of buttonDivs) {
-                    buttonDiv.removeClass ('selected');
-                }
-                selectedButtonDiv.addClass ('selected');
+            if (isHierarchical) {
+                buttons.flatList.iconDiv.removeClass ('selected');
+                buttons.treeView.iconDiv.addClass ('selected');
+            } else {
+                buttons.flatList.iconDiv.addClass ('selected');
+                buttons.treeView.iconDiv.removeClass ('selected');
             }
-
-            let buttonDivs = [];
-            for (let buttonIndex = 0; buttonIndex < buttons.length; buttonIndex++) {
-                const button = buttons[buttonIndex];
-                let buttonDiv = CreateButton (parentDiv, button.name, button.icon, button.extraClasses, () => {
-                    UpdateSelection (buttonDivs, buttonDiv);
-                    onClick (buttonIndex);
-                });
-                buttonDivs.push (buttonDiv);
-            }
-
-            UpdateSelection (buttonDivs, buttonDivs[0]);
         }
 
-        let viewButtons = [
-            {
+        let buttons = {
+            flatList : {
                 name : 'Flat list',
-                icon : 'flat_list'
+                icon : 'flat_list',
+                div : null,
+                iconDiv : null
             },
-            {
+            treeView : {
                 name : 'Tree view',
-                icon : 'tree_view'
+                icon : 'tree_view',
+                div : null,
+                iconDiv : null
+            },
+            expandAll : {
+                name : 'Expand all',
+                icon : 'expand',
+                div : null,
+                iconDiv : null
+            },
+            collapseAll : {
+                name : 'Collapse all',
+                icon : 'collapse',
+                div : null,
+                iconDiv : null
+            },
+            showHideMeshes : {
+                name : 'Show/hide meshes',
+                icon : 'visible',
+                div : null,
+                iconDiv : null
+            },
+            fitToWindow : {
+                name : 'Fit meshes to window',
+                icon : 'fit',
+                div : null,
+                iconDiv : null
             }
-        ];
+        };
 
-        CreateRadioButton (this.buttonsDiv, viewButtons, (buttonIndex) => {
-            if (buttonIndex === 0) {
-                if (!this.isHierarchical) {
-                    return;
-                }
-                this.isHierarchical = false;
-            } else if (buttonIndex === 1) {
-                if (this.isHierarchical) {
-                    return;
-                }
-                this.isHierarchical = true;
+        CreateButton (this.buttonsDiv, buttons.flatList, null, () => {
+            if (!this.isHierarchical) {
+                return;
             }
+            this.isHierarchical = false;
             this.ClearMeshTree ();
             this.FillMeshTree (importResult.model);
+            UpdateButtonsStatus (buttons, this.isHierarchical);
+            this.callbacks.onSelectionRemoved ();
+        });
+
+        CreateButton (this.buttonsDiv, buttons.treeView, null, () => {
+            if (this.isHierarchical) {
+                return;
+            }
+            this.isHierarchical = true;
+            this.ClearMeshTree ();
+            this.FillMeshTree (importResult.model);
+            UpdateButtonsStatus (buttons, this.isHierarchical);
             this.callbacks.onSelectionRemoved ();
         });
 
         $('<div>').addClass ('ov_navigator_buttons_separator').appendTo (this.buttonsDiv);
 
-        CreateButton (this.buttonsDiv, 'Expand all', 'expand', null, () => {
+        CreateButton (this.buttonsDiv, buttons.expandAll, null, () => {
             this.rootItem.ExpandAll (true);
         });
 
-        CreateButton (this.buttonsDiv, 'Collapse all', 'collapse', null, () => {
+        CreateButton (this.buttonsDiv, buttons.collapseAll, null, () => {
             this.rootItem.ExpandAll (false);
         });
 
-        this.showHideButton = CreateButton (this.buttonsDiv, 'Show/hide meshes', 'visible', 'right', () => {
+        this.showHideButton = CreateButton (this.buttonsDiv, buttons.showHideMeshes, 'right', () => {
             let nodeId = this.rootItem.GetNodeId ();
             this.callbacks.onNodeShowHide (nodeId);
         });
 
-        CreateButton (this.buttonsDiv, 'Fit meshes to window', 'fit', 'right', () => {
+        CreateButton (this.buttonsDiv, buttons.fitToWindow, 'right', () => {
             let nodeId = this.rootItem.GetNodeId ();
             this.callbacks.onNodeFitToWindow (nodeId);
         });
+
+        UpdateButtonsStatus (buttons, this.isHierarchical);
     }
 
     FillMeshTree (model)

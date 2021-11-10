@@ -29,6 +29,11 @@ div.ov_svg_icon.selected
 	color: var(--ov_selected_icon_color);
 }
 
+div.ov_svg_icon.disabled
+{
+	color: var(--ov_disabled_icon_color);
+}
+
 div.ov_thin_scrollbar
 {
 	scrollbar-color: var(--ov_border_color) transparent;

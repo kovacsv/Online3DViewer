@@ -12,6 +12,7 @@ OV.ThemeHandler = class {
             '--ov_icon_color': {},
             '--ov_light_icon_color': {},
             '--ov_selected_icon_color': {},
+            '--ov_disabled_icon_color': {},
             '--ov_hover_color': {},
             '--ov_hover_text_color': {},
             '--ov_logo_text_color': {},
