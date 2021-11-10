@@ -103,6 +103,8 @@
 		"website/o3dv/css/dialogs.css",
 		"website/o3dv/css/treeview.css",
 		"website/o3dv/css/panelset.css",
+		"website/o3dv/css/navigator.css",
+		"website/o3dv/css/sidebar.css",
 		"website/o3dv/css/website.css",
 		"website/o3dv/css/embed.css"
 	]

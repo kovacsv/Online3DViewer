@@ -409,10 +409,10 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
 
     FillButtons (importResult)
     {
-        function CreateButton (parentDiv, tooltip, icon, extraClasses, onClick)
+        function CreateButton (parentDiv, name, icon, extraClasses, onClick)
         {
-            let button = $('<div>').addClass ('ov_navigator_button').attr ('title', tooltip).appendTo (parentDiv);
-            if (extraClasses !== null) {
+            let button = $('<div>').addClass ('ov_navigator_button').attr ('alt', name).attr ('title', name).appendTo (parentDiv);
+            if (OV.IsDefined (extraClasses)) {
                 button.addClass (extraClasses);
             }
             let buttonIcon = OV.AddSvgIcon (button, icon);
@@ -422,25 +422,58 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             return buttonIcon;
         }
 
-        CreateButton (this.buttonsDiv, 'Flat list', 'flat_list', null, () => {
-            if (!this.isHierarchical) {
-                return;
+        function CreateRadioButton (parentDiv, buttons, onClick)
+        {
+            function UpdateSelection (buttonDivs, selectedButtonDiv)
+            {
+                for (let buttonDiv of buttonDivs) {
+                    buttonDiv.removeClass ('selected');
+                }
+                selectedButtonDiv.addClass ('selected');
             }
-            this.isHierarchical = false;
+
+            let buttonDivs = [];
+            for (let buttonIndex = 0; buttonIndex < buttons.length; buttonIndex++) {
+                const button = buttons[buttonIndex];
+                let buttonDiv = CreateButton (parentDiv, button.name, button.icon, button.extraClasses, () => {
+                    UpdateSelection (buttonDivs, buttonDiv);
+                    onClick (buttonIndex);
+                });
+                buttonDivs.push (buttonDiv);
+            }
+
+            UpdateSelection (buttonDivs, buttonDivs[0]);
+        }
+
+        let viewButtons = [
+            {
+                name : 'Flat list',
+                icon : 'flat_list'
+            },
+            {
+                name : 'Tree view',
+                icon : 'tree_view'
+            }
+        ];
+
+        CreateRadioButton (this.buttonsDiv, viewButtons, (buttonIndex) => {
+            if (buttonIndex === 0) {
+                if (!this.isHierarchical) {
+                    return;
+                }
+                this.isHierarchical = false;
+            } else if (buttonIndex === 1) {
+                if (this.isHierarchical) {
+                    return;
+                }
+                this.isHierarchical = true;
+            }
             this.ClearMeshTree ();
             this.FillMeshTree (importResult.model);
             this.callbacks.onSelectionRemoved ();
         });
 
-        CreateButton (this.buttonsDiv, 'Tree view', 'tree_view', null, () => {
-            if (this.isHierarchical) {
-                return;
-            }
-            this.isHierarchical = true;
-            this.ClearMeshTree ();
-            this.FillMeshTree (importResult.model);
-            this.callbacks.onSelectionRemoved ();
-        });
+        $('<div>').addClass ('ov_navigator_buttons_separator').appendTo (this.buttonsDiv);
 
         CreateButton (this.buttonsDiv, 'Expand all', 'expand', null, () => {
             this.rootItem.ExpandAll (true);
