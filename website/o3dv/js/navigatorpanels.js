@@ -338,6 +338,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         this.showHideButton = null;
         this.isHierarchical = false;
 
+        this.treeView.AddClass ('tight');
         this.buttonsDiv = $('<div>').addClass ('ov_navigator_buttons').insertBefore (this.treeDiv);
 
         this.popupDiv = $('<div>').addClass ('ov_navigator_info_panel').addClass ('ov_thin_scrollbar').appendTo (this.panelDiv);
@@ -462,12 +463,13 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
 
     FillMeshTree (model)
     {
-        function AddMeshToNodeTree (navigator, model, node, meshIndex, parentItem)
+        function AddMeshToNodeTree (navigator, model, node, meshIndex, parentItem, isHierarchical)
         {
             let mesh = model.GetMesh (meshIndex);
             let meshName = OV.GetMeshName (mesh.GetName ());
             let meshInstanceId = new OV.MeshInstanceId (node.GetId (), meshIndex);
-            let meshItem = new OV.MeshItem (meshName, meshInstanceId, {
+            let meshItemIcon = isHierarchical ? 'tree_mesh' : null;
+            let meshItem = new OV.MeshItem (meshName, meshItemIcon, meshInstanceId, {
                 onShowHide : (selectedMeshId) => {
                     navigator.callbacks.onMeshShowHide (selectedMeshId);
                 },
@@ -530,7 +532,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             }
 
             for (let meshIndex of node.GetMeshIndices ()) {
-                AddMeshToNodeTree (navigator, model, node, meshIndex, parentItem);
+                AddMeshToNodeTree (navigator, model, node, meshIndex, parentItem, isHierarchical);
             }
         }
 

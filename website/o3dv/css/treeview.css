@@ -54,6 +54,11 @@ div.ov_tree_view div.ov_tree_view_children
 	margin-left: 28px;
 }
 
+div.ov_tree_view.tight div.ov_tree_view_children
+{
+	margin-left: 10px;
+}
+
 @media (hover)
 {
 

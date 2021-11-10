@@ -11,9 +11,9 @@ OV.MaterialItem = class extends OV.TreeViewSingleItem
 
 OV.MeshItem = class extends OV.TreeViewButtonItem
 {
-    constructor (name, meshInstanceId, callbacks)
+    constructor (name, icon, meshInstanceId, callbacks)
     {
-        super (name);
+        super (name, icon);
 
         this.meshInstanceId = meshInstanceId;
         this.visible = true;

@@ -37,12 +37,15 @@ OV.TreeViewButton = class
 
 OV.TreeViewItem = class
 {
-    constructor (name)
+    constructor (name, icon)
     {
         this.name = name;
         this.parent = null;
         this.mainElement = $('<div>').addClass ('ov_tree_item').attr ('title', this.name);
         this.nameElement = $('<div>').addClass ('ov_tree_item_name').html (this.name).appendTo (this.mainElement);
+        if (OV.IsDefined (icon)) {
+            OV.CreateSvgIcon (icon, 'ov_tree_item_icon').insertBefore (this.nameElement);
+        }
     }
 
     OnClick (onClick)
@@ -65,9 +68,9 @@ OV.TreeViewItem = class
 
 OV.TreeViewSingleItem = class extends OV.TreeViewItem
 {
-    constructor (name)
+    constructor (name, icon)
     {
-        super (name);
+        super (name, icon);
         this.selected = false;
     }
 
@@ -95,9 +98,9 @@ OV.TreeViewSingleItem = class extends OV.TreeViewItem
 
 OV.TreeViewButtonItem = class extends OV.TreeViewSingleItem
 {
-    constructor (name)
+    constructor (name, icon)
     {
-        super (name);
+        super (name, icon);
         this.buttonsDiv = $('<div>').addClass ('ov_tree_item_button_container').insertBefore (this.nameElement);
     }
 
@@ -114,9 +117,9 @@ OV.TreeViewButtonItem = class extends OV.TreeViewSingleItem
 
 OV.TreeViewGroupItem = class extends OV.TreeViewItem
 {
-    constructor (name, iconPath)
+    constructor (name, icon)
     {
-        super (name);
+        super (name, icon);
         this.children = [];
         this.isVisible = true;
         this.isChildrenVisible = false;
@@ -126,9 +129,6 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
         this.closeButtonIcon = 'arrow_right';
 
         this.openCloseButton = OV.CreateSvgIcon (this.openButtonIcon, 'ov_tree_item_icon').insertBefore (this.nameElement);
-        if (OV.IsDefined (iconPath)) {
-            OV.CreateSvgIcon (iconPath, 'ov_tree_item_icon').insertBefore (this.nameElement);
-        }
     }
 
     AddChild (child)
@@ -196,9 +196,9 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
 
 OV.TreeViewGroupButtonItem = class extends OV.TreeViewGroupItem
 {
-    constructor (name, iconPath)
+    constructor (name, icon)
     {
-        super (name, iconPath);
+        super (name, icon);
         this.buttonsDiv = $('<div>').addClass ('ov_tree_item_button_container').insertBefore (this.nameElement);
     }
 
@@ -219,6 +219,11 @@ OV.TreeView = class
     {
         this.mainDiv = $('<div>').addClass ('ov_tree_view').appendTo (parentDiv);
         this.children = [];
+    }
+
+    AddClass (className)
+    {
+        this.mainDiv.addClass (className);
     }
 
     AddChild (child)
