@@ -9,9 +9,10 @@
     --ov_outline_button_hover_color: #c9e5f8;
     --ov_outline_button_text_color: #3393bd;
 	--ov_icon_color: #263238;
+	--ov_light_icon_color: #838383;
+	--ov_selected_icon_color: #3393bd;
 	--ov_hover_color: #c9e5f8;
 	--ov_hover_text_color: #3393bd;
-	--ov_light_icon_color: #838383;
 	--ov_logo_text_color: #15334a;
 	--ov_logo_border_color: #000000;
 	--ov_toolbar_background_color: #f5f5f5;
@@ -32,9 +33,10 @@
     --ov_outline_button_hover_color_dark: #2f6984;
     --ov_outline_button_text_color_dark: #c9e5f8;
 	--ov_icon_color_dark: #fafafa;
+	--ov_light_icon_color_dark: #bababa;
+	--ov_selected_icon_color_dark: #3393bd;
 	--ov_hover_color_dark: #667c86;
 	--ov_hover_text_color_dark: #fafafa;
-	--ov_light_icon_color_dark: #bababa;
 	--ov_logo_text_color_dark: #fafafa;
 	--ov_logo_border_color_dark: #2a2b2e;
 	--ov_toolbar_background_color_dark: #3d3e42;
@@ -44,5 +46,5 @@
     --ov_dialog_foreground_color_dark: #fafafa;
     --ov_dialog_background_color_dark: #333333;
 	--ov_border_color_dark: #444444;
-	--ov_shadow_dark: 0px 0px 10px #222222;	
+	--ov_shadow_dark: 0px 0px 10px #222222;
 }

@@ -26,7 +26,7 @@ div.ov_svg_icon.light
 
 div.ov_svg_icon.selected
 {
-	color: var(--ov_button_color);
+	color: var(--ov_selected_icon_color);
 }
 
 div.ov_thin_scrollbar
