@@ -18,6 +18,12 @@ threeJsFileMap = [
     [os.path.join ('three', 'examples', 'js', 'loaders', 'VRMLLoader.js'), os.path.join ('three_loaders', 'VRMLLoader.js')]
 ]
 
+pickrFileMap = [
+    [os.path.join ('@simonwep', 'pickr', 'LICENSE'), os.path.join ('pickr.license.md')],
+    [os.path.join ('@simonwep', 'pickr', 'dist', 'pickr.es5.min.js'), os.path.join ('pickr.es5.min.js')],
+    [os.path.join ('@simonwep', 'pickr', 'dist', 'themes', 'monolith.min.css'), os.path.join ('pickr.monolith.min.css')]
+]
+
 rhino3dmFileMap = [
     [os.path.join ('rhino3dm', 'rhino3dm.js'), os.path.join ('loaders', 'rhino3dm.min.js')],
     [os.path.join ('rhino3dm', 'rhino3dm.wasm'), os.path.join ('loaders', 'rhino3dm.wasm')],
@@ -50,6 +56,7 @@ def Main (argv):
     libsDir = os.path.join (rootDir, 'libs')
 
     UpdateModule (threeJsFileMap, nodeModulesDir, libsDir)
+    UpdateModule (pickrFileMap, nodeModulesDir, libsDir)
     UpdateModule (rhino3dmFileMap, nodeModulesDir, libsDir)
     UpdateModule (fflateFileMap, nodeModulesDir, libsDir)
 
