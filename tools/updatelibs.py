@@ -1,10 +1,7 @@
 import os
 import sys
-import json
+import re
 import shutil
-import zipfile
-import urllib
-import urllib.request
 
 from lib import tools_lib as Tools
 
@@ -44,6 +41,11 @@ fflateFileMap = [
     [os.path.join ('fflate', 'umd', 'index.js'), os.path.join ('loaders', 'fflate.min.js')],
 ]
 
+webIfcFileMap = [
+    [os.path.join ('web-ifc', 'web-ifc-api.js'), os.path.join ('loaders', 'web-ifc-api.js')],
+    [os.path.join ('web-ifc', 'web-ifc.wasm'), os.path.join ('loaders', 'web-ifc.wasm')],
+]
+
 def PrintInfo (message):
     print ('INFO: ' + message)
 
@@ -56,6 +58,11 @@ def UpdateModule (fileMap, moduleDir, libsDir):
         dst = os.path.join (libsDir, fileEntry[1])
         PrintInfo ('Copying file ' + os.path.split (src)[1])
         shutil.copy2 (src, dst)
+
+def FixWebIfcExport (libsDir):
+    apiFilePath = os.path.join (libsDir, 'loaders', 'web-ifc-api.js')
+    regex = re.compile (r'export \{.*\};', re.DOTALL)
+    Tools.ReplaceRegexInFile (apiFilePath, regex, '')
 
 def Main (argv):
     toolsDir = os.path.dirname (os.path.abspath (__file__))
@@ -71,6 +78,8 @@ def Main (argv):
     UpdateModule (dracoFileMap, nodeModulesDir, libsDir)
     UpdateModule (rhino3dmFileMap, nodeModulesDir, libsDir)
     UpdateModule (fflateFileMap, nodeModulesDir, libsDir)
+    UpdateModule (webIfcFileMap, nodeModulesDir, libsDir)
+    FixWebIfcExport (libsDir)
 
     return 0
 
