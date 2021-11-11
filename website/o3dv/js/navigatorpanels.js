@@ -708,6 +708,6 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
     IsolateMesh (meshInstanceId)
     {
         this.ShowAllMeshes (false);
-        this.ToggleMeshVisibility (meshInstanceId)
+        this.ToggleMeshVisibility (meshInstanceId);
     }
 };
