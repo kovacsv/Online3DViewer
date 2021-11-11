@@ -116,7 +116,7 @@ OV.Navigator = class
             },
             onViewTypeChanged : () => {
                 this.SetSelection (null);
-                this.ShowAllMeshes ();
+                this.ShowAllMeshes (true);
             }
         });
 
@@ -170,9 +170,9 @@ OV.Navigator = class
         return this.meshesPanel.HasHiddenMesh ();
     }
 
-    ShowAllMeshes ()
+    ShowAllMeshes (show)
     {
-        this.meshesPanel.ShowAllMeshes ();
+        this.meshesPanel.ShowAllMeshes (show);
         this.callbacks.updateMeshesVisibility ();
     }
 

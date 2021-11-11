@@ -161,7 +161,7 @@ OV.Website = class
                     name : 'Show all meshes',
                     icon : 'visible',
                     onClick : () => {
-                        this.navigator.ShowAllMeshes ();
+                        this.navigator.ShowAllMeshes (true);
                     }
                 });
             }
@@ -186,7 +186,11 @@ OV.Website = class
                     name : isMeshIsolated ? 'Remove isolation' : 'Isolate mesh',
                     icon : isMeshIsolated ? 'deisolate' : 'isolate',
                     onClick : () => {
-                        this.navigator.IsolateMesh (meshUserData.originalMeshId);
+                        if (isMeshIsolated) {
+                            this.navigator.ShowAllMeshes (true);
+                        } else {
+                            this.navigator.IsolateMesh (meshUserData.originalMeshId);
+                        }
                     }
                 });
             }

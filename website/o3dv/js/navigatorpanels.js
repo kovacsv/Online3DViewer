@@ -631,6 +631,15 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         return this.meshInstanceIdToItem.get (meshInstanceId.GetKey ());
     }
 
+    EnumerateNodeItems (processor)
+    {
+        for (const nodeItem of this.nodeIdToItem.values ()) {
+            if (!processor (nodeItem)) {
+                break;
+            }
+        }
+    }
+
     EnumerateMeshItems (processor)
     {
         for (const meshItem of this.meshInstanceIdToItem.values ()) {
@@ -659,10 +668,14 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         return hasHiddenMesh;
     }
 
-    ShowAllMeshes ()
+    ShowAllMeshes (show)
     {
+        this.EnumerateNodeItems ((nodeItem) => {
+            nodeItem.SetVisible (show, OV.NavigatorItemRecurse.No);
+            return true;
+        });
         this.EnumerateMeshItems ((meshItem) => {
-            meshItem.SetVisible (true);
+            meshItem.SetVisible (show, OV.NavigatorItemRecurse.No);
             return true;
         });
     }
@@ -670,13 +683,13 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
     ToggleNodeVisibility (nodeId)
     {
         let nodeItem = this.GetNodeItem (nodeId);
-        nodeItem.SetVisible (!nodeItem.IsVisible ());
+        nodeItem.SetVisible (!nodeItem.IsVisible (), OV.NavigatorItemRecurse.All);
     }
 
     ToggleMeshVisibility (meshInstanceId)
     {
         let meshItem = this.GetMeshItem (meshInstanceId);
-        meshItem.SetVisible (!meshItem.IsVisible ());
+        meshItem.SetVisible (!meshItem.IsVisible (), OV.NavigatorItemRecurse.Parents);
     }
 
     IsMeshIsolated (meshInstanceId)
@@ -694,16 +707,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
 
     IsolateMesh (meshInstanceId)
     {
-        // TODO: slow because of recursion
-
-        let isIsolated = this.IsMeshIsolated (meshInstanceId);
-        this.EnumerateMeshItems ((meshItem) => {
-            if (meshItem.GetMeshInstanceId ().IsEqual (meshInstanceId) || isIsolated) {
-                meshItem.SetVisible (true);
-            } else {
-                meshItem.SetVisible (false);
-            }
-            return true;
-        });
+        this.ShowAllMeshes (false);
+        this.ToggleMeshVisibility (meshInstanceId)
     }
 };

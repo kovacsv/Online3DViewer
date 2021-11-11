@@ -1,3 +1,11 @@
+OV.NavigatorItemRecurse =
+{
+    No : 0,
+    Parents : 1,
+    Children : 2,
+    All : 3
+};
+
 OV.MaterialItem = class extends OV.TreeViewSingleItem
 {
     constructor (name, materialIndex, callbacks)
@@ -45,7 +53,7 @@ OV.MeshItem = class extends OV.TreeViewButtonItem
         return this.visible;
     }
 
-    SetVisible (visible)
+    SetVisible (visible, recurse)
     {
         this.visible = visible;
         if (this.visible) {
@@ -53,8 +61,10 @@ OV.MeshItem = class extends OV.TreeViewButtonItem
         } else {
             this.showHideButton.SetImage ('hidden');
         }
-        if (this.parent instanceof OV.NodeItem) {
-            this.parent.UpdateVisibleStatus ();
+        if (recurse === OV.NavigatorItemRecurse.Parents) {
+            if (this.parent instanceof OV.NodeItem) {
+                this.parent.SetVisible (this.parent.CalculateIsVisible (), OV.NavigatorItemRecurse.Parents);
+            }
         }
     }
 };
@@ -66,6 +76,7 @@ OV.NodeItem = class extends OV.TreeViewGroupButtonItem
         super (name, null);
         this.nodeId = nodeId;
         this.callbacks = callbacks;
+        this.visible = true;
 
         this.fitToWindowButton = new OV.TreeViewButton ('fit');
         this.fitToWindowButton.OnClick (() => {
@@ -87,6 +98,11 @@ OV.NodeItem = class extends OV.TreeViewGroupButtonItem
 
     IsVisible ()
     {
+        return this.visible;
+    }
+
+    CalculateIsVisible ()
+    {
         let isVisible = false;
         this.EnumerateMeshItems ((meshItem) => {
             if (meshItem.IsVisible ()) {
@@ -96,12 +112,27 @@ OV.NodeItem = class extends OV.TreeViewGroupButtonItem
         return isVisible;
     }
 
-    SetVisible (visible)
+    SetVisible (visible, recurse)
     {
-        this.UpdateVisibleIcon (visible);
-        for (let child of this.children) {
-            if (child instanceof OV.NodeItem || child instanceof OV.MeshItem) {
-                child.SetVisible (visible);
+        this.visible = visible;
+        if (this.visible) {
+            this.showHideButton.SetImage ('visible');
+        } else {
+            this.showHideButton.SetImage ('hidden');
+        }
+        if (OV.IsDefined (this.callbacks.onVisibilityChanged)) {
+            this.callbacks.onVisibilityChanged (this.visible);
+        }
+        if (recurse === OV.NavigatorItemRecurse.Children || recurse === OV.NavigatorItemRecurse.All) {
+            for (let child of this.children) {
+                if (child instanceof OV.NodeItem || child instanceof OV.MeshItem) {
+                    child.SetVisible (this.visible, OV.NavigatorItemRecurse.Children);
+                }
+            }
+        }
+        if (recurse === OV.NavigatorItemRecurse.Parents || recurse === OV.NavigatorItemRecurse.All) {
+            if (this.parent instanceof OV.NodeItem) {
+                this.parent.SetVisible (this.parent.CalculateIsVisible (), OV.NavigatorItemRecurse.Parents);
             }
         }
     }
@@ -114,27 +145,6 @@ OV.NodeItem = class extends OV.TreeViewGroupButtonItem
             } else if (child instanceof OV.MeshItem) {
                 processor (child);
             }
-        }
-    }
-
-    UpdateVisibleStatus ()
-    {
-        let visible = this.IsVisible ();
-        this.UpdateVisibleIcon (visible);
-        if (this.parent instanceof OV.NodeItem) {
-            this.parent.UpdateVisibleStatus ();
-        }
-    }
-
-    UpdateVisibleIcon (visible)
-    {
-        if (visible) {
-            this.showHideButton.SetImage ('visible');
-        } else {
-            this.showHideButton.SetImage ('hidden');
-        }
-        if (OV.IsDefined (this.callbacks.onVisibilityChanged)) {
-            this.callbacks.onVisibilityChanged (visible);
         }
     }
 };
