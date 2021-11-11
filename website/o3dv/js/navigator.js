@@ -114,8 +114,9 @@ OV.Navigator = class
             onMaterialSelected : (materialIndex) => {
                 this.SetSelection (new OV.Selection (OV.SelectionType.Material, materialIndex));
             },
-            onSelectionRemoved : () => {
+            onViewTypeChanged : () => {
                 this.SetSelection (null);
+                this.ShowAllMeshes ();
             }
         });
 

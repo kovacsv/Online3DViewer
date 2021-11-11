@@ -441,6 +441,14 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             }
         }
 
+        function UpdateView (panel, importResult, isHierarchical)
+        {
+            panel.ClearMeshTree ();
+            panel.FillMeshTree (importResult.model);
+            UpdateButtonsStatus (panel.buttons, panel.showTree, isHierarchical);
+            panel.callbacks.onViewTypeChanged ();
+        }
+
         this.buttons = {
             flatList : {
                 name : 'Flat list',
@@ -489,10 +497,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
                 return;
             }
             this.showTree = false;
-            this.ClearMeshTree ();
-            this.FillMeshTree (importResult.model);
-            UpdateButtonsStatus (this.buttons, this.showTree, isHierarchical);
-            this.callbacks.onSelectionRemoved ();
+            UpdateView (this, importResult, isHierarchical);
         });
 
         CreateButton (this.buttonsDiv, this.buttons.treeView, null, () => {
@@ -500,10 +505,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
                 return;
             }
             this.showTree = true;
-            this.ClearMeshTree ();
-            this.FillMeshTree (importResult.model);
-            UpdateButtonsStatus (this.buttons, this.showTree, isHierarchical);
-            this.callbacks.onSelectionRemoved ();
+            UpdateView (this, importResult, isHierarchical);
         });
 
         this.buttons.separator = $('<div>').addClass ('ov_navigator_buttons_separator').appendTo (this.buttonsDiv);
@@ -692,6 +694,8 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
 
     IsolateMesh (meshInstanceId)
     {
+        // TODO: slow because of recursion
+
         let isIsolated = this.IsMeshIsolated (meshInstanceId);
         this.EnumerateMeshItems ((meshItem) => {
             if (meshItem.GetMeshInstanceId ().IsEqual (meshInstanceId) || isIsolated) {
