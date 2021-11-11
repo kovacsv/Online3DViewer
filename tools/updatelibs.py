@@ -29,6 +29,11 @@ threeJsFileMap = [
     [os.path.join ('three', 'examples', 'js', 'loaders', 'VRMLLoader.js'), os.path.join ('three_loaders', 'VRMLLoader.js')]
 ]
 
+dracoFileMap = [
+    [os.path.join ('draco3d', 'draco_decoder_nodejs.js'), os.path.join ('loaders', 'draco_decoder.js')],
+    [os.path.join ('draco3d', 'draco_decoder.wasm'), os.path.join ('loaders', 'draco_decoder.wasm')],
+]
+
 rhino3dmFileMap = [
     [os.path.join ('rhino3dm', 'rhino3dm.js'), os.path.join ('loaders', 'rhino3dm.min.js')],
     [os.path.join ('rhino3dm', 'rhino3dm.wasm'), os.path.join ('loaders', 'rhino3dm.wasm')],
@@ -63,6 +68,7 @@ def Main (argv):
     UpdateModule (jqueryFileMap, nodeModulesDir, libsDir)
     UpdateModule (pickrFileMap, nodeModulesDir, libsDir)
     UpdateModule (threeJsFileMap, nodeModulesDir, libsDir)
+    UpdateModule (dracoFileMap, nodeModulesDir, libsDir)
     UpdateModule (rhino3dmFileMap, nodeModulesDir, libsDir)
     UpdateModule (fflateFileMap, nodeModulesDir, libsDir)
 
