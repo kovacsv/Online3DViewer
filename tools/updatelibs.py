@@ -8,6 +8,17 @@ import urllib.request
 
 from lib import tools_lib as Tools
 
+jqueryFileMap = [
+    [os.path.join ('jquery', 'LICENSE.txt'), os.path.join ('jquery.license.md')],
+    [os.path.join ('jquery', 'dist', 'jquery.min.js'), os.path.join ('jquery.min.js')]
+]
+
+pickrFileMap = [
+    [os.path.join ('@simonwep', 'pickr', 'LICENSE'), os.path.join ('pickr.license.md')],
+    [os.path.join ('@simonwep', 'pickr', 'dist', 'pickr.es5.min.js'), os.path.join ('pickr.es5.min.js')],
+    [os.path.join ('@simonwep', 'pickr', 'dist', 'themes', 'monolith.min.css'), os.path.join ('pickr.monolith.min.css')]
+]
+
 threeJsFileMap = [
     [os.path.join ('three', 'LICENSE'), os.path.join ('three.license.md')],
     [os.path.join ('three', 'build', 'three.min.js'), os.path.join ('three.min.js')],
@@ -16,12 +27,6 @@ threeJsFileMap = [
     [os.path.join ('three', 'examples', 'js', 'loaders', 'ColladaLoader.js'), os.path.join ('three_loaders', 'ColladaLoader.js')],
     [os.path.join ('three', 'examples', 'js', 'loaders', 'FBXLoader.js'), os.path.join ('three_loaders', 'FBXLoader.js')],
     [os.path.join ('three', 'examples', 'js', 'loaders', 'VRMLLoader.js'), os.path.join ('three_loaders', 'VRMLLoader.js')]
-]
-
-pickrFileMap = [
-    [os.path.join ('@simonwep', 'pickr', 'LICENSE'), os.path.join ('pickr.license.md')],
-    [os.path.join ('@simonwep', 'pickr', 'dist', 'pickr.es5.min.js'), os.path.join ('pickr.es5.min.js')],
-    [os.path.join ('@simonwep', 'pickr', 'dist', 'themes', 'monolith.min.css'), os.path.join ('pickr.monolith.min.css')]
 ]
 
 rhino3dmFileMap = [
@@ -55,8 +60,9 @@ def Main (argv):
     nodeModulesDir = os.path.join (rootDir, 'node_modules')
     libsDir = os.path.join (rootDir, 'libs')
 
-    UpdateModule (threeJsFileMap, nodeModulesDir, libsDir)
+    UpdateModule (jqueryFileMap, nodeModulesDir, libsDir)
     UpdateModule (pickrFileMap, nodeModulesDir, libsDir)
+    UpdateModule (threeJsFileMap, nodeModulesDir, libsDir)
     UpdateModule (rhino3dmFileMap, nodeModulesDir, libsDir)
     UpdateModule (fflateFileMap, nodeModulesDir, libsDir)
 
