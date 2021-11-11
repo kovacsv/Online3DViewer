@@ -55,6 +55,9 @@ OV.MeshItem = class extends OV.TreeViewButtonItem
 
     SetVisible (visible, recurse)
     {
+        if (this.visible === visible) {
+            return;
+        }
         this.visible = visible;
         if (this.visible) {
             this.showHideButton.SetImage ('visible');
@@ -114,6 +117,9 @@ OV.NodeItem = class extends OV.TreeViewGroupButtonItem
 
     SetVisible (visible, recurse)
     {
+        if (this.visible === visible) {
+            return;
+        }
         this.visible = visible;
         if (this.visible) {
             this.showHideButton.SetImage ('visible');
