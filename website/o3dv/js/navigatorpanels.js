@@ -335,8 +335,8 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         this.nodeIdToItem = new Map ();
         this.meshInstanceIdToItem = new Map ();
         this.rootItem = null;
-        this.showHideButton = null;
         this.isHierarchical = false;
+        this.buttins = null;
 
         this.treeView.AddClass ('tight');
         this.buttonsDiv = $('<div>').addClass ('ov_navigator_buttons').insertBefore (this.treeDiv);
@@ -368,7 +368,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
     {
         this.ClearMeshTree ();
         this.buttonsDiv.empty ();
-        this.showHideButton = null;
+        this.buttons = null;
     }
 
     ClearMeshTree ()
@@ -432,7 +432,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             }
         }
 
-        let buttons = {
+        this.buttons = {
             flatList : {
                 name : 'Flat list',
                 icon : 'flat_list',
@@ -471,54 +471,54 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             }
         };
 
-        CreateButton (this.buttonsDiv, buttons.flatList, null, () => {
+        CreateButton (this.buttonsDiv, this.buttons.flatList, null, () => {
             if (!this.isHierarchical) {
                 return;
             }
             this.isHierarchical = false;
             this.ClearMeshTree ();
             this.FillMeshTree (importResult.model);
-            UpdateButtonsStatus (buttons, this.isHierarchical);
+            UpdateButtonsStatus (this.buttons, this.isHierarchical);
             this.callbacks.onSelectionRemoved ();
         });
 
-        CreateButton (this.buttonsDiv, buttons.treeView, null, () => {
+        CreateButton (this.buttonsDiv, this.buttons.treeView, null, () => {
             if (this.isHierarchical) {
                 return;
             }
             this.isHierarchical = true;
             this.ClearMeshTree ();
             this.FillMeshTree (importResult.model);
-            UpdateButtonsStatus (buttons, this.isHierarchical);
+            UpdateButtonsStatus (this.buttons, this.isHierarchical);
             this.callbacks.onSelectionRemoved ();
         });
 
         $('<div>').addClass ('ov_navigator_buttons_separator').appendTo (this.buttonsDiv);
 
-        CreateButton (this.buttonsDiv, buttons.expandAll, null, () => {
+        CreateButton (this.buttonsDiv, this.buttons.expandAll, null, () => {
             this.rootItem.ExpandAll (true);
         });
 
-        CreateButton (this.buttonsDiv, buttons.collapseAll, null, () => {
+        CreateButton (this.buttonsDiv, this.buttons.collapseAll, null, () => {
             this.rootItem.ExpandAll (false);
         });
 
-        this.showHideButton = CreateButton (this.buttonsDiv, buttons.showHideMeshes, 'right', () => {
+        CreateButton (this.buttonsDiv, this.buttons.showHideMeshes, 'right', () => {
             let nodeId = this.rootItem.GetNodeId ();
             this.callbacks.onNodeShowHide (nodeId);
         });
 
-        CreateButton (this.buttonsDiv, buttons.fitToWindow, 'right', () => {
+        CreateButton (this.buttonsDiv, this.buttons.fitToWindow, 'right', () => {
             let nodeId = this.rootItem.GetNodeId ();
             this.callbacks.onNodeFitToWindow (nodeId);
         });
 
-        UpdateButtonsStatus (buttons, this.isHierarchical);
+        UpdateButtonsStatus (this.buttons, this.isHierarchical);
     }
 
     FillMeshTree (model)
     {
-        function AddMeshToNodeTree (navigator, model, node, meshIndex, parentItem, isHierarchical)
+        function AddMeshToNodeTree (panel, model, node, meshIndex, parentItem, isHierarchical)
         {
             let mesh = model.GetMesh (meshIndex);
             let meshName = OV.GetMeshName (mesh.GetName ());
@@ -526,68 +526,68 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             let meshItemIcon = isHierarchical ? 'tree_mesh' : null;
             let meshItem = new OV.MeshItem (meshName, meshItemIcon, meshInstanceId, {
                 onShowHide : (selectedMeshId) => {
-                    navigator.callbacks.onMeshShowHide (selectedMeshId);
+                    panel.callbacks.onMeshShowHide (selectedMeshId);
                 },
                 onFitToWindow : (selectedMeshId) => {
-                    navigator.callbacks.onMeshFitToWindow (selectedMeshId);
+                    panel.callbacks.onMeshFitToWindow (selectedMeshId);
                 },
                 onSelected : (selectedMeshId) => {
-                    navigator.callbacks.onMeshSelected (selectedMeshId);
+                    panel.callbacks.onMeshSelected (selectedMeshId);
                 }
             });
-            navigator.meshInstanceIdToItem.set (meshInstanceId.GetKey (), meshItem);
+            panel.meshInstanceIdToItem.set (meshInstanceId.GetKey (), meshItem);
             parentItem.AddChild (meshItem);
         }
 
-        function CreateNodeItem (navigator, name, node)
+        function CreateNodeItem (panel, name, node)
         {
             const nodeName = OV.GetNodeName (name);
             const nodeId = node.GetId ();
             let nodeItem = new OV.NodeItem (nodeName, nodeId, {
                 onShowHide : (selectedNodeId) => {
-                    navigator.callbacks.onNodeShowHide (selectedNodeId);
+                    panel.callbacks.onNodeShowHide (selectedNodeId);
                 },
                 onFitToWindow : (selectedNodeId) => {
-                    navigator.callbacks.onNodeFitToWindow (selectedNodeId);
+                    panel.callbacks.onNodeFitToWindow (selectedNodeId);
                 }
             });
-            navigator.nodeIdToItem.set (nodeId, nodeItem);
+            panel.nodeIdToItem.set (nodeId, nodeItem);
             return nodeItem;
         }
 
-        function CreateDummyRootItem (navigator, node)
+        function CreateDummyRootItem (panel, node)
         {
             const nodeId = node.GetId ();
             let rootItem = new OV.NodeItem (null, nodeId, {
                 onVisibilityChanged : (isVisible) => {
                     if (isVisible) {
-                        OV.SetSvgIconImage (navigator.showHideButton, 'visible');
+                        OV.SetSvgIconImage (panel.buttons.showHideMeshes.iconDiv, 'visible');
                     } else {
-                        OV.SetSvgIconImage (navigator.showHideButton, 'hidden');
+                        OV.SetSvgIconImage (panel.buttons.showHideMeshes.iconDiv, 'hidden');
                     }
                 }
             });
             rootItem.Show (false);
             rootItem.ShowChildren (true);
-            navigator.treeView.AddChild (rootItem);
-            navigator.nodeIdToItem.set (nodeId, rootItem);
+            panel.treeView.AddChild (rootItem);
+            panel.nodeIdToItem.set (nodeId, rootItem);
             return rootItem;
         }
 
-        function AddModelNodeToTree (navigator, model, node, parentItem, isHierarchical)
+        function AddModelNodeToTree (panel, model, node, parentItem, isHierarchical)
         {
             for (let childNode of node.GetChildNodes ()) {
                 if (isHierarchical) {
-                    let nodeItem = CreateNodeItem (navigator, node.GetName (), childNode);
+                    let nodeItem = CreateNodeItem (panel, node.GetName (), childNode);
                     parentItem.AddChild (nodeItem);
-                    AddModelNodeToTree (navigator, model, childNode, nodeItem, isHierarchical);
+                    AddModelNodeToTree (panel, model, childNode, nodeItem, isHierarchical);
                 } else {
-                    AddModelNodeToTree (navigator, model, childNode, parentItem, isHierarchical);
+                    AddModelNodeToTree (panel, model, childNode, parentItem, isHierarchical);
                 }
             }
 
             for (let meshIndex of node.GetMeshIndices ()) {
-                AddMeshToNodeTree (navigator, model, node, meshIndex, parentItem, isHierarchical);
+                AddMeshToNodeTree (panel, model, node, meshIndex, parentItem, isHierarchical);
             }
         }
 

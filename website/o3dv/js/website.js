@@ -115,22 +115,16 @@ OV.Website = class
     {
         this.HidePopups ();
         this.model = null;
+        this.parameters.fileNameDiv.empty ();
         this.viewer.Clear ();
         this.navigator.Clear ();
         this.sidebar.Clear ();
     }
 
-    HidePopups ()
-    {
-        if (this.dialog !== null) {
-            this.dialog.Hide ();
-            this.dialog = null;
-        }
-    }
-
-    OnModelFinished (importResult, threeObject)
+    OnModelLoaded (importResult, threeObject)
     {
         this.model = importResult.model;
+        this.parameters.fileNameDiv.html (importResult.mainFile);
         this.viewer.SetMainObject (threeObject);
         this.viewer.SetUpVector (importResult.upVector, false);
         this.navigator.FillTree (importResult);
@@ -226,6 +220,14 @@ OV.Website = class
         } else {
             this.ClearModel ();
             this.SetUIState (OV.WebsiteUIState.Intro);
+        }
+    }
+
+    HidePopups ()
+    {
+        if (this.dialog !== null) {
+            this.dialog.Hide ();
+            this.dialog = null;
         }
     }
 
@@ -478,7 +480,7 @@ OV.Website = class
             },
             onFinish : (importResult, threeObject) =>
             {
-                this.OnModelFinished (importResult, threeObject);
+                this.OnModelLoaded (importResult, threeObject);
                 let importedExtension = OV.GetFileExtension (importResult.mainFile);
                 this.eventHandler.HandleEvent ('model_loaded', { extension : importedExtension });
                 this.SetUIState (OV.WebsiteUIState.Model);

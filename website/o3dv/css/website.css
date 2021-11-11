@@ -101,6 +101,16 @@ div.main
 	overflow: auto;
 }
 
+div.main_file_name
+{
+	margin: 10px 20px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	max-width: 450px;
+	float: left;
+}
+
 div.main_navigator
 {
 	width: 280px;

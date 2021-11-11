@@ -21,7 +21,7 @@ div.ov_navigator_buttons div.ov_navigator_button.right
 
 div.ov_navigator_buttons div.ov_navigator_buttons_separator
 {
-	background: var(--ov_toolbar_separator_color);
+	background: var(--ov_border_color);
 	width: 1px;
 	height: 28px;
 	margin: 0px 2px;
