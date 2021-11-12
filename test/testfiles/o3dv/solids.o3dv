@@ -1,0 +1,141 @@
+{
+	"properties" : [
+		{ "name" : "Author", "value" : "Viktor Kovács" },
+		{ "name" : "License", "value" : "MIT" }
+	],
+	"root" : {
+		"children" : [
+			{
+				"name" : "Tetrahedral",
+				"meshes" : [0]
+			},
+			{
+				"name" : "Octahedral",
+				"meshes" : [1, 2]
+			},
+			{
+				"name" : "Icosahedral",
+				"meshes" : [3, 4]
+			}
+		],
+		"transformation" : {
+			"rotation" : [0.7071067811865475, 0.0, 0.0, 0.7071067811865476]
+		}
+	},
+	"materials" : [
+		{
+			"name" : "Red",
+			"color" : [204, 51, 51]
+		},
+		{
+			"name" : "Green",
+			"color" : [39, 155, 97]
+		},
+		{
+			"name" : "Blue",
+			"color" : [0, 138, 184]
+		},
+		{
+			"name" : "Orange",
+			"color" : [255, 204, 51]
+		},
+		{
+			"name" : "Purple",
+			"color" : [204, 102, 153]
+		}
+	],
+	"meshes" : [
+		{
+			"name" : "Tetrahedron",
+			"type" : "platonic",
+			"material" : 0,
+			"parameters" : {
+				"solid_type" : "tetrahedron",
+				"radius" : 1.0
+			},
+			"properties" : [
+				{ "name" : "Name", "value" : "Tetrahedron" },
+				{ "name" : "Dual", "value" : "Tetrahedron" },
+				{ "name" : "Vertices", "value" : "4" },
+				{ "name" : "Edges", "value" : "6" },
+				{ "name" : "Faces", "value" : "4" }
+			]
+		},
+		{
+			"name" : "Hexahedron",
+			"type" : "platonic",
+			"material" : 1,
+			"transformation" : {
+				"translation" : [0.0, 3.0, 0.0]
+			},
+			"parameters" : {
+				"solid_type" : "hexahedron",
+				"radius" : 1.0
+			},
+			"properties" : [
+				{ "name" : "Name", "value" : "Hexahedron" },
+				{ "name" : "Dual", "value" : "Octahedron" },
+				{ "name" : "Vertices", "value" : "8" },
+				{ "name" : "Edges", "value" : "12" },
+				{ "name" : "Faces", "value" : "6" }
+			]
+		},
+		{
+			"name" : "Octahedron",
+			"type" : "platonic",
+			"material" : 2,
+			"transformation" : {
+				"translation" : [3.0, 0.0, 0.0]
+			},
+			"parameters" : {
+				"solid_type" : "octahedron",
+				"radius" : 1.0
+			},
+			"properties" : [
+				{ "name" : "Name", "value" : "Octahedron" },
+				{ "name" : "Dual", "value" : "Hexahedron" },
+				{ "name" : "Vertices", "value" : "6" },
+				{ "name" : "Edges", "value" : "12" },
+				{ "name" : "Faces", "value" : "8" }
+			]
+		},
+		{
+			"name" : "Dodecahedron",
+			"type" : "platonic",
+			"material" : 3,
+			"transformation" : {
+				"translation" : [3.0, 3.0, 0.0]
+			},
+			"parameters" : {
+				"solid_type" : "dodecahedron",
+				"radius" : 1.0
+			},
+			"properties" : [
+				{ "name" : "Name", "value" : "Dodecahedron" },
+				{ "name" : "Dual", "value" : "Icosahedron" },
+				{ "name" : "Vertices", "value" : "20" },
+				{ "name" : "Edges", "value" : "30" },
+				{ "name" : "Faces", "value" : "12" }
+			]
+		},
+		{
+			"name" : "Icosahedron",
+			"type" : "platonic",
+			"material" : 4,
+			"transformation" : {
+				"translation" : [6.0, 1.5, 0.0]
+			},
+			"parameters" : {
+				"solid_type" : "icosahedron",
+				"radius" : 1.0
+			},
+			"properties" : [
+				{ "name" : "Name", "value" : "Icosahedron" },
+				{ "name" : "Dual", "value" : "Dodecahedron" },
+				{ "name" : "Vertices", "value" : "12" },
+				{ "name" : "Edges", "value" : "30" },
+				{ "name" : "Faces", "value" : "20" }
+			]
+		}
+	]
+}

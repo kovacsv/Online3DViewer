@@ -4,7 +4,7 @@ OV.ImporterO3dv = class extends OV.ImporterBase
     {
         super ();
     }
-    
+
     CanImportExtension (extension)
     {
         return extension === 'o3dv';
@@ -14,10 +14,10 @@ OV.ImporterO3dv = class extends OV.ImporterBase
     {
         return OV.Direction.Z;
     }
-    
+
     ClearContent ()
     {
-        
+
     }
 
     ResetContent ()
@@ -44,6 +44,7 @@ OV.ImporterO3dv = class extends OV.ImporterBase
         if (content.root !== undefined) {
             this.ImportNode (content.root, this.model.GetRootNode ());
         }
+        this.ImportProperties (this.model, content);
         onFinish ();
     }
 
@@ -71,7 +72,7 @@ OV.ImporterO3dv = class extends OV.ImporterBase
         if (meshContent.material !== undefined) {
             genParams.SetMaterial (meshContent.material);
         }
-        // TODO: remove transformation from mesh, and from generator
+
         if (meshContent.transformation !== undefined) {
             let translation = new OV.Coord3D (0.0, 0.0, 0.0);
             let rotation = new OV.Quaternion (0.0, 0.0, 0.0, 1.0);
@@ -121,29 +122,42 @@ OV.ImporterO3dv = class extends OV.ImporterBase
             mesh = OV.GeneratePlatonicSolid (genParams, parameters.solid_type, radius);
         }
         if (mesh !== null) {
+            this.ImportProperties (mesh, meshContent);
             this.model.AddMesh (mesh);
         }
     }
 
-    ImportNode (node, meshNode)
+    ImportNode (nodeContent, meshNode)
     {
-        if (node.name !== undefined) {
-            meshNode.SetName (node.name);
+        if (nodeContent.name !== undefined) {
+            meshNode.SetName (nodeContent.name);
         }
-        if (node.transformation !== undefined) {
-            const nodeTransformation = this.GetTransformation (node.transformation);
+        if (nodeContent.transformation !== undefined) {
+            const nodeTransformation = this.GetTransformation (nodeContent.transformation);
             meshNode.SetTransformation (nodeTransformation);
         }
-        if (node.meshes !== undefined) {
-            for (const meshIndex of node.meshes) {
+        if (nodeContent.meshes !== undefined) {
+            for (const meshIndex of nodeContent.meshes) {
                 meshNode.AddMeshIndex (meshIndex);
             }
         }
-        if (node.children !== undefined) {
-            for (const child of node.children) {
+        if (nodeContent.children !== undefined) {
+            for (const child of nodeContent.children) {
                 let childMeshNode = new OV.Node ();
                 meshNode.AddChildNode (childMeshNode);
                 this.ImportNode (child, childMeshNode);
+            }
+        }
+    }
+
+    ImportProperties (element, nodeContent)
+    {
+        if (nodeContent.properties !== undefined) {
+            const propertyGroup = new OV.PropertyGroup ('Properties');
+            element.AddPropertyGroup (propertyGroup);
+            for (const nodeProperty of nodeContent.properties) {
+                const property = new OV.Property (OV.PropertyType.Text, nodeProperty.name, nodeProperty.value);
+                propertyGroup.AddProperty (property);
             }
         }
     }
