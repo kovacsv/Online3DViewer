@@ -128,8 +128,8 @@ OV.AddSvgIcon = function (parent, iconName, extraClass)
 
 OV.SetSvgIconImage = function (icon, iconName)
 {
-    icon.empty ();
-    $('<i>').addClass ('icon').addClass ('icon-' + iconName).appendTo (icon);
+    let iconChild = icon.children (':first');
+    iconChild.removeClass ().addClass ('icon').addClass ('icon-' + iconName);
 };
 
 OV.CreateHeaderButton = function (iconName, title, link)
