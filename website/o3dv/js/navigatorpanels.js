@@ -554,9 +554,9 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             parentItem.AddChild (meshItem);
         }
 
-        function CreateNodeItem (panel, name, node)
+        function CreateNodeItem (panel, node)
         {
-            const nodeName = OV.GetNodeName (name);
+            const nodeName = OV.GetNodeName (node.GetName ());
             const nodeId = node.GetId ();
             let nodeItem = new OV.NodeItem (nodeName, nodeId, {
                 onShowHide : (selectedNodeId) => {
@@ -593,7 +593,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         {
             for (let childNode of node.GetChildNodes ()) {
                 if (showTree) {
-                    let nodeItem = CreateNodeItem (panel, node.GetName (), childNode);
+                    let nodeItem = CreateNodeItem (panel, childNode);
                     parentItem.AddChild (nodeItem);
                     AddModelNodeToTree (panel, model, childNode, nodeItem, showTree);
                 } else {
