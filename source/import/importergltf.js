@@ -943,14 +943,18 @@ OV.ImporterGltf = class extends OV.ImporterBase
         node.SetTransformation (GetNodeTransformation (gltfNode));
         parentNode.AddChildNode (node);
 
-        if (gltfNode.mesh !== undefined) {
-            node.SetType (OV.NodeType.MeshNode);
-            node.AddMeshIndex (gltfNode.mesh);
-        } else if (gltfNode.children !== undefined) {
+        if (gltfNode.children !== undefined) {
             for (let childIndex of gltfNode.children) {
                 let childGltfNode = gltf.nodes[childIndex];
                 this.ImportNode (gltf, childGltfNode, node);
             }
+        }
+
+        if (gltfNode.mesh !== undefined) {
+            if (gltfNode.children === undefined || gltfNode.children.length === 0) {
+                node.SetType (OV.NodeType.MeshNode);
+            }
+            node.AddMeshIndex (gltfNode.mesh);
         }
     }
 
