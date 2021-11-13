@@ -25,23 +25,23 @@
 	"materials" : [
 		{
 			"name" : "Red",
-			"color" : [204, 51, 51]
+			"color" : [194, 41, 41]
 		},
 		{
 			"name" : "Green",
-			"color" : [39, 155, 97]
+			"color" : [29, 145, 87]
 		},
 		{
 			"name" : "Blue",
-			"color" : [0, 138, 184]
+			"color" : [0, 128, 174]
 		},
 		{
-			"name" : "Orange",
-			"color" : [255, 204, 51]
+			"name" : "Yellow",
+			"color" : [245, 194, 41]
 		},
 		{
 			"name" : "Purple",
-			"color" : [204, 102, 153]
+			"color" : [194, 92, 143]
 		}
 	],
 	"meshes" : [

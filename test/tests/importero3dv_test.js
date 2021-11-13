@@ -37,4 +37,48 @@ describe ('O3dv Importer', function () {
             done ();
         });
     });
+
+    it ('solids.o3dv', function (done) {
+        testFiles.ImportO3dvFile ('solids.o3dv', function (model) {
+            assert (OV.CheckModel (model));
+            assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+                name : '<Root>',
+                childNodes : [
+                    {
+                        name : 'Tetrahedral',
+                        childNodes : [],
+                        meshNames : ['Tetrahedron']
+                    },
+                    {
+                        name : 'Octahedral',
+                        childNodes : [],
+                        meshNames : ['Hexahedron', 'Octahedron']
+                    },                    {
+                        name : 'Icosahedral',
+                        childNodes : [],
+                        meshNames : ['Dodecahedron', 'Icosahedron']
+                    }
+                ],
+                meshNames : []
+            });
+
+            assert.strictEqual (model.MaterialCount (), 5);
+            assert.strictEqual (model.MeshCount (), 5);
+            assert.strictEqual (model.MeshInstanceCount (), 5);
+
+            assert (OV.IsEqual (OV.CalculateVolume (model), 8.707448863695035));
+            assert (OV.IsEqual (OV.CalculateSurfaceArea (model), 39.636169009449105));
+
+            assert.strictEqual (model.PropertyGroupCount (), 1);
+            assert.strictEqual (model.GetPropertyGroup (0).PropertyCount (), 2);
+
+            for (let i = 0; i < model.MeshCount (); i++) {
+                let mesh = model.GetMesh (i);
+                assert.strictEqual (mesh.PropertyGroupCount (), 1);
+                assert.strictEqual (mesh.GetPropertyGroup (0).PropertyCount (), 5);
+            }
+
+            done ();
+        });
+    });
 });
