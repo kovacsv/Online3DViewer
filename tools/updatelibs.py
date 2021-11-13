@@ -23,7 +23,8 @@ threeJsFileMap = [
     [os.path.join ('three', 'examples', 'js', 'loaders', '3MFLoader.js'), os.path.join ('three_loaders', '3MFLoader.js')],
     [os.path.join ('three', 'examples', 'js', 'loaders', 'ColladaLoader.js'), os.path.join ('three_loaders', 'ColladaLoader.js')],
     [os.path.join ('three', 'examples', 'js', 'loaders', 'FBXLoader.js'), os.path.join ('three_loaders', 'FBXLoader.js')],
-    [os.path.join ('three', 'examples', 'js', 'loaders', 'VRMLLoader.js'), os.path.join ('three_loaders', 'VRMLLoader.js')]
+    [os.path.join ('three', 'examples', 'js', 'loaders', 'VRMLLoader.js'), os.path.join ('three_loaders', 'VRMLLoader.js')],
+    [os.path.join ('three', 'examples', 'js', 'loaders', 'SVGLoader.js'), os.path.join ('three_loaders', 'SVGLoader.js')]
 ]
 
 dracoFileMap = [
