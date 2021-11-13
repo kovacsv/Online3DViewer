@@ -139,6 +139,7 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
                 AddObject (importer, model, childObject, node);
             }
             if (threeObject.isMesh && importer.IsMeshVisible (threeObject)) {
+                node.SetType (OV.NodeType.MeshNode);
                 let mesh = importer.ConvertThreeMesh (threeObject);
                 let meshIndex = model.AddMesh (mesh);
                 node.AddMeshIndex (meshIndex);

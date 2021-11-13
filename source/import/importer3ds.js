@@ -541,6 +541,7 @@ OV.Importer3ds = class extends OV.ImporterBase
                 let isMeshNode = this.meshNameToIndex.has (node3ds.name);
                 node.SetTransformation (GetNodeTransformation (node3ds, isMeshNode));
                 if (isMeshNode) {
+                    node.SetType (OV.NodeType.MeshNode);
                     node.AddMeshIndex (this.meshNameToIndex.get (node3ds.name));
                 }
             }

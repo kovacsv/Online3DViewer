@@ -1,4 +1,8 @@
-OV.InvalidNodeId = -1;
+OV.NodeType =
+{
+    GroupNode : 0,
+    MeshNode : 1
+};
 
 OV.NodeIdGenerator = class
 {
@@ -19,6 +23,7 @@ OV.Node = class
 {
     constructor ()
     {
+        this.type = OV.NodeType.GroupNode;
         this.name = '';
         this.parent = null;
         this.transformation = new OV.Transformation ();
@@ -33,6 +38,16 @@ OV.Node = class
     IsEmpty ()
     {
         return this.childNodes.length === 0 && this.meshIndices.length === 0;
+    }
+
+    GetType ()
+    {
+        return this.type;
+    }
+
+    SetType (type)
+    {
+        this.type = type;
     }
 
     GetId ()

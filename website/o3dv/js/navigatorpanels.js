@@ -591,16 +591,23 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
 
         function AddModelNodeToTree (panel, model, node, parentItem, showTree)
         {
+            let meshNodes = [];
             for (let childNode of node.GetChildNodes ()) {
                 if (showTree) {
-                    let nodeItem = CreateNodeItem (panel, childNode);
-                    parentItem.AddChild (nodeItem);
-                    AddModelNodeToTree (panel, model, childNode, nodeItem, showTree);
+                    if (childNode.GetType () === OV.NodeType.GroupNode) {
+                        let nodeItem = CreateNodeItem (panel, childNode);
+                        parentItem.AddChild (nodeItem);
+                        AddModelNodeToTree (panel, model, childNode, nodeItem, showTree);
+                    } else if (childNode.GetType () === OV.NodeType.MeshNode) {
+                        meshNodes.push (childNode);
+                    }
                 } else {
                     AddModelNodeToTree (panel, model, childNode, parentItem, showTree);
                 }
             }
-
+            for (let meshNode of meshNodes) {
+                AddModelNodeToTree (panel, model, meshNode, parentItem, showTree);
+            }
             for (let meshIndex of node.GetMeshIndices ()) {
                 AddMeshToNodeTree (panel, model, node, meshIndex, parentItem, showTree);
             }
