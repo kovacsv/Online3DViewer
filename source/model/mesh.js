@@ -7,6 +7,7 @@ OV.Mesh = class extends OV.ModelObject3D
         this.normals = [];
         this.uvs = [];
         this.triangles = [];
+        this.transformation = new OV.Transformation ();
     }
 
     VertexCount ()
@@ -88,10 +89,27 @@ OV.Mesh = class extends OV.ModelObject3D
         return this.triangles[index];
     }
 
+    SetTransformation (transformation)
+    {
+        this.transformation = transformation;
+    }
+
+    GetTransformation ()
+    {
+        return this.transformation;
+    }
+
     EnumerateVertices (onVertex)
     {
-        for (const vertex of this.vertices) {
-            onVertex (vertex);
+        if (this.transformation.IsIdentity ()) {
+            for (const vertex of this.vertices) {
+                onVertex (vertex);
+            }
+        } else {
+            for (const vertex of this.vertices) {
+                const transformed = this.transformation.TransformCoord3D (vertex);
+                onVertex (transformed);
+            }
         }
     }
 
@@ -104,11 +122,20 @@ OV.Mesh = class extends OV.ModelObject3D
 
     EnumerateTriangleVertices (onTriangleVertices)
     {
-        for (const triangle of this.triangles) {
-            let v0 = this.vertices[triangle.v0];
-            let v1 = this.vertices[triangle.v1];
-            let v2 = this.vertices[triangle.v2];
-            onTriangleVertices (v0, v1, v2);
+        if (this.transformation.IsIdentity ()) {
+            for (const triangle of this.triangles) {
+                let v0 = this.vertices[triangle.v0];
+                let v1 = this.vertices[triangle.v1];
+                let v2 = this.vertices[triangle.v2];
+                onTriangleVertices (v0, v1, v2);
+            }
+        } else {
+            for (const triangle of this.triangles) {
+                const v0Transformed = this.transformation.TransformCoord3D (this.vertices[triangle.v0]);
+                const v1Transformed = this.transformation.TransformCoord3D (this.vertices[triangle.v1]);
+                const v2Transformed = this.transformation.TransformCoord3D (this.vertices[triangle.v2]);
+                onTriangleVertices (v0Transformed, v1Transformed, v2Transformed);
+            }
         }
     }
 };

@@ -95,4 +95,35 @@ describe ('Mesh', function() {
         assert (OV.CoordIsEqual3D (mesh.GetVertex (2), new OV.Coord3D (0.0, 1.0, 3.0)));
         assert (OV.CoordIsEqual3D (mesh.GetNormal (0), new OV.Coord3D (-1.0, 0.0, 0.0)));
     });
+
+    it ('Mesh Transformation', function () {
+        var mesh = new OV.Mesh ();
+        mesh.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
+        mesh.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
+        mesh.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
+        mesh.AddNormal (new OV.Coord3D (0.0, 0.0, 1.0));
+        mesh.AddTextureUV (new OV.Coord2D (0.0, 0.0));
+        mesh.AddTextureUV (new OV.Coord2D (1.0, 0.0));
+        mesh.AddTextureUV (new OV.Coord2D (1.0, 1.0));
+        var triangle = new OV.Triangle (0, 1, 2);
+        triangle.SetNormals (0, 0, 0);
+        triangle.SetTextureUVs (0, 1, 2);
+        mesh.AddTriangle (triangle);
+
+        let rotation = OV.QuaternionFromAxisAngle (new OV.Coord3D (0.0, 1.0, 0.0), -Math.PI / 2.0);
+        let transformation = new OV.Transformation ();
+        transformation.AppendMatrix (new OV.Matrix ().CreateScale (2.0, 1.0, 1.0));
+        transformation.AppendMatrix (new OV.Matrix ().CreateRotation (rotation.x, rotation.y, rotation.z, rotation.w));
+        transformation.AppendMatrix (new OV.Matrix ().CreateTranslation (0.0, 0.0, 1.0));
+        mesh.SetTransformation (transformation);
+
+        let transformedVertices = [];
+        mesh.EnumerateVertices ((vertex) => {
+            transformedVertices.push (vertex);
+        })
+
+        assert (OV.CoordIsEqual3D (transformedVertices[0], new OV.Coord3D (0.0, 0.0, 1.0)));
+        assert (OV.CoordIsEqual3D (transformedVertices[1], new OV.Coord3D (0.0, 0.0, 3.0)));
+        assert (OV.CoordIsEqual3D (transformedVertices[2], new OV.Coord3D (0.0, 1.0, 3.0)));
+    });
 });
