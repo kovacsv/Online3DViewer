@@ -272,10 +272,6 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 		}
 
 		let threeMesh = new THREE.Mesh (threeGeometry, meshThreeMaterials);
-		let matrix = mesh.GetTransformation ().GetMatrix ();
-		let threeMatrix = new THREE.Matrix4 ().fromArray (matrix.Get ());
-		threeMesh.applyMatrix4 (threeMatrix);
-
 		threeMesh.userData = {
 			originalMeshId : meshInstanceId,
 			originalMaterials : meshOriginalMaterials,

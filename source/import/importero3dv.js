@@ -73,6 +73,22 @@ OV.ImporterO3dv = class extends OV.ImporterBase
             genParams.SetMaterial (meshContent.material);
         }
 
+        if (meshContent.transformation !== undefined) {
+            let translation = new OV.Coord3D (0.0, 0.0, 0.0);
+            let rotation = new OV.Quaternion (0.0, 0.0, 0.0, 1.0);
+            let scale = new OV.Coord3D (1.0, 1.0, 1.0);
+            if (meshContent.transformation.translation !== undefined) {
+                translation = OV.ArrayToCoord3D (meshContent.transformation.translation);
+            }
+            if (meshContent.transformation.rotation !== undefined) {
+                rotation = OV.ArrayToQuaternion (meshContent.transformation.rotation);
+            }
+            if (meshContent.transformation.scale !== undefined) {
+                scale = OV.ArrayToCoord3D (meshContent.transformation.scale);
+            }
+            genParams.SetTransformation (translation, rotation, scale);
+        }
+
         let parameters = meshContent.parameters;
         if (parameters === undefined) {
             return;
@@ -105,30 +121,10 @@ OV.ImporterO3dv = class extends OV.ImporterBase
             let radius = OV.ValueOrDefault (parameters.radius, 1.0);
             mesh = OV.GeneratePlatonicSolid (genParams, parameters.solid_type, radius);
         }
-
-        if (mesh === null) {
-            return;
+        if (mesh !== null) {
+            this.ImportProperties (mesh, meshContent);
+            this.model.AddMesh (mesh);
         }
-
-        if (meshContent.transformation !== undefined) {
-            let translation = new OV.Coord3D (0.0, 0.0, 0.0);
-            let rotation = new OV.Quaternion (0.0, 0.0, 0.0, 1.0);
-            let scale = new OV.Coord3D (1.0, 1.0, 1.0);
-            if (meshContent.transformation.translation !== undefined) {
-                translation = OV.ArrayToCoord3D (meshContent.transformation.translation);
-            }
-            if (meshContent.transformation.rotation !== undefined) {
-                rotation = OV.ArrayToQuaternion (meshContent.transformation.rotation);
-            }
-            if (meshContent.transformation.scale !== undefined) {
-                scale = OV.ArrayToCoord3D (meshContent.transformation.scale);
-            }
-            let matrix = new OV.Matrix ().ComposeTRS (translation, rotation, scale);
-            mesh.SetTransformation (new OV.Transformation (matrix));
-        }
-
-        this.ImportProperties (mesh, meshContent);
-        this.model.AddMesh (mesh);
     }
 
     ImportNode (nodeContent, meshNode)
