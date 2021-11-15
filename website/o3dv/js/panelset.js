@@ -166,7 +166,7 @@ OV.PanelSet = class
 
     Resize ()
     {
-        if (this.requestedPanelsVisible !== this.isPanelsVisible) {
+        if (this.requestedPanelsVisible !== this.panelsVisible) {
             this.ShowPanels (this.requestedPanelsVisible);
         }
         let height = this.parentDiv.height ();
