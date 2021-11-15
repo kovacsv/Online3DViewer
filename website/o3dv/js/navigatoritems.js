@@ -66,7 +66,8 @@ OV.MeshItem = class extends OV.TreeViewButtonItem
         }
         if (recurse === OV.NavigatorItemRecurse.Parents) {
             if (this.parent instanceof OV.NodeItem) {
-                this.parent.SetVisible (this.parent.CalculateIsVisible (), OV.NavigatorItemRecurse.Parents);
+                let parentIsVisible = this.parent.CalculateIsVisible ();
+                this.parent.SetVisible (parentIsVisible, OV.NavigatorItemRecurse.Parents);
             }
         }
     }
@@ -107,11 +108,14 @@ OV.NodeItem = class extends OV.TreeViewGroupButtonItem
     CalculateIsVisible ()
     {
         let isVisible = false;
-        this.EnumerateMeshItems ((meshItem) => {
-            if (meshItem.IsVisible ()) {
-                isVisible = true;
+        for (let child of this.children) {
+            if (child instanceof OV.NodeItem || child instanceof OV.MeshItem) {
+                if (child.IsVisible ()) {
+                    isVisible = true;
+                    break;
+                }
             }
-        });
+        }
         return isVisible;
     }
 
@@ -138,7 +142,8 @@ OV.NodeItem = class extends OV.TreeViewGroupButtonItem
         }
         if (recurse === OV.NavigatorItemRecurse.Parents || recurse === OV.NavigatorItemRecurse.All) {
             if (this.parent instanceof OV.NodeItem) {
-                this.parent.SetVisible (this.parent.CalculateIsVisible (), OV.NavigatorItemRecurse.Parents);
+                let parentIsVisible = this.parent.CalculateIsVisible ();
+                this.parent.SetVisible (parentIsVisible, OV.NavigatorItemRecurse.Parents);
             }
         }
     }

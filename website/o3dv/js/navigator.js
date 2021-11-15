@@ -116,7 +116,6 @@ OV.Navigator = class
             },
             onViewTypeChanged : () => {
                 this.SetSelection (null);
-                this.ShowAllMeshes (true);
             }
         });
 

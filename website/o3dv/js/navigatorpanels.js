@@ -443,8 +443,22 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
 
         function UpdateView (panel, importResult, isHierarchical)
         {
+            let hiddenMeshInstanceIds = [];
+            panel.EnumerateMeshItems ((meshItem) => {
+                if (!meshItem.IsVisible ()) {
+                    hiddenMeshInstanceIds.push (meshItem.GetMeshInstanceId ());
+                }
+                return true;
+            });
+
             panel.ClearMeshTree ();
             panel.FillMeshTree (importResult.model);
+
+            for (let meshInstanceId of hiddenMeshInstanceIds) {
+                let meshItem = panel.GetMeshItem (meshInstanceId);
+                meshItem.SetVisible (false, OV.NavigatorItemRecurse.Parents);
+            }
+
             UpdateButtonsStatus (panel.buttons, panel.showTree, isHierarchical);
             panel.callbacks.onViewTypeChanged ();
         }
