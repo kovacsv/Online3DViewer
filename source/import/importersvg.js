@@ -38,45 +38,48 @@ OV.ImporterThreeSvg = class extends OV.ImporterThreeBase
             return true;
         }
 
-        function ShowStroke (path)
+        function GetOrCreateMaterial (materials, style, opacity)
         {
-            const style = path.userData.style;
-            if (style.stroke === undefined || style.stroke === 'none') {
-                return false;
+            let material = null;
+            for (let existingMaterial of materials) {
+                if (existingMaterial.style === style && existingMaterial.opacity === opacity) {
+                    material = existingMaterial.material;
+                    break;
+                }
             }
-            return true;
+            if (material === null) {
+                material = new THREE.MeshPhongMaterial ({
+                    color: new THREE.Color ().setStyle (style),
+                    opacity: opacity,
+                    transparent: opacity < 1.0
+                });
+                materials.push ({
+                    style : style,
+                    opacity : opacity,
+                    material : material
+                });
+            }
+            return material;
         }
 
+        let materials = [];
+
         let object = new THREE.Object3D ();
+        object.rotation.x = Math.PI;
 
-        let fillsObject = new THREE.Object3D ();
-        let strokesObject = new THREE.Object3D ();
-
-        fillsObject.name = 'Fills';
-        strokesObject.name = 'Strokes';
-
-        object.add (fillsObject);
-        object.add (strokesObject);
-
-        const material = new THREE.MeshPhongMaterial ({
-            color: 0xcc0000
-        });
         for (let path of loadedObject.paths) {
             const shapes = THREE.SVGLoader.createShapes (path);
             if (ShowFill (path)) {
+                let pathStyle = path.userData.style;
+                let pathMaterial = GetOrCreateMaterial (materials, pathStyle.fill, pathStyle.opacity);
                 for (const shape of shapes) {
-                    const geometry = new THREE.ShapeGeometry (shape);
-                    const mesh = new THREE.Mesh (geometry, material);
-                    fillsObject.add (mesh);
-                }
-            }
-            if (ShowStroke (path)) {
-                for (const subPath of path.subPaths) {
-                    const geometry = THREE.SVGLoader.pointsToStroke (subPath.getPoints (), path.userData.style);
-                    if (geometry) {
-                        const mesh = new THREE.Mesh (geometry, material);
-                        strokesObject.add (mesh);
-                    }
+                    const geometry = new THREE.ExtrudeGeometry (shape, {
+                        depth: 10,
+                        bevelEnabled: false
+                    });
+                    const mesh = new THREE.Mesh (geometry, pathMaterial);
+                    mesh.name = path.userData.node.id;
+                    object.add (mesh);
                 }
             }
         }
