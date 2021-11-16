@@ -136,8 +136,8 @@ OV.Importer = class
                 this.missingFiles.push (fileName);
                 fileBuffer = null;
             } else {
-                fileBuffer = file.content;
                 this.usedFiles.push (fileName);
+                fileBuffer = file.content;
             }
             return fileBuffer;
         });
