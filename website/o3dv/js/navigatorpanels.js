@@ -504,7 +504,13 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         };
 
         const rootNode = importResult.model.GetRootNode ();
-        let isHierarchical = rootNode.ChildNodeCount () > 0;
+        let isHierarchical = false;
+        for (let childNode of rootNode.GetChildNodes ()) {
+            if (childNode.GetType () === OV.NodeType.GroupNode) {
+                isHierarchical = true;
+                break;
+            }
+        }
 
         CreateButton (this.buttonsDiv, this.buttons.flatList, null, () => {
             if (!this.showTree) {
