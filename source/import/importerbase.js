@@ -2,9 +2,14 @@ OV.ImporterBase = class
 {
     constructor ()
     {
-        
+        this.name = null;
+        this.extension = null;
+        this.callbacks = null;
+        this.model = null;
+        this.error = null;
+        this.message = null;
     }
-    
+
     Import (name, extension, content, callbacks)
     {
         this.Clear ();
