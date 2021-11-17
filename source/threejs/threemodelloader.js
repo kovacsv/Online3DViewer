@@ -16,43 +16,33 @@ OV.ThreeModelLoader = class
 
     LoadFromUrlList (urls, settings)
     {
-        if (this.inProgress) {
-            return;
-        }
-
-        this.inProgress = true;
-        this.callbacks.onLoadStart ();
-        this.importer.LoadFilesFromUrls (urls, () => {
-            this.OnFilesLoaded (settings);
-        });
+        this.LoadFromSource (urls, OV.FileSource.Url, settings);
     }
 
     LoadFromFileList (files, settings)
     {
+        this.LoadFromSource (files, OV.FileSource.File, settings);
+    }
+
+    LoadFromSource (files, fileSource, settings)
+    {
         if (this.inProgress) {
             return;
         }
 
         this.inProgress = true;
         this.callbacks.onLoadStart ();
-        this.importer.LoadFilesFromFileObjects (files, () => {
-            this.OnFilesLoaded (settings);
-        });
-    }
-
-    OnFilesLoaded (settings)
-    {
-        this.callbacks.onImportStart ();
-        OV.RunTaskAsync (() => {
-            this.importer.Import (settings, {
-                onSuccess : (importResult) => {
-                    this.OnModelImported (importResult);
-                },
-                onError : (importError) => {
-                    this.callbacks.onLoadError (importError);
-                    this.inProgress = false;
-                }
-            });
+        this.importer.ImportFiles (files, fileSource, settings, {
+            onFilesLoaded : () => {
+                this.callbacks.onImportStart ();
+            },
+            onImportSuccess : (importResult) => {
+                this.OnModelImported (importResult);
+            },
+            onImportError : (importError) => {
+                this.callbacks.onLoadError (importError);
+                this.inProgress = false;
+            }
         });
     }
 

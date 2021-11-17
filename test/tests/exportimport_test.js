@@ -11,16 +11,17 @@ function ExportImport (model, format, extension, onReady)
                 fileObjects.push (new FileObject ('', file.name, file.content));
             }
             let importer = new OV.Importer ();
-            importer.LoadFilesFromFileObjects (fileObjects, function () {
-                let settings = new OV.ImportSettings ();
-                importer.Import (settings, {
-                    onSuccess : function (importResult) {
-                        onReady (importResult.model)
-                    },
-                    onError : function (importError) {
+            let settings = new OV.ImportSettings ();
+            importer.ImportFilesFromFileObjects (fileObjects, settings, {
+                onFilesLoaded : function () {
 
-                    }
-                });
+                },
+                onImportSuccess : function (importResult) {
+                    onReady (importResult.model)
+                },
+                onImportError : function (importError) {
+
+                }
             });
         }
     });

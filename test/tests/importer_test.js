@@ -3,16 +3,17 @@ var path = require ('path');
 
 function ImportFilesWithImporter (importer, files, callbacks)
 {
-    importer.LoadFilesFromFileObjects (files, function () {
-        let settings = new OV.ImportSettings ();
-        importer.Import (settings, {
-            onSuccess : function (importResult) {
-                callbacks.success (importer, importResult);
-            },
-            onError : function (importError) {
-                callbacks.error (importer, importError);
-            }
-        });
+    let settings = new OV.ImportSettings ();
+    importer.ImportFilesFromFileObjects (files, settings, {
+        onFilesLoaded : function () {
+
+        },
+        onImportSuccess : function (importResult) {
+            callbacks.success (importer, importResult);
+        },
+        onImportError : function (importError) {
+            callbacks.error (importer, importError);
+        }
     });
 }
 
@@ -117,7 +118,7 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });
-    });    
+    });
 
     it ('Missing files', function (done) {
         let files = [];
@@ -198,12 +199,12 @@ describe ('Importer Test', function () {
                             error : function (importer, importError) {
                                 assert.fail ();
                             }
-                        });                        
+                        });
                     },
                     error : function (importer, importError) {
                         assert.fail ();
                     }
-                });                
+                });
             },
             error : function (importer, importError) {
                 assert.fail ();
@@ -219,15 +220,15 @@ describe ('Importer Test', function () {
         ]
         let files2 = [
             new FileObject ('obj', 'single_triangle.obj')
-        ];        
+        ];
 
         let theImporter = new OV.Importer ();
         ImportFilesWithImporter (theImporter, files1, {
             success : function (importer, importResult) {
                 assert (!OV.IsModelEmpty (importResult.model));
                 assert.deepStrictEqual (importResult.usedFiles, ['cube_with_materials.obj', 'cube_with_materials.mtl', 'cube_texture.png']);
-                assert.deepStrictEqual (importResult.missingFiles, []);       
-                
+                assert.deepStrictEqual (importResult.missingFiles, []);
+
                 ImportFilesWithImporter (theImporter, files2, {
                     success : function (importer, importResult) {
                         assert (!OV.IsModelEmpty (importResult.model));
@@ -238,12 +239,12 @@ describe ('Importer Test', function () {
                     error : function (importer, importError) {
                         assert.fail ();
                     }
-                });                
+                });
             },
             error : function (importer, importError) {
                 assert.fail ();
             }
-        });      
+        });
     });
 
     it ('Default color', function (done) {
@@ -251,22 +252,23 @@ describe ('Importer Test', function () {
             new FileObject ('stl', 'single_triangle.stl')
         ];
         let theImporter = new OV.Importer ();
-        theImporter.LoadFilesFromFileObjects (files, function () {
-            let settings = new OV.ImportSettings ();
-            settings.defaultColor = new OV.Color (200, 0, 0);
-            theImporter.Import (settings, {
-                onSuccess : function (importResult) {
-                    assert (!OV.IsModelEmpty (importResult.model));
-                    assert.deepStrictEqual (importResult.usedFiles, ['single_triangle.stl']);
-                    assert.deepStrictEqual (importResult.missingFiles, []);
-                    let material = importResult.model.GetMaterial (0);
-                    assert.deepStrictEqual (material.color, new OV.Color (200, 0, 0));
-                    done ();
-                },
-                onError : function (importError) {
-                    assert.fail ();
-                }
-            });
+        let settings = new OV.ImportSettings ();
+        settings.defaultColor = new OV.Color (200, 0, 0);
+        theImporter.ImportFilesFromFileObjects (files, settings, {
+            onFilesLoaded : function () {
+
+            },
+            onImportSuccess : function (importResult) {
+                assert (!OV.IsModelEmpty (importResult.model));
+                assert.deepStrictEqual (importResult.usedFiles, ['single_triangle.stl']);
+                assert.deepStrictEqual (importResult.missingFiles, []);
+                let material = importResult.model.GetMaterial (0);
+                assert.deepStrictEqual (material.color, new OV.Color (200, 0, 0));
+                done ();
+            },
+            onImportError : function (importError) {
+                assert.fail ();
+            }
         });
     });
 
@@ -285,7 +287,7 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });
-    });    
+    });
 
     it ('Zip file with Folders', function (done) {
         let files = [
@@ -320,5 +322,5 @@ describe ('Importer Test', function () {
                 assert.fail ();
             }
         });
-    });     
+    });
 });

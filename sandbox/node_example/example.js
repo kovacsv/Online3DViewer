@@ -53,14 +53,15 @@ global.FileReader = class
     }
 };
 
-importer.LoadFilesFromFileObjects (files, function () {
-    let settings = new OV.ImportSettings ();
-    importer.Import (settings, {
-        onSuccess : function (importResult) {
-            console.log (importResult);
-        },
-        onError : function (importError) {
-            console.log (importError);
-        }
-    });
+let settings = new OV.ImportSettings ();
+importer.ImportFilesFromFileObjects (files, settings, {
+    onFilesLoaded : function () {
+
+    },
+    onImportSuccess : function (importResult) {
+        console.log (importResult);
+    },
+    onImportError : function (importError) {
+        console.log (importError);
+    }
 });

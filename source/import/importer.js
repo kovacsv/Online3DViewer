@@ -104,21 +104,68 @@ OV.Importer = class
 		this.importers.push (importer);
 	}
 
-    LoadFilesFromUrls (fileList, onReady)
+    ImportFilesFromUrls (urlList, settings, callbacks)
     {
-        this.LoadFiles (fileList, OV.FileSource.Url, onReady);
+        this.ImportFiles (urlList, OV.FileSource.Url, settings, callbacks);
     }
 
-    LoadFilesFromFileObjects (fileList, onReady)
+    ImportFilesFromFileObjects (fileList, settings, callbacks)
     {
-        this.LoadFiles (fileList, OV.FileSource.File, onReady);
+        this.ImportFiles (fileList, OV.FileSource.File, settings, callbacks);
     }
 
-    Import (settings, callbacks)
+    ImportFiles (fileList, fileSource, settings, callbacks)
+    {
+        this.LoadFiles (fileList, fileSource, () => {
+            callbacks.onFilesLoaded ();
+            OV.RunTaskAsync (() => {
+                this.ImportLoadedFiles (settings, callbacks);
+            });
+        });
+    }
+
+    LoadFiles (fileList, fileSource, onReady)
+    {
+        let newFileList = new OV.FileList (this.importers);
+        if (fileSource === OV.FileSource.Url) {
+            newFileList.FillFromFileUrls (fileList);
+        } else if (fileSource === OV.FileSource.File) {
+            newFileList.FillFromFileObjects (fileList);
+        }
+        let reset = false;
+        if (this.HasMainFile (newFileList)) {
+            reset = true;
+        } else {
+            let foundMissingFile = false;
+            for (let i = 0; i < this.missingFiles.length; i++) {
+                let missingFile = this.missingFiles[i];
+                if (newFileList.ContainsFileByPath (missingFile)) {
+                    foundMissingFile = true;
+                }
+            }
+            if (!foundMissingFile) {
+                reset = true;
+            } else {
+                let newFiles = newFileList.GetFiles ();
+                this.fileList.ExtendFromFileList (newFiles);
+                reset = false;
+            }
+        }
+        if (reset) {
+            this.fileList = newFileList;
+        }
+        this.fileList.GetContent (() => {
+            this.DecompressArchives (this.fileList, () => {
+                onReady ();
+            });
+        });
+    }
+
+    ImportLoadedFiles (settings, callbacks)
     {
         let mainFile = this.GetMainFile (this.fileList);
         if (mainFile === null || mainFile.file === null || mainFile.file.content === null) {
-            callbacks.onError (new OV.ImportError (OV.ImportErrorCode.NoImportableFile, null));
+            callbacks.onImportError (new OV.ImportError (OV.ImportErrorCode.NoImportableFile, null));
             return;
         }
 
@@ -161,52 +208,15 @@ OV.Importer = class
                 result.usedFiles = this.usedFiles;
                 result.missingFiles = this.missingFiles;
                 result.upVector = importer.GetUpDirection ();
-                callbacks.onSuccess (result);
+                callbacks.onImportSuccess (result);
             },
             onError : () => {
                 let message = importer.GetErrorMessage ();
-                callbacks.onError (new OV.ImportError (OV.ImportErrorCode.ImportFailed, message));
+                callbacks.onImportError (new OV.ImportError (OV.ImportErrorCode.ImportFailed, message));
             },
             onComplete : () => {
                 importer.Clear ();
             }
-        });
-    }
-
-    LoadFiles (fileList, fileSource, onReady)
-    {
-        let newFileList = new OV.FileList (this.importers);
-        if (fileSource === OV.FileSource.Url) {
-            newFileList.FillFromFileUrls (fileList);
-        } else if (fileSource === OV.FileSource.File) {
-            newFileList.FillFromFileObjects (fileList);
-        }
-        let reset = false;
-        if (this.HasMainFile (newFileList)) {
-            reset = true;
-        } else {
-            let foundMissingFile = false;
-            for (let i = 0; i < this.missingFiles.length; i++) {
-                let missingFile = this.missingFiles[i];
-                if (newFileList.ContainsFileByPath (missingFile)) {
-                    foundMissingFile = true;
-                }
-            }
-            if (!foundMissingFile) {
-                reset = true;
-            } else {
-                let newFiles = newFileList.GetFiles ();
-                this.fileList.ExtendFromFileList (newFiles);
-                reset = false;
-            }
-        }
-        if (reset) {
-            this.fileList = newFileList;
-        }
-        this.fileList.GetContent (() => {
-            this.DecompressArchives (this.fileList, () => {
-                onReady ();
-            });
         });
     }
 
@@ -254,26 +264,26 @@ OV.Importer = class
 
     GetMainFile (fileList)
     {
+        function FindImporter (file, importers)
+        {
+            for (let importerIndex = 0; importerIndex < importers.length; importerIndex++) {
+                let importer = importers[importerIndex];
+                if (importer.CanImportExtension (file.extension)) {
+                    return importer;
+                }
+            }
+            return null;
+        }
+
         let files = fileList.GetFiles ();
         for (let fileIndex = 0; fileIndex < files.length; fileIndex++) {
             let file = files[fileIndex];
-            let importer = this.FindImporter (file);
+            let importer = FindImporter (file, this.importers);
             if (importer !== null) {
                 return {
                     file : file,
                     importer : importer
                 };
-            }
-        }
-        return null;
-    }
-
-    FindImporter (file)
-    {
-        for (let importerIndex = 0; importerIndex < this.importers.length; importerIndex++) {
-            let importer = this.importers[importerIndex];
-            if (importer.CanImportExtension (file.extension)) {
-                return importer;
             }
         }
         return null;
