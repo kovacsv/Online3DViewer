@@ -34,42 +34,41 @@ OV.ImportResult = class
     }
 };
 
-OV.ImportBuffers = class
+OV.ImporterFileAccessor = class
 {
     constructor (getBufferCallback)
     {
         this.getBufferCallback = getBufferCallback;
-        this.fileBuffers = {};
-        this.textureBuffers = {};
+        this.fileBuffers = new Map ();
+        this.textureBuffers = new Map ();
     }
 
     GetFileBuffer (filePath)
     {
         let fileName = OV.GetFileName (filePath);
-        let buffer = this.fileBuffers[fileName];
-        if (buffer === undefined) {
-            buffer = this.getBufferCallback (fileName);
-            this.fileBuffers[fileName] = buffer;
+        if (this.fileBuffers.has (fileName)) {
+            return this.fileBuffers.get (fileName);
         }
+        let buffer = this.getBufferCallback (fileName);
+        this.fileBuffers.set (fileName, buffer);
         return buffer;
     }
 
     GetTextureBuffer (filePath)
     {
         let fileName = OV.GetFileName (filePath);
-        let buffer = this.textureBuffers[fileName];
-        if (buffer === undefined) {
-            let textureBuffer = this.getBufferCallback (fileName);
-            if (textureBuffer !== null) {
-                buffer = {
-                    url : OV.CreateObjectUrl (textureBuffer),
-                    buffer : textureBuffer
-                };
-            } else {
-                buffer = null;
-            }
-            this.textureBuffers[fileName] = buffer;
+        if (this.textureBuffers.has (fileName)) {
+            return this.textureBuffers.get (fileName);
         }
+        let buffer = null;
+        let textureBuffer = this.getBufferCallback (fileName);
+        if (textureBuffer !== null) {
+            buffer = {
+                url : OV.CreateObjectUrl (textureBuffer),
+                buffer : textureBuffer
+            };
+        }
+        this.textureBuffers.set (fileName, buffer);
         return buffer;
     }
 };
@@ -176,7 +175,7 @@ OV.Importer = class
         this.usedFiles.push (mainFile.file.name);
 
         let importer = mainFile.importer;
-        let buffers = new OV.ImportBuffers ((fileName) => {
+        let fileAccessor = new OV.ImporterFileAccessor ((fileName) => {
             let fileBuffer = null;
             let file = this.fileList.FindFileByPath (fileName);
             if (file === null || file.content === null) {
@@ -196,10 +195,10 @@ OV.Importer = class
                 return material;
             },
             getFileBuffer : (filePath) => {
-                return buffers.GetFileBuffer (filePath);
+                return fileAccessor.GetFileBuffer (filePath);
             },
             getTextureBuffer : (filePath) => {
-                return buffers.GetTextureBuffer (filePath);
+                return fileAccessor.GetTextureBuffer (filePath);
             },
             onSuccess : () => {
                 let result = new OV.ImportResult ();
