@@ -139,7 +139,7 @@ module.exports =
             });
         }
 
-        model.EnumerateTransformedMeshInstances ((mesh) => {
+        model.EnumerateTransformedMeshes ((mesh) => {
             let boundingBox = OV.GetBoundingBox (mesh);
             let meshObj = {
                 name : mesh.GetName (),

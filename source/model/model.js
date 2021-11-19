@@ -149,7 +149,7 @@ OV.Model = class extends OV.ModelObject3D
         });
     }
 
-    EnumerateTransformedMeshInstances (onMesh)
+    EnumerateTransformedMeshes (onMesh)
     {
         this.EnumerateMeshInstances ((meshInstance) => {
             const transformed = meshInstance.GetTransformedMesh ();

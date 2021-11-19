@@ -171,7 +171,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
     {
         let meshDataArr = [];
 
-        model.EnumerateTransformedMeshInstances ((mesh) => {
+        model.EnumerateTransformedMeshes ((mesh) => {
             let buffer = OV.ConvertMeshToMeshBuffer (mesh);
             meshDataArr.push ({
                 name : mesh.GetName (),

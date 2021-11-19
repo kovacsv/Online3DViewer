@@ -43,7 +43,7 @@ OV.Exporter3dm = class extends OV.ExporterBase
 		files.push (rhinoFile);
 
         let rhinoDoc = new this.rhino.File3dm ();
-        model.EnumerateTransformedMeshInstances ((mesh) => {
+        model.EnumerateTransformedMeshes ((mesh) => {
             let meshBuffer = OV.ConvertMeshToMeshBuffer (mesh);
             for (let primitiveIndex = 0; primitiveIndex < meshBuffer.PrimitiveCount (); primitiveIndex++) {
                 let primitive = meshBuffer.GetPrimitive (primitiveIndex);

@@ -59,7 +59,7 @@ OV.ExporterObj = class extends OV.ExporterBase
         let normalOffset = 0;
         let uvOffset = 0;
         let usedMaterialName = null;
-        model.EnumerateTransformedMeshInstances ((mesh) => {
+        model.EnumerateTransformedMeshes ((mesh) => {
             objWriter.WriteArrayLine (['g', this.GetExportedMeshName (mesh.GetName ())]);
             for (let vertexIndex = 0; vertexIndex < mesh.VertexCount (); vertexIndex++) {
                 let vertex = mesh.GetVertex (vertexIndex);
