@@ -187,6 +187,70 @@ OV.ViewerGeometry = class
     }
 };
 
+OV.ViewerAxis = class
+{
+    constructor (scene)
+    {
+        this.scene = scene;
+        this.mainObject = null;
+    }
+
+    AddAxisLines (boundingBox, cellSize)
+    {
+        function CreateLine (from, to, material)
+        {
+            let points = [from, to];
+            let geometry = new THREE.BufferGeometry ().setFromPoints (points);
+            let line = new THREE.Line (geometry, material);
+            return line;
+        }
+
+        this.RemoveAxisLines ();
+
+        this.mainObject = new THREE.Object3D ();
+        const material = new THREE.LineBasicMaterial({
+            color: 0xcccccc
+        });
+
+        let boundingBoxSize = new THREE.Vector3 ();
+        boundingBox.getSize (boundingBoxSize);
+        let expandSize = boundingBoxSize.y * 0.5;
+
+        let minValue = new THREE.Vector2 (boundingBox.min.z - expandSize, boundingBox.min.x - expandSize);
+        let maxValue = new THREE.Vector2 (boundingBox.max.z + expandSize, boundingBox.max.x + expandSize);
+
+        let alignedMinValue = new THREE.Vector2 (
+            Math.floor (minValue.x / cellSize) * cellSize,
+            Math.floor (minValue.y / cellSize) * cellSize
+        );
+        let alignedMaxValue = new THREE.Vector2 (
+            Math.ceil (maxValue.x / cellSize) * cellSize,
+            Math.ceil (maxValue.y / cellSize) * cellSize
+        );
+
+        let level = boundingBox.min.y;
+        let cellCountX = Math.ceil ((alignedMaxValue.x - alignedMinValue.x) / cellSize);
+        let cellCountY = Math.ceil ((alignedMaxValue.y - alignedMinValue.y) / cellSize);
+        for (let step = 0; step < cellCountX + 1; step++) {
+            let lineDist = alignedMinValue.x + step * cellSize;
+            this.mainObject.add (CreateLine (new THREE.Vector3 (alignedMinValue.y, level, lineDist), new THREE.Vector3 (alignedMaxValue.y, level, lineDist), material));
+        }
+        for (let step = 0; step < cellCountY + 1; step++) {
+            let lineDist = alignedMinValue.y + step * cellSize;
+            this.mainObject.add (CreateLine (new THREE.Vector3 (lineDist, level, alignedMinValue.x), new THREE.Vector3 (lineDist, level, alignedMaxValue.x), material));
+        }
+        this.scene.add (this.mainObject);
+    }
+
+    RemoveAxisLines ()
+    {
+        if (this.mainObject !== null) {
+            this.scene.remove (this.mainObject);
+            this.mainObject = null;
+        }
+    }
+};
+
 OV.ShadingModel = class
 {
     constructor (scene)
@@ -255,6 +319,7 @@ OV.Viewer = class
         this.renderer = null;
         this.scene = null;
         this.geometry = null;
+        this.axis = null;
         this.camera = null;
         this.shading = null;
         this.navigation = null;
@@ -283,6 +348,7 @@ OV.Viewer = class
 
         this.scene = new THREE.Scene ();
         this.geometry = new OV.ViewerGeometry (this.scene);
+        this.axis = new OV.ViewerAxis (this.scene);
 
         this.InitCamera ();
         this.InitShading ();
@@ -429,6 +495,14 @@ OV.Viewer = class
         const shadingType = OV.GetShadingTypeOfObject (object);
         this.geometry.SetMainObject (object);
         this.shading.SetType (shadingType);
+
+        if (OV.FeatureSet.GridDisplay) {
+            let boundingBox = this.GetBoundingBox ((meshUserData) => {
+                return true;
+            });
+            let cellSize = 1.0;
+            this.axis.AddAxisLines (boundingBox, cellSize);
+        }
         this.Render ();
     }
 
