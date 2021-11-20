@@ -496,13 +496,12 @@ OV.Viewer = class
         this.geometry.SetMainObject (object);
         this.shading.SetType (shadingType);
 
-        if (OV.FeatureSet.GridDisplay) {
-            let boundingBox = this.GetBoundingBox ((meshUserData) => {
-                return true;
-            });
-            let cellSize = 1.0;
-            this.axis.AddAxisLines (boundingBox, cellSize);
-        }
+        // let boundingBox = this.GetBoundingBox ((meshUserData) => {
+        //     return true;
+        // });
+        // let cellSize = 1.0;
+        // this.axis.AddAxisLines (boundingBox, cellSize);
+
         this.Render ();
     }
 

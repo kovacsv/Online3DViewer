@@ -1,4 +1,3 @@
 OV.FeatureSet =
 {
-    GridDisplay : false
 };
