@@ -1,105 +1,106 @@
 {
-	"root" : {
-		"children" : [
-			{
-				"name" : "Cubes",
-				"transformation" : {
-					"translation" : [0.0, 0.0, 2.0]
-				},
-				"children" : [
-					{
-						"name" : "Cube 01",
-						"transformation" : {
-							"translation" : [0.0, 0.0, 0.0]
-						},
-						"meshes" : [0]
-					},
-					{
-						"name" : "Cube 02",
-						"transformation" : {
-							"translation" : [2.0, 0.0, 0.0]
-						},
-						"meshes" : [0]
-					},
-					{
-						"name" : "Cube 03",
-						"transformation" : {
-							"translation" : [2.0, 2.0, 0.0]
-						},
-						"meshes" : [0]
-					},
-					{
-						"name" : "Cube 04",
-						"transformation" : {
-							"translation" : [0.0, 2.0, 0.0]
-						},
-						"meshes" : [0]
-					}
-				]
+	"root" : 0,
+	"nodes" : [
+		{
+			"children" : [1, 2, 3, 4, 15, 16]
+		},
+		{
+			"name" : "Cubes",
+			"transformation" : {
+				"translation" : [0.0, 0.0, 2.0]
 			},
-			{
-				"name" : "Spheres",
-				"transformation" : {
-					"translation" : [0.0, 0.0, 4.0]
-				},
-				"children" : [
-					{
-						"name" : "Spheres 01",
-						"transformation" : {
-							"translation" : [0.0, 0.0, 0.0]
-						},
-						"meshes" : [1]
-					},
-					{
-						"name" : "Spheres 02",
-						"transformation" : {
-							"translation" : [2.0, 0.0, 0.0]
-						},
-						"meshes" : [1]
-					},
-					{
-						"name" : "Spheres 03",
-						"transformation" : {
-							"translation" : [2.0, 2.0, 0.0]
-						},
-						"meshes" : [1]
-					},
-					{
-						"name" : "Spheres 04",
-						"transformation" : {
-							"translation" : [0.0, 2.0, 0.0]
-						},
-						"meshes" : [1]
-					}
-				]
+			"children" : [5, 6, 7, 8]
+		},
+		{
+			"name" : "Cubes 2",
+			"transformation" : {
+				"translation" : [0.0, 0.0, 4.0]
 			},
-			{
-				"name" : "Cube and Sphere",
-				"transformation" : {
-					"translation" : [0.0, 0.0, 6.0]
-				},
-				"children" : [
-					{
-						"name" : "Cube 01",
-						"transformation" : {
-							"translation" : [0.0, 0.0, 0.0],
-							"scale" : [0.8, 0.8, 0.8]
-						},
-						"meshes" : [0]
-					},
-					{
-						"name" : "Sphere 01",
-						"transformation" : {
-							"translation" : [2.0, 0.0, 0.0],
-							"scale" : [0.8, 0.8, 0.8]
-						},
-						"meshes" : [1]
-					}
-				]
-			}			
-		],
-		"meshes" : [0, 1]
-	},
+			"children" : [5, 6, 7, 8]
+		},
+		{
+			"name" : "Spheres",
+			"transformation" : {
+				"translation" : [0.0, 0.0, 6.0]
+			},
+			"children" : [9, 10, 11, 12]
+		},
+		{
+			"name" : "Cube and Sphere",
+			"transformation" : {
+				"translation" : [0.0, 0.0, 8.0]
+			},
+			"children" : [13, 14]
+		},
+		{
+			"transformation" : {
+				"translation" : [0.0, 0.0, 0.0]
+			},
+			"mesh" : 0
+		},
+		{
+			"transformation" : {
+				"translation" : [2.0, 0.0, 0.0]
+			},
+			"mesh" : 0
+		},
+		{
+			"transformation" : {
+				"translation" : [2.0, 2.0, 0.0]
+			},
+			"mesh" : 0
+		},
+		{
+			"transformation" : {
+				"translation" : [0.0, 2.0, 0.0]
+			},
+			"mesh" : 0
+		},
+		{
+			"transformation" : {
+				"translation" : [0.0, 0.0, 0.0]
+			},
+			"mesh" : 1
+		},
+		{
+			"transformation" : {
+				"translation" : [2.0, 0.0, 0.0]
+			},
+			"mesh" : 1
+		},
+		{
+			"transformation" : {
+				"translation" : [2.0, 2.0, 0.0]
+			},
+			"mesh" : 1
+		},
+		{
+			"transformation" : {
+				"translation" : [0.0, 2.0, 0.0]
+			},
+			"mesh" : 1
+		},
+		{
+			"transformation" : {
+				"translation" : [0.0, 0.0, 0.0],
+				"scale" : [0.8, 0.8, 0.8]
+			},
+			"mesh" : 0
+		},
+		{
+			"transformation" : {
+				"translation" : [2.0, 0.0, 0.0],
+				"scale" : [0.8, 0.8, 0.8]
+			},
+			"mesh" : 1
+		},
+		{
+			"mesh" : 0
+		},
+		{
+			"mesh" : 1
+		}
+	],
 	"materials" : [
 		{
 			"name" : "Green",
@@ -109,7 +110,7 @@
 			"name" : "Blue",
 			"color" : [0, 0, 200]
 		}
-	],	
+	],
 	"meshes" : [
 		{
 			"name" : "Cube",
