@@ -16,18 +16,6 @@ describe ('Generator', function () {
         }
     });
 
-    it ('Cuboid with Transformation', function () {
-        const params = new OV.GeneratorParams ().SetTransformationTRS (
-            new OV.Coord3D (1.0, 0.0, 0.0),
-            new OV.Quaternion (0.0, 0.0, 0.0, 1.0),
-            new OV.Coord3D (1.0, 1.0, 1.0)
-        );
-        const cuboid = OV.GenerateCuboid (params, 1.0, 1.0, 1.0);
-        const bounds = OV.GetBoundingBox (cuboid);
-        assert (OV.CoordIsEqual3D (bounds.min, new OV.Coord3D (1.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (bounds.max, new OV.Coord3D (2.0, 1.0, 1.0)));
-    });
-
     it ('Cylinder with Default Parameters', function () {
         const cylinder = OV.GenerateCylinder (null, 0.5, 1.0, 25, false);
         assert (OV.IsSolid (cylinder));

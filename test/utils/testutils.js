@@ -165,8 +165,9 @@ module.exports =
         let cube1 = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         model.AddMeshToRootNode (cube1);
 
+        let cube2 = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         let matrix = new OV.Matrix ().CreateTranslation (1.0, 1.0, 1.0);
-        let cube2 = OV.GenerateCuboid (new OV.GeneratorParams ().SetTransformationMatrix (matrix), 1.0, 1.0, 1.0);
+        OV.TransformMesh (cube2, new OV.Transformation (matrix));
         model.AddMeshToRootNode (cube2);
 
         OV.FinalizeModel (model, function () { return new OV.Material (OV.MaterialType.Phong) });
@@ -180,8 +181,9 @@ module.exports =
         let cube1 = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         model.AddMeshToRootNode (cube1);
 
+        let cube2 = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         let matrix = new OV.Matrix ().CreateTranslation (1.0, 0.0, 1.0);
-        let cube2 = OV.GenerateCuboid (new OV.GeneratorParams ().SetTransformationMatrix (matrix), 1.0, 1.0, 1.0);
+        OV.TransformMesh (cube2, new OV.Transformation (matrix))
         model.AddMeshToRootNode (cube2);
 
         OV.FinalizeModel (model, function () { return new OV.Material (OV.MaterialType.Phong) });
@@ -195,8 +197,9 @@ module.exports =
         let cube1 = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         model.AddMeshToRootNode (cube1);
 
+        let cube2 = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         let matrix = new OV.Matrix ().CreateTranslation (1.0, 0.0, 0.0);
-        let cube2 = OV.GenerateCuboid (new OV.GeneratorParams ().SetTransformationMatrix (matrix), 1.0, 1.0, 1.0);
+        OV.TransformMesh (cube2, new OV.Transformation (matrix));
         model.AddMeshToRootNode (cube2);
 
         OV.FinalizeModel (model, function () { return new OV.Material (OV.MaterialType.Phong) });

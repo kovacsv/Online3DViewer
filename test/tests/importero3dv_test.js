@@ -11,22 +11,39 @@ describe ('O3dv Importer', function () {
                 childNodes : [
                     {
                         name : 'Translated',
-                        childNodes : [],
-                        meshNames : ['Cube']
+                        childNodes : [
+                            {
+                                name : '',
+                                childNodes : [],
+                                meshNames : ['Cube']
+                            }
+                        ],
+                        meshNames : []
                     },
                     {
                         name : 'Rotated',
                         childNodes : [
                             {
                                 name : 'Translated and Rotated',
-                                childNodes : [],
-                                meshNames : ['Cube']
+                                childNodes : [
+                                    {
+                                        name : '',
+                                        childNodes : [],
+                                        meshNames : ['Cube']
+                                    }
+                                ],
+                                meshNames : []
                             }
                         ],
                         meshNames : []
+                    },
+                    {
+                        name : '',
+                        childNodes : [],
+                        meshNames : ['Cube']
                     }
                 ],
-                meshNames : ['Cube']
+                meshNames : []
             });
 
             assert.strictEqual (model.MeshInstanceCount (), 3);
@@ -46,17 +63,45 @@ describe ('O3dv Importer', function () {
                 childNodes : [
                     {
                         name : 'Tetrahedral',
-                        childNodes : [],
-                        meshNames : ['Tetrahedron']
+                        childNodes : [
+                            {
+                                name : '',
+                                childNodes : [],
+                                meshNames : ['Tetrahedron']
+                            }
+                        ],
+                        meshNames : []
                     },
                     {
                         name : 'Octahedral',
-                        childNodes : [],
-                        meshNames : ['Hexahedron', 'Octahedron']
+                        childNodes : [
+                            {
+                                name : '',
+                                childNodes : [],
+                                meshNames : ['Hexahedron']
+                            },
+                            {
+                                name : '',
+                                childNodes : [],
+                                meshNames : ['Octahedron']
+                            }
+                        ],
+                        meshNames : []
                     },                    {
                         name : 'Icosahedral',
-                        childNodes : [],
-                        meshNames : ['Dodecahedron', 'Icosahedron']
+                        childNodes : [
+                            {
+                                name : '',
+                                childNodes : [],
+                                meshNames : ['Dodecahedron']
+                            },
+                            {
+                                name : '',
+                                childNodes : [],
+                                meshNames : ['Icosahedron']
+                            }
+                        ],
+                        meshNames : []
                     }
                 ],
                 meshNames : []

@@ -42,7 +42,7 @@ OV.ImporterO3dv = class extends OV.ImporterBase
             }
         }
         if (content.root !== undefined) {
-            this.ImportNode (content.root, this.model.GetRootNode ());
+            this.ImportNode (content, content.root, this.model.GetRootNode ());
         }
         this.ImportProperties (this.model, content);
         onFinish ();
@@ -71,11 +71,6 @@ OV.ImporterO3dv = class extends OV.ImporterBase
         }
         if (meshContent.material !== undefined) {
             genParams.SetMaterial (meshContent.material);
-        }
-
-        if (meshContent.transformation !== undefined) {
-            let meshTransformation = this.GetTransformation (meshContent.transformation);
-            genParams.SetTransformation (meshTransformation);
         }
 
         let parameters = meshContent.parameters;
@@ -116,7 +111,7 @@ OV.ImporterO3dv = class extends OV.ImporterBase
         }
     }
 
-    ImportNode (nodeContent, node)
+    ImportNode (content, nodeContent, node)
     {
         if (nodeContent.name !== undefined) {
             node.SetName (nodeContent.name);
@@ -125,16 +120,24 @@ OV.ImporterO3dv = class extends OV.ImporterBase
             const nodeTransformation = this.GetTransformation (nodeContent.transformation);
             node.SetTransformation (nodeTransformation);
         }
-        if (nodeContent.meshes !== undefined) {
-            for (const meshIndex of nodeContent.meshes) {
-                node.AddMeshIndex (meshIndex);
-            }
-        }
         if (nodeContent.children !== undefined) {
             for (const child of nodeContent.children) {
                 let childNode = new OV.Node ();
                 node.AddChildNode (childNode);
-                this.ImportNode (child, childNode);
+                this.ImportNode (content, child, childNode);
+            }
+        }
+        if (nodeContent.meshes !== undefined) {
+            for (const meshIndex of nodeContent.meshes) {
+                let meshNode = new OV.Node ();
+                meshNode.SetType (OV.NodeType.MeshNode);
+                let meshContent = content.meshes[meshIndex];
+                if (meshContent.transformation !== undefined) {
+                    let meshTransformation = this.GetTransformation (meshContent.transformation);
+                    meshNode.SetTransformation (meshTransformation);
+                }
+                meshNode.AddMeshIndex (meshIndex);
+                node.AddChildNode (meshNode);
             }
         }
     }

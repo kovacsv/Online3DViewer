@@ -4,7 +4,6 @@ OV.GeneratorParams = class
     {
         this.name = null;
         this.material = null;
-        this.transformation = null;
     }
 
     SetName (name)
@@ -16,23 +15,6 @@ OV.GeneratorParams = class
     SetMaterial (material)
     {
         this.material = material;
-        return this;
-    }
-
-    SetTransformationTRS (translation, rotation, scale)
-    {
-        const matrix = new OV.Matrix ().ComposeTRS (translation, rotation, scale);
-        return this.SetTransformationMatrix (matrix);
-    }
-
-    SetTransformationMatrix (matrix)
-    {
-        return this.SetTransformation (new OV.Transformation (matrix));
-    }
-
-    SetTransformation (transformation)
-    {
-        this.transformation = transformation;
         return this;
     }
 };
@@ -57,9 +39,6 @@ OV.Generator = class
     AddVertex (x, y, z)
     {
         let coord = new OV.Coord3D (x, y, z);
-        if (this.params.transformation !== null) {
-            coord = this.params.transformation.TransformCoord3D (coord);
-        }
         return this.mesh.AddVertex (coord);
     }
 
