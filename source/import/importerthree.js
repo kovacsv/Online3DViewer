@@ -80,16 +80,14 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
             if (url === mainFileUrl) {
                 return url;
             }
-            if (url.startsWith ('blob:')) {
-                const name = OV.GetFileName (url);
-                const extension = OV.GetFileExtension (url);
-                if (extension.length > 0) {
-                    const buffer = this.callbacks.getFileBuffer (url);
-                    if (buffer !== null) {
-                        let objectUrl = OV.CreateObjectUrl (buffer);
-                        this.objectUrlToFileName.set (objectUrl, name);
-                        return objectUrl;
-                    }
+            const name = OV.GetFileName (url);
+            const extension = OV.GetFileExtension (url);
+            if (extension.length > 0) {
+                const buffer = this.callbacks.getFileBuffer (url);
+                if (buffer !== null) {
+                    let objectUrl = OV.CreateObjectUrl (buffer);
+                    this.objectUrlToFileName.set (objectUrl, name);
+                    return objectUrl;
                 }
             }
             return url;
