@@ -19,7 +19,7 @@ OV.GeneratorParams = class
         return this;
     }
 
-    SetTransformation (translation, rotation, scale)
+    SetTransformationTRS (translation, rotation, scale)
     {
         const matrix = new OV.Matrix ().ComposeTRS (translation, rotation, scale);
         return this.SetTransformationMatrix (matrix);
@@ -27,7 +27,12 @@ OV.GeneratorParams = class
 
     SetTransformationMatrix (matrix)
     {
-        this.transformation = new OV.Transformation (matrix);
+        return this.SetTransformation (new OV.Transformation (matrix));
+    }
+
+    SetTransformation (transformation)
+    {
+        this.transformation = transformation;
         return this;
     }
 };

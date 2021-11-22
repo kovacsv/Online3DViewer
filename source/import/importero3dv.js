@@ -74,19 +74,8 @@ OV.ImporterO3dv = class extends OV.ImporterBase
         }
 
         if (meshContent.transformation !== undefined) {
-            let translation = new OV.Coord3D (0.0, 0.0, 0.0);
-            let rotation = new OV.Quaternion (0.0, 0.0, 0.0, 1.0);
-            let scale = new OV.Coord3D (1.0, 1.0, 1.0);
-            if (meshContent.transformation.translation !== undefined) {
-                translation = OV.ArrayToCoord3D (meshContent.transformation.translation);
-            }
-            if (meshContent.transformation.rotation !== undefined) {
-                rotation = OV.ArrayToQuaternion (meshContent.transformation.rotation);
-            }
-            if (meshContent.transformation.scale !== undefined) {
-                scale = OV.ArrayToCoord3D (meshContent.transformation.scale);
-            }
-            genParams.SetTransformation (translation, rotation, scale);
+            let meshTransformation = this.GetTransformation (meshContent.transformation);
+            genParams.SetTransformation (meshTransformation);
         }
 
         let parameters = meshContent.parameters;
@@ -127,25 +116,25 @@ OV.ImporterO3dv = class extends OV.ImporterBase
         }
     }
 
-    ImportNode (nodeContent, meshNode)
+    ImportNode (nodeContent, node)
     {
         if (nodeContent.name !== undefined) {
-            meshNode.SetName (nodeContent.name);
+            node.SetName (nodeContent.name);
         }
         if (nodeContent.transformation !== undefined) {
             const nodeTransformation = this.GetTransformation (nodeContent.transformation);
-            meshNode.SetTransformation (nodeTransformation);
+            node.SetTransformation (nodeTransformation);
         }
         if (nodeContent.meshes !== undefined) {
             for (const meshIndex of nodeContent.meshes) {
-                meshNode.AddMeshIndex (meshIndex);
+                node.AddMeshIndex (meshIndex);
             }
         }
         if (nodeContent.children !== undefined) {
             for (const child of nodeContent.children) {
-                let childMeshNode = new OV.Node ();
-                meshNode.AddChildNode (childMeshNode);
-                this.ImportNode (child, childMeshNode);
+                let childNode = new OV.Node ();
+                node.AddChildNode (childNode);
+                this.ImportNode (child, childNode);
             }
         }
     }

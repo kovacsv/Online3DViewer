@@ -17,7 +17,7 @@ describe ('Generator', function () {
     });
 
     it ('Cuboid with Transformation', function () {
-        const params = new OV.GeneratorParams ().SetTransformation (
+        const params = new OV.GeneratorParams ().SetTransformationTRS (
             new OV.Coord3D (1.0, 0.0, 0.0),
             new OV.Quaternion (0.0, 0.0, 0.0, 1.0),
             new OV.Coord3D (1.0, 1.0, 1.0)
@@ -60,5 +60,5 @@ describe ('Generator', function () {
         let icosahedron = OV.GeneratePlatonicSolid (null, 'icosahedron', 1.0);
         assert (OV.IsSolid (icosahedron));
         assert (OV.IsEqual (OV.CalculateVolume (icosahedron), 2.5361507101204093));
-    });    
+    });
 });
