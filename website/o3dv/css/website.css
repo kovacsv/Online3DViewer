@@ -103,12 +103,11 @@ div.main
 
 div.main_file_name
 {
-	margin: 10px 20px;
+	margin: 10px auto;
 	white-space: nowrap;
+	text-align: center;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	max-width: 450px;
-	float: left;
 }
 
 div.main_navigator
