@@ -68,8 +68,9 @@ div.ov_dialog div.ov_dialog_message
 
 div.ov_dialog div.ov_dialog_submessage
 {
-	margin-top: 10px;
 	font-size: 14px;
+	font-style: italic;
+	margin-top: 10px;
 }
 
 div.ov_dialog textarea.ov_dialog_textarea

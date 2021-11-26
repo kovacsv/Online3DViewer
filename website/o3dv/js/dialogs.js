@@ -11,7 +11,7 @@ OV.ShowMessageDialog = function (title, message, subMessage)
     ]);
     $('<div>').addClass ('ov_dialog_message').html (message).appendTo (contentDiv);
     if (subMessage !== null) {
-        $('<div>').addClass ('ov_dialog_submessage').html ('<i>' + subMessage + '</i>').appendTo (contentDiv);
+        $('<div>').addClass ('ov_dialog_submessage').html (subMessage).appendTo (contentDiv);
     }
     dialog.Show ();
     return dialog;
@@ -64,7 +64,7 @@ OV.CalculatePopupPositionToScreen = function (globalMouseCoordinates, contentDiv
     let windowObj = $(window);
     let windowWidth = windowObj.outerWidth ();
     let windowHeight = windowObj.outerHeight ();
-    let left =  globalMouseCoordinates.x;               
+    let left =  globalMouseCoordinates.x;
     let top =  globalMouseCoordinates.y;
     let right = left + contentDiv.outerWidth (true);
     let bottom = top + contentDiv.outerHeight (true);
