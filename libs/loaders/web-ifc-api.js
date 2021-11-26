@@ -51619,7 +51619,7 @@ var IfcZone = class {
 
 // dist/web-ifc-api.ts
 var WebIFCWasm;
-if (crossOriginIsolated) {
+if (self.crossOriginIsolated) {
   WebIFCWasm = require_web_ifc_mt();
 } else {
   WebIFCWasm = require_web_ifc();
