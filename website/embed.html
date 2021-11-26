@@ -132,10 +132,10 @@
 	<!-- externals end -->
 
 	<script type="text/javascript">
-		$(window).on ('load', function () {
+		window.addEventListener ('load', function () {
 			let embed = new OV.Embed ({
-				viewerDiv : $('#embed_viewer'),
-				websiteLinkDiv : $('#website_link')
+				viewerDiv : document.getElementById ('embed_viewer'),
+				websiteLinkDiv : document.getElementById ('website_link')
 			});
 			embed.Load ();
 		});
@@ -145,7 +145,6 @@
 <body>
 	<div class="embed_viewer" id="embed_viewer">
 		<a id="website_link" href="https://3dviewer.net" target="_blank" title="Open in 3dviewer.net">
-			<!-- <img class="embed_logo" src="assets/images/3dviewer_net_logo.svg"> -->
 			<svg class="embed_logo"><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>
 		</a>
 	</div>

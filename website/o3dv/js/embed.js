@@ -10,7 +10,7 @@ OV.Embed = class
 
     Load ()
     {
-        let canvas = $('<canvas>').appendTo (this.parameters.viewerDiv);
+        let canvas = OV.AddDomElement (this.parameters.viewerDiv, 'canvas');
         this.InitViewer (canvas);
         this.InitModelLoader ();
         this.Resize ();
@@ -31,19 +31,19 @@ OV.Embed = class
             }
             this.modelLoader.LoadFromUrlList (urls, settings);
             let hashParameters = OV.CreateModelUrlParameters (urls);
-            let websiteUrl = this.parameters.websiteLinkDiv.attr ('href') + '#' + hashParameters;
-            this.parameters.websiteLinkDiv.attr ('href', websiteUrl);
+            let websiteUrl = this.parameters.websiteLinkDiv.getAttribute ('href') + '#' + hashParameters;
+            this.parameters.websiteLinkDiv.setAttribute ('href', websiteUrl);
         }
 
-		$(window).on ('resize', () => {
+		window.addEventListener ('resize', () => {
 			this.Resize ();
 		});
     }
 
     Resize ()
     {
-        let windowWidth = $(window).outerWidth ();
-        let windowHeight = $(window).outerHeight ();
+        let windowWidth = window.innerWidth;
+        let windowHeight = window.innerHeight;
         this.viewer.Resize (windowWidth, windowHeight);
     }
 
@@ -65,7 +65,7 @@ OV.Embed = class
 
     InitViewer (canvas)
     {
-        this.viewer.Init (canvas.get (0));
+        this.viewer.Init (canvas);
         this.viewer.SetEnvironmentMap ([
             'assets/envmaps/grayclouds/posx.jpg',
             'assets/envmaps/grayclouds/negx.jpg',

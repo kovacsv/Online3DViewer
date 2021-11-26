@@ -19,3 +19,10 @@ OV.GetInnerDimensions = function (element, outerWidth, outerHeight)
         height : height
     };
 };
+
+OV.AddDomElement = function (parentElement, elementType)
+{
+    const element = document.createElement (elementType);
+    parentElement.appendChild (element);
+    return element;
+};
