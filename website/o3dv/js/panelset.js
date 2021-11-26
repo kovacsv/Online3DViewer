@@ -110,8 +110,11 @@ OV.PanelSet = class
             this.contentDiv.show ();
             this.parentDiv.outerWidth (this.menuDiv.outerWidth (true) + this.panelsPrevWidth, true);
         } else {
-            for (let otherPanelButton of this.panelButtons) {
-                otherPanelButton.removeClass ('selected');
+            for (let panelButton of this.panelButtons) {
+                panelButton.removeClass ('selected');
+            }
+            for (let panel of this.panels) {
+                panel.Show (false);
             }
             this.panelsPrevWidth = this.contentDiv.outerWidth (true);
             this.parentDiv.outerWidth (this.menuDiv.outerWidth (true), true);
@@ -124,17 +127,23 @@ OV.PanelSet = class
 
     ShowPanel (panel)
     {
-        for (let otherPanel of this.panels) {
-            otherPanel.Show (false);
-        }
-
-        for (let otherPanelButton of this.panelButtons) {
-            otherPanelButton.removeClass ('selected');
+        if (panel === this.GetVisiblePanel ()) {
+            return;
         }
 
         let panelButton = this.GetPanelButton (panel);
+        for (let otherPanelButton of this.panelButtons) {
+            if (otherPanelButton !== panelButton) {
+                otherPanelButton.removeClass ('selected');
+            }
+        }
         panelButton.addClass ('selected');
 
+        for (let otherPanel of this.panels) {
+            if (otherPanel !== panel) {
+                otherPanel.Show (false);
+            }
+        }
         panel.Show (true);
         panel.Resize ();
     }
@@ -168,12 +177,17 @@ OV.PanelSet = class
     {
         if (this.requestedPanelsVisible !== this.panelsVisible) {
             this.ShowPanels (this.requestedPanelsVisible);
+            return;
         }
         let height = this.parentDiv.height ();
         this.menuDiv.outerHeight (height, true);
         this.contentDiv.outerHeight (height, true);
-        for (let panel of this.panels) {
-            panel.Resize ();
+        if (this.panelsVisible) {
+            for (let panel of this.panels) {
+                if (panel.IsVisible ()) {
+                    panel.Resize ();
+                }
+            }
         }
     }
 
