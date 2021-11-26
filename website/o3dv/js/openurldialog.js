@@ -1,4 +1,3 @@
-
 OV.ShowOpenUrlDialog = function (onOk)
 {
     function CorrectFileHostUrls (urls)
@@ -25,7 +24,7 @@ OV.ShowOpenUrlDialog = function (onOk)
     }
 
     let dialog = new OV.ButtonDialog ();
-    let urlsTextArea = $('<textarea>').addClass ('ov_dialog_textarea');
+    let urlsTextArea = OV.CreateDomElement ('textarea', 'ov_dialog_textarea');
     let contentDiv = dialog.Init ('Open Model from Url', [
         {
             name : 'Cancel',
@@ -38,7 +37,7 @@ OV.ShowOpenUrlDialog = function (onOk)
             name : 'OK',
             onClick () {
                 let urls = [];
-                OV.ReadLines (urlsTextArea.val (), (line) => {
+                OV.ReadLines (urlsTextArea.value, (line) => {
                     urls.push (line);
                 });
                 dialog.Hide ();
@@ -48,8 +47,8 @@ OV.ShowOpenUrlDialog = function (onOk)
         }
     ]);
     let text = 'Here you can load models based on their urls. You can add more lines if your model builds up from multiple files.';
-    $('<div>').html (text).addClass ('ov_dialog_section').appendTo (contentDiv);
-    urlsTextArea.appendTo (contentDiv);
+    OV.AddDiv (contentDiv, 'ov_dialog_section', text);
+    contentDiv.appendChild (urlsTextArea);
     dialog.Show ();
     urlsTextArea.focus ();
     return dialog;

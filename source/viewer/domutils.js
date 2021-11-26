@@ -20,9 +20,38 @@ OV.GetInnerDimensions = function (element, outerWidth, outerHeight)
     };
 };
 
-OV.AddDomElement = function (parentElement, elementType)
+OV.CreateDomElement = function (elementType, className, innerHTML)
 {
-    const element = document.createElement (elementType);
+    let element = document.createElement (elementType);
+    if (className) {
+        element.className = className;
+    }
+    if (innerHTML) {
+        element.innerHTML = innerHTML;
+    }
+    return element;
+};
+
+OV.AddDomElement = function (parentElement, elementType, className, innerHTML)
+{
+    let element = OV.CreateDomElement (elementType, className, innerHTML);
     parentElement.appendChild (element);
     return element;
+};
+
+OV.ClearDomElement = function (element)
+{
+    while (element.firstChild) {
+        element.removeChild (element.firstChild);
+    }
+};
+
+OV.CreateDiv = function (className, innerHTML)
+{
+    return OV.CreateDomElement ('div', className, innerHTML);
+};
+
+OV.AddDiv = function (parentElement, className, innerHTML)
+{
+    return OV.AddDomElement (parentElement, 'div', className, innerHTML);
 };

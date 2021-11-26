@@ -1,5 +1,14 @@
+div.ov_modal
+{
+	position: absolute;
+}
+
 div.ov_modal_overlay
 {
+	width: 100%;
+	height: 100%;
+	left : 0;
+	top : 0;
 	position: absolute;
 }
 
@@ -83,6 +92,11 @@ div.ov_dialog textarea.ov_dialog_textarea
 	box-sizing: border-box;
 }
 
+div.ov_dialog div.ov_dialog_options
+{
+	height: 50px;
+}
+
 div.ov_dialog div.ov_dialog_select
 {
 	margin: 20px 0px;
@@ -91,6 +105,7 @@ div.ov_dialog div.ov_dialog_select
 
 div.ov_dialog div.ov_dialog_select div.ov_dialog_select_option
 {
+	width: 40px;
 	margin-right: 5px;
 	float: left;
 }
@@ -202,7 +217,7 @@ div.ov_progress
 	border-radius: 5px;
 }
 
-div.ov_progress svg.ov_progress_img
+div.ov_progress div.ov_progress_img svg
 {
 	width: 80px;
 	height: 80px;

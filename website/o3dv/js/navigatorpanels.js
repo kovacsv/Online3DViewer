@@ -72,7 +72,7 @@ OV.NavigatorMeshesPopupButton = class extends OV.NavigatorPopupButton
 
         this.popup = OV.ShowListPopup (meshItems, {
             calculatePosition : (contentDiv) => {
-                return OV.CalculatePopupPositionToElementBottomRight (this.button, contentDiv);
+                return OV.CalculatePopupPositionToElementBottomRight (this.button.get (0), contentDiv);
             },
             onHoverStart : (index) => {
                 const meshData = this.meshInfoArray[index];
@@ -129,7 +129,7 @@ OV.NavigatorMaterialsPopupButton = class extends OV.NavigatorPopupButton
 
         this.popup = OV.ShowListPopup (materialItems, {
             calculatePosition : (contentDiv) => {
-                return OV.CalculatePopupPositionToElementBottomRight (this.button, contentDiv);
+                return OV.CalculatePopupPositionToElementBottomRight (this.button.get (0), contentDiv);
             },
             onClick : (index) => {
                 let usedMaterial = this.materialInfoArray[index];

@@ -2,7 +2,7 @@ OV.Modal = class
 {
     constructor ()
     {
-        this.modalDiv = $('<div>').css ('position', 'absolute');
+        this.modalDiv = OV.CreateDiv ('ov_modal');
         this.overlayDiv = null;
         this.resizeHandler = null;
         this.positionCalculator = null;
@@ -33,20 +33,17 @@ OV.Modal = class
 
     Open ()
     {
-        let windowObj = $(window);
-        let bodyObj = $(document.body);
-
-        this.overlayDiv = $('<div>').addClass ('ov_modal_overlay').appendTo (bodyObj);
-        this.modalDiv.appendTo (bodyObj);
+        this.overlayDiv = OV.AddDiv (document.body, 'ov_modal_overlay');
+        document.body.appendChild (this.modalDiv);
 
         this.resizeHandler = this.Resize.bind (this);
-        windowObj.bind ('resize', this.resizeHandler);
+        window.addEventListener ('resize', this.resizeHandler);
         if (this.closeable) {
-            this.overlayDiv.click ((ev) => {
+            this.overlayDiv.addEventListener ('click', (ev) => {
                 ev.preventDefault ();
                 this.Close ();
             });
-            this.overlayDiv.contextmenu ((ev) => {
+            this.overlayDiv.addEventListener ('contextmenu', (ev) => {
                 ev.preventDefault ();
                 this.Close ();
             });
@@ -62,14 +59,14 @@ OV.Modal = class
             return;
         }
 
-        let windowObj = $(window);
-        windowObj.unbind ('resize', this.resizeHandler);
+        window.removeEventListener ('resize', this.resizeHandler);
         if (this.closeHandler !== null) {
             this.closeHandler ();
         }
 
         this.modalDiv.remove ();
         this.overlayDiv.remove ();
+
         this.overlayDiv = null;
         this.resizeHandler = null;
         this.isOpen = false;
@@ -82,26 +79,17 @@ OV.Modal = class
 
     Resize ()
     {
-        let windowObj = $(window);
-        let windowWidth = windowObj.outerWidth ();
-        let windowHeight = windowObj.outerHeight ();
-        this.overlayDiv.width (windowWidth);
-        this.overlayDiv.height (windowHeight);
-        this.overlayDiv.offset ({
-            left : 0,
-            top : 0
-        });
-        let positionX = (windowWidth - this.modalDiv.outerWidth ()) / 2;
-        let positionY = (windowHeight - this.modalDiv.outerHeight ()) / 3;
+        let windowWidth = window.innerWidth;
+        let windowHeight = window.innerHeight;
+        let positionX = (windowWidth - this.modalDiv.offsetWidth) / 2;
+        let positionY = (windowHeight - this.modalDiv.offsetHeight) / 3;
         if (this.positionCalculator !== null) {
             let calculatedPosition = this.positionCalculator ();
             positionX = calculatedPosition.x;
             positionY = calculatedPosition.y;
         }
-        this.modalDiv.offset ({
-            left : positionX,
-            top : positionY
-        });
+        this.modalDiv.style.left = positionX + 'px';
+        this.modalDiv.style.top = positionY + 'px';
     }
 };
 
@@ -155,16 +143,16 @@ OV.ProgressDialog = class extends OV.Dialog
     Init (text)
     {
         let contentDiv = this.modal.GetContentDiv ();
-        contentDiv.addClass ('ov_progress');
+        contentDiv.classList.add ('ov_progress');
 
-        $('<svg><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>').addClass ('ov_progress_img').appendTo (contentDiv);
-        this.textDiv = $('<div>').addClass ('ov_progress_text').appendTo (contentDiv);
+        OV.AddDiv (contentDiv, 'ov_progress_img', '<svg><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>');
+        this.textDiv = OV.AddDiv (contentDiv, 'ov_progress_text');
         this.SetText (text);
     }
 
     SetText (text)
     {
-        this.textDiv.html (text);
+        this.textDiv.innerHTML = text;
     }
 };
 
@@ -179,22 +167,22 @@ OV.ButtonDialog = class extends OV.Dialog
     {
         function AddButton (button, buttonsDiv)
         {
-            let buttonDiv = $('<div>').addClass ('ov_button').addClass ('ov_dialog_button').html (button.name).appendTo (buttonsDiv);
+            let buttonDiv = OV.AddDiv (buttonsDiv, 'ov_button ov_dialog_button', button.name);
             if (button.subClass) {
-                buttonDiv.addClass (button.subClass);
+                buttonDiv.classList.add (button.subClass);
             }
-            buttonDiv.click (() => {
+            buttonDiv.addEventListener ('click', () => {
                 button.onClick ();
             });
         }
 
         let contentDiv = this.modal.GetContentDiv ();
-        contentDiv.addClass ('ov_dialog');
+        contentDiv.classList.add ('ov_dialog');
 
-        $('<div>').addClass ('ov_dialog_title').html (title).appendTo (contentDiv);
-        let dialogContentDiv = $('<div>').addClass ('ov_dialog_content').appendTo (contentDiv);
-        let buttonsDiv = $('<div>').addClass ('ov_dialog_buttons').appendTo (contentDiv);
-        let buttonsInnerDiv = $('<div>').addClass ('ov_dialog_buttons_inner').appendTo (buttonsDiv);
+        OV.AddDiv (contentDiv, 'ov_dialog_title', title);
+        let dialogContentDiv = OV.AddDiv (contentDiv, 'ov_dialog_content');
+        let buttonsDiv = OV.AddDiv (contentDiv, 'ov_dialog_buttons');
+        let buttonsInnerDiv = OV.AddDiv (buttonsDiv, 'ov_dialog_buttons_inner');
         for (let i = 0; i < buttons.length; i++) {
             AddButton (buttons[i], buttonsInnerDiv);
         }
@@ -213,7 +201,7 @@ OV.PopupDialog = class extends OV.Dialog
     Init (positionCalculator)
     {
         let contentDiv = this.modal.GetContentDiv ();
-        contentDiv.addClass ('ov_popup');
+        contentDiv.classList.add ('ov_popup');
         this.modal.SetPositionCalculator (positionCalculator);
         return contentDiv;
     }
@@ -230,32 +218,30 @@ OV.ListPopup = class extends OV.PopupDialog
     Init (positionCalculator)
     {
         let contentDiv = super.Init (positionCalculator);
-        this.listDiv = $('<div>').addClass ('ov_popup_list').addClass ('ov_thin_scrollbar').appendTo (contentDiv);
+        this.listDiv = OV.AddDiv (contentDiv, 'ov_popup_list ov_thin_scrollbar');
         return contentDiv;
     }
 
     AddListItem (item, callbacks)
     {
-        let listItemDiv = $('<div>').addClass ('ov_popup_list_item').appendTo (this.listDiv);
+        let listItemDiv = OV.AddDiv (this.listDiv, 'ov_popup_list_item');
         if (item.icon) {
             OV.AddSvgIcon (listItemDiv, item.icon, 'left_inline');
         }
         if (item.color) {
-            let iconDiv = $('<div>').addClass ('ov_popup_list_item_icon').appendTo (listItemDiv);
+            let iconDiv = OV.AddDiv (listItemDiv, 'ov_popup_list_item_icon');
             let colorCircle = OV.CreateInlineColorCircle (item.color);
             colorCircle.appendTo (iconDiv);
         }
-        $('<div>').addClass ('ov_popup_list_item_name').html (item.name).appendTo (listItemDiv);
-        listItemDiv.click (callbacks.onClick);
+        OV.AddDiv (listItemDiv, 'ov_popup_list_item_name', item.name);
+        listItemDiv.addEventListener ('click', callbacks.onClick);
         if (OV.IsHoverEnabled () && callbacks.onHoverStart && callbacks.onHoverStop) {
-            listItemDiv.hover (
-                () => {
-                    callbacks.onHoverStart ();
-                },
-                () => {
-                    callbacks.onHoverStop ();
-                }
-            );
+            listItemDiv.addEventListener ('mouseover', () => {
+                callbacks.onHoverStart ();
+            });
+            listItemDiv.addEventListener ('mouseout', () => {
+                callbacks.onHoverStop ();
+            });
         }
     }
 };

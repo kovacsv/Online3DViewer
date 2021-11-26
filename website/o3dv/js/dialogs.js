@@ -9,9 +9,9 @@ OV.ShowMessageDialog = function (title, message, subMessage)
             }
         }
     ]);
-    $('<div>').addClass ('ov_dialog_message').html (message).appendTo (contentDiv);
+    OV.AddDiv (contentDiv, 'ov_dialog_message', message);
     if (subMessage !== null) {
-        $('<div>').addClass ('ov_dialog_submessage').html (subMessage).appendTo (contentDiv);
+        OV.AddDiv (contentDiv, 'ov_dialog_submessage', subMessage);
     }
     dialog.Show ();
     return dialog;
@@ -52,22 +52,21 @@ OV.ShowListPopup = function (items, callbacks)
 
 OV.CalculatePopupPositionToElementBottomRight = function (elementDiv, contentDiv)
 {
-    let offset = elementDiv.offset ();
+    let offset = elementDiv.getBoundingClientRect ();
     return {
-        x : offset.left + elementDiv.outerWidth (false),
-        y : offset.top + elementDiv.outerHeight (false) - contentDiv.outerHeight (true)
+        x : offset.left + elementDiv.offsetWidth,
+        y : offset.top + elementDiv.offsetHeight - contentDiv.offsetHeight
     };
 };
 
 OV.CalculatePopupPositionToScreen = function (globalMouseCoordinates, contentDiv)
 {
-    let windowObj = $(window);
-    let windowWidth = windowObj.outerWidth ();
-    let windowHeight = windowObj.outerHeight ();
+    let windowWidth = window.innerWidth;
+    let windowHeight = window.innerHeight;
     let left =  globalMouseCoordinates.x;
     let top =  globalMouseCoordinates.y;
-    let right = left + contentDiv.outerWidth (true);
-    let bottom = top + contentDiv.outerHeight (true);
+    let right = left + contentDiv.offsetWidth;
+    let bottom = top + contentDiv.offsetHeight;
     if (right > windowWidth) {
         left = left - (right - windowWidth);
     }

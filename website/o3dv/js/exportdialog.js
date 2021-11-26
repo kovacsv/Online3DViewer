@@ -100,17 +100,15 @@ OV.ExportDialog = class
         ]);
 
         let text = 'Select a format from the below list to export your model. Please note that the export can take several second.';
-        $('<div>').html (text).addClass ('ov_dialog_section').appendTo (contentDiv);
+        OV.AddDiv (contentDiv, 'ov_dialog_section', text);
 
-        let buttonWidth = 40;
-        let optionsHeight = 50;
-        let exportFormatSelect = $('<div>').addClass ('ov_dialog_select').appendTo (contentDiv);
-        this.formatParameters.formatSettingsDiv = $('<div>').addClass ('ov_dialog_section').height (optionsHeight).appendTo (contentDiv);
+        let exportFormatSelect = OV.AddDiv (contentDiv, 'ov_dialog_select');
+        this.formatParameters.formatSettingsDiv = OV.AddDiv (contentDiv, 'ov_dialog_section ov_dialog_options');
         for (let i = 0; i < this.exportFormats.length; i++) {
             let exportFormat = this.exportFormats[i];
-            let exportFormatButton = $('<div>').addClass ('ov_button').addClass ('outline').addClass ('ov_dialog_select_option').html (exportFormat.name).width (buttonWidth).appendTo (exportFormatSelect);
+            let exportFormatButton = OV.AddDiv (exportFormatSelect, 'ov_button outline ov_dialog_select_option', exportFormat.name);
             this.formatParameters.exportFormatButtonDivs.push (exportFormatButton);
-            exportFormatButton.click (() => {
+            exportFormatButton.addEventListener ('click', () => {
                 this.OnExportFormatSelect (i);
             });
         }
@@ -122,28 +120,32 @@ OV.ExportDialog = class
 
     OnExportFormatSelect (exportFormatIndex)
     {
-        this.formatParameters.formatSettingsDiv.empty ();
+        OV.ClearDomElement (this.formatParameters.formatSettingsDiv);
         for (let i = 0; i < this.formatParameters.exportFormatButtonDivs.length; i++) {
             let exportFormatButtonDiv = this.formatParameters.exportFormatButtonDivs[i];
             if (i === exportFormatIndex) {
-                exportFormatButtonDiv.removeClass ('outline');
+                exportFormatButtonDiv.classList.remove ('outline');
             } else {
-                exportFormatButtonDiv.addClass ('outline');
+                exportFormatButtonDiv.classList.add ('outline');
             }
         }
 
         let exportFormat = this.exportFormats[exportFormatIndex];
         for (let i = 0; i < exportFormat.formats.length; i++) {
             let format = exportFormat.formats[i];
-            let formatDiv = $('<div>').addClass ('ov_dialog_row').appendTo (this.formatParameters.formatSettingsDiv);
-            let formatLabel = $('<label>').attr ('for', format.name).appendTo (formatDiv);
-            let formatInput = $('<input>').addClass ('ov_radio_button').attr ('type', 'radio').attr ('id', format.name).attr ('name', 'format').appendTo (formatLabel);
-            $('<span>').html (format.name).appendTo (formatLabel);
+            let formatDiv = OV.AddDiv (this.formatParameters.formatSettingsDiv, 'ov_dialog_row');
+            let formatLabel = OV.AddDomElement (formatDiv, 'label');
+            formatLabel.setAttribute ('for', format.name);
+            let formatInput = OV.AddDomElement (formatLabel, 'input', 'ov_radio_button');
+            formatInput.setAttribute ('type', 'radio');
+            formatInput.setAttribute ('id', format.name);
+            formatInput.setAttribute ('name', 'format');
+            OV.AddDomElement (formatLabel, 'span', null, format.name);
             if (i === 0) {
-                formatInput.prop ('checked', true);
+                formatInput.checked = true;
                 this.formatParameters.selectedFormat = format;
             }
-            formatInput.change (() => {
+            formatInput.addEventListener ('change', () => {
                 this.formatParameters.selectedFormat = format;
             });
         }
@@ -205,19 +207,19 @@ OV.ExportDialog = class
         ]);
 
         let text = 'You can download your exported files here.';
-        $('<div>').html (text).addClass ('ov_dialog_section').appendTo (contentDiv);
+        OV.AddDiv (contentDiv, 'ov_dialog_section', text);
 
-        let fileListSection = $('<div>').addClass ('ov_dialog_section').appendTo (contentDiv);
-        let fileList = $('<div>').addClass ('ov_dialog_file_list').addClass ('ov_thin_scrollbar').appendTo (fileListSection);
+        let fileListSection = OV.AddDiv (contentDiv, 'ov_dialog_section');
+        let fileList = OV.AddDiv (fileListSection, 'ov_dialog_file_list ov_thin_scrollbar');
 
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
             let url = OV.CreateObjectUrl (file.GetBufferContent ());
-            let fileLink = $('<a>').addClass ('ov_dialog_file_link').appendTo (fileList);
-            fileLink.attr ('href', url);
-            fileLink.attr ('download', file.GetName ());
+            let fileLink = OV.AddDomElement (fileList, 'a', 'ov_dialog_file_link');
+            fileLink.setAttribute ('href', url);
+            fileLink.setAttribute ('download', file.GetName ());
             OV.AddSvgIcon (fileLink, 'file_download', 'ov_file_link_img');
-            $('<div>').addClass ('ov_dialog_file_link_text').html (file.GetName ()).appendTo (fileLink);
+            OV.AddDiv (fileLink, 'ov_dialog_file_link_text', file.GetName ());
         }
 
         dialog.Show ();

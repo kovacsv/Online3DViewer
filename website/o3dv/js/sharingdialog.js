@@ -2,12 +2,16 @@ OV.ShowSharingDialog = function (importer, settings, camera)
 {
     function AddCheckboxLine (parentDiv, text, id, onChange)
     {
-        let line = $('<div>').addClass ('ov_dialog_row').appendTo (parentDiv);
-        let label = $('<label>').attr ('for', id).appendTo (line);
-        let check = $('<input>').attr ('type', 'checkbox').attr ('checked', 'true').addClass ('ov_checkbox').attr ('id', id).appendTo (label);
-        $('<span>').html (text).appendTo (label);
-        check.change (() => {
-            onChange (check.prop ('checked'));
+        let line = OV.AddDiv (parentDiv, 'ov_dialog_row');
+        let label = OV.AddDomElement (line, 'label');
+        label.setAttribute ('for', id);
+        let check = OV.AddDomElement (label, 'input', 'ov_checkbox');
+        check.setAttribute ('type', 'checkbox');
+        check.setAttribute ('checked', 'true');
+        check.setAttribute ('id', id);
+        OV.AddDomElement (label, 'span', null, text);
+        check.addEventListener ('change', () => {
+            onChange (check.checked);
         });
     }
 
@@ -41,16 +45,20 @@ OV.ShowSharingDialog = function (importer, settings, camera)
     {
         let copyText = 'Copy';
         let copiedText = 'Copied';
-        let container = $('<div>').addClass ('ov_dialog_copyable_input').appendTo (parentDiv);
-        let input = $('<input>').addClass ('ov_dialog_text').prop ('readonly', true).appendTo (container);
-        let button = $('<div>').addClass ('ov_button').addClass ('outline').addClass ('ov_dialog_copyable_input_button').html (copyText).appendTo (container);
-        button.click (() => {
+        let container = OV.AddDiv (parentDiv, 'ov_dialog_copyable_input');
+        let input = OV.AddDomElement (container, 'input', 'ov_dialog_text');
+        input.readOnly = true;
+        let button = OV.AddDiv (container, 'ov_button outline ov_dialog_copyable_input_button', copyText);
+        button.addEventListener ('click', () => {
             OV.CopyToClipboard (getText ());
-            button.fadeOut (200, () => {
-                button.html (copiedText).fadeIn (200);
+            let jqButton = $(button); // TODO
+            jqButton.fadeOut (200, () => {
+                button.innerHTML = copiedText;
+                jqButton.fadeIn (200);
                 setTimeout (() => {
-                    button.fadeOut (200, () => {
-                        button.html (copyText).fadeIn (200);
+                    jqButton.fadeOut (200, () => {
+                        button.innerHTML = copyText;
+                        jqButton.fadeIn (200);
                     });
                 }, 2000);
             });
@@ -60,35 +68,36 @@ OV.ShowSharingDialog = function (importer, settings, camera)
 
     function AddSharingLinkTab (parentDiv, sharingLinkParams)
     {
-        let section = $('<div>').addClass ('ov_dialog_section').appendTo (parentDiv);
-        $('<div>').html ('Sharing Link').addClass ('ov_dialog_inner_title').appendTo (section);
+        let section = OV.AddDiv (parentDiv, 'ov_dialog_section');
+        OV.AddDiv (section, 'ov_dialog_inner_title', 'Sharing Link');
         let sharingLinkInput = AddCopyableTextInput (section, () => {
             return GetSharingLink (sharingLinkParams);
-        }); 
-        sharingLinkInput.val (GetSharingLink (sharingLinkParams));
+        });
+        sharingLinkInput.value = GetSharingLink (sharingLinkParams);
     }
 
     function AddEmbeddingCodeTab (parentDiv, settings, embeddingCodeParams)
     {
-        let section = $('<div>').addClass ('ov_dialog_section').css ('margin-top', '20px').appendTo (parentDiv);
-        $('<div>').html ('Embedding Code').addClass ('ov_dialog_inner_title').appendTo (section);
-        let optionsSection = $('<div>').addClass ('ov_dialog_section').appendTo (section);
+        let section = OV.AddDiv (parentDiv, 'ov_dialog_section');
+        section.style.marginTop = '20px';
+        OV.AddDiv (section, 'ov_dialog_inner_title', 'Embedding Code');
+        let optionsSection = OV.AddDiv (section, 'ov_dialog_section');
         let embeddingCodeInput = AddCopyableTextInput (section, () => {
             return GetEmbeddingCode (embeddingCodeParams);
         });
         AddCheckboxLine (optionsSection, 'Use current camera position', 'embed_camera', (checked) => {
             embeddingCodeParams.camera = checked ? camera : null;
-            embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
+            embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
         });
         AddCheckboxLine (optionsSection, 'Use overridden background color', 'embed_background', (checked) => {
             embeddingCodeParams.backgroundColor = checked ? settings.backgroundColor : null;
-            embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
+            embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
         });
         AddCheckboxLine (optionsSection, 'Use overridden default color', 'embed_color', (checked) => {
             embeddingCodeParams.defaultColor = checked ? settings.defaultColor : null;
-            embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
+            embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
         });
-        embeddingCodeInput.val (GetEmbeddingCode (embeddingCodeParams));
+        embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
     }
 
     if (!importer.GetFileList ().IsOnlyUrlSource ()) {
@@ -98,7 +107,7 @@ OV.ShowSharingDialog = function (importer, settings, camera)
             null
         );
     }
-    
+
     let files = importer.GetFileList ().GetFiles ();
     let modelFiles = [];
     for (let fileIndex = 0; fileIndex < files.length; fileIndex++) {
