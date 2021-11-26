@@ -26,8 +26,8 @@ OV.Model = class extends OV.ModelObject3D
     MeshInstanceCount ()
     {
         let count = 0;
-        this.EnumerateMeshInstances ((meshInstance) => {
-            count += 1;
+        this.root.Enumerate ((node) => {
+            count += node.MeshIndexCount ();
         });
         return count;
     }
