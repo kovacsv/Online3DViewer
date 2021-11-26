@@ -29,8 +29,8 @@
 		"fflate": "0.7.1",
 		"jquery": "3.5.1",
 		"rhino3dm": "7.11.1",
-		"three": "0.134.0",
-		"web-ifc": "0.0.28"
+		"three": "0.135.0",
+		"web-ifc": "0.0.29"
 	},
 	"eslintConfig": {
 		"env": {
