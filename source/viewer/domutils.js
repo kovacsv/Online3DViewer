@@ -55,3 +55,23 @@ OV.AddDiv = function (parentElement, className, innerHTML)
 {
     return OV.AddDomElement (parentElement, 'div', className, innerHTML);
 };
+
+OV.InsertDomElementBefore = function (newElement, existingElement)
+{
+    existingElement.parentNode.insertBefore (newElement, existingElement);
+};
+
+OV.InsertDomElementAfter = function (newElement, existingElement)
+{
+    existingElement.parentNode.insertBefore (newElement, existingElement.nextSibling);
+};
+
+OV.ShowDomElement = function (element)
+{
+    element.style.display = '';
+};
+
+OV.HideDomElement = function (element)
+{
+    element.style.display = 'none';
+};

@@ -148,7 +148,7 @@ OV.NavigatorPanel = class extends OV.Panel
 
         this.titleDiv = $('<div>').addClass ('ov_navigator_tree_title').appendTo (this.panelDiv);
         this.treeDiv = $('<div>').addClass ('ov_navigator_tree_panel').addClass ('ov_thin_scrollbar').appendTo (this.panelDiv);
-        this.treeView = new OV.TreeView (this.treeDiv);
+        this.treeView = new OV.TreeView (this.treeDiv.get (0));
 
         let panelName = this.GetName ();
         this.titleDiv.html (panelName).attr ('title', panelName);

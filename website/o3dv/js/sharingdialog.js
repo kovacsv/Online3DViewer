@@ -51,7 +51,7 @@ OV.ShowSharingDialog = function (importer, settings, camera)
         let button = OV.AddDiv (container, 'ov_button outline ov_dialog_copyable_input_button', copyText);
         button.addEventListener ('click', () => {
             OV.CopyToClipboard (getText ());
-            let jqButton = $(button); // TODO
+            let jqButton = $(button);
             jqButton.fadeOut (200, () => {
                 button.innerHTML = copiedText;
                 jqButton.fadeIn (200);

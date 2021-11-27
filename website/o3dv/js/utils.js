@@ -135,7 +135,7 @@ OV.CreateSvgIconElement = function (iconName, className)
 {
     let iconDiv = OV.CreateDiv ('ov_svg_icon');
     if (className) {
-        iconDiv.className = className;
+        iconDiv.classList.add (className);
     }
     OV.AddDomElement (iconDiv, 'i', 'icon icon-' + iconName);
     return iconDiv;
