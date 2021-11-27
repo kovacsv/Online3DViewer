@@ -5,11 +5,6 @@ import shutil
 
 from lib import tools_lib as Tools
 
-jqueryFileMap = [
-    [os.path.join ('jquery', 'LICENSE.txt'), os.path.join ('jquery.license.md')],
-    [os.path.join ('jquery', 'dist', 'jquery.min.js'), os.path.join ('jquery.min.js')]
-]
-
 pickrFileMap = [
     [os.path.join ('@simonwep', 'pickr', 'LICENSE'), os.path.join ('pickr.license.md')],
     [os.path.join ('@simonwep', 'pickr', 'dist', 'pickr.es5.min.js'), os.path.join ('pickr.es5.min.js')],
@@ -73,7 +68,6 @@ def Main (argv):
     nodeModulesDir = os.path.join (rootDir, 'node_modules')
     libsDir = os.path.join (rootDir, 'libs')
 
-    UpdateModule (jqueryFileMap, nodeModulesDir, libsDir)
     UpdateModule (pickrFileMap, nodeModulesDir, libsDir)
     UpdateModule (threeJsFileMap, nodeModulesDir, libsDir)
     UpdateModule (dracoFileMap, nodeModulesDir, libsDir)
