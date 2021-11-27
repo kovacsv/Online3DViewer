@@ -4,7 +4,7 @@ OV.Sidebar = class
     {
         this.mainDiv = mainDiv;
         this.splitterDiv = splitterDiv;
-        this.panelSet = new OV.PanelSet (mainDiv);
+        this.panelSet = new OV.PanelSet (mainDiv.get (0));
 
         this.detailsPanel = new OV.DetailsSidebarPanel (this.panelSet.GetContentDiv ());
         this.settingsPanel = new OV.SettingsSidebarPanel (this.panelSet.GetContentDiv ());

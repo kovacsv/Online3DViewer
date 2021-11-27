@@ -126,7 +126,8 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
         this.openButtonIcon = 'arrow_down';
         this.closeButtonIcon = 'arrow_right';
 
-        this.openCloseButton = OV.CreateSvgIcon (this.openButtonIcon, 'ov_tree_item_icon').insertBefore (this.nameElement);
+        this.openCloseButton = OV.CreateSvgIconElement (this.openButtonIcon, 'ov_tree_item_icon');
+        OV.InsertDomElementBefore (this.openCloseButton, this.nameElement);
     }
 
     AddChild (child)
@@ -169,10 +170,10 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
             return;
         }
         if (show) {
-            OV.SetSvgIconImage (this.openCloseButton, this.openButtonIcon);
+            OV.SetSvgIconImageElement (this.openCloseButton, this.openButtonIcon);
             $(this.childrenDiv).slideDown (400, onComplete);
         } else {
-            OV.SetSvgIconImage (this.openCloseButton, this.closeButtonIcon);
+            OV.SetSvgIconImageElement (this.openCloseButton, this.closeButtonIcon);
             $(this.childrenDiv).slideUp (400, onComplete);
         }
     }

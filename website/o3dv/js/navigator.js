@@ -38,7 +38,7 @@ OV.Navigator = class
         this.mainDiv = mainDiv;
         this.splitterDiv = splitterDiv;
 
-        this.panelSet = new OV.PanelSet (mainDiv);
+        this.panelSet = new OV.PanelSet (mainDiv.get (0));
         this.callbacks = null;
         this.selection = null;
         this.tempSelectedMeshId = null;

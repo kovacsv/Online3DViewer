@@ -218,7 +218,7 @@ OV.ExportDialog = class
             let fileLink = OV.AddDomElement (fileList, 'a', 'ov_dialog_file_link');
             fileLink.setAttribute ('href', url);
             fileLink.setAttribute ('download', file.GetName ());
-            OV.AddSvgIcon (fileLink, 'file_download', 'ov_file_link_img');
+            OV.AddSvgIconElement (fileLink, 'file_download', 'ov_file_link_img');
             OV.AddDiv (fileLink, 'ov_dialog_file_link_text', file.GetName ());
         }
 

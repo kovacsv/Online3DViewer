@@ -1,19 +1,19 @@
+OV.GetIntegerFromStyle = function (parameter)
+{
+    return Math.round (parseFloat (parameter));
+};
+
 OV.GetInnerDimensions = function (element, outerWidth, outerHeight)
 {
-    function GetInt (parameter)
-    {
-        return Math.round (parseFloat (parameter));
-    }
-
     let style = getComputedStyle (element);
     let width = outerWidth -
-        GetInt (style.borderLeftWidth) - GetInt (style.borderRightWidth) -
-        GetInt (style.marginLeft) - GetInt (style.marginRight) -
-        GetInt (style.paddingLeft) - GetInt (style.paddingRight);
+        OV.GetIntegerFromStyle (style.borderLeftWidth) - OV.GetIntegerFromStyle (style.borderRightWidth) -
+        OV.GetIntegerFromStyle (style.marginLeft) - OV.GetIntegerFromStyle (style.marginRight) -
+        OV.GetIntegerFromStyle (style.paddingLeft) - OV.GetIntegerFromStyle (style.paddingRight);
     let height = outerHeight -
-        GetInt (style.borderTopWidth) - GetInt (style.borderBottomWidth) -
-        GetInt (style.marginTop) - GetInt (style.marginBottom) -
-        GetInt (style.paddingTop) - GetInt (style.paddingBottom);
+        OV.GetIntegerFromStyle (style.borderTopWidth) - OV.GetIntegerFromStyle (style.borderBottomWidth) -
+        OV.GetIntegerFromStyle (style.marginTop) - OV.GetIntegerFromStyle (style.marginBottom) -
+        OV.GetIntegerFromStyle (style.paddingTop) - OV.GetIntegerFromStyle (style.paddingBottom);
     return {
         width : width,
         height : height
@@ -46,16 +46,6 @@ OV.ClearDomElement = function (element)
     }
 };
 
-OV.CreateDiv = function (className, innerHTML)
-{
-    return OV.CreateDomElement ('div', className, innerHTML);
-};
-
-OV.AddDiv = function (parentElement, className, innerHTML)
-{
-    return OV.AddDomElement (parentElement, 'div', className, innerHTML);
-};
-
 OV.InsertDomElementBefore = function (newElement, existingElement)
 {
     existingElement.parentNode.insertBefore (newElement, existingElement);
@@ -74,4 +64,35 @@ OV.ShowDomElement = function (element)
 OV.HideDomElement = function (element)
 {
     element.style.display = 'none';
+};
+
+OV.IsDomElementVisible = function (element)
+{
+    return element.style.display !== 'none';
+};
+
+OV.GetDomElementOuterHeight = function (element)
+{
+    let style = getComputedStyle (element);
+    return element.offsetHeight + OV.GetIntegerFromStyle (style.marginTop) + OV.GetIntegerFromStyle (style.marginBottom);
+};
+
+OV.SetDomElementWidth = function (element, width)
+{
+    element.style.width = width.toString () + 'px';
+};
+
+OV.SetDomElementHeight = function (element, height)
+{
+    element.style.height = height.toString () + 'px';
+};
+
+OV.CreateDiv = function (className, innerHTML)
+{
+    return OV.CreateDomElement ('div', className, innerHTML);
+};
+
+OV.AddDiv = function (parentElement, className, innerHTML)
+{
+    return OV.AddDomElement (parentElement, 'div', className, innerHTML);
 };

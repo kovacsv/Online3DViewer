@@ -108,29 +108,6 @@ OV.DownloadArrayBufferAsFile = function (arrayBuffer, fileName)
     OV.DownloadUrlAsFile (url, fileName);
 };
 
-OV.CreateSvgIcon = function (iconName, extraClass)
-{
-    let div = $('<div>').addClass ('ov_svg_icon');
-    $('<i>').addClass ('icon').addClass ('icon-' + iconName).appendTo (div);
-    if (extraClass !== undefined && extraClass !== null) {
-        div.addClass (extraClass);
-    }
-    return div;
-};
-
-OV.AddSvgIcon = function (parent, iconName, extraClass)
-{
-    let div = OV.CreateSvgIcon (iconName, extraClass);
-    div.appendTo (parent);
-    return div;
-};
-
-OV.SetSvgIconImage = function (icon, iconName)
-{
-    let iconChild = icon.children (':first');
-    iconChild.removeClass ().addClass ('icon').addClass ('icon-' + iconName);
-};
-
 OV.CreateSvgIconElement = function (iconName, className)
 {
     let iconDiv = OV.CreateDiv ('ov_svg_icon');
@@ -174,7 +151,10 @@ OV.CreateInlineColorCircle = function (color)
         Math.max (0, color.b - 50)
     );
     let darkerColorHexString = '#' + OV.ColorToHexString (darkerColor);
-    return $('<div>').addClass ('ov_color_circle').css ('background', hexString).css ('border', '1px solid ' + darkerColorHexString);
+    let circleDiv = OV.CreateDiv ('ov_color_circle');
+    circleDiv.style.background = hexString;
+    circleDiv.style.border = '1px solid ' + darkerColorHexString;
+    return circleDiv;
 };
 
 OV.InstallVerticalSplitter = function (splitterDiv, resizedDiv, flipped, onResize)

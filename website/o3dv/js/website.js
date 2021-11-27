@@ -340,8 +340,8 @@ OV.Website = class
 
     InitViewer ()
     {
-        let canvas = $('<canvas>').appendTo (this.parameters.viewerDiv);
-        this.viewer.Init (canvas.get (0));
+        let canvas = OV.AddDomElement (this.parameters.viewerDiv.get (0), 'canvas');
+        this.viewer.Init (canvas);
         this.viewer.SetBackgroundColor (this.settings.backgroundColor);
         this.viewer.SetEnvironmentMap ([
             'assets/envmaps/grayclouds/posx.jpg',

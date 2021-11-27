@@ -226,12 +226,12 @@ OV.ListPopup = class extends OV.PopupDialog
     {
         let listItemDiv = OV.AddDiv (this.listDiv, 'ov_popup_list_item');
         if (item.icon) {
-            OV.AddSvgIcon (listItemDiv, item.icon, 'left_inline');
+            OV.AddSvgIconElement (listItemDiv, item.icon, 'left_inline');
         }
         if (item.color) {
             let iconDiv = OV.AddDiv (listItemDiv, 'ov_popup_list_item_icon');
             let colorCircle = OV.CreateInlineColorCircle (item.color);
-            colorCircle.appendTo (iconDiv);
+            iconDiv.appendChild (colorCircle);
         }
         OV.AddDiv (listItemDiv, 'ov_popup_list_item_name', item.name);
         listItemDiv.addEventListener ('click', callbacks.onClick);

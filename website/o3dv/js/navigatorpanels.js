@@ -6,10 +6,10 @@ OV.NavigatorPopupButton = class
         this.callbacks = null;
         this.popup = null;
 
-        this.button = $('<div>').addClass ('ov_navigator_info_button').appendTo (this.parentDiv);
-        this.buttonText = $('<div>').addClass ('ov_navigator_info_button_text').appendTo (this.button);
-        OV.AddSvgIcon (this.button, 'arrow_right', 'ov_navigator_info_button_icon');
-        this.button.click (() => {
+        this.button = OV.AddDiv (this.parentDiv, 'ov_navigator_info_button');
+        this.buttonText = OV.AddDiv (this.button, 'ov_navigator_info_button_text');
+        OV.AddSvgIconElement (this.button, 'arrow_right', 'ov_navigator_info_button_icon');
+        this.button.addEventListener ('click', () => {
             this.OnButtonClick ();
         });
     }
@@ -49,7 +49,7 @@ OV.NavigatorMeshesPopupButton = class extends OV.NavigatorPopupButton
         }
 
         let meshesText = 'Meshes (' + this.meshInfoArray.length + ')';
-        this.buttonText.html (meshesText);
+        this.buttonText.innerHTML = meshesText;
     }
 
     OnButtonClick ()
@@ -72,7 +72,7 @@ OV.NavigatorMeshesPopupButton = class extends OV.NavigatorPopupButton
 
         this.popup = OV.ShowListPopup (meshItems, {
             calculatePosition : (contentDiv) => {
-                return OV.CalculatePopupPositionToElementBottomRight (this.button.get (0), contentDiv);
+                return OV.CalculatePopupPositionToElementBottomRight (this.button, contentDiv);
             },
             onHoverStart : (index) => {
                 const meshData = this.meshInfoArray[index];
@@ -105,7 +105,7 @@ OV.NavigatorMaterialsPopupButton = class extends OV.NavigatorPopupButton
         }
 
         let materialsText = 'Materials (' + this.materialInfoArray.length + ')';
-        this.buttonText.html (materialsText);
+        this.buttonText.innerHTML = materialsText;
     }
 
     OnButtonClick ()
@@ -129,7 +129,7 @@ OV.NavigatorMaterialsPopupButton = class extends OV.NavigatorPopupButton
 
         this.popup = OV.ShowListPopup (materialItems, {
             calculatePosition : (contentDiv) => {
-                return OV.CalculatePopupPositionToElementBottomRight (this.button.get (0), contentDiv);
+                return OV.CalculatePopupPositionToElementBottomRight (this.button, contentDiv);
             },
             onClick : (index) => {
                 let usedMaterial = this.materialInfoArray[index];
@@ -146,12 +146,13 @@ OV.NavigatorPanel = class extends OV.Panel
         super (parentDiv);
         this.callbacks = null;
 
-        this.titleDiv = $('<div>').addClass ('ov_navigator_tree_title').appendTo (this.panelDiv);
-        this.treeDiv = $('<div>').addClass ('ov_navigator_tree_panel').addClass ('ov_thin_scrollbar').appendTo (this.panelDiv);
-        this.treeView = new OV.TreeView (this.treeDiv.get (0));
+        this.titleDiv = OV.AddDiv (this.panelDiv, 'ov_navigator_tree_title');
+        this.treeDiv = OV.AddDiv (this.panelDiv, 'ov_navigator_tree_panel ov_thin_scrollbar');
+        this.treeView = new OV.TreeView (this.treeDiv);
 
         let panelName = this.GetName ();
-        this.titleDiv.html (panelName).attr ('title', panelName);
+        this.titleDiv.innerHTML = panelName;
+        this.titleDiv.setAttribute ('title', panelName);
     }
 
     Clear ()
@@ -194,9 +195,9 @@ OV.NavigatorFilesPanel = class extends OV.NavigatorPanel
 
     Resize ()
     {
-        let titleHeight = this.titleDiv.outerHeight (true);
-        let height = this.parentDiv.height ();
-        this.treeDiv.outerHeight (height - titleHeight, true);
+        let titleHeight = OV.GetDomElementOuterHeight (this.titleDiv);
+        let height = this.parentDiv.offsetHeight;
+        OV.SetDomElementHeight (this.treeDiv, height - titleHeight);
     }
 
     Clear ()
@@ -250,7 +251,7 @@ OV.NavigatorMaterialsPanel = class extends OV.NavigatorPanel
         this.callbacks = null;
         this.materialIndexToItem = new Map ();
 
-        this.popupDiv = $('<div>').addClass ('ov_navigator_info_panel').addClass ('ov_thin_scrollbar').appendTo (this.panelDiv);
+        this.popupDiv = OV.AddDiv (this.panelDiv, 'ov_navigator_info_panel');
         this.meshesButton = new OV.NavigatorMeshesPopupButton (this.popupDiv);
     }
 
@@ -266,10 +267,10 @@ OV.NavigatorMaterialsPanel = class extends OV.NavigatorPanel
 
     Resize ()
     {
-        let titleHeight = this.titleDiv.outerHeight (true);
-        let popupHeight = this.popupDiv.outerHeight (true);
-        let height = this.parentDiv.height ();
-        this.treeDiv.outerHeight (height - titleHeight - popupHeight, true);
+        let titleHeight = OV.GetDomElementOuterHeight (this.titleDiv);
+        let popupHeight = OV.GetDomElementOuterHeight (this.popupDiv);
+        let height = this.parentDiv.offsetHeight;
+        OV.SetDomElementHeight (this.treeDiv, height - titleHeight - popupHeight);
     }
 
     Clear ()
@@ -336,12 +337,14 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         this.meshInstanceIdToItem = new Map ();
         this.rootItem = null;
         this.showTree = false;
-        this.buttins = null;
+        this.buttons = null;
 
+        this.titleDiv.classList.add ('nomargin');
         this.treeView.AddClass ('tight');
-        this.buttonsDiv = $('<div>').addClass ('ov_navigator_buttons').insertBefore (this.treeDiv);
+        this.buttonsDiv = OV.CreateDiv ('ov_navigator_buttons');
+        OV.InsertDomElementBefore (this.buttonsDiv, this.treeDiv);
 
-        this.popupDiv = $('<div>').addClass ('ov_navigator_info_panel').addClass ('ov_thin_scrollbar').appendTo (this.panelDiv);
+        this.popupDiv = OV.AddDiv (this.panelDiv, 'ov_navigator_info_panel');
         this.materialsButton = new OV.NavigatorMaterialsPopupButton (this.popupDiv);
     }
 
@@ -357,17 +360,17 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
 
     Resize ()
     {
-        let titleHeight = this.titleDiv.outerHeight (true);
-        let buttonsHeight = this.buttonsDiv.outerHeight (true);
-        let popupHeight = this.popupDiv.outerHeight (true);
-        let height = this.parentDiv.height ();
-        this.treeDiv.outerHeight (height - titleHeight - buttonsHeight - popupHeight);
+        let titleHeight = this.titleDiv.offsetHeight;
+        let buttonsHeight = OV.GetDomElementOuterHeight (this.buttonsDiv);
+        let popupHeight = OV.GetDomElementOuterHeight (this.popupDiv);
+        let height = this.parentDiv.offsetHeight;
+        OV.SetDomElementHeight (this.treeDiv, height - titleHeight - buttonsHeight - popupHeight);
     }
 
     Clear ()
     {
         this.ClearMeshTree ();
-        this.buttonsDiv.empty ();
+        OV.ClearDomElement (this.buttonsDiv);
         this.buttons = null;
     }
 
@@ -409,14 +412,16 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
 
     FillButtons (importResult)
     {
-        function CreateButton (parentDiv, button, extraClasses, onClick)
+        function CreateButton (parentDiv, button, className, onClick)
         {
-            button.div = $('<div>').addClass ('ov_navigator_button').attr ('alt', button.name).attr ('title', button.name).appendTo (parentDiv);
-            if (OV.IsDefined (extraClasses)) {
-                button.div.addClass (extraClasses);
+            button.div = OV.AddDiv (parentDiv, 'ov_navigator_button');
+            button.div.setAttribute ('alt', button.name);
+            button.div.setAttribute ('title', button.name);
+            if (className) {
+                button.div.classList.add (className);
             }
-            button.iconDiv = OV.AddSvgIcon (button.div, button.icon);
-            button.div.click (() => {
+            button.iconDiv = OV.AddSvgIconElement (button.div, button.icon);
+            button.div.addEventListener ('click', () => {
                 onClick ();
             });
         }
@@ -424,20 +429,20 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
         function UpdateButtonsStatus (buttons, showTree, isHierarchical)
         {
             if (showTree) {
-                buttons.flatList.iconDiv.removeClass ('selected');
-                buttons.treeView.iconDiv.addClass ('selected');
+                buttons.flatList.iconDiv.classList.remove ('selected');
+                buttons.treeView.iconDiv.classList.add ('selected');
             } else {
-                buttons.flatList.iconDiv.addClass ('selected');
-                buttons.treeView.iconDiv.removeClass ('selected');
+                buttons.flatList.iconDiv.classList.add ('selected');
+                buttons.treeView.iconDiv.classList.remove ('selected');
             }
             if (showTree && isHierarchical) {
-                buttons.separator.show ();
-                buttons.expandAll.div.show ();
-                buttons.collapseAll.div.show ();
+                OV.ShowDomElement (buttons.separator);
+                OV.ShowDomElement (buttons.expandAll.div);
+                OV.ShowDomElement (buttons.collapseAll.div);
             } else {
-                buttons.separator.hide ();
-                buttons.expandAll.div.hide ();
-                buttons.collapseAll.div.hide ();
+                OV.HideDomElement (buttons.separator);
+                OV.HideDomElement (buttons.expandAll.div);
+                OV.HideDomElement (buttons.collapseAll.div);
             }
         }
 
@@ -528,7 +533,7 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             UpdateView (this, importResult, isHierarchical);
         });
 
-        this.buttons.separator = $('<div>').addClass ('ov_navigator_buttons_separator').appendTo (this.buttonsDiv);
+        this.buttons.separator = OV.AddDiv (this.buttonsDiv, 'ov_navigator_buttons_separator');
 
         CreateButton (this.buttonsDiv, this.buttons.expandAll, null, () => {
             this.rootItem.ExpandAll (true);
@@ -596,9 +601,9 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
             let rootItem = new OV.NodeItem (null, nodeId, {
                 onVisibilityChanged : (isVisible) => {
                     if (isVisible) {
-                        OV.SetSvgIconImage (panel.buttons.showHideMeshes.iconDiv, 'visible');
+                        OV.SetSvgIconImageElement (panel.buttons.showHideMeshes.iconDiv, 'visible');
                     } else {
-                        OV.SetSvgIconImage (panel.buttons.showHideMeshes.iconDiv, 'hidden');
+                        OV.SetSvgIconImageElement (panel.buttons.showHideMeshes.iconDiv, 'hidden');
                     }
                 }
             });

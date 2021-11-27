@@ -1,4 +1,3 @@
-
 OV.SidebarPanel = class extends OV.Panel
 {
     constructor (parentDiv)
@@ -6,12 +5,12 @@ OV.SidebarPanel = class extends OV.Panel
         super (parentDiv);
         this.callbacks = null;
 
-        this.titleDiv = $('<div>').addClass ('ov_sidebar_title').appendTo (this.panelDiv);
-        this.contentDiv = $('<div>').addClass ('ov_sidebar_content').addClass ('ov_thin_scrollbar').appendTo (this.panelDiv);
-        $('<div>').addClass ('ov_sidebar_title_text').html (this.GetName ()).appendTo (this.titleDiv);
+        this.titleDiv = OV.AddDiv (this.panelDiv, 'ov_sidebar_title');
+        this.contentDiv = OV.AddDiv (this.panelDiv, 'ov_sidebar_content ov_thin_scrollbar');
 
         let panelName = this.GetName ();
-        this.titleDiv.html (panelName).attr ('title', panelName);
+        OV.AddDiv (this.titleDiv, 'ov_sidebar_title_text', this.GetName ());
+        this.titleDiv.setAttribute ('title', panelName);
     }
 
     GetName ()
@@ -21,7 +20,7 @@ OV.SidebarPanel = class extends OV.Panel
 
     Clear ()
     {
-        this.contentDiv.empty ();
+        OV.ClearDomElement (this.contentDiv);
     }
 
     Init (callbacks)
@@ -50,7 +49,7 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
     AddObject3DProperties (object3D)
     {
         this.Clear ();
-        let table = $('<div>').addClass ('ov_property_table').appendTo (this.contentDiv);
+        let table = OV.AddDiv (this.contentDiv, 'ov_property_table');
         let boundingBox = OV.GetBoundingBox (object3D);
         let size = OV.SubCoord3D (boundingBox.max, boundingBox.min);
         this.AddProperty (table, new OV.Property (OV.PropertyType.Integer, 'Vertices', object3D.VertexCount ()));
@@ -73,7 +72,7 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
             return new OV.Property (OV.PropertyType.Number, null, volume);
         });
         if (object3D.PropertyGroupCount () > 0) {
-            let customTable = $('<div>').addClass ('ov_property_table ov_property_table_custom').appendTo (this.contentDiv);
+            let customTable = OV.AddDiv (this.contentDiv, 'ov_property_table ov_property_table_custom');
             for (let i = 0; i < object3D.PropertyGroupCount (); i++) {
                 const propertyGroup = object3D.GetPropertyGroup (i);
                 this.AddPropertyGroup (customTable, propertyGroup);
@@ -98,7 +97,7 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
         }
 
         this.Clear ();
-        let table = $('<div>').addClass ('ov_property_table').appendTo (this.contentDiv);
+        let table = OV.AddDiv (this.contentDiv, 'ov_property_table');
         let typeString = null;
         if (material.type === OV.MaterialType.Phong) {
             typeString = 'Phong';
@@ -127,16 +126,16 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
 
     AddPropertyGroup (table, propertyGroup)
     {
-        let row = $('<div>').addClass ('ov_property_table_row group').appendTo (table);
-        row.html (propertyGroup.name).attr ('title', propertyGroup.name);
+        let row = OV.AddDiv (table, 'ov_property_table_row group', propertyGroup.name);
+        row.setAttribute ('title', propertyGroup.name);
     }
 
     AddProperty (table, property)
     {
-        let row = $('<div>').addClass ('ov_property_table_row').appendTo (table);
-        let nameColum = $('<div>').addClass ('ov_property_table_cell ov_property_table_name').appendTo (row);
-        let valueColumn = $('<div>').addClass ('ov_property_table_cell ov_property_table_value').appendTo (row);
-        nameColum.html (property.name + ':').attr ('title', property.name);
+        let row = OV.AddDiv (table, 'ov_property_table_row');
+        let nameColumn = OV.AddDiv (row, 'ov_property_table_cell ov_property_table_name', property.name + ':');
+        let valueColumn = OV.AddDiv (row, 'ov_property_table_cell ov_property_table_value');
+        nameColumn.setAttribute ('title', property.name);
         this.DisplayPropertyValue (property, valueColumn);
         return row;
     }
@@ -144,24 +143,24 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
     AddPropertyInGroup (table, property)
     {
         let row = this.AddProperty (table, property);
-        row.addClass ('ingroup');
+        row.classList.add ('ingroup');
     }
 
     AddCalculatedProperty (table, name, calculateValue)
     {
-        let row = $('<div>').addClass ('ov_property_table_row').appendTo (table);
-        let nameColum = $('<div>').addClass ('ov_property_table_cell ov_property_table_name').appendTo (row);
-        let valueColumn = $('<div>').addClass ('ov_property_table_cell ov_property_table_value').appendTo (row);
-        nameColum.html (name + ':').attr ('title', name);
+        let row = OV.AddDiv (table, 'ov_property_table_row');
+        let nameColumn = OV.AddDiv (row, 'ov_property_table_cell ov_property_table_name', name + ':');
+        let valueColumn = OV.AddDiv (row, 'ov_property_table_cell ov_property_table_value');
+        nameColumn.setAttribute ('title', name);
 
-        let calculateButton = $('<div>').addClass ('ov_property_table_button').html ('Calculate...').appendTo (valueColumn);
-        calculateButton.click (() => {
-            valueColumn.empty ();
-            valueColumn.html ('Please wait...');
+        let calculateButton = OV.AddDiv (valueColumn, 'ov_property_table_button', 'Calculate...');
+        calculateButton.addEventListener ('click', () => {
+            OV.ClearDomElement (valueColumn);
+            valueColumn.innerHTML = 'Please wait...';
             OV.RunTaskAsync (() => {
                 let propertyValue = calculateValue ();
                 if (propertyValue === null) {
-                    valueColumn.html ('-');
+                    valueColumn.innerHTML = '-';
                 } else {
                     this.DisplayPropertyValue (propertyValue, valueColumn);
                 }
@@ -171,7 +170,7 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
 
     DisplayPropertyValue (property, targetDiv)
     {
-        targetDiv.empty ();
+        OV.ClearDomElement (targetDiv);
         let valueText = null;
         if (property.type === OV.PropertyType.Text) {
             valueText = property.value;
@@ -189,11 +188,12 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
         } else if (property.type === OV.PropertyType.Color) {
             let hexString = '#' + OV.ColorToHexString (property.value);
             let colorCircle = OV.CreateInlineColorCircle (property.value);
-            colorCircle.appendTo (targetDiv);
-            $('<span>').html (hexString).appendTo (targetDiv);
+            targetDiv.appendChild (colorCircle);
+            OV.AddDomElement (targetDiv, 'span', null, hexString);
         }
         if (valueText !== null) {
-            targetDiv.html (valueText).attr ('title', valueText);
+            targetDiv.innerHTML = valueText;
+            targetDiv.setAttribute ('title', valueText);
         }
     }
 };
@@ -252,21 +252,21 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
     {
         let hasDefaultMaterial = OV.HasDefaultMaterial (model);
         if (!hasDefaultMaterial) {
-            this.defaultColorInput.warning.show ();
+            OV.ShowDomElement (this.defaultColorInput.warning);
         } else {
-            this.defaultColorInput.warning.hide ();
+            OV.HideDomElement (this.defaultColorInput.warning);
         }
         this.Resize ();
     }
 
     AddColorParameter (title, description, warningText, predefinedColors, defaultValue, onChange)
     {
-        let contentDiv = $('<div>').addClass ('ov_sidebar_settings_content').appendTo (this.contentDiv);
-        let titleDiv = $('<div>').addClass ('ov_sidebar_subtitle').appendTo (contentDiv);
-        let colorInput = $('<div>').addClass ('color-picker').appendTo (titleDiv);
-        $('<span>').html (title).appendTo (titleDiv);
+        let contentDiv = OV.AddDiv (this.contentDiv, 'ov_sidebar_settings_content');
+        let titleDiv = OV.AddDiv (contentDiv, 'ov_sidebar_subtitle');
+        let colorInput = OV.AddDiv (titleDiv, 'color-picker');
+        OV.AddDomElement (titleDiv, 'span', null, title);
         const pickr = Pickr.create ({
-            el : colorInput.get (0),
+            el : colorInput,
             theme : 'monolith',
             position : 'left-start',
             swatches : predefinedColors,
@@ -297,12 +297,13 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             );
             onChange (ovColor);
         });
-        $('<div>').addClass ('ov_sidebar_settings_padded').html (description).appendTo (contentDiv);
+        OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded', description);
         let warningDiv = null;
         if (warningText !== null) {
-            warningDiv = $('<div>').addClass ('ov_sidebar_settings_padded').appendTo (contentDiv);
-            OV.AddSvgIcon (warningDiv, 'warning', 'left_inline light');
-            $('<div>').addClass ('ov_sidebar_settings_warning').html (warningText).appendTo (warningDiv);
+            warningDiv = OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded');
+            let icon = OV.AddSvgIconElement (warningDiv, 'warning', 'left_inline');
+            icon.classList.add ('light');
+            OV.AddDiv (warningDiv, 'ov_sidebar_settings_warning', warningText);
         }
         return {
             pickr : pickr,
@@ -314,11 +315,15 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
     {
         function AddRadioButton (contentDiv, themeId, themeName, onChange)
         {
-            let row = $('<div>').addClass ('ov_sidebar_settings_row').appendTo (contentDiv);
-            let label = $('<label>').attr ('for', themeId.toString ()).appendTo (row);
-            let radio = $('<input>').addClass ('ov_radio_button').attr ('type', 'radio').attr ('id', themeId.toString ()).attr ('name', 'theme').appendTo (label);
-            $('<span>').html (themeName).appendTo (label);
-            radio.change (() => {
+            let row = OV.AddDiv (contentDiv, 'ov_sidebar_settings_row');
+            let label = OV.AddDomElement (row, 'label');
+            label.setAttribute ('for', themeId.toString ());
+            let radio = OV.AddDomElement (label, 'input', 'ov_radio_button');
+            radio.setAttribute ('type', 'radio');
+            radio.setAttribute ('id', themeId.toString ());
+            radio.setAttribute ('name', 'theme');
+            OV.AddDomElement (label, 'span', null, themeName);
+            radio.addEventListener ('change', () => {
                 onChange (themeId);
             });
             return radio;
@@ -328,15 +333,16 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         {
             for (let i = 0; i < radioButtons.length; i++) {
                 let radioButton = radioButtons[i];
-                radioButton.prop ('checked', radioButton.attr ('id') === defaultValue.toString ());
+                radioButton.checked = radioButton.getAttribute ('id') === defaultValue.toString ();
             }
         }
 
-        let contentDiv = $('<div>').addClass ('ov_sidebar_settings_content').appendTo (this.contentDiv);
-        let titleDiv = $('<div>').addClass ('ov_sidebar_subtitle').appendTo (contentDiv);
-        OV.AddSvgIcon (titleDiv, 'theme', 'ov_sidebar_subtitle_icon');
-        $('<div>').html ('Appearance').appendTo (titleDiv);
-        let buttonsDiv = $('<div>').addClass ('ov_sidebar_settings_padded').appendTo (contentDiv);
+        let contentDiv = OV.AddDiv (this.contentDiv, 'ov_sidebar_settings_content');
+        let titleDiv = OV.AddDiv (contentDiv, 'ov_sidebar_subtitle');
+        OV.AddSvgIconElement (titleDiv, 'theme', 'ov_sidebar_subtitle_icon');
+        OV.AddDiv (titleDiv, null, 'Appearance');
+
+        let buttonsDiv = OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded');
         let result = {
             buttons : [],
             select: (value) => {
@@ -352,8 +358,8 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
 
     AddResetToDefaultsButton (defaultSettings)
     {
-        let resetToDefaultsButton = $('<div>').addClass ('ov_button').addClass ('outline').addClass ('ov_sidebar_button').html ('Reset to Default').appendTo (this.contentDiv);
-        resetToDefaultsButton.click (() => {
+        let resetToDefaultsButton = OV.AddDiv (this.contentDiv, 'ov_button outline ov_sidebar_button', 'Reset to Default');
+        resetToDefaultsButton.addEventListener ('click', () => {
             this.backgroundColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.backgroundColor));
             this.callbacks.onBackgroundColorChange (defaultSettings.backgroundColor);
             this.defaultColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.defaultColor));
