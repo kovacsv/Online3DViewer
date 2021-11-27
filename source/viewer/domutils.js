@@ -3,7 +3,7 @@ OV.GetIntegerFromStyle = function (parameter)
     return Math.round (parseFloat (parameter));
 };
 
-OV.GetElementExternalWidth = function (style)
+OV.GetDomElementExternalWidth = function (style)
 {
     let padding = OV.GetIntegerFromStyle (style.paddingLeft) + OV.GetIntegerFromStyle (style.paddingRight);
     let border = OV.GetIntegerFromStyle (style.borderLeftWidth) + OV.GetIntegerFromStyle (style.borderRightWidth);
@@ -11,7 +11,7 @@ OV.GetElementExternalWidth = function (style)
     return padding + border + margin;
 };
 
-OV.GetElementExternalHeight = function (style)
+OV.GetDomElementExternalHeight = function (style)
 {
     let padding = OV.GetIntegerFromStyle (style.paddingTop) + OV.GetIntegerFromStyle (style.paddingBottom);
     let border = OV.GetIntegerFromStyle (style.borderTopWidth) + OV.GetIntegerFromStyle (style.borderBottomWidth);
@@ -19,11 +19,11 @@ OV.GetElementExternalHeight = function (style)
     return padding + border + margin;
 };
 
-OV.GetInnerDimensions = function (element, outerWidth, outerHeight)
+OV.GetDomElementInnerDimensions = function (element, outerWidth, outerHeight)
 {
     let style = getComputedStyle (element);
-    let width = outerWidth - OV.GetElementExternalWidth (style);
-    let height = outerHeight - OV.GetElementExternalHeight (style);
+    let width = outerWidth - OV.GetDomElementExternalWidth (style);
+    let height = outerHeight - OV.GetDomElementExternalHeight (style);
     return {
         width : width,
         height : height
@@ -106,13 +106,13 @@ OV.GetDomElementOuterHeight = function (element)
 OV.SetDomElementOuterWidth = function (element, width)
 {
     let style = getComputedStyle (element);
-    OV.SetDomElementWidth (element, width - OV.GetElementExternalWidth (style));
+    OV.SetDomElementWidth (element, width - OV.GetDomElementExternalWidth (style));
 };
 
 OV.SetDomElementOuterHeight = function (element, height)
 {
     let style = getComputedStyle (element);
-    OV.SetDomElementHeight (element, height - OV.GetElementExternalHeight (style));
+    OV.SetDomElementHeight (element, height - OV.GetDomElementExternalHeight (style));
 };
 
 OV.CreateDiv = function (className, innerHTML)

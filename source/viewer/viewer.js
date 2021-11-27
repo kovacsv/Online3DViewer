@@ -393,7 +393,7 @@ OV.Viewer = class
 
     Resize (width, height)
     {
-        let innerSize = OV.GetInnerDimensions (this.canvas, width, height);
+        let innerSize = OV.GetDomElementInnerDimensions (this.canvas, width, height);
         this.ResizeRenderer (innerSize.width, innerSize.height);
     }
 
