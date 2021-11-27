@@ -26,7 +26,7 @@ The repository is separated into two parts. See more information in the [Develop
 
 ## Features
 
-- Load model:
+- Import model:
   - Select files from a file browser dialog.
   - Drag and drop files from your computer.
   - Specify files by web url.
