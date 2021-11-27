@@ -136,7 +136,7 @@ OV.SetSvgIconImageElement = function (iconElement, iconName)
     iconDiv.className = 'icon icon-' + iconName;
 };
 
-OV.CreateHeaderButton = function (iconName, title, link)
+OV.CreateHeaderButton = function (parentElement, iconName, title, link)
 {
     let buttonLink = OV.CreateDomElement ('a');
     buttonLink.setAttribute ('href', link);
@@ -144,6 +144,7 @@ OV.CreateHeaderButton = function (iconName, title, link)
     buttonLink.setAttribute ('rel', 'noopener noreferrer');
     OV.InstallTooltip (buttonLink, title);
     OV.AddSvgIconElement (buttonLink, iconName, 'header_button');
+    parentElement.appendChild (buttonLink);
     return buttonLink;
 };
 
