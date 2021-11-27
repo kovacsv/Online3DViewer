@@ -6,48 +6,48 @@ OV.ToolbarButton = class
         this.imageTitle = imageTitle;
 
         this.selected = false;
-        this.buttonDiv = $('<div>').addClass ('ov_toolbar_button');
-        this.buttonImg = OV.AddSvgIcon (this.buttonDiv, this.image);
+        this.buttonDiv = OV.CreateDiv ('ov_toolbar_button');
+        this.buttonImg = OV.AddSvgIconElement (this.buttonDiv, this.image);
         if (onClick !== null) {
-            this.buttonDiv.click (onClick);
+            this.buttonDiv.addEventListener ('click', onClick);
         }
 
-        this.buttonDiv.attr ('alt', this.imageTitle);
+        this.buttonDiv.setAttribute ('alt', this.imageTitle);
         OV.InstallTooltip (this.buttonDiv, this.imageTitle);
     }
 
     AddDomElements (parentDiv)
     {
-        this.buttonDiv.appendTo (parentDiv);
+        parentDiv.appendChild (this.buttonDiv);
     }
 
     AddClass (className)
     {
-        this.buttonDiv.addClass (className);
+        this.buttonDiv.classList.add (className);
     }
 
     RemoveClass (className)
     {
-        this.buttonDiv.removeClass (className);
+        this.buttonDiv.classList.remove (className);
     }
 
     AddImageClass (className)
     {
-        this.buttonImg.addClass (className);
+        this.buttonImg.classList.add (className);
     }
 
     RemoveImageClass (className)
     {
-        this.buttonImg.removeClass (className);
+        this.buttonImg.classList.remove (className);
     }
 
     SetSelected (selected)
     {
         this.selected = selected;
-        if (!this.selected) {
-            this.buttonDiv.removeClass ('selected');
+        if (this.selected) {
+            this.buttonDiv.classList.add ('selected');
         } else {
-            this.buttonDiv.addClass ('selected');
+            this.buttonDiv.classList.remove ('selected');
         }
     }
 };
@@ -56,7 +56,7 @@ OV.Toolbar = class
 {
     constructor (parentDiv)
     {
-        this.mainDiv = $('<div>').addClass ('ov_toolbar').appendTo (parentDiv);
+        this.mainDiv = OV.AddDiv (parentDiv, 'ov_toolbar');
     }
 
     AddImageButton (image, imageTitle, onClick)
@@ -92,6 +92,6 @@ OV.Toolbar = class
 
     AddSeparator ()
     {
-        return $('<div>').addClass ('ov_toolbar_separator').appendTo (this.mainDiv);
+        return OV.AddDiv (this.mainDiv, 'ov_toolbar_separator');
     }
 };

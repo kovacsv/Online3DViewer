@@ -55,6 +55,7 @@ div.title div.title_right
 
 div.title_right a
 {
+	color: var(--ov_foreground_color);
 	padding: 11px 5px;
 	display: block;
 	float: left;

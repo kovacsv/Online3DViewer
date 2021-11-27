@@ -13,7 +13,7 @@ OV.Website = class
         this.viewer = new OV.Viewer ();
         this.hashHandler = new OV.HashHandler ();
         this.cookieHandler = new OV.CookieHandler ();
-        this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
+        this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv.get (0));
         this.navigator = new OV.Navigator (this.parameters.navigatorDiv, this.parameters.navigatorSplitterDiv);
         this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv, this.parameters.sidebarSplitterDiv);
         this.eventHandler = new OV.EventHandler (this.parameters.eventHandler);
@@ -355,19 +355,21 @@ OV.Website = class
 
     InitToolbar ()
     {
-        function AddButton (toolbar, eventHandler, imageName, imageTitle, extraClass, onClick)
+        function AddButton (toolbar, eventHandler, imageName, imageTitle, classNames, onClick)
         {
             let button = toolbar.AddImageButton (imageName, imageTitle, () => {
                 eventHandler.HandleEvent ('toolbar_clicked', { item : imageName });
                 onClick ();
             });
-            if (extraClass !== null) {
-                button.AddClass (extraClass);
+            if (classNames !== null) {
+                for (let className of classNames) {
+                    button.AddClass (className);
+                }
             }
             return button;
         }
 
-        function AddRadioButton (toolbar, eventHandler, imageNames, imageTitles, selectedIndex, extraClass, onClick)
+        function AddRadioButton (toolbar, eventHandler, imageNames, imageTitles, selectedIndex, classNames, onClick)
         {
             let imageData = [];
             for (let i = 0; i < imageNames.length; i++) {
@@ -382,19 +384,22 @@ OV.Website = class
                 eventHandler.HandleEvent ('toolbar_clicked', { item : imageNames[buttonIndex] });
                 onClick (buttonIndex);
             });
-            if (extraClass !== null) {
-                for (let i = 0; i < buttons.length; i++) {
-                    let button = buttons[i];
-                    button.AddClass (extraClass);
+            if (classNames !== null) {
+                for (let className of classNames) {
+                    for (let button of buttons) {
+                        button.AddClass (className);
+                    }
                 }
             }
         }
 
-        function AddSeparator (toolbar, extraClass)
+        function AddSeparator (toolbar, classNames)
         {
             let separator = toolbar.AddSeparator ();
-            if (extraClass) {
-                separator.addClass (extraClass);
+            if (classNames !== null) {
+                for (let className of classNames) {
+                    separator.classList.add (className);
+                }
             }
         }
 
@@ -410,29 +415,29 @@ OV.Website = class
                 }
             });
         });
-        AddSeparator (this.toolbar, 'only_on_model');
-        AddButton (this.toolbar, this.eventHandler, 'fit', 'Fit model to window', 'only_on_model', () => {
+        AddSeparator (this.toolbar, ['only_on_model']);
+        AddButton (this.toolbar, this.eventHandler, 'fit', 'Fit model to window', ['only_on_model'], () => {
             this.FitModelToWindow (false);
         });
-        AddButton (this.toolbar, this.eventHandler, 'up_y', 'Set Y axis as up vector', 'only_on_model', () => {
+        AddButton (this.toolbar, this.eventHandler, 'up_y', 'Set Y axis as up vector', ['only_on_model'], () => {
             this.viewer.SetUpVector (OV.Direction.Y, true);
         });
-        AddButton (this.toolbar, this.eventHandler, 'up_z', 'Set Z axis as up vector', 'only_on_model', () => {
+        AddButton (this.toolbar, this.eventHandler, 'up_z', 'Set Z axis as up vector', ['only_on_model'], () => {
             this.viewer.SetUpVector (OV.Direction.Z, true);
         });
-        AddButton (this.toolbar, this.eventHandler, 'flip', 'Flip up vector', 'only_on_model', () => {
+        AddButton (this.toolbar, this.eventHandler, 'flip', 'Flip up vector', ['only_on_model'], () => {
             this.viewer.FlipUpVector ();
         });
-        AddSeparator (this.toolbar, 'only_on_model');
-        AddRadioButton (this.toolbar, this.eventHandler, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, 'only_on_model', (buttonIndex) => {
+        AddSeparator (this.toolbar, ['only_on_model']);
+        AddRadioButton (this.toolbar, this.eventHandler, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, ['only_on_model'], (buttonIndex) => {
             if (buttonIndex === 0) {
                 this.viewer.SetFixUpVector (true);
             } else if (buttonIndex === 1) {
                 this.viewer.SetFixUpVector (false);
             }
         });
-        AddSeparator (this.toolbar, 'only_full_width only_on_model');
-        AddButton (this.toolbar, this.eventHandler, 'export', 'Export model', 'only_full_width only_on_model', () => {
+        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
+        AddButton (this.toolbar, this.eventHandler, 'export', 'Export model', ['only_full_width', 'only_on_model'], () => {
             let exportDialog = new OV.ExportDialog ({
                 onDialog : (dialog) => {
                     this.dialog = dialog;
@@ -440,7 +445,7 @@ OV.Website = class
             });
             exportDialog.Show (this.model, this.viewer);
         });
-        AddButton (this.toolbar, this.eventHandler, 'share', 'Share model', 'only_full_width only_on_model', () => {
+        AddButton (this.toolbar, this.eventHandler, 'share', 'Share model', ['only_full_width', 'only_on_model'], () => {
             this.dialog = OV.ShowSharingDialog (importer, this.settings, this.viewer.GetCamera ());
         });
 

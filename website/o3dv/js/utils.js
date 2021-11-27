@@ -36,20 +36,19 @@ OV.IsSmallHeight = function ()
     return window.matchMedia ('(max-height: 800px)').matches;
 };
 
-OV.InstallTooltip = function (item, text)
+OV.InstallTooltip = function (element, text)
 {
-    function CalculateOffset (item, tooltip)
+    function CalculateOffset (element, tooltip)
     {
-        let windowObj = $(window);
-        let windowWidth = windowObj.outerWidth (true);
+        let windowWidth = window.innerWidth;
 
-        let itemOffset = item.offset ();
-        let itemWidth = item.outerWidth (true);
-        let itemHeight = item.outerHeight (true);
-        let tooltipWidth = tooltip.outerWidth (true);
+        let elementOffset = element.getBoundingClientRect ();
+        let elementWidth = element.offsetWidth;
+        let elementHeight = element.offsetHeight;
+        let tooltipWidth = tooltip.offsetWidth;
 
         let tooltipMargin = 10;
-        let left = itemOffset.left + itemWidth / 2 - tooltipWidth / 2;
+        let left = elementOffset.left + elementWidth / 2 - tooltipWidth / 2;
         if (left + tooltipWidth > windowWidth - tooltipMargin) {
             left = windowWidth - tooltipWidth - tooltipMargin;
         }
@@ -59,7 +58,7 @@ OV.InstallTooltip = function (item, text)
         left = Math.max (left, 0);
         return {
             left : left,
-            top : itemOffset.top + itemHeight + tooltipMargin
+            top : elementOffset.top + elementHeight + tooltipMargin
         };
     }
 
@@ -69,15 +68,15 @@ OV.InstallTooltip = function (item, text)
 
     let bodyObj = $(document.body);
     let tooltip = null;
-    item.hover (
-        () => {
-            tooltip = $('<div>').html (text).addClass ('ov_tooltip').appendTo (bodyObj);
-            tooltip.offset (CalculateOffset (item, tooltip));
-        },
-        () => {
-            tooltip.remove ();
-        }
-    );
+    element.addEventListener ('mouseover', () => {
+        tooltip = OV.AddDiv (document.body, 'ov_tooltip', text);
+        let offset = CalculateOffset (element, tooltip);
+        tooltip.style.left = offset.left + 'px';
+        tooltip.style.top = offset.top + 'px';
+    });
+    element.addEventListener ('mouseout', () => {
+        tooltip.remove ();
+    });
 };
 
 OV.CopyToClipboard = function (text)
@@ -132,14 +131,37 @@ OV.SetSvgIconImage = function (icon, iconName)
     iconChild.removeClass ().addClass ('icon').addClass ('icon-' + iconName);
 };
 
+OV.CreateSvgIconElement = function (iconName, className)
+{
+    let iconDiv = OV.CreateDiv ('ov_svg_icon');
+    if (className) {
+        iconDiv.className = className;
+    }
+    OV.AddDomElement (iconDiv, 'i', 'icon icon-' + iconName);
+    return iconDiv;
+};
+
+OV.AddSvgIconElement = function (parentElement, iconName, className)
+{
+    let iconDiv = OV.CreateSvgIconElement (iconName, className);
+    parentElement.appendChild (iconDiv);
+    return iconDiv;
+};
+
+OV.SetSvgIconImageElement = function (iconElement, iconName)
+{
+    let iconDiv = iconElement.firstChild;
+    iconDiv.className = 'icon icon-' + iconName;
+};
+
 OV.CreateHeaderButton = function (iconName, title, link)
 {
-    let buttonLink = $('<a>');
-    buttonLink.attr ('href', link);
-    buttonLink.attr ('target', '_blank');
-    buttonLink.attr ('rel', 'noopener noreferrer');
+    let buttonLink = OV.CreateDomElement ('a');
+    buttonLink.setAttribute ('href', link);
+    buttonLink.setAttribute ('target', '_blank');
+    buttonLink.setAttribute ('rel', 'noopener noreferrer');
     OV.InstallTooltip (buttonLink, title);
-    OV.AddSvgIcon (buttonLink, iconName, 'header_button');
+    OV.AddSvgIconElement (buttonLink, iconName, 'header_button');
     return buttonLink;
 };
 
