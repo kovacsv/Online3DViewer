@@ -86,9 +86,8 @@ OV.TreeViewSingleItem = class extends OV.TreeViewItem
                 OV.ScrollToView (this.mainElement);
             } else {
                 while (parent !== null) {
-                    parent.ShowChildren (true, () => {
-                        OV.ScrollToView (this.mainElement);
-                    });
+                    parent.ShowChildren (true);
+                    OV.ScrollToView (this.mainElement);
                     parent = parent.parent;
                 }
             }
@@ -163,7 +162,7 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
         }
     }
 
-    ShowChildren (show, onComplete)
+    ShowChildren (show)
     {
         this.isChildrenVisible = show;
         if (this.childrenDiv === null) {
@@ -171,10 +170,10 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
         }
         if (show) {
             OV.SetSvgIconImageElement (this.openCloseButton, this.openButtonIcon);
-            $(this.childrenDiv).slideDown (400, onComplete);
+            OV.ShowDomElement (this.childrenDiv);
         } else {
             OV.SetSvgIconImageElement (this.openCloseButton, this.closeButtonIcon);
-            $(this.childrenDiv).slideUp (400, onComplete);
+            OV.HideDomElement (this.childrenDiv);
         }
     }
 
@@ -184,10 +183,10 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
             this.childrenDiv = OV.CreateDiv ('ov_tree_view_children');
             OV.InsertDomElementAfter (this.childrenDiv, this.mainElement);
             this.Show (this.isVisible);
-            this.ShowChildren (this.isChildrenVisible, null);
+            this.ShowChildren (this.isChildrenVisible);
             this.OnClick ((ev) => {
                 this.isChildrenVisible = !this.isChildrenVisible;
-                this.ShowChildren (this.isChildrenVisible, null);
+                this.ShowChildren (this.isChildrenVisible);
             });
         }
         return this.childrenDiv;

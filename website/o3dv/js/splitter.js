@@ -15,7 +15,7 @@ OV.CreateVerticalSplitter = function (splitterDiv, callbacks)
         originalPosition = null;
     };
 
-    splitterDiv.mousedown ((ev) => {
+    splitterDiv.addEventListener ('mousedown', (ev) => {
         originalPosition = ev.clientX;
         callbacks.onSplitStart ();
 

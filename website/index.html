@@ -132,19 +132,19 @@
 	<!-- analytics end -->
 
 	<script type="text/javascript">
-		$(window).on ('load', function () {
+		window.addEventListener ('load', function () {
 			let website = new OV.Website ({
-				headerDiv : $('#header'),
-				toolbarDiv : $('#toolbar'),
-				mainDiv : $('#main'),
-				introDiv : $('#intro'),
-				fileNameDiv : $('#main_file_name'),
-				navigatorDiv : $('#main_navigator'),
-				navigatorSplitterDiv : $('#main_navigator_splitter'),
-				sidebarDiv : $('#main_sidebar'),
-				sidebarSplitterDiv : $('#main_sidebar_splitter'),
-				viewerDiv : $('#main_viewer'),
-				fileInput : $('#open_file'),
+				headerDiv : document.getElementById ('header'),
+				toolbarDiv : document.getElementById ('toolbar'),
+				mainDiv : document.getElementById ('main'),
+				introDiv : document.getElementById ('intro'),
+				fileNameDiv : document.getElementById ('main_file_name'),
+				navigatorDiv : document.getElementById ('main_navigator'),
+				navigatorSplitterDiv : document.getElementById ('main_navigator_splitter'),
+				sidebarDiv : document.getElementById ('main_sidebar'),
+				sidebarSplitterDiv : document.getElementById ('main_sidebar_splitter'),
+				viewerDiv : document.getElementById ('main_viewer'),
+				fileInput : document.getElementById ('open_file'),
 				eventHandler : window.gtagEventHandler
 			});
 			website.Load ();

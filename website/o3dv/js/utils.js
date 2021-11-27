@@ -66,7 +66,6 @@ OV.InstallTooltip = function (element, text)
         return;
     }
 
-    let bodyObj = $(document.body);
     let tooltip = null;
     element.addEventListener ('mouseover', () => {
         tooltip = OV.AddDiv (document.body, 'ov_tooltip', text);
@@ -162,7 +161,7 @@ OV.InstallVerticalSplitter = function (splitterDiv, resizedDiv, flipped, onResiz
     let originalWidth = null;
     OV.CreateVerticalSplitter (splitterDiv, {
         onSplitStart : () => {
-            originalWidth = resizedDiv.outerWidth (true);
+            originalWidth = OV.GetDomElementOuterWidth (resizedDiv);
         },
         onSplit : (xDiff) => {
             const minWidth = 280;
@@ -178,7 +177,7 @@ OV.InstallVerticalSplitter = function (splitterDiv, resizedDiv, flipped, onResiz
             } else if (newWidth > maxWidth)  {
                 newWidth = maxWidth;
             }
-            resizedDiv.outerWidth (newWidth, true);
+            OV.SetDomElementOuterWidth (resizedDiv, newWidth);
             onResize ();
         }
     });

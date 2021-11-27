@@ -73,8 +73,8 @@ div.intro
 	padding: 10px;
 	text-align: center;
 	border: 2px dashed var(--ov_border_color);
-	display: none;
 	overflow: auto;
+	display: none;
 }
 
 div.intro svg.intro_logo
@@ -100,6 +100,7 @@ div.intro div.intro_big_text
 div.main
 {
 	overflow: auto;
+	display: none;
 }
 
 div.main_file_name

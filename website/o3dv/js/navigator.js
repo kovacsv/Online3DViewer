@@ -38,7 +38,7 @@ OV.Navigator = class
         this.mainDiv = mainDiv;
         this.splitterDiv = splitterDiv;
 
-        this.panelSet = new OV.PanelSet (mainDiv.get (0));
+        this.panelSet = new OV.PanelSet (mainDiv);
         this.callbacks = null;
         this.selection = null;
         this.tempSelectedMeshId = null;
@@ -65,9 +65,9 @@ OV.Navigator = class
         this.panelSet.Init ({
             onResize : () => {
                 if (this.panelSet.IsPanelsVisible ()) {
-                    this.splitterDiv.show ();
+                    OV.ShowDomElement (this.splitterDiv);
                 } else {
-                    this.splitterDiv.hide ();
+                    OV.HideDomElement (this.splitterDiv);
                 }
                 this.callbacks.onResize ();
             },
@@ -126,18 +126,18 @@ OV.Navigator = class
 
     GetWidth ()
     {
-        let navigatorWidth = parseInt (this.mainDiv.outerWidth (true), 10);
+        let navigatorWidth = OV.GetDomElementOuterWidth (this.mainDiv);
         let splitterWidth = 0;
         if (this.panelSet.IsPanelsVisible ()) {
-            splitterWidth = parseInt (this.splitterDiv.outerWidth (true), 10);
+            splitterWidth = this.splitterDiv.offsetWidth;
         }
         return navigatorWidth + splitterWidth;
     }
 
     Resize (height)
     {
-        this.mainDiv.outerHeight (height, true);
-        this.splitterDiv.outerHeight (height, true);
+        OV.SetDomElementOuterHeight (this.mainDiv, height);
+        OV.SetDomElementHeight (this.splitterDiv, height);
         this.panelSet.Resize ();
     }
 
@@ -264,7 +264,6 @@ OV.Navigator = class
             }
         }
         this.UpdatePanels ();
-        this.Resize ();
     }
 
     UpdatePanels ()

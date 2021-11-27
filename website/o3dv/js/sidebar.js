@@ -4,7 +4,7 @@ OV.Sidebar = class
     {
         this.mainDiv = mainDiv;
         this.splitterDiv = splitterDiv;
-        this.panelSet = new OV.PanelSet (mainDiv.get (0));
+        this.panelSet = new OV.PanelSet (mainDiv);
 
         this.detailsPanel = new OV.DetailsSidebarPanel (this.panelSet.GetContentDiv ());
         this.settingsPanel = new OV.SettingsSidebarPanel (this.panelSet.GetContentDiv ());
@@ -31,9 +31,9 @@ OV.Sidebar = class
         this.panelSet.Init ({
             onResize : () => {
                 if (this.panelSet.IsPanelsVisible ()) {
-                    this.splitterDiv.show ();
+                    OV.ShowDomElement (this.splitterDiv);
                 } else {
-                    this.splitterDiv.hide ();
+                    OV.HideDomElement (this.splitterDiv);
                 }
                 this.callbacks.onResize ();
             },
@@ -71,25 +71,25 @@ OV.Sidebar = class
 
     Resize (height)
     {
-        this.mainDiv.outerHeight (height, true);
-        this.splitterDiv.outerHeight (height, true);
+        OV.SetDomElementOuterHeight (this.mainDiv, height);
+        OV.SetDomElementHeight (this.splitterDiv, height);
         this.panelSet.Resize ();
     }
 
     GetWidth ()
     {
-        let sidebarWidth = parseInt (this.mainDiv.outerWidth (true), 10);
+        let sidebarWidth = OV.GetDomElementOuterWidth (this.mainDiv);
         let splitterWidth = 0;
         if (this.panelSet.IsPanelsVisible ()) {
-             splitterWidth = parseInt (this.splitterDiv.outerWidth (true), 10);
+             splitterWidth = this.splitterDiv.offsetWidth;
         }
         return sidebarWidth + splitterWidth;
     }
 
     DecreaseWidth (diff)
     {
-        let oldWidth = this.mainDiv.outerWidth (true);
-        this.mainDiv.outerWidth (oldWidth - diff, true);
+        let oldWidth = this.mainDiv.offsetWidth;
+        OV.SetDomElementWidth (this.mainDiv, oldWidth - diff);
     }
 
     Clear ()
