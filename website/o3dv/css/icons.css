@@ -1,6 +1,6 @@
 @font-face {
     font-family: "O3DVIcons";
-    src: url("O3DVIcons/O3DVIcons.woff?24e3cf024c0a013e23e536baef079fe1") format("woff");
+    src: url("O3DVIcons/O3DVIcons.woff?7bda82bc77fb1b1ae8401407a3623f2c") format("woff");
 }
 
 i[class^="icon-"]:before, i[class*=" icon-"]:before {
@@ -113,15 +113,18 @@ i[class^="icon-"]:before, i[class*=" icon-"]:before {
 .icon-tree_view:before {
     content: "\f121";
 }
-.icon-up_y:before {
+.icon-twitter:before {
     content: "\f122";
 }
-.icon-up_z:before {
+.icon-up_y:before {
     content: "\f123";
 }
-.icon-visible:before {
+.icon-up_z:before {
     content: "\f124";
 }
-.icon-warning:before {
+.icon-visible:before {
     content: "\f125";
+}
+.icon-warning:before {
+    content: "\f126";
 }
