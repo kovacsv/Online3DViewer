@@ -45,4 +45,4 @@ The repository is separated into two parts. See more information in the [Develop
 
 ## External Libraries
 
-Online 3D Viewer uses these wonderful libraries: [three.js](https://github.com/mrdoob/three.js), [jquery](https://github.com/jquery/jquery), [pickr](https://github.com/Simonwep/pickr), [fflate](https://github.com/101arrowz/fflate), [draco](https://github.com/google/draco), [rhino3dm](https://github.com/mcneel/rhino3dm), [web-ifc](https://github.com/tomvandig/web-ifc).
+Online 3D Viewer uses these wonderful libraries: [three.js](https://github.com/mrdoob/three.js), [pickr](https://github.com/Simonwep/pickr), [fflate](https://github.com/101arrowz/fflate), [draco](https://github.com/google/draco), [rhino3dm](https://github.com/mcneel/rhino3dm), [web-ifc](https://github.com/tomvandig/web-ifc).

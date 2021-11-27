@@ -1,6 +1,5 @@
 {
 	"lib_files" : [
-		"libs/jquery.min.js",
 		"libs/pickr.monolith.min.css",
 		"libs/pickr.es5.min.js",
 		"libs/three.min.js"
