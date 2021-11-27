@@ -78,7 +78,7 @@ OV.HideDomElement = function (element)
 
 OV.IsDomElementVisible = function (element)
 {
-    return element.style.display !== 'none';
+    return element.offsetParent !== null;
 };
 
 OV.SetDomElementWidth = function (element, width)

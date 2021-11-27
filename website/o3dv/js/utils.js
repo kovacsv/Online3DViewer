@@ -26,6 +26,12 @@ OV.IsHoverEnabled = function ()
     return window.matchMedia ('(hover: hover)').matches;
 };
 
+OV.AddSmallWidthChangeEventListener = function (onChange)
+{
+    let mediaQuery = window.matchMedia ('(max-width: 800px)');
+    mediaQuery.addEventListener ('change', onChange);
+};
+
 OV.IsSmallWidth = function ()
 {
     return window.matchMedia ('(max-width: 800px)').matches;

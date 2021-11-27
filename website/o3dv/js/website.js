@@ -47,6 +47,10 @@ OV.Website = class
         this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
         this.OnHashChange ();
 
+        OV.AddSmallWidthChangeEventListener (() => {
+            this.OnSmallWidthChanged ();
+        });
+
         window.addEventListener ('resize', () => {
 			this.Resize ();
 		});
@@ -79,6 +83,11 @@ OV.Website = class
         this.viewer.Resize (contentWidth, contentHeight);
     }
 
+    OnSmallWidthChanged ()
+    {
+        this.UpdatePanelsVisibility ();
+    }
+
     HasLoadedModel ()
     {
         return this.model !== null;
@@ -100,6 +109,7 @@ OV.Website = class
             OV.HideDomElement (this.parameters.introDiv);
             OV.ShowDomElement (this.parameters.mainDiv);
             ShowOnlyOnModelElements (true);
+            this.UpdatePanelsVisibility ();
         } else if (uiState === OV.WebsiteUIState.Loading) {
             OV.HideDomElement (this.parameters.introDiv);
             OV.HideDomElement (this.parameters.mainDiv);
@@ -548,9 +558,6 @@ OV.Website = class
                 }
             }
         );
-
-        let showSidebar = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
-        this.sidebar.ShowPanels (showSidebar);
     }
 
     InitNavigator ()
@@ -650,9 +657,14 @@ OV.Website = class
                 this.cookieHandler.SetBoolVal ('ov_show_navigator', show);
             }
         });
+    }
 
+    UpdatePanelsVisibility ()
+    {
         let showNavigator = this.cookieHandler.GetBoolVal ('ov_show_navigator', true);
+        let showSidebar = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
         this.navigator.ShowPanels (showNavigator);
+        this.sidebar.ShowPanels (showSidebar);
     }
 
     InitCookieConsent ()

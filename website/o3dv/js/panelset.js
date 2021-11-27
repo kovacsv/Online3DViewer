@@ -53,7 +53,6 @@ OV.PanelSet = class
         this.panels = [];
         this.panelButtons = [];
         this.panelsVisible = true;
-        this.requestedPanelsVisible = true;
         this.panelsPrevWidth = null;
         this.callbacks = null;
     }
@@ -93,7 +92,6 @@ OV.PanelSet = class
     ShowPanels (show)
     {
         if (!this.IsParentVisible ()) {
-            this.requestedPanelsVisible = show;
             return;
         }
 
@@ -102,7 +100,6 @@ OV.PanelSet = class
         }
 
         this.panelsVisible = show;
-        this.requestedPanelsVisible = show;
         if (this.panelsVisible) {
             OV.ShowDomElement (this.contentDiv);
             OV.SetDomElementWidth (this.parentDiv, this.menuDiv.offsetWidth + this.panelsPrevWidth);
@@ -172,10 +169,6 @@ OV.PanelSet = class
 
     Resize ()
     {
-        if (this.requestedPanelsVisible !== this.panelsVisible) {
-            this.ShowPanels (this.requestedPanelsVisible);
-            return;
-        }
         let height = this.parentDiv.offsetHeight;
         OV.SetDomElementHeight (this.menuDiv, height);
         OV.SetDomElementHeight (this.contentDiv, height);
