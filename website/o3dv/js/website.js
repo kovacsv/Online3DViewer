@@ -1,5 +1,6 @@
 OV.WebsiteUIState =
 {
+    Undefined : 0,
     Intro : 1,
     Model : 2,
     Loading : 3
@@ -21,6 +22,7 @@ OV.Website = class
         this.modelLoader = new OV.ThreeModelLoader ();
         this.themeHandler = new OV.ThemeHandler ();
         this.highlightColor = new THREE.Color (0x8ec9f0);
+        this.uiState = OV.WebsiteUIState.Undefined;
         this.model = null;
         this.dialog = null;
     }
@@ -85,7 +87,9 @@ OV.Website = class
 
     OnSmallWidthChanged ()
     {
-        this.UpdatePanelsVisibility ();
+        if (this.uiState === OV.WebsiteUIState.Model) {
+            this.UpdatePanelsVisibility ();
+        }
     }
 
     HasLoadedModel ()
@@ -101,16 +105,21 @@ OV.Website = class
             root.style.setProperty ('--ov_only_on_model_display', show ? 'inherit' : 'none');
         }
 
-        if (uiState === OV.WebsiteUIState.Intro) {
+        if (this.uiState === uiState) {
+            return;
+        }
+
+        this.uiState = uiState;
+        if (this.uiState === OV.WebsiteUIState.Intro) {
             OV.ShowDomElement (this.parameters.introDiv);
             OV.HideDomElement (this.parameters.mainDiv);
             ShowOnlyOnModelElements (false);
-        } else if (uiState === OV.WebsiteUIState.Model) {
+        } else if (this.uiState === OV.WebsiteUIState.Model) {
             OV.HideDomElement (this.parameters.introDiv);
             OV.ShowDomElement (this.parameters.mainDiv);
             ShowOnlyOnModelElements (true);
             this.UpdatePanelsVisibility ();
-        } else if (uiState === OV.WebsiteUIState.Loading) {
+        } else if (this.uiState === OV.WebsiteUIState.Loading) {
             OV.HideDomElement (this.parameters.introDiv);
             OV.HideDomElement (this.parameters.mainDiv);
             ShowOnlyOnModelElements (false);

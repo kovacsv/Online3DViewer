@@ -1,9 +1,4 @@
 {
-	"lib_files" : [
-		"libs/pickr.monolith.min.css",
-		"libs/pickr.es5.min.js",
-		"libs/three.min.js"
-	],
 	"engine_files" : [
 		"source/core/core.js",
 		"source/core/taskrunner.js",
@@ -107,5 +102,13 @@
 		"website/o3dv/css/sidebar.css",
 		"website/o3dv/css/website.css",
 		"website/o3dv/css/embed.css"
+	],
+	"website_lib_files" : [
+		"libs/pickr.monolith.min.css",
+		"libs/pickr.es5.min.js",
+		"libs/three.min.js"
+	],
+	"embed_lib_files" : [
+		"libs/three.min.js"
 	]
 }

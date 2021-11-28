@@ -64,7 +64,8 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 	shutil.copytree (os.path.join (rootDir, 'website', 'o3dv', 'css', 'O3DVIcons'), os.path.join (websiteDir, 'o3dv', 'O3DVIcons'))
 	shutil.copytree (os.path.join (rootDir, 'website', 'info'), os.path.join (websiteDir, 'info'))
 
-	libFiles = config['lib_files']
+	websiteLibFiles = config['website_lib_files']
+	embedLibFiles = config['embed_lib_files']
 	importerFiles = ['o3dv/o3dv.min.js']
 	websiteFiles = [
 		'o3dv/o3dv.website.min.css',
@@ -80,7 +81,8 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 	for htmlFileName in htmlFileNames:
 		htmlFilePath = os.path.join (websiteDir, htmlFileName)
 		replacer = Tools.TokenReplacer (htmlFilePath, False)
-		replacer.ReplaceTokenFileLinks ('<!-- libs start -->', '<!-- libs end -->', libFiles, None)
+		replacer.ReplaceTokenFileLinks ('<!-- website libs start -->', '<!-- website libs end -->', websiteLibFiles, version)
+		replacer.ReplaceTokenFileLinks ('<!-- embed libs start -->', '<!-- embed libs end -->', embedLibFiles, version)
 		replacer.ReplaceTokenFileLinks ('<!-- engine start -->', '<!-- engine end -->', importerFiles, version)
 		replacer.ReplaceTokenFileLinks ('<!-- website start -->', '<!-- website end -->', websiteFiles, version)
 		externalScriptContent = ''
