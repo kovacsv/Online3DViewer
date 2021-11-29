@@ -116,22 +116,31 @@ div.ov_dialog div.ov_dialog_file_list
 	overflow: auto;
 }
 
-div.ov_dialog a.ov_dialog_file_link
+div.ov_dialog div.ov_dialog_import_file_list
 {
+	max-height: 300px;
+	overflow: auto;
+}
+
+div.ov_dialog div.ov_dialog_file_link
+{
+	color: var(--ov_button_color);
 	padding: 5px;
 	display: block;
 	overflow: auto;
 	border-radius: 5px;
+	cursor: pointer;
 }
 
-div.ov_dialog a.ov_dialog_file_link div.ov_file_link_img
+div.ov_dialog div.ov_dialog_file_link div.ov_file_link_img
 {
 	color: var(--ov_button_color);
+	margin-top: 2px;
 	margin-right: 10px;
 	float: left;
 }
 
-div.ov_dialog a.ov_dialog_file_link div.ov_dialog_file_link_text
+div.ov_dialog div.ov_dialog_file_link div.ov_dialog_file_link_text
 {
 	float: left;
 }
@@ -234,13 +243,13 @@ div.ov_progress div.ov_progress_text
 @media (hover)
 {
 
-div.ov_dialog a.ov_dialog_file_link:hover
+div.ov_dialog div.ov_dialog_file_link:hover
 {
 	color: var(--ov_hover_text_color);
 	background: var(--ov_hover_color);
 }
 
-div.ov_dialog a.ov_dialog_file_link:hover div.ov_file_link_img
+div.ov_dialog div.ov_dialog_file_link:hover div.ov_file_link_img
 {
 	color: var(--ov_hover_text_color);
 }

@@ -103,16 +103,6 @@ OV.Importer = class
 		this.importers.push (importer);
 	}
 
-    ImportFilesFromUrls (urlList, settings, callbacks)
-    {
-        this.ImportFiles (urlList, OV.FileSource.Url, settings, callbacks);
-    }
-
-    ImportFilesFromFileObjects (fileList, settings, callbacks)
-    {
-        this.ImportFiles (fileList, OV.FileSource.File, settings, callbacks);
-    }
-
     ImportFiles (fileList, fileSource, settings, callbacks)
     {
         this.LoadFiles (fileList, fileSource, () => {
@@ -132,7 +122,7 @@ OV.Importer = class
             newFileList.FillFromFileObjects (fileList);
         }
         let reset = false;
-        if (this.HasMainFile (newFileList)) {
+        if (this.HasImportableFile (newFileList)) {
             reset = true;
         } else {
             let foundMissingFile = false;
@@ -162,7 +152,29 @@ OV.Importer = class
 
     ImportLoadedFiles (settings, callbacks)
     {
-        let mainFile = this.GetMainFile (this.fileList);
+        let importableFiles = this.GetImportableFiles (this.fileList);
+        if (importableFiles.length === 0) {
+            callbacks.onImportError (new OV.ImportError (OV.ImportErrorCode.NoImportableFile, null));
+            return;
+        }
+
+        if (importableFiles.length === 1 || !callbacks.onSelectMainFile) {
+            let mainFile = importableFiles[0];
+            this.ImportLoadedMainFile (mainFile, settings, callbacks);
+        } else {
+            callbacks.onSelectMainFile (importableFiles, (mainFileIndex) => {
+                if (mainFileIndex === null) {
+                    callbacks.onImportError (new OV.ImportError (OV.ImportErrorCode.NoImportableFile, null));
+                    return;
+                }
+                let mainFile = importableFiles[mainFileIndex];
+                this.ImportLoadedMainFile (mainFile, settings, callbacks);
+            });
+        }
+    }
+
+    ImportLoadedMainFile (mainFile, settings, callbacks)
+    {
         if (mainFile === null || mainFile.file === null || mainFile.file.content === null) {
             callbacks.onImportError (new OV.ImportError (OV.ImportErrorCode.NoImportableFile, null));
             return;
@@ -256,12 +268,13 @@ OV.Importer = class
         return this.fileList;
     }
 
-    HasMainFile (fileList)
+    HasImportableFile (fileList)
     {
-        return this.GetMainFile (fileList) !== null;
+        let importableFiles = this.GetImportableFiles (fileList);
+        return importableFiles.length > 0;
     }
 
-    GetMainFile (fileList)
+    GetImportableFiles (fileList)
     {
         function FindImporter (file, importers)
         {
@@ -274,18 +287,19 @@ OV.Importer = class
             return null;
         }
 
+        let importableFiles = [];
         let files = fileList.GetFiles ();
         for (let fileIndex = 0; fileIndex < files.length; fileIndex++) {
             let file = files[fileIndex];
             let importer = FindImporter (file, this.importers);
             if (importer !== null) {
-                return {
+                importableFiles.push ({
                     file : file,
                     importer : importer
-                };
+                });
             }
         }
-        return null;
+        return importableFiles;
     }
 
     RevokeModelUrls ()

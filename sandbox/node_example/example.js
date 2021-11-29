@@ -54,7 +54,7 @@ global.FileReader = class
 };
 
 let settings = new OV.ImportSettings ();
-importer.ImportFilesFromFileObjects (files, settings, {
+importer.ImportFiles (files, OV.FileSource.File, settings, {
     onFilesLoaded : function () {
 
     },

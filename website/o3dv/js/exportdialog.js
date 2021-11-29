@@ -212,14 +212,13 @@ OV.ExportDialog = class
         let fileListSection = OV.AddDiv (contentDiv, 'ov_dialog_section');
         let fileList = OV.AddDiv (fileListSection, 'ov_dialog_file_list ov_thin_scrollbar');
 
-        for (let i = 0; i < files.length; i++) {
-            let file = files[i];
-            let url = OV.CreateObjectUrl (file.GetBufferContent ());
-            let fileLink = OV.AddDomElement (fileList, 'a', 'ov_dialog_file_link');
-            fileLink.setAttribute ('href', url);
-            fileLink.setAttribute ('download', file.GetName ());
+        for (let file of files) {
+            let fileLink = OV.AddDiv (fileList, 'ov_dialog_file_link');
             OV.AddSvgIconElement (fileLink, 'file_download', 'ov_file_link_img');
             OV.AddDiv (fileLink, 'ov_dialog_file_link_text', file.GetName ());
+            fileLink.addEventListener ('click', () => {
+                OV.DownloadArrayBufferAsFile (file.GetBufferContent (), file.GetName ());
+            });
         }
 
         dialog.Show ();

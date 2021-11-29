@@ -23,6 +23,44 @@ OV.InitModelLoader = function (modelLoader, callbacks)
         }
     }
 
+    function ShowFileSelectorDialog (files, onSelect)
+    {
+        let dialog = new OV.ButtonDialog ();
+        let contentDiv = dialog.Init ('Select Model', [
+            {
+                name : 'Cancel',
+                subClass : 'outline',
+                onClick () {
+                    dialog.Hide ();
+                }
+            }
+        ]);
+        dialog.SetCloseHandler (() => {
+            onSelect (null);
+        });
+
+        let text = 'Multiple importable models found. Select the model you would like to import from the list below.';
+        OV.AddDiv (contentDiv, 'ov_dialog_message', text);
+
+        let fileListSection = OV.AddDiv (contentDiv, 'ov_dialog_section');
+        let fileList = OV.AddDiv (fileListSection, 'ov_dialog_import_file_list ov_thin_scrollbar');
+
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
+            let fileLink = OV.AddDiv (fileList, 'ov_dialog_file_link');
+            OV.AddSvgIconElement (fileLink, 'meshes', 'ov_file_link_img');
+            OV.AddDiv (fileLink, 'ov_dialog_file_link_text', file.file.name);
+            fileLink.addEventListener ('click', () => {
+                dialog.SetCloseHandler (null);
+                dialog.Hide ();
+                onSelect (i);
+            });
+        }
+
+        dialog.Show ();
+        return dialog;
+    }
+
     function CloseDialogIfOpen (dialog)
     {
         if (dialog !== null) {
@@ -31,15 +69,22 @@ OV.InitModelLoader = function (modelLoader, callbacks)
         }
     }
 
-    let errorDialog = null;
+    let modalDialog = null;
     let progressDialog = null;
     modelLoader.Init ({
         onLoadStart : () => {
-            CloseDialogIfOpen (errorDialog);
+            CloseDialogIfOpen (modalDialog);
             callbacks.onStart ();
             progressDialog = new OV.ProgressDialog ();
             progressDialog.Init ('Loading Model');
             progressDialog.Show ();
+        },
+        onSelectMainFile : (files, selectFile) => {
+            progressDialog.Hide ();
+            modalDialog = ShowFileSelectorDialog (files, (index) => {
+                progressDialog.Show ();
+                selectFile (index);
+            });
         },
         onImportStart : () => {
             progressDialog.SetText ('Importing Model');
@@ -57,7 +102,7 @@ OV.InitModelLoader = function (modelLoader, callbacks)
         onLoadError : (importError) => {
             progressDialog.Hide ();
             callbacks.onError (importError);
-            errorDialog = OpenErrorDialog (importError);
+            modalDialog = OpenErrorDialog (importError);
         },
     });
 };

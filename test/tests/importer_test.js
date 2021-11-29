@@ -4,7 +4,7 @@ var path = require ('path');
 function ImportFilesWithImporter (importer, files, callbacks)
 {
     let settings = new OV.ImportSettings ();
-    importer.ImportFilesFromFileObjects (files, settings, {
+    importer.ImportFiles (files, OV.FileSource.File, settings, {
         onFilesLoaded : function () {
 
         },
@@ -254,7 +254,7 @@ describe ('Importer Test', function () {
         let theImporter = new OV.Importer ();
         let settings = new OV.ImportSettings ();
         settings.defaultColor = new OV.Color (200, 0, 0);
-        theImporter.ImportFilesFromFileObjects (files, settings, {
+        theImporter.ImportFiles (files, OV.FileSource.File, settings, {
             onFilesLoaded : function () {
 
             },

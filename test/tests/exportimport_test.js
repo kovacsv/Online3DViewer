@@ -12,7 +12,7 @@ function ExportImport (model, format, extension, onReady)
             }
             let importer = new OV.Importer ();
             let settings = new OV.ImportSettings ();
-            importer.ImportFilesFromFileObjects (fileObjects, settings, {
+            importer.ImportFiles (fileObjects, OV.FileSource.File, settings, {
                 onFilesLoaded : function () {
 
                 },
