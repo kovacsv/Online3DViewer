@@ -52,7 +52,7 @@ OV.RequestUrl = function (url, format)
 			reject ();
 			return;
 		}
-	
+
 		request.onload = function () {
 			if (request.status === 200) {
 				resolve (request.response);
@@ -60,11 +60,11 @@ OV.RequestUrl = function (url, format)
 				reject ();
 			}
 		};
-		
+
 		request.onerror = function () {
 			reject ();
 		};
-	
+
 		request.send (null);
 	});
 };
@@ -79,7 +79,7 @@ OV.ReadFile = function (file, format)
 				resolve (event.target.result);
 			}
 		};
-		
+
 		reader.onerror = function () {
 			reject ();
 		};
@@ -93,4 +93,3 @@ OV.ReadFile = function (file, format)
 		}
 	});
 };
-

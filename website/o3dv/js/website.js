@@ -489,10 +489,12 @@ OV.Website = class
         window.addEventListener ('drop', (ev) => {
             ev.stopPropagation ();
             ev.preventDefault ();
-            if (ev.dataTransfer.files.length > 0) {
-                this.eventHandler.HandleEvent ('model_load_started', { source : 'drop' });
-                this.LoadModelFromFileList (ev.dataTransfer.files);
-            }
+            OV.GetFilesFromDataTransfer (ev.dataTransfer, (files) => {
+                if (files.length > 0) {
+                    this.eventHandler.HandleEvent ('model_load_started', { source : 'drop' });
+                    this.LoadModelFromFileList (files);
+                }
+            });
         }, false);
     }
 

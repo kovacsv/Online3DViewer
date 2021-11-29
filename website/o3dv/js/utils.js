@@ -189,3 +189,76 @@ OV.InstallVerticalSplitter = function (splitterDiv, resizedDiv, flipped, onResiz
         }
     });
 };
+
+OV.GetFilesFromDataTransfer = function (dataTransfer, onReady)
+{
+    async function GetFileEntriesFromDirectory (dirEntry, fileEntries)
+    {
+        let reader = dirEntry.createReader ();
+        return new Promise ((resolve, reject) => {
+            reader.readEntries (
+                async (dirEntries) => {
+                    for (let entry of dirEntries) {
+                        if (entry.isFile) {
+                            fileEntries.push (entry);
+                        } else if (entry.isDirectory) {
+                            await GetFileEntriesFromDirectory (entry, fileEntries);
+                        }
+                    }
+                    resolve ();
+                },
+                (error) => {
+                    reject (error);
+                }
+            );
+        });
+    }
+
+    async function GetFileObjectsFromEntries (entries, onReady)
+    {
+        let fileEntries = [];
+        for (let entry of entries) {
+            if (entry.isFile) {
+                fileEntries.push (entry);
+            } else if (entry.isDirectory) {
+                await GetFileEntriesFromDirectory (entry, fileEntries);
+            }
+        }
+
+        let fileObjects = await Promise.all (fileEntries.map ((fileEntry) => {
+            return new Promise ((resolve, reject) => {
+                fileEntry.file (
+                    (file) => {
+                        resolve (file);
+                    },
+                    (error) => {
+                        reject (error);
+                    }
+                );
+            })
+        }));
+
+        onReady (fileObjects);
+    }
+
+    let getAsEntryFunc = null;
+    if (DataTransferItem) {
+        if (DataTransferItem.prototype.getAsEntry) {
+            getAsEntryFunc = DataTransferItem.prototype.getAsEntry;
+        } else if (DataTransferItem.prototype.webkitGetAsEntry) {
+            getAsEntryFunc = DataTransferItem.prototype.webkitGetAsEntry;
+        }
+    }
+
+    if (getAsEntryFunc !== null) {
+        let entries = [];
+        for (let item of dataTransfer.items) {
+            entries.push (getAsEntryFunc.call (item));
+        }
+        GetFileObjectsFromEntries (entries, (allEntries) => {
+            onReady (allEntries);
+        });
+    } else {
+        onReady (dataTransfer.files);
+    }
+};
