@@ -235,7 +235,7 @@ OV.GetFilesFromDataTransfer = function (dataTransfer, onReady)
                         reject (error);
                     }
                 );
-            })
+            });
         }));
 
         onReady (fileObjects);
