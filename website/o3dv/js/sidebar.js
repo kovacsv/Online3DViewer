@@ -1,13 +1,13 @@
 OV.Sidebar = class
 {
-    constructor (mainDiv, splitterDiv)
+    constructor (mainDiv, splitterDiv, settings)
     {
         this.mainDiv = mainDiv;
         this.splitterDiv = splitterDiv;
         this.panelSet = new OV.PanelSet (mainDiv);
 
         this.detailsPanel = new OV.DetailsSidebarPanel (this.panelSet.GetContentDiv ());
-        this.settingsPanel = new OV.SettingsSidebarPanel (this.panelSet.GetContentDiv ());
+        this.settingsPanel = new OV.SettingsSidebarPanel (this.panelSet.GetContentDiv (), settings);
 
         this.panelSet.AddPanel (this.detailsPanel);
         this.panelSet.AddPanel (this.settingsPanel);
@@ -24,7 +24,7 @@ OV.Sidebar = class
         this.panelSet.ShowPanels (show);
     }
 
-    Init (settings, callbacks)
+    Init (callbacks)
     {
         this.callbacks = callbacks;
 
@@ -42,22 +42,17 @@ OV.Sidebar = class
             }
         });
 
-        let defaultSettings = new OV.Settings ();
-        this.settingsPanel.InitSettings (
-            settings,
-            defaultSettings,
-            {
-                onBackgroundColorChange : (newVal) => {
-                    this.callbacks.onBackgroundColorChange (newVal);
-                },
-                onDefaultColorChange : (newVal) => {
-                    this.callbacks.onDefaultColorChange (newVal);
-                },
-                onThemeChange : (newVal) => {
-                    this.callbacks.onThemeChange (newVal);
-                }
+        this.settingsPanel.Init ({
+            onBackgroundColorChange : () => {
+                this.callbacks.onBackgroundColorChange ();
+            },
+            onDefaultColorChange : () => {
+                this.callbacks.onDefaultColorChange ();
+            },
+            onThemeChange : () => {
+                this.callbacks.onThemeChange ();
             }
-        );
+        });
 
         OV.InstallVerticalSplitter (this.splitterDiv, this.mainDiv, true, () => {
             this.callbacks.onResize ();

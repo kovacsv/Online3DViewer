@@ -11,14 +11,14 @@ OV.Website = class
     constructor (parameters)
     {
         this.parameters = parameters;
+        this.settings = new OV.Settings ();
         this.viewer = new OV.Viewer ();
         this.hashHandler = new OV.HashHandler ();
         this.cookieHandler = new OV.CookieHandler ();
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
         this.navigator = new OV.Navigator (this.parameters.navigatorDiv, this.parameters.navigatorSplitterDiv);
-        this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv, this.parameters.sidebarSplitterDiv);
+        this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv, this.parameters.sidebarSplitterDiv, this.settings);
         this.eventHandler = new OV.EventHandler (this.parameters.eventHandler);
-        this.settings = new OV.Settings ();
         this.modelLoader = new OV.ThreeModelLoader ();
         this.themeHandler = new OV.ThemeHandler ();
         this.highlightColor = new THREE.Color (0x8ec9f0);
@@ -337,15 +337,6 @@ OV.Website = class
         this.themeHandler.SwitchTheme (this.settings.themeId);
         this.settings.SaveToCookies (this.cookieHandler);
         if (resetColors) {
-            if (this.settings.themeId === OV.Theme.Light) {
-                this.settings.backgroundColor = new OV.Color (255, 255, 255);
-                this.settings.defaultColor = new OV.Color (200, 200, 200);
-            } else if (this.settings.themeId === OV.Theme.Dark) {
-                this.settings.backgroundColor = new OV.Color (42, 43, 46);
-                this.settings.defaultColor = new OV.Color (200, 200, 200);
-            } else {
-                return;
-            }
             this.settings.SaveToCookies (this.cookieHandler);
             this.viewer.SetBackgroundColor (this.settings.backgroundColor);
             if (this.modelLoader.defaultMaterial !== null) {
@@ -542,33 +533,29 @@ OV.Website = class
 
     InitSidebar ()
     {
-        this.sidebar.Init (this.settings,
-            {
-                onBackgroundColorChange : (newVal) => {
-                    this.settings.backgroundColor = newVal;
-                    this.settings.SaveToCookies (this.cookieHandler);
-                    this.viewer.SetBackgroundColor (newVal);
-                },
-                onDefaultColorChange : (newVal) => {
-                    this.settings.defaultColor = newVal;
-                    this.settings.SaveToCookies (this.cookieHandler);
-                    if (this.modelLoader.defaultMaterial !== null) {
-                        OV.ReplaceDefaultMaterialColor (this.model, newVal);
-                        this.modelLoader.ReplaceDefaultMaterialColor (newVal);
-                    }
-                    this.viewer.Render ();
-                },
-                onThemeChange : (newVal) => {
-                    this.SwitchTheme (newVal, true);
-                },
-                onResize : () => {
-                    this.Resize ();
-                },
-                onShowHidePanels : (show) => {
-                    this.cookieHandler.SetBoolVal ('ov_show_sidebar', show);
+        this.sidebar.Init ({
+            onBackgroundColorChange : () => {
+                this.settings.SaveToCookies (this.cookieHandler);
+                this.viewer.SetBackgroundColor (this.settings.backgroundColor);
+            },
+            onDefaultColorChange : () => {
+                this.settings.SaveToCookies (this.cookieHandler);
+                if (this.modelLoader.defaultMaterial !== null) {
+                    OV.ReplaceDefaultMaterialColor (this.model, this.settings.defaultColor);
+                    this.modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
                 }
+                this.viewer.Render ();
+            },
+            onThemeChange : () => {
+                this.SwitchTheme (this.settings.themeId, true);
+            },
+            onResize : () => {
+                this.Resize ();
+            },
+            onShowHidePanels : (show) => {
+                this.cookieHandler.SetBoolVal ('ov_show_sidebar', show);
             }
-        );
+        });
     }
 
     InitNavigator ()

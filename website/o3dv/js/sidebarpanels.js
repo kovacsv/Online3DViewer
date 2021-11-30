@@ -200,9 +200,10 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
 
 OV.SettingsSidebarPanel = class extends OV.SidebarPanel
 {
-    constructor (parentDiv)
+    constructor (parentDiv, settings)
     {
         super (parentDiv);
+        this.settings = settings;
         this.backgroundColorInput = null;
         this.defaultColorInput = null;
         this.defaultColorWarning = null;
@@ -225,27 +226,31 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         this.defaultColorInput.pickr.hide ();
     }
 
-    InitSettings (settings, defaultSettings, callbacks)
+    Init (callbacks)
     {
-        this.Init (callbacks);
+        super.Init (callbacks);
         this.backgroundColorInput = this.AddColorParameter (
             'Background Color',
             'Affects only the visualization.',
             null,
             ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'],
-            settings.backgroundColor,
-            this.callbacks.onBackgroundColorChange
+            this.settings.backgroundColor,
+            (newColor) => {
+                this.SetBackgroundColor (newColor, false);
+            }
         );
         this.defaultColorInput = this.AddColorParameter (
             'Default Color',
             'Appears when the model doesn\'t have materials.',
             'Has no effect on the currently loaded file.',
             ['#ffffff', '#e3e3e3', '#cc3333', '#fac832', '#4caf50', '#3393bd', '#9b27b0', '#fda4b8'],
-            settings.defaultColor,
-            this.callbacks.onDefaultColorChange
+            this.settings.defaultColor,
+            (newColor) => {
+                this.SetDefaultColor (newColor, false);
+            }
         );
-        this.themeInput = this.AddThemeParameter (settings.themeId);
-        this.AddResetToDefaultsButton (defaultSettings);
+        this.themeInput = this.AddThemeParameter (this.settings.themeId);
+        this.AddResetToDefaultsButton ();
     }
 
     Update (model)
@@ -257,6 +262,32 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             OV.HideDomElement (this.defaultColorInput.warning);
         }
         this.Resize ();
+    }
+
+    SetBackgroundColor (color, setInput)
+    {
+        this.settings.backgroundColor = color;
+        if (setInput) {
+            this.backgroundColorInput.pickr.setColor ('#' + OV.ColorToHexString (color));
+        } else {
+            this.callbacks.onBackgroundColorChange ();
+        }
+    }
+
+    SetDefaultColor (color, setInput)
+    {
+        this.settings.defaultColor = color;
+        if (setInput) {
+            this.defaultColorInput.pickr.setColor ('#' + OV.ColorToHexString (color));
+        } else {
+            this.callbacks.onDefaultColorChange ();
+        }
+    }
+
+    SetThemeId (themeId)
+    {
+        this.settings.themeId = themeId;
+        this.callbacks.onThemeChange ();
     }
 
     AddColorParameter (title, description, warningText, predefinedColors, defaultValue, onChange)
@@ -313,7 +344,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
 
     AddThemeParameter (defaultValue)
     {
-        function AddRadioButton (contentDiv, themeId, themeName, onChange)
+        function AddThemeRadioButton (obj, contentDiv, themeId, themeName, onChange)
         {
             let row = OV.AddDiv (contentDiv, 'ov_sidebar_settings_row');
             let label = OV.AddDomElement (row, 'label');
@@ -324,7 +355,15 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             radio.setAttribute ('name', 'theme');
             OV.AddDomElement (label, 'span', null, themeName);
             radio.addEventListener ('change', () => {
-                onChange (themeId);
+                obj.SetThemeId (themeId);
+                if (themeId === OV.Theme.Light) {
+                    obj.SetBackgroundColor (new OV.Color (255, 255, 255), true);
+                    obj.SetDefaultColor (new OV.Color (200, 200, 200), true);
+                } else if (themeId === OV.Theme.Dark) {
+                    obj.SetBackgroundColor (new OV.Color (42, 43, 46), true);
+                    obj.SetDefaultColor (new OV.Color (200, 200, 200), true);
+                }
+                onChange ();
             });
             return radio;
         }
@@ -349,22 +388,25 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
                 Select (result.buttons, value);
             }
         };
-        result.buttons.push (AddRadioButton (buttonsDiv, OV.Theme.Light, 'Light', this.callbacks.onThemeChange));
-        result.buttons.push (AddRadioButton (buttonsDiv, OV.Theme.Dark, 'Dark', this.callbacks.onThemeChange));
+        result.buttons.push (AddThemeRadioButton (this, buttonsDiv, OV.Theme.Light, 'Light', this.callbacks.onThemeChange));
+        result.buttons.push (AddThemeRadioButton (this, buttonsDiv, OV.Theme.Dark, 'Dark', this.callbacks.onThemeChange));
         Select (result.buttons, defaultValue);
         return result;
-
     }
 
-    AddResetToDefaultsButton (defaultSettings)
+    AddResetToDefaultsButton ()
     {
+        let defaultSettings = new OV.Settings ();
         let resetToDefaultsButton = OV.AddDiv (this.contentDiv, 'ov_button outline ov_sidebar_button', 'Reset to Default');
         resetToDefaultsButton.addEventListener ('click', () => {
+            this.settings.backgroundColor = defaultSettings.backgroundColor;
+            this.settings.defaultColor = defaultSettings.defaultColor;
             this.backgroundColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.backgroundColor));
             this.defaultColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.defaultColor));
             if (this.themeInput !== null) {
+                this.settings.themeId = defaultSettings.themeId;
                 this.themeInput.select (defaultSettings.themeId);
-                this.callbacks.onThemeChange (defaultSettings.themeId);
+                this.callbacks.onThemeChange ();
             }
         });
     }
