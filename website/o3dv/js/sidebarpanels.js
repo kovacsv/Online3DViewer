@@ -361,9 +361,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         let resetToDefaultsButton = OV.AddDiv (this.contentDiv, 'ov_button outline ov_sidebar_button', 'Reset to Default');
         resetToDefaultsButton.addEventListener ('click', () => {
             this.backgroundColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.backgroundColor));
-            this.callbacks.onBackgroundColorChange (defaultSettings.backgroundColor);
             this.defaultColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.defaultColor));
-            this.callbacks.onDefaultColorChange (defaultSettings.defaultColor);
             if (this.themeInput !== null) {
                 this.themeInput.select (defaultSettings.themeId);
                 this.callbacks.onThemeChange (defaultSettings.themeId);
