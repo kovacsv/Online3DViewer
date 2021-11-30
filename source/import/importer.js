@@ -162,7 +162,8 @@ OV.Importer = class
             let mainFile = importableFiles[0];
             this.ImportLoadedMainFile (mainFile, settings, callbacks);
         } else {
-            callbacks.onSelectMainFile (importableFiles, (mainFileIndex) => {
+            let fileNames = importableFiles.map (importableFile => importableFile.file.name);
+            callbacks.onSelectMainFile (fileNames, (mainFileIndex) => {
                 if (mainFileIndex === null) {
                     callbacks.onImportError (new OV.ImportError (OV.ImportErrorCode.NoImportableFile, null));
                     return;

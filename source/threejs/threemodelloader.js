@@ -36,11 +36,11 @@ OV.ThreeModelLoader = class
             onFilesLoaded : () => {
                 this.callbacks.onImportStart ();
             },
-            onSelectMainFile : (files, selectFile) => {
+            onSelectMainFile : (fileNames, selectFile) => {
                 if (!this.callbacks.onSelectMainFile) {
                     selectFile (0);
                 } else {
-                    this.callbacks.onSelectMainFile (files, selectFile);
+                    this.callbacks.onSelectMainFile (fileNames, selectFile);
                 }
             },
             onImportSuccess : (importResult) => {

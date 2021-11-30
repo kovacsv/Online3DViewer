@@ -23,7 +23,7 @@ OV.InitModelLoader = function (modelLoader, callbacks)
         }
     }
 
-    function ShowFileSelectorDialog (files, onSelect)
+    function ShowFileSelectorDialog (fileNames, onSelect)
     {
         let dialog = new OV.ButtonDialog ();
         let contentDiv = dialog.Init ('Select Model', [
@@ -45,11 +45,11 @@ OV.InitModelLoader = function (modelLoader, callbacks)
         let fileListSection = OV.AddDiv (contentDiv, 'ov_dialog_section');
         let fileList = OV.AddDiv (fileListSection, 'ov_dialog_import_file_list ov_thin_scrollbar');
 
-        for (let i = 0; i < files.length; i++) {
-            let file = files[i];
+        for (let i = 0; i < fileNames.length; i++) {
+            let fileName = fileNames[i];
             let fileLink = OV.AddDiv (fileList, 'ov_dialog_file_link');
             OV.AddSvgIconElement (fileLink, 'meshes', 'ov_file_link_img');
-            OV.AddDiv (fileLink, 'ov_dialog_file_link_text', file.file.name);
+            OV.AddDiv (fileLink, 'ov_dialog_file_link_text', fileName);
             fileLink.addEventListener ('click', () => {
                 dialog.SetCloseHandler (null);
                 dialog.Hide ();
@@ -79,9 +79,9 @@ OV.InitModelLoader = function (modelLoader, callbacks)
             progressDialog.Init ('Loading Model');
             progressDialog.Show ();
         },
-        onSelectMainFile : (files, selectFile) => {
+        onSelectMainFile : (fileNames, selectFile) => {
             progressDialog.Hide ();
-            modalDialog = ShowFileSelectorDialog (files, (index) => {
+            modalDialog = ShowFileSelectorDialog (fileNames, (index) => {
                 progressDialog.Show ();
                 selectFile (index);
             });
