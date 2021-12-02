@@ -90,7 +90,8 @@ OV.Importer = class
             new OV.ImporterThreeFbx (),
             new OV.ImporterThreeDae (),
             new OV.ImporterThreeWrl (),
-            new OV.ImporterThree3mf ()
+            new OV.ImporterThree3mf (),
+            new OV.ImporterThreeSvg ()
         ];
         this.fileList = new OV.FileList ();
         this.model = null;
@@ -214,9 +215,10 @@ OV.Importer = class
                 return fileAccessor.GetTextureBuffer (filePath);
             },
             onSuccess : () => {
+                this.model = importer.GetModel ();
                 let result = new OV.ImportResult ();
                 result.mainFile = mainFile.file.name;
-                result.model = importer.GetModel ();
+                result.model = this.model;
                 result.usedFiles = this.usedFiles;
                 result.missingFiles = this.missingFiles;
                 result.upVector = importer.GetUpDirection ();
