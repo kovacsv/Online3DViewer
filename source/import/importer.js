@@ -90,8 +90,7 @@ OV.Importer = class
             new OV.ImporterThreeFbx (),
             new OV.ImporterThreeDae (),
             new OV.ImporterThreeWrl (),
-            new OV.ImporterThree3mf (),
-            new OV.ImporterThreeSvg ()
+            new OV.ImporterThree3mf ()
         ];
         this.fileList = new OV.FileList ();
         this.model = null;
