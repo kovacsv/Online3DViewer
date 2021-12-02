@@ -59,9 +59,9 @@ OV.Sidebar = class
         });
     }
 
-    Update (model)
+    UpdateSettings (hasDefaultMaterial)
     {
-        this.settingsPanel.Update (model);
+        this.settingsPanel.UpdateSettings (hasDefaultMaterial);
     }
 
     Resize (height)

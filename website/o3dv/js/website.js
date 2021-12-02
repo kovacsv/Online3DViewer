@@ -145,7 +145,7 @@ OV.Website = class
         this.viewer.SetMainObject (threeObject);
         this.viewer.SetUpVector (importResult.upVector, false);
         this.navigator.FillTree (importResult);
-        this.sidebar.Update (this.model);
+        this.UpdateSidebar ();
         this.FitModelToWindow (true);
     }
 
@@ -287,6 +287,12 @@ OV.Website = class
             return meshInstanceIdKeys.has (meshUserData.originalMeshId.GetKey ());
         });
         this.viewer.FitSphereToWindow (boundingSphere, true);
+    }
+
+    UpdateSidebar ()
+    {
+        let hasDefaultMaterial = OV.HasDefaultMaterial (this.model);
+        this.sidebar.UpdateSettings (hasDefaultMaterial);
     }
 
     UpdateMeshesVisibility ()

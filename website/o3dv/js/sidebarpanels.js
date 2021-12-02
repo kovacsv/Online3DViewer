@@ -253,9 +253,8 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         this.AddResetToDefaultsButton ();
     }
 
-    Update (model)
+    UpdateSettings (hasDefaultMaterial)
     {
-        let hasDefaultMaterial = OV.HasDefaultMaterial (model);
         if (!hasDefaultMaterial) {
             OV.ShowDomElement (this.defaultColorInput.warning);
         } else {
