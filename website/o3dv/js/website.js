@@ -375,10 +375,8 @@ OV.Website = class
                 eventHandler.HandleEvent ('toolbar_clicked', { item : imageName });
                 onClick ();
             });
-            if (classNames !== null) {
-                for (let className of classNames) {
-                    button.AddClass (className);
-                }
+            for (let className of classNames) {
+                button.AddClass (className);
             }
             return button;
         }
@@ -398,11 +396,9 @@ OV.Website = class
                 eventHandler.HandleEvent ('toolbar_clicked', { item : imageNames[buttonIndex] });
                 onClick (buttonIndex);
             });
-            if (classNames !== null) {
-                for (let className of classNames) {
-                    for (let button of buttons) {
-                        button.AddClass (className);
-                    }
+            for (let className of classNames) {
+                for (let button of buttons) {
+                    button.AddClass (className);
                 }
             }
         }
@@ -419,10 +415,10 @@ OV.Website = class
 
         let importer = this.modelLoader.GetImporter ();
 
-        AddButton (this.toolbar, this.eventHandler, 'open', 'Open model from your device', null, () => {
+        AddButton (this.toolbar, this.eventHandler, 'open', 'Open model from your device', [], () => {
             this.OpenFileBrowserDialog ();
         });
-        AddButton (this.toolbar, this.eventHandler, 'open_url', 'Open model from a url', null, () => {
+        AddButton (this.toolbar, this.eventHandler, 'open_url', 'Open model from a url', [], () => {
             this.dialog = OV.ShowOpenUrlDialog ((urls) => {
                 if (urls.length > 0) {
                     this.hashHandler.SetModelFilesToHash (urls);
