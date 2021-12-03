@@ -19,7 +19,7 @@ OV.Website = class
         this.navigator = new OV.Navigator (this.parameters.navigatorDiv, this.parameters.navigatorSplitterDiv);
         this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv, this.parameters.sidebarSplitterDiv, this.settings);
         this.eventHandler = new OV.EventHandler (this.parameters.eventHandler);
-        this.modelLoader = new OV.ThreeModelLoader ();
+        this.modelLoaderUI = new OV.ThreeModelLoaderUI ();
         this.themeHandler = new OV.ThemeHandler ();
         this.highlightColor = new THREE.Color (0x8ec9f0);
         this.uiState = OV.WebsiteUIState.Undefined;
@@ -35,7 +35,6 @@ OV.Website = class
         this.InitViewer ();
         this.InitToolbar ();
         this.InitDragAndDrop ();
-        this.InitModelLoader ();
         this.InitSidebar ();
         this.InitNavigator ();
         this.InitCookieConsent ();
@@ -315,7 +314,7 @@ OV.Website = class
 
     LoadModelFromUrlList (urls, settings)
     {
-        this.modelLoader.LoadFromUrlList (urls, settings);
+        this.LoadModel (urls, OV.FileSource.Url, settings);
         this.ClearHashIfNotOnlyUrlList ();
     }
 
@@ -323,13 +322,55 @@ OV.Website = class
     {
         let importSettings = new OV.ImportSettings ();
         importSettings.defaultColor = this.settings.defaultColor;
-        this.modelLoader.LoadFromFileList (files, importSettings);
+        this.LoadModel (files, OV.FileSource.File, importSettings);
         this.ClearHashIfNotOnlyUrlList ();
+    }
+
+    LoadModel (files, fileSource, settings)
+    {
+        this.modelLoaderUI.LoadModel (files, fileSource, settings, {
+            onStart : () =>
+            {
+                this.SetUIState (OV.WebsiteUIState.Loading);
+                this.ClearModel ();
+            },
+            onFinish : (importResult, threeObject) =>
+            {
+                this.SetUIState (OV.WebsiteUIState.Model);
+                this.OnModelLoaded (importResult, threeObject);
+                let importedExtension = OV.GetFileExtension (importResult.mainFile);
+                this.eventHandler.HandleEvent ('model_loaded', { extension : importedExtension });
+            },
+            onRender : () =>
+            {
+                this.viewer.Render ();
+            },
+            onError : (importError) =>
+            {
+                this.SetUIState (OV.WebsiteUIState.Intro);
+                let reason = 'unknown';
+                if (importError.code === OV.ImportErrorCode.NoImportableFile) {
+                    reason = 'no_importable_file';
+                } else if (importError.code === OV.ImportErrorCode.ImportFailed) {
+                    reason = 'import_failed';
+                }
+                let extensions = [];
+                let importer = this.modelLoaderUI.GetImporter ();
+                let fileList = importer.GetFileList ().GetFiles ();
+                for (let i = 0; i < fileList.length; i++) {
+                    extensions.push (fileList[i].extension);
+                }
+                this.eventHandler.HandleEvent ('model_load_failed', {
+                    reason : reason,
+                    extensions : extensions
+                });
+            }
+        });
     }
 
     ClearHashIfNotOnlyUrlList ()
     {
-        let importer = this.modelLoader.GetImporter ();
+        let importer = this.modelLoaderUI.GetImporter ();
         let isOnlyUrl = importer.GetFileList ().IsOnlyUrlSource ();
         if (!isOnlyUrl && this.hashHandler.HasHash ()) {
             this.hashHandler.SkipNextEventHandler ();
@@ -345,9 +386,10 @@ OV.Website = class
         if (resetColors) {
             this.settings.SaveToCookies (this.cookieHandler);
             this.viewer.SetBackgroundColor (this.settings.backgroundColor);
-            if (this.modelLoader.defaultMaterial !== null) {
+            let modelLoader = this.modelLoaderUI.GetModelLoader ();
+            if (modelLoader.GetDefaultMaterial () !== null) {
                 OV.ReplaceDefaultMaterialColor (this.model, this.settings.defaultColor);
-                this.modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
+                modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
             }
         }
     }
@@ -413,7 +455,7 @@ OV.Website = class
             }
         }
 
-        let importer = this.modelLoader.GetImporter ();
+        let importer = this.modelLoaderUI.GetImporter ();
 
         AddButton (this.toolbar, this.eventHandler, 'open', 'Open model from your device', [], () => {
             this.OpenFileBrowserDialog ();
@@ -491,48 +533,6 @@ OV.Website = class
         }, false);
     }
 
-    InitModelLoader ()
-    {
-        OV.InitModelLoader (this.modelLoader, {
-            onStart : () =>
-            {
-                this.SetUIState (OV.WebsiteUIState.Loading);
-                this.ClearModel ();
-            },
-            onFinish : (importResult, threeObject) =>
-            {
-                this.SetUIState (OV.WebsiteUIState.Model);
-                this.OnModelLoaded (importResult, threeObject);
-                let importedExtension = OV.GetFileExtension (importResult.mainFile);
-                this.eventHandler.HandleEvent ('model_loaded', { extension : importedExtension });
-            },
-            onRender : () =>
-            {
-                this.viewer.Render ();
-            },
-            onError : (importError) =>
-            {
-                this.SetUIState (OV.WebsiteUIState.Intro);
-                let reason = 'unknown';
-                if (importError.code === OV.ImportErrorCode.NoImportableFile) {
-                    reason = 'no_importable_file';
-                } else if (importError.code === OV.ImportErrorCode.ImportFailed) {
-                    reason = 'import_failed';
-                }
-                let extensions = [];
-                let importer = this.modelLoader.GetImporter ();
-                let fileList = importer.GetFileList ().GetFiles ();
-                for (let i = 0; i < fileList.length; i++) {
-                    extensions.push (fileList[i].extension);
-                }
-                this.eventHandler.HandleEvent ('model_load_failed', {
-                    reason : reason,
-                    extensions : extensions
-                });
-            }
-        });
-    }
-
     InitSidebar ()
     {
         this.sidebar.Init ({
@@ -542,9 +542,10 @@ OV.Website = class
             },
             onDefaultColorChange : () => {
                 this.settings.SaveToCookies (this.cookieHandler);
-                if (this.modelLoader.defaultMaterial !== null) {
+                let modelLoader = this.modelLoaderUI.GetModelLoader ();
+                if (modelLoader.GetDefaultMaterial () !== null) {
                     OV.ReplaceDefaultMaterialColor (this.model, this.settings.defaultColor);
-                    this.modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
+                    modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
                 }
                 this.viewer.Render ();
             },

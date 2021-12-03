@@ -3,69 +3,53 @@ OV.ThreeModelLoader = class
     constructor ()
     {
         this.importer = new OV.Importer ();
-        this.callbacks = null;
         this.inProgress = false;
         this.defaultMaterial = null;
         this.hasHighpDriverIssue = OV.HasHighpDriverIssue ();
     }
 
-    Init (callbacks)
+    InProgress ()
     {
-        this.callbacks = callbacks;
+        return this.inProgress;
     }
 
-    LoadFromUrlList (urls, settings)
-    {
-        this.LoadFromSource (urls, OV.FileSource.Url, settings);
-    }
-
-    LoadFromFileList (files, settings)
-    {
-        this.LoadFromSource (files, OV.FileSource.File, settings);
-    }
-
-    LoadFromSource (files, fileSource, settings)
+    LoadModel (files, fileSource, settings, callbacks)
     {
         if (this.inProgress) {
             return;
         }
 
         this.inProgress = true;
-        this.callbacks.onLoadStart ();
+        callbacks.onLoadStart ();
         this.importer.ImportFiles (files, fileSource, settings, {
             onFilesLoaded : () => {
-                this.callbacks.onImportStart ();
+                callbacks.onImportStart ();
             },
             onSelectMainFile : (fileNames, selectFile) => {
-                if (!this.callbacks.onSelectMainFile) {
+                if (!callbacks.onSelectMainFile) {
                     selectFile (0);
                 } else {
-                    this.callbacks.onSelectMainFile (fileNames, selectFile);
+                    callbacks.onSelectMainFile (fileNames, selectFile);
                 }
             },
             onImportSuccess : (importResult) => {
-                this.OnModelImported (importResult);
+                callbacks.onVisualizationStart ();
+                let params = new OV.ModelToThreeConversionParams ();
+                params.forceMediumpForMaterials = this.hasHighpDriverIssue;
+                let output = new OV.ModelToThreeConversionOutput ();
+                OV.ConvertModelToThreeObject (importResult.model, params, output, {
+                    onTextureLoaded : () => {
+                        callbacks.onTextureLoaded ();
+                    },
+                    onModelLoaded : (threeObject) => {
+                        this.defaultMaterial = output.defaultMaterial;
+                        callbacks.onModelFinished (importResult, threeObject);
+                        this.inProgress = false;
+                    }
+                });
             },
             onImportError : (importError) => {
-                this.callbacks.onLoadError (importError);
-                this.inProgress = false;
-            }
-        });
-    }
-
-    OnModelImported (importResult)
-    {
-        this.callbacks.onVisualizationStart ();
-        let params = new OV.ModelToThreeConversionParams ();
-        params.forceMediumpForMaterials = this.hasHighpDriverIssue;
-        let output = new OV.ModelToThreeConversionOutput ();
-        OV.ConvertModelToThreeObject (importResult.model, params, output, {
-            onTextureLoaded : () => {
-                this.callbacks.onTextureLoaded ();
-            },
-            onModelLoaded : (threeObject) => {
-                this.defaultMaterial = output.defaultMaterial;
-                this.callbacks.onModelFinished (importResult, threeObject);
+                callbacks.onLoadError (importError);
                 this.inProgress = false;
             }
         });
@@ -74,6 +58,11 @@ OV.ThreeModelLoader = class
     GetImporter ()
     {
         return this.importer;
+    }
+
+    GetDefaultMaterial ()
+    {
+        return this.defaultMaterial;
     }
 
     ReplaceDefaultMaterialColor (defaultColor)

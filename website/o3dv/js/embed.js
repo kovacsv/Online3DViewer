@@ -5,18 +5,17 @@ OV.Embed = class
         this.parameters = parameters;
         this.viewer = new OV.Viewer ();
         this.hashHandler = new OV.HashHandler ();
-        this.modelLoader = new OV.ThreeModelLoader ();
+        this.modelLoaderUI = new OV.ThreeModelLoaderUI ();
     }
 
     Load ()
     {
         let canvas = OV.AddDomElement (this.parameters.viewerDiv, 'canvas');
         this.InitViewer (canvas);
-        this.InitModelLoader ();
         this.Resize ();
 
         if (this.hashHandler.HasHash ()) {
-            let urls = this.hashHandler.GetModelFilesFromHash ();
+        let urls = this.hashHandler.GetModelFilesFromHash ();
             if (urls === null) {
                 return;
             }
@@ -29,7 +28,24 @@ OV.Embed = class
             if (defaultColor !== null) {
                 settings.defaultColor = defaultColor;
             }
-            this.modelLoader.LoadFromUrlList (urls, settings);
+            this.modelLoaderUI.LoadModel (urls, OV.FileSource.Url, settings, {
+                onStart : () =>
+                {
+
+                },
+                onFinish : (importResult, threeObject) =>
+                {
+                    this.OnModelFinished (importResult, threeObject);
+                },
+                onRender : () =>
+                {
+                    this.viewer.Render ();
+                },
+                onError : (importError) =>
+                {
+
+                }
+            });
             let hashParameters = OV.CreateModelUrlParameters (urls);
             let websiteUrl = this.parameters.websiteLinkDiv.getAttribute ('href') + '#' + hashParameters;
             this.parameters.websiteLinkDiv.setAttribute ('href', websiteUrl);
@@ -74,27 +90,5 @@ OV.Embed = class
             'assets/envmaps/grayclouds/posz.jpg',
             'assets/envmaps/grayclouds/negz.jpg'
         ]);
-    }
-
-    InitModelLoader ()
-    {
-        OV.InitModelLoader (this.modelLoader, {
-            onStart : () =>
-            {
-
-            },
-            onFinish : (importResult, threeObject) =>
-            {
-                this.OnModelFinished (importResult, threeObject);
-            },
-            onRender : () =>
-            {
-                this.viewer.Render ();
-            },
-            onError : (importError) =>
-            {
-
-            }
-        });
     }
 };

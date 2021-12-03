@@ -15,13 +15,31 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, parameters)
     viewer.Resize (width, height);
 
     let loader = new OV.ThreeModelLoader ();
+
+    if (modelUrls === null || modelUrls.length === 0) {
+        return null;
+    }
+
+    if (parameters.backgroundColor) {
+        viewer.SetBackgroundColor (parameters.backgroundColor);
+    }
+
+    if (parameters.environmentMap) {
+        viewer.SetEnvironmentMap (parameters.environmentMap);
+    }
+
+    let settings = new OV.ImportSettings ();
+    if (parameters.defaultColor) {
+        settings.defaultColor = parameters.defaultColor;
+    }
+
     let progressDiv = null;
-    loader.Init ({
+    loader.LoadModel (modelUrls, OV.FileSource.Url, settings, {
         onLoadStart : () => {
             canvas.style.display = 'none';
             progressDiv = document.createElement ('div');
-            parentDiv.appendChild (progressDiv);
             progressDiv.innerHTML = 'Loading model...';
+            parentDiv.appendChild (progressDiv);
         },
         onImportStart : () => {
             progressDiv.innerHTML = 'Importing model...';
@@ -60,25 +78,6 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, parameters)
             progressDiv.innerHTML = message;
         }
     });
-
-    if (modelUrls === null || modelUrls.length === 0) {
-        return null;
-    }
-
-    if (parameters.backgroundColor) {
-        viewer.SetBackgroundColor (parameters.backgroundColor);
-    }
-
-    if (parameters.environmentMap) {
-        viewer.SetEnvironmentMap (parameters.environmentMap);
-    }
-
-    let settings = new OV.ImportSettings ();
-    if (parameters.defaultColor) {
-        settings.defaultColor = parameters.defaultColor;
-    }
-
-    loader.LoadFromUrlList (modelUrls, settings);
     return {
         element: parentDiv,
         viewer: viewer

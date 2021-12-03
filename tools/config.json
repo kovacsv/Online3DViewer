@@ -85,7 +85,7 @@
 		"website/o3dv/js/sidebarpanels.js",
 		"website/o3dv/js/sidebar.js",
 		"website/o3dv/js/hashhandler.js",
-		"website/o3dv/js/loader.js",
+		"website/o3dv/js/threemodelloaderui.js",
 		"website/o3dv/js/themehandler.js",
 		"website/o3dv/js/website.js",
 		"website/o3dv/js/embed.js"
