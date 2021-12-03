@@ -4,10 +4,10 @@ div.ov_sidebar_title
 	font-weight: bold;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	overflow: hidden;
 	padding-bottom: 10px;
 	margin-bottom: 10px;
 	border-bottom: 1px solid var(--ov_border_color);
+	overflow: hidden;
 }
 
 div.ov_sidebar_title div.ov_sidebar_title_text
@@ -22,12 +22,22 @@ div.ov_sidebar_title div.ov_sidebar_title_img
 	cursor: pointer;
 }
 
-div.ov_sidebar_subtitle_icon
+div.ov_sidebar_subtitle
+{
+	overflow: hidden;
+}
+
+div.ov_sidebar_subtitle div.ov_sidebar_subtitle_icon
 {
 	width: 30px;
 	height: 18px;
 	margin-top: 2px;
 	margin-right: 10px;
+	float: left;
+}
+
+div.ov_sidebar_subtitle div.ov_sidebar_subtitle_text
+{
 	float: left;
 }
 
@@ -52,6 +62,7 @@ div.ov_sidebar_content div.ov_sidebar_settings_padded
 {
 	margin: 10px 0px 0px 40px;
 	float: left;
+	overflow: hidden;
 }
 
 div.ov_sidebar_content div.ov_sidebar_settings_warning

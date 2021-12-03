@@ -294,7 +294,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         let contentDiv = OV.AddDiv (this.contentDiv, 'ov_sidebar_settings_content');
         let titleDiv = OV.AddDiv (contentDiv, 'ov_sidebar_subtitle');
         let colorInput = OV.AddDiv (titleDiv, 'color-picker');
-        OV.AddDomElement (titleDiv, 'span', null, title);
+        OV.AddDiv (titleDiv, 'ov_sidebar_subtitle', title);
         const pickr = Pickr.create ({
             el : colorInput,
             theme : 'monolith',
@@ -378,7 +378,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         let contentDiv = OV.AddDiv (this.contentDiv, 'ov_sidebar_settings_content');
         let titleDiv = OV.AddDiv (contentDiv, 'ov_sidebar_subtitle');
         OV.AddSvgIconElement (titleDiv, 'theme', 'ov_sidebar_subtitle_icon');
-        OV.AddDiv (titleDiv, null, 'Appearance');
+        OV.AddDiv (titleDiv, 'ov_sidebar_subtitle_text', 'Appearance');
 
         let buttonsDiv = OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded');
         let result = {
