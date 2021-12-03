@@ -51,7 +51,6 @@ OV.ExporterGltf = class extends OV.ExporterBase
             if (fileNameToIndex.has (fileName)) {
                 return fileNameToIndex.get (fileName);
             } else {
-
                 let textureFile = new OV.ExportedFile (fileName);
                 textureFile.SetBufferContent (texture.buffer);
                 files.push (textureFile);
