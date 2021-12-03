@@ -45,26 +45,30 @@ OV.ExporterGltf = class extends OV.ExporterBase
             byteLength : mainBuffer.byteLength
         });
 
-        let fileNameToIndex = [];
+        let fileNameToIndex = new Map ();
         this.ExportMaterials (model, mainJson, (texture) => {
             let fileName = OV.GetFileName (texture.name);
-            let textureIndex = fileNameToIndex[fileName];
-            if (textureIndex === undefined) {
+            if (fileNameToIndex.has (fileName)) {
+                return fileNameToIndex.get (fileName);
+            } else {
+
                 let textureFile = new OV.ExportedFile (fileName);
                 textureFile.SetBufferContent (texture.buffer);
                 files.push (textureFile);
 
-                textureIndex = mainJson.textures.length;
-                fileNameToIndex[fileName] = textureIndex;
+                let textureIndex = mainJson.textures.length;
+                fileNameToIndex.set (fileName, textureIndex);
 
                 mainJson.images.push ({
                     uri : fileName
                 });
+
                 mainJson.textures.push ({
                     source : textureIndex
                 });
+
+                return textureIndex;
             }
-            return textureIndex;
         });
 
         gltfFile.SetTextContent (JSON.stringify (mainJson, null, 4));
@@ -99,15 +103,16 @@ OV.ExporterGltf = class extends OV.ExporterBase
         let textureBuffers = [];
         let textureOffset = mainBuffer.byteLength;
 
-        let fileNameToIndex = [];
+        let fileNameToIndex = new Map ();
         this.ExportMaterials (model, mainJson, (texture) => {
             let fileName = OV.GetFileName (texture.name);
             let extension = OV.GetFileExtension (texture.name);
-            let textureIndex = fileNameToIndex[fileName];
-            if (textureIndex === undefined) {
+            if (fileNameToIndex.has (fileName)) {
+                return fileNameToIndex.get (fileName);
+            } else {
                 let bufferViewIndex = mainJson.bufferViews.length;
-                textureIndex = mainJson.textures.length;
-                fileNameToIndex[fileName] = textureIndex;
+                let textureIndex = mainJson.textures.length;
+                fileNameToIndex.set (fileName, textureIndex);
                 let textureBuffer = texture.buffer;
                 textureBuffers.push (textureBuffer);
                 mainJson.bufferViews.push ({
@@ -123,8 +128,9 @@ OV.ExporterGltf = class extends OV.ExporterBase
                 mainJson.textures.push ({
                     source : textureIndex
                 });
+
+                return textureIndex;
             }
-            return textureIndex;
         });
 
         let mainBinaryBufferLength = mainBuffer.byteLength;
@@ -375,7 +381,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
                 }
 
                 let textureIndex = addTexture (texture);
-                   let textureParams = {
+                let textureParams = {
                     index : textureIndex
                 };
 
