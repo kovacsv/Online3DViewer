@@ -50,18 +50,6 @@ OV.TextureMap = class
         }
         return false;
     }
-
-    Clone ()
-    {
-        let cloned = new OV.TextureMap ();
-        cloned.name = this.name;
-        cloned.url = this.url;
-        cloned.buffer = this.buffer;
-        cloned.offset = this.offset.Clone ();
-        cloned.scale = this.scale.Clone ();
-        cloned.rotation = this.rotation;
-        return cloned;
-    }
 };
 
 OV.MaterialType =
@@ -101,45 +89,6 @@ OV.Material = class
         this.multiplyMetallicMap = false;
 
         this.isDefault = false;
-    }
-
-    Clone ()
-    {
-        let cloned = new OV.Material (this.type);
-
-        cloned.name = this.name;
-        cloned.color = this.color.Clone ();
-
-        cloned.ambient = this.ambient.Clone ();
-        cloned.specular = this.specular.Clone ();
-        cloned.emissive = this.emissive.Clone ();
-
-        cloned.metalness = this.metalness;
-        cloned.roughness = this.roughness;
-
-        cloned.shininess = this.shininess;
-        cloned.opacity = this.opacity;
-
-        cloned.diffuseMap = this.CloneTextureMap (this.diffuseMap);
-        cloned.specularMap = this.CloneTextureMap (this.specularMap);
-        cloned.bumpMap = this.CloneTextureMap (this.bumpMap);
-        cloned.normalMap = this.CloneTextureMap (this.normalMap);
-        cloned.emissiveMap = this.CloneTextureMap (this.emissiveMap);
-        cloned.metalnessMap = this.CloneTextureMap (this.metalnessMap);
-
-        cloned.alphaTest = this.alphaTest;
-        cloned.transparent = this.transparent;
-        cloned.multiplyDiffuseMap = this.multiplyDiffuseMap;
-
-        return cloned;
-    }
-
-    CloneTextureMap (textureMap)
-    {
-        if (textureMap === null) {
-            return null;
-        }
-        return textureMap.Clone ();
     }
 };
 
