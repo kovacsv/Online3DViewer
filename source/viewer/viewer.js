@@ -1,9 +1,3 @@
-OV.ShadingModelType =
-{
-    Phong : 1,
-    Physical : 2
-};
-
 OV.GetDefaultCamera = function (direction)
 {
     if (direction === OV.Direction.X) {
@@ -48,9 +42,9 @@ OV.GetShadingTypeOfObject = function (mainObject)
         if (obj.isMesh) {
             for (const material of obj.material) {
                 if (material.type === 'MeshPhongMaterial') {
-                    shadingType = OV.ShadingModelType.Phong;
+                    shadingType = OV.ShadingType.Phong;
                 } else if (material.type === 'MeshStandardMaterial') {
-                    shadingType = OV.ShadingModelType.Physical;
+                    shadingType = OV.ShadingType.Physical;
                 }
                 return false;
             }
@@ -257,7 +251,7 @@ OV.ShadingModel = class
     {
         this.scene = scene;
 
-        this.type = OV.ShadingModelType.Phong;
+        this.type = OV.ShadingType.Phong;
         this.ambientLight = new THREE.AmbientLight (0x888888);
         this.directionalLight = new THREE.DirectionalLight (0x888888);
         this.environment = null;
@@ -269,11 +263,11 @@ OV.ShadingModel = class
     SetType (type)
     {
         this.type = type;
-        if (this.type === OV.ShadingModelType.Phong) {
+        if (this.type === OV.ShadingType.Phong) {
             this.ambientLight.color.set (0x888888);
             this.directionalLight.color.set (0x888888);
             this.scene.environment = null;
-        } else if (this.type === OV.ShadingModelType.Physical) {
+        } else if (this.type === OV.ShadingType.Physical) {
             this.ambientLight.color.set (0x000000);
             this.directionalLight.color.set (0x555555);
             this.scene.environment = this.environment;
@@ -296,12 +290,12 @@ OV.ShadingModel = class
 
     CreateHighlightMaterial (highlightColor)
     {
-        if (this.type === OV.ShadingModelType.Phong) {
+        if (this.type === OV.ShadingType.Phong) {
             return new THREE.MeshPhongMaterial ({
                 color : highlightColor,
                 side : THREE.DoubleSide
             });
-        } else if (this.type === OV.ShadingModelType.Physical) {
+        } else if (this.type === OV.ShadingType.Physical) {
             return new THREE.MeshStandardMaterial ({
                 color : highlightColor,
                 side : THREE.DoubleSide

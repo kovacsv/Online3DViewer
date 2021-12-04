@@ -21,7 +21,7 @@ OV.HasHighpDriverIssue = function ()
     scene.add (ambientLight);
 
     let light = new THREE.DirectionalLight (0x888888);
-    light.position.set (0.0, 0.0, 1.0);	
+    light.position.set (0.0, 0.0, 1.0);
     scene.add (light);
 
     let camera = new THREE.PerspectiveCamera (45.0, 1.0, 0.1, 1000.0);
@@ -45,7 +45,7 @@ OV.HasHighpDriverIssue = function ()
         context.UNSIGNED_BYTE,
         pixels
     );
-    
+
     document.body.removeChild (canvas);
 
     let blackThreshold = 50;
@@ -53,6 +53,31 @@ OV.HasHighpDriverIssue = function ()
         return true;
     }
     return false;
+};
+
+OV.ShadingType =
+{
+    Phong : 1,
+    Physical : 2
+};
+
+OV.GetShadingType = function (model)
+{
+    let phongCount = 0;
+    let physicalCount = 0;
+    for (let i = 0; i < model.MaterialCount (); i++) {
+        let material = model.GetMaterial (i);
+        if (material.type === OV.MaterialType.Phong) {
+            phongCount += 1;
+        } else if (material.type === OV.MaterialType.Physical) {
+            physicalCount += 1;
+        }
+    }
+    if (phongCount >= physicalCount) {
+        return OV.ShadingType.Phong;
+    } else {
+        return OV.ShadingType.Physical;
+    }
 };
 
 OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
@@ -73,7 +98,7 @@ OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
             let y = normals[i + 1];
             let z = normals[i + 2];
             mesh.AddNormal (new OV.Coord3D (x, y, z));
-        }		
+        }
     }
     let hasUVs = (threeGeometry.attributes.uv !== undefined);
     if (hasUVs) {
@@ -82,7 +107,7 @@ OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
             let x = uvs[i];
             let y = uvs[i + 1];
             mesh.AddTextureUV (new OV.Coord2D (x, y));
-        }		
+        }
     }
     let indices = null;
     if (threeGeometry.index !== null) {
@@ -108,6 +133,6 @@ OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
             triangle.SetMaterial (materialIndex);
         }
         mesh.AddTriangle (triangle);
-    }    
+    }
     return mesh;
 };
