@@ -426,12 +426,14 @@ OV.ExporterGltf = class extends OV.ExporterBase
                 }
                 jsonMaterial.pbrMetallicRoughness.baseColorTexture = baseColorTexture;
             }
-            let metallicTexture = GetTextureParams (mainJson, material.metalnessMap, addTexture);
-            if (metallicTexture !== null) {
-                jsonMaterial.pbrMetallicRoughness.metallicRoughnessTexture = metallicTexture;
-            } else {
-                jsonMaterial.pbrMetallicRoughness.metallicFactor = material.metalness;
-                jsonMaterial.pbrMetallicRoughness.roughnessFactor = material.roughness;
+            if (material.type === OV.MaterialType.Physical) {
+                let metallicTexture = GetTextureParams (mainJson, material.metalnessMap, addTexture);
+                if (metallicTexture !== null) {
+                    jsonMaterial.pbrMetallicRoughness.metallicRoughnessTexture = metallicTexture;
+                } else {
+                    jsonMaterial.pbrMetallicRoughness.metallicFactor = material.metalness;
+                    jsonMaterial.pbrMetallicRoughness.roughnessFactor = material.roughness;
+                }
             }
             let normalTexture = GetTextureParams (mainJson, material.normalMap, addTexture);
             if (normalTexture !== null) {

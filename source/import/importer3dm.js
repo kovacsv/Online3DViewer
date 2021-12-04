@@ -248,16 +248,16 @@ OV.Importer3dm = class extends OV.ImporterBase
 
 			let material = null;
 			if (rhinoMaterial === null) {
-				material = new OV.Material (OV.MaterialType.Phong);
+				material = new OV.PhongMaterial ();
 				material.color.Set (255, 255, 255);
 			} else {
 				let physicallyBased = rhinoMaterial.physicallyBased ();
 				if (physicallyBased.supported) {
-					material = new OV.Material (OV.MaterialType.Physical);
+					material = new OV.PhysicalMaterial ();
 					material.metalness = physicallyBased.metallic ? 1.0 : 0.0;
 					material.roughness = physicallyBased.roughness;
 				} else {
-					material = new OV.Material (OV.MaterialType.Phong);
+					material = new OV.PhongMaterial ();
 					SetColor (material.ambient, rhinoMaterial.ambientColor);
 					SetColor (material.specular, rhinoMaterial.specularColor);
 				}
@@ -275,7 +275,7 @@ OV.Importer3dm = class extends OV.ImporterBase
 			}
 			for (let i = 0; i < model.MaterialCount (); i++) {
 				let current = model.GetMaterial (i);
-				if (OV.MaterialIsEqual (current, material)) {
+				if (current.IsEqual (material)) {
 					return i;
 				}
 			}

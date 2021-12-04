@@ -166,7 +166,7 @@ OV.Importer3ds = class extends OV.ImporterBase
 
     ReadMaterialChunk (reader, length)
     {
-        let material = new OV.Material (OV.MaterialType.Phong);
+        let material = new OV.PhongMaterial ();
         let endByte = this.GetChunkEnd (reader, length);
         let shininess = null;
         let shininessStrength = null;

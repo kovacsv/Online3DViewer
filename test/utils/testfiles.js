@@ -54,7 +54,7 @@ module.exports =
         });
         importer.Import (fileName, extension, content, {
             getDefaultMaterial : function () {
-                var material = new OV.Material (OV.MaterialType.Phong);
+                var material = new OV.PhongMaterial ();
                 return material;
             },
             getFileBuffer : function (filePath) {

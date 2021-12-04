@@ -50,6 +50,39 @@ OV.TextureMap = class
         }
         return false;
     }
+
+    IsEqual (rhs)
+    {
+        if (this.name !== rhs.name) {
+            return false;
+        }
+        if (this.name !== rhs.name) {
+            return false;
+        }
+        if (this.url !== rhs.url) {
+            return false;
+        }
+        if (!OV.CoordIsEqual2D (this.offset, rhs.offset)) {
+            return false;
+        }
+        if (!OV.CoordIsEqual2D (this.scale, rhs.scale)) {
+            return false;
+        }
+        if (!OV.IsEqual (this.rotation, rhs.rotation)) {
+            return false;
+        }
+        return true;
+    }
+};
+
+OV.TextureMapIsEqual = function (aTex, bTex)
+{
+    if (aTex === null && bTex === null) {
+        return true;
+    } else if (aTex === null || bTex === null) {
+        return false;
+    }
+    return aTex.IsEqual (bTex);
 };
 
 OV.MaterialType =
@@ -58,37 +91,182 @@ OV.MaterialType =
     Physical : 2
 };
 
-OV.Material = class
+OV.MaterialBase = class
 {
     constructor (type)
     {
         this.type = type;
+        this.isDefault = false;
+
         this.name = '';
         this.color = new OV.Color (0, 0, 0);
+    }
 
-        this.ambient = new OV.Color (0, 0, 0);
-        this.specular = new OV.Color (0, 0, 0);
+    IsEqual (rhs)
+    {
+        if (this.type !== rhs.type) {
+            return false;
+        }
+        if (this.isDefault !== rhs.isDefault) {
+            return false;
+        }
+        if (this.name !== rhs.name) {
+            return false;
+        }
+        if (!OV.ColorIsEqual (this.color, rhs.color)) {
+            return false;
+        }
+        return true;
+    }
+};
+
+OV.FaceMaterial = class extends OV.MaterialBase
+{
+    constructor (type)
+    {
+        super (type);
+
         this.emissive = new OV.Color (0, 0, 0);
 
-        this.metalness = 0.0;
-        this.roughness = 1.0;
-
-        this.shininess = 0.0; // 0.0 .. 1.0
         this.opacity = 1.0; // 0.0 .. 1.0
+        this.transparent = false;
 
         this.diffuseMap = null;
-        this.specularMap = null;
         this.bumpMap = null;
         this.normalMap = null;
         this.emissiveMap = null;
-        this.metalnessMap = null;
 
         this.alphaTest = 0.0; // 0.0 .. 1.0
-        this.transparent = false;
         this.multiplyDiffuseMap = false;
-        this.multiplyMetallicMap = false;
+    }
 
-        this.isDefault = false;
+    IsEqual (rhs)
+    {
+        if (!super.IsEqual (rhs)) {
+            return false;
+        }
+        if (!OV.ColorIsEqual (this.emissive, rhs.emissive)) {
+            return false;
+        }
+        if (!OV.IsEqual (this.opacity, rhs.opacity)) {
+            return false;
+        }
+        if (this.transparent !== rhs.transparent) {
+            return false;
+        }
+        if (!OV.TextureMapIsEqual (this.diffuseMap, rhs.diffuseMap)) {
+            return false;
+        }
+        if (!OV.TextureMapIsEqual (this.bumpMap, rhs.bumpMap)) {
+            return false;
+        }
+        if (!OV.TextureMapIsEqual (this.normalMap, rhs.normalMap)) {
+            return false;
+        }
+        if (!OV.TextureMapIsEqual (this.emissiveMap, rhs.emissiveMap)) {
+            return false;
+        }
+        if (!OV.IsEqual (this.alphaTest, rhs.alphaTest)) {
+            return false;
+        }
+        if (this.multiplyDiffuseMap !== rhs.multiplyDiffuseMap) {
+            return false;
+        }
+        return true;
+    }
+
+    EnumerateTextureMaps (enumerator)
+    {
+        if (this.diffuseMap !== null) {
+            enumerator (this.diffuseMap);
+        }
+        if (this.bumpMap !== null) {
+            enumerator (this.bumpMap);
+        }
+        if (this.normalMap !== null) {
+            enumerator (this.normalMap);
+        }
+        if (this.emissiveMap !== null) {
+            enumerator (this.emissiveMap);
+        }
+    }
+};
+
+OV.PhongMaterial = class extends OV.FaceMaterial
+{
+    constructor ()
+    {
+        super (OV.MaterialType.Phong);
+
+        this.ambient = new OV.Color (0, 0, 0);
+        this.specular = new OV.Color (0, 0, 0);
+        this.shininess = 0.0; // 0.0 .. 1.0
+        this.specularMap = null;
+    }
+
+    IsEqual (rhs)
+    {
+        if (!super.IsEqual (rhs)) {
+            return false;
+        }
+        if (!OV.ColorIsEqual (this.ambient, rhs.ambient)) {
+            return false;
+        }
+        if (!OV.ColorIsEqual (this.specular, rhs.specular)) {
+            return false;
+        }
+        if (!OV.IsEqual (this.shininess, rhs.shininess)) {
+            return false;
+        }
+        if (!OV.TextureMapIsEqual (this.specularMap, rhs.specularMap)) {
+            return false;
+        }
+        return true;
+    }
+
+    EnumerateTextureMaps (enumerator)
+    {
+        super.EnumerateTextureMaps (enumerator);
+        if (this.specularMap !== null) {
+            enumerator (this.specularMap);
+        }
+    }
+};
+
+OV.PhysicalMaterial = class extends OV.FaceMaterial
+{
+    constructor ()
+    {
+        super (OV.MaterialType.Physical);
+
+        this.metalness = 0.0; // 0.0 .. 1.0
+        this.roughness = 1.0; // 0.0 .. 1.0
+        this.metalnessMap = null;
+    }
+
+    IsEqual (rhs)
+    {
+        if (!super.IsEqual (rhs)) {
+            return false;
+        }
+        if (!OV.IsEqual (this.metalness, rhs.metalness)) {
+            return false;
+        }
+        if (!OV.IsEqual (this.roughness, rhs.roughness)) {
+            return false;
+        }
+        if (!OV.TextureMapIsEqual (this.metalnessMap, rhs.metalnessMap)) {
+            return false;
+        }
+        return true;
+    }
+
+    EnumerateTextureMaps (enumerator)
+    {
+        super.EnumerateTextureMaps (enumerator);
+        if (this.metalnessMap !== null) {
+            enumerator (this.metalnessMap);
+        }
     }
 };
 
@@ -170,104 +348,4 @@ OV.TextureIsEqual = function (a, b)
         return false;
     }
     return true;
-};
-
-OV.MaterialIsEqual = function (a, b)
-{
-    function TextureIsEqual (aTex, bTex)
-    {
-        if (aTex === null && bTex === null) {
-            return true;
-        } else if (aTex === null || bTex === null) {
-            return false;
-        }
-        return OV.TextureIsEqual (aTex, bTex);
-    }
-
-    if (a.type !== b.type) {
-        return false;
-    }
-    if (a.name !== b.name) {
-        return false;
-    }
-    if (!OV.ColorIsEqual (a.color, b.color)) {
-        return false;
-    }
-    if (!OV.ColorIsEqual (a.ambient, b.ambient)) {
-        return false;
-    }
-    if (!OV.ColorIsEqual (a.specular, b.specular)) {
-        return false;
-    }
-    if (!OV.ColorIsEqual (a.emissive, b.emissive)) {
-        return false;
-    }
-    if (!OV.IsEqual (a.metalness, b.metalness)) {
-        return false;
-    }
-    if (!OV.IsEqual (a.roughness, b.roughness)) {
-        return false;
-    }
-    if (!OV.IsEqual (a.shininess, b.shininess)) {
-        return false;
-    }
-    if (!OV.IsEqual (a.opacity, b.opacity)) {
-        return false;
-    }
-    if (!TextureIsEqual (a.diffuseMap, b.diffuseMap)) {
-        return false;
-    }
-    if (!TextureIsEqual (a.specularMap, b.specularMap)) {
-        return false;
-    }
-    if (!TextureIsEqual (a.bumpMap, b.bumpMap)) {
-        return false;
-    }
-    if (!TextureIsEqual (a.normalMap, b.normalMap)) {
-        return false;
-    }
-    if (!TextureIsEqual (a.emissiveMap, b.emissiveMap)) {
-        return false;
-    }
-    if (!TextureIsEqual (a.metalnessMap, b.metalnessMap)) {
-        return false;
-    }
-    if (!OV.IsEqual (a.alphaTest, b.alphaTest)) {
-        return false;
-    }
-    if (a.transparent !== b.transparent) {
-        return false;
-    }
-    if (a.multiplyDiffuseMap !== b.multiplyDiffuseMap) {
-        return false;
-    }
-    if (a.multiplyMetallicMap !== b.multiplyMetallicMap) {
-        return false;
-    }
-    if (a.isDefault !== b.isDefault) {
-        return false;
-    }
-    return true;
-};
-
-OV.EnumerateMaterialTextureMaps = function (material, enumerator)
-{
-    if (material.diffuseMap !== null) {
-        enumerator (material.diffuseMap);
-    }
-    if (material.specularMap !== null) {
-        enumerator (material.specularMap);
-    }
-    if (material.bumpMap !== null) {
-        enumerator (material.bumpMap);
-    }
-    if (material.normalMap !== null) {
-        enumerator (material.normalMap);
-    }
-    if (material.emissiveMap !== null) {
-        enumerator (material.emissiveMap);
-    }
-    if (material.metalnessMap !== null) {
-        enumerator (material.metalnessMap);
-    }
 };

@@ -116,11 +116,14 @@ OV.DetailsSidebarPanel = class extends OV.SidebarPanel
         }
         this.AddProperty (table, new OV.Property (OV.PropertyType.Percent, 'Opacity', material.opacity));
         AddTextureMap (this, table, 'Diffuse Map', material.diffuseMap);
-        AddTextureMap (this, table, 'Specular Map', material.specularMap);
         AddTextureMap (this, table, 'Bump Map', material.bumpMap);
         AddTextureMap (this, table, 'Normal Map', material.normalMap);
         AddTextureMap (this, table, 'Emissive Map', material.emissiveMap);
-        AddTextureMap (this, table, 'Metallic Map', material.metalnessMap);
+        if (material.type === OV.MaterialType.Phong) {
+            AddTextureMap (this, table, 'Specular Map', material.specularMap);
+        } else if (material.type === OV.MaterialType.Physical) {
+            AddTextureMap (this, table, 'Metallic Map', material.metalnessMap);
+        }
         this.Resize ();
     }
 

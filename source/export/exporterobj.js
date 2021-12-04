@@ -41,13 +41,17 @@ OV.ExporterObj = class extends OV.ExporterBase
         for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
             let material = model.GetMaterial (materialIndex);
             mtlWriter.WriteArrayLine (['newmtl', this.GetExportedMaterialName (material.name)]);
-            mtlWriter.WriteArrayLine (['Ka', material.ambient.r / 255.0, material.ambient.g / 255.0, material.ambient.b / 255.0]);
             mtlWriter.WriteArrayLine (['Kd', material.color.r / 255.0, material.color.g / 255.0, material.color.b / 255.0]);
-            mtlWriter.WriteArrayLine (['Ks', material.specular.r / 255.0, material.specular.g / 255.0, material.specular.b / 255.0]);
-            mtlWriter.WriteArrayLine (['Ns', material.shininess * 1000.0]);
             mtlWriter.WriteArrayLine (['d', material.opacity]);
+            if (material.type === OV.MaterialType.Phong) {
+                mtlWriter.WriteArrayLine (['Ka', material.ambient.r / 255.0, material.ambient.g / 255.0, material.ambient.b / 255.0]);
+                mtlWriter.WriteArrayLine (['Ks', material.specular.r / 255.0, material.specular.g / 255.0, material.specular.b / 255.0]);
+                mtlWriter.WriteArrayLine (['Ns', material.shininess * 1000.0]);
+            }
             WriteTexture (mtlWriter, 'map_Kd', material.diffuseMap, files);
-            WriteTexture (mtlWriter, 'map_Ks', material.specularMap, files);
+            if (material.type === OV.MaterialType.Phong) {
+                WriteTexture (mtlWriter, 'map_Ks', material.specularMap, files);
+            }
             WriteTexture (mtlWriter, 'bump', material.bumpMap, files);
         }
         mtlFile.SetTextContent (mtlWriter.GetText ());

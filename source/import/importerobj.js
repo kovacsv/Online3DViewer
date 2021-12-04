@@ -220,7 +220,7 @@ OV.ImporterObj = class extends OV.ImporterBase
                 return true;
             }
 
-            let material = new OV.Material (OV.MaterialType.Phong);
+            let material = new OV.PhongMaterial ();
             let materialName = OV.NameFromLine (line, keyword.length, '#');
             let materialIndex = this.model.AddMaterial (material);
             material.name = materialName;

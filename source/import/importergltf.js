@@ -263,41 +263,46 @@ OV.GltfExtensions = class
         }
 
         if (gltfMaterial.extensions === undefined) {
-            return;
+            return null;
         }
+
         let khrSpecularGlossiness = gltfMaterial.extensions.KHR_materials_pbrSpecularGlossiness;
-        if (khrSpecularGlossiness !== undefined) {
-            material.type = OV.MaterialType.Phong;
-            let diffuseColor = khrSpecularGlossiness.diffuseFactor;
-            if (diffuseColor !== undefined) {
-                material.color = new OV.Color (
-                    GetMaterialComponent (diffuseColor[0]),
-                    GetMaterialComponent (diffuseColor[1]),
-                    GetMaterialComponent (diffuseColor[2])
-                );
-                material.opacity = diffuseColor[3];
-            }
-            let diffuseTexture = khrSpecularGlossiness.diffuseTexture;
-            if (diffuseTexture !== undefined) {
-                material.diffuseMap = imporTextureFn (diffuseTexture);
-            }
-            let specularColor = khrSpecularGlossiness.specularFactor;
-            if (specularColor !== undefined) {
-                material.specular = new OV.Color (
-                    GetMaterialComponent (specularColor[0]),
-                    GetMaterialComponent (specularColor[1]),
-                    GetMaterialComponent (specularColor[2])
-                );
-            }
-            let specularTexture = khrSpecularGlossiness.specularGlossinessTexture;
-            if (specularTexture !== undefined) {
-                material.specularMap = imporTextureFn (specularTexture);
-            }
-            let glossiness = khrSpecularGlossiness.glossinessFactor;
-            if (glossiness !== undefined) {
-                material.shininess = glossiness;
-            }
+        if (khrSpecularGlossiness === undefined) {
+            return null;
         }
+
+        let phongMaterial = new OV.PhongMaterial ();
+        let diffuseColor = khrSpecularGlossiness.diffuseFactor;
+        if (diffuseColor !== undefined) {
+            phongMaterial.color = new OV.Color (
+                GetMaterialComponent (diffuseColor[0]),
+                GetMaterialComponent (diffuseColor[1]),
+                GetMaterialComponent (diffuseColor[2])
+            );
+            phongMaterial.opacity = diffuseColor[3];
+        }
+        let diffuseTexture = khrSpecularGlossiness.diffuseTexture;
+        if (diffuseTexture !== undefined) {
+            phongMaterial.diffuseMap = imporTextureFn (diffuseTexture);
+        }
+        let specularColor = khrSpecularGlossiness.specularFactor;
+        if (specularColor !== undefined) {
+            phongMaterial.specular = new OV.Color (
+                GetMaterialComponent (specularColor[0]),
+                GetMaterialComponent (specularColor[1]),
+                GetMaterialComponent (specularColor[2])
+            );
+        }
+        let specularTexture = khrSpecularGlossiness.specularGlossinessTexture;
+        if (specularTexture !== undefined) {
+            phongMaterial.specularMap = imporTextureFn (specularTexture);
+        }
+        let glossiness = khrSpecularGlossiness.glossinessFactor;
+        if (glossiness !== undefined) {
+            phongMaterial.shininess = glossiness;
+        }
+
+        return phongMaterial;
     }
 
     ProcessTexture (gltfTexture, texture)
@@ -629,7 +634,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
             return parseInt (Math.round (OV.LinearToSRGB (component) * 255.0), 10);
         }
 
-        let material = new OV.Material (OV.MaterialType.Physical);
+        let material = new OV.PhysicalMaterial ();
         if (gltfMaterial.name !== undefined) {
             material.name = gltfMaterial.name;
         }
@@ -685,9 +690,12 @@ OV.ImporterGltf = class extends OV.ImporterBase
             }
         }
 
-        this.gltfExtensions.ProcessMaterial (gltfMaterial, material, (textureRef) => {
+        let newMaterial = this.gltfExtensions.ProcessMaterial (gltfMaterial, material, (textureRef) => {
             return this.ImportTexture (gltf, textureRef);
         });
+        if (newMaterial !== null) {
+            material = newMaterial;
+        }
         this.model.AddMaterial (material);
     }
 

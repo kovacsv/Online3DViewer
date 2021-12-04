@@ -139,7 +139,7 @@ OV.PlyMaterialHandler = class
 
         let materialIndex = this.colorToMaterial[materialName];
         if (materialIndex === undefined) {
-            let material = new OV.Material (OV.MaterialType.Phong);
+            let material = new OV.PhongMaterial ();
             material.name = materialName;
             material.color = new OV.Color (color[0], color[1], color[2]);
             material.opacity = color[3] / 255.0;

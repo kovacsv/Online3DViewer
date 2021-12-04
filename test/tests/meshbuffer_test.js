@@ -46,7 +46,7 @@ describe ('Mesh Buffer', function () {
         assert.strictEqual (buffer.primitives[0].indices.length, 6);
         assert.strictEqual (buffer.primitives[0].vertices.length, 6 * 3);
         assert.strictEqual (buffer.primitives[0].normals.length, 6 * 3);
-        assert.strictEqual (buffer.primitives[0].uvs.length, 0);        
+        assert.strictEqual (buffer.primitives[0].uvs.length, 0);
     });
 
     it ('Mesh To Buffer Different UVs', function () {
@@ -66,7 +66,7 @@ describe ('Mesh Buffer', function () {
         assert.strictEqual (buffer.primitives[0].indices.length, 6);
         assert.strictEqual (buffer.primitives[0].vertices.length, 6 * 3);
         assert.strictEqual (buffer.primitives[0].normals.length, 6 * 3);
-        assert.strictEqual (buffer.primitives[0].uvs.length, 6 * 2);        
+        assert.strictEqual (buffer.primitives[0].uvs.length, 6 * 2);
     });
 
     it ('Mesh To Buffer Same Normals and UVs', function () {
@@ -85,7 +85,7 @@ describe ('Mesh Buffer', function () {
         assert.strictEqual (buffer.primitives[0].indices.length, 6);
         assert.strictEqual (buffer.primitives[0].vertices.length, 4 * 3);
         assert.strictEqual (buffer.primitives[0].normals.length, 4 * 3);
-        assert.strictEqual (buffer.primitives[0].uvs.length, 4 * 2);        
+        assert.strictEqual (buffer.primitives[0].uvs.length, 4 * 2);
     });
 
     it ('Mesh To Buffer Cube', function () {
@@ -123,7 +123,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model, function () {
-            return new OV.Material (OV.MaterialType.Phong);
+            return new OV.PhongMaterial ();
         });
         assert (OV.CheckModel (model));
 
@@ -132,7 +132,7 @@ describe ('Mesh Buffer', function () {
         assert.strictEqual (buffer.primitives[0].indices.length, 36);
         assert.strictEqual (buffer.primitives[0].vertices.length, 24 * 3);
         assert.strictEqual (buffer.primitives[0].normals.length, 24 * 3);
-        assert.strictEqual (buffer.primitives[0].uvs.length, 0);                
+        assert.strictEqual (buffer.primitives[0].uvs.length, 0);
     });
 
     it ('Mesh To Buffer Cube Auto Normals', function () {
@@ -163,7 +163,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model, function () {
-            return new OV.Material (OV.MaterialType.Phong);
+            return new OV.PhongMaterial ();
         });
         assert (OV.CheckModel (model));
 
@@ -205,7 +205,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model, function () {
-            return new OV.Material (OV.MaterialType.Phong);
+            return new OV.PhongMaterial ();
         });
         assert (OV.CheckModel (model));
 
@@ -217,12 +217,12 @@ describe ('Mesh Buffer', function () {
         assert.strictEqual (buffer.primitives[0].uvs.length, 0);
         assert.strictEqual (buffer.primitives[0].GetByteLength (2, 4), 36 * 2 + 2 * 8 * 3 * 4);
         assert.strictEqual (buffer.GetByteLength (2, 4), 36 * 2 + 2 * 8 * 3 * 4);
-    });    
+    });
 
     it ('Mesh To Buffer Cube Materials', function () {
         var model = new OV.Model ();
-        model.AddMaterial (new OV.Material (OV.MaterialType.Phong));
-        model.AddMaterial (new OV.Material (OV.MaterialType.Phong));
+        model.AddMaterial (new OV.PhongMaterial ());
+        model.AddMaterial (new OV.PhongMaterial ());
         var mesh = new OV.Mesh ();
 
         mesh.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
@@ -249,7 +249,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model, function () {
-            return new OV.Material (OV.MaterialType.Phong);
+            return new OV.PhongMaterial ();
         });
         assert (OV.CheckModel (model));
 
@@ -266,7 +266,7 @@ describe ('Mesh Buffer', function () {
         assert.strictEqual (buffer.primitives[1].uvs.length, 0);
         assert.strictEqual (buffer.primitives[1].GetByteLength (2, 4), 18 * 2 + 2 * 12 * 3 * 4);
         assert.strictEqual (buffer.GetByteLength (2, 4), 36 * 2 + 2 * 24 * 3 * 4);
-    });    
+    });
 
     it ('Mesh To Buffer Cube One UV', function () {
         var model = new OV.Model ();
@@ -299,7 +299,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model, function () {
-            return new OV.Material (OV.MaterialType.Phong);
+            return new OV.PhongMaterial ();
         });
         assert (OV.CheckModel (model));
 
@@ -342,7 +342,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model, function () {
-            return new OV.Material (OV.MaterialType.Phong);
+            return new OV.PhongMaterial ();
         });
         assert (OV.CheckModel (model));
 
@@ -352,5 +352,5 @@ describe ('Mesh Buffer', function () {
         assert.strictEqual (buffer.primitives[0].vertices.length, 30 * 3);
         assert.strictEqual (buffer.primitives[0].normals.length, 30 * 3);
         assert.strictEqual (buffer.primitives[0].uvs.length, 30 * 2);
-    });        
+    });
 });

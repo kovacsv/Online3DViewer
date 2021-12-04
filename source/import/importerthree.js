@@ -258,7 +258,7 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
             }
         }
 
-        let material = new OV.Material (OV.MaterialType.Phong);
+        let material = new OV.PhongMaterial ();
         material.name = threeMaterial.name;
         SetColor (material.color, threeMaterial.color);
         material.opacity = threeMaterial.opacity;

@@ -71,9 +71,11 @@ OV.Exporter3dm = class extends OV.ExporterBase
                 let material = model.GetMaterial (primitive.material);
                 let rhinoMaterial = new this.rhino.Material ();
                 rhinoMaterial.name = this.GetExportedMaterialName (material.name);
-                rhinoMaterial.ambientColor = ColorToRhinoColor (material.ambient);
+                if (material.type === OV.MaterialType.Phong) {
+                    rhinoMaterial.ambientColor = ColorToRhinoColor (material.ambient);
+                    rhinoMaterial.specularColor = ColorToRhinoColor (material.specular);
+                }
                 rhinoMaterial.diffuseColor = ColorToRhinoColor (material.color);
-                rhinoMaterial.specularColor = ColorToRhinoColor (material.specular);
                 rhinoMaterial.transparency = 1.0 - material.opacity;
 
                 let rhinoMaterialIndex = rhinoDoc.materials ().count ();

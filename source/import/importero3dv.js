@@ -56,7 +56,7 @@ OV.ImporterO3dv = class extends OV.ImporterBase
 
     ImportMaterial (materialContent)
     {
-        let material = new OV.Material (OV.MaterialType.Physical);
+        let material = new OV.PhysicalMaterial ();
         material.color.Set (255, 255, 255);
         if (materialContent.name !== undefined) {
             material.name = materialContent.name;

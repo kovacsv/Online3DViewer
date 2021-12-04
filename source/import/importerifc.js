@@ -207,7 +207,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
 
         let materialIndex = this.materialNameToIndex[materialName];
         if (materialIndex === undefined) {
-			let material = new OV.Material (OV.MaterialType.Phong);
+			let material = new OV.PhongMaterial ();
             material.name = materialName;
 			material.color = color;
             material.opacity = ifcColor.w;
