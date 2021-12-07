@@ -86,6 +86,9 @@ global.document = {
                 } else if (element.src.indexOf ('fflate') !== -1) {
                     global.fflate = require (element.src);
                     element.onload ();
+                } else if (element.src.indexOf ('rhino3dm') !== -1) {
+                    global.rhino3dm = require (element.src);
+                    element.onload ();
                 } else {
                     element.onerror ();
                 }
