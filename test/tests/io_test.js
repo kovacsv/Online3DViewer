@@ -3,13 +3,13 @@ var testUtils = require ('../utils/testutils.js');
 
 describe ('IO Test', function () {
     it ('Binary Reader', function () {
-        let buffer = testUtils.GetArrayBufferFileContent ('bin', 'binary_content.bin');
+        let buffer = testUtils.GetArrayBufferFileContent ('bin/binary_content.bin');
         let reader = new OV.BinaryReader (buffer, true);
-        
+
         assert.strictEqual (reader.GetByteLength (), 166);
         assert.strictEqual (reader.ReadBoolean8 (), true);
         assert.strictEqual (reader.ReadBoolean8 (), false);
-        
+
         assert.strictEqual (String.fromCharCode (reader.ReadCharacter8 ()), 'a');
         assert.strictEqual (String.fromCharCode (reader.ReadCharacter8 ()), 'A');
         assert.strictEqual (String.fromCharCode (reader.ReadUnsignedCharacter8 ()), 'a');

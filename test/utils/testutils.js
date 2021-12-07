@@ -3,18 +3,18 @@ var path = require ('path');
 
 module.exports =
 {
-    GetTextFileContent : function (folder, fileName)
+    GetTextFileContent : function (fileName)
     {
-        var testFilePath = path.join ('testfiles', folder, fileName);
+        var testFilePath = path.join ('testfiles', fileName);
         if (!fs.existsSync (testFilePath)) {
             return null;
         }
         return fs.readFileSync (testFilePath).toString ();
     },
 
-    GetArrayBufferFileContent : function (folder, fileName)
+    GetArrayBufferFileContent : function (fileName)
     {
-        var testFilePath = path.join ('testfiles', folder, fileName);
+        var testFilePath = path.join ('testfiles', fileName);
         var buffer = fs.readFileSync (testFilePath);
         var arrayBuffer = new ArrayBuffer (buffer.length);
         var uint8Array = new Uint8Array (arrayBuffer);

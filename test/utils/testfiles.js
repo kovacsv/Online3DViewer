@@ -1,4 +1,5 @@
 var testUtils = require ('./testutils.js');
+var path = require ('path');
 
 module.exports =
 {
@@ -46,10 +47,10 @@ module.exports =
 
     ImportFile : function (importer, folder, fileName, onReady)
     {
-        let content = testUtils.GetArrayBufferFileContent (folder, fileName);
+        let content = testUtils.GetArrayBufferFileContent (path.join (folder, fileName));
         var extension = OV.GetFileExtension (fileName);
         let fileAccessor = new OV.ImporterFileAccessor (function (filePath) {
-            let fileContent = testUtils.GetArrayBufferFileContent (folder, filePath);
+            let fileContent = testUtils.GetArrayBufferFileContent (path.join (folder, filePath));
             return fileContent;
         });
         importer.Import (fileName, extension, content, {

@@ -37,7 +37,17 @@ global.FileReader = class
 
     readAsText (fileObject)
     {
-        let content = testUtils.GetTextFileContent (fileObject.folderName, fileObject.fileName);
+        if (fileObject.fileContent !== null) {
+            this.onloadend ({
+                target : {
+                    readyState : FileReader.DONE,
+                    result : fileObject.fileContent
+                }
+            });
+            return;
+        }
+
+        let content = testUtils.GetTextFileContent (fileObject.fileName);
         if (content !== null) {
             this.onloadend ({
                 target : {
@@ -62,7 +72,7 @@ global.FileReader = class
             return;
         }
 
-        let content = testUtils.GetArrayBufferFileContent (fileObject.folderName, fileObject.fileName);
+        let content = testUtils.GetArrayBufferFileContent (fileObject.fileName);
         if (content !== null) {
             this.onloadend ({
                 target : {
