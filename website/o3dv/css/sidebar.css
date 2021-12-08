@@ -58,6 +58,18 @@ div.ov_sidebar_content div.ov_sidebar_settings_row
 	overflow: auto;
 }
 
+div.ov_sidebar_content div.ov_sidebar_settings_details_input
+{
+	width: 30px;
+	margin-right: 10px;
+	float: left;
+}
+
+div.ov_sidebar_content div.ov_sidebar_settings_details_text
+{
+	float: left;
+}
+
 div.ov_sidebar_content div.ov_sidebar_settings_padded
 {
 	margin: 10px 0px 0px 40px;

@@ -11,7 +11,7 @@ OV.Settings = class
         this.defaultColor = new OV.Color (200, 200, 200);
         this.showEdges = false;
         this.edgeColor = new OV.Color (0, 0, 0);
-        this.edgeThreshold = 10;
+        this.edgeThreshold = 1;
         this.themeId = OV.Theme.Light;
     }
 
@@ -21,7 +21,7 @@ OV.Settings = class
         this.defaultColor = cookieHandler.GetColorVal ('ov_default_color', new OV.Color (200, 200, 200));
         this.showEdges = cookieHandler.GetBoolVal ('ov_show_edges', false);
         this.edgeColor = cookieHandler.GetColorVal ('ov_edge_color', new OV.Color (0, 0, 0));
-        this.edgeThreshold = cookieHandler.GetIntVal ('ov_edge_threshold', 10);
+        this.edgeThreshold = cookieHandler.GetIntVal ('ov_edge_threshold', 1);
         this.showEdges = cookieHandler.GetBoolVal ('ov_show_edges', false);
         this.themeId = cookieHandler.GetIntVal ('ov_theme_id', OV.Theme.Light);
     }

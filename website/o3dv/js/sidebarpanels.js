@@ -237,8 +237,8 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             'Background Color',
             'Affects only the visualization.',
             null,
-            ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'],
             this.settings.backgroundColor,
+            ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'],
             (newColor) => {
                 this.SetBackgroundColor (newColor, false);
             }
@@ -247,8 +247,8 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             'Default Color',
             'Appears when the model doesn\'t have materials.',
             'Has no effect on the currently loaded file.',
-            ['#ffffff', '#e3e3e3', '#cc3333', '#fac832', '#4caf50', '#3393bd', '#9b27b0', '#fda4b8'],
             this.settings.defaultColor,
+            ['#ffffff', '#e3e3e3', '#cc3333', '#fac832', '#4caf50', '#3393bd', '#9b27b0', '#fda4b8'],
             (newColor) => {
                 this.SetDefaultColor (newColor, false);
             }
@@ -288,19 +288,15 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         }
     }
 
-    AddColorParameter (title, description, warningText, predefinedColors, defaultValue, onChange)
+    AddColorPicker (parentDiv, defaultColor, predefinedColors, onChange)
     {
-        let contentDiv = OV.AddDiv (this.contentDiv, 'ov_sidebar_settings_content');
-        let titleDiv = OV.AddDiv (contentDiv, 'ov_sidebar_subtitle');
-        let colorInput = OV.AddDiv (titleDiv, 'color-picker');
-        OV.AddDiv (titleDiv, 'ov_sidebar_subtitle', title);
-        const pickr = Pickr.create ({
-            el : colorInput,
+        let pickr = Pickr.create ({
+            el : parentDiv,
             theme : 'monolith',
             position : 'left-start',
             swatches : predefinedColors,
             comparison : false,
-            default : '#' + OV.ColorToHexString (defaultValue),
+            default : '#' + OV.ColorToHexString (defaultColor),
             components : {
                 preview : false,
                 opacity : false,
@@ -326,6 +322,18 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             );
             onChange (ovColor);
         });
+        return pickr;
+    }
+
+    AddColorParameter (title, description, warningText, defaultColor, predefinedColors, onChange)
+    {
+        let contentDiv = OV.AddDiv (this.contentDiv, 'ov_sidebar_settings_content');
+        let titleDiv = OV.AddDiv (contentDiv, 'ov_sidebar_subtitle');
+        let colorInput = OV.AddDiv (titleDiv, 'color-picker');
+        OV.AddDiv (titleDiv, 'ov_sidebar_subtitle', title);
+        let pickr = this.AddColorPicker (colorInput, defaultColor, predefinedColors, (color) => {
+            onChange (color);
+        });
         OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded', description);
         let warningDiv = null;
         if (warningText !== null) {
@@ -340,12 +348,21 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         };
     }
 
-    AddEdgeDisplayParameter (show, edgeColor, edgeThreshold)
+    AddEdgeDisplayParameter (defaultShowEdges, defaultEdgeColor, defaultEdgeThreshold)
     {
         function AddRadioButton (contentDiv, id, text, onChange)
         {
             let row = OV.AddDiv (contentDiv, 'ov_sidebar_settings_row');
             return OV.AddRadioButton (row, 'edge_display', id, text, onChange);
+        }
+
+        function ShowEdgeSettings (edgeSettingsDiv, show)
+        {
+            if (show) {
+                OV.ShowDomElement (edgeSettingsDiv);
+            } else {
+                OV.HideDomElement (edgeSettingsDiv);
+            }
         }
 
         let contentDiv = OV.AddDiv (this.contentDiv, 'ov_sidebar_settings_content');
@@ -354,22 +371,39 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         OV.AddDiv (titleDiv, 'ov_sidebar_subtitle_text', 'Edge Display');
 
         let buttonsDiv = OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded');
+        let edgeSettingsDiv = OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded');
+
+        let colorRow = OV.AddDiv (edgeSettingsDiv, 'ov_sidebar_settings_row');
+        let colorInputDiv = OV.AddDiv (colorRow, 'ov_sidebar_settings_details_input');
+        OV.AddDiv (colorRow, 'ov_sidebar_settings_details_text', 'Edge Color');
+        let predefinedEdgeColors = ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'];
+        let colorInput = OV.AddDiv (colorInputDiv);
+        let pickr = this.AddColorPicker (colorInput, defaultEdgeColor, predefinedEdgeColors, (color) => {
+            this.settings.edgeColor = color;
+            this.callbacks.onEdgeDisplayChange ();
+        });
+
         let buttons = [];
         let offButton = AddRadioButton (buttonsDiv, 'off', 'Don\'t Show Edges', () => {
+            OV.HideDomElement (edgeSettingsDiv);
             this.settings.showEdges = false;
             this.callbacks.onEdgeDisplayChange ();
         });
         let onButton = AddRadioButton (buttonsDiv, 'on', 'Show Edges', () => {
+            OV.ShowDomElement (edgeSettingsDiv);
             this.settings.showEdges = true;
             this.callbacks.onEdgeDisplayChange ();
         });
         buttons.push (offButton);
         buttons.push (onButton);
 
-        OV.SelectRadioButton (buttons, show ? 'on' : 'off');
+        OV.SelectRadioButton (buttons, defaultShowEdges ? 'on' : 'off');
+        ShowEdgeSettings (edgeSettingsDiv, defaultShowEdges);
         return {
+            pickr : pickr,
             select : (value) => {
                 OV.SelectRadioButton (buttons, value ? 'on' : 'off');
+                ShowEdgeSettings (edgeSettingsDiv, value);
             }
         };
     }
@@ -425,6 +459,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             this.settings.showEdges = defaultSettings.showEdges;
             this.settings.edgeColor = defaultSettings.edgeColor;
             this.settings.edgeThreshold = defaultSettings.edgeThreshold;
+            this.edgeDisplayInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.edgeColor));
             this.edgeDisplayInput.select (this.settings.showEdges);
             this.callbacks.onEdgeDisplayChange ();
 
