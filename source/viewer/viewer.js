@@ -35,6 +35,23 @@ OV.TraverseThreeObject = function (object, processor)
     return true;
 };
 
+OV.SetThreeMeshPolygonOffset = function (mesh, offset)
+{
+    function SetMaterialsPolygonOffset (materials, offset)
+    {
+        for (let material of materials) {
+            material.polygonOffset = offset;
+            material.polygonOffsetUnit = 1;
+            material.polygonOffsetFactor = 1;
+        }
+    }
+
+    SetMaterialsPolygonOffset (mesh.material, offset);
+    if (mesh.userData.threeMaterials) {
+        SetMaterialsPolygonOffset (mesh.userData.threeMaterials, offset);
+    }
+};
+
 OV.GetShadingTypeOfObject = function (mainObject)
 {
     let shadingType = null;
@@ -112,23 +129,112 @@ OV.ViewerGeometry = class
     {
         this.scene = scene;
         this.mainObject = null;
+        this.mainEdgeObject = null;
+        this.edgeSettings = {
+            showEdges : false,
+            edgeColor : new OV.Color (0, 0, 0),
+            edgeThreshold : 1
+        };
     }
 
     SetMainObject (mainObject)
     {
         this.mainObject = mainObject;
         this.scene.add (this.mainObject);
+        if (this.edgeSettings.showEdges) {
+            this.GenerateMainEdgeObject ();
+        }
+    }
+
+    SetEdgeSettings (show, color, threshold)
+    {
+        let needToGenerate = false;
+        if (show && (!this.edgeSettings.showEdges || this.edgeSettings.edgeThreshold !== threshold)) {
+            needToGenerate = true;
+        }
+
+        this.edgeSettings.showEdges = show;
+        this.edgeSettings.edgeThreshold = threshold;
+        this.edgeSettings.edgeColor = color;
+
+        if (this.mainObject === null) {
+            return;
+        }
+
+        if (this.edgeSettings.showEdges) {
+            if (needToGenerate) {
+                this.ClearMainEdgeObject ();
+                this.GenerateMainEdgeObject ();
+            } else {
+                let edgeColor = new THREE.Color (
+                    this.edgeSettings.edgeColor.r / 255.0,
+                    this.edgeSettings.edgeColor.g / 255.0,
+                    this.edgeSettings.edgeColor.b / 255.0
+                );
+                this.EnumerateEdges ((edge) => {
+                    edge.material.color = edgeColor;
+                });
+            }
+        } else {
+            this.ClearMainEdgeObject ();
+        }
+    }
+
+    GenerateMainEdgeObject ()
+    {
+        let edgeColor = new THREE.Color (
+            this.edgeSettings.edgeColor.r / 255.0,
+            this.edgeSettings.edgeColor.g / 255.0,
+            this.edgeSettings.edgeColor.b / 255.0
+        );
+        this.mainEdgeObject = new THREE.Object3D ();
+        this.mainObject.updateWorldMatrix (true, true);
+        this.EnumerateMeshes ((mesh) => {
+            OV.SetThreeMeshPolygonOffset (mesh, true);
+            let edges = new THREE.EdgesGeometry (mesh.geometry, this.edgeSettings.edgeThreshold);
+            let line = new THREE.LineSegments (edges, new THREE.LineBasicMaterial ({
+                color: edgeColor
+            }));
+            line.applyMatrix4 (mesh.matrixWorld);
+            line.userData = mesh.userData;
+            this.mainEdgeObject.add (line);
+        });
+        this.scene.add (this.mainEdgeObject);
+    }
+
+    Clear ()
+    {
+        this.ClearMainObject ();
+        this.ClearMainEdgeObject ();
     }
 
     ClearMainObject ()
     {
-        if (this.mainObject !== null) {
-            this.EnumerateMeshes ((mesh) => {
-                mesh.geometry.dispose ();
-            });
-            this.scene.remove (this.mainObject);
-            this.mainObject = null;
+        if (this.mainObject === null) {
+            return;
         }
+
+        this.EnumerateMeshes ((mesh) => {
+            mesh.geometry.dispose ();
+        });
+        this.scene.remove (this.mainObject);
+        this.mainObject = null;
+    }
+
+    ClearMainEdgeObject ()
+    {
+        if (this.mainEdgeObject === null) {
+            return;
+        }
+
+        this.EnumerateMeshes ((mesh) => {
+            OV.SetThreeMeshPolygonOffset (mesh, false);
+        });
+        this.EnumerateEdges ((edge) => {
+            edge.geometry.dispose ();
+        });
+        this.scene.remove (this.mainEdgeObject);
+        this.mainEdgeObject = null;
     }
 
     EnumerateMeshes (enumerator)
@@ -138,6 +244,18 @@ OV.ViewerGeometry = class
         }
         this.mainObject.traverse ((obj) => {
             if (obj.isMesh) {
+                enumerator (obj);
+            }
+        });
+    }
+
+    EnumerateEdges (enumerator)
+    {
+        if (this.mainEdgeObject === null) {
+            return;
+        }
+        this.mainEdgeObject.traverse ((obj) => {
+            if (obj.isLineSegments) {
                 enumerator (obj);
             }
         });
@@ -288,20 +406,26 @@ OV.ShadingModel = class
         this.directionalLight.position.set (lightDir.x, lightDir.y, lightDir.z);
     }
 
-    CreateHighlightMaterial (highlightColor)
+    CreateHighlightMaterial (highlightColor, withOffset)
     {
+        let material = null;
         if (this.type === OV.ShadingType.Phong) {
-            return new THREE.MeshPhongMaterial ({
+            material = new THREE.MeshPhongMaterial ({
                 color : highlightColor,
                 side : THREE.DoubleSide
             });
         } else if (this.type === OV.ShadingType.Physical) {
-            return new THREE.MeshStandardMaterial ({
+            material = new THREE.MeshStandardMaterial ({
                 color : highlightColor,
                 side : THREE.DoubleSide
             });
         }
-        return null;
+        if (material !== null && withOffset) {
+            material.polygonOffset = true;
+            material.polygonOffsetUnit = 1;
+            material.polygonOffsetFactor = 1;
+        }
+        return material;
     }
 };
 
@@ -364,6 +488,12 @@ OV.Viewer = class
     {
         let hexColor = '#' + OV.ColorToHexString (color);
         this.renderer.setClearColor (hexColor, 1.0);
+        this.Render ();
+    }
+
+    SetEdgeSettings (show, color, threshold)
+    {
+        this.geometry.SetEdgeSettings (show, color, threshold);
         this.Render ();
     }
 
@@ -501,7 +631,7 @@ OV.Viewer = class
 
     Clear ()
     {
-        this.geometry.ClearMainObject ();
+        this.geometry.Clear ();
         this.Render ();
     }
 
@@ -511,6 +641,12 @@ OV.Viewer = class
             let visible = isVisible (mesh.userData);
             if (mesh.visible !== visible) {
                 mesh.visible = visible;
+            }
+        });
+        this.geometry.EnumerateEdges ((edge) => {
+            let visible = isVisible (edge.userData);
+            if (edge.visible !== visible) {
+                edge.visible = visible;
             }
         });
         this.Render ();
@@ -527,7 +663,8 @@ OV.Viewer = class
             return highlightMaterials;
         }
 
-        const highlightMaterial = this.shading.CreateHighlightMaterial (highlightColor);
+        const showEdges = this.geometry.edgeSettings.showEdges;
+        const highlightMaterial = this.shading.CreateHighlightMaterial (highlightColor, showEdges);
         this.geometry.EnumerateMeshes ((mesh) => {
             let highlighted = isHighlighted (mesh.userData);
             if (highlighted) {

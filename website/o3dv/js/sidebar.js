@@ -49,6 +49,9 @@ OV.Sidebar = class
             onDefaultColorChange : () => {
                 this.callbacks.onDefaultColorChange ();
             },
+            onEdgeDisplayChange : () => {
+                this.callbacks.onEdgeDisplayChange ();
+            },
             onThemeChange : () => {
                 this.callbacks.onThemeChange ();
             }

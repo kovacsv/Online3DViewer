@@ -378,6 +378,12 @@ OV.Website = class
         }
     }
 
+    UpdateEdgeDisplay ()
+    {
+        this.settings.SaveToCookies (this.cookieHandler);
+        this.viewer.SetEdgeSettings (this.settings.showEdges, this.settings.edgeColor, this.settings.edgeThreshold);
+    }
+
     SwitchTheme (newThemeId, resetColors)
     {
         this.settings.themeId = newThemeId;
@@ -398,6 +404,7 @@ OV.Website = class
     {
         let canvas = OV.AddDomElement (this.parameters.viewerDiv, 'canvas');
         this.viewer.Init (canvas);
+        this.viewer.SetEdgeSettings (this.settings.showEdges, this.settings.edgeColor, this.settings.edgeThreshold);
         this.viewer.SetBackgroundColor (this.settings.backgroundColor);
         this.viewer.SetEnvironmentMap ([
             'assets/envmaps/grayclouds/posx.jpg',
@@ -548,6 +555,9 @@ OV.Website = class
                     modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
                 }
                 this.viewer.Render ();
+            },
+            onEdgeDisplayChange : () => {
+                this.UpdateEdgeDisplay ();
             },
             onThemeChange : () => {
                 this.SwitchTheme (this.settings.themeId, true);

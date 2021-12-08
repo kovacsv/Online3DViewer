@@ -115,6 +115,27 @@ OV.SetDomElementOuterHeight = function (element, height)
     OV.SetDomElementHeight (element, height - OV.GetDomElementExternalHeight (style));
 };
 
+OV.AddRadioButton = function (parentElement, name, id, text, onChange)
+{
+    let label = OV.AddDomElement (parentElement, 'label');
+    label.setAttribute ('for', id);
+    let radio = OV.AddDomElement (label, 'input', 'ov_radio_button');
+    radio.setAttribute ('type', 'radio');
+    radio.setAttribute ('id', id);
+    radio.setAttribute ('name', name);
+    OV.AddDomElement (label, 'span', null, text);
+    radio.addEventListener ('change', onChange);
+    return radio;
+};
+
+OV.SelectRadioButton = function (radioButtons, selectedId)
+{
+    for (let radioButton of radioButtons) {
+        let isChecked = radioButton.getAttribute ('id') === selectedId;
+        radioButton.checked = isChecked;
+    }
+};
+
 OV.CreateDiv = function (className, innerHTML)
 {
     return OV.CreateDomElement ('div', className, innerHTML);

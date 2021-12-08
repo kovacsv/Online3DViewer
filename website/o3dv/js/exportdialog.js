@@ -134,20 +134,13 @@ OV.ExportDialog = class
         for (let i = 0; i < exportFormat.formats.length; i++) {
             let format = exportFormat.formats[i];
             let formatDiv = OV.AddDiv (this.formatParameters.formatSettingsDiv, 'ov_dialog_row');
-            let formatLabel = OV.AddDomElement (formatDiv, 'label');
-            formatLabel.setAttribute ('for', format.name);
-            let formatInput = OV.AddDomElement (formatLabel, 'input', 'ov_radio_button');
-            formatInput.setAttribute ('type', 'radio');
-            formatInput.setAttribute ('id', format.name);
-            formatInput.setAttribute ('name', 'format');
-            OV.AddDomElement (formatLabel, 'span', null, format.name);
+            let formatInput = OV.AddRadioButton (formatDiv, 'format', format.name, format.name, () => {
+                this.formatParameters.selectedFormat = format;
+            });
             if (i === 0) {
                 formatInput.checked = true;
                 this.formatParameters.selectedFormat = format;
             }
-            formatInput.addEventListener ('change', () => {
-                this.formatParameters.selectedFormat = format;
-            });
         }
     }
 

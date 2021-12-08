@@ -210,6 +210,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         this.backgroundColorInput = null;
         this.defaultColorInput = null;
         this.defaultColorWarning = null;
+        this.edgeDisplayInput = null;
         this.themeInput = null;
     }
 
@@ -252,6 +253,7 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
                 this.SetDefaultColor (newColor, false);
             }
         );
+        this.edgeDisplayInput = this.AddEdgeDisplayParameter (this.settings.showEdges, this.settings.edgeColor, this.settings.edgeThreshold);
         this.themeInput = this.AddThemeParameter (this.settings.themeId);
         this.AddResetToDefaultsButton ();
     }
@@ -284,12 +286,6 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         } else {
             this.callbacks.onDefaultColorChange ();
         }
-    }
-
-    SetThemeId (themeId)
-    {
-        this.settings.themeId = themeId;
-        this.callbacks.onThemeChange ();
     }
 
     AddColorParameter (title, description, warningText, predefinedColors, defaultValue, onChange)
@@ -344,38 +340,46 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         };
     }
 
-    AddThemeParameter (defaultValue)
+    AddEdgeDisplayParameter (show, edgeColor, edgeThreshold)
     {
-        function AddThemeRadioButton (obj, contentDiv, themeId, themeName, onChange)
+        function AddRadioButton (contentDiv, id, text, onChange)
         {
             let row = OV.AddDiv (contentDiv, 'ov_sidebar_settings_row');
-            let label = OV.AddDomElement (row, 'label');
-            label.setAttribute ('for', themeId.toString ());
-            let radio = OV.AddDomElement (label, 'input', 'ov_radio_button');
-            radio.setAttribute ('type', 'radio');
-            radio.setAttribute ('id', themeId.toString ());
-            radio.setAttribute ('name', 'theme');
-            OV.AddDomElement (label, 'span', null, themeName);
-            radio.addEventListener ('change', () => {
-                obj.SetThemeId (themeId);
-                if (themeId === OV.Theme.Light) {
-                    obj.SetBackgroundColor (new OV.Color (255, 255, 255), true);
-                    obj.SetDefaultColor (new OV.Color (200, 200, 200), true);
-                } else if (themeId === OV.Theme.Dark) {
-                    obj.SetBackgroundColor (new OV.Color (42, 43, 46), true);
-                    obj.SetDefaultColor (new OV.Color (200, 200, 200), true);
-                }
-                onChange ();
-            });
-            return radio;
+            return OV.AddRadioButton (row, 'edge_display', id, text, onChange);
         }
 
-        function Select (radioButtons, defaultValue)
-        {
-            for (let i = 0; i < radioButtons.length; i++) {
-                let radioButton = radioButtons[i];
-                radioButton.checked = radioButton.getAttribute ('id') === defaultValue.toString ();
+        let contentDiv = OV.AddDiv (this.contentDiv, 'ov_sidebar_settings_content');
+        let titleDiv = OV.AddDiv (contentDiv, 'ov_sidebar_subtitle');
+        OV.AddSvgIconElement (titleDiv, 'edges', 'ov_sidebar_subtitle_icon');
+        OV.AddDiv (titleDiv, 'ov_sidebar_subtitle_text', 'Edge Display');
+
+        let buttonsDiv = OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded');
+        let buttons = [];
+        let offButton = AddRadioButton (buttonsDiv, 'off', 'Don\'t Show Edges', () => {
+            this.settings.showEdges = false;
+            this.callbacks.onEdgeDisplayChange ();
+        });
+        let onButton = AddRadioButton (buttonsDiv, 'on', 'Show Edges', () => {
+            this.settings.showEdges = true;
+            this.callbacks.onEdgeDisplayChange ();
+        });
+        buttons.push (offButton);
+        buttons.push (onButton);
+
+        OV.SelectRadioButton (buttons, show ? 'on' : 'off');
+        return {
+            select : (value) => {
+                OV.SelectRadioButton (buttons, value ? 'on' : 'off');
             }
+        };
+    }
+
+    AddThemeParameter (defaultValue)
+    {
+        function AddRadioButton (contentDiv, themeId, themeName, onChange)
+        {
+            let row = OV.AddDiv (contentDiv, 'ov_sidebar_settings_row');
+            return OV.AddRadioButton (row, 'theme', themeId.toString (), themeName, onChange);
         }
 
         let contentDiv = OV.AddDiv (this.contentDiv, 'ov_sidebar_settings_content');
@@ -384,16 +388,28 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         OV.AddDiv (titleDiv, 'ov_sidebar_subtitle_text', 'Appearance');
 
         let buttonsDiv = OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded');
-        let result = {
-            buttons : [],
-            select: (value) => {
-                Select (result.buttons, value);
+        let buttons = [];
+        let lightButton = AddRadioButton (buttonsDiv, OV.Theme.Light, 'Light', () => {
+            this.SetBackgroundColor (new OV.Color (255, 255, 255), true);
+            this.SetDefaultColor (new OV.Color (200, 200, 200), true);
+            this.settings.themeId = OV.Theme.Light;
+            this.callbacks.onThemeChange ();
+        });
+        let darkButton = AddRadioButton (buttonsDiv, OV.Theme.Dark, 'Dark', () => {
+            this.SetBackgroundColor (new OV.Color (42, 43, 46), true);
+            this.SetDefaultColor (new OV.Color (200, 200, 200), true);
+            this.settings.themeId = OV.Theme.Dark;
+            this.callbacks.onThemeChange ();
+        });
+        buttons.push (lightButton);
+        buttons.push (darkButton);
+
+        OV.SelectRadioButton (buttons, defaultValue.toString ());
+        return {
+            select : (value) => {
+                OV.SelectRadioButton (buttons, value.toString ());
             }
         };
-        result.buttons.push (AddThemeRadioButton (this, buttonsDiv, OV.Theme.Light, 'Light', this.callbacks.onThemeChange));
-        result.buttons.push (AddThemeRadioButton (this, buttonsDiv, OV.Theme.Dark, 'Dark', this.callbacks.onThemeChange));
-        Select (result.buttons, defaultValue);
-        return result;
     }
 
     AddResetToDefaultsButton ()
@@ -405,11 +421,16 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             this.settings.defaultColor = defaultSettings.defaultColor;
             this.backgroundColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.backgroundColor));
             this.defaultColorInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.defaultColor));
-            if (this.themeInput !== null) {
-                this.settings.themeId = defaultSettings.themeId;
-                this.themeInput.select (defaultSettings.themeId);
-                this.callbacks.onThemeChange ();
-            }
+
+            this.settings.showEdges = defaultSettings.showEdges;
+            this.settings.edgeColor = defaultSettings.edgeColor;
+            this.settings.edgeThreshold = defaultSettings.edgeThreshold;
+            this.edgeDisplayInput.select (this.settings.showEdges);
+            this.callbacks.onEdgeDisplayChange ();
+
+            this.settings.themeId = defaultSettings.themeId;
+            this.themeInput.select (this.settings.themeId);
+            this.callbacks.onThemeChange ();
         });
     }
 };
