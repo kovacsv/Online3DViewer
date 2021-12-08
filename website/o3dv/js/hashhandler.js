@@ -58,6 +58,12 @@ OV.HashHandler = class
         return parser.GetDefaultColor ();
     }
 
+    GetEdgeSettingsFromHash ()
+    {
+        let parser = OV.CreateUrlParser (this.GetHash ());
+        return parser.GetEdgeSettings ();
+    }
+
     GetHash ()
     {
         return window.location.hash.substr (1);

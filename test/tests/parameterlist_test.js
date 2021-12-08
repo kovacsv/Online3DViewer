@@ -13,13 +13,19 @@ describe ('Parameter List', function () {
         let urlParams1 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).GetParameterList ();
         let urlParams2 = OV.CreateUrlBuilder ().AddCamera (camera).GetParameterList ();
         let urlParams3 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).GetParameterList ();
-        let urlParams4 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).AddColor (color).GetParameterList ();
-        let urlParams5 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).AddBackground (background).AddColor (color).GetParameterList ();
+        let urlParams4 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).AddDefaultColor (color).GetParameterList ();
+        let urlParams5 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).AddBackgroundColor (background).AddDefaultColor (color).GetParameterList ();
+        let urlParams6 = OV.CreateUrlBuilder ().AddEdgeSettings ({
+            showEdges : true,
+            edgeColor : new OV.Color (1, 2, 3),
+            edgeThreshold : 15
+        }).GetParameterList ();
         assert.strictEqual (urlParams1, 'model=a.txt,b.txt');
         assert.strictEqual (urlParams2, 'camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000');
         assert.strictEqual (urlParams3, 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000');
         assert.strictEqual (urlParams4, 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$defaultcolor=1,2,3');
         assert.strictEqual (urlParams5, 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$backgroundcolor=4,5,6$defaultcolor=1,2,3');
+        assert.strictEqual (urlParams6, 'edgesettings=on,1,2,3,15');
     });
 
     it ('Parameter list parser', function () {
@@ -37,6 +43,7 @@ describe ('Parameter List', function () {
         let urlParams3 = 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000';
         let urlParams4 = 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$defaultcolor=1,2,3';
         let urlParams5 = 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$backgroundcolor=4,5,6$defaultcolor=1,2,3';
+        let urlParams6 = 'edgesettings=on,1,2,3,15';
         let parserLegacy = OV.CreateUrlParser (urlParamsLegacy);
         assert.deepStrictEqual (parserLegacy.GetModelUrls (), modelUrls);
         assert.deepStrictEqual (parserLegacy.GetCamera (), null);
@@ -61,5 +68,11 @@ describe ('Parameter List', function () {
         assert.deepStrictEqual (parser5.GetCamera (), camera);
         assert.deepStrictEqual (parser5.GetDefaultColor (), color);
         assert.deepStrictEqual (parser5.GetBackgroundColor (), background);
+        let parser6 = OV.CreateUrlParser (urlParams6);
+        assert.deepStrictEqual (parser6.GetEdgeSettings (), {
+            showEdges : true,
+            edgeColor : new OV.Color (1, 2, 3),
+            edgeThreshold : 15
+        });
     });
 });

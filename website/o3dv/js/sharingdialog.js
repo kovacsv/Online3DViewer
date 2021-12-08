@@ -28,8 +28,9 @@ OV.ShowSharingDialog = function (importer, settings, camera)
         let builder = OV.CreateUrlBuilder ();
         builder.AddModelUrls (params.files);
         builder.AddCamera (params.camera);
-        builder.AddBackground (params.backgroundColor);
-        builder.AddColor (params.defaultColor);
+        builder.AddBackgroundColor (params.backgroundColor);
+        builder.AddDefaultColor (params.defaultColor);
+        builder.AddEdgeSettings (params.edgeSettings);
         let hashParameters = builder.GetParameterList ();
 
         let embeddingCode = '';
@@ -90,6 +91,15 @@ OV.ShowSharingDialog = function (importer, settings, camera)
             embeddingCodeParams.defaultColor = checked ? settings.defaultColor : null;
             embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
         });
+        AddCheckboxLine (optionsSection, 'Use overridden edge display', 'embed_edge_display', (checked) => {
+            const edgeSettings = {
+                showEdges : settings.edgeSettings,
+                edgeColor : settings.edgeColor,
+                edgeThreshold : settings.edgeThreshold
+            };
+            embeddingCodeParams.edgeSettings = checked ? edgeSettings : null;
+            embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
+        });
         embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
     }
 
@@ -118,7 +128,12 @@ OV.ShowSharingDialog = function (importer, settings, camera)
         files : modelFiles,
         camera : camera,
         backgroundColor : settings.backgroundColor,
-        defaultColor : settings.defaultColor
+        defaultColor : settings.defaultColor,
+        edgeSettings : {
+            showEdges : settings.showEdges,
+            edgeColor : settings.edgeColor,
+            edgeThreshold : settings.edgeThreshold
+        }
     };
 
     let dialog = new OV.ButtonDialog ();

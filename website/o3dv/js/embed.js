@@ -23,6 +23,14 @@ OV.Embed = class
             if (background !== null) {
                 this.viewer.SetBackgroundColor (background);
             }
+            let edgeSettings = this.hashHandler.GetEdgeSettingsFromHash ();
+            if (edgeSettings !== null) {
+                this.viewer.SetEdgeSettings (
+                    edgeSettings.showEdges,
+                    edgeSettings.edgeColor,
+                    edgeSettings.edgeThreshold
+                );
+            }
             let settings = new OV.ImportSettings ();
             let defaultColor = this.hashHandler.GetDefaultColorFromHash ();
             if (defaultColor !== null) {

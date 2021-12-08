@@ -95,6 +95,40 @@ OV.ParameterConverter =
             this.StringToInteger (paramParts[2])
         );
         return color;
+    },
+
+    EdgeSettingsToString : function (edgeSettings)
+    {
+        if (edgeSettings === null) {
+            return null;
+        }
+        let edgeSettingsParameters = [
+            edgeSettings.showEdges ? 'on' : 'off',
+            this.ColorToString (edgeSettings.edgeColor),
+            this.IntegerToString (edgeSettings.edgeThreshold),
+        ].join (',');
+        return edgeSettingsParameters;
+    },
+
+    StringToEdgeSettings : function (str)
+    {
+        if (str === null || str.length === 0) {
+            return null;
+        }
+        let paramParts = str.split (',');
+        if (paramParts.length !== 5) {
+            return null;
+        }
+        let edgeSettings = {
+            showEdges : paramParts[0] === 'on' ? true : false,
+            edgeColor : new OV.Color (
+                this.StringToInteger (paramParts[1]),
+                this.StringToInteger (paramParts[2]),
+                this.StringToInteger (paramParts[3])
+            ),
+            edgeThreshold : this.StringToInteger (paramParts[4])
+        };
+        return edgeSettings;
     }
 };
 
@@ -118,15 +152,21 @@ OV.ParameterListBuilder = class
         return this;
     }
 
-    AddBackground (background)
+    AddBackgroundColor (background)
     {
         this.AddUrlPart ('backgroundcolor', OV.ParameterConverter.ColorToString (background));
         return this;
     }
 
-    AddColor (color)
+    AddDefaultColor (color)
     {
         this.AddUrlPart ('defaultcolor', OV.ParameterConverter.ColorToString (color));
+        return this;
+    }
+
+    AddEdgeSettings (edgeSettings)
+    {
+        this.AddUrlPart ('edgesettings', OV.ParameterConverter.EdgeSettingsToString (edgeSettings));
         return this;
     }
 
@@ -144,7 +184,7 @@ OV.ParameterListBuilder = class
     GetParameterList ()
     {
         return this.paramList;
-    } 
+    }
 };
 
 OV.ParameterListParser = class
@@ -183,7 +223,13 @@ OV.ParameterListParser = class
         let colorParams = this.GetKeywordParams ('defaultcolor');
         return OV.ParameterConverter.StringToColor (colorParams);
     }
-    
+
+    GetEdgeSettings ()
+    {
+        let edgeSettingsParams = this.GetKeywordParams ('edgesettings');
+        return OV.ParameterConverter.StringToEdgeSettings (edgeSettingsParams);
+    }
+
     GetKeywordParams (keyword)
     {
         if (this.paramList === null || this.paramList.length === 0) {

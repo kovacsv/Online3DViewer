@@ -24,6 +24,14 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, parameters)
         viewer.SetBackgroundColor (parameters.backgroundColor);
     }
 
+    if (parameters.edgeSettings) {
+        viewer.SetEdgeSettings (
+            parameters.edgeSettings.showEdges,
+            parameters.edgeSettings.edgeColor,
+            parameters.edgeSettings.edgeThreshold
+        );
+    }
+
     if (parameters.environmentMap) {
         viewer.SetEnvironmentMap (parameters.environmentMap);
     }
@@ -106,6 +114,12 @@ OV.Init3DViewerElements = function (onReady)
             defaultColor = OV.ParameterConverter.StringToColor (defaultColorParams);
         }
 
+        let edgeSettings = null;
+        let edgeSettingsParams = element.getAttribute ('edgesettings');
+        if (edgeSettingsParams) {
+            edgeSettings = OV.ParameterConverter.StringToEdgeSettings (edgeSettingsParams);
+        }
+
         let environmentMap = null;
         let environmentMapParams = element.getAttribute ('environmentmap');
         if (environmentMapParams) {
@@ -125,6 +139,7 @@ OV.Init3DViewerElements = function (onReady)
             camera,
             backgroundColor,
             defaultColor,
+            edgeSettings,
             environmentMap
         });
     }
