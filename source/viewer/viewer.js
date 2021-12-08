@@ -197,6 +197,7 @@ OV.ViewerGeometry = class
             }));
             line.applyMatrix4 (mesh.matrixWorld);
             line.userData = mesh.userData;
+            line.visible = mesh.visible;
             this.mainEdgeObject.add (line);
         });
         this.scene.add (this.mainEdgeObject);
