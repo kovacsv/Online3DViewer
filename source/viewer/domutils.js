@@ -128,6 +128,17 @@ OV.AddRadioButton = function (parentElement, name, id, text, onChange)
     return radio;
 };
 
+OV.AddSelect = function (parentElement, options)
+{
+    let selectElement = OV.AddDomElement (parentElement, 'select');
+    for (let option of options) {
+        let optionElement = OV.AddDomElement (selectElement, 'option');
+        optionElement.value = option.value;
+        optionElement.innerHTML = option.text;
+    }
+    return selectElement;
+};
+
 OV.SelectRadioButton = function (radioButtons, selectedId)
 {
     for (let radioButton of radioButtons) {

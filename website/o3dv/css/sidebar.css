@@ -58,22 +58,28 @@ div.ov_sidebar_content div.ov_sidebar_settings_row
 	overflow: auto;
 }
 
-div.ov_sidebar_content div.ov_sidebar_settings_details_input
+div.ov_sidebar_content div.ov_sidebar_settings_parameter_name
 {
-	width: 30px;
-	margin-right: 10px;
+	width: 70%;
 	float: left;
 }
 
-div.ov_sidebar_content div.ov_sidebar_settings_details_text
+div.ov_sidebar_content div.ov_sidebar_settings_parameter_value
 {
+	width: 30%;
 	float: left;
+}
+
+div.ov_sidebar_content div.ov_sidebar_settings_parameter_value select
+{
+	color: var(--ov_dialog_foreground_color);
+	background: var(--ov_dialog_background_color);
+	border: 1px solid var(--ov_border_color)
 }
 
 div.ov_sidebar_content div.ov_sidebar_settings_padded
 {
 	margin: 10px 0px 0px 40px;
-	float: left;
 	overflow: hidden;
 }
 

@@ -9,6 +9,11 @@
 	src: url('Quicksand/Quicksand-Regular.ttf');
 }
 
+input, select, textarea
+{
+	outline: none;
+}
+
 html, body
 {
 	color: var(--ov_foreground_color);

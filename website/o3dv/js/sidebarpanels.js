@@ -374,14 +374,34 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         let edgeSettingsDiv = OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded');
 
         let colorRow = OV.AddDiv (edgeSettingsDiv, 'ov_sidebar_settings_row');
-        let colorInputDiv = OV.AddDiv (colorRow, 'ov_sidebar_settings_details_input');
-        OV.AddDiv (colorRow, 'ov_sidebar_settings_details_text', 'Edge Color');
+        OV.AddDiv (colorRow, 'ov_sidebar_settings_parameter_name', 'Edge Color');
         let predefinedEdgeColors = ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'];
+        let colorInputDiv = OV.AddDiv (colorRow, 'ov_sidebar_settings_parameter_value');
         let colorInput = OV.AddDiv (colorInputDiv);
         let pickr = this.AddColorPicker (colorInput, defaultEdgeColor, predefinedEdgeColors, (color) => {
             this.settings.edgeColor = color;
             this.callbacks.onEdgeDisplayChange ();
         });
+
+        let thresholdRow = OV.AddDiv (edgeSettingsDiv, 'ov_sidebar_settings_row');
+        OV.AddDiv (thresholdRow, 'ov_sidebar_settings_parameter_name', 'Threshold Angle');
+        let thresholdInputDiv = OV.AddDiv (thresholdRow, 'ov_sidebar_settings_parameter_value');
+        let thresholdValues = [{
+            value : '1',
+            text : '1'
+        }];
+        for (let thresholdValue = 10; thresholdValue <= 180; thresholdValue += 10) {
+            thresholdValues.push ({
+                value : thresholdValue.toString (),
+                text : thresholdValue.toString ()
+            });
+        }
+        let thresholdSelect = OV.AddSelect (thresholdInputDiv, thresholdValues);
+        thresholdSelect.addEventListener ('change', () => {
+            this.settings.edgeThreshold = parseInt (thresholdSelect.value, 10);
+            this.callbacks.onEdgeDisplayChange ();
+        });
+        thresholdSelect.value = defaultEdgeThreshold.toString ();
 
         let buttons = [];
         let offButton = AddRadioButton (buttonsDiv, 'off', 'Don\'t Show Edges', () => {
@@ -396,11 +416,12 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
         });
         buttons.push (offButton);
         buttons.push (onButton);
-
         OV.SelectRadioButton (buttons, defaultShowEdges ? 'on' : 'off');
         ShowEdgeSettings (edgeSettingsDiv, defaultShowEdges);
+
         return {
             pickr : pickr,
+            threshold : thresholdSelect,
             select : (value) => {
                 OV.SelectRadioButton (buttons, value ? 'on' : 'off');
                 ShowEdgeSettings (edgeSettingsDiv, value);
@@ -459,8 +480,9 @@ OV.SettingsSidebarPanel = class extends OV.SidebarPanel
             this.settings.showEdges = defaultSettings.showEdges;
             this.settings.edgeColor = defaultSettings.edgeColor;
             this.settings.edgeThreshold = defaultSettings.edgeThreshold;
-            this.edgeDisplayInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.edgeColor));
             this.edgeDisplayInput.select (this.settings.showEdges);
+            this.edgeDisplayInput.pickr.setColor ('#' + OV.ColorToHexString (defaultSettings.edgeColor));
+            this.edgeDisplayInput.threshold.value = this.settings.edgeThreshold.toString ();
             this.callbacks.onEdgeDisplayChange ();
 
             this.settings.themeId = defaultSettings.themeId;
