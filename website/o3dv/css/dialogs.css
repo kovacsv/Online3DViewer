@@ -88,7 +88,6 @@ div.ov_dialog textarea.ov_dialog_textarea
 	width: 100%;
 	height: 120px;
 	border: 1px solid var(--ov_border_color);
-	outline: none;
 	box-sizing: border-box;
 }
 
@@ -158,7 +157,6 @@ div.ov_dialog div.ov_dialog_copyable_input input
 	width: 70%;
 	margin-top: 6px;
 	box-sizing: border-box;
-	outline: none;
 	float: left;
 	border: 0px;
 	box-sizing: border-box;
