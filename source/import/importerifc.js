@@ -32,7 +32,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
     {
 		if (this.ifc === null) {
 			OV.LoadExternalLibrary ('loaders/web-ifc-api.js').then (() => {
-                this.ifc = new IfcAPI ();
+                this.ifc = new IfcAPI2 ();
                 this.ifc.Init ().then (() => {
                     this.ImportIfcContent (fileContent);
                     onFinish ();

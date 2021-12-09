@@ -728,7 +728,7 @@ var require_web_ifc_mt = __commonJS({
           function receiveInstance(instance, module2) {
             var exports3 = instance.exports;
             Module["asm"] = exports3;
-            wasmTable = Module["asm"]["qa"];
+            wasmTable = Module["asm"]["pa"];
             wasmModule = module2;
             if (!ENVIRONMENT_IS_PTHREAD) {
               var numWorkersToLoad = PThread.unusedWorkers.length;
@@ -782,11 +782,11 @@ var require_web_ifc_mt = __commonJS({
         }
         var tempDouble;
         var tempI64;
-        var ASM_CONSTS = { 41585: function($0, $1) {
+        var ASM_CONSTS = { 41793: function($0, $1) {
           setTimeout(function() {
             _do_emscripten_dispatch_to_thread($0, $1);
           }, 0);
-        }, 41663: function() {
+        }, 41871: function() {
           throw "Canceled!";
         } };
         function initPthreadsJS() {
@@ -3267,60 +3267,9 @@ var require_web_ifc_mt = __commonJS({
         }, get64: function(low, high) {
           return low;
         } };
-        function ___sys_fcntl64(fd, cmd, varargs) {
-          if (ENVIRONMENT_IS_PTHREAD)
-            return _emscripten_proxy_to_main_thread_js(2, 1, fd, cmd, varargs);
-          SYSCALLS.varargs = varargs;
-          try {
-            var stream = SYSCALLS.getStreamFromFD(fd);
-            switch (cmd) {
-              case 0: {
-                var arg = SYSCALLS.get();
-                if (arg < 0) {
-                  return -28;
-                }
-                var newStream;
-                newStream = FS.open(stream.path, stream.flags, 0, arg);
-                return newStream.fd;
-              }
-              case 1:
-              case 2:
-                return 0;
-              case 3:
-                return stream.flags;
-              case 4: {
-                var arg = SYSCALLS.get();
-                stream.flags |= arg;
-                return 0;
-              }
-              case 12: {
-                var arg = SYSCALLS.get();
-                var offset = 0;
-                GROWABLE_HEAP_I16()[arg + offset >> 1] = 2;
-                return 0;
-              }
-              case 13:
-              case 14:
-                return 0;
-              case 16:
-              case 8:
-                return -28;
-              case 9:
-                setErrNo(28);
-                return -1;
-              default: {
-                return -28;
-              }
-            }
-          } catch (e) {
-            if (typeof FS === "undefined" || !(e instanceof FS.ErrnoError))
-              abort(e);
-            return -e.errno;
-          }
-        }
         function ___sys_ioctl(fd, op, varargs) {
           if (ENVIRONMENT_IS_PTHREAD)
-            return _emscripten_proxy_to_main_thread_js(3, 1, fd, op, varargs);
+            return _emscripten_proxy_to_main_thread_js(2, 1, fd, op, varargs);
           SYSCALLS.varargs = varargs;
           try {
             var stream = SYSCALLS.getStreamFromFD(fd);
@@ -3378,7 +3327,7 @@ var require_web_ifc_mt = __commonJS({
         }
         function ___sys_open(path, flags, varargs) {
           if (ENVIRONMENT_IS_PTHREAD)
-            return _emscripten_proxy_to_main_thread_js(4, 1, path, flags, varargs);
+            return _emscripten_proxy_to_main_thread_js(3, 1, path, flags, varargs);
           SYSCALLS.varargs = varargs;
           try {
             var pathname = SYSCALLS.getStr(path);
@@ -5184,7 +5133,7 @@ var require_web_ifc_mt = __commonJS({
         }
         function _emscripten_set_canvas_element_size_main_thread(target, width, height) {
           if (ENVIRONMENT_IS_PTHREAD)
-            return _emscripten_proxy_to_main_thread_js(5, 1, target, width, height);
+            return _emscripten_proxy_to_main_thread_js(4, 1, target, width, height);
           return _emscripten_set_canvas_element_size_calling_thread(target, width, height);
         }
         function _emscripten_set_canvas_element_size(target, width, height) {
@@ -5376,7 +5325,7 @@ var require_web_ifc_mt = __commonJS({
         }
         function _environ_get(__environ, environ_buf) {
           if (ENVIRONMENT_IS_PTHREAD)
-            return _emscripten_proxy_to_main_thread_js(6, 1, __environ, environ_buf);
+            return _emscripten_proxy_to_main_thread_js(5, 1, __environ, environ_buf);
           try {
             var bufSize = 0;
             getEnvStrings().forEach(function(string, i) {
@@ -5394,7 +5343,7 @@ var require_web_ifc_mt = __commonJS({
         }
         function _environ_sizes_get(penviron_count, penviron_buf_size) {
           if (ENVIRONMENT_IS_PTHREAD)
-            return _emscripten_proxy_to_main_thread_js(7, 1, penviron_count, penviron_buf_size);
+            return _emscripten_proxy_to_main_thread_js(6, 1, penviron_count, penviron_buf_size);
           try {
             var strings = getEnvStrings();
             GROWABLE_HEAP_I32()[penviron_count >> 2] = strings.length;
@@ -5412,7 +5361,7 @@ var require_web_ifc_mt = __commonJS({
         }
         function _fd_close(fd) {
           if (ENVIRONMENT_IS_PTHREAD)
-            return _emscripten_proxy_to_main_thread_js(8, 1, fd);
+            return _emscripten_proxy_to_main_thread_js(7, 1, fd);
           try {
             var stream = SYSCALLS.getStreamFromFD(fd);
             FS.close(stream);
@@ -5425,7 +5374,7 @@ var require_web_ifc_mt = __commonJS({
         }
         function _fd_read(fd, iov, iovcnt, pnum) {
           if (ENVIRONMENT_IS_PTHREAD)
-            return _emscripten_proxy_to_main_thread_js(9, 1, fd, iov, iovcnt, pnum);
+            return _emscripten_proxy_to_main_thread_js(8, 1, fd, iov, iovcnt, pnum);
           try {
             var stream = SYSCALLS.getStreamFromFD(fd);
             var num = SYSCALLS.doReadv(stream, iov, iovcnt);
@@ -5439,7 +5388,7 @@ var require_web_ifc_mt = __commonJS({
         }
         function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
           if (ENVIRONMENT_IS_PTHREAD)
-            return _emscripten_proxy_to_main_thread_js(10, 1, fd, offset_low, offset_high, whence, newOffset);
+            return _emscripten_proxy_to_main_thread_js(9, 1, fd, offset_low, offset_high, whence, newOffset);
           try {
             var stream = SYSCALLS.getStreamFromFD(fd);
             var HIGH_OFFSET = 4294967296;
@@ -5461,7 +5410,7 @@ var require_web_ifc_mt = __commonJS({
         }
         function _fd_write(fd, iov, iovcnt, pnum) {
           if (ENVIRONMENT_IS_PTHREAD)
-            return _emscripten_proxy_to_main_thread_js(11, 1, fd, iov, iovcnt, pnum);
+            return _emscripten_proxy_to_main_thread_js(10, 1, fd, iov, iovcnt, pnum);
           try {
             var stream = SYSCALLS.getStreamFromFD(fd);
             var num = SYSCALLS.doWritev(stream, iov, iovcnt);
@@ -5884,7 +5833,7 @@ var require_web_ifc_mt = __commonJS({
         UnboundTypeError = Module["UnboundTypeError"] = extendError(Error, "UnboundTypeError");
         init_emval();
         var GLctx;
-        var proxiedFunctionTable = [null, _atexit, ___sys_fcntl64, ___sys_ioctl, ___sys_open, _emscripten_set_canvas_element_size_main_thread, _environ_get, _environ_sizes_get, _fd_close, _fd_read, _fd_seek, _fd_write];
+        var proxiedFunctionTable = [null, _atexit, ___sys_ioctl, ___sys_open, _emscripten_set_canvas_element_size_main_thread, _environ_get, _environ_sizes_get, _fd_close, _fd_read, _fd_seek, _fd_write];
         function intArrayFromString(stringy, dontAddNull, length) {
           var len = length > 0 ? length : lengthBytesUTF8(stringy) + 1;
           var u8array = new Array(len);
@@ -5897,126 +5846,126 @@ var require_web_ifc_mt = __commonJS({
           __ATINIT__.push({ func: function() {
             ___wasm_call_ctors();
           } });
-        var asmLibraryArg = { "p": ___assert_fail, "P": ___cxa_allocate_exception, "O": ___cxa_throw, "K": ___sys_fcntl64, "ha": ___sys_ioctl, "ia": ___sys_open, "na": __embind_finalize_value_array, "w": __embind_finalize_value_object, "ka": __embind_register_bool, "z": __embind_register_class, "y": __embind_register_class_constructor, "e": __embind_register_class_function, "ja": __embind_register_emval, "ma": __embind_register_enum, "E": __embind_register_enum_value, "M": __embind_register_float, "i": __embind_register_function, "s": __embind_register_integer, "q": __embind_register_memory_view, "N": __embind_register_std_string, "F": __embind_register_std_wstring, "oa": __embind_register_value_array, "l": __embind_register_value_array_element, "x": __embind_register_value_object, "h": __embind_register_value_object_field, "la": __embind_register_void, "$": __emscripten_notify_thread_queue, "u": __emval_as, "pa": __emval_call, "b": __emval_decref, "_": __emval_get_global, "r": __emval_get_property, "o": __emval_incref, "ba": __emval_instanceof, "Q": __emval_is_number, "G": __emval_new_array, "j": __emval_new_cstring, "A": __emval_new_object, "t": __emval_run_destructors, "m": __emval_set_property, "g": __emval_take_value, "I": _abort, "fa": _clock_gettime, "B": _emscripten_asm_const_int, "aa": _emscripten_check_blocking_allowed, "H": _emscripten_conditional_set_current_thread_status, "k": _emscripten_futex_wait, "n": _emscripten_futex_wake, "d": _emscripten_get_now, "D": _emscripten_is_main_browser_thread, "C": _emscripten_is_main_runtime_thread, "U": _emscripten_memcpy_big, "W": _emscripten_receive_on_main_thread_js, "v": _emscripten_resize_heap, "X": _emscripten_set_canvas_element_size, "f": _emscripten_set_current_thread_status, "Y": _emscripten_webgl_create_context, "da": _environ_get, "ea": _environ_sizes_get, "L": _fd_close, "ga": _fd_read, "R": _fd_seek, "J": _fd_write, "T": initPthreadsJS, "a": wasmMemory || Module["wasmMemory"], "V": _pthread_cleanup_push, "Z": _pthread_create, "c": _pthread_self, "S": _setTempRet0, "ca": _strftime_l };
+        var asmLibraryArg = { "p": ___assert_fail, "H": ___cxa_allocate_exception, "G": ___cxa_throw, "ha": ___sys_ioctl, "ia": ___sys_open, "na": __embind_finalize_value_array, "w": __embind_finalize_value_object, "ka": __embind_register_bool, "z": __embind_register_class, "y": __embind_register_class_constructor, "e": __embind_register_class_function, "ja": __embind_register_emval, "ma": __embind_register_enum, "E": __embind_register_enum_value, "N": __embind_register_float, "i": __embind_register_function, "u": __embind_register_integer, "q": __embind_register_memory_view, "O": __embind_register_std_string, "F": __embind_register_std_wstring, "oa": __embind_register_value_array, "l": __embind_register_value_array_element, "x": __embind_register_value_object, "h": __embind_register_value_object_field, "la": __embind_register_void, "$": __emscripten_notify_thread_queue, "s": __emval_as, "P": __emval_call, "b": __emval_decref, "Z": __emval_get_global, "t": __emval_get_property, "o": __emval_incref, "ba": __emval_instanceof, "Q": __emval_is_number, "I": __emval_new_array, "j": __emval_new_cstring, "A": __emval_new_object, "r": __emval_run_destructors, "m": __emval_set_property, "g": __emval_take_value, "K": _abort, "fa": _clock_gettime, "B": _emscripten_asm_const_int, "aa": _emscripten_check_blocking_allowed, "J": _emscripten_conditional_set_current_thread_status, "k": _emscripten_futex_wait, "n": _emscripten_futex_wake, "d": _emscripten_get_now, "D": _emscripten_is_main_browser_thread, "C": _emscripten_is_main_runtime_thread, "U": _emscripten_memcpy_big, "W": _emscripten_receive_on_main_thread_js, "v": _emscripten_resize_heap, "X": _emscripten_set_canvas_element_size, "f": _emscripten_set_current_thread_status, "Y": _emscripten_webgl_create_context, "da": _environ_get, "ea": _environ_sizes_get, "M": _fd_close, "ga": _fd_read, "R": _fd_seek, "L": _fd_write, "T": initPthreadsJS, "a": wasmMemory || Module["wasmMemory"], "V": _pthread_cleanup_push, "_": _pthread_create, "c": _pthread_self, "S": _setTempRet0, "ca": _strftime_l };
         var asm = createWasm();
         var ___wasm_call_ctors = Module["___wasm_call_ctors"] = function() {
-          return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["ra"]).apply(null, arguments);
+          return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["qa"]).apply(null, arguments);
         };
         var _main = Module["_main"] = function() {
-          return (_main = Module["_main"] = Module["asm"]["sa"]).apply(null, arguments);
+          return (_main = Module["_main"] = Module["asm"]["ra"]).apply(null, arguments);
         };
         var _malloc = Module["_malloc"] = function() {
-          return (_malloc = Module["_malloc"] = Module["asm"]["ta"]).apply(null, arguments);
+          return (_malloc = Module["_malloc"] = Module["asm"]["sa"]).apply(null, arguments);
         };
         var _free = Module["_free"] = function() {
-          return (_free = Module["_free"] = Module["asm"]["ua"]).apply(null, arguments);
+          return (_free = Module["_free"] = Module["asm"]["ta"]).apply(null, arguments);
         };
         var ___getTypeName = Module["___getTypeName"] = function() {
-          return (___getTypeName = Module["___getTypeName"] = Module["asm"]["va"]).apply(null, arguments);
+          return (___getTypeName = Module["___getTypeName"] = Module["asm"]["ua"]).apply(null, arguments);
         };
         var ___embind_register_native_and_builtin_types = Module["___embind_register_native_and_builtin_types"] = function() {
-          return (___embind_register_native_and_builtin_types = Module["___embind_register_native_and_builtin_types"] = Module["asm"]["wa"]).apply(null, arguments);
+          return (___embind_register_native_and_builtin_types = Module["___embind_register_native_and_builtin_types"] = Module["asm"]["va"]).apply(null, arguments);
         };
         var ___errno_location = Module["___errno_location"] = function() {
-          return (___errno_location = Module["___errno_location"] = Module["asm"]["xa"]).apply(null, arguments);
+          return (___errno_location = Module["___errno_location"] = Module["asm"]["wa"]).apply(null, arguments);
         };
         var _emscripten_get_global_libc = Module["_emscripten_get_global_libc"] = function() {
-          return (_emscripten_get_global_libc = Module["_emscripten_get_global_libc"] = Module["asm"]["ya"]).apply(null, arguments);
+          return (_emscripten_get_global_libc = Module["_emscripten_get_global_libc"] = Module["asm"]["xa"]).apply(null, arguments);
         };
         var ___em_js__initPthreadsJS = Module["___em_js__initPthreadsJS"] = function() {
-          return (___em_js__initPthreadsJS = Module["___em_js__initPthreadsJS"] = Module["asm"]["za"]).apply(null, arguments);
+          return (___em_js__initPthreadsJS = Module["___em_js__initPthreadsJS"] = Module["asm"]["ya"]).apply(null, arguments);
         };
         var stackSave = Module["stackSave"] = function() {
-          return (stackSave = Module["stackSave"] = Module["asm"]["Aa"]).apply(null, arguments);
+          return (stackSave = Module["stackSave"] = Module["asm"]["za"]).apply(null, arguments);
         };
         var stackRestore = Module["stackRestore"] = function() {
-          return (stackRestore = Module["stackRestore"] = Module["asm"]["Ba"]).apply(null, arguments);
+          return (stackRestore = Module["stackRestore"] = Module["asm"]["Aa"]).apply(null, arguments);
         };
         var stackAlloc = Module["stackAlloc"] = function() {
-          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["Ca"]).apply(null, arguments);
+          return (stackAlloc = Module["stackAlloc"] = Module["asm"]["Ba"]).apply(null, arguments);
         };
         var _emscripten_stack_set_limits = Module["_emscripten_stack_set_limits"] = function() {
-          return (_emscripten_stack_set_limits = Module["_emscripten_stack_set_limits"] = Module["asm"]["Da"]).apply(null, arguments);
+          return (_emscripten_stack_set_limits = Module["_emscripten_stack_set_limits"] = Module["asm"]["Ca"]).apply(null, arguments);
         };
         var _memalign = Module["_memalign"] = function() {
-          return (_memalign = Module["_memalign"] = Module["asm"]["Ea"]).apply(null, arguments);
+          return (_memalign = Module["_memalign"] = Module["asm"]["Da"]).apply(null, arguments);
         };
         var _emscripten_main_browser_thread_id = Module["_emscripten_main_browser_thread_id"] = function() {
-          return (_emscripten_main_browser_thread_id = Module["_emscripten_main_browser_thread_id"] = Module["asm"]["Fa"]).apply(null, arguments);
+          return (_emscripten_main_browser_thread_id = Module["_emscripten_main_browser_thread_id"] = Module["asm"]["Ea"]).apply(null, arguments);
         };
         var ___pthread_tsd_run_dtors = Module["___pthread_tsd_run_dtors"] = function() {
-          return (___pthread_tsd_run_dtors = Module["___pthread_tsd_run_dtors"] = Module["asm"]["Ga"]).apply(null, arguments);
+          return (___pthread_tsd_run_dtors = Module["___pthread_tsd_run_dtors"] = Module["asm"]["Fa"]).apply(null, arguments);
         };
         var _emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = function() {
-          return (_emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = Module["asm"]["Ha"]).apply(null, arguments);
+          return (_emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = Module["asm"]["Ga"]).apply(null, arguments);
         };
         var _emscripten_current_thread_process_queued_calls = Module["_emscripten_current_thread_process_queued_calls"] = function() {
-          return (_emscripten_current_thread_process_queued_calls = Module["_emscripten_current_thread_process_queued_calls"] = Module["asm"]["Ia"]).apply(null, arguments);
+          return (_emscripten_current_thread_process_queued_calls = Module["_emscripten_current_thread_process_queued_calls"] = Module["asm"]["Ha"]).apply(null, arguments);
         };
         var _emscripten_register_main_browser_thread_id = Module["_emscripten_register_main_browser_thread_id"] = function() {
-          return (_emscripten_register_main_browser_thread_id = Module["_emscripten_register_main_browser_thread_id"] = Module["asm"]["Ja"]).apply(null, arguments);
+          return (_emscripten_register_main_browser_thread_id = Module["_emscripten_register_main_browser_thread_id"] = Module["asm"]["Ia"]).apply(null, arguments);
         };
         var _do_emscripten_dispatch_to_thread = Module["_do_emscripten_dispatch_to_thread"] = function() {
-          return (_do_emscripten_dispatch_to_thread = Module["_do_emscripten_dispatch_to_thread"] = Module["asm"]["Ka"]).apply(null, arguments);
+          return (_do_emscripten_dispatch_to_thread = Module["_do_emscripten_dispatch_to_thread"] = Module["asm"]["Ja"]).apply(null, arguments);
         };
         var _emscripten_async_run_in_main_thread = Module["_emscripten_async_run_in_main_thread"] = function() {
-          return (_emscripten_async_run_in_main_thread = Module["_emscripten_async_run_in_main_thread"] = Module["asm"]["La"]).apply(null, arguments);
+          return (_emscripten_async_run_in_main_thread = Module["_emscripten_async_run_in_main_thread"] = Module["asm"]["Ka"]).apply(null, arguments);
         };
         var _emscripten_sync_run_in_main_thread = Module["_emscripten_sync_run_in_main_thread"] = function() {
-          return (_emscripten_sync_run_in_main_thread = Module["_emscripten_sync_run_in_main_thread"] = Module["asm"]["Ma"]).apply(null, arguments);
+          return (_emscripten_sync_run_in_main_thread = Module["_emscripten_sync_run_in_main_thread"] = Module["asm"]["La"]).apply(null, arguments);
         };
         var _emscripten_sync_run_in_main_thread_0 = Module["_emscripten_sync_run_in_main_thread_0"] = function() {
-          return (_emscripten_sync_run_in_main_thread_0 = Module["_emscripten_sync_run_in_main_thread_0"] = Module["asm"]["Na"]).apply(null, arguments);
+          return (_emscripten_sync_run_in_main_thread_0 = Module["_emscripten_sync_run_in_main_thread_0"] = Module["asm"]["Ma"]).apply(null, arguments);
         };
         var _emscripten_sync_run_in_main_thread_1 = Module["_emscripten_sync_run_in_main_thread_1"] = function() {
-          return (_emscripten_sync_run_in_main_thread_1 = Module["_emscripten_sync_run_in_main_thread_1"] = Module["asm"]["Oa"]).apply(null, arguments);
+          return (_emscripten_sync_run_in_main_thread_1 = Module["_emscripten_sync_run_in_main_thread_1"] = Module["asm"]["Na"]).apply(null, arguments);
         };
         var _emscripten_sync_run_in_main_thread_2 = Module["_emscripten_sync_run_in_main_thread_2"] = function() {
-          return (_emscripten_sync_run_in_main_thread_2 = Module["_emscripten_sync_run_in_main_thread_2"] = Module["asm"]["Pa"]).apply(null, arguments);
+          return (_emscripten_sync_run_in_main_thread_2 = Module["_emscripten_sync_run_in_main_thread_2"] = Module["asm"]["Oa"]).apply(null, arguments);
         };
         var _emscripten_sync_run_in_main_thread_xprintf_varargs = Module["_emscripten_sync_run_in_main_thread_xprintf_varargs"] = function() {
-          return (_emscripten_sync_run_in_main_thread_xprintf_varargs = Module["_emscripten_sync_run_in_main_thread_xprintf_varargs"] = Module["asm"]["Qa"]).apply(null, arguments);
+          return (_emscripten_sync_run_in_main_thread_xprintf_varargs = Module["_emscripten_sync_run_in_main_thread_xprintf_varargs"] = Module["asm"]["Pa"]).apply(null, arguments);
         };
         var _emscripten_sync_run_in_main_thread_3 = Module["_emscripten_sync_run_in_main_thread_3"] = function() {
-          return (_emscripten_sync_run_in_main_thread_3 = Module["_emscripten_sync_run_in_main_thread_3"] = Module["asm"]["Ra"]).apply(null, arguments);
+          return (_emscripten_sync_run_in_main_thread_3 = Module["_emscripten_sync_run_in_main_thread_3"] = Module["asm"]["Qa"]).apply(null, arguments);
         };
         var _emscripten_sync_run_in_main_thread_4 = Module["_emscripten_sync_run_in_main_thread_4"] = function() {
-          return (_emscripten_sync_run_in_main_thread_4 = Module["_emscripten_sync_run_in_main_thread_4"] = Module["asm"]["Sa"]).apply(null, arguments);
+          return (_emscripten_sync_run_in_main_thread_4 = Module["_emscripten_sync_run_in_main_thread_4"] = Module["asm"]["Ra"]).apply(null, arguments);
         };
         var _emscripten_sync_run_in_main_thread_5 = Module["_emscripten_sync_run_in_main_thread_5"] = function() {
-          return (_emscripten_sync_run_in_main_thread_5 = Module["_emscripten_sync_run_in_main_thread_5"] = Module["asm"]["Ta"]).apply(null, arguments);
+          return (_emscripten_sync_run_in_main_thread_5 = Module["_emscripten_sync_run_in_main_thread_5"] = Module["asm"]["Sa"]).apply(null, arguments);
         };
         var _emscripten_sync_run_in_main_thread_6 = Module["_emscripten_sync_run_in_main_thread_6"] = function() {
-          return (_emscripten_sync_run_in_main_thread_6 = Module["_emscripten_sync_run_in_main_thread_6"] = Module["asm"]["Ua"]).apply(null, arguments);
+          return (_emscripten_sync_run_in_main_thread_6 = Module["_emscripten_sync_run_in_main_thread_6"] = Module["asm"]["Ta"]).apply(null, arguments);
         };
         var _emscripten_sync_run_in_main_thread_7 = Module["_emscripten_sync_run_in_main_thread_7"] = function() {
-          return (_emscripten_sync_run_in_main_thread_7 = Module["_emscripten_sync_run_in_main_thread_7"] = Module["asm"]["Va"]).apply(null, arguments);
+          return (_emscripten_sync_run_in_main_thread_7 = Module["_emscripten_sync_run_in_main_thread_7"] = Module["asm"]["Ua"]).apply(null, arguments);
         };
         var _emscripten_run_in_main_runtime_thread_js = Module["_emscripten_run_in_main_runtime_thread_js"] = function() {
-          return (_emscripten_run_in_main_runtime_thread_js = Module["_emscripten_run_in_main_runtime_thread_js"] = Module["asm"]["Wa"]).apply(null, arguments);
+          return (_emscripten_run_in_main_runtime_thread_js = Module["_emscripten_run_in_main_runtime_thread_js"] = Module["asm"]["Va"]).apply(null, arguments);
         };
         var __emscripten_call_on_thread = Module["__emscripten_call_on_thread"] = function() {
-          return (__emscripten_call_on_thread = Module["__emscripten_call_on_thread"] = Module["asm"]["Xa"]).apply(null, arguments);
+          return (__emscripten_call_on_thread = Module["__emscripten_call_on_thread"] = Module["asm"]["Wa"]).apply(null, arguments);
         };
         var _emscripten_tls_init = Module["_emscripten_tls_init"] = function() {
-          return (_emscripten_tls_init = Module["_emscripten_tls_init"] = Module["asm"]["Ya"]).apply(null, arguments);
+          return (_emscripten_tls_init = Module["_emscripten_tls_init"] = Module["asm"]["Xa"]).apply(null, arguments);
         };
         var dynCall_jiji = Module["dynCall_jiji"] = function() {
-          return (dynCall_jiji = Module["dynCall_jiji"] = Module["asm"]["Za"]).apply(null, arguments);
+          return (dynCall_jiji = Module["dynCall_jiji"] = Module["asm"]["Ya"]).apply(null, arguments);
         };
         var dynCall_viijii = Module["dynCall_viijii"] = function() {
-          return (dynCall_viijii = Module["dynCall_viijii"] = Module["asm"]["_a"]).apply(null, arguments);
+          return (dynCall_viijii = Module["dynCall_viijii"] = Module["asm"]["Za"]).apply(null, arguments);
         };
         var dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = function() {
-          return (dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = Module["asm"]["$a"]).apply(null, arguments);
+          return (dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = Module["asm"]["_a"]).apply(null, arguments);
         };
         var dynCall_iiiiij = Module["dynCall_iiiiij"] = function() {
-          return (dynCall_iiiiij = Module["dynCall_iiiiij"] = Module["asm"]["ab"]).apply(null, arguments);
+          return (dynCall_iiiiij = Module["dynCall_iiiiij"] = Module["asm"]["$a"]).apply(null, arguments);
         };
         var dynCall_iiiiijj = Module["dynCall_iiiiijj"] = function() {
-          return (dynCall_iiiiijj = Module["dynCall_iiiiijj"] = Module["asm"]["bb"]).apply(null, arguments);
+          return (dynCall_iiiiijj = Module["dynCall_iiiiijj"] = Module["asm"]["ab"]).apply(null, arguments);
         };
-        var _main_thread_futex = Module["_main_thread_futex"] = 51720;
+        var _main_thread_futex = Module["_main_thread_futex"] = 51928;
         Module["addRunDependency"] = addRunDependency;
         Module["removeRunDependency"] = removeRunDependency;
         Module["FS_createPath"] = FS.createPath;
@@ -6726,7 +6675,7 @@ var require_web_ifc = __commonJS({
           function receiveInstance(instance, module2) {
             var exports3 = instance.exports;
             Module["asm"] = exports3;
-            wasmTable = Module["asm"]["ca"];
+            wasmTable = Module["asm"]["ba"];
             removeRunDependency("wasm-instantiate");
           }
           addRunDependency("wasm-instantiate");
@@ -6864,10 +6813,6 @@ var require_web_ifc = __commonJS({
           exceptionLast = ptr;
           uncaughtExceptionCount++;
           throw ptr;
-        }
-        function setErrNo(value) {
-          HEAP32[___errno_location() >>> 2] = value;
-          return value;
         }
         var PATH = { splitPath: function(filename) {
           var splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
@@ -8947,55 +8892,6 @@ var require_web_ifc = __commonJS({
         }, get64: function(low, high) {
           return low;
         } };
-        function ___sys_fcntl64(fd, cmd, varargs) {
-          SYSCALLS.varargs = varargs;
-          try {
-            var stream = SYSCALLS.getStreamFromFD(fd);
-            switch (cmd) {
-              case 0: {
-                var arg = SYSCALLS.get();
-                if (arg < 0) {
-                  return -28;
-                }
-                var newStream;
-                newStream = FS.open(stream.path, stream.flags, 0, arg);
-                return newStream.fd;
-              }
-              case 1:
-              case 2:
-                return 0;
-              case 3:
-                return stream.flags;
-              case 4: {
-                var arg = SYSCALLS.get();
-                stream.flags |= arg;
-                return 0;
-              }
-              case 12: {
-                var arg = SYSCALLS.get();
-                var offset = 0;
-                HEAP16[arg + offset >>> 1] = 2;
-                return 0;
-              }
-              case 13:
-              case 14:
-                return 0;
-              case 16:
-              case 8:
-                return -28;
-              case 9:
-                setErrNo(28);
-                return -1;
-              default: {
-                return -28;
-              }
-            }
-          } catch (e) {
-            if (typeof FS === "undefined" || !(e instanceof FS.ErrnoError))
-              abort(e);
-            return -e.errno;
-          }
-        }
         function ___sys_ioctl(fd, op, varargs) {
           SYSCALLS.varargs = varargs;
           try {
@@ -10548,6 +10444,10 @@ var require_web_ifc = __commonJS({
             return performance.now();
           };
         var _emscripten_get_now_is_monotonic = true;
+        function setErrNo(value) {
+          HEAP32[___errno_location() >>> 2] = value;
+          return value;
+        }
         function _clock_gettime(clk_id, tp) {
           var now;
           if (clk_id === 0) {
@@ -10986,43 +10886,43 @@ var require_web_ifc = __commonJS({
         __ATINIT__.push({ func: function() {
           ___wasm_call_ctors();
         } });
-        var asmLibraryArg = { "x": ___assert_fail, "H": ___cxa_allocate_exception, "G": ___cxa_throw, "C": ___sys_fcntl64, "V": ___sys_ioctl, "W": ___sys_open, "$": __embind_finalize_value_array, "q": __embind_finalize_value_object, "Y": __embind_register_bool, "t": __embind_register_class, "s": __embind_register_class_constructor, "c": __embind_register_class_function, "X": __embind_register_emval, "_": __embind_register_enum, "v": __embind_register_enum_value, "E": __embind_register_float, "f": __embind_register_function, "m": __embind_register_integer, "k": __embind_register_memory_view, "F": __embind_register_std_string, "w": __embind_register_std_wstring, "aa": __embind_register_value_array, "h": __embind_register_value_array_element, "r": __embind_register_value_object, "e": __embind_register_value_object_field, "Z": __embind_register_void, "o": __emval_as, "ba": __emval_call, "b": __emval_decref, "J": __emval_get_global, "l": __emval_get_property, "j": __emval_incref, "N": __emval_instanceof, "I": __emval_is_number, "y": __emval_new_array, "g": __emval_new_cstring, "u": __emval_new_object, "n": __emval_run_destructors, "i": __emval_set_property, "d": __emval_take_value, "A": _abort, "T": _clock_gettime, "M": _emscripten_memcpy_big, "p": _emscripten_resize_heap, "R": _environ_get, "S": _environ_sizes_get, "D": _fd_close, "U": _fd_read, "K": _fd_seek, "B": _fd_write, "a": wasmMemory, "z": _pthread_mutexattr_destroy, "P": _pthread_mutexattr_init, "O": _pthread_mutexattr_settype, "L": _setTempRet0, "Q": _strftime_l };
+        var asmLibraryArg = { "z": ___assert_fail, "y": ___cxa_allocate_exception, "x": ___cxa_throw, "V": ___sys_ioctl, "W": ___sys_open, "$": __embind_finalize_value_array, "q": __embind_finalize_value_object, "Y": __embind_register_bool, "t": __embind_register_class, "s": __embind_register_class_constructor, "c": __embind_register_class_function, "X": __embind_register_emval, "_": __embind_register_enum, "v": __embind_register_enum_value, "F": __embind_register_float, "f": __embind_register_function, "o": __embind_register_integer, "k": __embind_register_memory_view, "G": __embind_register_std_string, "w": __embind_register_std_wstring, "aa": __embind_register_value_array, "h": __embind_register_value_array_element, "r": __embind_register_value_object, "e": __embind_register_value_object_field, "Z": __embind_register_void, "m": __emval_as, "H": __emval_call, "b": __emval_decref, "J": __emval_get_global, "n": __emval_get_property, "j": __emval_incref, "N": __emval_instanceof, "I": __emval_is_number, "A": __emval_new_array, "g": __emval_new_cstring, "u": __emval_new_object, "l": __emval_run_destructors, "i": __emval_set_property, "d": __emval_take_value, "C": _abort, "T": _clock_gettime, "M": _emscripten_memcpy_big, "p": _emscripten_resize_heap, "R": _environ_get, "S": _environ_sizes_get, "E": _fd_close, "U": _fd_read, "K": _fd_seek, "D": _fd_write, "a": wasmMemory, "B": _pthread_mutexattr_destroy, "P": _pthread_mutexattr_init, "O": _pthread_mutexattr_settype, "L": _setTempRet0, "Q": _strftime_l };
         var asm = createWasm();
         var ___wasm_call_ctors = Module["___wasm_call_ctors"] = function() {
-          return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["da"]).apply(null, arguments);
+          return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["ca"]).apply(null, arguments);
         };
         var _main = Module["_main"] = function() {
-          return (_main = Module["_main"] = Module["asm"]["ea"]).apply(null, arguments);
+          return (_main = Module["_main"] = Module["asm"]["da"]).apply(null, arguments);
         };
         var _malloc = Module["_malloc"] = function() {
-          return (_malloc = Module["_malloc"] = Module["asm"]["fa"]).apply(null, arguments);
+          return (_malloc = Module["_malloc"] = Module["asm"]["ea"]).apply(null, arguments);
         };
         var _free = Module["_free"] = function() {
-          return (_free = Module["_free"] = Module["asm"]["ga"]).apply(null, arguments);
+          return (_free = Module["_free"] = Module["asm"]["fa"]).apply(null, arguments);
         };
         var ___getTypeName = Module["___getTypeName"] = function() {
-          return (___getTypeName = Module["___getTypeName"] = Module["asm"]["ha"]).apply(null, arguments);
+          return (___getTypeName = Module["___getTypeName"] = Module["asm"]["ga"]).apply(null, arguments);
         };
         var ___embind_register_native_and_builtin_types = Module["___embind_register_native_and_builtin_types"] = function() {
-          return (___embind_register_native_and_builtin_types = Module["___embind_register_native_and_builtin_types"] = Module["asm"]["ia"]).apply(null, arguments);
+          return (___embind_register_native_and_builtin_types = Module["___embind_register_native_and_builtin_types"] = Module["asm"]["ha"]).apply(null, arguments);
         };
         var ___errno_location = Module["___errno_location"] = function() {
-          return (___errno_location = Module["___errno_location"] = Module["asm"]["ja"]).apply(null, arguments);
+          return (___errno_location = Module["___errno_location"] = Module["asm"]["ia"]).apply(null, arguments);
         };
         var dynCall_jiji = Module["dynCall_jiji"] = function() {
-          return (dynCall_jiji = Module["dynCall_jiji"] = Module["asm"]["ka"]).apply(null, arguments);
+          return (dynCall_jiji = Module["dynCall_jiji"] = Module["asm"]["ja"]).apply(null, arguments);
         };
         var dynCall_viijii = Module["dynCall_viijii"] = function() {
-          return (dynCall_viijii = Module["dynCall_viijii"] = Module["asm"]["la"]).apply(null, arguments);
+          return (dynCall_viijii = Module["dynCall_viijii"] = Module["asm"]["ka"]).apply(null, arguments);
         };
         var dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = function() {
-          return (dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = Module["asm"]["ma"]).apply(null, arguments);
+          return (dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = Module["asm"]["la"]).apply(null, arguments);
         };
         var dynCall_iiiiij = Module["dynCall_iiiiij"] = function() {
-          return (dynCall_iiiiij = Module["dynCall_iiiiij"] = Module["asm"]["na"]).apply(null, arguments);
+          return (dynCall_iiiiij = Module["dynCall_iiiiij"] = Module["asm"]["ma"]).apply(null, arguments);
         };
         var dynCall_iiiiijj = Module["dynCall_iiiiijj"] = function() {
-          return (dynCall_iiiiijj = Module["dynCall_iiiiijj"] = Module["asm"]["oa"]).apply(null, arguments);
+          return (dynCall_iiiiijj = Module["dynCall_iiiiijj"] = Module["asm"]["na"]).apply(null, arguments);
         };
         Module["addRunDependency"] = addRunDependency;
         Module["removeRunDependency"] = removeRunDependency;
@@ -29169,19 +29069,19 @@ var IfcEventType = class {
   }
 };
 var IfcExtendedProperties = class {
-  constructor(expressID, type, Name, Description, Properties) {
+  constructor(expressID, type, Name, Description, Properties2) {
     this.expressID = expressID;
     this.type = type;
     this.Name = Name;
     this.Description = Description;
-    this.Properties = Properties;
+    this.Properties = Properties2;
   }
   static FromTape(expressID, type, tape) {
     let ptr = 0;
     let Name = tape[ptr++];
     let Description = tape[ptr++];
-    let Properties = tape[ptr++];
-    return new IfcExtendedProperties(expressID, type, Name, Description, Properties);
+    let Properties2 = tape[ptr++];
+    return new IfcExtendedProperties(expressID, type, Name, Description, Properties2);
   }
   ToTape() {
     let args = [];
@@ -34427,21 +34327,21 @@ var IfcMaterialProfileWithOffsets = class {
   }
 };
 var IfcMaterialProperties = class {
-  constructor(expressID, type, Name, Description, Properties, Material) {
+  constructor(expressID, type, Name, Description, Properties2, Material) {
     this.expressID = expressID;
     this.type = type;
     this.Name = Name;
     this.Description = Description;
-    this.Properties = Properties;
+    this.Properties = Properties2;
     this.Material = Material;
   }
   static FromTape(expressID, type, tape) {
     let ptr = 0;
     let Name = tape[ptr++];
     let Description = tape[ptr++];
-    let Properties = tape[ptr++];
+    let Properties2 = tape[ptr++];
     let Material = tape[ptr++];
-    return new IfcMaterialProperties(expressID, type, Name, Description, Properties, Material);
+    return new IfcMaterialProperties(expressID, type, Name, Description, Properties2, Material);
   }
   ToTape() {
     let args = [];
@@ -37599,21 +37499,21 @@ var IfcProfileDef = class {
   }
 };
 var IfcProfileProperties = class {
-  constructor(expressID, type, Name, Description, Properties, ProfileDefinition) {
+  constructor(expressID, type, Name, Description, Properties2, ProfileDefinition) {
     this.expressID = expressID;
     this.type = type;
     this.Name = Name;
     this.Description = Description;
-    this.Properties = Properties;
+    this.Properties = Properties2;
     this.ProfileDefinition = ProfileDefinition;
   }
   static FromTape(expressID, type, tape) {
     let ptr = 0;
     let Name = tape[ptr++];
     let Description = tape[ptr++];
-    let Properties = tape[ptr++];
+    let Properties2 = tape[ptr++];
     let ProfileDefinition = tape[ptr++];
-    return new IfcProfileProperties(expressID, type, Name, Description, Properties, ProfileDefinition);
+    return new IfcProfileProperties(expressID, type, Name, Description, Properties2, ProfileDefinition);
   }
   ToTape() {
     let args = [];
@@ -51617,9 +51517,362 @@ var IfcZone = class {
   }
 };
 
+// dist/helpers/ifc-elements.ts
+var IfcElements2 = {
+  103090709: "IFCPROJECT",
+  4097777520: "IFCSITE",
+  4031249490: "IFCBUILDING",
+  3124254112: "IFCBUILDINGSTOREY",
+  3856911033: "IFCSPACE",
+  1674181508: "IFCANNOTATION",
+  25142252: "IFCCONTROLLER",
+  32344328: "IFCBOILER",
+  76236018: "IFCLAMP",
+  90941305: "IFCPUMP",
+  177149247: "IFCAIRTERMINALBOX",
+  182646315: "IFCFLOWINSTRUMENT",
+  263784265: "IFCFURNISHINGELEMENT",
+  264262732: "IFCELECTRICGENERATOR",
+  277319702: "IFCAUDIOVISUALAPPLIANCE",
+  310824031: "IFCPIPEFITTING",
+  331165859: "IFCSTAIR",
+  342316401: "IFCDUCTFITTING",
+  377706215: "IFCMECHANICALFASTENER",
+  395920057: "IFCDOOR",
+  402227799: "IFCELECTRICMOTOR",
+  413509423: "IFCSYSTEMFURNITUREELEMENT",
+  484807127: "IFCEVAPORATOR",
+  486154966: "IFCWINDOWSTANDARDCASE",
+  629592764: "IFCLIGHTFIXTURE",
+  630975310: "IFCUNITARYCONTROLELEMENT",
+  635142910: "IFCCABLECARRIERFITTING",
+  639361253: "IFCCOIL",
+  647756555: "IFCFASTENER",
+  707683696: "IFCFLOWSTORAGEDEVICE",
+  738039164: "IFCPROTECTIVEDEVICE",
+  753842376: "IFCBEAM",
+  812556717: "IFCTANK",
+  819412036: "IFCFILTER",
+  843113511: "IFCCOLUMN",
+  862014818: "IFCELECTRICDISTRIBUTIONBOARD",
+  900683007: "IFCFOOTING",
+  905975707: "IFCCOLUMNSTANDARDCASE",
+  926996030: "IFCVOIDINGFEATURE",
+  979691226: "IFCREINFORCINGBAR",
+  987401354: "IFCFLOWSEGMENT",
+  1003880860: "IFCELECTRICTIMECONTROL",
+  1051757585: "IFCCABLEFITTING",
+  1052013943: "IFCDISTRIBUTIONCHAMBERELEMENT",
+  1062813311: "IFCDISTRIBUTIONCONTROLELEMENT",
+  1073191201: "IFCMEMBER",
+  1095909175: "IFCBUILDINGELEMENTPROXY",
+  1156407060: "IFCPLATESTANDARDCASE",
+  1162798199: "IFCSWITCHINGDEVICE",
+  1329646415: "IFCSHADINGDEVICE",
+  1335981549: "IFCDISCRETEACCESSORY",
+  1360408905: "IFCDUCTSILENCER",
+  1404847402: "IFCSTACKTERMINAL",
+  1426591983: "IFCFIRESUPPRESSIONTERMINAL",
+  1437502449: "IFCMEDICALDEVICE",
+  1509553395: "IFCFURNITURE",
+  1529196076: "IFCSLAB",
+  1620046519: "IFCTRANSPORTELEMENT",
+  1634111441: "IFCAIRTERMINAL",
+  1658829314: "IFCENERGYCONVERSIONDEVICE",
+  1677625105: "IFCCIVILELEMENT",
+  1687234759: "IFCPILE",
+  1904799276: "IFCELECTRICAPPLIANCE",
+  1911478936: "IFCMEMBERSTANDARDCASE",
+  1945004755: "IFCDISTRIBUTIONELEMENT",
+  1973544240: "IFCCOVERING",
+  1999602285: "IFCSPACEHEATER",
+  2016517767: "IFCROOF",
+  2056796094: "IFCAIRTOAIRHEATRECOVERY",
+  2058353004: "IFCFLOWCONTROLLER",
+  2068733104: "IFCHUMIDIFIER",
+  2176052936: "IFCJUNCTIONBOX",
+  2188021234: "IFCFLOWMETER",
+  2223149337: "IFCFLOWTERMINAL",
+  2262370178: "IFCRAILING",
+  2272882330: "IFCCONDENSER",
+  2295281155: "IFCPROTECTIVEDEVICETRIPPINGUNIT",
+  2320036040: "IFCREINFORCINGMESH",
+  2347447852: "IFCTENDONANCHOR",
+  2391383451: "IFCVIBRATIONISOLATOR",
+  2391406946: "IFCWALL",
+  2474470126: "IFCMOTORCONNECTION",
+  2769231204: "IFCVIRTUALELEMENT",
+  2814081492: "IFCENGINE",
+  2906023776: "IFCBEAMSTANDARDCASE",
+  2938176219: "IFCBURNER",
+  2979338954: "IFCBUILDINGELEMENTPART",
+  3024970846: "IFCRAMP",
+  3026737570: "IFCTUBEBUNDLE",
+  3027962421: "IFCSLABSTANDARDCASE",
+  3040386961: "IFCDISTRIBUTIONFLOWELEMENT",
+  3053780830: "IFCSANITARYTERMINAL",
+  3079942009: "IFCOPENINGSTANDARDCASE",
+  3087945054: "IFCALARM",
+  3101698114: "IFCSURFACEFEATURE",
+  3127900445: "IFCSLABELEMENTEDCASE",
+  3132237377: "IFCFLOWMOVINGDEVICE",
+  3171933400: "IFCPLATE",
+  3221913625: "IFCCOMMUNICATIONSAPPLIANCE",
+  3242481149: "IFCDOORSTANDARDCASE",
+  3283111854: "IFCRAMPFLIGHT",
+  3296154744: "IFCCHIMNEY",
+  3304561284: "IFCWINDOW",
+  3310460725: "IFCELECTRICFLOWSTORAGEDEVICE",
+  3319311131: "IFCHEATEXCHANGER",
+  3415622556: "IFCFAN",
+  3420628829: "IFCSOLARDEVICE",
+  3493046030: "IFCGEOGRAPHICELEMENT",
+  3495092785: "IFCCURTAINWALL",
+  3508470533: "IFCFLOWTREATMENTDEVICE",
+  3512223829: "IFCWALLSTANDARDCASE",
+  3518393246: "IFCDUCTSEGMENT",
+  3571504051: "IFCCOMPRESSOR",
+  3588315303: "IFCOPENINGELEMENT",
+  3612865200: "IFCPIPESEGMENT",
+  3640358203: "IFCCOOLINGTOWER",
+  3651124850: "IFCPROJECTIONELEMENT",
+  3694346114: "IFCOUTLET",
+  3747195512: "IFCEVAPORATIVECOOLER",
+  3758799889: "IFCCABLECARRIERSEGMENT",
+  3824725483: "IFCTENDON",
+  3825984169: "IFCTRANSFORMER",
+  3902619387: "IFCCHILLER",
+  4074379575: "IFCDAMPER",
+  4086658281: "IFCSENSOR",
+  4123344466: "IFCELEMENTASSEMBLY",
+  4136498852: "IFCCOOLEDBEAM",
+  4156078855: "IFCWALLELEMENTEDCASE",
+  4175244083: "IFCINTERCEPTOR",
+  4207607924: "IFCVALVE",
+  4217484030: "IFCCABLESEGMENT",
+  4237592921: "IFCWASTETERMINAL",
+  4252922144: "IFCSTAIRFLIGHT",
+  4278956645: "IFCFLOWFITTING",
+  4288193352: "IFCACTUATOR",
+  4292641817: "IFCUNITARYEQUIPMENT",
+  3009204131: "IFCGRID"
+};
+
+// dist/helpers/properties.ts
+var PropsNames = {
+  aggregates: {
+    name: IFCRELAGGREGATES,
+    relating: "RelatingObject",
+    related: "RelatedObjects",
+    key: "children"
+  },
+  spatial: {
+    name: IFCRELCONTAINEDINSPATIALSTRUCTURE,
+    relating: "RelatingStructure",
+    related: "RelatedElements",
+    key: "children"
+  },
+  psets: {
+    name: IFCRELDEFINESBYPROPERTIES,
+    relating: "RelatingPropertyDefinition",
+    related: "RelatedObjects",
+    key: "hasPsets"
+  },
+  materials: {
+    name: IFCRELASSOCIATESMATERIAL,
+    relating: "RelatingMaterial",
+    related: "RelatedObjects",
+    key: "hasMaterial"
+  },
+  type: {
+    name: IFCRELDEFINESBYTYPE,
+    relating: "RelatingType",
+    related: "RelatedObjects",
+    key: "hasType"
+  }
+};
+var Properties = class {
+  constructor(api) {
+    this.api = api;
+  }
+  getItemProperties(modelID, id, recursive = false) {
+    return __async(this, null, function* () {
+      return this.api.GetLine(modelID, id, recursive);
+    });
+  }
+  getPropertySets(modelID, elementID, recursive = false) {
+    return __async(this, null, function* () {
+      return yield this.getProperty(modelID, elementID, recursive, PropsNames.psets);
+    });
+  }
+  getTypeProperties(modelID, elementID, recursive = false) {
+    return __async(this, null, function* () {
+      return yield this.getProperty(modelID, elementID, recursive, PropsNames.type);
+    });
+  }
+  getMaterialsProperties(modelID, elementID, recursive = false) {
+    return __async(this, null, function* () {
+      return yield this.getProperty(modelID, elementID, recursive, PropsNames.materials);
+    });
+  }
+  getSpatialStructure(modelID, includeProperties) {
+    return __async(this, null, function* () {
+      yield this.getAllTypesOfModel(modelID);
+      const chunks = yield this.getSpatialTreeChunks(modelID);
+      const allLines = yield this.api.GetLineIDsWithType(modelID, IFCPROJECT);
+      const projectID = allLines.get(0);
+      const project = Properties.newIfcProject(projectID);
+      yield this.getSpatialNode(modelID, project, chunks, includeProperties);
+      this.cleanupTypes();
+      return project;
+    });
+  }
+  getAllItemsOfType(modelID, type, verbose) {
+    return __async(this, null, function* () {
+      let items = [];
+      const lines = yield this.api.GetLineIDsWithType(modelID, type);
+      for (let i = 0; i < lines.size(); i++)
+        items.push(lines.get(i));
+      if (!verbose)
+        return items;
+      const result = [];
+      for (let i = 0; i < items.length; i++) {
+        result.push(yield this.api.GetLine(modelID, items[i]));
+      }
+      return result;
+    });
+  }
+  getProperty(modelID, elementID, recursive = false, propName) {
+    return __async(this, null, function* () {
+      const propSetIds = yield this.getAllRelatedItemsOfType(modelID, elementID, propName);
+      const result = [];
+      for (let i = 0; i < propSetIds.length; i++) {
+        result.push(yield this.api.GetLine(modelID, propSetIds[i], recursive));
+      }
+      return result;
+    });
+  }
+  getChunks(modelID, chunks, propNames) {
+    return __async(this, null, function* () {
+      const relation = yield this.api.GetLineIDsWithType(modelID, propNames.name);
+      for (let i = 0; i < relation.size(); i++) {
+        const rel = yield this.api.GetLine(modelID, relation.get(i), false);
+        this.saveChunk(chunks, propNames, rel);
+      }
+    });
+  }
+  static isRelated(id, rel, propNames) {
+    const relatedItems = rel[propNames.related];
+    if (Array.isArray(relatedItems)) {
+      const values = relatedItems.map((item) => item.value);
+      return values.includes(id);
+    }
+    return relatedItems.value === id;
+  }
+  static newIfcProject(id) {
+    return {
+      expressID: id,
+      type: "IFCPROJECT",
+      children: []
+    };
+  }
+  getSpatialNode(modelID, node, treeChunks, includeProperties) {
+    return __async(this, null, function* () {
+      yield this.getChildren(modelID, node, treeChunks, PropsNames.aggregates, includeProperties);
+      yield this.getChildren(modelID, node, treeChunks, PropsNames.spatial, includeProperties);
+    });
+  }
+  getChildren(modelID, node, treeChunks, propNames, includeProperties) {
+    return __async(this, null, function* () {
+      const children = treeChunks[node.expressID];
+      if (children == void 0)
+        return;
+      const prop = propNames.key;
+      const nodes = [];
+      for (let i = 0; i < children.length; i++) {
+        const child = children[i];
+        let node2 = this.newNode(child);
+        if (includeProperties) {
+          const properties = yield this.getItemProperties(modelID, node2.expressID);
+          node2 = __spreadValues(__spreadValues({}, properties), node2);
+        }
+        yield this.getSpatialNode(modelID, node2, treeChunks, includeProperties);
+        nodes.push(node2);
+      }
+      node[prop] = nodes;
+    });
+  }
+  newNode(id) {
+    const typeName = this.getNodeType(id);
+    return {
+      expressID: id,
+      type: typeName,
+      children: []
+    };
+  }
+  getNodeType(id) {
+    const typeID = this.types[id];
+    return IfcElements2[typeID];
+  }
+  getSpatialTreeChunks(modelID) {
+    return __async(this, null, function* () {
+      const treeChunks = {};
+      yield this.getChunks(modelID, treeChunks, PropsNames.aggregates);
+      yield this.getChunks(modelID, treeChunks, PropsNames.spatial);
+      return treeChunks;
+    });
+  }
+  saveChunk(chunks, propNames, rel) {
+    const relating = rel[propNames.relating].value;
+    const related = rel[propNames.related].map((r) => r.value);
+    if (chunks[relating] == void 0) {
+      chunks[relating] = related;
+    } else {
+      chunks[relating] = chunks[relating].concat(related);
+    }
+  }
+  getRelated(rel, propNames, IDs) {
+    const element = rel[propNames.relating];
+    if (!Array.isArray(element))
+      IDs.push(element.value);
+    else
+      element.forEach((ele) => IDs.push(ele.value));
+  }
+  getAllRelatedItemsOfType(modelID, id, propNames) {
+    return __async(this, null, function* () {
+      const lines = yield this.api.GetLineIDsWithType(modelID, propNames.name);
+      const IDs = [];
+      for (let i = 0; i < lines.size(); i++) {
+        const rel = yield this.api.GetLine(modelID, lines.get(i));
+        const isRelated = Properties.isRelated(id, rel, propNames);
+        if (isRelated)
+          this.getRelated(rel, propNames, IDs);
+      }
+      return IDs;
+    });
+  }
+  cleanupTypes() {
+    this.types = {};
+  }
+  getAllTypesOfModel(modelID) {
+    return __async(this, null, function* () {
+      const result = {};
+      const elements = Object.keys(IfcElements2).map((e) => parseInt(e));
+      for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        const lines = yield this.api.GetLineIDsWithType(modelID, element);
+        const size = lines.size();
+        for (let i2 = 0; i2 < size; i2++)
+          result[lines.get(i2)] = element;
+      }
+      this.types = result;
+    });
+  }
+};
+
 // dist/web-ifc-api.ts
 var WebIFCWasm;
-if (self.crossOriginIsolated) {
+if (typeof self !== "undefined" && self.crossOriginIsolated) {
   WebIFCWasm = require_web_ifc_mt();
 } else {
   WebIFCWasm = require_web_ifc();
@@ -51637,12 +51890,13 @@ var LINE_END = 9;
 function ms() {
   return new Date().getTime();
 }
-var IfcAPI = class {
+var IfcAPI2 = class {
   constructor() {
     this.wasmModule = void 0;
     this.fs = void 0;
     this.wasmPath = "";
     this.ifcGuidMap = new Map();
+    this.properties = new Properties(this);
   }
   Init(customLocateFileHandler) {
     return __async(this, null, function* () {
@@ -51661,7 +51915,6 @@ var IfcAPI = class {
     });
   }
   OpenModel(data, settings) {
-    this.wasmModule["FS_createDataFile"]("/", "filename", data, true, true, true);
     let s = __spreadValues({
       COORDINATE_TO_ORIGIN: false,
       USE_FAST_BOOLS: false,
@@ -51670,8 +51923,15 @@ var IfcAPI = class {
       CIRCLE_SEGMENTS_HIGH: 12,
       BOOL_ABORT_THRESHOLD: 1e4
     }, settings);
-    let result = this.wasmModule.OpenModel(s);
-    this.wasmModule["FS_unlink"]("/filename");
+    let offsetInSrc = 0;
+    let result = this.wasmModule.OpenModel(s, (destPtr, destSize) => {
+      let srcSize = Math.min(data.byteLength - offsetInSrc, destSize);
+      let dest = this.wasmModule.HEAPU8.subarray(destPtr, destPtr + destSize);
+      let src = data.subarray(offsetInSrc, offsetInSrc + srcSize);
+      dest.set(src);
+      offsetInSrc += srcSize;
+      return srcSize;
+    });
     return result;
   }
   CreateModel(settings) {
