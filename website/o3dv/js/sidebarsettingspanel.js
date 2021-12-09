@@ -342,16 +342,14 @@ OV.SidebarSettingsPanel = class extends OV.SidebarPanel
         resetToDefaultsButton.addEventListener ('click', () => {
             this.settings.backgroundColor = defaultSettings.backgroundColor;
             this.settings.defaultColor = defaultSettings.defaultColor;
-            this.backgroundColorSection.Update (defaultSettings.backgroundColor);
-            this.defaultColorSection.Update (defaultSettings.defaultColor);
-
             this.settings.showEdges = defaultSettings.showEdges;
             this.settings.edgeColor = defaultSettings.edgeColor;
             this.settings.edgeThreshold = defaultSettings.edgeThreshold;
-            this.edgeDisplaySection.Update (defaultSettings.showEdges, defaultSettings.edgeColor, defaultSettings.edgeThreshold);
-            this.callbacks.onEdgeDisplayChange ();
-
             this.settings.themeId = defaultSettings.themeId;
+
+            this.backgroundColorSection.Update (defaultSettings.backgroundColor);
+            this.defaultColorSection.Update (defaultSettings.defaultColor);
+            this.edgeDisplaySection.Update (defaultSettings.showEdges, defaultSettings.edgeColor, defaultSettings.edgeThreshold);
             this.themeSection.Update (defaultSettings.themeId);
             this.callbacks.onThemeChange ();
         });
