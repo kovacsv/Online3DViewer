@@ -168,8 +168,10 @@ OV.Importer = class
                     callbacks.onImportError (new OV.ImportError (OV.ImportErrorCode.NoImportableFile, null));
                     return;
                 }
-                let mainFile = importableFiles[mainFileIndex];
-                this.ImportLoadedMainFile (mainFile, settings, callbacks);
+                OV.RunTaskAsync (() => {
+                    let mainFile = importableFiles[mainFileIndex];
+                    this.ImportLoadedMainFile (mainFile, settings, callbacks);
+                });
             });
         }
     }
