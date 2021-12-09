@@ -72,6 +72,15 @@ OV.Modal = class
         this.isOpen = false;
     }
 
+    MoveToTop ()
+    {
+        if (!this.isOpen) {
+            return;
+        }
+        this.modalDiv.style.zIndex = '1000';
+        this.overlayDiv.style.zIndex = '1000';
+    }
+
     IsOpen ()
     {
         return this.isOpen;
@@ -128,6 +137,11 @@ OV.Dialog = class
     Hide ()
     {
         this.modal.Close ();
+    }
+
+    MoveToTop ()
+    {
+        this.modal.MoveToTop ();
     }
 };
 

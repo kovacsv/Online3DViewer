@@ -15,5 +15,6 @@ OV.ShowCookieDialog = function (onAccept)
     OV.AddDiv (contentDiv, 'ov_dialog_section', text);
     dialog.SetCloseable (false);
     dialog.Show ();
+    dialog.MoveToTop ();
     return dialog;
 };
