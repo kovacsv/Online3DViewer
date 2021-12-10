@@ -685,8 +685,13 @@ OV.Website = class
             return;
         }
 
-        OV.ShowCookieDialog (() => {
+        let text = 'This website uses cookies to offer you better user experience. See the details at the <a target="_blank" href="info/cookies.html">Cookies Policy</a> page.';
+        let popupDiv = OV.AddDiv (document.body, 'ov_bottom_floating_panel');
+        OV.AddDiv (popupDiv, 'ov_floating_panel_text', text);
+        let acceptButton = OV.AddDiv (popupDiv, 'ov_button ov_floating_panel_button', 'Accept');
+        acceptButton.addEventListener ('click', () => {
             this.cookieHandler.SetBoolVal ('ov_cookie_consent', true);
+            popupDiv.remove ();
         });
     }
 };
