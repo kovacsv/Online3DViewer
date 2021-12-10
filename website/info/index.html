@@ -214,8 +214,17 @@
 				<li>
 					Use the open button on the toolbar. Here you can select all the relevant files.
 				</li>
-				<li>Drag and drop all the relevant files into the browser window.</li>
+				<li>
+					Drag and drop all the relevant files into the browser window.
+				</li>
 			</ol>
+		</p>
+		<p>
+			Please note that you can not only open model files, but a zip file containing all your models. With drag and drop
+			it's also possible to load an entire folder from your computer.
+		</p>
+		<p>
+			If multiple files can be loaded, a dialog will appear, where you can select which file would you like to import.
 		</p>
 
 		<h3 id="loading_models_server">Loading models hosted on a web server</h3>
@@ -284,15 +293,30 @@
 		</p>
 		<p>
 			<ul>
-				<li>Background Color: This will change the background color of the canvas. It has no effect on model export, but the background color will be visible when you export a png image.</li>
-				<li>Default Color: This color is used when there is no material information in the model (for example in case of stl files). Changing this value regenerates the model in the background, so the model will be exported with the chosen color.</li>
+				<li>
+					Background Color: This will change the background color of the canvas. It has no effect on model export,
+					but the background color will be visible when you export a png image.
+				</li>
+				<li>
+					Default Color: This color is used when there is no material information in the model (for example in case
+					of stl files). Changing this value regenerates the model in the background, so the model will be exported
+					with the chosen color.
+				</li>
+				<li>
+					Edge Display: Here you can set the edge display parameters. If edges are visible, you can choose a color
+					for all edges, and a threshold angle. Edges will be visible only if the angle between the adjoining faces
+					exceeds the threshold.
+				</li>
+				<li>
+					Appearance: Switch between light and dark themes.
+				</li>
 			</ul>
 		</p>
 
 		<h2 id="exporting_models">Exporting models</h2>
 		<p>
 			You can export your model in several file formats. To achieve this, click on the export button in the toolbar.
-			After that select the format you would like to export to, and download the resulting files one by one.
+			After that, select the format you would like to export to, and download the resulting files one by one.
 		</p>
 
 		<h2 id="embed_selfhost">Self-hosted viewer</h2>
