@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="800"
+   height="400"
+   viewBox="0 0 211.66667 105.83333"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="dropbox.svg">
+  <defs
+     id="defs2">
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path1038"
+         d="M 0,0 5,-5 -12.5,0 5,5 Z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.00000003pt;stroke-opacity:1"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <clipPath
+       id="d-5">
+      <use
+         id="use923"
+         xlink:href="#c"
+         overflow="visible"
+         height="100%"
+         width="100%"
+         style="overflow:visible"
+         x="0"
+         y="0" />
+    </clipPath>
+    <path
+       d="M -5,-1 H 57 V 61 H -5 Z"
+       id="a"
+       inkscape:connector-curvature="0" />
+    <path
+       d="M -5,-1 H 57 V 61 H -5 Z"
+       id="c"
+       inkscape:connector-curvature="0" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="539.79629"
+     inkscape:cy="233.18962"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-191.16666)">
+    <circle
+       style="opacity:1;fill:#0061ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.26458332;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="path817"
+       cx="23.130972"
+       cy="211.18834"
+       r="10.583333" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.74363136px;line-height:1.25;font-family:Quicksand;-inkscape-font-specification:Quicksand;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.1807723"
+       x="23.714819"
+       y="216.12811"
+       id="text821"><tspan
+         sodipodi:role="line"
+         id="tspan819"
+         x="23.714819"
+         y="216.12811"
+         style="font-size:14.11111069px;line-height:6.98500013px;text-align:center;text-anchor:middle;fill:#ffffff;stroke-width:1.1807723">1</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.81483555px;line-height:1.25;font-family:Quicksand;-inkscape-font-specification:Quicksand;letter-spacing:0px;word-spacing:0px;fill:#263238;fill-opacity:1;stroke:none;stroke-width:0.66111267"
+       x="42.452263"
+       y="213.56834"
+       id="text825"><tspan
+         sodipodi:role="line"
+         x="42.452263"
+         y="213.56834"
+         style="line-height:13.22916698px;fill:#263238;fill-opacity:1;stroke-width:0.66111267"
+         id="tspan866">Upload your 3D model to Dropbox.</tspan></text>
+    <circle
+       cy="243.99623"
+       cx="23.130972"
+       id="circle848"
+       style="opacity:1;fill:#0061ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.26458332;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       r="10.583333" />
+    <text
+       id="text852"
+       y="249.00568"
+       x="22.930882"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.74363136px;line-height:1.25;font-family:Quicksand;-inkscape-font-specification:Quicksand;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.1807723"
+       xml:space="preserve"><tspan
+         style="font-size:14.11111069px;text-align:center;text-anchor:middle;fill:#ffffff;stroke-width:1.1807723"
+         y="249.00568"
+         x="22.930882"
+         id="tspan850"
+         sodipodi:role="line">2</tspan></text>
+    <circle
+       style="opacity:1;fill:#0061ff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.26458332;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       id="circle860"
+       cx="23.130972"
+       cy="276.80408"
+       r="10.583333" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15.74363136px;line-height:1.25;font-family:Quicksand;-inkscape-font-specification:Quicksand;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.1807723"
+       x="23.197889"
+       y="281.67242"
+       id="text864"><tspan
+         sodipodi:role="line"
+         id="tspan862"
+         x="23.197889"
+         y="281.67242"
+         style="font-size:14.11111069px;text-align:center;text-anchor:middle;fill:#ffffff;stroke-width:1.1807723">3</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.81483555px;line-height:1.25;font-family:Quicksand;-inkscape-font-specification:Quicksand;letter-spacing:0px;word-spacing:0px;fill:#263238;fill-opacity:1;stroke:none;stroke-width:0.66111267"
+       x="42.831303"
+       y="246.37624"
+       id="text825-1"><tspan
+         sodipodi:role="line"
+         x="42.831303"
+         y="246.37624"
+         style="line-height:13.22916698px;fill:#263238;fill-opacity:1;stroke-width:0.66111267"
+         id="tspan906">Get the sharing link of your model file.</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:8.81483555px;line-height:1.25;font-family:Quicksand;-inkscape-font-specification:Quicksand;letter-spacing:0px;word-spacing:0px;fill:#263238;fill-opacity:1;stroke:none;stroke-width:0.66111267"
+       x="43.22797"
+       y="272.56952"
+       id="text825-1-6"><tspan
+         sodipodi:role="line"
+         x="43.22797"
+         y="272.56952"
+         style="line-height:13.22916698px;fill:#263238;fill-opacity:1;stroke-width:0.66111267"
+         id="tspan866-8-5">Go to Online 3D Viewer, click on the</tspan><tspan
+         sodipodi:role="line"
+         x="43.22797"
+         y="285.79868"
+         style="line-height:13.22916698px;fill:#263238;fill-opacity:1;stroke-width:0.66111267"
+         id="tspan908">     button, and paste the link.</tspan></text>
+    <path
+       id="path910"
+       d="m 49.532512,279.85391 1.549236,-1.54924 1.549237,1.54924 m -1.549237,0.2582 v -1.80744 m -2.323854,4.13131 c 1.291029,0 2.323854,-1.03284 2.323854,-2.32387 m -5.680535,6.97157 c -0.877902,0 -1.549237,-0.67134 -1.549237,-1.54923 0,-0.8779 0.671335,-1.54924 1.549237,-1.54924 m 3.098474,0 c 0.877901,0 1.549236,0.67134 1.549236,1.54924 0,0.87789 -0.671335,1.54923 -1.549236,1.54923 m -2.582062,-1.54923 h 2.06565 m -2.582062,-1.54924 h 0.774618 m 1.549236,0 h 0.77462 m -3.098474,3.09847 h 0.774618 m 1.549236,0 h 0.77462"
+       stroke-miterlimit="10"
+       inkscape:connector-curvature="0"
+       style="fill:none;stroke:#263238;stroke-width:0.51641226;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10" />
+  </g>
+</svg>
