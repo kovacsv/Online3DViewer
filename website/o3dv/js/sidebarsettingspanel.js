@@ -58,11 +58,7 @@ OV.SettingsColorSection = class
 
     Show (show)
     {
-        if (show) {
-            OV.ShowDomElement (this.contentDiv);
-        } else {
-            OV.HideDomElement (this.contentDiv);
-        }
+        OV.ShowDomElement (this.contentDiv, show);
     }
 
     Update (color)
@@ -139,11 +135,11 @@ OV.SettingsEdgeDisplaySection = class
 
         this.buttons = [];
         let offButton = AddRadioButton (buttonsDiv, 'off', 'Don\'t Show Edges', () => {
-            OV.HideDomElement (this.edgeSettingsDiv);
+            OV.ShowDomElement (this.edgeSettingsDiv, false);
             callbacks.onShowEdgesChange (false);
         });
         let onButton = AddRadioButton (buttonsDiv, 'on', 'Show Edges', () => {
-            OV.ShowDomElement (this.edgeSettingsDiv);
+            OV.ShowDomElement (this.edgeSettingsDiv, true);
             callbacks.onShowEdgesChange (true);
         });
         this.buttons.push (offButton);
@@ -166,11 +162,7 @@ OV.SettingsEdgeDisplaySection = class
 
     ShowEdgeSettings (show)
     {
-        if (show) {
-            OV.ShowDomElement (this.edgeSettingsDiv);
-        } else {
-            OV.HideDomElement (this.edgeSettingsDiv);
-        }
+        OV.ShowDomElement (this.edgeSettingsDiv, show);
     }
 
     Clear ()
@@ -338,7 +330,7 @@ OV.SidebarSettingsPanel = class extends OV.SidebarPanel
     AddResetToDefaultsButton ()
     {
         let defaultSettings = new OV.Settings ();
-        let resetToDefaultsButton = OV.AddDiv (this.contentDiv, 'ov_button outline ov_sidebar_button', 'Reset to Default');
+        let resetToDefaultsButton = OV.AddDiv (this.contentDiv, 'ov_button ov_sidebar_button outline', 'Reset to Default');
         resetToDefaultsButton.addEventListener ('click', () => {
             this.settings.backgroundColor = defaultSettings.backgroundColor;
             this.settings.defaultColor = defaultSettings.defaultColor;

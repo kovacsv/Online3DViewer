@@ -154,10 +154,10 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
             return;
         }
         if (this.isVisible) {
-            OV.ShowDomElement (this.mainElement);
+            OV.ShowDomElement (this.mainElement, true);
             this.childrenDiv.classList.add ('ov_tree_view_children');
         } else {
-            OV.HideDomElement (this.mainElement);
+            OV.ShowDomElement (this.mainElement, false);
             this.childrenDiv.classList.remove ('ov_tree_view_children');
         }
     }
@@ -170,10 +170,10 @@ OV.TreeViewGroupItem = class extends OV.TreeViewItem
         }
         if (show) {
             OV.SetSvgIconImageElement (this.openCloseButton, this.openButtonIcon);
-            OV.ShowDomElement (this.childrenDiv);
+            OV.ShowDomElement (this.childrenDiv, true);
         } else {
             OV.SetSvgIconImageElement (this.openCloseButton, this.closeButtonIcon);
-            OV.HideDomElement (this.childrenDiv);
+            OV.ShowDomElement (this.childrenDiv, false);
         }
     }
 

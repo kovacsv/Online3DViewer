@@ -1,3 +1,4 @@
 OV.FeatureSet =
 {
+    MeasureTool : false
 };

@@ -66,14 +66,13 @@ OV.InsertDomElementAfter = function (newElement, existingElement)
     existingElement.parentNode.insertBefore (newElement, existingElement.nextSibling);
 };
 
-OV.ShowDomElement = function (element)
+OV.ShowDomElement = function (element, show)
 {
-    element.style.display = 'block';
-};
-
-OV.HideDomElement = function (element)
-{
-    element.style.display = 'none';
+    if (show) {
+        element.style.display = 'block';
+    } else {
+        element.style.display = 'none';
+    }
 };
 
 OV.IsDomElementVisible = function (element)

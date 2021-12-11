@@ -529,6 +529,11 @@ OV.Viewer = class
         });
     }
 
+    GetCanvas ()
+    {
+        return this.canvas;
+    }
+
     GetCamera ()
     {
         return this.navigation.GetCamera ();
@@ -667,6 +672,12 @@ OV.Viewer = class
         this.Render ();
     }
 
+    ClearExtra ()
+    {
+        this.extraGeometry.Clear ();
+        this.Render ();
+    }
+
     SetMeshesVisibility (isVisible)
     {
         this.geometry.EnumerateMeshes ((mesh) => {
@@ -695,8 +706,7 @@ OV.Viewer = class
             return highlightMaterials;
         }
 
-        const showEdges = this.geometry.edgeSettings.showEdges;
-        const highlightMaterial = this.shading.CreateHighlightMaterial (highlightColor, showEdges);
+        const highlightMaterial = this.CreateHighlightMaterial (highlightColor);
         this.geometry.EnumerateMeshes ((mesh) => {
             let highlighted = isHighlighted (mesh.userData);
             if (highlighted) {
@@ -713,6 +723,12 @@ OV.Viewer = class
         });
 
         this.Render ();
+    }
+
+    CreateHighlightMaterial (highlightColor)
+    {
+        const showEdges = this.geometry.edgeSettings.showEdges;
+        return this.shading.CreateHighlightMaterial (highlightColor, showEdges);
     }
 
     GetMeshUserDataUnderMouse (mouseCoords)

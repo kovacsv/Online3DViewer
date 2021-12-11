@@ -41,6 +41,11 @@ OV.ToolbarButton = class
         this.buttonImg.classList.remove (className);
     }
 
+    IsSelected ()
+    {
+        return this.selected;
+    }
+
     SetSelected (selected)
     {
         this.selected = selected;
@@ -63,6 +68,17 @@ OV.Toolbar = class
     {
         let button = new OV.ToolbarButton (image, imageTitle, onClick);
         button.AddDomElements (this.mainDiv);
+        return button;
+    }
+
+    AddImagePushButton (image, imageTitle, isSelected, onClick)
+    {
+        let button = new OV.ToolbarButton (image, imageTitle, () => {
+            button.SetSelected (!button.IsSelected ());
+            onClick ();
+        });
+        button.AddDomElements (this.mainDiv);
+        button.SetSelected (isSelected);
         return button;
     }
 

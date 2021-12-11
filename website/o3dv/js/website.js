@@ -13,6 +13,7 @@ OV.Website = class
         this.parameters = parameters;
         this.settings = new OV.Settings ();
         this.viewer = new OV.Viewer ();
+        this.measureTool = new OV.MeasureTool ();
         this.hashHandler = new OV.HashHandler ();
         this.cookieHandler = new OV.CookieHandler ();
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
@@ -33,6 +34,7 @@ OV.Website = class
         this.SwitchTheme (this.settings.themeId, false);
 
         this.InitViewer ();
+        this.InitMeasureTool ();
         this.InitToolbar ();
         this.InitDragAndDrop ();
         this.InitSidebar ();
@@ -111,17 +113,17 @@ OV.Website = class
 
         this.uiState = uiState;
         if (this.uiState === OV.WebsiteUIState.Intro) {
-            OV.ShowDomElement (this.parameters.introDiv);
-            OV.HideDomElement (this.parameters.mainDiv);
+            OV.ShowDomElement (this.parameters.introDiv, true);
+            OV.ShowDomElement (this.parameters.mainDiv, false);
             ShowOnlyOnModelElements (false);
         } else if (this.uiState === OV.WebsiteUIState.Model) {
-            OV.HideDomElement (this.parameters.introDiv);
-            OV.ShowDomElement (this.parameters.mainDiv);
+            OV.ShowDomElement (this.parameters.introDiv, false);
+            OV.ShowDomElement (this.parameters.mainDiv, true);
             ShowOnlyOnModelElements (true);
             this.UpdatePanelsVisibility ();
         } else if (this.uiState === OV.WebsiteUIState.Loading) {
-            OV.HideDomElement (this.parameters.introDiv);
-            OV.HideDomElement (this.parameters.mainDiv);
+            OV.ShowDomElement (this.parameters.introDiv, false);
+            OV.ShowDomElement (this.parameters.mainDiv, false);
             ShowOnlyOnModelElements (false);
         }
 
@@ -133,6 +135,7 @@ OV.Website = class
         this.HidePopups ();
         this.model = null;
         this.parameters.fileNameDiv.innerHTML = '';
+        this.measureTool.Clear ();
         this.viewer.Clear ();
         this.navigator.Clear ();
         this.sidebar.Clear ();
@@ -151,13 +154,21 @@ OV.Website = class
 
     OnModelClicked (button, mouseCoordinates)
     {
-        if (button === 1) {
-            let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
-            if (meshUserData === null) {
-                this.navigator.SetSelection (null);
-            } else {
-                this.navigator.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshUserData.originalMeshId));
-            }
+        if (button !== 1) {
+            return;
+        }
+
+        if (this.measureTool.IsActive ()) {
+            this.measureTool.Click (mouseCoordinates);
+            this.sidebar.UpdateMeasureTool (this.measureTool);
+            return;
+        }
+
+        let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
+        if (meshUserData === null) {
+            this.navigator.SetSelection (null);
+        } else {
+            this.navigator.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshUserData.originalMeshId));
         }
     }
 
@@ -422,6 +433,11 @@ OV.Website = class
         ]);
     }
 
+    InitMeasureTool ()
+    {
+        this.measureTool.Init (this.viewer, this.highlightColor);
+    }
+
     InitToolbar ()
     {
         function AddButton (toolbar, eventHandler, imageName, imageTitle, classNames, onClick)
@@ -567,6 +583,15 @@ OV.Website = class
             },
             onThemeChange : () => {
                 this.SwitchTheme (this.settings.themeId, true);
+            },
+            onMeasureToolActivedChange : (isActivated) => {
+                if (isActivated) {
+                    this.navigator.SetSelection (null);
+                    this.measureTool.SetActive (true);
+                } else {
+                    this.measureTool.SetActive (false);
+                }
+                this.sidebar.UpdateMeasureTool (this.measureTool);
             },
             onResize : () => {
                 this.Resize ();

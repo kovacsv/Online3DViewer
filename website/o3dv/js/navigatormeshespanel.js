@@ -157,15 +157,10 @@ OV.NavigatorMeshesPanel = class extends OV.NavigatorPanel
                 buttons.flatList.iconDiv.classList.add ('selected');
                 buttons.treeView.iconDiv.classList.remove ('selected');
             }
-            if (showTree && isHierarchical) {
-                OV.ShowDomElement (buttons.separator);
-                OV.ShowDomElement (buttons.expandAll.div);
-                OV.ShowDomElement (buttons.collapseAll.div);
-            } else {
-                OV.HideDomElement (buttons.separator);
-                OV.HideDomElement (buttons.expandAll.div);
-                OV.HideDomElement (buttons.collapseAll.div);
-            }
+            let showExpandButtons = showTree && isHierarchical;
+            OV.ShowDomElement (buttons.separator, showExpandButtons);
+            OV.ShowDomElement (buttons.expandAll.div, showExpandButtons);
+            OV.ShowDomElement (buttons.collapseAll.div, showExpandButtons);
         }
 
         function UpdateView (panel, importResult, isHierarchical)

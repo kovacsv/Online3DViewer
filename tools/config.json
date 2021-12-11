@@ -61,6 +61,7 @@
 		"source/viewer/domutils.js",
 		"source/viewer/navigation.js",
 		"source/viewer/viewer.js",
+		"source/viewer/measuretool.js",
 		"source/viewer/domviewer.js"
 	],
 	"website_files_js" : [
@@ -87,6 +88,7 @@
 		"website/o3dv/js/sidebarpanel.js",
 		"website/o3dv/js/sidebardetailspanel.js",
 		"website/o3dv/js/sidebarsettingspanel.js",
+		"website/o3dv/js/sidebarmeasurepanel.js",
 		"website/o3dv/js/sidebar.js",
 		"website/o3dv/js/hashhandler.js",
 		"website/o3dv/js/threemodelloaderui.js",

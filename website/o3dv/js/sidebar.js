@@ -8,9 +8,13 @@ OV.Sidebar = class
 
         this.detailsPanel = new OV.SidebarDetailsPanel (this.panelSet.GetContentDiv ());
         this.settingsPanel = new OV.SidebarSettingsPanel (this.panelSet.GetContentDiv (), settings);
+        this.measurePanel = new OV.SidebarMeasurePanel (this.panelSet.GetContentDiv ());
 
         this.panelSet.AddPanel (this.detailsPanel);
         this.panelSet.AddPanel (this.settingsPanel);
+        if (OV.FeatureSet.MeasureTool) {
+            this.panelSet.AddPanel (this.measurePanel);
+        }
         this.panelSet.ShowPanel (this.detailsPanel);
     }
 
@@ -30,11 +34,7 @@ OV.Sidebar = class
 
         this.panelSet.Init ({
             onResize : () => {
-                if (this.panelSet.IsPanelsVisible ()) {
-                    OV.ShowDomElement (this.splitterDiv);
-                } else {
-                    OV.HideDomElement (this.splitterDiv);
-                }
+                OV.ShowDomElement (this.splitterDiv, this.panelSet.IsPanelsVisible ());
                 this.callbacks.onResize ();
             },
             onShowHidePanels : (show) => {
@@ -57,6 +57,12 @@ OV.Sidebar = class
             }
         });
 
+        this.measurePanel.Init ({
+            onActivatedChange : (isActivated) => {
+                this.callbacks.onMeasureToolActivedChange (isActivated);
+            }
+        });
+
         OV.InstallVerticalSplitter (this.splitterDiv, this.mainDiv, true, () => {
             this.callbacks.onResize ();
         });
@@ -65,6 +71,11 @@ OV.Sidebar = class
     UpdateSettings (hasDefaultMaterial)
     {
         this.settingsPanel.UpdateSettings (hasDefaultMaterial);
+    }
+
+    UpdateMeasureTool (measureTool)
+    {
+        this.measurePanel.UpdateMeasureTool (measureTool);
     }
 
     Resize (height)
