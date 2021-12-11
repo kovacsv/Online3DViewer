@@ -39,7 +39,8 @@ OV.Website = class
         this.InitNavigator ();
         this.InitCookieConsent ();
 
-        this.viewer.SetClickHandler (this.OnModelClicked.bind (this));
+        this.viewer.SetMouseClickHandler (this.OnModelClicked.bind (this));
+        this.viewer.SetMouseMoveHandler (this.OnModelMouseMoved.bind (this));
         this.viewer.SetContextMenuHandler (this.OnModelContextMenu.bind (this));
 
         this.Resize ();
@@ -158,6 +159,11 @@ OV.Website = class
                 this.navigator.SetSelection (new OV.Selection (OV.SelectionType.Mesh, meshUserData.originalMeshId));
             }
         }
+    }
+
+    OnModelMouseMoved (mouseCoordinates)
+    {
+
     }
 
     OnModelContextMenu (globalMouseCoordinates, mouseCoordinates)

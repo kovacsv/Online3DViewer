@@ -262,11 +262,12 @@ OV.ViewerGeometry = class
         });
     }
 
-    GetModelMeshUnderMouse (mouseCoords, camera, width, height)
+    GetMeshIntersectionUnderMouse (mouseCoords, camera, width, height)
     {
         if (this.mainObject === null) {
             return null;
         }
+
         let raycaster = new THREE.Raycaster ();
         let mousePos = new THREE.Vector2 ();
         mousePos.x = (mouseCoords.x / width) * 2 - 1;
@@ -276,27 +277,43 @@ OV.ViewerGeometry = class
         for (let i = 0; i < iSectObjects.length; i++) {
             let iSectObject = iSectObjects[i];
             if (iSectObject.object.type === 'Mesh' && iSectObject.object.visible) {
-                return iSectObject.object;
-            }
-        }
-        return null;
-    }
-
-    GetModelIntersectionUnderMouse (mouseCoords, camera, width, height)
-    {
-        let raycaster = new THREE.Raycaster ();
-        let mousePos = new THREE.Vector2 ();
-        mousePos.x = (mouseCoords.x / width) * 2 - 1;
-        mousePos.y = -(mouseCoords.y / height) * 2 + 1;
-        raycaster.setFromCamera (mousePos, camera);
-        let iSectObjects = raycaster.intersectObjects (this.modelMeshes);
-        for (let i = 0; i < iSectObjects.length; i++) {
-            let iSectObject = iSectObjects[i];
-            if (iSectObject.object.type === 'Mesh' && iSectObject.object.visible) {
                 return iSectObject;
             }
         }
+
         return null;
+    }
+};
+
+OV.ViewerExtraGeometry = class
+{
+    constructor (scene)
+    {
+        this.scene = scene;
+        this.mainObject = null;
+    }
+
+    AddObject (object)
+    {
+        if (this.mainObject === null) {
+            this.mainObject = new THREE.Object3D ();
+            this.scene.add (this.mainObject);
+        }
+        this.mainObject.add (object);
+    }
+
+    Clear ()
+    {
+        if (this.mainObject === null) {
+            return;
+        }
+        this.mainObject.traverse ((obj) => {
+            if (obj.isMesh || obj.isLineSegments) {
+                obj.geometry.dispose ();
+            }
+        });
+        this.scene.remove (this.mainObject);
+        this.mainObject = null;
     }
 };
 
@@ -438,6 +455,7 @@ OV.Viewer = class
         this.renderer = null;
         this.scene = null;
         this.geometry = null;
+        this.extraGeometry = null;
         this.axis = null;
         this.camera = null;
         this.shading = null;
@@ -467,6 +485,7 @@ OV.Viewer = class
 
         this.scene = new THREE.Scene ();
         this.geometry = new OV.ViewerGeometry (this.scene);
+        this.extraGeometry = new OV.ViewerExtraGeometry (this.scene);
         this.axis = new OV.ViewerAxis (this.scene);
 
         this.InitCamera ();
@@ -475,9 +494,14 @@ OV.Viewer = class
         this.Render ();
     }
 
-    SetClickHandler (onClick)
+    SetMouseClickHandler (onMouseClick)
     {
-        this.navigation.SetClickHandler (onClick);
+        this.navigation.SetMouseClickHandler (onMouseClick);
+    }
+
+    SetMouseMoveHandler (onMouseMove)
+    {
+        this.navigation.SetMouseMoveHandler (onMouseMove);
     }
 
     SetContextMenuHandler (onContext)
@@ -630,9 +654,16 @@ OV.Viewer = class
         this.Render ();
     }
 
+    AddExtraObject (object)
+    {
+        this.extraGeometry.AddObject (object);
+        this.Render ();
+    }
+
     Clear ()
     {
         this.geometry.Clear ();
+        this.extraGeometry.Clear ();
         this.Render ();
     }
 
@@ -686,17 +717,26 @@ OV.Viewer = class
 
     GetMeshUserDataUnderMouse (mouseCoords)
     {
+        let intersection = this.GetMeshIntersectionUnderMouse (mouseCoords);
+        if (intersection === null) {
+            return null;
+        }
+        return intersection.object.userData;
+    }
+
+    GetMeshIntersectionUnderMouse (mouseCoords)
+    {
         let width = this.canvas.width;
         let height = this.canvas.height;
         if (window.devicePixelRatio) {
             width /= window.devicePixelRatio;
             height /= window.devicePixelRatio;
         }
-        let mesh = this.geometry.GetModelMeshUnderMouse (mouseCoords, this.camera, width, height);
-        if (mesh === null) {
+        let intersection = this.geometry.GetMeshIntersectionUnderMouse (mouseCoords, this.camera, width, height);
+        if (intersection === null) {
             return null;
         }
-        return mesh.userData;
+        return intersection;
     }
 
     GetBoundingBox (needToProcess)

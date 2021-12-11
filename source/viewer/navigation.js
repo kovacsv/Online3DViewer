@@ -252,7 +252,8 @@ OV.Navigation = class
 		this.clickDetector = new OV.ClickDetector ();
 
 		this.onUpdate = null;
-		this.onClick = null;
+		this.onMouseClick = null;
+		this.onMouseMove = null;
 		this.onContext = null;
 
 		if (this.canvas.addEventListener) {
@@ -275,9 +276,14 @@ OV.Navigation = class
 		this.onUpdate = onUpdate;
 	}
 
-	SetClickHandler (onClick)
+	SetMouseClickHandler (onMouseClick)
 	{
-		this.onClick = onClick;
+		this.onMouseClick = onMouseClick;
+	}
+
+	SetMouseMoveHandler (onMouseMove)
+	{
+		this.onMouseMove = onMouseMove;
 	}
 
 	SetContextMenuHandler (onContext)
@@ -398,6 +404,11 @@ OV.Navigation = class
 	{
 		this.mouse.Move (this.canvas, ev);
 		this.clickDetector.Move ();
+		if (this.onMouseMove) {
+			let mouseCoords = OV.GetClientCoordinates (this.canvas, ev.clientX, ev.clientY);
+			this.onMouseMove (mouseCoords);
+		}
+
 		if (!this.mouse.IsButtonDown ()) {
 			return;
 		}
@@ -577,9 +588,9 @@ OV.Navigation = class
 
 	Click (button, clientX, clientY)
 	{
-		if (this.onClick) {
+		if (this.onMouseClick) {
 			let mouseCoords = OV.GetClientCoordinates (this.canvas, clientX, clientY);
-			this.onClick (button, mouseCoords);
+			this.onMouseClick (button, mouseCoords);
 		}
 	}
 
