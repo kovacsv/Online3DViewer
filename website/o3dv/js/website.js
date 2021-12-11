@@ -133,12 +133,17 @@ OV.Website = class
     ClearModel ()
     {
         this.HidePopups ();
+
         this.model = null;
-        this.parameters.fileNameDiv.innerHTML = '';
-        this.measureTool.Clear ();
         this.viewer.Clear ();
+
+        this.parameters.fileNameDiv.innerHTML = '';
+
         this.navigator.Clear ();
         this.sidebar.Clear ();
+
+        this.measureTool.Clear ();
+        this.sidebar.UpdateMeasureTool (this.measureTool);
     }
 
     OnModelLoaded (importResult, threeObject)

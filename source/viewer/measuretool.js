@@ -99,6 +99,8 @@ OV.MeasureTool = class
         coneGeometry.rotateX (-Math.PI / 2);
 
         let coneMaterial = this.viewer.CreateHighlightMaterial (this.highlightColor);
+        coneMaterial.opacity = 0.6;
+        coneMaterial.transparent = true;
         let cone = new THREE.Mesh (coneGeometry, coneMaterial);
 
         let faceNormal = this.GetFaceWorldNormal (intersection);
