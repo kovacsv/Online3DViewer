@@ -38,6 +38,18 @@ img
 	display: block;
 }
 
+ol, ul
+{
+	padding: 0px 25px;
+	margin: 0px;
+}
+
+li
+{
+	margin: 10px 0px;
+	line-height: 25px;
+}
+
 .only_on_model
 {
 	display: var(--ov_only_on_model_display);

@@ -38,6 +38,8 @@ OV.SidebarMeasurePanel = class extends OV.SidebarPanel
 
         this.helpSection = OV.AddDiv (this.contentDiv, 'ov_sidebar_section');
         this.resultSection = OV.AddDiv (this.contentDiv, 'ov_sidebar_section');
+
+        this.helpSection.innerHTML = this.GetDefaultHelpText ();
     }
 
     UpdateMeasureTool (measureTool)
@@ -51,9 +53,9 @@ OV.SidebarMeasurePanel = class extends OV.SidebarPanel
         if (measureTool.IsActive ()) {
             let markerCount = measureTool.GetMarkerCount ();
             if (markerCount === 0) {
-                this.helpSection.innerHTML = 'Select a model point to start measure.';
+                this.helpSection.innerHTML = 'Click on a model point to start measure.';
             } else if (markerCount === 1) {
-                this.helpSection.innerHTML = 'Select another model point to start measure.';
+                this.helpSection.innerHTML = 'Click on another model point to see the results.';
             } else if (markerCount === 2) {
                 OV.ShowDomElement (this.helpSection, false);
                 OV.ShowDomElement (this.resultSection, true);
@@ -87,7 +89,17 @@ OV.SidebarMeasurePanel = class extends OV.SidebarPanel
                 OV.AddDiv (this.resultSection, 'ov_sidebar_measure_value', facesAngleStr + '°');
 
             }
+        } else {
+            this.helpSection.innerHTML = this.GetDefaultHelpText ();
         }
+    }
+
+    GetDefaultHelpText ()
+    {
+        return `<ol>
+        <li>Activate measure mode with the button above.</li>
+        <li>Click two points in the model to see the results.</li>
+        </ol>`;
     }
 
     Clear ()
