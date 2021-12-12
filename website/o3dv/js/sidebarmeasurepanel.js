@@ -1,9 +1,10 @@
 OV.SidebarMeasurePanel = class extends OV.SidebarPanel
 {
-    constructor (parentDiv)
+    constructor (parentDiv, measureTool)
     {
         super (parentDiv);
 
+        this.measureTool = measureTool;
         this.helpSection = null;
         this.resultSection = null;
     }
@@ -42,7 +43,7 @@ OV.SidebarMeasurePanel = class extends OV.SidebarPanel
         this.helpSection.innerHTML = this.GetDefaultHelpText ();
     }
 
-    UpdateMeasureTool (measureTool)
+    UpdateMeasureTool ()
     {
         OV.ClearDomElement (this.helpSection);
         OV.ClearDomElement (this.resultSection);
@@ -50,8 +51,8 @@ OV.SidebarMeasurePanel = class extends OV.SidebarPanel
         OV.ShowDomElement (this.helpSection, true);
         OV.ShowDomElement (this.resultSection, false);
 
-        if (measureTool.IsActive ()) {
-            let markerCount = measureTool.GetMarkerCount ();
+        if (this.measureTool.IsActive ()) {
+            let markerCount = this.measureTool.GetMarkerCount ();
             if (markerCount === 0) {
                 this.helpSection.innerHTML = 'Click on a model point to start measure.';
             } else if (markerCount === 1) {
@@ -60,12 +61,12 @@ OV.SidebarMeasurePanel = class extends OV.SidebarPanel
                 OV.ShowDomElement (this.helpSection, false);
                 OV.ShowDomElement (this.resultSection, true);
 
-                let calculatedValues = measureTool.Calculate ();
+                let calculatedValues = this.measureTool.Calculate ();
 
                 OV.AddDiv (this.resultSection, 'ov_sidebar_measure_name', 'Distance of points');
                 let pointsDistanceStr = calculatedValues.pointsDistance.toLocaleString (undefined, {
                     minimumFractionDigits: 2,
-                    maximumFractionDigits: 6
+                    maximumFractionDigits: 4
                 });
                 OV.AddDiv (this.resultSection, 'ov_sidebar_measure_value', pointsDistanceStr);
 
@@ -73,7 +74,7 @@ OV.SidebarMeasurePanel = class extends OV.SidebarPanel
                 if (calculatedValues.parallelFacesDistance !== null) {
                     let facesDistanceStr = calculatedValues.parallelFacesDistance.toLocaleString (undefined, {
                         minimumFractionDigits: 2,
-                        maximumFractionDigits: 6
+                        maximumFractionDigits: 4
                     });
                     OV.AddDiv (this.resultSection, 'ov_sidebar_measure_value', facesDistanceStr);
                 } else {
@@ -84,7 +85,7 @@ OV.SidebarMeasurePanel = class extends OV.SidebarPanel
                 let facesAngleDegree = calculatedValues.facesAngle * OV.RadDeg;
                 let facesAngleStr = facesAngleDegree.toLocaleString (undefined, {
                     minimumFractionDigits: 2,
-                    maximumFractionDigits: 6
+                    maximumFractionDigits: 4
                 });
                 OV.AddDiv (this.resultSection, 'ov_sidebar_measure_value', facesAngleStr + '°');
 

@@ -72,7 +72,7 @@ OV.MeasureTool = class
         const bNormal = this.GetFaceWorldNormal (b);
         result.pointsDistance = a.point.distanceTo (b.point);
         result.facesAngle = aNormal.angleTo (bNormal);
-        if (OV.IsEqual (result.facesAngle, 0.0) || OV.IsEqual (result.facesAngle, Math.PI)) {
+        if (OV.IsEqualEps (result.facesAngle, 0.0, OV.BigEps) || OV.IsEqualEps (result.facesAngle, Math.PI, OV.BigEps)) {
             let aPlane = new THREE.Plane ().setFromNormalAndCoplanarPoint (aNormal, a.point);
             result.parallelFacesDistance = Math.abs (aPlane.distanceToPoint (b.point));
         }

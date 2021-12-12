@@ -18,7 +18,7 @@ OV.Website = class
         this.cookieHandler = new OV.CookieHandler ();
         this.toolbar = new OV.Toolbar (this.parameters.toolbarDiv);
         this.navigator = new OV.Navigator (this.parameters.navigatorDiv, this.parameters.navigatorSplitterDiv);
-        this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv, this.parameters.sidebarSplitterDiv, this.settings);
+        this.sidebar = new OV.Sidebar (this.parameters.sidebarDiv, this.parameters.sidebarSplitterDiv, this.settings, this.measureTool);
         this.eventHandler = new OV.EventHandler (this.parameters.eventHandler);
         this.modelLoaderUI = new OV.ThreeModelLoaderUI ();
         this.themeHandler = new OV.ThemeHandler ();
@@ -143,7 +143,7 @@ OV.Website = class
         this.sidebar.Clear ();
 
         this.measureTool.Clear ();
-        this.sidebar.UpdateMeasureTool (this.measureTool);
+        this.sidebar.UpdateMeasureTool ();
     }
 
     OnModelLoaded (importResult, threeObject)
@@ -165,7 +165,7 @@ OV.Website = class
 
         if (this.measureTool.IsActive ()) {
             this.measureTool.Click (mouseCoordinates);
-            this.sidebar.UpdateMeasureTool (this.measureTool);
+            this.sidebar.UpdateMeasureTool ();
             return;
         }
 
@@ -596,7 +596,7 @@ OV.Website = class
                 } else {
                     this.measureTool.SetActive (false);
                 }
-                this.sidebar.UpdateMeasureTool (this.measureTool);
+                this.sidebar.UpdateMeasureTool ();
             },
             onResize : () => {
                 this.Resize ();

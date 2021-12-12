@@ -1,6 +1,6 @@
 OV.Sidebar = class
 {
-    constructor (mainDiv, splitterDiv, settings)
+    constructor (mainDiv, splitterDiv, settings, measureTool)
     {
         this.mainDiv = mainDiv;
         this.splitterDiv = splitterDiv;
@@ -8,7 +8,7 @@ OV.Sidebar = class
 
         this.detailsPanel = new OV.SidebarDetailsPanel (this.panelSet.GetContentDiv ());
         this.settingsPanel = new OV.SidebarSettingsPanel (this.panelSet.GetContentDiv (), settings);
-        this.measurePanel = new OV.SidebarMeasurePanel (this.panelSet.GetContentDiv ());
+        this.measurePanel = new OV.SidebarMeasurePanel (this.panelSet.GetContentDiv (), measureTool);
 
         this.panelSet.AddPanel (this.detailsPanel);
         this.panelSet.AddPanel (this.settingsPanel);
@@ -73,9 +73,9 @@ OV.Sidebar = class
         this.settingsPanel.UpdateSettings (hasDefaultMaterial);
     }
 
-    UpdateMeasureTool (measureTool)
+    UpdateMeasureTool ()
     {
-        this.measurePanel.UpdateMeasureTool (measureTool);
+        this.measurePanel.UpdateMeasureTool ();
     }
 
     Resize (height)
