@@ -192,13 +192,11 @@ OV.ClickDetector = class
 	constructor ()
 	{
 		this.isClick = false;
-		this.button = 0;
 	}
 
-	Down (ev)
+	Down ()
 	{
 		this.isClick = true;
-		this.button = ev.which;
 	}
 
 	Move ()
@@ -206,17 +204,9 @@ OV.ClickDetector = class
 		this.isClick = false;
 	}
 
-	Up (ev)
-	{
-		if (this.isClick && ev.which !== this.button) {
-			this.isClick = false;
-		}
-	}
-
 	Leave ()
 	{
 		this.isClick = false;
-		this.button = 0;
 	}
 
 	IsClick ()
@@ -392,7 +382,7 @@ OV.Navigation = class
 		ev.preventDefault ();
 
 		this.mouse.Down (this.canvas, ev);
-		this.clickDetector.Down (ev);
+		this.clickDetector.Down ();
 	}
 
 	OnMouseMove (ev)
@@ -442,7 +432,7 @@ OV.Navigation = class
 	OnMouseUp (ev)
 	{
 		this.mouse.Up (this.canvas, ev);
-		this.clickDetector.Up (ev);
+
 		if (this.clickDetector.IsClick ()) {
 			let mouseCoords = this.mouse.GetPosition ();
 			this.Click (ev.which, mouseCoords);
@@ -512,7 +502,6 @@ OV.Navigation = class
 	{
 		ev.preventDefault ();
 
-		this.clickDetector.Up (ev);
 		if (this.clickDetector.IsClick ()) {
 			this.Context (ev.clientX, ev.clientY);
 		}
