@@ -84,7 +84,7 @@ OV.MouseInteraction = class
 		return this.buttons[length - 1];
 	}
 
-	GetCoordinates ()
+	GetPosition ()
 	{
 		return this.curr;
 	}
@@ -140,16 +140,6 @@ OV.TouchInteraction = class
 		this.currDist = this.GetTouchDistanceFromEvent (canvas, ev);
 		this.diffDist = this.currDist - this.prevDist;
 		this.prevDist = this.currDist;
-	}
-
-	End (canvas, ev)
-	{
-		if (ev.touches.length === 0) {
-			return;
-		}
-		this.fingers = 0;
-		this.currPos = this.GetPositionFromEvent (canvas, ev);
-		this.currDist = this.GetTouchDistanceFromEvent (canvas, ev);
 	}
 
 	IsFingerDown ()
@@ -454,7 +444,7 @@ OV.Navigation = class
 		this.mouse.Up (this.canvas, ev);
 		this.clickDetector.Up (ev);
 		if (this.clickDetector.IsClick ()) {
-			let mouseCoords = this.mouse.GetCoordinates ();
+			let mouseCoords = this.mouse.GetPosition ();
 			this.Click (ev.which, mouseCoords);
 		}
 	}
@@ -500,8 +490,6 @@ OV.Navigation = class
 	OnTouchEnd (ev)
 	{
 		ev.preventDefault ();
-
-		this.touch.End (this.canvas, ev);
 	}
 
 	OnMouseWheel (ev)
