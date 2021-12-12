@@ -246,6 +246,7 @@ OV.Navigation = class
 			this.canvas.addEventListener ('wheel', this.OnMouseWheel.bind (this));
 			this.canvas.addEventListener ('touchstart', this.OnTouchStart.bind (this));
 			this.canvas.addEventListener ('touchmove', this.OnTouchMove.bind (this));
+			this.canvas.addEventListener ('touchcancel', this.OnTouchEnd.bind (this));
 			this.canvas.addEventListener ('touchend', this.OnTouchEnd.bind (this));
 			this.canvas.addEventListener ('contextmenu', this.OnContextMenu.bind (this));
 		}
