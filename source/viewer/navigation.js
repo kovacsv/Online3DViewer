@@ -44,13 +44,13 @@ OV.MouseInteraction = class
     Down (canvas, ev)
     {
         this.buttons.push (ev.which);
-        this.curr = this.GetCurrent (canvas, ev);
+        this.curr = this.GetPositionFromEvent (canvas, ev);
         this.prev = this.curr.Clone ();
     }
 
     Move (canvas, ev)
     {
-        this.curr = this.GetCurrent (canvas, ev);
+        this.curr = this.GetPositionFromEvent (canvas, ev);
 		this.diff = OV.SubCoord2D (this.curr, this.prev);
 		this.prev = this.curr.Clone ();
 	}
@@ -61,13 +61,13 @@ OV.MouseInteraction = class
 		if (buttonIndex !== -1) {
 			this.buttons.splice (buttonIndex, 1);
 		}
-		this.curr = this.GetCurrent (canvas, ev);
+		this.curr = this.GetPositionFromEvent (canvas, ev);
 	}
 
 	Leave (canvas, ev)
 	{
 		this.buttons = [];
-		this.curr = this.GetCurrent (canvas, ev);
+		this.curr = this.GetPositionFromEvent (canvas, ev);
 	}
 
 	IsButtonDown ()
@@ -84,12 +84,17 @@ OV.MouseInteraction = class
 		return this.buttons[length - 1];
 	}
 
+	GetCoordinates ()
+	{
+		return this.curr;
+	}
+
 	GetMoveDiff ()
 	{
 		return this.diff;
 	}
 
-	GetCurrent (canvas, ev)
+	GetPositionFromEvent (canvas, ev)
 	{
 		return OV.GetClientCoordinates (canvas, ev.clientX, ev.clientY);
 	}
@@ -116,10 +121,10 @@ OV.TouchInteraction = class
 
 		this.fingers = ev.touches.length;
 
-		this.currPos = this.GetCurrent (canvas, ev);
+		this.currPos = this.GetPositionFromEvent (canvas, ev);
 		this.prevPos = this.currPos.Clone ();
 
-		this.currDist = this.GetTouchDistance (canvas, ev);
+		this.currDist = this.GetTouchDistanceFromEvent (canvas, ev);
 		this.prevDist = this.currDist;
 	}
 
@@ -128,11 +133,11 @@ OV.TouchInteraction = class
 		if (ev.touches.length === 0) {
 			return;
 		}
-		this.currPos = this.GetCurrent (canvas, ev);
+		this.currPos = this.GetPositionFromEvent (canvas, ev);
 		this.diffPos = OV.SubCoord2D (this.currPos, this.prevPos);
 		this.prevPos = this.currPos.Clone ();
 
-		this.currDist = this.GetTouchDistance (canvas, ev);
+		this.currDist = this.GetTouchDistanceFromEvent (canvas, ev);
 		this.diffDist = this.currDist - this.prevDist;
 		this.prevDist = this.currDist;
 	}
@@ -143,8 +148,8 @@ OV.TouchInteraction = class
 			return;
 		}
 		this.fingers = 0;
-		this.currPos = this.GetCurrent (canvas, ev);
-		this.currDist = this.GetTouchDistance (canvas, ev);
+		this.currPos = this.GetPositionFromEvent (canvas, ev);
+		this.currDist = this.GetTouchDistanceFromEvent (canvas, ev);
 	}
 
 	IsFingerDown ()
@@ -167,7 +172,7 @@ OV.TouchInteraction = class
 		return this.diffDist;
 	}
 
-	GetCurrent (canvas, ev)
+	GetPositionFromEvent (canvas, ev)
 	{
 		let coord = null;
 		if (ev.touches.length !== 0) {
@@ -177,7 +182,7 @@ OV.TouchInteraction = class
 		return coord;
 	}
 
-	GetTouchDistance (canvas, ev)
+	GetTouchDistanceFromEvent (canvas, ev)
 	{
 		if (ev.touches.length !== 2) {
 			return 0.0;
@@ -449,7 +454,8 @@ OV.Navigation = class
 		this.mouse.Up (this.canvas, ev);
 		this.clickDetector.Up (ev);
 		if (this.clickDetector.IsClick ()) {
-			this.Click (ev.which, ev.clientX, ev.clientY);
+			let mouseCoords = this.mouse.GetCoordinates ();
+			this.Click (ev.which, mouseCoords);
 		}
 	}
 
@@ -586,10 +592,9 @@ OV.Navigation = class
 		}
 	}
 
-	Click (button, clientX, clientY)
+	Click (button, mouseCoords)
 	{
 		if (this.onMouseClick) {
-			let mouseCoords = OV.GetClientCoordinates (this.canvas, clientX, clientY);
 			this.onMouseClick (button, mouseCoords);
 		}
 	}
