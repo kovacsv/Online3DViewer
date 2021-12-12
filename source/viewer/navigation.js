@@ -164,6 +164,11 @@ OV.TouchInteraction = class
 		return this.fingers;
 	}
 
+	GetPosition ()
+	{
+		return this.currPos;
+	}
+
 	GetMoveDiff ()
 	{
 		return this.diffPos;
@@ -204,21 +209,41 @@ OV.ClickDetector = class
 	constructor ()
 	{
 		this.isClick = false;
+		this.startPosition = null;
 	}
 
-	Down ()
+	Start (startPosition)
 	{
 		this.isClick = true;
+		this.startPosition = startPosition;
 	}
 
-	Move ()
+	Move (currentPosition)
 	{
-		this.isClick = false;
+		if (!this.isClick) {
+			return;
+		}
+
+		if (this.startPosition !== null) {
+			const maxClickDistance = 3.0;
+			const currentDistance = OV.CoordDistance2D (this.startPosition, currentPosition);
+			if (currentDistance > maxClickDistance) {
+				this.isClick = false;
+			}
+		} else {
+			this.isClick = false;
+		}
 	}
 
-	Leave ()
+	End ()
+	{
+		this.startPosition = null;
+	}
+
+	Cancel ()
 	{
 		this.isClick = false;
+		this.startPosition = null;
 	}
 
 	IsClick ()
@@ -395,13 +420,13 @@ OV.Navigation = class
 		ev.preventDefault ();
 
 		this.mouse.Down (this.canvas, ev);
-		this.clickDetector.Down ();
+		this.clickDetector.Start (this.mouse.GetPosition ());
 	}
 
 	OnMouseMove (ev)
 	{
 		this.mouse.Move (this.canvas, ev);
-		this.clickDetector.Move ();
+		this.clickDetector.Move (this.mouse.GetPosition ());
 		if (this.onMouseMove) {
 			let mouseCoords = OV.GetClientCoordinates (this.canvas, ev.clientX, ev.clientY);
 			this.onMouseMove (mouseCoords);
@@ -445,6 +470,7 @@ OV.Navigation = class
 	OnMouseUp (ev)
 	{
 		this.mouse.Up (this.canvas, ev);
+		this.clickDetector.End ();
 
 		if (this.clickDetector.IsClick ()) {
 			let mouseCoords = this.mouse.GetPosition ();
@@ -455,7 +481,7 @@ OV.Navigation = class
 	OnMouseLeave (ev)
 	{
 		this.mouse.Leave (this.canvas, ev);
-		this.clickDetector.Leave ();
+		this.clickDetector.Cancel ();
 	}
 
 	OnTouchStart (ev)
@@ -463,6 +489,7 @@ OV.Navigation = class
 		ev.preventDefault ();
 
 		this.touch.Start (this.canvas, ev);
+		this.clickDetector.Start (this.touch.GetPosition ());
 	}
 
 	OnTouchMove (ev)
@@ -470,6 +497,7 @@ OV.Navigation = class
 		ev.preventDefault ();
 
 		this.touch.Move (this.canvas, ev);
+		this.clickDetector.Move (this.touch.GetPosition ());
 		if (!this.touch.IsFingerDown ()) {
 			return;
 		}
@@ -495,6 +523,14 @@ OV.Navigation = class
 		ev.preventDefault ();
 
 		this.touch.End (this.canvas, ev);
+		this.clickDetector.End ();
+
+		if (this.clickDetector.IsClick ()) {
+			let touchCoords = this.touch.GetPosition ();
+			if (this.touch.GetFingerCount () === 1) {
+				this.Click (1, touchCoords);
+			}
+		}
 	}
 
 	OnMouseWheel (ev)
@@ -519,6 +555,7 @@ OV.Navigation = class
 
 		if (this.clickDetector.IsClick ()) {
 			this.Context (ev.clientX, ev.clientY);
+			this.clickDetector.Cancel ();
 		}
 	}
 
