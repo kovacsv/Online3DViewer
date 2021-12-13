@@ -228,10 +228,10 @@ OV.ClickDetector = class
 			const maxClickDistance = 3.0;
 			const currentDistance = OV.CoordDistance2D (this.startPosition, currentPosition);
 			if (currentDistance > maxClickDistance) {
-				this.isClick = false;
+				this.Cancel ();
 			}
 		} else {
-			this.isClick = false;
+			this.Cancel ();
 		}
 	}
 
