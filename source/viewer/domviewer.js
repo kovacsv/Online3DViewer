@@ -77,6 +77,8 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, parameters)
             let message = 'Unknown error';
             if (importError.code === OV.ImportErrorCode.NoImportableFile) {
                 message = 'No importable file found';
+            } else if (importError.code === OV.ImportErrorCode.FailedToLoadFile) {
+                message = 'Failed load file for import.';
             } else if (importError.code === OV.ImportErrorCode.ImportFailed) {
                 message = 'Failed to import model.';
             }

@@ -9,8 +9,9 @@ OV.ImportSettings = class
 OV.ImportErrorCode =
 {
     NoImportableFile : 1,
-    ImportFailed : 2,
-    UnknownError : 3
+    FailedToLoadFile : 2,
+    ImportFailed : 3,
+    UnknownError : 4
 };
 
 OV.ImportError = class
@@ -179,7 +180,7 @@ OV.Importer = class
     ImportLoadedMainFile (mainFile, settings, callbacks)
     {
         if (mainFile === null || mainFile.file === null || mainFile.file.content === null) {
-            callbacks.onImportError (new OV.ImportError (OV.ImportErrorCode.NoImportableFile, null));
+            callbacks.onImportError (new OV.ImportError (OV.ImportErrorCode.FailedToLoadFile, null));
             return;
         }
 

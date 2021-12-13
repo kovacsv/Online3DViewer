@@ -46,7 +46,7 @@ describe ('Importer Test', function () {
                 assert.fail ();
             },
             error : function (importer, importError) {
-                assert.strictEqual (importError.code, OV.ImportErrorCode.NoImportableFile);
+                assert.strictEqual (importError.code, OV.ImportErrorCode.FailedToLoadFile);
                 done ();
             }
         });

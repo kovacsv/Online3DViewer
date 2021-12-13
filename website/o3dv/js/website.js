@@ -373,6 +373,8 @@ OV.Website = class
                 let reason = 'unknown';
                 if (importError.code === OV.ImportErrorCode.NoImportableFile) {
                     reason = 'no_importable_file';
+                } else if (importError.code === OV.ImportErrorCode.FailedToLoadFile) {
+                    reason = 'failed_to_load_file';
                 } else if (importError.code === OV.ImportErrorCode.ImportFailed) {
                     reason = 'import_failed';
                 }
