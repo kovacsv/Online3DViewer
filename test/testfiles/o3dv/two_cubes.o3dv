@@ -1,0 +1,38 @@
+{
+	"root" : 0,
+	"nodes" : [
+		{
+			"children" : [1, 2]
+		},
+		{
+			"transformation" : {
+				"translation" : [0.0, 0.0, 0.0]
+			},
+			"mesh" : 0
+		},
+		{
+			"transformation" : {
+				"translation" : [2.0, 0.0, 0.0]
+			},
+			"mesh" : 0
+		}
+	],
+	"materials" : [
+		{
+			"name" : "Blue",
+			"color" : [0, 0, 200]
+		}
+	],
+	"meshes" : [
+		{
+			"name" : "Cube",
+			"type" : "cuboid",
+			"material" : 0,
+			"parameters" : {
+				"size_x" : 1.0,
+				"size_y" : 1.0,
+				"size_z" : 1.0
+			}
+		}
+	]
+}
