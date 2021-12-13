@@ -70,7 +70,7 @@ OV.ThreeModelLoaderUI = class
         } else if (importError.code === OV.ImportErrorCode.FailedToLoadFile) {
             return OV.ShowMessageDialog (
                 'Something went wrong',
-                'Failed load file for import.',
+                'Failed to load file for import.',
                 importError.message
             );
         } else if (importError.code === OV.ImportErrorCode.ImportFailed) {
