@@ -37,16 +37,13 @@ div.inline
 	line-height: inherit;
 }
 
-i
+i.icon
 {
-	width: 18px;
-	height: 18px;
-	display: block;
-}
-
-i[class^="icon-"]:before, i[class*=" icon-"]:before {
-    height:18px;
-	margin-bottom: -4px;
+	font-size: 16px;
+	margin: 0px 2px;
+	display: inline-block;
+	position: relative;
+	bottom: -4px;
 }
 
 h1
@@ -103,13 +100,14 @@ p.info
 
 ol, ul
 {
-	padding: 0px 25px;
+	padding: 0px 0px 0px 25px;
 }
 
 li
 {
-	margin: 10px 0px;
+	text-align: justify;
 	line-height: 25px;
+	margin: 10px 0px;
 }
 
 table
@@ -160,6 +158,19 @@ div.code
 	padding : 5px;
 	overflow: auto;
 	white-space: nowrap;
+}
+
+h3.question
+{
+	cursor: pointer;
+	margin-top: 15px;
+	margin-bottom: 20px;
+}
+
+div.answer
+{
+	display: none;
+	margin-bottom: 30px;
 }
 
 @media only screen and (max-width: 1000px)

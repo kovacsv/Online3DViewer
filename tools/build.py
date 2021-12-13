@@ -76,7 +76,8 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 		'index.html',
 		'embed.html',
 		os.path.join ('info', 'index.html'),
-		os.path.join ('info', 'cookies.html')
+		os.path.join ('info', 'cookies.html'),
+		os.path.join ('info', 'faq.html')
 	]
 	for htmlFileName in htmlFileNames:
 		htmlFilePath = os.path.join (websiteDir, htmlFileName)
