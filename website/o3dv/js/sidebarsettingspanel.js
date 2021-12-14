@@ -224,10 +224,17 @@ OV.SidebarSettingsPanel = class extends OV.SidebarPanel
     {
         super (parentDiv);
         this.settings = settings;
-        this.backgroundColorSection = new OV.SettingsColorSection (this.contentDiv);
-        this.defaultColorSection = new OV.SettingsColorSection (this.contentDiv);
-        this.edgeDisplaySection = new OV.SettingsEdgeDisplaySection (this.contentDiv);
-        this.themeSection = new OV.SettingsThemeSection (this.contentDiv);
+
+        this.sectionsDiv = OV.AddDiv (this.contentDiv, 'ov_sidebar_settings_sections ov_thin_scrollbar');
+        this.backgroundColorSection = new OV.SettingsColorSection (this.sectionsDiv);
+        this.defaultColorSection = new OV.SettingsColorSection (this.sectionsDiv);
+        this.edgeDisplaySection = new OV.SettingsEdgeDisplaySection (this.sectionsDiv);
+        this.themeSection = new OV.SettingsThemeSection (this.sectionsDiv);
+
+        this.resetToDefaultsButton = OV.AddDiv (this.contentDiv, 'ov_button ov_sidebar_button outline', 'Reset to Default');
+        this.resetToDefaultsButton.addEventListener ('click', () => {
+            this.ResetToDefaults ();
+        });
     }
 
     GetName ()
@@ -298,7 +305,6 @@ OV.SidebarSettingsPanel = class extends OV.SidebarPanel
             }
             callbacks.onThemeChange ();
         });
-        this.AddResetToDefaultsButton ();
     }
 
     UpdateSettings (hasDefaultMaterial)
@@ -327,23 +333,29 @@ OV.SidebarSettingsPanel = class extends OV.SidebarPanel
         }
     }
 
-    AddResetToDefaultsButton ()
+    ResetToDefaults ()
     {
         let defaultSettings = new OV.Settings ();
-        let resetToDefaultsButton = OV.AddDiv (this.contentDiv, 'ov_button ov_sidebar_button outline', 'Reset to Default');
-        resetToDefaultsButton.addEventListener ('click', () => {
-            this.settings.backgroundColor = defaultSettings.backgroundColor;
-            this.settings.defaultColor = defaultSettings.defaultColor;
-            this.settings.showEdges = defaultSettings.showEdges;
-            this.settings.edgeColor = defaultSettings.edgeColor;
-            this.settings.edgeThreshold = defaultSettings.edgeThreshold;
-            this.settings.themeId = defaultSettings.themeId;
 
-            this.backgroundColorSection.Update (defaultSettings.backgroundColor);
-            this.defaultColorSection.Update (defaultSettings.defaultColor);
-            this.edgeDisplaySection.Update (defaultSettings.showEdges, defaultSettings.edgeColor, defaultSettings.edgeThreshold);
-            this.themeSection.Update (defaultSettings.themeId);
-            this.callbacks.onThemeChange ();
-        });
+        this.settings.backgroundColor = defaultSettings.backgroundColor;
+        this.settings.defaultColor = defaultSettings.defaultColor;
+        this.settings.showEdges = defaultSettings.showEdges;
+        this.settings.edgeColor = defaultSettings.edgeColor;
+        this.settings.edgeThreshold = defaultSettings.edgeThreshold;
+        this.settings.themeId = defaultSettings.themeId;
+
+        this.backgroundColorSection.Update (defaultSettings.backgroundColor);
+        this.defaultColorSection.Update (defaultSettings.defaultColor);
+        this.edgeDisplaySection.Update (defaultSettings.showEdges, defaultSettings.edgeColor, defaultSettings.edgeThreshold);
+        this.themeSection.Update (defaultSettings.themeId);
+        this.callbacks.onThemeChange ();
+    }
+
+    Resize ()
+    {
+        let titleHeight = OV.GetDomElementOuterHeight (this.titleDiv);
+        let resetButtonHeight = OV.GetDomElementOuterHeight (this.resetToDefaultsButton);
+        let height = this.parentDiv.offsetHeight;
+        OV.SetDomElementOuterHeight (this.sectionsDiv, height - titleHeight - resetButtonHeight);
     }
 };

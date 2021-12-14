@@ -58,6 +58,12 @@ div.ov_sidebar_content div.ov_sidebar_settings_content
 	overflow: auto;
 }
 
+div.ov_sidebar_content div.ov_sidebar_settings_sections
+{
+	margin-bottom: 10px;
+	overflow: auto;
+}
+
 div.ov_sidebar_content div.ov_sidebar_settings_row
 {
 	margin: 5px 0px;
