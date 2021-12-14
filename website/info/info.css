@@ -24,19 +24,6 @@ a:hover
 	text-decoration: underline;
 }
 
-div.inline
-{
-	background: red;
-	font-size: 18px;
-	width: 18px;
-	height: 18px;
-	display: inline-block;
-	margin-left: 3px;
-	margin-right: 3px;
-	margin-bottom: -4px;
-	line-height: inherit;
-}
-
 i.icon
 {
 	font-size: 16px;
