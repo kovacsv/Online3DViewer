@@ -138,6 +138,24 @@ OV.AddSelect = function (parentElement, options)
     return selectElement;
 };
 
+OV.AddRangeSlider = function (parentElement, min, max)
+{
+    let slider = OV.AddDomElement (parentElement, 'input', 'ov_slider');
+    slider.setAttribute ('type', 'range');
+    slider.setAttribute ('min', min.toString ());
+    slider.setAttribute ('max', max.toString ());
+    return slider;
+};
+
+OV.AddNumberInput = function (parentElement, min, max)
+{
+    let slider = OV.AddDomElement (parentElement, 'input', 'ov_number_input');
+    slider.setAttribute ('type', 'number');
+    slider.setAttribute ('min', min.toString ());
+    slider.setAttribute ('max', max.toString ());
+    return slider;
+};
+
 OV.SelectRadioButton = function (radioButtons, selectedId)
 {
     for (let radioButton of radioButtons) {

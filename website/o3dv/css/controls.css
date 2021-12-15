@@ -87,11 +87,6 @@ input.ov_dialog_text
 
 input.ov_radio_button
 {
-	margin-right: 10px;
-}
-
-input.ov_radio_button
-{
 	position: relative;
 	top: 2px;
 	width: 14px;
@@ -131,6 +126,44 @@ input.ov_checkbox:checked
 	background-image: url('O3DVIcons/checkmark.svg');
 	background-position: center;
 	border: 0px;
+}
+
+input.ov_slider
+{
+	height: 1px;
+	background: var(--ov_border_color);
+	outline: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+input.ov_slider::-webkit-slider-thumb
+{
+	background: var(--ov_button_color);
+	width: 14px;
+	height: 14px;
+	border-radius: 14px;
+	cursor: pointer;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+input.ov_slider::-moz-range-thumb
+{
+	background: var(--ov_button_color);
+	width: 14px;
+	height: 14px;
+	border: 0px;
+	border-radius: 14px;
+	cursor: pointer;
+}
+
+span.ov_slider_label
+{
+	margin-left: 10px;
+	position: relative;
+	bottom: -4px;
 }
 
 @media (hover)

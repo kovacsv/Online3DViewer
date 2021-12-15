@@ -48,7 +48,7 @@ OV.SettingsColorSection = class
     {
         this.contentDiv = OV.AddDiv (this.parentDiv, 'ov_sidebar_settings_content');
         let titleDiv = OV.AddDiv (this.contentDiv, 'ov_sidebar_subtitle');
-        let colorInput = OV.AddDiv (titleDiv, 'color-picker');
+        let colorInput = OV.AddDiv (titleDiv, 'ov_color_picker');
         OV.AddDiv (titleDiv, 'ov_sidebar_subtitle', title);
         this.pickr = OV.AddColorPicker (colorInput, color, predefinedColors, (color) => {
             onChange (color);
@@ -85,7 +85,8 @@ OV.SettingsEdgeDisplaySection = class
         this.parentDiv = parentDiv;
         this.buttons = null;
         this.pickr = null;
-        this.thresholdSelect = null;
+        this.thresholdSlider = null;
+        this.thresholdSliderValue = null;
         this.edgeSettingsDiv = null;
     }
 
@@ -105,33 +106,27 @@ OV.SettingsEdgeDisplaySection = class
         let buttonsDiv = OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded');
         this.edgeSettingsDiv = OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded');
 
-        let colorRow = OV.AddDiv (this.edgeSettingsDiv, 'ov_sidebar_settings_row');
-        OV.AddDiv (colorRow, 'ov_sidebar_settings_parameter_name', 'Edge Color');
+        let edgeColorRow = OV.AddDiv (this.edgeSettingsDiv, 'ov_sidebar_settings_row');
         let predefinedEdgeColors = ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'];
-        let colorInputDiv = OV.AddDiv (colorRow, 'ov_sidebar_settings_parameter_value');
-        let colorInput = OV.AddDiv (colorInputDiv);
+
+        let colorInput = OV.AddDiv (edgeColorRow, 'ov_color_picker');
         this.pickr = OV.AddColorPicker (colorInput, edgeColor, predefinedEdgeColors, (color) => {
             callbacks.onEdgeColorChange (color);
         });
+        OV.AddDiv (edgeColorRow, null, 'Edge Color');
 
-        let thresholdRow = OV.AddDiv (this.edgeSettingsDiv, 'ov_sidebar_settings_row');
-        OV.AddDiv (thresholdRow, 'ov_sidebar_settings_parameter_name', 'Threshold Angle');
-        let thresholdInputDiv = OV.AddDiv (thresholdRow, 'ov_sidebar_settings_parameter_value');
-        let thresholdValues = [{
-            value : '1',
-            text : '1'
-        }];
-        for (let thresholdValue = 10; thresholdValue <= 180; thresholdValue += 10) {
-            thresholdValues.push ({
-                value : thresholdValue.toString (),
-                text : thresholdValue.toString ()
-            });
-        }
-        this.thresholdSelect = OV.AddSelect (thresholdInputDiv, thresholdValues);
-        this.thresholdSelect.addEventListener ('change', () => {
-            callbacks.onEdgeThresholdChange (parseInt (this.thresholdSelect.value, 10));
+        let thresholdRow = OV.AddDiv (this.edgeSettingsDiv, 'ov_sidebar_settings_row large');
+        this.thresholdSlider = OV.AddRangeSlider (thresholdRow, 0, 90);
+        this.thresholdSlider.setAttribute ('title', 'Edge Angle Threshold');
+        this.thresholdSliderValue = OV.AddDomElement (thresholdRow, 'span', 'ov_slider_label');
+        this.thresholdSlider.addEventListener ('input', () => {
+            this.thresholdSliderValue.innerHTML = this.thresholdSlider.value;
         });
-        this.thresholdSelect.value = edgeThreshold.toString ();
+        this. thresholdSlider.addEventListener ('change', () => {
+            callbacks.onEdgeThresholdChange (this.thresholdSlider.value);
+        });
+        this.thresholdSlider.value = edgeThreshold;
+        this.thresholdSliderValue.innerHTML = edgeThreshold;
 
         this.buttons = [];
         let offButton = AddRadioButton (buttonsDiv, 'off', 'Don\'t Show Edges', () => {
@@ -157,7 +152,8 @@ OV.SettingsEdgeDisplaySection = class
         OV.SelectRadioButton (this.buttons, showEdges ? 'on' : 'off');
         this.ShowEdgeSettings (showEdges);
         this.pickr.setColor ('#' + OV.ColorToHexString (edgeColor));
-        this.thresholdSelect.value = edgeThreshold.toString ();
+        this.thresholdSlider.value = edgeThreshold;
+        this.thresholdSliderValue.innerHTML = edgeThreshold;
     }
 
     ShowEdgeSettings (show)
