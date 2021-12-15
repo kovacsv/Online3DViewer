@@ -27,6 +27,13 @@ div.ov_sidebar_subtitle
 	overflow: hidden;
 }
 
+div.ov_sidebar_subtitle div.ov_sidebar_subtitle_toggle
+{
+	margin-right: 10px;
+	margin-top: 3px;
+	float: left;
+}
+
 div.ov_sidebar_subtitle div.ov_sidebar_subtitle_icon
 {
 	width: 30px;

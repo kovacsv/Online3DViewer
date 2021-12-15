@@ -83,7 +83,7 @@ OV.SettingsEdgeDisplaySection = class
     constructor (parentDiv)
     {
         this.parentDiv = parentDiv;
-        this.buttons = null;
+        this.edgeDisplayToggle = null;
         this.pickr = null;
         this.thresholdSlider = null;
         this.thresholdSliderValue = null;
@@ -92,19 +92,17 @@ OV.SettingsEdgeDisplaySection = class
 
     Init (showEdges, edgeColor, edgeThreshold, callbacks)
     {
-        function AddRadioButton (contentDiv, id, text, onChange)
-        {
-            let row = OV.AddDiv (contentDiv, 'ov_sidebar_settings_row');
-            return OV.AddRadioButton (row, 'edge_display', id, text, onChange);
-        }
-
         let contentDiv = OV.AddDiv (this.parentDiv, 'ov_sidebar_settings_content');
         let titleDiv = OV.AddDiv (contentDiv, 'ov_sidebar_subtitle');
-        OV.AddSvgIconElement (titleDiv, 'edges', 'ov_sidebar_subtitle_icon');
-        OV.AddDiv (titleDiv, 'ov_sidebar_subtitle_text', 'Edge Display');
 
-        let buttonsDiv = OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded');
+        this.edgeDisplayToggle = OV.AddToggle (titleDiv, 'ov_sidebar_subtitle_toggle');
+        OV.AddDiv (titleDiv, 'ov_sidebar_subtitle_text', 'Show Edges');
+
         this.edgeSettingsDiv = OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded');
+        this.edgeDisplayToggle.OnChange (() => {
+            OV.ShowDomElement (this.edgeSettingsDiv, this.edgeDisplayToggle.GetStatus ());
+            callbacks.onShowEdgesChange (this.edgeDisplayToggle.GetStatus () ? true : false);
+        });
 
         let edgeColorRow = OV.AddDiv (this.edgeSettingsDiv, 'ov_sidebar_settings_row');
         let predefinedEdgeColors = ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'];
@@ -128,29 +126,19 @@ OV.SettingsEdgeDisplaySection = class
         this.thresholdSlider.value = edgeThreshold;
         this.thresholdSliderValue.innerHTML = edgeThreshold;
 
-        this.buttons = [];
-        let offButton = AddRadioButton (buttonsDiv, 'off', 'Don\'t Show Edges', () => {
-            OV.ShowDomElement (this.edgeSettingsDiv, false);
-            callbacks.onShowEdgesChange (false);
-        });
-        let onButton = AddRadioButton (buttonsDiv, 'on', 'Show Edges', () => {
-            OV.ShowDomElement (this.edgeSettingsDiv, true);
-            callbacks.onShowEdgesChange (true);
-        });
-        this.buttons.push (offButton);
-        this.buttons.push (onButton);
-
-        OV.SelectRadioButton (this.buttons, showEdges ? 'on' : 'off');
+        this.edgeDisplayToggle.SetStatus (showEdges);
         this.ShowEdgeSettings (showEdges);
     }
 
     Update (showEdges, edgeColor, edgeThreshold)
     {
-        if (this.buttons === null) {
+        if (this.edgeDisplayToggle === null) {
             return;
         }
-        OV.SelectRadioButton (this.buttons, showEdges ? 'on' : 'off');
+
+        this.edgeDisplayToggle.SetStatus (showEdges);
         this.ShowEdgeSettings (showEdges);
+
         this.pickr.setColor ('#' + OV.ColorToHexString (edgeColor));
         this.thresholdSlider.value = edgeThreshold;
         this.thresholdSliderValue.innerHTML = edgeThreshold;
@@ -175,42 +163,31 @@ OV.SettingsThemeSection = class
     constructor (parentDiv)
     {
         this.parentDiv = parentDiv;
-        this.buttons = null;
+        this.darkModeToggle = null;
     }
 
     Init (themeId, onChange)
     {
-        function AddRadioButton (contentDiv, themeId, themeName, onChange)
-        {
-            let row = OV.AddDiv (contentDiv, 'ov_sidebar_settings_row');
-            return OV.AddRadioButton (row, 'theme', themeId.toString (), themeName, onChange);
-        }
-
         let contentDiv = OV.AddDiv (this.parentDiv, 'ov_sidebar_settings_content');
         let titleDiv = OV.AddDiv (contentDiv, 'ov_sidebar_subtitle');
-        OV.AddSvgIconElement (titleDiv, 'theme', 'ov_sidebar_subtitle_icon');
-        OV.AddDiv (titleDiv, 'ov_sidebar_subtitle_text', 'Appearance');
 
-        let buttonsDiv = OV.AddDiv (contentDiv, 'ov_sidebar_settings_padded');
-        this.buttons = [];
-        let lightButton = AddRadioButton (buttonsDiv, OV.Theme.Light, 'Light', () => {
-            onChange (OV.Theme.Light);
+        this.darkModeToggle = OV.AddToggle (titleDiv, 'ov_sidebar_subtitle_toggle');
+        this.darkModeToggle.OnChange (() => {
+            onChange (this.darkModeToggle.GetStatus () ? OV.Theme.Dark : OV.Theme.Light);
         });
-        let darkButton = AddRadioButton (buttonsDiv, OV.Theme.Dark, 'Dark', () => {
-            onChange (OV.Theme.Dark);
-        });
-        this.buttons.push (lightButton);
-        this.buttons.push (darkButton);
+        OV.AddDiv (titleDiv, 'ov_sidebar_subtitle_text', 'Dark Mode');
 
-        OV.SelectRadioButton (this.buttons, themeId.toString ());
+        let isDarkMode = (themeId === OV.Theme.Dark);
+        this.darkModeToggle.SetStatus (isDarkMode);
     }
 
     Update (themeId)
     {
-        if (this.buttons === null) {
+        if (this.darkModeToggle === null) {
             return;
         }
-        OV.SelectRadioButton (this.buttons, themeId.toString ());
+        let isDarkMode = (themeId === OV.Theme.Dark);
+        this.darkModeToggle.SetStatus (isDarkMode);
     }
 };
 

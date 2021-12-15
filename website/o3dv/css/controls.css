@@ -166,6 +166,38 @@ span.ov_slider_label
 	bottom: -4px;
 }
 
+div.ov_toggle
+{
+	width: 24px;
+	height: 8px;
+	padding: 2px;
+	transition: 0.4s;
+	border: 1px solid var(--ov_foreground_color);
+	border-radius: 10px;
+	cursor: pointer;
+}
+
+div.ov_toggle_slider
+{
+	width: 6px;
+	height: 6px;
+	transition: .4s;
+	border-radius: 8px;
+	border: 1px solid var(--ov_foreground_color);
+}
+
+div.ov_toggle.on
+{
+	background: var(--ov_foreground_color);
+}
+
+div.ov_toggle.on div.ov_toggle_slider
+{
+	background: var(--ov_background_color);
+	transform: translateX(16px);
+	border: 1px solid var(--ov_background_color);
+}
+
 @media (hover)
 {
 

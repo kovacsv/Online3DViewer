@@ -164,6 +164,50 @@ OV.SelectRadioButton = function (radioButtons, selectedId)
     }
 };
 
+OV.AddToggle = function (parentElement, className)
+{
+    function UpdateStatus (toggle, status)
+    {
+        if (status) {
+            toggle.classList.add ('on');
+        } else {
+            toggle.classList.remove ('on');
+        }
+    }
+
+    let status = false;
+    let onChange = null;
+
+    let toggleClassName = 'ov_toggle';
+    if (className) {
+        toggleClassName += ' ' + className;
+    }
+    let toggle = OV.AddDiv (parentElement, toggleClassName);
+    OV.AddDiv (toggle, 'ov_toggle_slider');
+
+    toggle.addEventListener ('click', () => {
+        status = !status;
+        UpdateStatus (toggle, status);
+        if (onChange) {
+            onChange ();
+        }
+    });
+
+    return {
+        element : toggle,
+        GetStatus : () => {
+            return status;
+        },
+        SetStatus : (newStatus) => {
+            status = newStatus;
+            UpdateStatus (toggle, status);
+        },
+        OnChange : (onChangeHandler) => {
+            onChange = onChangeHandler;
+        }
+    };
+};
+
 OV.CreateDiv = function (className, innerHTML)
 {
     return OV.CreateDomElement ('div', className, innerHTML);
