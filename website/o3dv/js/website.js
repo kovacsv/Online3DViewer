@@ -163,6 +163,39 @@ OV.Website = class
             return;
         }
 
+        if (this.parameters.fileNameDiv.innerHTML === 'christmas_challenge.gltf') {
+            let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
+            if (meshUserData !== null && meshUserData.originalMeshId.meshIndex === 0) {
+                this.navigator.ToggleMeshVisibility (meshUserData.originalMeshId);
+                if (meshUserData.originalMeshId.IsEqual (new OV.MeshInstanceId (59, 0))) {
+                    this.navigator.FitMeshToWindow (meshUserData.originalMeshId);
+                    setTimeout (() => {
+                        let dialog = new OV.ButtonDialog ();
+                        let contentDiv = dialog.Init ('You did it!', [
+                            {
+                                name : 'Cancel',
+                                subClass : 'outline',
+                                onClick () {
+                                    dialog.Hide ();
+                                }
+                            },
+                            {
+                                name : 'Tweet!',
+                                onClick () {
+                                    window.open('https://twitter.com/intent/tweet?screen_name=Online3DViewer&ref_src=twsrc%5Etfw&text=I%27ve%20just%20solved%20the%20Christmas%20Challenge.%20%E2%9D%A4%F0%9F%8E%84%F0%9F%8E%81%20%0a%0aCheck%20it%20out%20here:%20LINK', '_blank');
+                                    dialog.Hide ();
+                                }
+                            }
+                        ]);
+                        OV.AddDiv (contentDiv, null, 'You\'ve just solved the Christmas Challenge. ❤🎄🎁');
+                        dialog.Show ();
+                        this.dialog = dialog;
+                    }, 1500);
+                }
+                return;
+            }
+        }
+
         if (this.measureTool.IsActive ()) {
             this.measureTool.Click (mouseCoordinates);
             this.sidebar.UpdateMeasureTool ();
