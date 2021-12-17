@@ -127,17 +127,6 @@ OV.AddRadioButton = function (parentElement, name, id, text, onChange)
     return radio;
 };
 
-OV.AddSelect = function (parentElement, options)
-{
-    let selectElement = OV.AddDomElement (parentElement, 'select');
-    for (let option of options) {
-        let optionElement = OV.AddDomElement (selectElement, 'option');
-        optionElement.value = option.value;
-        optionElement.innerHTML = option.text;
-    }
-    return selectElement;
-};
-
 OV.AddRangeSlider = function (parentElement, min, max)
 {
     let slider = OV.AddDomElement (parentElement, 'input', 'ov_slider');
@@ -145,23 +134,6 @@ OV.AddRangeSlider = function (parentElement, min, max)
     slider.setAttribute ('min', min.toString ());
     slider.setAttribute ('max', max.toString ());
     return slider;
-};
-
-OV.AddNumberInput = function (parentElement, min, max)
-{
-    let slider = OV.AddDomElement (parentElement, 'input', 'ov_number_input');
-    slider.setAttribute ('type', 'number');
-    slider.setAttribute ('min', min.toString ());
-    slider.setAttribute ('max', max.toString ());
-    return slider;
-};
-
-OV.SelectRadioButton = function (radioButtons, selectedId)
-{
-    for (let radioButton of radioButtons) {
-        let isChecked = radioButton.getAttribute ('id') === selectedId;
-        radioButton.checked = isChecked;
-    }
 };
 
 OV.AddToggle = function (parentElement, className)
