@@ -155,55 +155,12 @@ OV.Website = class
         this.navigator.FillTree (importResult);
         this.UpdateSidebar ();
         this.FitModelToWindow (true);
-
-        if (this.parameters.fileNameDiv.innerHTML === 'christmas_challenge.gltf') {
-            this.dialog = OV.ShowMessageDialog (
-                'Christmas Challenge',
-                'Click on the boxes and find the hidden surprise. &#x1F381;',
-                null
-            );
-        }
     }
 
     OnModelClicked (button, mouseCoordinates)
     {
         if (button !== 1) {
             return;
-        }
-
-        if (this.parameters.fileNameDiv.innerHTML === 'christmas_challenge.gltf') {
-            this.eventHandler.HandleEvent ('christmas_challenge', { type : 'loaded' });
-            let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
-            if (meshUserData !== null && meshUserData.originalMeshId.meshIndex === 0) {
-                this.navigator.ToggleMeshVisibility (meshUserData.originalMeshId);
-                if (meshUserData.originalMeshId.IsEqual (new OV.MeshInstanceId (59, 0))) {
-                    this.eventHandler.HandleEvent ('christmas_challenge', { type : 'solved' });
-                    this.navigator.FitMeshToWindow (meshUserData.originalMeshId);
-                    setTimeout (() => {
-                        let dialog = new OV.ButtonDialog ();
-                        let contentDiv = dialog.Init ('You did it!', [
-                            {
-                                name : 'Close',
-                                subClass : 'outline',
-                                onClick () {
-                                    dialog.Hide ();
-                                }
-                            },
-                            {
-                                name : 'Tweet!',
-                                onClick () {
-                                    window.open ('https://twitter.com/intent/tweet?ref_src=twsrc%5Etfw&text=I%27ve%20just%20solved%20the%20@Online3DViewer%20Christmas%20Challenge.%20%E2%9D%A4%F0%9F%8E%84%F0%9F%8E%81%20%0a%0aGive%20it%20a%20try%20here:%20https://tinyurl.com/o3dvchristmas%0a%0a%233d%20%233dviewer%20%23threejs%20%23opensource%20%23christmas', '_blank');
-                                    dialog.Hide ();
-                                }
-                            }
-                        ]);
-                        OV.AddDiv (contentDiv, null, 'You\'ve just solved the Christmas Challenge. &#x2764;&#x1F384;&#x1F381;');
-                        dialog.Show ();
-                        this.dialog = dialog;
-                    }, 1500);
-                }
-                return;
-            }
         }
 
         if (this.measureTool.IsActive ()) {
