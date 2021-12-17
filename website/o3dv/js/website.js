@@ -157,6 +157,7 @@ OV.Website = class
         this.FitModelToWindow (true);
 
         if (this.parameters.fileNameDiv.innerHTML === 'christmas_challenge.gltf') {
+            this.eventHandler.HandleEvent ('christmas_challenge', { type : 'started' });
             this.dialog = OV.ShowMessageDialog (
                 'Christmas Challenge',
                 'Click on the boxes and find the hidden surprise. &#x1F381;',
@@ -172,7 +173,7 @@ OV.Website = class
         }
 
         if (this.parameters.fileNameDiv.innerHTML === 'christmas_challenge.gltf') {
-            this.eventHandler.HandleEvent ('christmas_challenge', { type : 'loaded' });
+            this.eventHandler.HandleEvent ('christmas_challenge', { type : 'clicked' });
             let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
             if (meshUserData !== null && meshUserData.originalMeshId.meshIndex === 0) {
                 this.navigator.ToggleMeshVisibility (meshUserData.originalMeshId);
