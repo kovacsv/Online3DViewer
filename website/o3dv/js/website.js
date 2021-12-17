@@ -155,6 +155,14 @@ OV.Website = class
         this.navigator.FillTree (importResult);
         this.UpdateSidebar ();
         this.FitModelToWindow (true);
+
+        if (this.parameters.fileNameDiv.innerHTML === 'christmas_challenge.gltf') {
+            this.dialog = OV.ShowMessageDialog (
+                'Christmas Challenge',
+                'Click on the boxes and find the hidden surprise. &#x1F381;',
+                null
+            );
+        }
     }
 
     OnModelClicked (button, mouseCoordinates)
