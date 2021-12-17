@@ -68,9 +68,11 @@ OV.Website = class
 
         let navigatorWidth = 0;
         let sidebarWidth = 0;
+        let safetyMargin = 0;
         if (!OV.IsSmallWidth ()) {
             navigatorWidth = this.navigator.GetWidth ();
             sidebarWidth = this.sidebar.GetWidth ();
+            safetyMargin = 1;
         }
 
         const minContentWidth = 50;
@@ -81,10 +83,11 @@ OV.Website = class
         }
         let contentHeight = windowHeight - headerHeight;
 
+        console.log (contentWidth);
         OV.SetDomElementOuterHeight (this.parameters.introDiv, contentHeight);
         this.navigator.Resize (contentHeight);
         this.sidebar.Resize (contentHeight);
-        this.viewer.Resize (contentWidth, contentHeight);
+        this.viewer.Resize (contentWidth - safetyMargin, contentHeight);
     }
 
     OnSmallWidthChanged ()
