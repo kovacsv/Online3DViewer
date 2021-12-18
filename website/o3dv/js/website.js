@@ -254,6 +254,7 @@ OV.Website = class
             if (urls === null) {
                 return;
             }
+            OV.TransformFileHostUrls (urls);
             let importSettings = new OV.ImportSettings ();
             importSettings.defaultColor = this.settings.defaultColor;
             let defaultColor = this.hashHandler.GetDefaultColorFromHash ();

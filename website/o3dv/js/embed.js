@@ -19,6 +19,7 @@ OV.Embed = class
             if (urls === null) {
                 return;
             }
+            OV.TransformFileHostUrls (urls);
             let background = this.hashHandler.GetBackgroundFromHash ();
             if (background !== null) {
                 this.viewer.SetBackgroundColor (background);

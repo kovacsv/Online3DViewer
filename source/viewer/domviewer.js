@@ -14,11 +14,10 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, parameters)
     let height = parentDiv.clientHeight;
     viewer.Resize (width, height);
 
-    let loader = new OV.ThreeModelLoader ();
-
     if (modelUrls === null || modelUrls.length === 0) {
         return null;
     }
+    OV.TransformFileHostUrls (modelUrls);
 
     if (parameters.backgroundColor) {
         viewer.SetBackgroundColor (parameters.backgroundColor);
@@ -42,6 +41,7 @@ OV.Init3DViewerElement = function (parentDiv, modelUrls, parameters)
     }
 
     let progressDiv = null;
+    let loader = new OV.ThreeModelLoader ();
     loader.LoadModel (modelUrls, OV.FileSource.Url, settings, {
         onLoadStart : () => {
             canvas.style.display = 'none';
