@@ -111,6 +111,7 @@ describe ('O3dv Importer', function () {
             assert.strictEqual (model.MeshCount (), 5);
             assert.strictEqual (model.MeshInstanceCount (), 5);
 
+            assert (OV.IsSolid (model));
             assert (OV.IsEqual (OV.CalculateVolume (model), 8.707448863695035));
             assert (OV.IsEqual (OV.CalculateSurfaceArea (model), 39.636169009449105));
 

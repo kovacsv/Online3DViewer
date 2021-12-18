@@ -18,9 +18,6 @@ OV.GetTetrahedronSignedVolume = function (v0, v1, v2)
 
 OV.CalculateVolume = function (object3D)
 {
-    if (!OV.IsSolid (object3D)) {
-        return null;
-    }
     let volume = 0.0;
     object3D.EnumerateTriangleVertices ((v0, v1, v2) => {
         volume += OV.GetTetrahedronSignedVolume (v0, v1, v2);

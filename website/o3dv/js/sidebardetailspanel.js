@@ -27,6 +27,9 @@ OV.SidebarDetailsPanel = class extends OV.SidebarPanel
         this.AddProperty (table, new OV.Property (OV.PropertyType.Number, 'Size Y', size.y));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Number, 'Size Z', size.z));
         this.AddCalculatedProperty (table, 'Volume', () => {
+            if (!OV.IsSolid (object3D)) {
+                return null;
+            }
             const volume = OV.CalculateVolume (object3D);
             if (volume === null) {
                 return null;
@@ -34,11 +37,11 @@ OV.SidebarDetailsPanel = class extends OV.SidebarPanel
             return new OV.Property (OV.PropertyType.Number, null, volume);
         });
         this.AddCalculatedProperty (table, 'Surface', () => {
-            const volume = OV.CalculateSurfaceArea (object3D);
-            if (volume === null) {
+            const surfaceArea = OV.CalculateSurfaceArea (object3D);
+            if (surfaceArea === null) {
                 return null;
             }
-            return new OV.Property (OV.PropertyType.Number, null, volume);
+            return new OV.Property (OV.PropertyType.Number, null, surfaceArea);
         });
         if (object3D.PropertyGroupCount () > 0) {
             let customTable = OV.AddDiv (this.contentDiv, 'ov_property_table ov_property_table_custom');
