@@ -41,6 +41,8 @@ OV.EmbeddedViewer = class
 
     LoadModelFromUrls (modelUrls)
     {
+        this.viewer.Clear ();
+
         if (modelUrls === null || modelUrls.length === 0) {
             return null;
         }
