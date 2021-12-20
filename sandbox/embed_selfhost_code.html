@@ -76,51 +76,57 @@
 	<!-- engine end -->
 
     <style>
-        div
+        div.online_3d_viewer
         {
             float: left;
             border: 1px solid #eeeeee;
-            margin: 0px 4px 4px 0px;
+            width: 640px;
+            height: 480px;
         }
     </style>
+
+    <script type='text/javascript'>
+        window.addEventListener ('load', () => {
+            // get the parent element of the viewer
+            let parentDiv = document.getElementById ('viewer');
+
+            // initialize the viewer with the parent element and some parameters
+            // the canvas will be resized according to the size of the parent
+            let viewer = new OV.EmbeddedViewer (parentDiv, {
+                camera : new OV.Camera (
+                    new OV.Coord3D (-1.5, -3.0, 2.0),
+                    new OV.Coord3D (0.0, 0.0, 0.0),
+                    new OV.Coord3D (0.0, 0.0, 1.0)
+                ),
+                backgroundColor : new OV.Color (255, 255, 255),
+                defaultColor : new OV.Color (200, 200, 200),
+                edgeSettings : {
+                    showEdges : false,
+                    edgeColor : new OV.Color (0, 0, 0),
+                    edgeThreshold : 1
+                },
+                environmentMap : [
+                    '../website/assets/envmaps/grayclouds/posx.jpg',
+                    '../website/assets/envmaps/grayclouds/negx.jpg',
+                    '../website/assets/envmaps/grayclouds/posy.jpg',
+                    '../website/assets/envmaps/grayclouds/negy.jpg',
+                    '../website/assets/envmaps/grayclouds/posz.jpg',
+                    '../website/assets/envmaps/grayclouds/negz.jpg'
+                ]
+            });
+
+            // load a model providing model urls
+            viewer.LoadModelFromUrls ([
+                '../../test/testfiles/obj/hundred_cubes.obj',
+                '../../test/testfiles/obj/hundred_cubes.mtl'
+            ]);
+        });
+    </script>
 </head>
 
 <body>
-    <script type='text/javascript'>
-        {
-            let container = document.createElement ('div');
-            container.style.width = '400px';
-            container.style.height = '300px';
-            document.body.appendChild (container);
-            let modelUrls = [
-                '../../test/testfiles/3ds/cube_four_instances.3ds',
-                '../../test/testfiles/3ds/texture.png'
-            ];
-            OV.Init3DViewerElement (container, modelUrls);
-        }
-        {
-            let container = document.createElement ('div');
-            container.style.width = '400px';
-            container.style.height = '300px';
-            document.body.appendChild (container);
-            let modelUrls = [
-                '../../test/testfiles/obj/hundred_cubes.obj',
-                '../../test/testfiles/obj/hundred_cubes.mtl'
-            ];
-            OV.Init3DViewerElement (container, modelUrls);
-        }
-        {
-            let container = document.createElement ('div');
-            container.style.width = '400px';
-            container.style.height = '300px';
-            document.body.appendChild (container);
-            let modelUrls = [
-                '../../test/testfiles/obj/hundred_cubes.obj?param1=value1&param2=value2',
-                '../../test/testfiles/obj/hundred_cubes.mtl?param1=value1&param2=value2'
-            ];
-            OV.Init3DViewerElement (container, modelUrls);
-        }
-    </script>
+    <div class="online_3d_viewer" id="viewer">
+    </div>
 </body>
 
 </html>

@@ -62,7 +62,7 @@
 		"source/viewer/navigation.js",
 		"source/viewer/viewer.js",
 		"source/viewer/measuretool.js",
-		"source/viewer/domviewer.js"
+		"source/viewer/embeddedviewer.js"
 	],
 	"website_files_js" : [
 		"website/o3dv/js/featureset.js",
