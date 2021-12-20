@@ -101,6 +101,11 @@ OV.EmbeddedViewer = class
         });
     }
 
+    GetViewer ()
+    {
+        return this.viewer;
+    }
+
     Resize ()
     {
         let width = this.parentElement.clientWidth;
