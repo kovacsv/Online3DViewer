@@ -83,7 +83,6 @@ OV.Website = class
         }
         let contentHeight = windowHeight - headerHeight;
 
-        console.log (contentWidth);
         OV.SetDomElementOuterHeight (this.parameters.introDiv, contentHeight);
         this.navigator.Resize (contentHeight);
         this.sidebar.Resize (contentHeight);

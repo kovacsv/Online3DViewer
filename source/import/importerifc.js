@@ -31,8 +31,8 @@ OV.ImporterIfc = class extends OV.ImporterBase
     ImportContent (fileContent, onFinish)
     {
 		if (this.ifc === null) {
-			OV.LoadExternalLibrary ('loaders/web-ifc-api.js').then (() => {
-                this.ifc = new IfcAPI2 ();
+			OV.LoadExternalLibrary ('loaders/web-ifc-api-browser.js').then (() => {
+                this.ifc = new WebIFC.IfcAPI ();
                 this.ifc.Init ().then (() => {
                     this.ImportIfcContent (fileContent);
                     onFinish ();
@@ -109,9 +109,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
 
     ImportProperties (modelID)
     {
-        // TODO: var IFCRELDEFINESBYPROPERTIES = 4186316022;
-        // TODO: var IFCBUILDING = 4031249490;
-        const lines = this.ifc.GetLineIDsWithType (modelID, 4186316022);
+        const lines = this.ifc.GetLineIDsWithType (modelID, WebIFC.IFCRELDEFINESBYPROPERTIES);
         for (let i = 0; i < lines.size (); i++) {
             const relID = lines.get (i);
             const rel = this.ifc.GetLine (modelID, relID);
@@ -122,7 +120,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
                 let element = this.expressIDToMesh[objectRelID.value];
                 if (element === undefined) {
                     let propSetOwner = this.ifc.GetLine (modelID, objectRelID.value, true);
-                    if (propSetOwner.type === 4031249490) {
+                    if (propSetOwner.type === WebIFC.IFCBUILDING) {
                         element = this.model;
                     } else {
                         return;

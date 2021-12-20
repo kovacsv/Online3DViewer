@@ -38,7 +38,7 @@ fflateFileMap = [
 ]
 
 webIfcFileMap = [
-    [os.path.join ('web-ifc', 'web-ifc-api.js'), os.path.join ('loaders', 'web-ifc-api.js')],
+    [os.path.join ('web-ifc', 'web-ifc-api-browser.js'), os.path.join ('loaders', 'web-ifc-api-browser.js')],
     [os.path.join ('web-ifc', 'web-ifc.wasm'), os.path.join ('loaders', 'web-ifc.wasm')],
 ]
 
@@ -55,11 +55,6 @@ def UpdateModule (fileMap, moduleDir, libsDir):
         PrintInfo ('Copying file ' + os.path.split (src)[1])
         shutil.copy2 (src, dst)
 
-def FixWebIfcExport (libsDir):
-    apiFilePath = os.path.join (libsDir, 'loaders', 'web-ifc-api.js')
-    regex = re.compile (r'export \{.*\};', re.DOTALL)
-    Tools.ReplaceRegexInFile (apiFilePath, regex, '')
-
 def Main (argv):
     toolsDir = os.path.dirname (os.path.abspath (__file__))
     rootDir = os.path.dirname (toolsDir)
@@ -74,7 +69,6 @@ def Main (argv):
     UpdateModule (rhino3dmFileMap, nodeModulesDir, libsDir)
     UpdateModule (fflateFileMap, nodeModulesDir, libsDir)
     UpdateModule (webIfcFileMap, nodeModulesDir, libsDir)
-    FixWebIfcExport (libsDir)
 
     return 0
 
