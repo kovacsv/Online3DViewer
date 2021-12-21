@@ -262,18 +262,19 @@ OV.NavigationType =
 
 OV.Navigation = class
 {
-	constructor (canvas, camera)
+	constructor (canvas, camera, callbacks)
 	{
 		this.canvas = canvas;
 		this.camera = camera;
+		this.callbacks = callbacks;
 		this.orbitCenter = this.camera.center.Clone ();
 		this.fixUpVector = true;
 
 		this.mouse = new OV.MouseInteraction ();
 		this.touch = new OV.TouchInteraction ();
 		this.clickDetector = new OV.ClickDetector ();
+		this.lastNavigationType = OV.NavigationType.None;
 
-		this.onUpdate = null;
 		this.onMouseClick = null;
 		this.onMouseMove = null;
 		this.onContext = null;
@@ -292,11 +293,6 @@ OV.Navigation = class
 			document.addEventListener ('mouseup', this.OnMouseUp.bind (this));
 			document.addEventListener ('mouseleave', this.OnMouseLeave.bind (this));
 		}
-	}
-
-	SetUpdateHandler (onUpdate)
-	{
-		this.onUpdate = onUpdate;
 	}
 
 	SetMouseClickHandler (onMouseClick)
@@ -464,6 +460,7 @@ OV.Navigation = class
 			this.Zoom (-moveDiff.y * zoomRatio);
 		}
 
+		this.lastNavigationType = navigationType;
 		this.Update ();
 	}
 
@@ -476,6 +473,11 @@ OV.Navigation = class
 			let mouseCoords = this.mouse.GetPosition ();
 			this.Click (ev.which, mouseCoords);
 		}
+
+		if (this.lastNavigationType === OV.NavigationType.Pan) {
+			this.UpdateOrbitCenter ();
+		}
+		this.lastNavigationType = OV.NavigationType.None;
 	}
 
 	OnMouseLeave (ev)
@@ -505,16 +507,25 @@ OV.Navigation = class
 		let moveDiff = this.touch.GetMoveDiff ();
 		let distanceDiff = this.touch.GetDistanceDiff ();
 		let fingerCount = this.touch.GetFingerCount ();
+
+		let navigationType = OV.NavigationType.None;
 		if (fingerCount === 1) {
+			navigationType = OV.NavigationType.Orbit;
+		} else if (fingerCount === 2) {
+			navigationType = OV.NavigationType.Pan;
+		}
+
+		if (navigationType === OV.NavigationType.Orbit) {
 			let orbitRatio = 0.5;
 			this.Orbit (moveDiff.x * orbitRatio, moveDiff.y * orbitRatio);
-		} else if (fingerCount === 2) {
+		} else if (navigationType === OV.NavigationType.Pan) {
 			let zoomRatio = 0.005;
 			this.Zoom (distanceDiff * zoomRatio);
 			let panRatio = 0.001 * OV.CoordDistance3D (this.camera.eye, this.camera.center);
 			this.Pan (moveDiff.x * panRatio, moveDiff.y * panRatio);
 		}
 
+		this.lastNavigationType = navigationType;
 		this.Update ();
 	}
 
@@ -531,6 +542,11 @@ OV.Navigation = class
 				this.Click (1, touchCoords);
 			}
 		}
+
+		if (this.lastNavigationType === OV.NavigationType.Pan) {
+			this.UpdateOrbitCenter ();
+		}
+		this.lastNavigationType = OV.NavigationType.None;
 	}
 
 	OnMouseWheel (ev)
@@ -616,9 +632,7 @@ OV.Navigation = class
 
 	Update ()
 	{
-		if (this.onUpdate) {
-			this.onUpdate ();
-		}
+		this.callbacks.onUpdate ();
 	}
 
 	Click (button, mouseCoords)
@@ -637,6 +651,14 @@ OV.Navigation = class
 			};
 			let localCoords = OV.GetClientCoordinates (this.canvas, clientX, clientY);
 			this.onContext (globalCoords, localCoords);
+		}
+	}
+
+	UpdateOrbitCenter ()
+	{
+		let centerCoord = this.callbacks.getCenterIntersection ();
+		if (centerCoord !== null) {
+			this.orbitCenter = centerCoord;
 		}
 	}
 };

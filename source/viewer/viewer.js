@@ -488,7 +488,7 @@ OV.Viewer = class
         this.extraGeometry = new OV.ViewerExtraGeometry (this.scene);
         this.axis = new OV.ViewerAxis (this.scene);
 
-        this.InitCamera ();
+        this.InitNavigation ();
         this.InitShading ();
 
         this.Render ();
@@ -742,13 +742,8 @@ OV.Viewer = class
 
     GetMeshIntersectionUnderMouse (mouseCoords)
     {
-        let width = this.canvas.width;
-        let height = this.canvas.height;
-        if (window.devicePixelRatio) {
-            width /= window.devicePixelRatio;
-            height /= window.devicePixelRatio;
-        }
-        let intersection = this.geometry.GetMeshIntersectionUnderMouse (mouseCoords, this.camera, width, height);
+        let canvasSize = this.GetCanvasSize ();
+        let intersection = this.geometry.GetMeshIntersectionUnderMouse (mouseCoords, this.camera, canvasSize.width, canvasSize.height);
         if (intersection === null) {
             return null;
         }
@@ -791,7 +786,7 @@ OV.Viewer = class
         });
     }
 
-    InitCamera ()
+    InitNavigation ()
     {
         this.camera = new THREE.PerspectiveCamera (45.0, this.canvas.width / this.canvas.height, 0.1, 1000.0);
         this.scene.add (this.camera);
@@ -799,9 +794,19 @@ OV.Viewer = class
         let canvasElem = this.renderer.domElement;
         let camera = OV.GetDefaultCamera (OV.Direction.Z);
 
-        this.navigation = new OV.Navigation (canvasElem, camera);
-        this.navigation.SetUpdateHandler (() => {
-            this.Render ();
+        this.navigation = new OV.Navigation (canvasElem, camera, {
+            onUpdate : () => {
+                this.Render ();
+            },
+            getCenterIntersection : () => {
+                let canvasSize = this.GetCanvasSize ();
+                let centerCoord = new OV.Coord2D (canvasSize.width / 2.0, canvasSize.height / 2.0);
+                let intersection = this.GetMeshIntersectionUnderMouse (centerCoord);
+                if (intersection === null) {
+                    return null;
+                }
+                return new OV.Coord3D (intersection.point.x, intersection.point.y, intersection.point.z);
+            }
         });
 
         this.upVector = new OV.UpVector ();
@@ -819,6 +824,20 @@ OV.Viewer = class
         return {
             width : parseInt (originalSize.x, 10),
             height : parseInt (originalSize.y, 10)
+        };
+    }
+
+    GetCanvasSize ()
+    {
+        let width = this.canvas.width;
+        let height = this.canvas.height;
+        if (window.devicePixelRatio) {
+            width /= window.devicePixelRatio;
+            height /= window.devicePixelRatio;
+        }
+        return {
+            width : width,
+            height : height
         };
     }
 

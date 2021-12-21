@@ -34,10 +34,14 @@ OV.BoundingBoxCalculator3D = class
             new OV.Coord3D (Infinity, Infinity, Infinity),
             new OV.Coord3D (-Infinity, -Infinity, -Infinity)
         );
+        this.isValid = false;
     }
 
     GetBox ()
     {
+        if (!this.isValid) {
+            return null;
+        }
         return this.box;
     }
 
@@ -49,5 +53,6 @@ OV.BoundingBoxCalculator3D = class
         this.box.max.x = Math.max (this.box.max.x, point.x);
         this.box.max.y = Math.max (this.box.max.y, point.y);
         this.box.max.z = Math.max (this.box.max.z, point.z);
+        this.isValid = true;
     }
 };
