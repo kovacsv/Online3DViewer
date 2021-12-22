@@ -570,12 +570,9 @@ OV.Viewer = class
         let center = new OV.Coord3D (boundingSphere.center.x, boundingSphere.center.y, boundingSphere.center.z);
         let radius = boundingSphere.radius;
         let fov = this.camera.fov;
-        if (animation) {
-            let newCamera = this.navigation.GetFitToSphereCamera (center, radius, fov);
-            this.navigation.MoveCamera (newCamera, this.settings.animationSteps);
-        } else {
-            this.navigation.FitToSphere (center, radius, fov);
-        }
+
+        let newCamera = this.navigation.GetFitToSphereCamera (center, radius, fov);
+        this.navigation.MoveCamera (newCamera, animation ? this.settings.animationSteps : 0);
     }
 
     AdjustClippingPlanesToSphere (boundingSphere)

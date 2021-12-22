@@ -31,6 +31,11 @@ OV.Camera = class
     }
 };
 
+OV.CameraIsEqual3D = function (a, b)
+{
+	return OV.CoordIsEqual3D (a.eye, b.eye) && OV.CoordIsEqual3D (a.center, b.center) && OV.CoordIsEqual3D (a.up, b.up);
+};
+
 OV.MouseInteraction = class
 {
     constructor ()
@@ -349,40 +354,21 @@ OV.Navigation = class
 			return;
 		}
 
-		if (stepCount === 0) {
-			this.SetCamera (newCamera);
-			return;
+		if (stepCount === 0 || OV.CameraIsEqual3D (this.camera, newCamera)) {
+			this.camera = newCamera;
+		} else {
+			let tweenFunc = OV.ParabolicTweenFunction;
+			let steps = {
+				eye : OV.TweenCoord3D (this.camera.eye, newCamera.eye, stepCount, tweenFunc),
+				center : OV.TweenCoord3D (this.camera.center, newCamera.center, stepCount, tweenFunc),
+				up : OV.TweenCoord3D (this.camera.up, newCamera.up, stepCount, tweenFunc)
+			};
+			requestAnimationFrame (() => {
+				Step (this, steps, stepCount, 0);
+			});
 		}
 
-		if (OV.CoordIsEqual3D (this.camera.eye, newCamera.eye) &&
-			OV.CoordIsEqual3D (this.camera.center, newCamera.center) &&
-			OV.CoordIsEqual3D (this.camera.up, newCamera.up))
-		{
-			return;
-		}
-
-		let tweenFunc = OV.ParabolicTweenFunction;
-		let steps = {
-			eye : OV.TweenCoord3D (this.camera.eye, newCamera.eye, stepCount, tweenFunc),
-			center : OV.TweenCoord3D (this.camera.center, newCamera.center, stepCount, tweenFunc),
-			up : OV.TweenCoord3D (this.camera.up, newCamera.up, stepCount, tweenFunc)
-		};
-		requestAnimationFrame (() => {
-			Step (this, steps, stepCount, 0);
-		});
-		this.Update ();
-	}
-
-	FitToSphere (center, radius, fov)
-	{
-		if (OV.IsZero (radius)) {
-			return;
-		}
-
-		let fitCamera = this.GetFitToSphereCamera (center, radius, fov);
-		this.camera = fitCamera;
-
-		this.orbitCenter = this.camera.center.Clone ();
+		this.orbitCenter = newCamera.center.Clone ();
 		this.Update ();
 	}
 
@@ -406,7 +392,7 @@ OV.Navigation = class
 		let distance = radius / Math.sin (fieldOfView * OV.DegRad);
 
 		fitCamera.eye = fitCamera.center.Clone ().Offset (centerEyeDirection, distance);
-		this.orbitCenter = fitCamera.center.Clone ();
+
 		return fitCamera;
 	}
 
@@ -569,29 +555,22 @@ OV.Navigation = class
 
 		let viewDirection = OV.SubCoord3D (this.camera.center, this.camera.eye).Normalize ();
 		let horizontalDirection = OV.CrossVector3D (viewDirection, this.camera.up).Normalize ();
-		let differentCenter = !OV.CoordIsEqual3D (this.orbitCenter, this.camera.center);
 
 		if (this.fixUpVector) {
 			let originalAngle = OV.VectorAngle3D (viewDirection, this.camera.up);
 			let newAngle = originalAngle + radAngleY;
 			if (OV.IsGreater (newAngle, 0.0) && OV.IsLower (newAngle, Math.PI)) {
 				this.camera.eye.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
-				if (differentCenter) {
-					this.camera.center.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
-				}
+				this.camera.center.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
 			}
 			this.camera.eye.Rotate (this.camera.up, -radAngleX, this.orbitCenter);
-			if (differentCenter) {
-				this.camera.center.Rotate (this.camera.up, -radAngleX, this.orbitCenter);
-			}
+			this.camera.center.Rotate (this.camera.up, -radAngleX, this.orbitCenter);
 		} else {
 			let verticalDirection = OV.CrossVector3D (horizontalDirection, viewDirection).Normalize ();
 			this.camera.eye.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
 			this.camera.eye.Rotate (verticalDirection, -radAngleX, this.orbitCenter);
-			if (differentCenter) {
-				this.camera.center.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
-				this.camera.center.Rotate (verticalDirection, -radAngleX, this.orbitCenter);
-			}
+			this.camera.center.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
+			this.camera.center.Rotate (verticalDirection, -radAngleX, this.orbitCenter);
 			this.camera.up = verticalDirection;
 		}
 	}
