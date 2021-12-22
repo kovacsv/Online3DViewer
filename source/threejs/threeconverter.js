@@ -136,27 +136,31 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 		}
 
 		let threeMaterial = null;
-		if (shadingType === OV.ShadingType.Phong && material.type === OV.MaterialType.Phong) {
+		if (shadingType === OV.ShadingType.Phong) {
 			threeMaterial = new THREE.MeshPhongMaterial (materialParams);
-			let specularColor = new THREE.Color (material.specular.r / 255.0, material.specular.g / 255.0, material.specular.b / 255.0);
-			if (OV.IsEqual (material.shininess, 0.0)) {
-				specularColor.setRGB (0.0, 0.0, 0.0);
+			if (material.type === OV.MaterialType.Phong) {
+				let specularColor = new THREE.Color (material.specular.r / 255.0, material.specular.g / 255.0, material.specular.b / 255.0);
+				if (OV.IsEqual (material.shininess, 0.0)) {
+					specularColor.setRGB (0.0, 0.0, 0.0);
+				}
+				threeMaterial.specular = specularColor;
+				threeMaterial.shininess = material.shininess * 100.0;
+				LoadTexture (stateHandler, threeMaterial, material.specularMap, (threeTexture) => {
+					threeMaterial.specularMap = threeTexture;
+				});
 			}
-			threeMaterial.specular = specularColor;
-			threeMaterial.shininess = material.shininess * 100.0;
-			LoadTexture (stateHandler, threeMaterial, material.specularMap, (threeTexture) => {
-				threeMaterial.specularMap = threeTexture;
-			});
-		} else if (shadingType === OV.ShadingType.Physical && material.type === OV.MaterialType.Physical) {
+		} else if (shadingType === OV.ShadingType.Physical) {
 			threeMaterial = new THREE.MeshStandardMaterial (materialParams);
-			threeMaterial.metalness = material.metalness;
-			threeMaterial.roughness = material.roughness;
-			LoadTexture (stateHandler, threeMaterial, material.metalnessMap, (threeTexture) => {
-				threeMaterial.metalness = 1.0;
-				threeMaterial.roughness = 1.0;
-				threeMaterial.metalnessMap = threeTexture;
-				threeMaterial.roughnessMap = threeTexture;
-			});
+			if (material.type === OV.MaterialType.Physical) {
+				threeMaterial.metalness = material.metalness;
+				threeMaterial.roughness = material.roughness;
+				LoadTexture (stateHandler, threeMaterial, material.metalnessMap, (threeTexture) => {
+					threeMaterial.metalness = 1.0;
+					threeMaterial.roughness = 1.0;
+					threeMaterial.metalnessMap = threeTexture;
+					threeMaterial.roughnessMap = threeTexture;
+				});
+			}
 		}
 
 		let emissiveColor = new THREE.Color (material.emissive.r / 255.0, material.emissive.g / 255.0, material.emissive.b / 255.0);
