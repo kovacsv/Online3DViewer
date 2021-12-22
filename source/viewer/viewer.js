@@ -317,7 +317,7 @@ OV.ViewerExtraGeometry = class
     }
 };
 
-OV.ViewerAxis = class
+OV.ViewerGrid = class
 {
     constructor (scene)
     {
@@ -325,7 +325,7 @@ OV.ViewerAxis = class
         this.mainObject = null;
     }
 
-    AddAxisLines (boundingBox, cellSize)
+    AddGridLines (boundingBox, cellSize)
     {
         function CreateLine (from, to, material)
         {
@@ -335,7 +335,7 @@ OV.ViewerAxis = class
             return line;
         }
 
-        this.RemoveAxisLines ();
+        this.RemoveGridLines ();
 
         this.mainObject = new THREE.Object3D ();
         const material = new THREE.LineBasicMaterial({
@@ -372,7 +372,7 @@ OV.ViewerAxis = class
         this.scene.add (this.mainObject);
     }
 
-    RemoveAxisLines ()
+    RemoveGridLines ()
     {
         if (this.mainObject !== null) {
             this.scene.remove (this.mainObject);
@@ -456,7 +456,7 @@ OV.Viewer = class
         this.scene = null;
         this.geometry = null;
         this.extraGeometry = null;
-        this.axis = null;
+        this.grid = null;
         this.camera = null;
         this.shading = null;
         this.navigation = null;
@@ -486,7 +486,7 @@ OV.Viewer = class
         this.scene = new THREE.Scene ();
         this.geometry = new OV.ViewerGeometry (this.scene);
         this.extraGeometry = new OV.ViewerExtraGeometry (this.scene);
-        this.axis = new OV.ViewerAxis (this.scene);
+        this.grid = new OV.ViewerGrid (this.scene);
 
         this.InitNavigation ();
         this.InitShading ();
@@ -654,7 +654,7 @@ OV.Viewer = class
         //     return true;
         // });
         // let cellSize = 1.0;
-        // this.axis.AddAxisLines (boundingBox, cellSize);
+        // this.grid.AddGridLines (boundingBox, cellSize);
 
         this.Render ();
     }
