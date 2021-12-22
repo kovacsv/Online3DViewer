@@ -797,15 +797,6 @@ OV.Viewer = class
         this.navigation = new OV.Navigation (canvasElem, camera, {
             onUpdate : () => {
                 this.Render ();
-            },
-            getCenterIntersection : () => {
-                let canvasSize = this.GetCanvasSize ();
-                let centerCoord = new OV.Coord2D (canvasSize.width / 2.0, canvasSize.height / 2.0);
-                let intersection = this.GetMeshIntersectionUnderMouse (centerCoord);
-                if (intersection === null) {
-                    return null;
-                }
-                return new OV.Coord3D (intersection.point.x, intersection.point.y, intersection.point.z);
             }
         });
 

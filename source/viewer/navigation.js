@@ -273,7 +273,6 @@ OV.Navigation = class
 		this.mouse = new OV.MouseInteraction ();
 		this.touch = new OV.TouchInteraction ();
 		this.clickDetector = new OV.ClickDetector ();
-		this.lastNavigationType = OV.NavigationType.None;
 
 		this.onMouseClick = null;
 		this.onMouseMove = null;
@@ -460,7 +459,6 @@ OV.Navigation = class
 			this.Zoom (-moveDiff.y * zoomRatio);
 		}
 
-		this.lastNavigationType = navigationType;
 		this.Update ();
 	}
 
@@ -473,11 +471,6 @@ OV.Navigation = class
 			let mouseCoords = this.mouse.GetPosition ();
 			this.Click (ev.which, mouseCoords);
 		}
-
-		if (this.lastNavigationType === OV.NavigationType.Pan) {
-			this.UpdateOrbitCenter ();
-		}
-		this.lastNavigationType = OV.NavigationType.None;
 	}
 
 	OnMouseLeave (ev)
@@ -525,7 +518,6 @@ OV.Navigation = class
 			this.Pan (moveDiff.x * panRatio, moveDiff.y * panRatio);
 		}
 
-		this.lastNavigationType = navigationType;
 		this.Update ();
 	}
 
@@ -542,11 +534,6 @@ OV.Navigation = class
 				this.Click (1, touchCoords);
 			}
 		}
-
-		if (this.lastNavigationType === OV.NavigationType.Pan) {
-			this.UpdateOrbitCenter ();
-		}
-		this.lastNavigationType = OV.NavigationType.None;
 	}
 
 	OnMouseWheel (ev)
@@ -651,14 +638,6 @@ OV.Navigation = class
 			};
 			let localCoords = OV.GetClientCoordinates (this.canvas, clientX, clientY);
 			this.onContext (globalCoords, localCoords);
-		}
-	}
-
-	UpdateOrbitCenter ()
-	{
-		let centerCoord = this.callbacks.getCenterIntersection ();
-		if (centerCoord !== null) {
-			this.orbitCenter = centerCoord;
 		}
 	}
 };
