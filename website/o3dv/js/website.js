@@ -405,6 +405,12 @@ OV.Website = class
         }
     }
 
+    UpdateGridDisplay ()
+    {
+        this.settings.SaveToCookies (this.cookieHandler);
+        this.viewer.SetGridSettings (this.settings.showGrid);
+    }
+
     UpdateEdgeDisplay ()
     {
         this.settings.SaveToCookies (this.cookieHandler);
@@ -431,6 +437,7 @@ OV.Website = class
     {
         let canvas = OV.AddDomElement (this.parameters.viewerDiv, 'canvas');
         this.viewer.Init (canvas);
+        this.viewer.SetGridSettings (this.settings.showGrid);
         this.viewer.SetEdgeSettings (this.settings.showEdges, this.settings.edgeColor, this.settings.edgeThreshold);
         this.viewer.SetBackgroundColor (this.settings.backgroundColor);
         this.viewer.SetEnvironmentMap ([
@@ -587,6 +594,9 @@ OV.Website = class
                     modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
                 }
                 this.viewer.Render ();
+            },
+            onGridDisplayChange : () => {
+                this.UpdateGridDisplay ();
             },
             onEdgeDisplayChange : () => {
                 this.UpdateEdgeDisplay ();

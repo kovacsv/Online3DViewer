@@ -323,9 +323,24 @@ OV.ViewerGrid = class
     {
         this.scene = scene;
         this.mainObject = null;
+        this.gridSettings = {
+            showGrid : false,
+            direction : OV.Direction.Y,
+            cellSize : 1.0
+        };
     }
 
-    AddGridLines (boundingBox, cellSize)
+    IsGridVisible ()
+    {
+        return this.gridSettings.showGrid;
+    }
+
+    SetGridSettings (show)
+    {
+        this.gridSettings.showGrid = show;
+    }
+
+    UpdateGridLines (boundingBox)
     {
         function CreateLine (from, to, material)
         {
@@ -335,20 +350,29 @@ OV.ViewerGrid = class
             return line;
         }
 
-        this.RemoveGridLines ();
+        this.ClearGridLines ();
+        if (boundingBox === null) {
+            return;
+        }
+
+        if (!this.gridSettings.showGrid) {
+            return;
+        }
 
         this.mainObject = new THREE.Object3D ();
         const material = new THREE.LineBasicMaterial({
             color: 0xcccccc
         });
 
+        // TODO: direction handling
         let boundingBoxSize = new THREE.Vector3 ();
         boundingBox.getSize (boundingBoxSize);
-        let expandSize = boundingBoxSize.y * 0.5;
+        let expandSize = 1.0;
 
         let minValue = new THREE.Vector2 (boundingBox.min.z - expandSize, boundingBox.min.x - expandSize);
         let maxValue = new THREE.Vector2 (boundingBox.max.z + expandSize, boundingBox.max.x + expandSize);
 
+        let cellSize = this.gridSettings.cellSize;
         let alignedMinValue = new THREE.Vector2 (
             Math.floor (minValue.x / cellSize) * cellSize,
             Math.floor (minValue.y / cellSize) * cellSize
@@ -358,21 +382,25 @@ OV.ViewerGrid = class
             Math.ceil (maxValue.y / cellSize) * cellSize
         );
 
-        let level = boundingBox.min.y;
+        let level = 0.0;
         let cellCountX = Math.ceil ((alignedMaxValue.x - alignedMinValue.x) / cellSize);
         let cellCountY = Math.ceil ((alignedMaxValue.y - alignedMinValue.y) / cellSize);
         for (let step = 0; step < cellCountX + 1; step++) {
             let lineDist = alignedMinValue.x + step * cellSize;
-            this.mainObject.add (CreateLine (new THREE.Vector3 (alignedMinValue.y, level, lineDist), new THREE.Vector3 (alignedMaxValue.y, level, lineDist), material));
+            let beg = new THREE.Vector3 (alignedMinValue.y, level, lineDist);
+            let end = new THREE.Vector3 (alignedMaxValue.y, level, lineDist);
+            this.mainObject.add (CreateLine (beg, end, material));
         }
         for (let step = 0; step < cellCountY + 1; step++) {
             let lineDist = alignedMinValue.y + step * cellSize;
-            this.mainObject.add (CreateLine (new THREE.Vector3 (lineDist, level, alignedMinValue.x), new THREE.Vector3 (lineDist, level, alignedMaxValue.x), material));
+            let beg = new THREE.Vector3 (lineDist, level, alignedMinValue.x);
+            let end = new THREE.Vector3 (lineDist, level, alignedMaxValue.x);
+            this.mainObject.add (CreateLine (beg, end, material));
         }
         this.scene.add (this.mainObject);
     }
 
-    RemoveGridLines ()
+    ClearGridLines ()
     {
         if (this.mainObject !== null) {
             this.scene.remove (this.mainObject);
@@ -516,6 +544,13 @@ OV.Viewer = class
         this.Render ();
     }
 
+    SetGridSettings (show)
+    {
+        this.grid.SetGridSettings (show);
+        this.UpdateGridLines ();
+        this.Render ();
+    }
+
     SetEdgeSettings (show, color, threshold)
     {
         this.geometry.SetEdgeSettings (show, color, threshold);
@@ -646,12 +681,7 @@ OV.Viewer = class
         const shadingType = OV.GetShadingTypeOfObject (object);
         this.geometry.SetMainObject (object);
         this.shading.SetType (shadingType);
-
-        // let boundingBox = this.GetBoundingBox ((meshUserData) => {
-        //     return true;
-        // });
-        // let cellSize = 1.0;
-        // this.grid.AddGridLines (boundingBox, cellSize);
+        this.UpdateGridLines ();
 
         this.Render ();
     }
@@ -660,6 +690,19 @@ OV.Viewer = class
     {
         this.extraGeometry.AddObject (object);
         this.Render ();
+    }
+
+    UpdateGridLines ()
+    {
+        this.grid.ClearGridLines ();
+        if (!this.grid.IsGridVisible ()) {
+            return;
+        }
+
+        let boundingBox = this.GetBoundingBox ((meshUserData) => {
+            return true;
+        });
+        this.grid.UpdateGridLines (boundingBox);
     }
 
     Clear ()

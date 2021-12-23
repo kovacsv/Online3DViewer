@@ -78,6 +78,36 @@ OV.SettingsColorSection = class
     }
 };
 
+OV.SettingsGridDisplaySection = class
+{
+    constructor (parentDiv)
+    {
+        this.parentDiv = parentDiv;
+        this.gridDisplayToggle = null;
+    }
+
+    Init (showGrid, onChange)
+    {
+        let contentDiv = OV.AddDiv (this.parentDiv, 'ov_sidebar_settings_content');
+        let titleDiv = OV.AddDiv (contentDiv, 'ov_sidebar_subtitle');
+
+        this.showGridToggle = OV.AddToggle (titleDiv, 'ov_sidebar_subtitle_toggle');
+        this.showGridToggle.OnChange (() => {
+            onChange (this.showGridToggle.GetStatus ());
+        });
+        OV.AddDiv (titleDiv, 'ov_sidebar_subtitle_text', 'Show Grid');
+        this.showGridToggle.SetStatus (showGrid);
+    }
+
+    Update (showGrid)
+    {
+        if (this.showGridToggle === null) {
+            return;
+        }
+        this.showGridToggle.SetStatus (showGrid);
+    }
+};
+
 OV.SettingsEdgeDisplaySection = class
 {
     constructor (parentDiv)
@@ -201,6 +231,10 @@ OV.SidebarSettingsPanel = class extends OV.SidebarPanel
         this.sectionsDiv = OV.AddDiv (this.contentDiv, 'ov_sidebar_settings_sections ov_thin_scrollbar');
         this.backgroundColorSection = new OV.SettingsColorSection (this.sectionsDiv);
         this.defaultColorSection = new OV.SettingsColorSection (this.sectionsDiv);
+        this.gridDisplaySection = null;
+        if (OV.FeatureSet.ShowGrid) {
+            this.gridDisplaySection = new OV.SettingsGridDisplaySection (this.sectionsDiv);
+        }
         this.edgeDisplaySection = new OV.SettingsEdgeDisplaySection (this.sectionsDiv);
         this.themeSection = new OV.SettingsThemeSection (this.sectionsDiv);
 
@@ -248,6 +282,12 @@ OV.SidebarSettingsPanel = class extends OV.SidebarPanel
                 this.SetDefaultColor (newColor, false);
             }
         );
+        if (this.gridDisplaySection !== null) {
+            this.gridDisplaySection.Init (this.settings.showGrid, (showGrid) => {
+                this.settings.showGrid = showGrid;
+                callbacks.onGridDisplayChange ();
+            });
+        }
         this.edgeDisplaySection.Init (
             this.settings.showEdges,
             this.settings.edgeColor,
@@ -312,6 +352,7 @@ OV.SidebarSettingsPanel = class extends OV.SidebarPanel
 
         this.settings.backgroundColor = defaultSettings.backgroundColor;
         this.settings.defaultColor = defaultSettings.defaultColor;
+        this.settings.showGrid = defaultSettings.showGrid;
         this.settings.showEdges = defaultSettings.showEdges;
         this.settings.edgeColor = defaultSettings.edgeColor;
         this.settings.edgeThreshold = defaultSettings.edgeThreshold;
@@ -319,8 +360,15 @@ OV.SidebarSettingsPanel = class extends OV.SidebarPanel
 
         this.backgroundColorSection.Update (defaultSettings.backgroundColor);
         this.defaultColorSection.Update (defaultSettings.defaultColor);
+        if (this.gridDisplaySection !== null) {
+            this.gridDisplaySection.Update (defaultSettings.showGrid);
+        }
         this.edgeDisplaySection.Update (defaultSettings.showEdges, defaultSettings.edgeColor, defaultSettings.edgeThreshold);
         this.themeSection.Update (defaultSettings.themeId);
+
+        if (this.gridDisplaySection !== null) {
+            this.callbacks.onGridDisplayChange ();
+        }
         this.callbacks.onThemeChange ();
     }
 
