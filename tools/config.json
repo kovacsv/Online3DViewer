@@ -60,6 +60,7 @@
 		"source/parameters/parameterlist.js",
 		"source/viewer/domutils.js",
 		"source/viewer/navigation.js",
+		"source/viewer/viewergeometry.js",
 		"source/viewer/viewer.js",
 		"source/viewer/measuretool.js",
 		"source/viewer/embeddedviewer.js"
