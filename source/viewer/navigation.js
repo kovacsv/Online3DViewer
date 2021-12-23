@@ -272,7 +272,6 @@ OV.Navigation = class
 		this.canvas = canvas;
 		this.camera = camera;
 		this.callbacks = callbacks;
-		this.orbitCenter = this.camera.center.Clone ();
 		this.fixUpVector = true;
 
 		this.mouse = new OV.MouseInteraction ();
@@ -368,7 +367,6 @@ OV.Navigation = class
 			});
 		}
 
-		this.orbitCenter = newCamera.center.Clone ();
 		this.Update ();
 	}
 
@@ -560,17 +558,13 @@ OV.Navigation = class
 			let originalAngle = OV.VectorAngle3D (viewDirection, this.camera.up);
 			let newAngle = originalAngle + radAngleY;
 			if (OV.IsGreater (newAngle, 0.0) && OV.IsLower (newAngle, Math.PI)) {
-				this.camera.eye.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
-				this.camera.center.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
+				this.camera.eye.Rotate (horizontalDirection, -radAngleY, this.camera.center);
 			}
-			this.camera.eye.Rotate (this.camera.up, -radAngleX, this.orbitCenter);
-			this.camera.center.Rotate (this.camera.up, -radAngleX, this.orbitCenter);
+			this.camera.eye.Rotate (this.camera.up, -radAngleX, this.camera.center);
 		} else {
 			let verticalDirection = OV.CrossVector3D (horizontalDirection, viewDirection).Normalize ();
-			this.camera.eye.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
-			this.camera.eye.Rotate (verticalDirection, -radAngleX, this.orbitCenter);
-			this.camera.center.Rotate (horizontalDirection, -radAngleY, this.orbitCenter);
-			this.camera.center.Rotate (verticalDirection, -radAngleX, this.orbitCenter);
+			this.camera.eye.Rotate (horizontalDirection, -radAngleY, this.camera.center);
+			this.camera.eye.Rotate (verticalDirection, -radAngleX, this.camera.center);
 			this.camera.up = verticalDirection;
 		}
 	}
