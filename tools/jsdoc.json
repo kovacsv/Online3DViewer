@@ -1,6 +1,6 @@
 {
 	"source": {
-		"include": "source"
+		"include": ["source", "website"]
 	},
     "opts": {
         "template": "node_modules/docdash/",
@@ -16,5 +16,10 @@
                 "target":"_blank"
             }
         }
-	}
+	},
+    "templates": {
+        "default": {
+            "includeDate": false
+        }
+    }
 }
