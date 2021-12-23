@@ -128,8 +128,14 @@ OV.ViewerGeometry = class
     constructor (scene)
     {
         this.scene = scene;
+
         this.mainObject = null;
+        this.mainGridObject = null;
         this.mainEdgeObject = null;
+
+        this.gridSettings = {
+            showGrid : false
+        };
         this.edgeSettings = {
             showEdges : false,
             edgeColor : new OV.Color (0, 0, 0),
@@ -141,6 +147,10 @@ OV.ViewerGeometry = class
     {
         this.mainObject = mainObject;
         this.scene.add (this.mainObject);
+
+        if (this.gridSettings.showGrid) {
+            this.GenerateMainGridObject ();
+        }
         if (this.edgeSettings.showEdges) {
             this.GenerateMainEdgeObject ();
         }
@@ -150,6 +160,21 @@ OV.ViewerGeometry = class
     {
         if (this.mainObject !== null) {
             this.mainObject.updateWorldMatrix (true, true);
+        }
+    }
+
+    SetGridSettings (show)
+    {
+        this.gridSettings.showGrid = show;
+        if (this.mainObject === null) {
+            return;
+        }
+
+        if (this.gridSettings.showGrid) {
+            this.ClearMainGridObject ();
+            this.GenerateMainGridObject ();
+        } else {
+            this.ClearMainGridObject ();
         }
     }
 
@@ -187,6 +212,67 @@ OV.ViewerGeometry = class
         }
     }
 
+    GenerateMainGridObject ()
+    {
+        function CreateLine (from, to, material)
+        {
+            let points = [from, to];
+            let geometry = new THREE.BufferGeometry ().setFromPoints (points);
+            let line = new THREE.Line (geometry, material);
+            return line;
+        }
+
+        this.UpdateWorldMatrix ();
+        let boundingBox = this.GetBoundingBox ((meshUserData) => {
+            return true;
+        });
+        if (boundingBox === null) {
+            return;
+        }
+
+        this.mainGridObject = new THREE.Object3D ();
+        const strongMaterial = new THREE.LineBasicMaterial ({ color: 0x888888 });
+        const lightMaterial = new THREE.LineBasicMaterial ({ color: 0xdddddd });
+
+        // TODO: direction handling
+        let boundingBoxSize = new THREE.Vector3 ();
+        boundingBox.getSize (boundingBoxSize);
+        let expandSize = 1.0;
+
+        let minValue = new THREE.Vector2 (boundingBox.min.z - expandSize, boundingBox.min.x - expandSize);
+        let maxValue = new THREE.Vector2 (boundingBox.max.z + expandSize, boundingBox.max.x + expandSize);
+
+        let cellSize = 1.0;
+        let alignedMinValue = new THREE.Vector2 (
+            Math.floor (minValue.x / cellSize) * cellSize,
+            Math.floor (minValue.y / cellSize) * cellSize
+        );
+        let alignedMaxValue = new THREE.Vector2 (
+            Math.ceil (maxValue.x / cellSize) * cellSize,
+            Math.ceil (maxValue.y / cellSize) * cellSize
+        );
+
+        let level = boundingBox.min.y;
+        let cellCountX = Math.floor ((alignedMaxValue.x - alignedMinValue.x) / cellSize);
+        let cellCountY = Math.floor ((alignedMaxValue.y - alignedMinValue.y) / cellSize);
+        for (let step = 0; step < cellCountX + 1; step++) {
+            let lineDist = alignedMinValue.x + step * cellSize;
+            let beg = new THREE.Vector3 (alignedMinValue.y, level, lineDist);
+            let end = new THREE.Vector3 (alignedMaxValue.y, level, lineDist);
+            let material = OV.IsEqual (lineDist, 0.0) ? strongMaterial : lightMaterial;
+            this.mainGridObject.add (CreateLine (beg, end, material));
+        }
+        for (let step = 0; step < cellCountY + 1; step++) {
+            let lineDist = alignedMinValue.y + step * cellSize;
+            let beg = new THREE.Vector3 (lineDist, level, alignedMinValue.x);
+            let end = new THREE.Vector3 (lineDist, level, alignedMaxValue.x);
+            let material = OV.IsEqual (lineDist, 0.0) ? strongMaterial : lightMaterial;
+            this.mainGridObject.add (CreateLine (beg, end, material));
+        }
+        this.scene.add (this.mainGridObject);
+
+    }
+
     GenerateMainEdgeObject ()
     {
         let edgeColor = new THREE.Color (
@@ -195,7 +281,8 @@ OV.ViewerGeometry = class
             this.edgeSettings.edgeColor.b / 255.0
         );
         this.mainEdgeObject = new THREE.Object3D ();
-        this.mainObject.updateWorldMatrix (true, true);
+
+        this.UpdateWorldMatrix ();
         this.EnumerateMeshes ((mesh) => {
             OV.SetThreeMeshPolygonOffset (mesh, true);
             let edges = new THREE.EdgesGeometry (mesh.geometry, this.edgeSettings.edgeThreshold);
@@ -210,9 +297,38 @@ OV.ViewerGeometry = class
         this.scene.add (this.mainEdgeObject);
     }
 
+    GetBoundingBox (needToProcess)
+    {
+        let hasMesh = false;
+        let boundingBox = new THREE.Box3 ();
+        this.EnumerateMeshes ((mesh) => {
+            if (needToProcess (mesh.userData)) {
+                boundingBox.union (new THREE.Box3 ().setFromObject (mesh));
+                hasMesh = true;
+            }
+        });
+        if (!hasMesh) {
+            return null;
+        }
+        return boundingBox;
+    }
+
+    GetBoundingSphere (needToProcess)
+    {
+        let boundingBox = this.GetBoundingBox (needToProcess);
+        if (boundingBox === null) {
+            return null;
+        }
+
+        let boundingSphere = new THREE.Sphere ();
+        boundingBox.getBoundingSphere (boundingSphere);
+        return boundingSphere;
+    }
+
     Clear ()
     {
         this.ClearMainObject ();
+        this.ClearMainGridObject ();
         this.ClearMainEdgeObject ();
     }
 
@@ -227,6 +343,21 @@ OV.ViewerGeometry = class
         });
         this.scene.remove (this.mainObject);
         this.mainObject = null;
+    }
+
+    ClearMainGridObject ()
+    {
+        if (this.mainGridObject === null) {
+            return;
+        }
+
+        this.mainGridObject.traverse ((obj) => {
+            if (obj.isLineSegments) {
+                obj.geometry.dispose ();
+            }
+        });
+        this.scene.remove (this.mainGridObject);
+        this.mainGridObject = null;
     }
 
     ClearMainEdgeObject ()
@@ -324,102 +455,6 @@ OV.ViewerExtraGeometry = class
     }
 };
 
-OV.ViewerGrid = class
-{
-    constructor (scene)
-    {
-        this.scene = scene;
-        this.mainObject = null;
-        this.gridSettings = {
-            showGrid : false
-        };
-    }
-
-    IsGridVisible ()
-    {
-        return this.gridSettings.showGrid;
-    }
-
-    SetGridSettings (show)
-    {
-        this.gridSettings.showGrid = show;
-    }
-
-    UpdateGridLines (boundingBox)
-    {
-        function CreateLine (from, to, material)
-        {
-            let points = [from, to];
-            let geometry = new THREE.BufferGeometry ().setFromPoints (points);
-            let line = new THREE.Line (geometry, material);
-            return line;
-        }
-
-        this.ClearGridLines ();
-        if (boundingBox === null) {
-            return;
-        }
-
-        if (!this.gridSettings.showGrid) {
-            return;
-        }
-
-        this.mainObject = new THREE.Object3D ();
-        const strongMaterial = new THREE.LineBasicMaterial ({ color: 0x888888 });
-        const lightMaterial = new THREE.LineBasicMaterial ({ color: 0xdddddd });
-
-        // TODO: direction handling
-        let boundingBoxSize = new THREE.Vector3 ();
-        boundingBox.getSize (boundingBoxSize);
-        let expandSize = 1.0;
-
-        let minValue = new THREE.Vector2 (boundingBox.min.z - expandSize, boundingBox.min.x - expandSize);
-        let maxValue = new THREE.Vector2 (boundingBox.max.z + expandSize, boundingBox.max.x + expandSize);
-
-        let cellSize = 1.0;
-        let alignedMinValue = new THREE.Vector2 (
-            Math.floor (minValue.x / cellSize) * cellSize,
-            Math.floor (minValue.y / cellSize) * cellSize
-        );
-        let alignedMaxValue = new THREE.Vector2 (
-            Math.ceil (maxValue.x / cellSize) * cellSize,
-            Math.ceil (maxValue.y / cellSize) * cellSize
-        );
-
-        let level = boundingBox.min.y;
-        let cellCountX = Math.floor ((alignedMaxValue.x - alignedMinValue.x) / cellSize);
-        let cellCountY = Math.floor ((alignedMaxValue.y - alignedMinValue.y) / cellSize);
-        for (let step = 0; step < cellCountX + 1; step++) {
-            let lineDist = alignedMinValue.x + step * cellSize;
-            let beg = new THREE.Vector3 (alignedMinValue.y, level, lineDist);
-            let end = new THREE.Vector3 (alignedMaxValue.y, level, lineDist);
-            let material = OV.IsEqual (lineDist, 0.0) ? strongMaterial : lightMaterial;
-            this.mainObject.add (CreateLine (beg, end, material));
-        }
-        for (let step = 0; step < cellCountY + 1; step++) {
-            let lineDist = alignedMinValue.y + step * cellSize;
-            let beg = new THREE.Vector3 (lineDist, level, alignedMinValue.x);
-            let end = new THREE.Vector3 (lineDist, level, alignedMaxValue.x);
-            let material = OV.IsEqual (lineDist, 0.0) ? strongMaterial : lightMaterial;
-            this.mainObject.add (CreateLine (beg, end, material));
-        }
-        this.scene.add (this.mainObject);
-    }
-
-    ClearGridLines ()
-    {
-        if (this.mainObject !== null) {
-            this.mainObject.traverse ((obj) => {
-                if (obj.isMesh || obj.isLineSegments) {
-                    obj.geometry.dispose ();
-                }
-            });
-            this.scene.remove (this.mainObject);
-            this.mainObject = null;
-        }
-    }
-};
-
 OV.ShadingModel = class
 {
     constructor (scene)
@@ -495,7 +530,6 @@ OV.Viewer = class
         this.scene = null;
         this.geometry = null;
         this.extraGeometry = null;
-        this.grid = null;
         this.camera = null;
         this.shading = null;
         this.navigation = null;
@@ -525,7 +559,6 @@ OV.Viewer = class
         this.scene = new THREE.Scene ();
         this.geometry = new OV.ViewerGeometry (this.scene);
         this.extraGeometry = new OV.ViewerExtraGeometry (this.scene);
-        this.grid = new OV.ViewerGrid (this.scene);
 
         this.InitNavigation ();
         this.InitShading ();
@@ -557,8 +590,7 @@ OV.Viewer = class
 
     SetGridSettings (show)
     {
-        this.grid.SetGridSettings (show);
-        this.UpdateGridLines ();
+        this.geometry.SetGridSettings (show);
         this.Render ();
     }
 
@@ -692,7 +724,6 @@ OV.Viewer = class
         const shadingType = OV.GetShadingTypeOfObject (object);
         this.geometry.SetMainObject (object);
         this.shading.SetType (shadingType);
-        this.UpdateGridLines ();
 
         this.Render ();
     }
@@ -701,20 +732,6 @@ OV.Viewer = class
     {
         this.extraGeometry.AddObject (object);
         this.Render ();
-    }
-
-    UpdateGridLines ()
-    {
-        this.grid.ClearGridLines ();
-        if (!this.grid.IsGridVisible ()) {
-            return;
-        }
-
-        this.geometry.UpdateWorldMatrix ();
-        let boundingBox = this.GetBoundingBox ((meshUserData) => {
-            return true;
-        });
-        this.grid.UpdateGridLines (boundingBox);
     }
 
     Clear ()
@@ -804,31 +821,12 @@ OV.Viewer = class
 
     GetBoundingBox (needToProcess)
     {
-        let hasMesh = false;
-        let boundingBox = new THREE.Box3 ();
-        this.geometry.EnumerateMeshes ((mesh) => {
-            if (needToProcess (mesh.userData)) {
-                boundingBox.union (new THREE.Box3 ().setFromObject (mesh));
-                hasMesh = true;
-            }
-        });
-
-        if (!hasMesh) {
-            return null;
-        }
-        return boundingBox;
+        return this.geometry.GetBoundingBox (needToProcess);
     }
 
     GetBoundingSphere (needToProcess)
     {
-        let boundingBox = this.GetBoundingBox (needToProcess);
-        if (boundingBox === null) {
-            return null;
-        }
-
-        let boundingSphere = new THREE.Sphere ();
-        boundingBox.getBoundingSphere (boundingSphere);
-        return boundingSphere;
+        return this.geometry.GetBoundingSphere (needToProcess);
     }
 
     EnumerateMeshesUserData (enumerator)
