@@ -146,6 +146,13 @@ OV.ViewerGeometry = class
         }
     }
 
+    UpdateWorldMatrix ()
+    {
+        if (this.mainObject !== null) {
+            this.mainObject.updateWorldMatrix (true, true);
+        }
+    }
+
     SetEdgeSettings (show, color, threshold)
     {
         let needToGenerate = false;
@@ -324,9 +331,7 @@ OV.ViewerGrid = class
         this.scene = scene;
         this.mainObject = null;
         this.gridSettings = {
-            showGrid : false,
-            direction : OV.Direction.Y,
-            cellSize : 1.0
+            showGrid : false
         };
     }
 
@@ -360,9 +365,8 @@ OV.ViewerGrid = class
         }
 
         this.mainObject = new THREE.Object3D ();
-        const material = new THREE.LineBasicMaterial({
-            color: 0xcccccc
-        });
+        const strongMaterial = new THREE.LineBasicMaterial ({ color: 0x888888 });
+        const lightMaterial = new THREE.LineBasicMaterial ({ color: 0xdddddd });
 
         // TODO: direction handling
         let boundingBoxSize = new THREE.Vector3 ();
@@ -372,7 +376,7 @@ OV.ViewerGrid = class
         let minValue = new THREE.Vector2 (boundingBox.min.z - expandSize, boundingBox.min.x - expandSize);
         let maxValue = new THREE.Vector2 (boundingBox.max.z + expandSize, boundingBox.max.x + expandSize);
 
-        let cellSize = this.gridSettings.cellSize;
+        let cellSize = 1.0;
         let alignedMinValue = new THREE.Vector2 (
             Math.floor (minValue.x / cellSize) * cellSize,
             Math.floor (minValue.y / cellSize) * cellSize
@@ -382,19 +386,21 @@ OV.ViewerGrid = class
             Math.ceil (maxValue.y / cellSize) * cellSize
         );
 
-        let level = 0.0;
-        let cellCountX = Math.ceil ((alignedMaxValue.x - alignedMinValue.x) / cellSize);
-        let cellCountY = Math.ceil ((alignedMaxValue.y - alignedMinValue.y) / cellSize);
+        let level = boundingBox.min.y;
+        let cellCountX = Math.floor ((alignedMaxValue.x - alignedMinValue.x) / cellSize);
+        let cellCountY = Math.floor ((alignedMaxValue.y - alignedMinValue.y) / cellSize);
         for (let step = 0; step < cellCountX + 1; step++) {
             let lineDist = alignedMinValue.x + step * cellSize;
             let beg = new THREE.Vector3 (alignedMinValue.y, level, lineDist);
             let end = new THREE.Vector3 (alignedMaxValue.y, level, lineDist);
+            let material = OV.IsEqual (lineDist, 0.0) ? strongMaterial : lightMaterial;
             this.mainObject.add (CreateLine (beg, end, material));
         }
         for (let step = 0; step < cellCountY + 1; step++) {
             let lineDist = alignedMinValue.y + step * cellSize;
             let beg = new THREE.Vector3 (lineDist, level, alignedMinValue.x);
             let end = new THREE.Vector3 (lineDist, level, alignedMaxValue.x);
+            let material = OV.IsEqual (lineDist, 0.0) ? strongMaterial : lightMaterial;
             this.mainObject.add (CreateLine (beg, end, material));
         }
         this.scene.add (this.mainObject);
@@ -403,6 +409,11 @@ OV.ViewerGrid = class
     ClearGridLines ()
     {
         if (this.mainObject !== null) {
+            this.mainObject.traverse ((obj) => {
+                if (obj.isMesh || obj.isLineSegments) {
+                    obj.geometry.dispose ();
+                }
+            });
             this.scene.remove (this.mainObject);
             this.mainObject = null;
         }
@@ -699,6 +710,7 @@ OV.Viewer = class
             return;
         }
 
+        this.geometry.UpdateWorldMatrix ();
         let boundingBox = this.GetBoundingBox ((meshUserData) => {
             return true;
         });
