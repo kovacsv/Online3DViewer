@@ -1,0 +1,20 @@
+{
+	"source": {
+		"include": "source"
+	},
+    "opts": {
+        "template": "node_modules/docdash/",
+        "encoding": "utf8",
+        "destination": "build/docs/",
+        "recurse": true,
+        "verbose": true
+    },
+	"docdash" : {
+		"menu": {
+            "GitHub": {
+                "href":"https://github.com/kovacsv/Online3DViewer",
+                "target":"_blank"
+            }
+        }
+	}
+}
