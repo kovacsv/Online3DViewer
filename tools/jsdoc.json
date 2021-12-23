@@ -7,7 +7,7 @@
         "encoding": "utf8",
         "destination": "build/docs/",
         "recurse": true,
-        "verbose": true
+        "verbose": false
     },
 	"docdash" : {
 		"menu": {

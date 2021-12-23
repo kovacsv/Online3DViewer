@@ -20,11 +20,12 @@
 	"scripts": {
 		"start": "http-server",
 		"test": "mocha test",
-		"build": "node tools/run_python.js tools/build.py",
+		"lint": "eslint source && eslint website",
+		"doc": "jsdoc -c tools/jsdoc.json",
+		"build": "npm run lint && npm run doc && node tools/run_python.js tools/build.py",
 		"update": "node tools/run_python.js tools/update.py",
 		"updatelibs": "npm install && node tools/run_python.js tools/updatelibs.py",
-		"svg": "node tools/run_python.js tools/svg.py",
-		"doc": "jsdoc -c tools/jsdoc.json"
+		"svg": "node tools/run_python.js tools/svg.py"
 	},
 	"dependencies": {
 		"@simonwep/pickr": "1.8.2",

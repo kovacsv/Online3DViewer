@@ -18,12 +18,6 @@ def GetVersion (rootDir):
 		packageJson = json.load (packageJsonFile)
 	return packageJson['version']
 
-def ESLintFolder (folder):
-	result = Tools.RunCommand ('eslint', [folder])
-	if result != 0:
-		return False
-	return True
-
 def CompressCssFiles (inputFiles, outputFile):
 	parameters = ['-o', outputFile]
 	for inputFile in inputFiles:
@@ -142,18 +136,6 @@ def Main (argv):
 	config = None
 	with open (os.path.join (toolsDir, 'config.json')) as configJson:
 		config = json.load (configJson)
-
-	PrintInfo ('ESLint importer sources.')
-	esLintResult = ESLintFolder (os.path.join (rootDir, 'source'))
-	if not esLintResult:
-		PrintError ('ESLint importer sources failed.')
-		return 1
-
-	PrintInfo ('ESLint website sources.')
-	esLintResult = ESLintFolder (os.path.join (rootDir, 'website', 'o3dv'))
-	if not esLintResult:
-		PrintError ('ESLint website sources failed.')
-		return 1
 
 	version = GetVersion (rootDir)
 	PrintInfo ('Create build directory')
