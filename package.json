@@ -32,7 +32,7 @@
 		"draco3d": "1.5.0",
 		"fflate": "0.7.2",
 		"rhino3dm": "7.11.1",
-		"three": "0.135.0",
+		"three": "0.136.0",
 		"web-ifc": "0.0.32"
 	},
 	"eslintConfig": {
