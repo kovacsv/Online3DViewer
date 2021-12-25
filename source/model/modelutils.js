@@ -85,30 +85,6 @@ OV.CloneMesh = function (mesh)
     return cloned;
 };
 
-OV.EnumerateModelVerticesAndTriangles = function (model, callbacks)
-{
-    model.EnumerateMeshInstances ((meshInstance) => {
-        meshInstance.EnumerateVertices ((vertex) => {
-            callbacks.onVertex (vertex.x, vertex.y, vertex.z);
-        });
-    });
-    let vertexOffset = 0;
-    model.EnumerateMeshInstances ((meshInstance) => {
-        meshInstance.EnumerateTriangleVertexIndices ((v0, v1, v2) => {
-            callbacks.onTriangle (v0 + vertexOffset, v1 + vertexOffset, v2 + vertexOffset);
-        });
-        vertexOffset += meshInstance.VertexCount ();
-    });
-};
-
-OV.EnumerateTrianglesWithNormals = function (object3D, onTriangle)
-{
-    object3D.EnumerateTriangleVertices ((v0, v1, v2) => {
-        let normal = OV.CalculateTriangleNormal (v0, v1, v2);
-        onTriangle (v0, v1, v2, normal);
-    });
-};
-
 OV.GetBoundingBox = function (object3D)
 {
     let calculator = new OV.BoundingBoxCalculator3D ();

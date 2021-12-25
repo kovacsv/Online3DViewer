@@ -20,24 +20,24 @@ OV.ExporterGltf = class extends OV.ExporterBase
         return (format === OV.FileFormat.Text && extension === 'gltf') || (format === OV.FileFormat.Binary && extension === 'glb');
     }
 
-	ExportContent (model, format, files, onFinish)
+	ExportContent (exporterModel, format, files, onFinish)
 	{
         if (format === OV.FileFormat.Text) {
-            this.ExportAsciiContent (model, files);
+            this.ExportAsciiContent (exporterModel, files);
         } else if (format === OV.FileFormat.Binary) {
-            this.ExportBinaryContent (model, files);
+            this.ExportBinaryContent (exporterModel, files);
         }
         onFinish ();
 	}
 
-	ExportAsciiContent (model, files)
+	ExportAsciiContent (exporterModel, files)
 	{
         let gltfFile = new OV.ExportedFile ('model.gltf');
         let binFile = new OV.ExportedFile ('model.bin');
         files.push (gltfFile);
         files.push (binFile);
 
-        let meshDataArr = this.GetMeshData (model);
+        let meshDataArr = this.GetMeshData (exporterModel);
         let mainBuffer = this.GetMainBuffer (meshDataArr);
         let mainJson = this.GetMainJson (meshDataArr);
         mainJson.buffers.push ({
@@ -46,7 +46,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
         });
 
         let fileNameToIndex = new Map ();
-        this.ExportMaterials (model, mainJson, (texture) => {
+        this.ExportMaterials (exporterModel, mainJson, (texture) => {
             let fileName = OV.GetFileName (texture.name);
             if (fileNameToIndex.has (fileName)) {
                 return fileNameToIndex.get (fileName);
@@ -74,7 +74,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
         binFile.SetBufferContent (mainBuffer);
     }
 
-    ExportBinaryContent (model, files)
+    ExportBinaryContent (exporterModel, files)
     {
         function AlignToBoundary (size)
         {
@@ -95,7 +95,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
         let glbFile = new OV.ExportedFile ('model.glb');
         files.push (glbFile);
 
-        let meshDataArr = this.GetMeshData (model);
+        let meshDataArr = this.GetMeshData (exporterModel);
         let mainBuffer = this.GetMainBuffer (meshDataArr);
         let mainJson = this.GetMainJson (meshDataArr);
 
@@ -103,7 +103,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
         let textureOffset = mainBuffer.byteLength;
 
         let fileNameToIndex = new Map ();
-        this.ExportMaterials (model, mainJson, (texture) => {
+        this.ExportMaterials (exporterModel, mainJson, (texture) => {
             let fileName = OV.GetFileName (texture.name);
             let extension = OV.GetFileExtension (texture.name);
             if (fileNameToIndex.has (fileName)) {
@@ -172,11 +172,11 @@ OV.ExporterGltf = class extends OV.ExporterBase
         glbFile.SetBufferContent (glbWriter.GetBuffer ());
     }
 
-    GetMeshData (model)
+    GetMeshData (exporterModel)
     {
         let meshDataArr = [];
 
-        model.EnumerateTransformedMeshes ((mesh) => {
+        exporterModel.EnumerateTransformedMeshes ((mesh) => {
             let buffer = OV.ConvertMeshToMeshBuffer (mesh);
             meshDataArr.push ({
                 name : mesh.GetName (),
@@ -343,7 +343,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
         return mainJson;
     }
 
-    ExportMaterials (model, mainJson, addTexture)
+    ExportMaterials (exporterModel, mainJson, addTexture)
     {
         function ExportMaterial (obj, mainJson, material, addTexture)
         {
@@ -447,8 +447,8 @@ OV.ExporterGltf = class extends OV.ExporterBase
             mainJson.materials.push (jsonMaterial);
         }
 
-        for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
-            let material = model.GetMaterial (materialIndex);
+        for (let materialIndex = 0; materialIndex < exporterModel.MaterialCount (); materialIndex++) {
+            let material = exporterModel.GetMaterial (materialIndex);
             ExportMaterial (this, mainJson, material, addTexture);
         }
     }

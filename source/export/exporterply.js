@@ -10,29 +10,29 @@ OV.ExporterPly = class extends OV.ExporterBase
         return (format === OV.FileFormat.Text || format === OV.FileFormat.Binary) && extension === 'ply';
     }
 
-	ExportContent (model, format, files, onFinish)
+	ExportContent (exporterModel, format, files, onFinish)
 	{
 		if (format === OV.FileFormat.Text) {
-			this.ExportText (model, files);
+			this.ExportText (exporterModel, files);
 		} else {
-			this.ExportBinary (model, files);
+			this.ExportBinary (exporterModel, files);
 		}
 		onFinish ();
 	}
 
-	ExportText (model, files)
+	ExportText (exporterModel, files)
 	{
 		let plyFile = new OV.ExportedFile ('model.ply');
 		files.push (plyFile);
 
 		let plyWriter = new OV.TextWriter ();
 
-		let vertexCount = model.VertexCount ();
-		let triangleCount = model.TriangleCount ();
+		let vertexCount = exporterModel.VertexCount ();
+		let triangleCount = exporterModel.TriangleCount ();
 		let headerText = this.GetHeaderText ('ascii', vertexCount, triangleCount);
 		plyWriter.Write (headerText);
 
-		OV.EnumerateModelVerticesAndTriangles (model, {
+		exporterModel.EnumerateVerticesAndTriangles ({
 			onVertex : function (x, y, z) {
 				plyWriter.WriteArrayLine ([x, y, z]);
 			},
@@ -44,13 +44,13 @@ OV.ExporterPly = class extends OV.ExporterBase
 		plyFile.SetTextContent (plyWriter.GetText ());
 	}
 
-	ExportBinary (model, files)
+	ExportBinary (exporterModel, files)
 	{
 		let plyFile = new OV.ExportedFile ('model.ply');
 		files.push (plyFile);
 
-		let vertexCount = model.VertexCount ();
-		let triangleCount = model.TriangleCount ();
+		let vertexCount = exporterModel.VertexCount ();
+		let triangleCount = exporterModel.TriangleCount ();
 		let headerText = this.GetHeaderText ('binary_little_endian', vertexCount, triangleCount);
 
 		let fullByteLength = headerText.length + vertexCount * 3 * 4 + triangleCount * (1 + 3 * 4);
@@ -60,7 +60,7 @@ OV.ExporterPly = class extends OV.ExporterBase
 			plyWriter.WriteUnsignedCharacter8 (headerText.charCodeAt (i));
 		}
 
-		OV.EnumerateModelVerticesAndTriangles (model, {
+		exporterModel.EnumerateVerticesAndTriangles ({
 			onVertex : function (x, y, z) {
 				plyWriter.WriteFloat32 (x);
 				plyWriter.WriteFloat32 (y);

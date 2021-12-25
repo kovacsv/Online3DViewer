@@ -46,6 +46,7 @@
 		"source/import/importerifc.js",
 		"source/import/filelist.js",
 		"source/import/importer.js",
+		"source/export/exportermodel.js",
 		"source/export/exporterbase.js",
 		"source/export/exporterobj.js",
 		"source/export/exporterstl.js",

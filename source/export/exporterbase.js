@@ -50,16 +50,17 @@ OV.ExporterBase = class
     {
         return false;
     }
-    
+
 	Export (model, format, onFinish)
 	{
 		let files = [];
-		this.ExportContent (model, format, files, () => {
+		let exporterModel = new OV.ExporterModel (model);
+		this.ExportContent (exporterModel, format, files, () => {
 			onFinish (files);
 		});
 	}
 
-	ExportContent (model, format, files, onFinish)
+	ExportContent (exporterModel, format, files, onFinish)
 	{
 
 	}
@@ -68,11 +69,11 @@ OV.ExporterBase = class
 	{
 		return this.GetExportedName (originalName, 'Material');
 	}
-	
+
 	GetExportedMeshName (originalName)
 	{
 		return this.GetExportedName (originalName, 'Mesh');
-	}	
+	}
 
 	GetExportedName (originalName, defaultName)
 	{

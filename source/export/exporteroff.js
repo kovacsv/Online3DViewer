@@ -10,16 +10,16 @@ OV.ExporterOff = class extends OV.ExporterBase
         return format === OV.FileFormat.Text && extension === 'off';
     }
 
-	ExportContent (model, format, files, onFinish)
+	ExportContent (exporterModel, format, files, onFinish)
 	{
 		let offFile = new OV.ExportedFile ('model.off');
 		files.push (offFile);
 
 		let offWriter = new OV.TextWriter ();
 		offWriter.WriteLine ('OFF');
-		offWriter.WriteArrayLine ([model.VertexCount (), model.TriangleCount (), 0]);
+		offWriter.WriteArrayLine ([exporterModel.VertexCount (), exporterModel.TriangleCount (), 0]);
 
-		OV.EnumerateModelVerticesAndTriangles (model, {
+		exporterModel.EnumerateVerticesAndTriangles ({
 			onVertex : function (x, y, z) {
 				offWriter.WriteArrayLine ([x, y, z]);
 			},

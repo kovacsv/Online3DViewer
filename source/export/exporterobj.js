@@ -10,7 +10,7 @@ OV.ExporterObj = class extends OV.ExporterBase
         return format === OV.FileFormat.Text && extension === 'obj';
     }
 
-    ExportContent (model, format, files, onFinish)
+    ExportContent (exporterModel, format, files, onFinish)
     {
         function WriteTexture (mtlWriter, keyword, texture, files)
         {
@@ -38,8 +38,8 @@ OV.ExporterObj = class extends OV.ExporterBase
 
         let mtlWriter = new OV.TextWriter ();
         mtlWriter.WriteLine (this.GetHeaderText ());
-        for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
-            let material = model.GetMaterial (materialIndex);
+        for (let materialIndex = 0; materialIndex < exporterModel.MaterialCount (); materialIndex++) {
+            let material = exporterModel.GetMaterial (materialIndex);
             mtlWriter.WriteArrayLine (['newmtl', this.GetExportedMaterialName (material.name)]);
             mtlWriter.WriteArrayLine (['Kd', material.color.r / 255.0, material.color.g / 255.0, material.color.b / 255.0]);
             mtlWriter.WriteArrayLine (['d', material.opacity]);
@@ -63,7 +63,7 @@ OV.ExporterObj = class extends OV.ExporterBase
         let normalOffset = 0;
         let uvOffset = 0;
         let usedMaterialName = null;
-        model.EnumerateTransformedMeshes ((mesh) => {
+        exporterModel.EnumerateTransformedMeshes ((mesh) => {
             objWriter.WriteArrayLine (['g', this.GetExportedMeshName (mesh.GetName ())]);
             for (let vertexIndex = 0; vertexIndex < mesh.VertexCount (); vertexIndex++) {
                 let vertex = mesh.GetVertex (vertexIndex);
@@ -86,7 +86,7 @@ OV.ExporterObj = class extends OV.ExporterBase
                 let n1 = triangle.n1 + normalOffset + 1;
                 let n2 = triangle.n2 + normalOffset + 1;
                 if (triangle.mat !== null) {
-                    let material = model.GetMaterial (triangle.mat);
+                    let material = exporterModel.GetMaterial (triangle.mat);
                     let materialName = this.GetExportedMaterialName (material.name);
                     if (materialName !== usedMaterialName) {
                         objWriter.WriteArrayLine (['usemtl', materialName]);

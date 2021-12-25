@@ -11,23 +11,23 @@ OV.Exporter3dm = class extends OV.ExporterBase
         return format === OV.FileFormat.Binary && extension === '3dm';
     }
 
-	ExportContent (model, format, files, onFinish)
+	ExportContent (exporterModel, format, files, onFinish)
 	{
 		if (this.rhino === null) {
 			OV.LoadExternalLibrary ('loaders/rhino3dm.min.js').then (() => {
                 rhino3dm ().then ((rhino) => {
                     this.rhino = rhino;
-                    this.ExportRhinoContent (model, files, onFinish);
+                    this.ExportRhinoContent (exporterModel, files, onFinish);
                 });
             }).catch (() => {
                 onFinish ();
             });
 		} else {
-			this.ExportRhinoContent (model, files, onFinish);
+			this.ExportRhinoContent (exporterModel, files, onFinish);
 		}
 	}
 
-    ExportRhinoContent (model, files, onFinish)
+    ExportRhinoContent (exporterModel, files, onFinish)
     {
         function ColorToRhinoColor (color)
         {
@@ -43,7 +43,7 @@ OV.Exporter3dm = class extends OV.ExporterBase
 		files.push (rhinoFile);
 
         let rhinoDoc = new this.rhino.File3dm ();
-        model.EnumerateTransformedMeshes ((mesh) => {
+        exporterModel.EnumerateTransformedMeshes ((mesh) => {
             let meshBuffer = OV.ConvertMeshToMeshBuffer (mesh);
             for (let primitiveIndex = 0; primitiveIndex < meshBuffer.PrimitiveCount (); primitiveIndex++) {
                 let primitive = meshBuffer.GetPrimitive (primitiveIndex);
@@ -68,7 +68,7 @@ OV.Exporter3dm = class extends OV.ExporterBase
                     }
                 };
 
-                let material = model.GetMaterial (primitive.material);
+                let material = exporterModel.GetMaterial (primitive.material);
                 let rhinoMaterial = new this.rhino.Material ();
                 rhinoMaterial.name = this.GetExportedMaterialName (material.name);
                 if (material.type === OV.MaterialType.Phong) {

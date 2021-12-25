@@ -10,24 +10,24 @@ OV.ExporterStl = class extends OV.ExporterBase
         return (format === OV.FileFormat.Text || format === OV.FileFormat.Binary) && extension === 'stl';
     }
 
-	ExportContent (model, format, files, onFinish)
+	ExportContent (exporterModel, format, files, onFinish)
 	{
 		if (format === OV.FileFormat.Text) {
-			this.ExportText (model, files);
+			this.ExportText (exporterModel, files);
 		} else {
-			this.ExportBinary (model, files);
+			this.ExportBinary (exporterModel, files);
 		}
 		onFinish ();
 	}
 
-	ExportText (model, files)
+	ExportText (exporterModel, files)
 	{
 		let stlFile = new OV.ExportedFile ('model.stl');
 		files.push (stlFile);
 
 		let stlWriter = new OV.TextWriter ();
 		stlWriter.WriteLine ('solid Model');
-		OV.EnumerateTrianglesWithNormals (model, (v0, v1, v2, normal) => {
+		exporterModel.EnumerateTrianglesWithNormals ((v0, v1, v2, normal) => {
 			stlWriter.WriteArrayLine (['facet', 'normal', normal.x, normal.y, normal.z]);
 			stlWriter.Indent (1);
 			stlWriter.WriteLine ('outer loop');
@@ -45,12 +45,12 @@ OV.ExporterStl = class extends OV.ExporterBase
 		stlFile.SetTextContent (stlWriter.GetText ());
 	}
 
-	ExportBinary (model, files)
+	ExportBinary (exporterModel, files)
 	{
 		let stlFile = new OV.ExportedFile ('model.stl');
 		files.push (stlFile);
 
-		let triangleCount = model.TriangleCount ();
+		let triangleCount = exporterModel.TriangleCount ();
 		let headerSize = 80;
 		let fullByteLength = headerSize + 4 + triangleCount * 50;
 		let stlWriter = new OV.BinaryWriter (fullByteLength, true);
@@ -60,7 +60,7 @@ OV.ExporterStl = class extends OV.ExporterBase
 		}
 
 		stlWriter.WriteUnsignedInteger32 (triangleCount);
-		OV.EnumerateTrianglesWithNormals (model, (v0, v1, v2, normal) => {
+		exporterModel.EnumerateTrianglesWithNormals ((v0, v1, v2, normal) => {
 			stlWriter.WriteFloat32 (normal.x);
 			stlWriter.WriteFloat32 (normal.y);
 			stlWriter.WriteFloat32 (normal.z);
