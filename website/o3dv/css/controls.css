@@ -128,6 +128,14 @@ input.ov_checkbox:checked
 	border: 0px;
 }
 
+select.ov_select
+{
+	color: var(--ov_dialog_foreground_color);
+	background: var(--ov_dialog_background_color);
+	padding: 3px;
+	border: 1px solid var(--ov_border_color);
+}
+
 input.ov_slider
 {
 	height: 1px;

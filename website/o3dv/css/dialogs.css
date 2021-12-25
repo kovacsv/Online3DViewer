@@ -96,19 +96,6 @@ div.ov_dialog div.ov_dialog_options
 	height: 50px;
 }
 
-div.ov_dialog div.ov_dialog_select
-{
-	margin: 20px 0px;
-	overflow: auto;
-}
-
-div.ov_dialog div.ov_dialog_select div.ov_dialog_select_option
-{
-	width: 40px;
-	margin-right: 5px;
-	float: left;
-}
-
 div.ov_dialog div.ov_dialog_file_list
 {
 	max-height: 105px;
@@ -175,6 +162,24 @@ div.ov_dialog div.ov_dialog_row
 {
 	padding: 2px 0px;
 	overflow: auto;
+}
+
+div.ov_dialog div.ov_dialog_row_name
+{
+	width: 30%;
+	float: left;
+}
+
+div.ov_dialog div.ov_dialog_row_value
+{
+	width: 70%;
+	float: left;
+}
+
+div.ov_dialog select.ov_select
+{
+	width: 100%;
+	box-sizing: border-box;
 }
 
 div.ov_popup

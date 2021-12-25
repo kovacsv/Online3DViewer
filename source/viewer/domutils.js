@@ -136,6 +136,21 @@ OV.AddRangeSlider = function (parentElement, min, max)
     return slider;
 };
 
+OV.AddSelect = function (parentElement, options, selectedIndex, onChange)
+{
+    let select = OV.AddDomElement (parentElement, 'select', 'ov_select');
+    for (let option of options) {
+        OV.AddDomElement (select, 'option', null, option);
+    }
+    select.selectedIndex = selectedIndex;
+    if (onChange) {
+        select.addEventListener ('change', () => {
+            onChange (select.selectedIndex);
+        });
+    }
+    return select;
+};
+
 OV.AddToggle = function (parentElement, className)
 {
     function UpdateStatus (toggle, status)
