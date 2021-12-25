@@ -128,7 +128,8 @@ OV.Model = class extends OV.ModelObject3D
             return null;
         }
         let foundMesh = this.GetMesh (instanceId.meshIndex);
-        return new OV.MeshInstance (foundNode, foundMesh);
+        let id = new OV.MeshInstanceId (foundNode.GetId (), instanceId.meshIndex);
+        return new OV.MeshInstance (id, foundNode, foundMesh);
     }
 
     EnumerateMeshes (onMesh)
@@ -142,8 +143,9 @@ OV.Model = class extends OV.ModelObject3D
     {
         this.root.Enumerate ((node) => {
             for (let meshIndex of node.GetMeshIndices ()) {
+                let id = new OV.MeshInstanceId (node.GetId (), meshIndex);
                 let mesh = this.GetMesh (meshIndex);
-                let meshInstance = new OV.MeshInstance (node, mesh);
+                let meshInstance = new OV.MeshInstance (id, node, mesh);
                 onMeshInstance (meshInstance);
             }
         });

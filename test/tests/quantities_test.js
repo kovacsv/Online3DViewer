@@ -105,7 +105,7 @@ describe ('Quantities', function () {
         const transformation = new OV.Transformation (new OV.Matrix ().CreateScale (2.0, 2.0, 2.0));
         let node = new OV.Node ();
         node.SetTransformation (transformation);
-        const meshInstance = new OV.MeshInstance (node, mesh);
+        const meshInstance = new OV.MeshInstance (null, node, mesh);
         assert (OV.IsSolid (meshInstance));
         assert (OV.IsEqual (OV.CalculateVolume (meshInstance), 8.0));
         assert (OV.IsEqual (OV.CalculateSurfaceArea (meshInstance), 24.0));

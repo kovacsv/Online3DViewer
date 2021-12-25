@@ -403,4 +403,15 @@ describe ('Node Hierarchy', function () {
         assert.strictEqual (model.TextureUVCount (), 0);
         assert.strictEqual (model.TriangleCount (), 12 * 3);
     });
+
+    it ('Instance enumeration', function () {
+        let model = testUtils.GetTranslatedRotatedCubesModel ();
+        let meshInstances = [];
+        model.EnumerateMeshInstances ((meshInstance) => {
+            meshInstances.push (meshInstance);
+        });
+        assert (meshInstances[0].GetId ().IsEqual (new OV.MeshInstanceId (0, 0)));
+        assert (meshInstances[1].GetId ().IsEqual (new OV.MeshInstanceId (1, 0)));
+        assert (meshInstances[2].GetId ().IsEqual (new OV.MeshInstanceId (3, 0)));
+    });
 });
