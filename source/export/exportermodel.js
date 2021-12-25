@@ -1,8 +1,18 @@
 OV.ExporterModel = class
 {
-    constructor (model)
+    constructor (model, parameters)
     {
         this.model = model;
+        this.parameters = {
+            isMeshVisible : (meshInstanceId) => {
+                return true;
+            }
+        };
+        if (OV.IsDefined (parameters)) {
+            if (OV.IsDefined (parameters.isMeshVisible)) {
+                this.parameters.isMeshVisible = parameters.isMeshVisible;
+            }
+        }
     }
 
     MaterialCount ()
@@ -10,24 +20,36 @@ OV.ExporterModel = class
         return this.model.MaterialCount ();
     }
 
-    VertexCount ()
-    {
-        return this.model.VertexCount ();
-    }
-
-    TriangleCount ()
-    {
-        return this.model.TriangleCount ();
-    }
-
     GetMaterial (index)
     {
         return this.model.GetMaterial (index);
     }
 
+    VertexCount ()
+    {
+        let vertexCount = 0;
+        this.EnumerateMeshInstances ((meshInstance) => {
+            vertexCount += meshInstance.VertexCount ();
+        });
+        return vertexCount;
+    }
+
+    TriangleCount ()
+    {
+        let triangleCount = 0;
+        this.EnumerateMeshInstances ((meshInstance) => {
+            triangleCount += meshInstance.TriangleCount ();
+        });
+        return triangleCount;
+    }
+
     EnumerateMeshInstances (onMeshInstance)
     {
-        this.model.EnumerateMeshInstances (onMeshInstance);
+        this.model.EnumerateMeshInstances ((meshInstance) => {
+            if (this.parameters.isMeshVisible (meshInstance.GetId ())) {
+                onMeshInstance (meshInstance);
+            }
+        });
     }
 
     EnumerateTransformedMeshes (onMesh)
