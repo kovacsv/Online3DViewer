@@ -537,6 +537,9 @@ OV.Website = class
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         AddButton (this.toolbar, this.eventHandler, 'export', 'Export model', ['only_full_width', 'only_on_model'], () => {
             let exportDialog = new OV.ExportDialog ({
+                isMeshVisible : (meshInstanceId) => {
+                    return this.navigator.IsMeshVisible (meshInstanceId);
+                },
                 onDialog : (dialog) => {
                     this.dialog = dialog;
                 }

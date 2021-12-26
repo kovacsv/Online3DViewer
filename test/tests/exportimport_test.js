@@ -109,7 +109,8 @@ function CreateTestModel ()
 function ExportImport (model, format, extension, onReady)
 {
     let exporter = new OV.Exporter ();
-    exporter.Export (model, format, extension, {
+    let exporterModel = new OV.ExporterModel (model);
+    exporter.Export (exporterModel, format, extension, {
         onSuccess : function (exportedFiles) {
             let importer = new OV.Importer ();
             let settings = new OV.ImportSettings ();

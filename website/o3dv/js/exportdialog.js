@@ -41,7 +41,7 @@ OV.ModelExporterUI = class extends OV.ExporterUI
         return OV.ExportType.Model;
     }
 
-    ExportModel (model, onDialog)
+    ExportModel (model, callbacks)
     {
         let progressDialog = new OV.ProgressDialog ();
         progressDialog.Init ('Exporting Model');
@@ -49,7 +49,13 @@ OV.ModelExporterUI = class extends OV.ExporterUI
 
         OV.RunTaskAsync (() => {
             let exporter = new OV.Exporter ();
-            exporter.Export (model, this.format, this.extension, {
+            let exporterModel = new OV.ExporterModel (model, {
+                isMeshVisible : (meshInstanceId) => {
+                    // TODO return callbacks.isMeshVisible (meshInstanceId);
+                    return true;
+                }
+            });
+            exporter.Export (exporterModel, this.format, this.extension, {
                 onError : () => {
                     progressDialog.Hide ();
                 },
@@ -63,7 +69,7 @@ OV.ModelExporterUI = class extends OV.ExporterUI
                     } else if (files.length > 1) {
                         progressDialog.Hide ();
                         let filesDialog = this.ShowExportedFiles (files);
-                        onDialog (filesDialog);
+                        callbacks.onDialog (filesDialog);
                     }
                 }
             });
@@ -217,8 +223,13 @@ OV.ExportDialog = class
     ExportFormat (model, viewer)
     {
         if (this.selectedExporter.GetType () === OV.ExportType.Model) {
-            this.selectedExporter.ExportModel (model, (filesDialog) => {
-                this.callbacks.onDialog (filesDialog);
+            this.selectedExporter.ExportModel (model, {
+                isMeshVisible : (meshInstanceId) => {
+                    return this.callbacks.isMeshVisible (meshInstanceId);
+                },
+                onDialog : (filesDialog) => {
+                    this.callbacks.onDialog (filesDialog);
+                }
             });
         } else if (this.selectedExporter.GetType () === OV.ExportType.Image) {
             this.selectedExporter.ExportImage (viewer);

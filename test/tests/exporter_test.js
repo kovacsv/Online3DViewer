@@ -65,7 +65,8 @@ function CreateTestModel ()
 function Export (model, format, extension, onReady)
 {
     let exporter = new OV.Exporter ();
-    exporter.Export (model, format, extension, {
+    let exporterModel = new OV.ExporterModel (model);
+    exporter.Export (exporterModel, format, extension, {
         onSuccess : function (files) {
             onReady (files);
         }
@@ -108,7 +109,8 @@ describe ('Exporter', function () {
     it ('Exporter Error', function (done) {
         let model = CreateTestModel ();
         let exporter = new OV.Exporter ();
-        exporter.Export (model, OV.FileFormat.Text, 'ext', {
+        let exporterModel = new OV.ExporterModel (model);
+        exporter.Export (exporterModel, OV.FileFormat.Text, 'ext', {
             onError : function () {
                 done ();
             }

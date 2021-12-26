@@ -68,7 +68,7 @@ OV.ExporterModel = class
             });
         });
         let vertexOffset = 0;
-        this.model.EnumerateMeshInstances ((meshInstance) => {
+        this.EnumerateMeshInstances ((meshInstance) => {
             meshInstance.EnumerateTriangleVertexIndices ((v0, v1, v2) => {
                 callbacks.onTriangle (v0 + vertexOffset, v1 + vertexOffset, v2 + vertexOffset);
             });
