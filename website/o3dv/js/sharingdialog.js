@@ -3,15 +3,8 @@ OV.ShowSharingDialog = function (importer, settings, camera)
     function AddCheckboxLine (parentDiv, text, id, onChange)
     {
         let line = OV.AddDiv (parentDiv, 'ov_dialog_row');
-        let label = OV.AddDomElement (line, 'label');
-        label.setAttribute ('for', id);
-        let check = OV.AddDomElement (label, 'input', 'ov_checkbox');
-        check.setAttribute ('type', 'checkbox');
-        check.setAttribute ('checked', 'true');
-        check.setAttribute ('id', id);
-        OV.AddDomElement (label, 'span', null, text);
-        check.addEventListener ('change', () => {
-            onChange (check.checked);
+        let checkbox = OV.AddCheckbox (line, id, text, true, () => {
+            onChange (checkbox.checked);
         });
     }
 

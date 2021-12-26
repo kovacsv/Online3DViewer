@@ -65,8 +65,8 @@ function CreateTestModel ()
 function Export (model, format, extension, onReady)
 {
     let exporter = new OV.Exporter ();
-    let exporterModel = new OV.ExporterModel (model);
-    exporter.Export (exporterModel, format, extension, {
+    let settings = new OV.ExporterSettings ();
+    exporter.Export (model, settings, format, extension, {
         onSuccess : function (files) {
             onReady (files);
         }
@@ -76,7 +76,8 @@ function Export (model, format, extension, onReady)
 describe ('Exporter Model', function () {
     it ('No filter test', function (done) {
         let model = CreateTestModel ();
-        let exporterModel = new OV.ExporterModel (model);
+        let settings = new OV.ExporterSettings ();
+        let exporterModel = new OV.ExporterModel (model, settings);
         let meshInstances = [];
         exporterModel.EnumerateMeshInstances ((meshInstance) => {
             meshInstances.push (meshInstance);
@@ -89,11 +90,12 @@ describe ('Exporter Model', function () {
 
     it ('Model filter test', function (done) {
         let model = CreateTestModel ();
-        let exporterModel = new OV.ExporterModel (model, {
+        let settings = new OV.ExporterSettings ({
             isMeshVisible : (meshInstanceId) => {
                 return meshInstanceId.IsEqual (new OV.MeshInstanceId (0, 1));
             }
         });
+        let exporterModel = new OV.ExporterModel (model, settings);
         let meshInstances = [];
         exporterModel.EnumerateMeshInstances ((meshInstance) => {
             meshInstances.push (meshInstance);
@@ -109,8 +111,8 @@ describe ('Exporter', function () {
     it ('Exporter Error', function (done) {
         let model = CreateTestModel ();
         let exporter = new OV.Exporter ();
-        let exporterModel = new OV.ExporterModel (model);
-        exporter.Export (exporterModel, OV.FileFormat.Text, 'ext', {
+        let settings = new OV.ExporterSettings ();
+        exporter.Export (model, settings, OV.FileFormat.Text, 'ext', {
             onError : function () {
                 done ();
             }

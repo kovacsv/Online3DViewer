@@ -123,8 +123,25 @@ OV.AddRadioButton = function (parentElement, name, id, text, onChange)
     radio.setAttribute ('id', id);
     radio.setAttribute ('name', name);
     OV.AddDomElement (label, 'span', null, text);
-    radio.addEventListener ('change', onChange);
+    if (onChange) {
+        radio.addEventListener ('change', onChange);
+    }
     return radio;
+};
+
+OV.AddCheckbox = function (parentElement, id, text, isChecked, onChange)
+{
+    let label = OV.AddDomElement (parentElement, 'label');
+    label.setAttribute ('for', id);
+    let check = OV.AddDomElement (label, 'input', 'ov_checkbox');
+    check.setAttribute ('type', 'checkbox');
+    check.setAttribute ('checked', isChecked);
+    check.setAttribute ('id', id);
+    OV.AddDomElement (label, 'span', null, text);
+    if (onChange) {
+        check.addEventListener ('change', onChange);
+    }
+    return check;
 };
 
 OV.AddRangeSlider = function (parentElement, min, max)

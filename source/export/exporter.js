@@ -17,7 +17,7 @@ OV.Exporter = class
         this.exporters.push (exporter);
     }
 
-    Export (exporterModel, format, extension, callbacks)
+    Export (model, settings, format, extension, callbacks)
     {
         let exporter = null;
         for (let i = 0; i < this.exporters.length; i++) {
@@ -32,6 +32,7 @@ OV.Exporter = class
             return;
         }
 
+        let exporterModel = new OV.ExporterModel (model, settings);
         exporter.Export (exporterModel, format, (files) => {
             if (files.length === 0) {
                 callbacks.onError ();

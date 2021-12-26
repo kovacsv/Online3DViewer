@@ -160,13 +160,14 @@ div.ov_dialog div.ov_dialog_copyable_input div.ov_dialog_copyable_input_button
 
 div.ov_dialog div.ov_dialog_row
 {
-	padding: 2px 0px;
+	padding: 3px 0px;
 	overflow: auto;
 }
 
 div.ov_dialog div.ov_dialog_row_name
 {
 	width: 30%;
+	margin-top: 4px;
 	float: left;
 }
 

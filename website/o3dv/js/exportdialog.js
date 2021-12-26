@@ -34,6 +34,7 @@ OV.ModelExporterUI = class extends OV.ExporterUI
         super (name);
         this.format = format;
         this.extension = extension;
+        this.visibleOnlyCheckbox = null;
     }
 
     GetType ()
@@ -41,21 +42,43 @@ OV.ModelExporterUI = class extends OV.ExporterUI
         return OV.ExportType.Model;
     }
 
+    GenerateParametersUI (parametersDiv)
+    {
+        let line = OV.AddDiv (parametersDiv, 'ov_dialog_row');
+        this.visibleOnlyCheckbox = OV.AddCheckbox (line, 'export_visible_only', 'Export visible meshes only', true);
+    }
+
     ExportModel (model, callbacks)
     {
+        let visibleOnly = this.visibleOnlyCheckbox.checked;
+        let settings = new OV.ExporterSettings ({
+            isMeshVisible : (meshInstanceId) => {
+                if (visibleOnly) {
+                    return callbacks.isMeshVisible (meshInstanceId);
+                } else {
+                    return true;
+                }
+            }
+        });
+
+        // TODO
+        // if (exporterModel.MeshInstanceCount () === 0) {
+        //     let errorDialog = OV.ShowMessageDialog (
+        //         'Export Failed',
+        //         'The model doesn\'t contain any meshes.',
+        //         null
+        //     );
+        //     callbacks.onDialog (errorDialog);
+        //     return;
+        // }
+
         let progressDialog = new OV.ProgressDialog ();
         progressDialog.Init ('Exporting Model');
         progressDialog.Show ();
 
         OV.RunTaskAsync (() => {
             let exporter = new OV.Exporter ();
-            let exporterModel = new OV.ExporterModel (model, {
-                isMeshVisible : (meshInstanceId) => {
-                    // TODO return callbacks.isMeshVisible (meshInstanceId);
-                    return true;
-                }
-            });
-            exporter.Export (exporterModel, this.format, this.extension, {
+            exporter.Export (model, settings, this.format, this.extension, {
                 onError : () => {
                     progressDialog.Hide ();
                 },

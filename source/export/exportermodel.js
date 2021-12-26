@@ -1,18 +1,24 @@
-OV.ExporterModel = class
+OV.ExporterSettings = class
 {
-    constructor (model, parameters)
+    constructor (settings)
     {
-        this.model = model;
-        this.parameters = {
-            isMeshVisible : (meshInstanceId) => {
-                return true;
-            }
+        this.isMeshVisible = (meshInstanceId) => {
+            return true;
         };
-        if (OV.IsDefined (parameters)) {
-            if (OV.IsDefined (parameters.isMeshVisible)) {
-                this.parameters.isMeshVisible = parameters.isMeshVisible;
+        if (OV.IsDefined (settings)) {
+            if (OV.IsDefined (settings.isMeshVisible)) {
+                this.isMeshVisible = settings.isMeshVisible;
             }
         }
+    }
+};
+
+OV.ExporterModel = class
+{
+    constructor (model, settings)
+    {
+        this.model = model;
+        this.settings = settings;
     }
 
     MaterialCount ()
@@ -43,10 +49,19 @@ OV.ExporterModel = class
         return triangleCount;
     }
 
+    MeshInstanceCount ()
+    {
+        let meshInstanceCount = 0;
+        this.EnumerateMeshInstances ((meshInstance) => {
+            meshInstanceCount += 1;
+        });
+        return meshInstanceCount;
+    }
+
     EnumerateMeshInstances (onMeshInstance)
     {
         this.model.EnumerateMeshInstances ((meshInstance) => {
-            if (this.parameters.isMeshVisible (meshInstance.GetId ())) {
+            if (this.settings.isMeshVisible (meshInstance.GetId ())) {
                 onMeshInstance (meshInstance);
             }
         });
