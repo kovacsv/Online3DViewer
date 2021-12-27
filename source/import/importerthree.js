@@ -68,11 +68,9 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
 
     LoadModel (fileContent, onFinish)
     {
-        let loadedObject = null;
+        let isAllLoadersDone = false;
         let loadingManager = new THREE.LoadingManager (() => {
-            if (loadedObject !== null) {
-                this.OnThreeObjectsLoaded (loadedObject, onFinish);
-            }
+            isAllLoadersDone = true;
         });
 
         const mainFileUrl = OV.CreateObjectUrl (fileContent);
@@ -101,7 +99,14 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
 
         threeLoader.load (mainFileUrl,
             (object) => {
-                loadedObject = object;
+                OV.WaitWhile (() => {
+                    console.log ('wait');
+                    if (isAllLoadersDone) {
+                        this.OnThreeObjectsLoaded (object, onFinish);
+                        return false;
+                    }
+                    return true;
+                });
             },
             () => {
             },
@@ -170,7 +175,13 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
                 }
                 for (let i = 0; i < threeMesh.geometry.groups.length; i++) {
                     let group = threeMesh.geometry.groups[i];
-                    for (let j = group.start / 3; j < group.start / 3 + group.count / 3; j++) {
+                    let groupEnd = group.start;
+                    if (group.count === Infinity) {
+                        groupEnd = mesh.TriangleCount ();
+                    } else {
+                        groupEnd = group.start / 3 + group.count / 3;
+                    }
+                    for (let j = group.start / 3; j < groupEnd; j++) {
                         let triangle = mesh.GetTriangle (j);
                         triangle.SetMaterial (materialIndices[group.materialIndex]);
                     }

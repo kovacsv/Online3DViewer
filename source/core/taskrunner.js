@@ -73,3 +73,16 @@ OV.RunTasksBatch = function (count, batchCount, callbacks)
     let taskRunner = new OV.TaskRunner ();
     taskRunner.RunBatch (count, batchCount, callbacks);
 };
+
+OV.WaitWhile = function (expression)
+{
+    function Waiter (expression)
+    {
+        if (expression ()) {
+            setTimeout (() => {
+                Waiter (expression);
+            }, 1);
+        }
+    }
+    Waiter (expression);
+};
