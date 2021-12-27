@@ -96,12 +96,6 @@ div.ov_dialog div.ov_dialog_options
 	height: 50px;
 }
 
-div.ov_dialog div.ov_dialog_file_list
-{
-	max-height: 105px;
-	overflow: auto;
-}
-
 div.ov_dialog div.ov_dialog_import_file_list
 {
 	max-height: 300px;

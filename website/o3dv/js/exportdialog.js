@@ -90,44 +90,22 @@ OV.ModelExporterUI = class extends OV.ExporterUI
                         let file = files[0];
                         OV.DownloadArrayBufferAsFile (file.GetBufferContent (), file.GetName ());
                     } else if (files.length > 1) {
-                        progressDialog.Hide ();
-                        let filesDialog = this.ShowExportedFiles (files);
-                        callbacks.onDialog (filesDialog);
+                        OV.LoadExternalLibrary ('loaders/fflate.min.js').then (() => {
+                            let filesInZip = {};
+                            for (let file of files) {
+                                filesInZip[file.name] = new Uint8Array (file.content);
+                            }
+                            let zippedContent = fflate.zipSync (filesInZip);
+                            let zippedBuffer = zippedContent.buffer;
+                            progressDialog.Hide ();
+                            OV.DownloadArrayBufferAsFile (zippedBuffer, 'model.zip');
+                        }).catch (() => {
+                            progressDialog.Hide ();
+                        });
                     }
                 }
             });
         });
-    }
-
-    ShowExportedFiles (files)
-    {
-        let dialog = new OV.ButtonDialog ();
-        let contentDiv = dialog.Init ('Exported Files', [
-            {
-                name : 'Close',
-                onClick () {
-                    dialog.Hide ();
-                }
-            }
-        ]);
-
-        let text = 'You can download your exported files here.';
-        OV.AddDiv (contentDiv, 'ov_dialog_section', text);
-
-        let fileListSection = OV.AddDiv (contentDiv, 'ov_dialog_section');
-        let fileList = OV.AddDiv (fileListSection, 'ov_dialog_file_list ov_thin_scrollbar');
-
-        for (let file of files) {
-            let fileLink = OV.AddDiv (fileList, 'ov_dialog_file_link');
-            OV.AddSvgIconElement (fileLink, 'file_download', 'ov_file_link_img');
-            OV.AddDiv (fileLink, 'ov_dialog_file_link_text', file.GetName ());
-            fileLink.addEventListener ('click', () => {
-                OV.DownloadArrayBufferAsFile (file.GetBufferContent (), file.GetName ());
-            });
-        }
-
-        dialog.Show ();
-        return dialog;
     }
 };
 
