@@ -100,7 +100,6 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
         threeLoader.load (mainFileUrl,
             (object) => {
                 OV.WaitWhile (() => {
-                    console.log ('wait');
                     if (isAllLoadersDone) {
                         this.OnThreeObjectsLoaded (object, onFinish);
                         return false;
