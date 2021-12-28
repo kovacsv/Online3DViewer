@@ -121,7 +121,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 		}
 
 		let material = model.GetMaterial (materialIndex);
-		let baseColor = new THREE.Color (material.color.r / 255.0, material.color.g / 255.0, material.color.b / 255.0);
+		let baseColor = OV.ConvertColorToThreeColor (material.color);
 		if (material.vertexColors) {
 			baseColor.setRGB (1.0, 1.0, 1.0);
 		}
@@ -143,7 +143,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 		if (shadingType === OV.ShadingType.Phong) {
 			threeMaterial = new THREE.MeshPhongMaterial (materialParams);
 			if (material.type === OV.MaterialType.Phong) {
-				let specularColor = new THREE.Color (material.specular.r / 255.0, material.specular.g / 255.0, material.specular.b / 255.0);
+				let specularColor = OV.ConvertColorToThreeColor (material.specular);
 				if (OV.IsEqual (material.shininess, 0.0)) {
 					specularColor.setRGB (0.0, 0.0, 0.0);
 				}
@@ -167,7 +167,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 			}
 		}
 
-		let emissiveColor = new THREE.Color (material.emissive.r / 255.0, material.emissive.g / 255.0, material.emissive.b / 255.0);
+		let emissiveColor = OV.ConvertColorToThreeColor (material.emissive);
 		threeMaterial.emissive = emissiveColor;
 
 		LoadTexture (stateHandler, threeMaterial, material.diffuseMap, (threeTexture) => {
@@ -239,13 +239,13 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 			vertices.push (v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z);
 
 			if (meshHasVertexColors) {
-				let vc0 = mesh.GetVertexColor (triangle.v0);
-				let vc1 = mesh.GetVertexColor (triangle.v1);
-				let vc2 = mesh.GetVertexColor (triangle.v2);
+				let vc0 = OV.ConvertColorToThreeColor (mesh.GetVertexColor (triangle.v0));
+				let vc1 = OV.ConvertColorToThreeColor (mesh.GetVertexColor (triangle.v1));
+				let vc2 = OV.ConvertColorToThreeColor (mesh.GetVertexColor (triangle.v2));
 				vertexColors.push (
-					vc0.r / 255.0, vc0.g / 255.0, vc0.b / 255.0,
-					vc1.r / 255.0, vc1.g / 255.0, vc1.b / 255.0,
-					vc2.r / 255.0, vc2.g / 255.0, vc2.b / 255.0
+					vc0.r, vc0.g, vc0.b,
+					vc1.r, vc1.g, vc1.b,
+					vc2.r, vc2.g, vc2.b
 				);
 			}
 

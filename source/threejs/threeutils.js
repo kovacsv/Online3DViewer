@@ -89,6 +89,15 @@ OV.ConvertThreeColorToColor = function (threeColor)
     );
 };
 
+OV.ConvertColorToThreeColor = function (color)
+{
+    return new THREE.Color (
+        color.r / 255.0,
+        color.g / 255.0,
+        color.b / 255.0
+    );
+};
+
 OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
 {
     let mesh = new OV.Mesh ();
