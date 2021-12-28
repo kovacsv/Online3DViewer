@@ -144,6 +144,7 @@ module.exports =
             let meshObj = {
                 name : mesh.GetName (),
                 vertexCount : mesh.VertexCount (),
+                vertexColorCount : mesh.VertexColorCount (),
                 normalCount : mesh.NormalCount (),
                 uvCount : mesh.TextureUVCount (),
                 triangleCount : mesh.TriangleCount (),

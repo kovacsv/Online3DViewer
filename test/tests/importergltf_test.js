@@ -38,6 +38,7 @@ describe ('Gltf Importer', function () {
                         {
                             name : '',
                             vertexCount : 3,
+                            vertexColorCount : 0,
                             normalCount : 1,
                             uvCount : 0,
                             triangleCount : 1,
@@ -75,9 +76,9 @@ describe ('Gltf Importer', function () {
                             name : '',
                             childNodes : [
                                 {
-                                name : '',
-                                childNodes : [],
-                                meshNames : ['Mesh']
+                                    name : '',
+                                    childNodes : [],
+                                    meshNames : ['Mesh']
                                 }
                             ],
                             meshNames : []
@@ -94,8 +95,65 @@ describe ('Gltf Importer', function () {
                         {
                             name : 'Mesh',
                             vertexCount : 24,
+                            vertexColorCount : 0,
                             normalCount : 24,
                             uvCount : 0,
+                            triangleCount : 12,
+                            boundingBox : {
+                                min : [-0.5, -0.5, -0.5],
+                                max : [0.5, 0.5, 0.5]
+                            }
+                        }
+                    ]
+                });
+                processed += 1;
+                if (processed == testFileList.length) {
+                    done ();
+                }
+            });
+        }
+    });
+
+    it ('BoxVertexColors', function (done) {
+        let testFileList = [
+            ['BoxVertexColors/glTF', 'BoxVertexColors.gltf'],
+            ['BoxVertexColors/glTF-Embedded', 'BoxVertexColors.gltf'],
+            ['BoxVertexColors/glTF-Binary', 'BoxVertexColors.glb']
+        ];
+        let processed = 0;
+        for (let i = 0; i < testFileList.length; i++) {
+            let testFile = testFileList[i];
+            testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
+                assert (OV.CheckModel (model));
+                assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+                    name : '<Root>',
+                    childNodes : [
+                        {
+                            name : 'RootNode',
+                            childNodes : [
+                                {
+                                    name : 'Cube',
+                                    childNodes : [],
+                                    meshNames : ['Cube']
+                                }
+                            ],
+                            meshNames : []
+                        }
+                    ],
+                    meshNames : []
+                });
+                assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+                    name : '',
+                    materials : [
+                        { name : 'Default' }
+                    ],
+                    meshes : [
+                        {
+                            name : 'Cube',
+                            vertexCount : 24,
+                            vertexColorCount : 24,
+                            normalCount : 24,
+                            uvCount : 24,
                             triangleCount : 12,
                             boundingBox : {
                                 min : [-0.5, -0.5, -0.5],
@@ -149,6 +207,7 @@ describe ('Gltf Importer', function () {
                         {
                             name : 'Mesh',
                             vertexCount : 24,
+                            vertexColorCount : 0,
                             normalCount : 24,
                             uvCount : 0,
                             triangleCount : 12,
@@ -204,6 +263,7 @@ describe ('Gltf Importer', function () {
                         {
                             name : 'Mesh',
                             vertexCount : 24,
+                            vertexColorCount : 0,
                             normalCount : 24,
                             uvCount : 24,
                             triangleCount : 12,
@@ -257,6 +317,7 @@ describe ('Gltf Importer', function () {
                         {
                             name : '',
                             vertexCount : 3,
+                            vertexColorCount : 0,
                             normalCount : 3,
                             uvCount : 0,
                             triangleCount : 1,
@@ -268,6 +329,7 @@ describe ('Gltf Importer', function () {
                         {
                             name : '',
                             vertexCount : 3,
+                            vertexColorCount : 0,
                             normalCount : 3,
                             uvCount : 0,
                             triangleCount : 1,
@@ -312,6 +374,7 @@ describe ('Gltf Importer', function () {
                         {
                             name: 'ArrowMeshZ2',
                             vertexCount: 78,
+                            vertexColorCount: 0,
                             normalCount: 78,
                             uvCount: 0,
                             triangleCount: 38,
@@ -323,6 +386,7 @@ describe ('Gltf Importer', function () {
                         {
                             name: 'TargetMeshZ2',
                             vertexCount: 50,
+                            vertexColorCount: 0,
                             normalCount: 50,
                             uvCount: 0,
                             triangleCount: 26,
@@ -334,6 +398,7 @@ describe ('Gltf Importer', function () {
                         {
                             name: 'TargetMeshY2',
                             vertexCount: 50,
+                            vertexColorCount: 0,
                             normalCount: 50,
                             uvCount: 0,
                             triangleCount: 26,
@@ -345,6 +410,7 @@ describe ('Gltf Importer', function () {
                         {
                             name: 'ArrowMeshY2',
                             vertexCount: 78,
+                            vertexColorCount: 0,
                             normalCount: 78,
                             uvCount: 0,
                             triangleCount: 38,
@@ -356,6 +422,7 @@ describe ('Gltf Importer', function () {
                         {
                             name: 'ArrowMeshX2',
                             vertexCount: 78,
+                            vertexColorCount: 0,
                             normalCount: 78,
                             uvCount: 0,
                             triangleCount: 38,
@@ -367,6 +434,7 @@ describe ('Gltf Importer', function () {
                         {
                             name: 'TargetMeshX2',
                             vertexCount: 54,
+                            vertexColorCount: 0,
                             normalCount: 54,
                             uvCount: 0,
                             triangleCount: 26,
@@ -378,6 +446,7 @@ describe ('Gltf Importer', function () {
                         {
                             name: 'TargetMeshZ1',
                             vertexCount: 52,
+                            vertexColorCount: 0,
                             normalCount: 52,
                             uvCount: 0,
                             triangleCount: 26,
@@ -389,6 +458,7 @@ describe ('Gltf Importer', function () {
                         {
                             name: 'ArrowMeshZ1',
                             vertexCount: 74,
+                            vertexColorCount: 0,
                             normalCount: 74,
                             uvCount: 0,
                             triangleCount: 38,
@@ -400,6 +470,7 @@ describe ('Gltf Importer', function () {
                         {
                             name: 'TargetMeshX1',
                             vertexCount: 54,
+                            vertexColorCount: 0,
                             normalCount: 54,
                             uvCount: 0,
                             triangleCount: 26,
@@ -411,6 +482,7 @@ describe ('Gltf Importer', function () {
                         {
                             name: 'ArrowMeshX1',
                             vertexCount: 78,
+                            vertexColorCount: 0,
                             normalCount: 78,
                             uvCount: 0,
                             triangleCount: 38,
@@ -422,6 +494,7 @@ describe ('Gltf Importer', function () {
                         {
                             name: 'TargetMeshY1',
                             vertexCount: 52,
+                            vertexColorCount: 0,
                             normalCount: 52,
                             uvCount: 0,
                             triangleCount: 26,
@@ -433,6 +506,7 @@ describe ('Gltf Importer', function () {
                         {
                             name: 'ArrowMeshY1',
                             vertexCount: 78,
+                            vertexColorCount: 0,
                             normalCount: 78,
                             uvCount: 0,
                             triangleCount: 38,
@@ -444,6 +518,7 @@ describe ('Gltf Importer', function () {
                         {
                             name: 'BaseCubeMesh',
                             vertexCount: 272,
+                            vertexColorCount: 0,
                             normalCount: 272,
                             uvCount: 0,
                             triangleCount: 140,
@@ -484,6 +559,7 @@ describe ('Gltf Importer', function () {
                         {
                             name : '',
                             vertexCount : 4,
+                            vertexColorCount : 0,
                             normalCount : 2,
                             uvCount : 0,
                             triangleCount : 2,
@@ -520,6 +596,7 @@ describe ('Gltf Importer', function () {
                         {
                             name : '',
                             vertexCount : 6,
+                            vertexColorCount : 0,
                             normalCount : 2,
                             uvCount : 0,
                             triangleCount : 2,
@@ -557,6 +634,7 @@ describe ('Gltf Importer', function () {
                         {
                             name : '',
                             vertexCount : 14,
+                            vertexColorCount : 0,
                             normalCount : 12,
                             uvCount : 0,
                             triangleCount : 12,

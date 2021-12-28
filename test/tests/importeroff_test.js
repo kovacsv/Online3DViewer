@@ -59,7 +59,7 @@ describe ('Off Importer', function () {
             });
             done ();
         });
-    });        
+    });
 
     it ('single_rectangle.off', function (done) {
         testFiles.ImportOffFile ('single_rectangle.off', function (model) {
@@ -84,7 +84,7 @@ describe ('Off Importer', function () {
                                 normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
                                 uvs : [],
                                 mat : 0
-                            }                        
+                            }
                         ]
                     }
                 ]
@@ -92,7 +92,7 @@ describe ('Off Importer', function () {
             done ();
         });
     });
-    
+
     it ('single_triangle_with_comments.off', function (done) {
         testFiles.ImportOffFile ('single_triangle_with_comments.off', function (model) {
             assert (OV.CheckModel (model));
@@ -132,6 +132,7 @@ describe ('Off Importer', function () {
                     {
                         name : '',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 0,
                         triangleCount : 12,
@@ -144,5 +145,5 @@ describe ('Off Importer', function () {
             });
             done ();
         });
-    });        
+    });
 });

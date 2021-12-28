@@ -59,7 +59,7 @@ describe ('Ply Importer', function() {
             });
             done ();
         });
-    });        
+    });
 
     it ('single_rectangle.ply', function (done) {
         var model = testFiles.ImportPlyFile ('single_rectangle.ply', function (model) {
@@ -84,7 +84,7 @@ describe ('Ply Importer', function() {
                                 normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
                                 uvs : [],
                                 mat : 0
-                            }                        
+                            }
                         ]
                     }
                 ]
@@ -92,7 +92,7 @@ describe ('Ply Importer', function() {
             done ();
         });
     });
-    
+
     it ('single_triangle_with_comments.ply', function (done) {
         var model = testFiles.ImportPlyFile ('single_triangle_with_comments.ply', function (model) {
             assert (OV.CheckModel (model));
@@ -131,6 +131,7 @@ describe ('Ply Importer', function() {
                     {
                         name : '',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 0,
                         triangleCount : 12,
@@ -157,6 +158,7 @@ describe ('Ply Importer', function() {
                     {
                         name : '',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 0,
                         triangleCount : 12,
@@ -169,7 +171,7 @@ describe ('Ply Importer', function() {
             });
             done ();
         });
-    });    
+    });
 
     it ('cube_meshlab_binary.ply', function (done) {
         var model = testFiles.ImportPlyFile ('cube_meshlab_binary.ply', function (model) {
@@ -183,6 +185,7 @@ describe ('Ply Importer', function() {
                     {
                         name : '',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 0,
                         triangleCount : 12,
@@ -212,6 +215,7 @@ describe ('Ply Importer', function() {
                     {
                         name : '',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 0,
                         triangleCount : 12,
@@ -224,5 +228,5 @@ describe ('Ply Importer', function() {
             });
             done ();
         });
-    });    
+    });
 });

@@ -19,6 +19,7 @@ describe ('3ds Importer', function() {
                     {
                         name : 'cube',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
                         triangleCount : 12,
@@ -49,6 +50,7 @@ describe ('3ds Importer', function() {
                     {
                         name : 'cube',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
                         triangleCount : 12,
@@ -79,6 +81,7 @@ describe ('3ds Importer', function() {
                     {
                         name : 'cube',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
                         triangleCount : 12,
@@ -90,6 +93,7 @@ describe ('3ds Importer', function() {
                     {
                         name : 'cube',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
                         triangleCount : 12,
@@ -120,6 +124,7 @@ describe ('3ds Importer', function() {
                     {
                         name : 'cube',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
                         triangleCount : 12,
@@ -131,6 +136,7 @@ describe ('3ds Importer', function() {
                     {
                         name : 'cube',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
                         triangleCount : 12,
@@ -142,6 +148,7 @@ describe ('3ds Importer', function() {
                     {
                         name : 'cube',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
                         triangleCount : 12,
@@ -153,6 +160,7 @@ describe ('3ds Importer', function() {
                     {
                         name : 'cube',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
                         triangleCount : 12,
@@ -177,6 +185,7 @@ describe ('3ds Importer', function() {
                     {
                         name: 'Cube',
                         vertexCount: 8,
+                        vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
                         triangleCount: 12,
@@ -185,6 +194,7 @@ describe ('3ds Importer', function() {
                     {
                         name: 'Cube',
                         vertexCount: 8,
+                        vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
                         triangleCount: 12,
@@ -193,6 +203,7 @@ describe ('3ds Importer', function() {
                     {
                         name: 'Cube',
                         vertexCount: 8,
+                        vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
                         triangleCount: 12,
@@ -201,6 +212,7 @@ describe ('3ds Importer', function() {
                     {
                         name: 'Cube',
                         vertexCount: 8,
+                        vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
                         triangleCount: 12,
@@ -209,6 +221,7 @@ describe ('3ds Importer', function() {
                     {
                         name: 'Cube',
                         vertexCount: 8,
+                        vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
                         triangleCount: 12,
@@ -217,6 +230,7 @@ describe ('3ds Importer', function() {
                     {
                         name: 'Cube',
                         vertexCount: 8,
+                        vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
                         triangleCount: 12,
@@ -225,6 +239,7 @@ describe ('3ds Importer', function() {
                     {
                         name: 'Cube',
                         vertexCount: 8,
+                        vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
                         triangleCount: 12,
@@ -233,6 +248,7 @@ describe ('3ds Importer', function() {
                     {
                         name: 'Cube',
                         vertexCount: 8,
+                        vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
                         triangleCount: 12,

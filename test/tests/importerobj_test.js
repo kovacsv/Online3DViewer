@@ -59,7 +59,7 @@ describe ('Obj Importer', function () {
             });
             done ();
         });
-    });    
+    });
 
     it ('single_rectangle.obj', function (done) {
         testFiles.ImportObjFile ('single_rectangle.obj', function (model) {
@@ -84,7 +84,7 @@ describe ('Obj Importer', function () {
                                 normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
                                 uvs : [],
                                 mat : 0
-                            }                        
+                            }
                         ]
                     }
                 ]
@@ -227,7 +227,7 @@ describe ('Obj Importer', function () {
                                 mat : 0
                             }
                         ]
-                    }                
+                    }
                 ]
             });
             done ();
@@ -269,7 +269,7 @@ describe ('Obj Importer', function () {
             });
             done ();
         });
-    });    
+    });
 
     it ('single_triangle_with_material.obj', function (done) {
         testFiles.ImportObjFile ('single_triangle_with_material.obj', function (model) {
@@ -322,7 +322,7 @@ describe ('Obj Importer', function () {
                                 normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
                                 uvs : [],
                                 mat : 1
-                            }                        
+                            }
                         ]
                     }
                 ]
@@ -361,7 +361,7 @@ describe ('Obj Importer', function () {
                                 mat : 0
                             }
                         ]
-                    }                
+                    }
                 ]
             });
             done ();
@@ -393,7 +393,7 @@ describe ('Obj Importer', function () {
                                 mat : 0
                             }
                         ]
-                    }                
+                    }
                 ]
             });
             done ();
@@ -425,7 +425,7 @@ describe ('Obj Importer', function () {
                                 mat : 0
                             }
                         ]
-                    }                
+                    }
                 ]
             });
             done ();
@@ -460,12 +460,12 @@ describe ('Obj Importer', function () {
                                 mat : 1
                             }
                         ]
-                    }                
+                    }
                 ]
             });
             done ();
         });
-    });        
+    });
 
     it ('cube_with_materials.obj', function (done) {
         testFiles.ImportObjFile ('cube_with_materials.obj', function (model) {
@@ -483,6 +483,7 @@ describe ('Obj Importer', function () {
                     {
                         name : 'Cube',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 6,
                         uvCount : 4,
                         triangleCount : 12,
@@ -512,6 +513,7 @@ describe ('Obj Importer', function () {
                     {
                         name : 'Cube',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 6,
                         uvCount : 4,
                         triangleCount : 12,
@@ -542,6 +544,7 @@ describe ('Obj Importer', function () {
                     {
                         name : 'Cube',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 6,
                         uvCount : 4,
                         triangleCount : 12,
@@ -555,7 +558,7 @@ describe ('Obj Importer', function () {
             done ();
         });
     });
-    
+
     it ('cube with white spaces.obj', function (done) {
         testFiles.ImportObjFile ('cube with white spaces.obj', function (model) {
             assert (OV.CheckModel (model));
@@ -572,6 +575,7 @@ describe ('Obj Importer', function () {
                     {
                         name : 'Cube Mesh',
                         vertexCount : 8,
+                        vertexColorCount : 0,
                         normalCount : 6,
                         uvCount : 4,
                         triangleCount : 12,
@@ -584,7 +588,7 @@ describe ('Obj Importer', function () {
             });
             done ();
         });
-    });    
+    });
 
     it ('icosahedron.obj', function (done) {
         testFiles.ImportObjFile ('icosahedron.obj', function (model) {
@@ -598,6 +602,7 @@ describe ('Obj Importer', function () {
                     {
                         name : 'Icosahedron',
                         vertexCount : 12,
+                        vertexColorCount : 0,
                         normalCount : 20,
                         uvCount : 0,
                         triangleCount : 20,
