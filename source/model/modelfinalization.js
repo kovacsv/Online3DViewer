@@ -96,24 +96,18 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
             calculateCurveNormals : false
         };
 
+        let hasVertexColors = (mesh.VertexCount () === mesh.VertexColorCount ());
         for (let i = 0; i < mesh.TriangleCount (); i++) {
             let triangle = mesh.GetTriangle (i);
             FinalizeTriangle (mesh, triangle, status);
+            if (hasVertexColors) {
+                let material = model.GetMaterial (triangle.mat);
+                material.vertexColors = true;
+            }
         }
 
         if (status.calculateCurveNormals) {
             CalculateCurveNormals (mesh);
-        }
-
-        let hasVertexColors = (mesh.VertexCount () === mesh.VertexColorCount ());
-        if (hasVertexColors) {
-            for (let i = 0; i < mesh.TriangleCount (); i++) {
-                let triangle = mesh.GetTriangle (i);
-                if (triangle.mat !== null) {
-                    let material = model.GetMaterial (triangle.mat);
-                    material.vertexColors = true;
-                }
-            }
         }
     }
 
