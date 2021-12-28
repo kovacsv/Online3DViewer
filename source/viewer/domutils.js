@@ -135,8 +135,8 @@ OV.AddCheckbox = function (parentElement, id, text, isChecked, onChange)
     label.setAttribute ('for', id);
     let check = OV.AddDomElement (label, 'input', 'ov_checkbox');
     check.setAttribute ('type', 'checkbox');
-    check.setAttribute ('checked', isChecked);
     check.setAttribute ('id', id);
+    check.checked = isChecked;
     OV.AddDomElement (label, 'span', null, text);
     if (onChange) {
         check.addEventListener ('change', onChange);

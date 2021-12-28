@@ -52,6 +52,7 @@ OV.ModelExporterUI = class extends OV.ExporterUI
     {
         let visibleOnly = this.visibleOnlyCheckbox.checked;
         let settings = new OV.ExporterSettings ({
+            transformation : new OV.Transformation (),
             isMeshVisible : (meshInstanceId) => {
                 if (visibleOnly) {
                     return callbacks.isMeshVisible (meshInstanceId);
@@ -61,16 +62,16 @@ OV.ModelExporterUI = class extends OV.ExporterUI
             }
         });
 
-        // TODO
-        // if (exporterModel.MeshInstanceCount () === 0) {
-        //     let errorDialog = OV.ShowMessageDialog (
-        //         'Export Failed',
-        //         'The model doesn\'t contain any meshes.',
-        //         null
-        //     );
-        //     callbacks.onDialog (errorDialog);
-        //     return;
-        // }
+        let exporterModel = new OV.ExporterModel (model, settings);
+        if (exporterModel.MeshInstanceCount () === 0) {
+            let errorDialog = OV.ShowMessageDialog (
+                'Export Failed',
+                'The model doesn\'t contain any meshes.',
+                null
+            );
+            callbacks.onDialog (errorDialog);
+            return;
+        }
 
         let progressDialog = new OV.ProgressDialog ();
         progressDialog.Init ('Exporting Model');

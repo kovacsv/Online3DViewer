@@ -2,6 +2,7 @@ OV.ExporterSettings = class
 {
     constructor (settings)
     {
+        this.transformation = new OV.Transformation ();
         this.isMeshVisible = (meshInstanceId) => {
             return true;
         };
@@ -67,31 +68,47 @@ OV.ExporterModel = class
     EnumerateTransformedMeshes (onMesh)
     {
         this.EnumerateMeshInstances ((meshInstance) => {
-            const transformed = meshInstance.GetTransformedMesh ();
+            let transformation = meshInstance.GetTransformation ();
+            if (!this.settings.transformation.IsIdentity ()) {
+                transformation.Append (this.settings.transformation);
+            }
+
+            let mesh = meshInstance.GetMesh ();
+            let transformed = OV.CloneMesh (mesh);
+            if (!transformation.IsIdentity ()) {
+                OV.TransformMesh (transformed, transformation);
+            }
+
             onMesh (transformed);
         });
     }
 
     EnumerateVerticesAndTriangles (callbacks)
     {
-        this.EnumerateMeshInstances ((meshInstance) => {
-            meshInstance.EnumerateVertices ((vertex) => {
+        let transformedMeshes = [];
+        this.EnumerateTransformedMeshes ((mesh) => {
+            transformedMeshes.push (mesh);
+        });
+
+        for (let mesh of transformedMeshes) {
+            mesh.EnumerateVertices ((vertex) => {
                 callbacks.onVertex (vertex.x, vertex.y, vertex.z);
             });
-        });
+        }
+
         let vertexOffset = 0;
-        this.EnumerateMeshInstances ((meshInstance) => {
-            meshInstance.EnumerateTriangleVertexIndices ((v0, v1, v2) => {
+        for (let mesh of transformedMeshes) {
+            mesh.EnumerateTriangleVertexIndices ((v0, v1, v2) => {
                 callbacks.onTriangle (v0 + vertexOffset, v1 + vertexOffset, v2 + vertexOffset);
             });
-            vertexOffset += meshInstance.VertexCount ();
-        });
+            vertexOffset += mesh.VertexCount ();
+        }
     }
 
     EnumerateTrianglesWithNormals (onTriangle)
     {
-        this.EnumerateMeshInstances ((meshInstance) => {
-            meshInstance.EnumerateTriangleVertices ((v0, v1, v2) => {
+        this.EnumerateTransformedMeshes ((mesh) => {
+            mesh.EnumerateTriangleVertices ((v0, v1, v2) => {
                 let normal = OV.CalculateTriangleNormal (v0, v1, v2);
                 onTriangle (v0, v1, v2, normal);
             });

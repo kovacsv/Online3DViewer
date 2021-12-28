@@ -32,6 +32,16 @@ OV.MeshInstance = class extends OV.ModelObject3D
         return this.id;
     }
 
+    GetTransformation ()
+    {
+        return this.node.GetWorldTransformation ();
+    }
+
+    GetMesh ()
+    {
+        return this.mesh;
+    }
+
     VertexCount ()
     {
         return this.mesh.VertexCount ();
@@ -103,7 +113,7 @@ OV.MeshInstance = class extends OV.ModelObject3D
     GetTransformedMesh ()
     {
         let transformation = this.node.GetWorldTransformation ();
-        const transformed = OV.CloneMesh (this.mesh);
+        let transformed = OV.CloneMesh (this.mesh);
         OV.TransformMesh (transformed, transformation);
         return transformed;
     }

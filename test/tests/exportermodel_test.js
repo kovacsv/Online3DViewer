@@ -60,4 +60,35 @@ describe ('Exporter Model', function () {
         assert (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (0.0, 0.0, 0.0)));
         assert (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (2.0, 1.0, 1.0)));
     });
+
+    it ('Model transformation test', function () {
+        let rotation = OV.QuaternionFromAxisAngle (new OV.Coord3D (0.0, 1.0, 0.0), -Math.PI / 2.0);
+
+        let model = CreateTestModel ();
+        let settings = new OV.ExporterSettings ({
+            transformation : new OV.Transformation (new OV.Matrix ().CreateRotation (rotation.x, rotation.y, rotation.z, rotation.w))
+        });
+        let exporterModel = new OV.ExporterModel (model, settings);
+        assert.strictEqual (exporterModel.MeshInstanceCount (), 3);
+        let boundingBox = GetExporterModelBoundingBox (exporterModel);
+        assert (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (-1.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (0.0, 1.0, 3.0)));
+    });
+
+    it ('Model filter and transformation test', function () {
+        let rotation = OV.QuaternionFromAxisAngle (new OV.Coord3D (0.0, 1.0, 0.0), -Math.PI / 2.0);
+
+        let model = CreateTestModel ();
+        let settings = new OV.ExporterSettings ({
+            transformation : new OV.Transformation (new OV.Matrix ().CreateRotation (rotation.x, rotation.y, rotation.z, rotation.w)),
+            isMeshVisible : (meshInstanceId) => {
+                return !meshInstanceId.IsEqual (new OV.MeshInstanceId (3, 2));
+            }
+        });
+        let exporterModel = new OV.ExporterModel (model, settings);
+        assert.strictEqual (exporterModel.MeshInstanceCount (), 2);
+        let boundingBox = GetExporterModelBoundingBox (exporterModel);
+        assert (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (-1.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (0.0, 1.0, 2.0)));
+    });
 });

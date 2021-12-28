@@ -74,7 +74,6 @@
 				"single"
 			],
 			"block-scoped-var": "error",
-			"no-loop-func": "error",
 			"no-undef": "error",
 			"no-extend-native": "error",
 			"eqeqeq": "error",
