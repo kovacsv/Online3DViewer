@@ -80,9 +80,11 @@ OV.SidebarDetailsPanel = class extends OV.SidebarPanel
         this.AddProperty (table, new OV.Property (OV.PropertyType.Text, 'Type', typeString));
         this.AddProperty (table, new OV.Property (OV.PropertyType.Color, 'Color', material.color));
         if (material.type === OV.MaterialType.Phong) {
-            this.AddProperty (table, new OV.Property (OV.PropertyType.Color, 'Ambient', material.ambient));
+        this.AddProperty (table, new OV.Property (OV.PropertyType.Color, 'Ambient', material.ambient));
             this.AddProperty (table, new OV.Property (OV.PropertyType.Color, 'Specular', material.specular));
-        } else if (material.type === OV.MaterialType.Physical) {
+        }
+        this.AddProperty (table, new OV.Property (OV.PropertyType.Boolean, 'Vertex Colors', material.vertexColors));
+        if (material.type === OV.MaterialType.Physical) {
             this.AddProperty (table, new OV.Property (OV.PropertyType.Percent, 'Metalness', material.metalness));
             this.AddProperty (table, new OV.Property (OV.PropertyType.Percent, 'Roughness', material.roughness));
         }

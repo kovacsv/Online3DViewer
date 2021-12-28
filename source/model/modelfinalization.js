@@ -1,6 +1,6 @@
 OV.FinalizeModel = function (model, getDefaultMaterial)
 {
-    function FinalizeMesh (mesh, getDefaultMaterialIndex)
+    function FinalizeMesh (model, mesh, getDefaultMaterialIndex)
     {
         function CalculateCurveNormals (mesh)
         {
@@ -104,6 +104,17 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
         if (status.calculateCurveNormals) {
             CalculateCurveNormals (mesh);
         }
+
+        let hasVertexColors = (mesh.VertexCount () === mesh.VertexColorCount ());
+        if (hasVertexColors) {
+            for (let i = 0; i < mesh.TriangleCount (); i++) {
+                let triangle = mesh.GetTriangle (i);
+                if (triangle.mat !== null) {
+                    let material = model.GetMaterial (triangle.mat);
+                    material.vertexColors = true;
+                }
+            }
+        }
     }
 
     let defaultMaterialIndex = null;
@@ -123,7 +134,7 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
             i = i - 1;
             continue;
         }
-        FinalizeMesh (mesh, getDefaultMaterialIndex);
+        FinalizeMesh (model, mesh, getDefaultMaterialIndex);
     }
 
     let rootNode = model.GetRootNode ();

@@ -121,6 +121,13 @@ OV.GltfBufferReader = class
             let z = this.ReadComponent ();
             this.SkipBytesByStride (3);
             return new OV.Coord3D (x, y, z);
+        } else if (this.dataType === OV.GltfDataType.VEC4) {
+            let x = this.ReadComponent ();
+            let y = this.ReadComponent ();
+            let z = this.ReadComponent ();
+            let w = this.ReadComponent ();
+            this.SkipBytesByStride (4);
+            return new OV.Coord4D (x, y, z, w);
         }
         return null;
     }
@@ -353,6 +360,15 @@ OV.GltfExtensions = class
                         attributeArray[i + 2]
                     ));
                 }
+            } else if (numComponents === 4) {
+                for (let i = 0; i < attributeArray.length; i += 4) {
+                    processor (new OV.Coord4D (
+                        attributeArray[i + 0],
+                        attributeArray[i + 1],
+                        attributeArray[i + 2],
+                        attributeArray[i + 3]
+                    ));
+                }
             }
             draco._free (attributePtr);
         }
@@ -385,6 +401,7 @@ OV.GltfExtensions = class
         }
 
         let hasVertices = (extensionParams.attributes.POSITION !== undefined);
+        let hasVertexColors = (extensionParams.attributes.COLOR_0 !== undefined);
         let hasNormals = (extensionParams.attributes.NORMAL !== undefined);
         let hasUVs = (extensionParams.attributes.TEXCOORD_0 !== undefined);
 
@@ -399,6 +416,13 @@ OV.GltfExtensions = class
         EnumerateComponents (this.draco, decoder, dracoMesh, extensionParams.attributes.POSITION, (vertex) => {
             mesh.AddVertex (vertex);
         });
+
+        if (hasVertexColors) {
+            EnumerateComponents (this.draco, decoder, dracoMesh, extensionParams.attributes.COLOR_0, (vertexColor) => {
+                let color = new OV.Color (vertexColor.x * 255.0, vertexColor.y * 255.0, vertexColor.z * 255.0);
+                mesh.AddVertexColor (color);
+            });
+        }
 
         if (hasNormals) {
             EnumerateComponents (this.draco, decoder, dracoMesh, extensionParams.attributes.NORMAL, (normal) => {
@@ -778,6 +802,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
         }
 
         let hasVertices = (primitive.attributes.POSITION !== undefined);
+        let hasVertexColors = (primitive.attributes.COLOR_0 !== undefined);
         let hasNormals = (primitive.attributes.NORMAL !== undefined);
         let hasUVs = (primitive.attributes.TEXCOORD_0 !== undefined);
         let hasIndices = (primitive.indices !== undefined);
@@ -805,6 +830,18 @@ OV.ImporterGltf = class extends OV.ImporterBase
             });
         } else {
             return;
+        }
+
+        if (hasVertexColors) {
+            let accessor = gltf.accessors[primitive.attributes.COLOR_0];
+            let reader = this.GetReaderFromAccessor (gltf, accessor);
+            if (reader === null) {
+                return;
+            }
+            reader.EnumerateData ((data) => {
+                let color = new OV.Color (data.x * 255.0, data.y * 255.0, data.z * 255.0);
+                mesh.AddVertexColor (color);
+            });
         }
 
         if (hasNormals) {

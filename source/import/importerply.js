@@ -97,36 +97,7 @@ OV.PlyMaterialHandler = class
     constructor (model)
     {
         this.model = model;
-        this.vertexColors = [];
         this.colorToMaterial = {};
-    }
-
-    AddVertexColor (color)
-    {
-        this.vertexColors.push (color);
-    }
-
-    GetTriangleColor (v0, v1, v2)
-    {
-        let vertexCount = this.vertexColors.length;
-        if (v0 >= vertexCount || v1 >= vertexCount || v2 >= vertexCount) {
-            return null;
-        }
-        return this.vertexColors[v0];
-    }
-
-    GetTriangleFaceMaterialIndex (color)
-    {
-        return this.GetMaterialIndexByColor (color);
-    }
-
-    GetTriangleVertexMaterialIndex (v0, v1, v2)
-    {
-        let color = this.GetTriangleColor (v0, v1, v2);
-        if (color === null) {
-            return null;
-        }
-        return this.GetMaterialIndexByColor (color);
     }
 
     GetMaterialIndexByColor (color)
@@ -397,7 +368,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                     let z = ReadByFormat (reader, element.format[2]);
                     let color = SkipAndGetColor (reader, element.format, 3);
                     if (color !== null) {
-                        materialHandler.AddVertexColor (color);
+                        this.mesh.AddVertexColor (new OV.Color (color[0], color[1], color[2]));
                     }
                     this.mesh.AddVertex (new OV.Coord3D (x, y, z));
                 }
@@ -411,9 +382,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                         let v2 = vertices[i + 2];
                         let triangle = new OV.Triangle (v0, v1, v2);
                         if (faceColor !== null) {
-                            triangle.mat = materialHandler.GetTriangleFaceMaterialIndex (faceColor);
-                        } else {
-                            triangle.mat = materialHandler.GetTriangleVertexMaterialIndex (v0, v1, v2);
+                            triangle.mat = materialHandler.GetMaterialIndexByColor (faceColor);
                         }
                         this.mesh.AddTriangle (triangle);
                     }

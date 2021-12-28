@@ -100,6 +100,8 @@ OV.MaterialBase = class
 
         this.name = '';
         this.color = new OV.Color (0, 0, 0);
+
+        this.vertexColors = false;
     }
 
     IsEqual (rhs)
@@ -114,6 +116,9 @@ OV.MaterialBase = class
             return false;
         }
         if (!OV.ColorIsEqual (this.color, rhs.color)) {
+            return false;
+        }
+        if (this.vertexColors !== rhs.vertexColors) {
             return false;
         }
         return true;

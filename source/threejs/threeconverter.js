@@ -122,9 +122,13 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 
 		let material = model.GetMaterial (materialIndex);
 		let baseColor = new THREE.Color (material.color.r / 255.0, material.color.g / 255.0, material.color.b / 255.0);
+		if (material.vertexColors) {
+			baseColor.setRGB (1.0, 1.0, 1.0);
+		}
 
 		let materialParams = {
 			color : baseColor,
+			vertexColors : material.vertexColors,
 			opacity : material.opacity,
 			transparent : material.transparent,
 			alphaTest : material.alphaTest,
@@ -210,9 +214,10 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 		let threeGeometry = new THREE.BufferGeometry ();
 		let meshThreeMaterials = [];
 		let meshOriginalMaterials = [];
-		let modelToThreeMaterials = {};
+		let modelToThreeMaterials = new Map ();
 
 		let vertices = [];
+		let vertexColors = [];
 		let normals = [];
 		let uvs = [];
 
@@ -222,7 +227,8 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 			end : -1
 		});
 
-		let meshHasUVs = mesh.TextureUVCount () > 0;
+		let meshHasVertexColors = (mesh.VertexCount () === mesh.VertexColorCount ());
+		let meshHasUVs = (mesh.TextureUVCount () > 0);
 		for (let i = 0; i < triangleIndices.length; i++) {
 			let triangleIndex = triangleIndices[i];
 			let triangle = mesh.GetTriangle (triangleIndex);
@@ -231,6 +237,17 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 			let v1 = mesh.GetVertex (triangle.v1);
 			let v2 = mesh.GetVertex (triangle.v2);
 			vertices.push (v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z);
+
+			if (meshHasVertexColors) {
+				let vc0 = mesh.GetVertexColor (triangle.v0);
+				let vc1 = mesh.GetVertexColor (triangle.v1);
+				let vc2 = mesh.GetVertexColor (triangle.v2);
+				vertexColors.push (
+					vc0.r / 255.0, vc0.g / 255.0, vc0.b / 255.0,
+					vc1.r / 255.0, vc1.g / 255.0, vc1.b / 255.0,
+					vc2.r / 255.0, vc2.g / 255.0, vc2.b / 255.0
+				);
+			}
 
 			let n0 = mesh.GetNormal (triangle.n0);
 			let n1 = mesh.GetNormal (triangle.n1);
@@ -247,10 +264,8 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 			}
 
 			let modelMaterialIndex = triangle.mat;
-			let materialIndex = modelToThreeMaterials[modelMaterialIndex];
-			if (materialIndex === undefined) {
-				materialIndex = meshThreeMaterials.length;
-				modelToThreeMaterials[modelMaterialIndex] = materialIndex;
+			if (!modelToThreeMaterials.has (modelMaterialIndex)) {
+				modelToThreeMaterials.set (modelMaterialIndex, meshThreeMaterials.length);
 				meshThreeMaterials.push (modelThreeMaterials[modelMaterialIndex]);
 				meshOriginalMaterials.push (modelMaterialIndex);
 				if (i > 0) {
@@ -266,6 +281,9 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 		groups[groups.length - 1].end = triangleCount - 1;
 
 		threeGeometry.setAttribute ('position', new THREE.Float32BufferAttribute (vertices, 3));
+		if (vertexColors.length !== 0) {
+			threeGeometry.setAttribute ('color', new THREE.Float32BufferAttribute (vertexColors, 3));
+		}
 		threeGeometry.setAttribute ('normal', new THREE.Float32BufferAttribute (normals, 3));
 		if (uvs.length !== 0) {
 			threeGeometry.setAttribute ('uv', new THREE.Float32BufferAttribute (uvs, 2));

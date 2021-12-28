@@ -4,6 +4,7 @@ OV.Mesh = class extends OV.ModelObject3D
     {
         super ();
         this.vertices = [];
+        this.vertexColors = [];
         this.normals = [];
         this.uvs = [];
         this.triangles = [];
@@ -12,6 +13,11 @@ OV.Mesh = class extends OV.ModelObject3D
     VertexCount ()
     {
         return this.vertices.length;
+    }
+
+    VertexColorCount ()
+    {
+        return this.vertexColors.length;
     }
 
     NormalCount ()
@@ -43,6 +49,22 @@ OV.Mesh = class extends OV.ModelObject3D
     GetVertex (index)
     {
         return this.vertices[index];
+    }
+
+    AddVertexColor (color)
+    {
+        this.vertexColors.push (color);
+        return this.vertexColors.length - 1;
+    }
+
+    SetVertexColor (index, color)
+    {
+        this.vertexColors[index] = color;
+    }
+
+    GetVertexColor (index)
+    {
+        return this.vertexColors[index];
     }
 
     AddNormal (normal)
