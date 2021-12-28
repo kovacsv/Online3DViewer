@@ -37,6 +37,15 @@ OV.GltfConstants =
     BINARY_CHUNK_TYPE : 0x004E4942
 };
 
+OV.GetGltfColor = function (color)
+{
+    return new OV.Color (
+        parseInt (Math.round (OV.LinearToSRGB (color[0]) * 255.0), 10),
+        parseInt (Math.round (OV.LinearToSRGB (color[1]) * 255.0), 10),
+        parseInt (Math.round (OV.LinearToSRGB (color[2]) * 255.0), 10)
+    );
+};
+
 OV.GltfBufferReader = class
 {
     constructor (buffer)
@@ -264,11 +273,6 @@ OV.GltfExtensions = class
 
     ProcessMaterial (gltfMaterial, material, imporTextureFn)
     {
-        function GetMaterialComponent (component)
-        {
-            return parseInt (Math.round (OV.LinearToSRGB (component) * 255.0), 10);
-        }
-
         if (gltfMaterial.extensions === undefined) {
             return null;
         }
@@ -281,11 +285,7 @@ OV.GltfExtensions = class
         let phongMaterial = new OV.PhongMaterial ();
         let diffuseColor = khrSpecularGlossiness.diffuseFactor;
         if (diffuseColor !== undefined) {
-            phongMaterial.color = new OV.Color (
-                GetMaterialComponent (diffuseColor[0]),
-                GetMaterialComponent (diffuseColor[1]),
-                GetMaterialComponent (diffuseColor[2])
-            );
+            phongMaterial.color = OV.GetGltfColor (diffuseColor);
             phongMaterial.opacity = diffuseColor[3];
         }
         let diffuseTexture = khrSpecularGlossiness.diffuseTexture;
@@ -294,11 +294,7 @@ OV.GltfExtensions = class
         }
         let specularColor = khrSpecularGlossiness.specularFactor;
         if (specularColor !== undefined) {
-            phongMaterial.specular = new OV.Color (
-                GetMaterialComponent (specularColor[0]),
-                GetMaterialComponent (specularColor[1]),
-                GetMaterialComponent (specularColor[2])
-            );
+            phongMaterial.specular = OV.GetGltfColor (specularColor);
         }
         let specularTexture = khrSpecularGlossiness.specularGlossinessTexture;
         if (specularTexture !== undefined) {
@@ -419,7 +415,7 @@ OV.GltfExtensions = class
 
         if (hasVertexColors) {
             EnumerateComponents (this.draco, decoder, dracoMesh, extensionParams.attributes.COLOR_0, (vertexColor) => {
-                let color = new OV.Color (vertexColor.x * 255.0, vertexColor.y * 255.0, vertexColor.z * 255.0);
+                let color = OV.GetGltfColor ([vertexColor.x, vertexColor.y, vertexColor.z]);
                 mesh.AddVertexColor (color);
             });
         }
@@ -653,29 +649,16 @@ OV.ImporterGltf = class extends OV.ImporterBase
 
     ImportMaterial (gltf, gltfMaterial)
     {
-        function GetMaterialComponent (component)
-        {
-            return parseInt (Math.round (OV.LinearToSRGB (component) * 255.0), 10);
-        }
-
         let material = new OV.PhysicalMaterial ();
         if (gltfMaterial.name !== undefined) {
             material.name = gltfMaterial.name;
         }
 
-        material.color = new OV.Color (
-            GetMaterialComponent (1.0),
-            GetMaterialComponent (1.0),
-            GetMaterialComponent (1.0)
-        );
+        material.color = OV.GetGltfColor ([1.0, 1.0, 1.0]);
         if (gltfMaterial.pbrMetallicRoughness !== undefined) {
             let baseColor = gltfMaterial.pbrMetallicRoughness.baseColorFactor;
             if (baseColor !== undefined) {
-                material.color = new OV.Color (
-                    GetMaterialComponent (baseColor[0]),
-                    GetMaterialComponent (baseColor[1]),
-                    GetMaterialComponent (baseColor[2])
-                );
+                material.color = OV.GetGltfColor (baseColor);
                 material.opacity = baseColor[3];
             }
             let metallicFactor = gltfMaterial.pbrMetallicRoughness.metallicFactor;
@@ -688,11 +671,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
             }
             let emissiveColor = gltfMaterial.emissiveFactor;
             if (emissiveColor !== undefined) {
-                material.emissive = new OV.Color (
-                    GetMaterialComponent (emissiveColor[0]),
-                    GetMaterialComponent (emissiveColor[1]),
-                    GetMaterialComponent (emissiveColor[2])
-                );
+                material.emissive = OV.GetGltfColor (emissiveColor);
             }
 
             material.diffuseMap = this.ImportTexture (gltf, gltfMaterial.pbrMetallicRoughness.baseColorTexture);
@@ -839,7 +818,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
                 return;
             }
             reader.EnumerateData ((data) => {
-                let color = new OV.Color (data.x * 255.0, data.y * 255.0, data.z * 255.0);
+                let color = OV.GetGltfColor ([data.x, data.y, data.z]);
                 mesh.AddVertexColor (color);
             });
         }
