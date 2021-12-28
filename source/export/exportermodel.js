@@ -5,11 +5,8 @@ OV.ExporterSettings = class
         this.isMeshVisible = (meshInstanceId) => {
             return true;
         };
-        if (OV.IsDefined (settings)) {
-            if (OV.IsDefined (settings.isMeshVisible)) {
-                this.isMeshVisible = settings.isMeshVisible;
-            }
-        }
+
+        OV.CopyObjectAttributes (settings, this);
     }
 };
 
@@ -18,7 +15,7 @@ OV.ExporterModel = class
     constructor (model, settings)
     {
         this.model = model;
-        this.settings = settings;
+        this.settings = settings || new OV.ExporterSettings ();
     }
 
     MaterialCount ()

@@ -73,40 +73,6 @@ function Export (model, format, extension, onReady)
     });
 }
 
-describe ('Exporter Model', function () {
-    it ('No filter test', function (done) {
-        let model = CreateTestModel ();
-        let settings = new OV.ExporterSettings ();
-        let exporterModel = new OV.ExporterModel (model, settings);
-        let meshInstances = [];
-        exporterModel.EnumerateMeshInstances ((meshInstance) => {
-            meshInstances.push (meshInstance);
-        });
-        assert.strictEqual (meshInstances.length, 2);
-        assert.strictEqual (exporterModel.VertexCount (), 8);
-        assert.strictEqual (exporterModel.TriangleCount (), 4);
-        done ();
-    });
-
-    it ('Model filter test', function (done) {
-        let model = CreateTestModel ();
-        let settings = new OV.ExporterSettings ({
-            isMeshVisible : (meshInstanceId) => {
-                return meshInstanceId.IsEqual (new OV.MeshInstanceId (0, 1));
-            }
-        });
-        let exporterModel = new OV.ExporterModel (model, settings);
-        let meshInstances = [];
-        exporterModel.EnumerateMeshInstances ((meshInstance) => {
-            meshInstances.push (meshInstance);
-        });
-        assert.strictEqual (meshInstances.length, 1);
-        assert.strictEqual (exporterModel.VertexCount (), 5);
-        assert.strictEqual (exporterModel.TriangleCount (), 3);
-        done ();
-    });
-});
-
 describe ('Exporter', function () {
     it ('Exporter Error', function (done) {
         let model = CreateTestModel ();

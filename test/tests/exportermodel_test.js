@@ -1,0 +1,63 @@
+var assert = require ('assert');
+
+function CreateTestModel ()
+{
+    let model = new OV.Model ();
+
+    for (let i = 0; i < 3; i++) {
+        let material = new OV.PhongMaterial ();
+        material.name = 'Material ' + i.toString ();
+        model.AddMaterial (material);
+    }
+
+    let root = model.GetRootNode ();
+    for (let i = 0; i < 3; i++) {
+        let genParams = new OV.GeneratorParams ().SetMaterial (i);
+        let cube = OV.GenerateCuboid (genParams, 1.0, 1.0, 1.0);
+        let meshIndex = model.AddMesh (cube);
+        let node = new OV.Node ();
+        node.AddMeshIndex (meshIndex);
+        node.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateTranslation (i, 0.0, 0.0)));
+        root.AddChildNode (node);
+    }
+
+    OV.FinalizeModel (model, null);
+    return model;
+}
+
+function GetExporterModelBoundingBox (exporterModel)
+{
+    let calculator = new OV.BoundingBoxCalculator3D ();
+    exporterModel.EnumerateTransformedMeshes ((mesh) => {
+        mesh.EnumerateVertices ((vertex) => {
+            calculator.AddPoint (vertex);
+        });
+
+    });
+    return calculator.GetBox ();
+}
+
+describe ('Exporter Model', function () {
+    it ('No filter test', function () {
+        let model = CreateTestModel ();
+        let exporterModel = new OV.ExporterModel (model);
+        assert.strictEqual (exporterModel.MeshInstanceCount (), 3);
+        let boundingBox = GetExporterModelBoundingBox (exporterModel);
+        assert (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (3.0, 1.0, 1.0)));
+    });
+
+    it ('Model filter test', function () {
+        let model = CreateTestModel ();
+        let settings = new OV.ExporterSettings ({
+            isMeshVisible : (meshInstanceId) => {
+                return !meshInstanceId.IsEqual (new OV.MeshInstanceId (3, 2));
+            }
+        });
+        let exporterModel = new OV.ExporterModel (model, settings);
+        assert.strictEqual (exporterModel.MeshInstanceCount (), 2);
+        let boundingBox = GetExporterModelBoundingBox (exporterModel);
+        assert (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (2.0, 1.0, 1.0)));
+    });
+});
