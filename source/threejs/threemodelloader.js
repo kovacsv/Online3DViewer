@@ -68,7 +68,7 @@ OV.ThreeModelLoader = class
     ReplaceDefaultMaterialColor (defaultColor)
     {
         if (this.defaultMaterial !== null) {
-            this.defaultMaterial.color = new THREE.Color (defaultColor.r / 255.0, defaultColor.g / 255.0, defaultColor.b / 255.0);
+            this.defaultMaterial.color = OV.ConvertColorToThreeColor (defaultColor);
         }
     }
 };

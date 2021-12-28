@@ -91,11 +91,8 @@ OV.ViewerGeometry = class
                 this.ClearMainEdgeObject ();
                 this.GenerateMainEdgeObject ();
             } else {
-                let edgeColor = new THREE.Color (
-                    this.edgeSettings.edgeColor.r / 255.0,
-                    this.edgeSettings.edgeColor.g / 255.0,
-                    this.edgeSettings.edgeColor.b / 255.0
-                );
+
+                let edgeColor = OV.ConvertColorToThreeColor (this.edgeSettings.edgeColor);
                 this.EnumerateEdges ((edge) => {
                     edge.material.color = edgeColor;
                 });
@@ -168,11 +165,7 @@ OV.ViewerGeometry = class
 
     GenerateMainEdgeObject ()
     {
-        let edgeColor = new THREE.Color (
-            this.edgeSettings.edgeColor.r / 255.0,
-            this.edgeSettings.edgeColor.g / 255.0,
-            this.edgeSettings.edgeColor.b / 255.0
-        );
+        let edgeColor = OV.ConvertColorToThreeColor (this.edgeSettings.edgeColor);
         this.mainEdgeObject = new THREE.Object3D ();
 
         this.UpdateWorldMatrix ();
