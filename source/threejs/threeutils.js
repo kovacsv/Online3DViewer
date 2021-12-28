@@ -83,6 +83,7 @@ OV.GetShadingType = function (model)
 OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
 {
     let mesh = new OV.Mesh ();
+
     let vertices = threeGeometry.attributes.position.array;
     for (let i = 0; i < vertices.length; i += 3) {
         let x = vertices[i];
@@ -90,6 +91,19 @@ OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
         let z = vertices[i + 2];
         mesh.AddVertex (new OV.Coord3D (x, y, z));
     }
+
+    let hasVertexColors = (threeGeometry.attributes.color !== undefined);
+    if (hasVertexColors) {
+        let colors = threeGeometry.attributes.color.array;
+        let itemSize = threeGeometry.attributes.color.itemSize;
+        for (let i = 0; i < colors.length; i += itemSize) {
+            let x = colors[i];
+            let y = colors[i + 1];
+            let z = colors[i + 2];
+            mesh.AddVertexColor (new OV.Color (x * 255.0, y * 255.0, z * 255.0));
+        }
+    }
+
     let hasNormals = (threeGeometry.attributes.normal !== undefined);
     if (hasNormals) {
         let normals = threeGeometry.attributes.normal.array;
@@ -100,6 +114,7 @@ OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
             mesh.AddNormal (new OV.Coord3D (x, y, z));
         }
     }
+
     let hasUVs = (threeGeometry.attributes.uv !== undefined);
     if (hasUVs) {
         let uvs = threeGeometry.attributes.uv.array;
@@ -109,6 +124,7 @@ OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
             mesh.AddTextureUV (new OV.Coord2D (x, y));
         }
     }
+
     let indices = null;
     if (threeGeometry.index !== null) {
         indices = threeGeometry.index.array;
@@ -118,6 +134,7 @@ OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
             indices.push (i);
         }
     }
+
     for (let i = 0; i < indices.length; i += 3) {
         let v0 = indices[i];
         let v1 = indices[i + 1];
@@ -134,5 +151,6 @@ OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
         }
         mesh.AddTriangle (triangle);
     }
+
     return mesh;
 };
