@@ -80,6 +80,15 @@ OV.GetShadingType = function (model)
     }
 };
 
+OV.ConvertThreeColorToColor = function (threeColor)
+{
+    return new OV.Color (
+        parseInt (Math.round (threeColor.r * 255.0), 10),
+        parseInt (Math.round (threeColor.g * 255.0), 10),
+        parseInt (Math.round (threeColor.b * 255.0), 10)
+    );
+};
+
 OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
 {
     let mesh = new OV.Mesh ();
@@ -97,10 +106,8 @@ OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
         let colors = threeGeometry.attributes.color.array;
         let itemSize = threeGeometry.attributes.color.itemSize;
         for (let i = 0; i < colors.length; i += itemSize) {
-            let x = colors[i];
-            let y = colors[i + 1];
-            let z = colors[i + 2];
-            mesh.AddVertexColor (new OV.Color (x * 255.0, y * 255.0, z * 255.0));
+            let threeColor = new THREE.Color (colors[i], colors[i + 1], colors[i + 2]);
+            mesh.AddVertexColor (OV.ConvertThreeColorToColor (threeColor));
         }
     }
 

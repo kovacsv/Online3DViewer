@@ -209,15 +209,6 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
 
     ConvertThreeMaterial (threeMaterial)
     {
-        function SetColor (color, threeColor)
-        {
-            color.Set (
-                parseInt (threeColor.r * 255.0, 10),
-                parseInt (threeColor.g * 255.0, 10),
-                parseInt (threeColor.b * 255.0, 10)
-            );
-        }
-
         function CreateTexture (threeMap, objectUrlToFileName)
         {
             function GetDataUrl (img)
@@ -270,12 +261,12 @@ OV.ImporterThreeBase = class extends OV.ImporterBase
 
         let material = new OV.PhongMaterial ();
         material.name = threeMaterial.name;
-        SetColor (material.color, threeMaterial.color);
+        material.color = OV.ConvertThreeColorToColor (threeMaterial.color);
         material.opacity = threeMaterial.opacity;
         material.transparent = threeMaterial.transparent;
         material.alphaTest = threeMaterial.alphaTest;
         if (threeMaterial.type === 'MeshPhongMaterial') {
-            SetColor (material.specular, threeMaterial.specular);
+            material.specular = OV.ConvertThreeColorToColor (threeMaterial.specular);
             material.shininess = threeMaterial.shininess / 100.0;
         }
         material.diffuseMap = CreateTexture (threeMaterial.map, this.objectUrlToFileName);
