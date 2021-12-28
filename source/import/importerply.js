@@ -383,6 +383,8 @@ OV.ImporterPly = class extends OV.ImporterBase
                         let triangle = new OV.Triangle (v0, v1, v2);
                         if (faceColor !== null) {
                             triangle.mat = materialHandler.GetMaterialIndexByColor (faceColor);
+                        } else if (this.mesh.VertexColorCount () > 0) {
+                            triangle.SetVertexColors (v0, v1, v2);
                         }
                         this.mesh.AddTriangle (triangle);
                     }

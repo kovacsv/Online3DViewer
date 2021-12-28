@@ -227,7 +227,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 			end : -1
 		});
 
-		let meshHasVertexColors = (mesh.VertexCount () === mesh.VertexColorCount ());
+		let meshHasVertexColors = OV.MeshHasVertexColors (mesh);
 		let meshHasUVs = (mesh.TextureUVCount () > 0);
 		for (let i = 0; i < triangleIndices.length; i++) {
 			let triangleIndex = triangleIndices[i];
@@ -238,14 +238,20 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 			let v2 = mesh.GetVertex (triangle.v2);
 			vertices.push (v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z);
 
-			if (meshHasVertexColors) {
-				let vc0 = OV.ConvertColorToThreeColor (mesh.GetVertexColor (triangle.v0));
-				let vc1 = OV.ConvertColorToThreeColor (mesh.GetVertexColor (triangle.v1));
-				let vc2 = OV.ConvertColorToThreeColor (mesh.GetVertexColor (triangle.v2));
+			if (triangle.HasVertexColors ()) {
+				let vc0 = OV.ConvertColorToThreeColor (mesh.GetVertexColor (triangle.c0));
+				let vc1 = OV.ConvertColorToThreeColor (mesh.GetVertexColor (triangle.c1));
+				let vc2 = OV.ConvertColorToThreeColor (mesh.GetVertexColor (triangle.c2));
 				vertexColors.push (
 					vc0.r, vc0.g, vc0.b,
 					vc1.r, vc1.g, vc1.b,
 					vc2.r, vc2.g, vc2.b
+				);
+			} else if (meshHasVertexColors) {
+				vertexColors.push (
+					0.0, 0.0, 0.0,
+					0.0, 0.0, 0.0,
+					0.0, 0.0, 0.0
 				);
 			}
 

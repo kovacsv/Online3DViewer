@@ -156,6 +156,9 @@ OV.ConvertThreeGeometryToMesh = function (threeGeometry, materialIndex)
         let v1 = indices[i + 1];
         let v2 = indices[i + 2];
         let triangle = new OV.Triangle (v0, v1, v2);
+        if (hasVertexColors) {
+            triangle.SetVertexColors (v0, v1, v2);
+        }
         if (hasNormals) {
             triangle.SetNormals (v0, v1, v2);
         }

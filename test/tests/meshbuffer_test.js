@@ -30,6 +30,28 @@ describe ('Mesh Buffer', function () {
         assert.strictEqual (buffer.primitives[1].uvs.length, 0);
     });
 
+    it ('Mesh To Buffer Different Colors', function () {
+        var mesh = new OV.Mesh ();
+        mesh.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
+        mesh.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
+        mesh.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
+        mesh.AddVertex (new OV.Coord3D (0.0, 1.0, 0.0));
+
+        mesh.AddVertexColor (new OV.Color (0.1, 0.0, 0.0));
+        mesh.AddVertexColor (new OV.Color (0.2, 0.0, 0.0));
+
+        mesh.AddNormal (new OV.Coord3D (0.0, 0.0, 1.0));
+        mesh.AddTriangle (new OV.Triangle (0, 1, 2).SetVertexColors (0, 0, 0).SetNormals (0, 0, 0).SetMaterial (0));
+        mesh.AddTriangle (new OV.Triangle (0, 2, 3).SetVertexColors (1, 1, 1).SetNormals (0, 0, 0).SetMaterial (0));
+
+        let buffer = OV.ConvertMeshToMeshBuffer (mesh);
+        assert.strictEqual (buffer.primitives.length, 1);
+        assert.strictEqual (buffer.primitives[0].indices.length, 6);
+        assert.strictEqual (buffer.primitives[0].vertices.length, 6 * 3);
+        assert.strictEqual (buffer.primitives[0].normals.length, 6 * 3);
+        assert.strictEqual (buffer.primitives[0].uvs.length, 0);
+    });
+
     it ('Mesh To Buffer Different Normals', function () {
         var mesh = new OV.Mesh ();
         mesh.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));

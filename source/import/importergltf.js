@@ -406,6 +406,7 @@ OV.GltfExtensions = class
         }
 
         let vertexOffset = mesh.VertexCount ();
+        let vertexColorOffset = mesh.VertexColorCount ();
         let normalOffset = mesh.NormalCount ();
         let uvOffset = mesh.TextureUVCount ();
 
@@ -443,7 +444,7 @@ OV.GltfExtensions = class
             let v0 = indexArray[i];
             let v1 = indexArray[i + 1];
             let v2 = indexArray[i + 2];
-            importer.AddTriangle (primitive, mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset);
+            importer.AddTriangle (primitive, mesh, v0, v1, v2, hasVertexColors, hasNormals, hasUVs, vertexOffset, vertexColorOffset, normalOffset, uvOffset);
         }
         this.draco._free (indexDataPtr);
 
@@ -795,6 +796,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
         }
 
         let vertexOffset = mesh.VertexCount ();
+        let vertexColorOffset = mesh.VertexColorCount ();
         let normalOffset = mesh.NormalCount ();
         let uvOffset = mesh.TextureUVCount ();
 
@@ -867,7 +869,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
                 let v0 = vertexIndices[i];
                 let v1 = vertexIndices[i + 1];
                 let v2 = vertexIndices[i + 2];
-                this.AddTriangle (primitive, mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset);
+                this.AddTriangle (primitive, mesh, v0, v1, v2, hasVertexColors, hasNormals, hasUVs, vertexOffset, vertexColorOffset, normalOffset, uvOffset);
             }
         } else if (mode === OV.GltfRenderMode.TRIANGLE_STRIP) {
             for (let i = 0; i < vertexIndices.length - 2; i++) {
@@ -879,21 +881,28 @@ OV.ImporterGltf = class extends OV.ImporterBase
                     v1 = v2;
                     v2 = tmp;
                 }
-                this.AddTriangle (primitive, mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset);
+                this.AddTriangle (primitive, mesh, v0, v1, v2, hasVertexColors, hasNormals, hasUVs, vertexOffset, vertexColorOffset, normalOffset, uvOffset);
             }
         } else if (mode === OV.GltfRenderMode.TRIANGLE_FAN) {
             for (let i = 1; i < vertexIndices.length - 1; i++) {
                 let v0 = vertexIndices[0];
                 let v1 = vertexIndices[i];
                 let v2 = vertexIndices[i + 1];
-                this.AddTriangle (primitive, mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset);
+                this.AddTriangle (primitive, mesh, v0, v1, v2, hasVertexColors, hasNormals, hasUVs, vertexOffset, vertexColorOffset, normalOffset, uvOffset);
             }
         }
     }
 
-    AddTriangle (primitive, mesh, v0, v1, v2, hasNormals, hasUVs, vertexOffset, normalOffset, uvOffset)
+    AddTriangle (primitive, mesh, v0, v1, v2, hasVertexColors, hasNormals, hasUVs, vertexOffset, vertexColorOffset, normalOffset, uvOffset)
     {
         let triangle = new OV.Triangle (vertexOffset + v0, vertexOffset + v1, vertexOffset + v2);
+        if (hasVertexColors) {
+            triangle.SetVertexColors (
+                vertexColorOffset + v0,
+                vertexColorOffset + v1,
+                vertexColorOffset + v2
+            );
+        }
         if (hasNormals) {
             triangle.SetNormals (
                 normalOffset + v0,
