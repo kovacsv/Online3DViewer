@@ -209,6 +209,9 @@ OV.ExporterGltf = class extends OV.ExporterBase
                 for (let i = 0; i < primitive.vertices.length; i++) {
                     writer.WriteFloat32 (primitive.vertices[i]);
                 }
+                for (let i = 0; i < primitive.colors.length; i++) {
+                    writer.WriteFloat32 (OV.SRGBToLinear (primitive.colors[i]));
+                }
                 for (let i = 0; i < primitive.normals.length; i++) {
                     writer.WriteFloat32 (primitive.normals[i]);
                 }
@@ -245,6 +248,7 @@ OV.ExporterGltf = class extends OV.ExporterBase
                     byteLength : byteLength,
                 });
                 this.byteOffset += byteLength;
+                return this.mainJson.bufferViews.length - 1;
             }
         }
 
@@ -282,33 +286,38 @@ OV.ExporterGltf = class extends OV.ExporterBase
             for (let primitiveIndex = 0; primitiveIndex < primitives.length; primitiveIndex++) {
                 let primitive = primitives[primitiveIndex];
 
-                let bufferViewIndex = mainJson.bufferViews.length;
                 let bufferViewCreator = new BufferViewCreator (mainJson, meshData.offsets[primitiveIndex]);
-                bufferViewCreator.AddBufferView (primitive.indices.length * this.components.index.size);
-                bufferViewCreator.AddBufferView (primitive.vertices.length * this.components.number.size);
-                bufferViewCreator.AddBufferView (primitive.normals.length * this.components.number.size);
+                let indicesBufferView = bufferViewCreator.AddBufferView (primitive.indices.length * this.components.index.size);
+                let verticesBufferView = bufferViewCreator.AddBufferView (primitive.vertices.length * this.components.number.size);
+                let colorsBufferView = null;
+                if (primitive.colors.length > 0) {
+                    colorsBufferView = bufferViewCreator.AddBufferView (primitive.colors.length * this.components.number.size);
+                }
+                let normalsBufferView = bufferViewCreator.AddBufferView (primitive.normals.length * this.components.number.size);
+                let uvsBufferView = null;
+                if (primitive.uvs.length > 0) {
+                    uvsBufferView = bufferViewCreator.AddBufferView (primitive.uvs.length * this.components.number.size);
+                }
 
-                let accessorIndex = mainJson.accessors.length;
                 let jsonPrimitive = {
-                    attributes : {
-                        POSITION : accessorIndex + 1,
-                        NORMAL : accessorIndex + 2
-                    },
-                    indices : accessorIndex,
+                    attributes : {},
                     mode : 4,
                     material : primitive.material
                 };
 
                 let bounds = primitive.GetBounds ();
+
                 mainJson.accessors.push ({
-                    bufferView : bufferViewIndex,
+                    bufferView : indicesBufferView,
                     byteOffset : 0,
                     componentType : this.components.index.type,
                     count : primitive.indices.length,
                     type : 'SCALAR'
                 });
+                jsonPrimitive.indices = mainJson.accessors.length - 1;
+
                 mainJson.accessors.push ({
-                    bufferView : bufferViewIndex + 1,
+                    bufferView : verticesBufferView,
                     byteOffset : 0,
                     componentType : this.components.number.type,
                     count : primitive.vertices.length / 3,
@@ -316,23 +325,37 @@ OV.ExporterGltf = class extends OV.ExporterBase
                     max : bounds.max,
                     type : 'VEC3'
                 });
+                jsonPrimitive.attributes.POSITION = mainJson.accessors.length - 1;
+
+                if (colorsBufferView !== null) {
+                    mainJson.accessors.push ({
+                        bufferView : colorsBufferView,
+                        byteOffset : 0,
+                        componentType : this.components.number.type,
+                        count : primitive.colors.length / 3,
+                        type : 'VEC3'
+                    });
+                    jsonPrimitive.attributes.COLOR_0 = mainJson.accessors.length - 1;
+                }
+
                 mainJson.accessors.push ({
-                    bufferView : bufferViewIndex + 2,
+                    bufferView : normalsBufferView,
                     byteOffset : 0,
                     componentType : this.components.number.type,
                     count : primitive.normals.length / 3,
                     type : 'VEC3'
                 });
-                if (primitive.uvs.length > 0) {
-                    bufferViewCreator.AddBufferView (primitive.uvs.length * this.components.number.size);
+                jsonPrimitive.attributes.NORMAL = mainJson.accessors.length - 1;
+
+                if (uvsBufferView !== null) {
                     mainJson.accessors.push ({
-                        bufferView : bufferViewIndex + 3,
+                        bufferView : uvsBufferView,
                         byteOffset : 0,
                         componentType : this.components.number.type,
                         count : primitive.uvs.length / 2,
                         type : 'VEC2'
                     });
-                    jsonPrimitive.attributes.TEXCOORD_0 = accessorIndex + 3;
+                    jsonPrimitive.attributes.TEXCOORD_0 = mainJson.accessors.length - 1;
                 }
 
                 jsonMesh.primitives.push (jsonPrimitive);

@@ -64,7 +64,7 @@ OV.MeshBuffer = class
 
 OV.ConvertMeshToMeshBuffer = function (mesh)
 {
-    function AddVertexToPrimitiveBuffer (mesh, vertexIndex, vertexColorIndex, normalIndex, uvIndex, primitiveBuffer, meshToPrimitiveVertices)
+    function AddVertexToPrimitiveBuffer (mesh, indices, primitiveBuffer, meshVertexToPrimitiveVertices)
     {
         function GetVertexColorOrDefault (mesh, vertexColorIndex, forceVertexColors)
         {
@@ -88,26 +88,26 @@ OV.ConvertMeshToMeshBuffer = function (mesh)
             }
         }
 
-        function AddVertex (mesh, vertexIndex, vertexColorIndex, normalIndex, uvIndex, primitiveBuffer)
+        function AddVertex (mesh, indices, primitiveBuffer)
         {
             let forceVertexColors = mesh.VertexColorCount () > 0;
             let forceUVs = mesh.TextureUVCount () > 0;
 
-            let vertex = mesh.GetVertex (vertexIndex);
-            let normal = mesh.GetNormal (normalIndex);
+            let vertex = mesh.GetVertex (indices.vertex);
+            let normal = mesh.GetNormal (indices.normal);
 
             let primitiveVertexIndex = primitiveBuffer.vertices.length / 3;
             primitiveBuffer.indices.push (primitiveVertexIndex);
             primitiveBuffer.vertices.push (vertex.x, vertex.y, vertex.z);
 
-            let vertexColor = GetVertexColorOrDefault (mesh, vertexColorIndex, forceVertexColors);
+            let vertexColor = GetVertexColorOrDefault (mesh, indices.color, forceVertexColors);
             if (vertexColor !== null) {
                 primitiveBuffer.colors.push (vertexColor.r / 255.0, vertexColor.g / 255.0, vertexColor.b / 255.0);
             }
 
             primitiveBuffer.normals.push (normal.x, normal.y, normal.z);
 
-            let uv = GetUVOrDefault (mesh, uvIndex, forceUVs);
+            let uv = GetUVOrDefault (mesh, indices.uv, forceUVs);
             if (uv !== null) {
                 primitiveBuffer.uvs.push (uv.x, uv.y);
             }
@@ -120,7 +120,7 @@ OV.ConvertMeshToMeshBuffer = function (mesh)
             };
         }
 
-        function FindMatchingPrimitiveVertex (mesh, primitiveVertices, vertexColorIndex, normalIndex, uvIndex)
+        function FindMatchingPrimitiveVertex (mesh, primitiveVertices, indices)
         {
             function IsEqualVertexColor (mesh, vertexColorIndex, existingVertexColor)
             {
@@ -148,9 +148,9 @@ OV.ConvertMeshToMeshBuffer = function (mesh)
 
             for (let i = 0; i < primitiveVertices.length; i++) {
                 let primitiveVertex = primitiveVertices[i];
-                let equalVertexColor = IsEqualVertexColor (mesh, vertexColorIndex, primitiveVertex.vertexColor);
-                let equalNormal = IsEqualNormal (mesh, normalIndex, primitiveVertex.normal);
-                let equalUv = IsEqualUV (mesh, uvIndex, primitiveVertex.uv);
+                let equalVertexColor = IsEqualVertexColor (mesh, indices.color, primitiveVertex.vertexColor);
+                let equalNormal = IsEqualNormal (mesh, indices.normal, primitiveVertex.normal);
+                let equalUv = IsEqualUV (mesh, indices.uv, primitiveVertex.uv);
                 if (equalVertexColor && equalNormal && equalUv) {
                     return primitiveVertex;
                 }
@@ -158,18 +158,18 @@ OV.ConvertMeshToMeshBuffer = function (mesh)
             return null;
         }
 
-        if (meshToPrimitiveVertices.has (vertexIndex)) {
-            let primitiveVertices = meshToPrimitiveVertices.get (vertexIndex);
-            let existingPrimitiveVertex = FindMatchingPrimitiveVertex (mesh, primitiveVertices, vertexColorIndex, normalIndex, uvIndex);
+        if (meshVertexToPrimitiveVertices.has (indices.vertex)) {
+            let primitiveVertices = meshVertexToPrimitiveVertices.get (indices.vertex);
+            let existingPrimitiveVertex = FindMatchingPrimitiveVertex (mesh, primitiveVertices, indices);
             if (existingPrimitiveVertex !== null) {
                 primitiveBuffer.indices.push (existingPrimitiveVertex.index);
             } else {
-                let primitiveVertex = AddVertex (mesh, vertexIndex, vertexColorIndex, normalIndex, uvIndex, primitiveBuffer);
+                let primitiveVertex = AddVertex (mesh, indices, primitiveBuffer);
                 primitiveVertices.push (primitiveVertex);
             }
         } else {
-            let primitiveVertex = AddVertex (mesh, vertexIndex, vertexColorIndex, normalIndex, uvIndex, primitiveBuffer);
-            meshToPrimitiveVertices.set (vertexIndex, [primitiveVertex]);
+            let primitiveVertex = AddVertex (mesh, indices, primitiveBuffer);
+            meshVertexToPrimitiveVertices.set (indices.vertex, [primitiveVertex]);
         }
     }
 
@@ -191,19 +191,38 @@ OV.ConvertMeshToMeshBuffer = function (mesh)
     });
 
     let primitiveBuffer = null;
-    let meshToPrimitiveVertices = null;
+    let meshVertexToPrimitiveVertices = null;
     for (let i = 0; i < triangleIndices.length; i++) {
         let triangleIndex = triangleIndices[i];
         let triangle = mesh.GetTriangle (triangleIndex);
         if (primitiveBuffer === null || primitiveBuffer.material !== triangle.mat) {
             primitiveBuffer = new OV.MeshPrimitiveBuffer ();
             primitiveBuffer.material = triangle.mat;
-            meshToPrimitiveVertices = new Map ();
+            meshVertexToPrimitiveVertices = new Map ();
             meshBuffer.primitives.push (primitiveBuffer);
         }
-        AddVertexToPrimitiveBuffer (mesh, triangle.v0, triangle.c0, triangle.n0, triangle.u0, primitiveBuffer, meshToPrimitiveVertices);
-        AddVertexToPrimitiveBuffer (mesh, triangle.v1, triangle.c1, triangle.n1, triangle.u1, primitiveBuffer, meshToPrimitiveVertices);
-        AddVertexToPrimitiveBuffer (mesh, triangle.v2, triangle.c2, triangle.n2, triangle.u2, primitiveBuffer, meshToPrimitiveVertices);
+        let v0Indices = {
+            vertex : triangle.v0,
+            color : triangle.c0,
+            normal : triangle.n0,
+            uv : triangle.u0
+        };
+        let v1Indices = {
+            vertex : triangle.v1,
+            color : triangle.c1,
+            normal : triangle.n1,
+            uv : triangle.u1
+        };
+        let v2Indices = {
+            vertex : triangle.v2,
+            color : triangle.c2,
+            normal : triangle.n2,
+            uv : triangle.u2
+        };
+
+        AddVertexToPrimitiveBuffer (mesh, v0Indices, primitiveBuffer, meshVertexToPrimitiveVertices);
+        AddVertexToPrimitiveBuffer (mesh, v1Indices, primitiveBuffer, meshVertexToPrimitiveVertices);
+        AddVertexToPrimitiveBuffer (mesh, v2Indices, primitiveBuffer, meshVertexToPrimitiveVertices);
     }
 
     return meshBuffer;
