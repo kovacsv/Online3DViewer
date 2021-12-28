@@ -44,23 +44,23 @@ OV.ModelExporterUI = class extends OV.ExporterUI
 
     GenerateParametersUI (parametersDiv)
     {
-        let line = OV.AddDiv (parametersDiv, 'ov_dialog_row');
-        this.visibleOnlyCheckbox = OV.AddCheckbox (line, 'export_visible_only', 'Export visible meshes only', true);
+        function AddCheckbox (parentDiv, id, name, isChecked)
+        {
+            let line = OV.AddDiv (parentDiv, 'ov_dialog_row');
+            return OV.AddCheckbox (line, id, name, isChecked);
+        }
+
+        this.visibleOnlyCheckbox = AddCheckbox (parametersDiv, 'export_visible_only', 'Export visible meshes only', true);
     }
 
     ExportModel (model, callbacks)
     {
-        let visibleOnly = this.visibleOnlyCheckbox.checked;
-        let settings = new OV.ExporterSettings ({
-            transformation : new OV.Transformation (),
-            isMeshVisible : (meshInstanceId) => {
-                if (visibleOnly) {
-                    return callbacks.isMeshVisible (meshInstanceId);
-                } else {
-                    return true;
-                }
-            }
-        });
+        let settings = new OV.ExporterSettings ();
+        if (this.visibleOnlyCheckbox.checked) {
+            settings.isMeshVisible = (meshInstanceId) => {
+                return callbacks.isMeshVisible (meshInstanceId);
+            };
+        }
 
         let exporterModel = new OV.ExporterModel (model, settings);
         if (exporterModel.MeshInstanceCount () === 0) {
