@@ -195,6 +195,17 @@ OV.CheckModel = function (model)
             if (!IsCorrectIndex (triangle.v2, mesh.VertexCount ())) {
                 return false;
             }
+            if (triangle.HasVertexColors ()) {
+                if (!IsCorrectIndex (triangle.c0, mesh.VertexColorCount ())) {
+                    return false;
+                }
+                if (!IsCorrectIndex (triangle.c1, mesh.VertexColorCount ())) {
+                    return false;
+                }
+                if (!IsCorrectIndex (triangle.c2, mesh.VertexColorCount ())) {
+                    return false;
+                }
+            }
             if (!IsCorrectIndex (triangle.n0, mesh.NormalCount ())) {
                 return false;
             }

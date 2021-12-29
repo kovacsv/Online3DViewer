@@ -59,8 +59,12 @@ describe ('Mesh', function() {
         assert.strictEqual (triangle.v1, 2);
         assert.strictEqual (triangle.v2, 3);
         assert (triangle.HasVertices ());
+        assert (!triangle.HasVertexColors ());
         assert (!triangle.HasNormals ());
         assert (!triangle.HasTextureUVs ());
+        assert.strictEqual (triangle.c0, null);
+        assert.strictEqual (triangle.c1, null);
+        assert.strictEqual (triangle.c2, null);
         assert.strictEqual (triangle.n0, null);
         assert.strictEqual (triangle.n1, null);
         assert.strictEqual (triangle.n2, null);
