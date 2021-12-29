@@ -46,6 +46,29 @@ OV.GetGltfColor = function (color)
     );
 };
 
+OV.GetGltfVertexColor = function (color)
+{
+    function GetColorComponent (component, normalize)
+    {
+        if (normalize) {
+            return parseInt (Math.round (OV.LinearToSRGB (component / 255.0) * 255.0), 10);
+        } else {
+            return parseInt (Math.round (OV.LinearToSRGB (component) * 255.0), 10);
+        }
+    }
+
+    let normalize = false;
+    if (color[0] > 1.0 || color[1] > 1.0 || color[2] > 1.0) {
+        normalize = true;
+    }
+
+    return new OV.Color (
+        GetColorComponent (color[0], normalize),
+        GetColorComponent (color[1], normalize),
+        GetColorComponent (color[2], normalize)
+    );
+};
+
 OV.GltfBufferReader = class
 {
     constructor (buffer)
@@ -416,7 +439,7 @@ OV.GltfExtensions = class
 
         if (hasVertexColors) {
             EnumerateComponents (this.draco, decoder, dracoMesh, extensionParams.attributes.COLOR_0, (vertexColor) => {
-                let color = OV.GetGltfColor ([vertexColor.x, vertexColor.y, vertexColor.z]);
+                let color = OV.GetGltfVertexColor ([vertexColor.x, vertexColor.y, vertexColor.z]);
                 mesh.AddVertexColor (color);
             });
         }
@@ -820,7 +843,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
                 return;
             }
             reader.EnumerateData ((data) => {
-                let color = OV.GetGltfColor ([data.x, data.y, data.z]);
+                let color = OV.GetGltfVertexColor ([data.x, data.y, data.z]);
                 mesh.AddVertexColor (color);
             });
         }
