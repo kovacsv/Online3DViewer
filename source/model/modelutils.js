@@ -172,7 +172,7 @@ OV.HasDefaultMaterial = function (model)
 {
     for (let i = 0; i < model.MaterialCount (); i++) {
         let material = model.GetMaterial (i);
-        if (material.isDefault) {
+        if (material.isDefault && !material.vertexColors) {
             return true;
         }
     }
