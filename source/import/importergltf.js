@@ -46,26 +46,21 @@ OV.GetGltfColor = function (color)
     );
 };
 
-OV.GetGltfVertexColor = function (color)
+OV.GetGltfVertexColor = function (color, componentType)
 {
-    function GetColorComponent (component, normalize)
+    function GetColorComponent (component, componentType)
     {
-        if (normalize) {
-            return parseInt (Math.round (OV.LinearToSRGB (component / 255.0) * 255.0), 10);
-        } else {
-            return parseInt (Math.round (OV.LinearToSRGB (component) * 255.0), 10);
+        let normalized = component;
+        if (componentType !== OV.GltfComponentType.FLOAT) {
+            normalized /= 255.0;
         }
-    }
-
-    let normalize = false;
-    if (color[0] > 1.0 || color[1] > 1.0 || color[2] > 1.0) {
-        normalize = true;
+        return parseInt (Math.round (OV.LinearToSRGB (normalized) * 255.0), 10);
     }
 
     return new OV.Color (
-        GetColorComponent (color[0], normalize),
-        GetColorComponent (color[1], normalize),
-        GetColorComponent (color[2], normalize)
+        GetColorComponent (color[0], componentType),
+        GetColorComponent (color[1], componentType),
+        GetColorComponent (color[2], componentType)
     );
 };
 
@@ -843,7 +838,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
                 return;
             }
             reader.EnumerateData ((data) => {
-                let color = OV.GetGltfVertexColor ([data.x, data.y, data.z]);
+                let color = OV.GetGltfVertexColor ([data.x, data.y, data.z], reader.componentType);
                 mesh.AddVertexColor (color);
             });
         }
