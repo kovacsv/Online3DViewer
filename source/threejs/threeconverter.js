@@ -227,7 +227,7 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 			end : -1
 		});
 
-		let meshHasVertexColors = OV.MeshHasVertexColors (mesh);
+		let meshHasVertexColors = (mesh.VertexColorCount () > 0);
 		let meshHasUVs = (mesh.TextureUVCount () > 0);
 		for (let i = 0; i < triangleIndices.length; i++) {
 			let triangleIndex = triangleIndices[i];

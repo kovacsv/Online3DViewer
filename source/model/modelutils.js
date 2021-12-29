@@ -35,11 +35,6 @@ OV.TransformMesh = function (mesh, transformation)
     }
 };
 
-OV.MeshHasVertexColors = function (mesh)
-{
-    return mesh.VertexCount () === mesh.VertexColorCount ();
-};
-
 OV.FlipMeshTrianglesOrientation = function (mesh)
 {
     for (let i = 0; i < mesh.TriangleCount (); i++) {

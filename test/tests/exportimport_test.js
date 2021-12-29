@@ -219,3 +219,29 @@ describe ('Export-Import Test', function () {
         });
     });
 });
+
+describe ('Export-Import Vertex Colors Test', function () {
+    it ('Export-Import Vertex Colors glTF', function (done) {
+        let model = new OV.Model ();
+        let mesh = new OV.Mesh ();
+        mesh.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
+        mesh.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
+        mesh.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
+        mesh.AddVertexColor (new OV.Color (1.0, 0.0, 0.0));
+        mesh.AddTriangle (new OV.Triangle (0, 1, 2).SetVertexColors (0, 0, 0));
+        model.AddMeshToRootNode (mesh);
+        OV.FinalizeModel (model, () => { return new OV.PhongMaterial (); });
+        ExportImport (model, OV.FileFormat.Binary, 'glb', (model2) => {
+            assert.strictEqual (model2.MeshCount (), 1);
+            let mesh2 = model2.GetMesh (0);
+            assert.strictEqual (mesh2.VertexCount (), 3);
+            assert.strictEqual (mesh2.VertexColorCount (), 3);
+            assert.strictEqual (mesh2.TriangleCount (), 1);
+            let triangle2 = mesh2.GetTriangle (0);
+            assert.strictEqual (triangle2.c0, 0);
+            assert.strictEqual (triangle2.c1, 1);
+            assert.strictEqual (triangle2.c2, 2);
+            done ();
+        });
+    });
+});
