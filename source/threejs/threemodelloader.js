@@ -67,7 +67,7 @@ OV.ThreeModelLoader = class
 
     ReplaceDefaultMaterialColor (defaultColor)
     {
-        if (this.defaultMaterial !== null) {
+        if (this.defaultMaterial !== null && !this.defaultMaterial.vertexColors) {
             this.defaultMaterial.color = OV.ConvertColorToThreeColor (defaultColor);
         }
     }
