@@ -415,7 +415,7 @@ OV.GltfExtensions = class
         }
 
         let hasVertices = (extensionParams.attributes.POSITION !== undefined);
-        let hasVertexColors = (extensionParams.attributes.COLOR_0 !== undefined);
+        let hasVertexColors = false;
         let hasNormals = (extensionParams.attributes.NORMAL !== undefined);
         let hasUVs = (extensionParams.attributes.TEXCOORD_0 !== undefined);
 
@@ -431,13 +431,6 @@ OV.GltfExtensions = class
         EnumerateComponents (this.draco, decoder, dracoMesh, extensionParams.attributes.POSITION, (vertex) => {
             mesh.AddVertex (vertex);
         });
-
-        if (hasVertexColors) {
-            EnumerateComponents (this.draco, decoder, dracoMesh, extensionParams.attributes.COLOR_0, (vertexColor) => {
-                let color = OV.GetGltfVertexColor ([vertexColor.x, vertexColor.y, vertexColor.z]);
-                mesh.AddVertexColor (color);
-            });
-        }
 
         if (hasNormals) {
             EnumerateComponents (this.draco, decoder, dracoMesh, extensionParams.attributes.NORMAL, (normal) => {
