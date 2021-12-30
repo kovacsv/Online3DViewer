@@ -1,6 +1,33 @@
-OV.FinalizeModel = function (model, getDefaultMaterial)
+OV.ModelFinalizer = class
 {
-    function FinalizeMesh (model, mesh, getDefaultMaterialIndex)
+    constructor (getDefaultMaterial)
+    {
+        this.getDefaultMaterial = getDefaultMaterial;
+        this.defaultMaterialIndex = null;
+    }
+
+    Finalize (model)
+    {
+        this.Reset ();
+
+        this.FinalizeMeshes (model);
+        this.FinalizeNodes (model);
+    }
+
+    FinalizeMeshes (model)
+    {
+        for (let i = 0; i < model.MeshCount (); i++) {
+            let mesh = model.GetMesh (i);
+            if (mesh.TriangleCount () === 0) {
+                model.RemoveMesh (i);
+                i = i - 1;
+                continue;
+            }
+            this.FinalizeMesh (model, mesh);
+        }
+    }
+
+    FinalizeMesh (model, mesh)
     {
         function CalculateCurveNormals (mesh)
         {
@@ -69,85 +96,92 @@ OV.FinalizeModel = function (model, getDefaultMaterial)
             }
         }
 
-        function FinalizeTriangle (mesh, triangle, status)
-        {
-            if (!triangle.HasNormals ()) {
-                if (triangle.curve === null || triangle.curve === 0) {
-                    let v0 = mesh.GetVertex (triangle.v0);
-                    let v1 = mesh.GetVertex (triangle.v1);
-                    let v2 = mesh.GetVertex (triangle.v2);
-                    let normal = OV.CalculateTriangleNormal (v0, v1, v2);
-                    let normalIndex = mesh.AddNormal (normal);
-                    triangle.SetNormals (normalIndex, normalIndex, normalIndex);
-                } else {
-                    status.calculateCurveNormals = true;
-                }
-            }
-            if (triangle.mat === null) {
-                triangle.mat = status.getDefaultMaterialIndex ();
-            }
-            if (triangle.curve === null) {
-                triangle.curve = 0;
-            }
-        }
-
-        let status = {
-            getDefaultMaterialIndex : getDefaultMaterialIndex,
+        let meshStatus = {
             calculateCurveNormals : false
         };
 
         for (let i = 0; i < mesh.TriangleCount (); i++) {
             let triangle = mesh.GetTriangle (i);
-            FinalizeTriangle (mesh, triangle, status);
+            this.FinalizeTriangle (model, mesh, triangle, meshStatus);
             if (triangle.HasVertexColors ()) {
                 let material = model.GetMaterial (triangle.mat);
                 material.vertexColors = true;
             }
         }
 
-        if (status.calculateCurveNormals) {
+        if (meshStatus.calculateCurveNormals) {
             CalculateCurveNormals (mesh);
         }
     }
 
-    let defaultMaterialIndex = null;
-    let getDefaultMaterialIndex = function () {
-        if (defaultMaterialIndex === null) {
-            let defaultMaterial = getDefaultMaterial ();
+    FinalizeTriangle (model, mesh, triangle, meshStatus)
+    {
+        if (!triangle.HasNormals ()) {
+            if (triangle.curve === null || triangle.curve === 0) {
+                let v0 = mesh.GetVertex (triangle.v0);
+                let v1 = mesh.GetVertex (triangle.v1);
+                let v2 = mesh.GetVertex (triangle.v2);
+                let normal = OV.CalculateTriangleNormal (v0, v1, v2);
+                let normalIndex = mesh.AddNormal (normal);
+                triangle.SetNormals (normalIndex, normalIndex, normalIndex);
+            } else {
+                meshStatus.calculateCurveNormals = true;
+            }
+        }
+
+        if (triangle.mat === null) {
+            triangle.mat = this.GetDefaultMaterialIndex (model);
+        }
+
+        if (triangle.curve === null) {
+            triangle.curve = 0;
+        }
+    }
+
+    FinalizeNodes (model)
+    {
+        let rootNode = model.GetRootNode ();
+
+        let emptyNodes = [];
+        rootNode.EnumerateChildren ((node) => {
+            if (node.IsEmpty ()) {
+                emptyNodes.push (node);
+            }
+        });
+
+        for (let nodeIndex = 0; nodeIndex < emptyNodes.length; nodeIndex++) {
+            let node = emptyNodes[nodeIndex];
+            let parentNode = node.GetParent ();
+            if (parentNode === null) {
+                continue;
+            }
+            parentNode.RemoveChildNode (node);
+            if (parentNode.IsEmpty ()) {
+                emptyNodes.push (parentNode);
+            }
+        }
+    }
+
+    GetDefaultMaterialIndex (model)
+    {
+        if (this.defaultMaterialIndex === null) {
+            let defaultMaterial = this.getDefaultMaterial ();
             defaultMaterial.isDefault = true;
-            defaultMaterialIndex = model.AddMaterial (defaultMaterial);
+            this.defaultMaterialIndex = model.AddMaterial (defaultMaterial);
         }
-        return defaultMaterialIndex;
-    };
-
-    for (let i = 0; i < model.MeshCount (); i++) {
-        let mesh = model.GetMesh (i);
-        if (mesh.TriangleCount () === 0) {
-            model.RemoveMesh (i);
-            i = i - 1;
-            continue;
-        }
-        FinalizeMesh (model, mesh, getDefaultMaterialIndex);
+        return this.defaultMaterialIndex;
     }
 
-    let rootNode = model.GetRootNode ();
-    let emptyNodes = [];
-    rootNode.EnumerateChildren ((node) => {
-        if (node.IsEmpty ()) {
-            emptyNodes.push (node);
-        }
-    });
-    for (let nodeIndex = 0; nodeIndex < emptyNodes.length; nodeIndex++) {
-        let node = emptyNodes[nodeIndex];
-        let parentNode = node.GetParent ();
-        if (parentNode === null) {
-            continue;
-        }
-        parentNode.RemoveChildNode (node);
-        if (parentNode.IsEmpty ()) {
-            emptyNodes.push (parentNode);
-        }
+    Reset ()
+    {
+        this.defaultMaterialIndex = null;
     }
+};
+
+OV.FinalizeModel = function (model, getDefaultMaterial)
+{
+    let finalizer = new OV.ModelFinalizer (getDefaultMaterial);
+    finalizer.Finalize (model);
 };
 
 OV.CheckModel = function (model)
