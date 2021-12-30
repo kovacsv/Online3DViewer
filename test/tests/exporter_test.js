@@ -58,7 +58,7 @@ function CreateTestModel ()
     mesh2.AddTriangle (triangle4);
     model.AddMeshToRootNode (mesh2);
 
-    OV.FinalizeModel (model, null);
+    OV.FinalizeModel (model);
     return model;
 }
 
@@ -215,8 +215,8 @@ describe ('Exporter', function () {
             let contentBuffer = stlFile.GetBufferContent ();
             let importer = new OV.ImporterStl ();
             importer.Import (stlFile.GetName (), 'stl', contentBuffer, {
-                getDefaultMaterial () {
-                    return new OV.PhongMaterial ();
+                getDefaultMaterialColor () {
+                    return new OV.Color (0, 0, 0);
                 },
                 onSuccess () {
                     let importedModel = importer.GetModel ();
@@ -309,8 +309,8 @@ describe ('Exporter', function () {
             let contentBuffer = plyFile.GetBufferContent ();
             let importer = new OV.ImporterPly ();
             importer.Import (plyFile.GetName (), 'ply', contentBuffer, {
-                getDefaultMaterial () {
-                    return new OV.PhongMaterial ();
+                getDefaultMaterialColor () {
+                    return new OV.Color (0, 0, 0);
                 },
                 onSuccess () {
                     let importedModel = importer.GetModel ();
@@ -339,8 +339,8 @@ describe ('Exporter', function () {
             let contentBuffer = gltfFile.GetBufferContent ();
             let importer = new OV.ImporterGltf ();
             importer.Import (gltfFile.GetName (), 'gltf', contentBuffer, {
-                getDefaultMaterial () {
-                    return new OV.PhongMaterial ();
+                getDefaultMaterialColor () {
+                    return new OV.Color (0, 0, 0);
                 },
                 getFileBuffer (filePath) {
                     if (filePath == 'model.bin') {
@@ -377,8 +377,8 @@ describe ('Exporter', function () {
             let contentBuffer = glbFile.GetBufferContent ();
             let importer = new OV.ImporterGltf ();
             importer.Import (glbFile.GetName (), 'glb', contentBuffer, {
-                getDefaultMaterial () {
-                    return new OV.PhongMaterial ();
+                getDefaultMaterialColor () {
+                    return new OV.Color (0, 0, 0);
                 },
                 getFileBuffer (filePath) {
                     return null;

@@ -144,9 +144,7 @@ describe ('Mesh Buffer', function () {
         mesh.AddTriangle (new OV.Triangle (4, 6, 7).SetNormals (5, 5, 5));
 
         model.AddMesh (mesh);
-        OV.FinalizeModel (model, function () {
-            return new OV.PhongMaterial ();
-        });
+        OV.FinalizeModel (model);
         assert (OV.CheckModel (model));
 
         let buffer = OV.ConvertMeshToMeshBuffer (mesh);
@@ -184,9 +182,7 @@ describe ('Mesh Buffer', function () {
         mesh.AddTriangle (new OV.Triangle (4, 6, 7));
 
         model.AddMesh (mesh);
-        OV.FinalizeModel (model, function () {
-            return new OV.PhongMaterial ();
-        });
+        OV.FinalizeModel (model);
         assert (OV.CheckModel (model));
 
         let buffer = OV.ConvertMeshToMeshBuffer (mesh);
@@ -226,9 +222,7 @@ describe ('Mesh Buffer', function () {
         mesh.AddTriangle (new OV.Triangle (4, 6, 7).SetCurve (1));
 
         model.AddMesh (mesh);
-        OV.FinalizeModel (model, function () {
-            return new OV.PhongMaterial ();
-        });
+        OV.FinalizeModel (model);
         assert (OV.CheckModel (model));
 
         let buffer = OV.ConvertMeshToMeshBuffer (mesh);
@@ -270,9 +264,7 @@ describe ('Mesh Buffer', function () {
         mesh.AddTriangle (new OV.Triangle (4, 6, 7).SetMaterial (1));
 
         model.AddMesh (mesh);
-        OV.FinalizeModel (model, function () {
-            return new OV.PhongMaterial ();
-        });
+        OV.FinalizeModel (model);
         assert (OV.CheckModel (model));
 
         let buffer = OV.ConvertMeshToMeshBuffer (mesh);
@@ -320,9 +312,7 @@ describe ('Mesh Buffer', function () {
         mesh.AddTriangle (new OV.Triangle (4, 6, 7));
 
         model.AddMesh (mesh);
-        OV.FinalizeModel (model, function () {
-            return new OV.PhongMaterial ();
-        });
+        OV.FinalizeModel (model);
         assert (OV.CheckModel (model));
 
         let buffer = OV.ConvertMeshToMeshBuffer (mesh);
@@ -363,9 +353,7 @@ describe ('Mesh Buffer', function () {
         mesh.AddTriangle (new OV.Triangle (4, 6, 7).SetTextureUVs (0, 1, 2));
 
         model.AddMesh (mesh);
-        OV.FinalizeModel (model, function () {
-            return new OV.PhongMaterial ();
-        });
+        OV.FinalizeModel (model);
         assert (OV.CheckModel (model));
 
         let buffer = OV.ConvertMeshToMeshBuffer (mesh);

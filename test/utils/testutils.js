@@ -171,7 +171,7 @@ module.exports =
         OV.TransformMesh (cube2, new OV.Transformation (matrix));
         model.AddMeshToRootNode (cube2);
 
-        OV.FinalizeModel (model, function () { return new OV.PhongMaterial () });
+        OV.FinalizeModel (model);
         return model;
     },
 
@@ -187,7 +187,7 @@ module.exports =
         OV.TransformMesh (cube2, new OV.Transformation (matrix))
         model.AddMeshToRootNode (cube2);
 
-        OV.FinalizeModel (model, function () { return new OV.PhongMaterial () });
+        OV.FinalizeModel (model);
         return model;
     },
 
@@ -203,7 +203,7 @@ module.exports =
         OV.TransformMesh (cube2, new OV.Transformation (matrix));
         model.AddMeshToRootNode (cube2);
 
-        OV.FinalizeModel (model, function () { return new OV.PhongMaterial () });
+        OV.FinalizeModel (model);
         return model;
     },
 
@@ -252,7 +252,7 @@ module.exports =
     {
         var model = new OV.Model ();
         model.AddMeshToRootNode (mesh);
-        OV.FinalizeModel (model, function () { return new OV.PhongMaterial () });
+        OV.FinalizeModel (model);
         return model;
     },
 
@@ -376,7 +376,7 @@ module.exports =
         root.AddChildNode (rotatedNode);
         rotatedNode.AddChildNode (translatedRotatedNode);
 
-        OV.FinalizeModel (model, function () { return new OV.PhongMaterial () });
+        OV.FinalizeModel (model);
         return model;
     }
 }

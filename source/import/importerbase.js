@@ -52,7 +52,9 @@ OV.ImporterBase = class
             return;
         }
 
-        OV.FinalizeModel (this.model, this.callbacks.getDefaultMaterial);
+        OV.FinalizeModel (this.model, {
+            getDefaultMaterialColor : this.callbacks.getDefaultMaterialColor
+        });
 
         callbacks.onSuccess ();
         callbacks.onComplete ();

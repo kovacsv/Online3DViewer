@@ -91,7 +91,7 @@ describe ('Model Finalization', function () {
         var model = new OV.Model ();
         var meshIndex = model.AddMesh (mesh);
         assert.strictEqual (model.MaterialCount (), 0);
-        OV.FinalizeModel (model, function () { return new OV.PhongMaterial () });
+        OV.FinalizeModel (model);
         assert.strictEqual (model.MaterialCount (), 1);
         var theMesh = model.GetMesh (meshIndex);
         assert.strictEqual (theMesh.NormalCount (), 1);
@@ -120,7 +120,7 @@ describe ('Model Finalization', function () {
         var model = new OV.Model ()
         var meshIndex = model.AddMesh (mesh);
 
-        OV.FinalizeModel (model, function () { return new OV.PhongMaterial () });
+        OV.FinalizeModel (model);
 
         var theMesh = model.GetMesh (meshIndex);
         assert.strictEqual (theMesh.NormalCount (), 6);
@@ -153,7 +153,7 @@ describe ('Model Finalization', function () {
         var model = new OV.Model ()
         var meshIndex = model.AddMesh (mesh);
 
-        OV.FinalizeModel (model, function () { return new OV.PhongMaterial () });
+        OV.FinalizeModel (model);
 
         var theMesh = model.GetMesh (meshIndex);
         assert.strictEqual (theMesh.NormalCount (), 9);
@@ -192,7 +192,7 @@ describe ('Model Finalization', function () {
         node3.AddMeshIndex (meshIndex);
         node3.AddMeshIndex (emptyMeshIndex);
 
-        OV.FinalizeModel (model, function () { return new OV.PhongMaterial () });
+        OV.FinalizeModel (model);
         assert.strictEqual (model.MeshCount (), 1);
 
         let meshInstances = [];
@@ -210,7 +210,7 @@ describe ('Model Finalization', function () {
 
     it ('Remove Empty Nodes Recursively', function () {
         let model = testUtils.GetHierarchicalModelNoFinalization ();
-        OV.FinalizeModel (model, function () { return new OV.PhongMaterial () });
+        OV.FinalizeModel (model);
         assert.strictEqual (model.MeshCount (), 0);
         assert.strictEqual (model.MeshInstanceCount (), 0);
         assert (model.GetRootNode ().IsEmpty ());
@@ -395,7 +395,7 @@ describe ('Node Hierarchy', function () {
 
     it ('Instance counters', function () {
         let model = testUtils.GetTranslatedRotatedCubesModel ();
-        OV.FinalizeModel (model, function () { return new OV.PhongMaterial () });
+        OV.FinalizeModel (model);
         assert.strictEqual (model.MeshCount (), 1);
         assert.strictEqual (model.MeshInstanceCount (), 3);
         assert.strictEqual (model.VertexCount (), 8 * 3);

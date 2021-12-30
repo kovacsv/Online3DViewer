@@ -1,8 +1,13 @@
 OV.ModelFinalizer = class
 {
-    constructor (getDefaultMaterial)
+    constructor (params)
     {
-        this.getDefaultMaterial = getDefaultMaterial;
+        this.params = {
+            getDefaultMaterialColor : () => {
+                return new OV.Color (0, 0, 0);
+            }
+        };
+        OV.CopyObjectAttributes (params, this.params);
         this.defaultMaterialIndex = null;
     }
 
@@ -102,7 +107,12 @@ OV.ModelFinalizer = class
 
         for (let i = 0; i < mesh.TriangleCount (); i++) {
             let triangle = mesh.GetTriangle (i);
-            this.FinalizeTriangle (model, mesh, triangle, meshStatus);
+            this.FinalizeTriangle (mesh, triangle, meshStatus);
+
+            if (triangle.mat === null) {
+                triangle.mat = this.GetDefaultMaterialIndex (model);
+            }
+
             if (triangle.HasVertexColors ()) {
                 let material = model.GetMaterial (triangle.mat);
                 material.vertexColors = true;
@@ -114,7 +124,7 @@ OV.ModelFinalizer = class
         }
     }
 
-    FinalizeTriangle (model, mesh, triangle, meshStatus)
+    FinalizeTriangle (mesh, triangle, meshStatus)
     {
         if (!triangle.HasNormals ()) {
             if (triangle.curve === null || triangle.curve === 0) {
@@ -127,10 +137,6 @@ OV.ModelFinalizer = class
             } else {
                 meshStatus.calculateCurveNormals = true;
             }
-        }
-
-        if (triangle.mat === null) {
-            triangle.mat = this.GetDefaultMaterialIndex (model);
         }
 
         if (triangle.curve === null) {
@@ -165,7 +171,9 @@ OV.ModelFinalizer = class
     GetDefaultMaterialIndex (model)
     {
         if (this.defaultMaterialIndex === null) {
-            let defaultMaterial = this.getDefaultMaterial ();
+            let defaultMaterialColor = this.params.getDefaultMaterialColor ();
+            let defaultMaterial = new OV.PhongMaterial ();
+            defaultMaterial.color = defaultMaterialColor;
             defaultMaterial.isDefault = true;
             this.defaultMaterialIndex = model.AddMaterial (defaultMaterial);
         }
@@ -178,9 +186,9 @@ OV.ModelFinalizer = class
     }
 };
 
-OV.FinalizeModel = function (model, getDefaultMaterial)
+OV.FinalizeModel = function (model, params)
 {
-    let finalizer = new OV.ModelFinalizer (getDefaultMaterial);
+    let finalizer = new OV.ModelFinalizer (params);
     finalizer.Finalize (model);
 };
 

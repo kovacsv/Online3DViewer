@@ -21,7 +21,7 @@ function CreateTestModel ()
         root.AddChildNode (node);
     }
 
-    OV.FinalizeModel (model, null);
+    OV.FinalizeModel (model);
     return model;
 }
 

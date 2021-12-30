@@ -102,7 +102,7 @@ function CreateTestModel ()
     meshWithPhysicalMaterial.AddTriangle (new OV.Triangle (0, 1, 2).SetMaterial (2));
     node3.AddMeshIndex (model.AddMesh (meshWithPhysicalMaterial));
 
-    OV.FinalizeModel (model, () => { return new OV.PhongMaterial (); });
+    OV.FinalizeModel (model);
     return model;
 }
 
@@ -230,7 +230,7 @@ describe ('Export-Import Vertex Colors Test', function () {
         mesh.AddVertexColor (new OV.Color (1.0, 0.0, 0.0));
         mesh.AddTriangle (new OV.Triangle (0, 1, 2).SetVertexColors (0, 0, 0));
         model.AddMeshToRootNode (mesh);
-        OV.FinalizeModel (model, () => { return new OV.PhongMaterial (); });
+        OV.FinalizeModel (model);
         ExportImport (model, OV.FileFormat.Binary, 'glb', (model2) => {
             assert.strictEqual (model2.MeshCount (), 1);
             let mesh2 = model2.GetMesh (0);

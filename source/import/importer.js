@@ -205,10 +205,8 @@ OV.Importer = class
         });
 
         importer.Import (mainFile.file.name, mainFile.file.extension, mainFile.file.content, {
-            getDefaultMaterial : () => {
-                let material = new OV.PhongMaterial ();
-                material.color = settings.defaultColor;
-                return material;
+            getDefaultMaterialColor : () => {
+                return settings.defaultColor;
             },
             getFileBuffer : (filePath) => {
                 return fileAccessor.GetFileBuffer (filePath);

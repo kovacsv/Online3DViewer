@@ -54,9 +54,8 @@ module.exports =
             return fileContent;
         });
         importer.Import (fileName, extension, content, {
-            getDefaultMaterial : function () {
-                var material = new OV.PhongMaterial ();
-                return material;
+            getDefaultMaterialColor () {
+                return new OV.Color (0, 0, 0);
             },
             getFileBuffer : function (filePath) {
                 return fileAccessor.GetFileBuffer (filePath);

@@ -37,7 +37,7 @@ describe ('Model Utils', function () {
         mesh2.AddTriangle (new OV.Triangle (0, 1, 2));
         model.AddMeshToRootNode (mesh2);
 
-        OV.FinalizeModel (model, function () { return new OV.PhongMaterial (); });
+        OV.FinalizeModel (model);
 
         let mesh1Bounds = OV.GetBoundingBox (model.GetMesh (0));
         assert (OV.CoordIsEqual3D (mesh1Bounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
