@@ -1,0 +1,67 @@
+{
+	"root" : 0,
+	"nodes" : [
+		{
+			"children" : [1, 2, 3]
+		},
+		{
+			"transformation" : {
+				"translation" : [0.0, 0.0, 0.0]
+			},
+			"mesh" : 0
+		},
+		{
+			"transformation" : {
+				"translation" : [2.0, 0.0, 0.0]
+			},
+			"mesh" : 1
+		},
+		{
+			"transformation" : {
+				"translation" : [4.0, 0.0, 0.0]
+			},
+			"mesh" : 2
+		}
+	],
+	"materials" : [
+		{
+			"name" : "Red",
+			"color" : [200, 0, 0]
+		},	
+		{
+			"name" : "Blue",
+			"color" : [0, 0, 200]
+		}
+	],
+	"meshes" : [
+		{
+			"name" : "Cube",
+			"type" : "cuboid",
+			"material" : 0,
+			"parameters" : {
+				"size_x" : 1.0,
+				"size_y" : 1.0,
+				"size_z" : 1.0
+			}
+		},
+		{
+			"name" : "Cube",
+			"type" : "cuboid",
+			"material" : 1,
+			"parameters" : {
+				"size_x" : 1.0,
+				"size_y" : 1.0,
+				"size_z" : 1.0
+			}
+		},		
+		{
+			"name" : "Cube",
+			"type" : "cuboid",
+			"parameters" : {
+				"size_x" : 1.0,
+				"size_y" : 1.0,
+				"size_z" : 1.0
+			}
+		}		
+	]
+}
