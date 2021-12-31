@@ -197,9 +197,6 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 	{
 		let mesh = model.GetMesh (meshInstanceId.meshIndex);
 		let triangleCount = mesh.TriangleCount ();
-		if (triangleCount === 0) {
-			return null;
-		}
 
 		let triangleIndices = [];
 		for (let i = 0; i < triangleCount; i++) {
@@ -312,7 +309,8 @@ OV.ConvertModelToThreeObject = function (model, params, output, callbacks)
 	function ConvertMesh (threeObject, model, meshInstanceId, modelThreeMaterials)
 	{
 		let mesh = model.GetMesh (meshInstanceId.meshIndex);
-		if (mesh.TriangleCount () > 0) {
+		let type = OV.GetMeshType (mesh);
+		if (type === OV.MeshType.TriangleMesh) {
 			let threeMesh = CreateThreeMesh (model, meshInstanceId, modelThreeMaterials);
 			threeObject.add (threeMesh);
 		}

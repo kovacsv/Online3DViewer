@@ -23,7 +23,8 @@ OV.ModelFinalizer = class
     {
         for (let i = 0; i < model.MeshCount (); i++) {
             let mesh = model.GetMesh (i);
-            if (mesh.TriangleCount () === 0) {
+            let type = OV.GetMeshType (mesh);
+            if (type === OV.MeshType.Empty) {
                 model.RemoveMesh (i);
                 i = i - 1;
                 continue;

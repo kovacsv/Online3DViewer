@@ -1,3 +1,17 @@
+OV.MeshType =
+{
+    Empty : 0,
+    TriangleMesh : 1
+};
+
+OV.GetMeshType = function (mesh)
+{
+    if (mesh.TriangleCount () > 0) {
+        return OV.MeshType.TriangleMesh;
+    }
+    return OV.MeshType.Empty;
+};
+
 OV.CalculateTriangleNormal = function (v0, v1, v2)
 {
     let v = OV.SubCoord3D (v1, v0);

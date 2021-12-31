@@ -2,7 +2,7 @@ OV.IsModelEmpty = function (model)
 {
     let isEmpty = true;
     model.EnumerateMeshInstances ((meshInstance) => {
-        if (meshInstance.TriangleCount () > 0) {
+        if (OV.GetMeshType (meshInstance) !== OV.MeshType.Empty) {
             isEmpty = false;
         }
     });
