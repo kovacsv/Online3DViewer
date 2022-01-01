@@ -18,6 +18,7 @@
 		"source/io/bufferutils.js",
 		"source/io/fileutils.js",
 		"source/io/externallibs.js",
+		"source/model/color.js",
 		"source/model/material.js",
 		"source/model/triangle.js",
 		"source/model/property.js",
