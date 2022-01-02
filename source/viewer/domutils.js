@@ -30,6 +30,20 @@ OV.GetDomElementInnerDimensions = function (element, outerWidth, outerHeight)
     };
 };
 
+OV.GetDomElementClientCoordinates = function (element, clientX, clientY)
+{
+    if (element.getBoundingClientRect) {
+        let clientRect = element.getBoundingClientRect ();
+        clientX -= clientRect.left;
+        clientY -= clientRect.top;
+    }
+    if (window.pageXOffset && window.pageYOffset) {
+        clientX += window.pageXOffset;
+        clientY += window.pageYOffset;
+    }
+    return (new OV.Coord2D (clientX, clientY));
+};
+
 OV.CreateDomElement = function (elementType, className, innerHTML)
 {
     let element = document.createElement (elementType);

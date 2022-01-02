@@ -1,17 +1,3 @@
-OV.GetClientCoordinates = function (canvas, clientX, clientY)
-{
-    if (canvas.getBoundingClientRect) {
-        let clientRect = canvas.getBoundingClientRect ();
-        clientX -= clientRect.left;
-        clientY -= clientRect.top;
-    }
-    if (window.pageXOffset && window.pageYOffset) {
-        clientX += window.pageXOffset;
-        clientY += window.pageYOffset;
-    }
-    return (new OV.Coord2D (clientX, clientY));
-};
-
 OV.Camera = class
 {
     constructor (eye, center, up)
@@ -101,7 +87,7 @@ OV.MouseInteraction = class
 
 	GetPositionFromEvent (canvas, ev)
 	{
-		return OV.GetClientCoordinates (canvas, ev.clientX, ev.clientY);
+		return OV.GetDomElementClientCoordinates (canvas, ev.clientX, ev.clientY);
 	}
 };
 
@@ -189,7 +175,7 @@ OV.TouchInteraction = class
 		let coord = null;
 		if (ev.touches.length !== 0) {
 			let touchEv = ev.touches[0];
-			coord = OV.GetClientCoordinates (canvas, touchEv.pageX, touchEv.pageY);
+			coord = OV.GetDomElementClientCoordinates (canvas, touchEv.pageX, touchEv.pageY);
 		}
 		return coord;
 	}
@@ -202,8 +188,8 @@ OV.TouchInteraction = class
 		let touchEv1 = ev.touches[0];
 		let touchEv2 = ev.touches[1];
 		let distance = OV.CoordDistance2D (
-			OV.GetClientCoordinates (canvas, touchEv1.pageX, touchEv1.pageY),
-			OV.GetClientCoordinates (canvas, touchEv2.pageX, touchEv2.pageY)
+			OV.GetDomElementClientCoordinates (canvas, touchEv1.pageX, touchEv1.pageY),
+			OV.GetDomElementClientCoordinates (canvas, touchEv2.pageX, touchEv2.pageY)
 		);
 		return distance;
 	}
@@ -407,7 +393,7 @@ OV.Navigation = class
 		this.mouse.Move (this.canvas, ev);
 		this.clickDetector.Move (this.mouse.GetPosition ());
 		if (this.onMouseMove) {
-			let mouseCoords = OV.GetClientCoordinates (this.canvas, ev.clientX, ev.clientY);
+			let mouseCoords = OV.GetDomElementClientCoordinates (this.canvas, ev.clientX, ev.clientY);
 			this.onMouseMove (mouseCoords);
 		}
 
@@ -609,7 +595,7 @@ OV.Navigation = class
 				x : clientX,
 				y : clientY
 			};
-			let localCoords = OV.GetClientCoordinates (this.canvas, clientX, clientY);
+			let localCoords = OV.GetDomElementClientCoordinates (this.canvas, clientX, clientY);
 			this.onContext (globalCoords, localCoords);
 		}
 	}
