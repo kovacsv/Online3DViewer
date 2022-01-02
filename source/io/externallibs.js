@@ -1,6 +1,5 @@
 OV.ExternalLibLocation = null;
-
-OV.LoadedExternalLibs = {};
+OV.LoadedExternalLibs = new Set ();
 
 OV.LoadExternalLibrary = function (libName)
 {
@@ -9,17 +8,17 @@ OV.LoadExternalLibrary = function (libName)
             reject ();
             return;
         }
-    
-        if (OV.LoadedExternalLibs[libName] !== undefined) {
+
+        if (OV.LoadedExternalLibs.has (libName)) {
             resolve ();
             return;
         }
-    
+
         let scriptElement = document.createElement ('script');
         scriptElement.type = 'text/javascript';
         scriptElement.src = OV.ExternalLibLocation + '/' + libName;
         scriptElement.onload = () => {
-            OV.LoadedExternalLibs[libName] = true;
+            OV.LoadedExternalLibs.add (libName);
             resolve ();
         };
         scriptElement.onerror = () => {

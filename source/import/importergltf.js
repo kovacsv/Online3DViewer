@@ -490,7 +490,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
     ResetContent ()
     {
         this.bufferContents = [];
-        this.imageIndexToTextureParams = {};
+        this.imageIndexToTextureParams = new Map ();
     }
 
     ImportContent (fileContent, onFinish)
@@ -725,8 +725,10 @@ OV.ImporterGltf = class extends OV.ImporterBase
         let gltfImageIndex = gltfTexture.source;
         let gltfImage = gltf.images[gltfImageIndex];
 
-        let textureParams = this.imageIndexToTextureParams[gltfImageIndex];
-        if (textureParams === undefined) {
+        let textureParams = null;
+        if (this.imageIndexToTextureParams.has (gltfImageIndex)) {
+            textureParams = this.imageIndexToTextureParams.get (gltfImageIndex);
+        } else {
             textureParams = {
                 name : null,
                 url : null,
@@ -757,7 +759,7 @@ OV.ImporterGltf = class extends OV.ImporterBase
                     textureParams.buffer = buffer;
                 }
             }
-            this.imageIndexToTextureParams[gltfImageIndex] = textureParams;
+            this.imageIndexToTextureParams.set (gltfImageIndex, textureParams);
         }
 
         texture.name = textureParams.name;

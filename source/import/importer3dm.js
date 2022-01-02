@@ -18,14 +18,14 @@ OV.Importer3dm = class extends OV.ImporterBase
 
 	ClearContent ()
 	{
-		this.instanceObjects = null;
-		this.instanceDefinitions = null;
+		this.instanceIdToObject = null;
+		this.instanceIdToDefinition = null;
 	}
 
     ResetContent ()
     {
-		this.instanceObjects = {};
-		this.instanceDefinitions = {};
+		this.instanceIdToObject = new Map ();
+		this.instanceIdToDefinition = new Map ();
     }
 
     ImportContent (fileContent, onFinish)
@@ -73,13 +73,13 @@ OV.Importer3dm = class extends OV.ImporterBase
 			let rhinoObject = rhinoObjects.get (i);
 			let rhinoAttributes = rhinoObject.attributes ();
 			if (rhinoAttributes.isInstanceDefinitionObject) {
-				this.instanceObjects[rhinoAttributes.id] = rhinoObject;
+				this.instanceIdToObject.set (rhinoAttributes.id, rhinoObject);
 			}
 		}
 		let rhinoInstanceDefinitions = rhinoDoc.instanceDefinitions ();
 		for (let i = 0; i < rhinoInstanceDefinitions.count (); i++) {
 			let rhinoInstanceDefinition = rhinoInstanceDefinitions.get (i);
-			this.instanceDefinitions[rhinoInstanceDefinition.id] = rhinoInstanceDefinition;
+			this.instanceIdToDefinition.set (rhinoInstanceDefinition.id, rhinoInstanceDefinition);
 		}
 	}
 
@@ -145,13 +145,13 @@ OV.Importer3dm = class extends OV.ImporterBase
 			deleteMesh = true;
 		} else if (objectType === this.rhino.ObjectType.InstanceReference) {
 			let parentDefinitionId = rhinoGeometry.parentIdefId;
-			let instanceDefinition = this.instanceDefinitions[parentDefinitionId];
-			if (instanceDefinition !== undefined) {
+			if (this.instanceIdToDefinition.has (parentDefinitionId)) {
+				let instanceDefinition = this.instanceIdToDefinition.get (parentDefinitionId);
 				let instanceObjectIds = instanceDefinition.getObjectIds ();
 				for (let i = 0; i < instanceObjectIds.length; i++) {
 					let instanceObjectId = instanceObjectIds[i];
-					let instanceObject = this.instanceObjects[instanceObjectId];
-					if (instanceObject !== undefined) {
+					if (this.instanceIdToObject.has (instanceObjectId)) {
+						let instanceObject = this.instanceIdToObject.get (instanceObjectId);
 						rhinoInstanceReferences.push (rhinoObject);
 						this.ImportRhinoGeometryObject (rhinoDoc, instanceObject, rhinoInstanceReferences);
 						rhinoInstanceReferences.pop ();

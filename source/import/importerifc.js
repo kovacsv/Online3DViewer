@@ -24,8 +24,8 @@ OV.ImporterIfc = class extends OV.ImporterBase
 
     ResetContent ()
     {
-        this.materialNameToIndex = {};
-        this.expressIDToMesh = {};
+        this.materialNameToIndex = new Map ();
+        this.expressIDToMesh = new Map ();
     }
 
     ImportContent (fileContent, onFinish)
@@ -103,7 +103,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
             vertexOffset += ifcVertices.length / 6;
         }
 
-        this.expressIDToMesh[ifcMesh.expressID] = mesh;
+        this.expressIDToMesh.set (ifcMesh.expressID, mesh);
         this.model.AddMeshToRootNode (mesh);
     }
 
@@ -117,14 +117,17 @@ OV.ImporterIfc = class extends OV.ImporterBase
                 continue;
             }
             rel.RelatedObjects.forEach ((objectRelID) => {
-                let element = this.expressIDToMesh[objectRelID.value];
-                if (element === undefined) {
+                let element = null;
+                if (this.expressIDToMesh.has (objectRelID.value)) {
+                    element = this.expressIDToMesh.get (objectRelID.value);
+                } else {
                     let propSetOwner = this.ifc.GetLine (modelID, objectRelID.value, true);
                     if (propSetOwner.type === WebIFC.IFCBUILDING) {
                         element = this.model;
-                    } else {
-                        return;
                     }
+                }
+                if (element === null) {
+                    return;
                 }
                 let propSetDef = rel.RelatingPropertyDefinition;
                 let propSet = this.ifc.GetLine (modelID, propSetDef.value, true);
@@ -203,17 +206,18 @@ OV.ImporterIfc = class extends OV.ImporterBase
             OV.IntegerToHexString (color.b) +
             OV.IntegerToHexString (parseInt (ifcColor.w * 255.0, 10));
 
-        let materialIndex = this.materialNameToIndex[materialName];
-        if (materialIndex === undefined) {
+        if (this.materialNameToIndex.has (materialName)) {
+            return this.materialNameToIndex.get (materialName);
+        } else {
 			let material = new OV.PhongMaterial ();
             material.name = materialName;
 			material.color = color;
             material.opacity = ifcColor.w;
             OV.UpdateMaterialTransparency (material);
-            materialIndex = this.model.AddMaterial (material);
-            this.materialNameToIndex[materialName] = materialIndex;
+            let materialIndex = this.model.AddMaterial (material);
+            this.materialNameToIndex.set (materialName, materialIndex);
+            return materialIndex;
         }
-        return materialIndex;
     }
 
     GetIFCString (ifcString)

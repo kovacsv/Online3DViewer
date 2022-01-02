@@ -44,7 +44,7 @@ OV.Topology = class
         this.edges = [];
         this.triangleEdges = [];
         this.triangles = [];
-        this.edgeStartToEndVertexMap = {};
+        this.edgeStartToEndVertexMap = new Map ();
     }
 
     AddVertex ()
@@ -114,11 +114,11 @@ OV.Topology = class
 
     AddEdge (startVertex, endVertex)
     {
-        if (this.edgeStartToEndVertexMap[startVertex] === undefined) {
-            this.edgeStartToEndVertexMap[startVertex] = [];
+        if (!this.edgeStartToEndVertexMap.has (startVertex)) {
+            this.edgeStartToEndVertexMap.set (startVertex, []);
         }
-        
-        let endVertices = this.edgeStartToEndVertexMap[startVertex];
+
+        let endVertices = this.edgeStartToEndVertexMap.get (startVertex);
         for (let i = 0; i < endVertices.length; i++) {
             let endVertexItem = endVertices[i];
             if (endVertexItem.endVertex === endVertex) {

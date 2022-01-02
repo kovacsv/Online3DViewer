@@ -97,7 +97,7 @@ OV.PlyMaterialHandler = class
     constructor (model)
     {
         this.model = model;
-        this.colorToMaterial = {};
+        this.colorToMaterial = new Map ();
     }
 
     GetMaterialIndexByColor (color)
@@ -108,18 +108,18 @@ OV.PlyMaterialHandler = class
             OV.IntegerToHexString (color[2]) +
             OV.IntegerToHexString (color[3]);
 
-        let materialIndex = this.colorToMaterial[materialName];
-        if (materialIndex === undefined) {
+        if (this.colorToMaterial.has (materialName)) {
+            return this.colorToMaterial.get (materialName);
+        } else {
             let material = new OV.PhongMaterial ();
             material.name = materialName;
             material.color = new OV.Color (color[0], color[1], color[2]);
             material.opacity = color[3] / 255.0;
             OV.UpdateMaterialTransparency (material);
-            materialIndex = this.model.AddMaterial (material);
-            this.colorToMaterial[materialName] = materialIndex;
+            let materialIndex = this.model.AddMaterial (material);
+            this.colorToMaterial.set (materialName, materialIndex);
+            return materialIndex;
         }
-
-        return materialIndex;
     }
 };
 

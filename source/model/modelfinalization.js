@@ -51,7 +51,7 @@ OV.ModelFinalizer = class
                 }
 
                 let averageNormals = [];
-                let neigTriangles = vertexToTriangles[vertexIndex];
+                let neigTriangles = vertexToTriangles.get (vertexIndex);
                 for (let i = 0; i < neigTriangles.length; i++) {
                     let neigIndex = neigTriangles[i];
                     let neigTriangle = mesh.GetTriangle (neigIndex);
@@ -73,10 +73,10 @@ OV.ModelFinalizer = class
             }
 
             let triangleNormals = [];
-            let vertexToTriangles = {};
+            let vertexToTriangles = new Map ();
 
             for (let vertexIndex = 0; vertexIndex < mesh.VertexCount (); vertexIndex++) {
-                vertexToTriangles[vertexIndex] = [];
+                vertexToTriangles.set (vertexIndex, []);
             }
 
             for (let triangleIndex = 0; triangleIndex < mesh.TriangleCount (); triangleIndex++) {
@@ -86,9 +86,9 @@ OV.ModelFinalizer = class
                 let v2 = mesh.GetVertex (triangle.v2);
                 let normal = OV.CalculateTriangleNormal (v0, v1, v2);
                 triangleNormals.push (normal);
-                vertexToTriangles[triangle.v0].push (triangleIndex);
-                vertexToTriangles[triangle.v1].push (triangleIndex);
-                vertexToTriangles[triangle.v2].push (triangleIndex);
+                vertexToTriangles.get (triangle.v0).push (triangleIndex);
+                vertexToTriangles.get (triangle.v1).push (triangleIndex);
+                vertexToTriangles.get (triangle.v2).push (triangleIndex);
             }
 
             for (let triangleIndex = 0; triangleIndex < mesh.TriangleCount (); triangleIndex++) {
