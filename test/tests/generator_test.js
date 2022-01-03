@@ -10,10 +10,7 @@ describe ('Generator', function () {
     it ('Cuboid with Material', function () {
         const params = new OV.GeneratorParams ().SetMaterial (1);
         const cuboid = OV.GenerateCuboid (params, 1.0, 1.0, 1.0);
-        for (let i = 0; i < cuboid.TriangleCount (); i++) {
-            const triangle = cuboid.GetTriangle (i);
-            assert.strictEqual (triangle.mat, 1);
-        }
+        assert.strictEqual (cuboid.GetMaterial (), 1);
     });
 
     it ('Cylinder with Default Parameters', function () {
