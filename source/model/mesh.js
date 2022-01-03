@@ -133,4 +133,38 @@ OV.Mesh = class extends OV.ModelObject3D
             onTriangleVertices (v0, v1, v2);
         }
     }
+
+    Clone ()
+    {
+        let cloned = new OV.Mesh ();
+
+        cloned.SetName (this.GetName ());
+
+        for (let i = 0; i < this.VertexCount (); i++) {
+            let vertex = this.GetVertex (i);
+            cloned.AddVertex (vertex.Clone ());
+        }
+
+        for (let i = 0; i < this.VertexColorCount (); i++) {
+            let color = this.GetVertexColor (i);
+            cloned.AddVertexColor (color.Clone ());
+        }
+
+        for (let i = 0; i < this.NormalCount (); i++) {
+            let normal = this.GetNormal (i);
+            cloned.AddNormal (normal.Clone ());
+        }
+
+        for (let i = 0; i < this.TextureUVCount (); i++) {
+            let uv = this.GetTextureUV (i);
+            cloned.AddTextureUV (uv.Clone ());
+        }
+
+        for (let i = 0; i < this.TriangleCount (); i++) {
+            let triangle = this.GetTriangle (i);
+            cloned.AddTriangle (triangle.Clone ());
+        }
+
+        return cloned;
+    }
 };

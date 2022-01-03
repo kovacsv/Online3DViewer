@@ -58,37 +58,3 @@ OV.FlipMeshTrianglesOrientation = function (mesh)
         triangle.v2 = tmp;
     }
 };
-
-OV.CloneMesh = function (mesh)
-{
-    let cloned = new OV.Mesh ();
-
-    cloned.SetName (mesh.GetName ());
-
-    for (let i = 0; i < mesh.VertexCount (); i++) {
-        let vertex = mesh.GetVertex (i);
-        cloned.AddVertex (vertex.Clone ());
-    }
-
-    for (let i = 0; i < mesh.VertexColorCount (); i++) {
-        let color = mesh.GetVertexColor (i);
-        cloned.AddVertexColor (color.Clone ());
-    }
-
-    for (let i = 0; i < mesh.NormalCount (); i++) {
-        let normal = mesh.GetNormal (i);
-        cloned.AddNormal (normal.Clone ());
-    }
-
-    for (let i = 0; i < mesh.TextureUVCount (); i++) {
-        let uv = mesh.GetTextureUV (i);
-        cloned.AddTextureUV (uv.Clone ());
-    }
-
-    for (let i = 0; i < mesh.TriangleCount (); i++) {
-        let triangle = mesh.GetTriangle (i);
-        cloned.AddTriangle (triangle.Clone ());
-    }
-
-    return cloned;
-};

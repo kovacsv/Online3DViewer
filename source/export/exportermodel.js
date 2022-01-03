@@ -74,7 +74,7 @@ OV.ExporterModel = class
             }
 
             let mesh = meshInstance.GetMesh ();
-            let transformed = OV.CloneMesh (mesh);
+            let transformed = mesh.Clone ();
             if (!transformation.IsIdentity ()) {
                 OV.TransformMesh (transformed, transformation);
             }

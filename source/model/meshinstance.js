@@ -113,7 +113,7 @@ OV.MeshInstance = class extends OV.ModelObject3D
     GetTransformedMesh ()
     {
         let transformation = this.node.GetWorldTransformation ();
-        let transformed = OV.CloneMesh (this.mesh);
+        let transformed = this.mesh.Clone ();
         OV.TransformMesh (transformed, transformation);
         return transformed;
     }
