@@ -28,9 +28,6 @@ OV.Generator = class
         if (this.params.name !== null) {
             this.mesh.SetName (this.params.name);
         }
-        if (this.params.material !== null) {
-            this.mesh.SetMaterial (this.params.material);
-        }
         this.curve = null;
     }
 
@@ -68,6 +65,9 @@ OV.Generator = class
     AddTriangle (v0, v1, v2)
     {
         let triangle = new OV.Triangle (v0, v1, v2);
+        if (this.params.material !== null) {
+            triangle.mat = this.params.material;
+        }
         if (this.curve !== null) {
             triangle.SetCurve (this.curve);
         }

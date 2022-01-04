@@ -8,7 +8,6 @@ OV.Mesh = class extends OV.ModelObject3D
         this.normals = [];
         this.uvs = [];
         this.triangles = [];
-        this.mat = null;
     }
 
     VertexCount ()
@@ -111,16 +110,6 @@ OV.Mesh = class extends OV.ModelObject3D
         return this.triangles[index];
     }
 
-    SetMaterial (mat)
-    {
-        this.mat = mat;
-    }
-
-    GetMaterial ()
-    {
-        return this.mat;
-    }
-
     EnumerateVertices (onVertex)
     {
         for (const vertex of this.vertices) {
@@ -175,8 +164,6 @@ OV.Mesh = class extends OV.ModelObject3D
             let triangle = this.GetTriangle (i);
             cloned.AddTriangle (triangle.Clone ());
         }
-
-        cloned.SetMaterial (this.GetMaterial ());
 
         return cloned;
     }

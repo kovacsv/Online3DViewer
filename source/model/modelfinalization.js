@@ -111,12 +111,7 @@ OV.ModelFinalizer = class
             this.FinalizeTriangle (mesh, triangle, meshStatus);
 
             if (triangle.mat === null) {
-                let meshMaterial = mesh.GetMaterial ();
-                if (meshMaterial !== null) {
-                    triangle.mat = meshMaterial;
-                } else {
-                    triangle.mat = this.GetDefaultMaterialIndex (model);
-                }
+                triangle.mat = this.GetDefaultMaterialIndex (model);
             }
 
             if (triangle.HasVertexColors ()) {
@@ -336,13 +331,6 @@ OV.CheckModel = function (model)
         for (let i = 0; i < mesh.TriangleCount (); i++) {
             let triangle = mesh.GetTriangle (i);
             if (!CheckTriangle (model, mesh, triangle)) {
-                return false;
-            }
-        }
-
-        let meshMaterial = mesh.GetMaterial ();
-        if (meshMaterial !== null) {
-            if (!IsCorrectIndex (meshMaterial, model.MaterialCount ())) {
                 return false;
             }
         }
