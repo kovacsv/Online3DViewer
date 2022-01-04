@@ -254,7 +254,7 @@ OV.ImporterPly = class extends OV.ImporterBase
                 return;
             }
 
-            if (foundFace < face.count) {
+            if (face !== null && foundFace < face.count) {
                 if (parameters.length >= 4) {
                     let vertexCount = parseInt (parameters[0], 10);
                     if (parameters.length < vertexCount + 1) {

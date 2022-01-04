@@ -1,4 +1,3 @@
-
 OV.SetThreeMeshPolygonOffset = function (mesh, offset)
 {
     function SetMaterialsPolygonOffset (materials, offset)
