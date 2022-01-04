@@ -91,6 +91,12 @@ OV.Matrix = class
         return this;
     }
 
+    CreateRotationAxisAngle (axis, angle)
+    {
+        let quaternion = OV.QuaternionFromAxisAngle (axis, angle);
+        return this.CreateRotation (quaternion.x, quaternion.y, quaternion.z, quaternion.w);
+    }
+
     CreateScale (x, y, z)
     {
         this.matrix = [

@@ -25,6 +25,20 @@ OV.ExporterUI = class
     {
 
     }
+
+    AddCheckbox (parentDiv, id, name, isChecked)
+    {
+        let line = OV.AddDiv (parentDiv, 'ov_dialog_row');
+        return OV.AddCheckbox (line, id, name, isChecked);
+    }
+
+    AddSelect (parametersDiv, name, values, defaultIndex)
+    {
+        let parameterRow = OV.AddDiv (parametersDiv, 'ov_dialog_row');
+        OV.AddDiv (parameterRow, 'ov_dialog_row_name', name);
+        let parameterValueDiv = OV.AddDiv (parameterRow, 'ov_dialog_row_value');
+        return OV.AddSelect (parameterValueDiv, values, defaultIndex);
+    }
 };
 
 OV.ModelExporterUI = class extends OV.ExporterUI
@@ -34,7 +48,8 @@ OV.ModelExporterUI = class extends OV.ExporterUI
         super (name);
         this.format = format;
         this.extension = extension;
-        this.visibleOnlyCheckbox = null;
+        this.visibleOnlySelect = null;
+        this.rotationSelect = null;
     }
 
     GetType ()
@@ -44,22 +59,25 @@ OV.ModelExporterUI = class extends OV.ExporterUI
 
     GenerateParametersUI (parametersDiv)
     {
-        function AddCheckbox (parentDiv, id, name, isChecked)
-        {
-            let line = OV.AddDiv (parentDiv, 'ov_dialog_row');
-            return OV.AddCheckbox (line, id, name, isChecked);
-        }
-
-        this.visibleOnlyCheckbox = AddCheckbox (parametersDiv, 'export_visible_only', 'Export visible meshes only', true);
+        this.visibleOnlySelect = this.AddSelect (parametersDiv, 'Scope', ['Entire Model', 'Visible Only'], 1);
+        this.rotationSelect = this.AddSelect (parametersDiv, 'Rotation', ['No Rotation', '-90 Degrees', '90 Degrees'], 0);
     }
 
     ExportModel (model, callbacks)
     {
         let settings = new OV.ExporterSettings ();
-        if (this.visibleOnlyCheckbox.checked) {
+        if (this.visibleOnlySelect.selectedIndex === 1) {
             settings.isMeshVisible = (meshInstanceId) => {
                 return callbacks.isMeshVisible (meshInstanceId);
             };
+        }
+
+        if (this.rotationSelect.selectedIndex === 1) {
+            let matrix = new OV.Matrix ().CreateRotationAxisAngle (new OV.Coord3D (1.0, 0.0, 0.0), -Math.PI / 2.0);
+            settings.transformation.SetMatrix (matrix);
+        } else if (this.rotationSelect.selectedIndex === 2) {
+            let matrix = new OV.Matrix ().CreateRotationAxisAngle (new OV.Coord3D (1.0, 0.0, 0.0), Math.PI / 2.0);
+            settings.transformation.SetMatrix (matrix);
         }
 
         let exporterModel = new OV.ExporterModel (model, settings);
@@ -131,16 +149,8 @@ OV.ImageExporterUI = class extends OV.ExporterUI
 
     GenerateParametersUI (parametersDiv)
     {
-        function AddParameterSelect (parametersDiv, name, values, defaultIndex)
-        {
-            let parameterRow = OV.AddDiv (parametersDiv, 'ov_dialog_row');
-            OV.AddDiv (parameterRow, 'ov_dialog_row_name', name);
-            let parameterValueDiv = OV.AddDiv (parameterRow, 'ov_dialog_row_value');
-            return OV.AddSelect (parameterValueDiv, values, defaultIndex);
-        }
-
         let sizeNames = this.sizes.map (size => size.name);
-        this.sizeSelect = AddParameterSelect (parametersDiv, 'Image size', sizeNames, 1);
+        this.sizeSelect = this.AddSelect (parametersDiv, 'Image size', sizeNames, 1);
     }
 
     ExportImage (viewer)
