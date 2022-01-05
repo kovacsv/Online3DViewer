@@ -10,6 +10,11 @@ OV.Object3D = class
         return 0;
     }
 
+    VertexColorCount ()
+    {
+        return 0;
+    }
+
     NormalCount ()
     {
         return 0;

@@ -41,6 +41,15 @@ OV.Model = class extends OV.ModelObject3D
         return count;
     }
 
+    VertexColorCount ()
+    {
+        let count = 0;
+        this.EnumerateMeshInstances ((meshInstance) => {
+            count += meshInstance.VertexColorCount ();
+        });
+        return count;
+    }
+
     NormalCount ()
     {
         let count = 0;

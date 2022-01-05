@@ -16,17 +16,45 @@ OV.ModelFinalizer = class
         this.Reset ();
 
         this.FinalizeMeshes (model);
+        this.FinalizeMaterials (model);
         this.FinalizeNodes (model);
+    }
+
+    FinalizeMaterials (model)
+    {
+        let hasVertexColors = (model.VertexColorCount () > 0);
+        if (!hasVertexColors) {
+            return;
+        }
+
+        let materialHasVertexColors = new Map ();
+        for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
+            let mesh = model.GetMesh (meshIndex);
+            for (let triangleIndex = 0; triangleIndex < mesh.TriangleCount (); triangleIndex++) {
+                let triangle = mesh.GetTriangle (triangleIndex);
+                let hasVertexColors = triangle.HasVertexColors ();
+                if (!materialHasVertexColors.has (triangle.mat)) {
+                    materialHasVertexColors.set (triangle.mat, hasVertexColors);
+                } else if (!hasVertexColors) {
+                    materialHasVertexColors.set (triangle.mat, false);
+                }
+            }
+        }
+
+        for (let [materialIndex, hasVertexColors] of materialHasVertexColors) {
+            let material = model.GetMaterial (materialIndex);
+            material.vertexColors = hasVertexColors;
+        }
     }
 
     FinalizeMeshes (model)
     {
-        for (let i = 0; i < model.MeshCount (); i++) {
-            let mesh = model.GetMesh (i);
+        for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
+            let mesh = model.GetMesh (meshIndex);
             let type = OV.GetMeshType (mesh);
             if (type === OV.MeshType.Empty) {
-                model.RemoveMesh (i);
-                i = i - 1;
+                model.RemoveMesh (meshIndex);
+                meshIndex = meshIndex - 1;
                 continue;
             }
             this.FinalizeMesh (model, mesh);
@@ -112,11 +140,6 @@ OV.ModelFinalizer = class
 
             if (triangle.mat === null) {
                 triangle.mat = this.GetDefaultMaterialIndex (model);
-            }
-
-            if (triangle.HasVertexColors ()) {
-                let material = model.GetMaterial (triangle.mat);
-                material.vertexColors = true;
             }
         }
 

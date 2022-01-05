@@ -47,6 +47,11 @@ OV.MeshInstance = class extends OV.ModelObject3D
         return this.mesh.VertexCount ();
     }
 
+    VertexColorCount ()
+    {
+        return this.mesh.VertexColorCount ();
+    }
+
     NormalCount ()
     {
         return this.mesh.NormalCount ();
