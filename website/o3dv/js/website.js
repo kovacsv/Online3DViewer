@@ -32,6 +32,7 @@ OV.Website = class
     {
         this.settings.LoadFromCookies (this.cookieHandler);
         this.SwitchTheme (this.settings.themeId, false);
+        this.eventHandler.HandleEvent ('theme_on_load', this.settings.themeId === OV.Theme.Light ? 'light' : 'dark');
 
         this.InitViewer ();
         this.InitMeasureTool ();
@@ -260,7 +261,7 @@ OV.Website = class
             if (defaultColor !== null) {
                 importSettings.defaultColor = defaultColor;
             }
-            this.eventHandler.HandleEvent ('model_load_started', { source : 'hash' });
+            this.eventHandler.HandleEvent ('model_load_started', 'hash');
             this.LoadModelFromUrlList (urls, importSettings);
         } else {
             this.ClearModel ();
@@ -364,7 +365,7 @@ OV.Website = class
                 this.SetUIState (OV.WebsiteUIState.Model);
                 this.OnModelLoaded (importResult, threeObject);
                 let importedExtension = OV.GetFileExtension (importResult.mainFile);
-                this.eventHandler.HandleEvent ('model_loaded', { extension : importedExtension });
+                this.eventHandler.HandleEvent ('model_loaded', importedExtension);
             },
             onRender : () =>
             {
@@ -373,24 +374,20 @@ OV.Website = class
             onError : (importError) =>
             {
                 this.SetUIState (OV.WebsiteUIState.Intro);
-                let reason = 'unknown';
-                if (importError.code === OV.ImportErrorCode.NoImportableFile) {
-                    reason = 'no_importable_file';
-                } else if (importError.code === OV.ImportErrorCode.FailedToLoadFile) {
-                    reason = 'failed_to_load_file';
-                } else if (importError.code === OV.ImportErrorCode.ImportFailed) {
-                    reason = 'import_failed';
-                }
                 let extensions = [];
                 let importer = this.modelLoaderUI.GetImporter ();
                 let fileList = importer.GetFileList ().GetFiles ();
                 for (let i = 0; i < fileList.length; i++) {
                     extensions.push (fileList[i].extension);
                 }
-                this.eventHandler.HandleEvent ('model_load_failed', {
-                    reason : reason,
-                    extensions : extensions
-                });
+                let extensionsStr = extensions.join (',');
+                if (importError.code === OV.ImportErrorCode.NoImportableFile) {
+                    this.eventHandler.HandleEvent ('no_importable_file', extensionsStr);
+                } else if (importError.code === OV.ImportErrorCode.FailedToLoadFile) {
+                    this.eventHandler.HandleEvent ('failed_to_load_file', extensionsStr);
+                } else if (importError.code === OV.ImportErrorCode.ImportFailed) {
+                    this.eventHandler.HandleEvent ('import_failed', extensionsStr);
+                }
             }
         });
     }
@@ -457,10 +454,9 @@ OV.Website = class
 
     InitToolbar ()
     {
-        function AddButton (toolbar, eventHandler, imageName, imageTitle, classNames, onClick)
+        function AddButton (toolbar, imageName, imageTitle, classNames, onClick)
         {
             let button = toolbar.AddImageButton (imageName, imageTitle, () => {
-                eventHandler.HandleEvent ('toolbar_clicked', { item : imageName });
                 onClick ();
             });
             for (let className of classNames) {
@@ -469,7 +465,7 @@ OV.Website = class
             return button;
         }
 
-        function AddRadioButton (toolbar, eventHandler, imageNames, imageTitles, selectedIndex, classNames, onClick)
+        function AddRadioButton (toolbar, imageNames, imageTitles, selectedIndex, classNames, onClick)
         {
             let imageData = [];
             for (let i = 0; i < imageNames.length; i++) {
@@ -481,7 +477,6 @@ OV.Website = class
                 });
             }
             let buttons = toolbar.AddImageRadioButton (imageData, selectedIndex, (buttonIndex) => {
-                eventHandler.HandleEvent ('toolbar_clicked', { item : imageNames[buttonIndex] });
                 onClick (buttonIndex);
             });
             for (let className of classNames) {
@@ -503,10 +498,10 @@ OV.Website = class
 
         let importer = this.modelLoaderUI.GetImporter ();
 
-        AddButton (this.toolbar, this.eventHandler, 'open', 'Open model from your device', [], () => {
+        AddButton (this.toolbar, 'open', 'Open model from your device', [], () => {
             this.OpenFileBrowserDialog ();
         });
-        AddButton (this.toolbar, this.eventHandler, 'open_url', 'Open model from a url', [], () => {
+        AddButton (this.toolbar, 'open_url', 'Open model from a url', [], () => {
             this.dialog = OV.ShowOpenUrlDialog ((urls) => {
                 if (urls.length > 0) {
                     this.hashHandler.SetModelFilesToHash (urls);
@@ -514,20 +509,20 @@ OV.Website = class
             });
         });
         AddSeparator (this.toolbar, ['only_on_model']);
-        AddButton (this.toolbar, this.eventHandler, 'fit', 'Fit model to window', ['only_on_model'], () => {
+        AddButton (this.toolbar, 'fit', 'Fit model to window', ['only_on_model'], () => {
             this.FitModelToWindow (false);
         });
-        AddButton (this.toolbar, this.eventHandler, 'up_y', 'Set Y axis as up vector', ['only_on_model'], () => {
+        AddButton (this.toolbar, 'up_y', 'Set Y axis as up vector', ['only_on_model'], () => {
             this.viewer.SetUpVector (OV.Direction.Y, true);
         });
-        AddButton (this.toolbar, this.eventHandler, 'up_z', 'Set Z axis as up vector', ['only_on_model'], () => {
+        AddButton (this.toolbar, 'up_z', 'Set Z axis as up vector', ['only_on_model'], () => {
             this.viewer.SetUpVector (OV.Direction.Z, true);
         });
-        AddButton (this.toolbar, this.eventHandler, 'flip', 'Flip up vector', ['only_on_model'], () => {
+        AddButton (this.toolbar, 'flip', 'Flip up vector', ['only_on_model'], () => {
             this.viewer.FlipUpVector ();
         });
         AddSeparator (this.toolbar, ['only_on_model']);
-        AddRadioButton (this.toolbar, this.eventHandler, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, ['only_on_model'], (buttonIndex) => {
+        AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, ['only_on_model'], (buttonIndex) => {
             if (buttonIndex === 0) {
                 this.viewer.SetFixUpVector (true);
             } else if (buttonIndex === 1) {
@@ -535,7 +530,7 @@ OV.Website = class
             }
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddButton (this.toolbar, this.eventHandler, 'export', 'Export model', ['only_full_width', 'only_on_model'], () => {
+        AddButton (this.toolbar, 'export', 'Export model', ['only_full_width', 'only_on_model'], () => {
             let exportDialog = new OV.ExportDialog ({
                 isMeshVisible : (meshInstanceId) => {
                     return this.navigator.IsMeshVisible (meshInstanceId);
@@ -543,16 +538,16 @@ OV.Website = class
                 onDialog : (dialog) => {
                     this.dialog = dialog;
                 }
-            });
+            }, this.eventHandler);
             exportDialog.Show (this.model, this.viewer);
         });
-        AddButton (this.toolbar, this.eventHandler, 'share', 'Share model', ['only_full_width', 'only_on_model'], () => {
-            this.dialog = OV.ShowSharingDialog (importer, this.settings, this.viewer.GetCamera ());
+        AddButton (this.toolbar, 'share', 'Share model', ['only_full_width', 'only_on_model'], () => {
+            this.dialog = OV.ShowSharingDialog (importer.GetFileList (), this.settings, this.viewer.GetCamera (), this.eventHandler);
         });
 
         this.parameters.fileInput.addEventListener ('change', (ev) => {
             if (ev.target.files.length > 0) {
-                this.eventHandler.HandleEvent ('model_load_started', { source : 'open_file' });
+                this.eventHandler.HandleEvent ('model_load_started', 'open_file');
                 this.LoadModelFromFileList (ev.target.files);
             }
         });
@@ -575,7 +570,7 @@ OV.Website = class
             ev.preventDefault ();
             OV.GetFilesFromDataTransfer (ev.dataTransfer, (files) => {
                 if (files.length > 0) {
-                    this.eventHandler.HandleEvent ('model_load_started', { source : 'drop' });
+                    this.eventHandler.HandleEvent ('model_load_started', 'drop');
                     this.LoadModelFromFileList (files);
                 }
             });
@@ -602,9 +597,11 @@ OV.Website = class
                 this.UpdateGridDisplay ();
             },
             onEdgeDisplayChange : () => {
+                this.eventHandler.HandleEvent ('edge_display_changed', this.settings.showEdges ? 'on' : 'off');
                 this.UpdateEdgeDisplay ();
             },
             onThemeChange : () => {
+                this.eventHandler.HandleEvent ('theme_changed', this.settings.themeId === OV.Theme.Light ? 'light' : 'dark');
                 this.SwitchTheme (this.settings.themeId, true);
             },
             onMeasureToolActivedChange : (isActivated) => {

@@ -1,4 +1,4 @@
-OV.ShowSharingDialog = function (importer, settings, camera)
+OV.ShowSharingDialog = function (fileList, settings, camera, eventHandler)
 {
     function AddCheckboxLine (parentDiv, text, id, onChange)
     {
@@ -53,23 +53,25 @@ OV.ShowSharingDialog = function (importer, settings, camera)
         return input;
     }
 
-    function AddSharingLinkTab (parentDiv, sharingLinkParams)
+    function AddSharingLinkTab (parentDiv, sharingLinkParams, eventHandler)
     {
         let section = OV.AddDiv (parentDiv, 'ov_dialog_section');
         OV.AddDiv (section, 'ov_dialog_inner_title', 'Sharing Link');
         let sharingLinkInput = AddCopyableTextInput (section, () => {
+            eventHandler.HandleEvent ('model_shared', 'sharing_link');
             return GetSharingLink (sharingLinkParams);
         });
         sharingLinkInput.value = GetSharingLink (sharingLinkParams);
     }
 
-    function AddEmbeddingCodeTab (parentDiv, settings, embeddingCodeParams)
+    function AddEmbeddingCodeTab (parentDiv, settings, embeddingCodeParams, eventHandler)
     {
         let section = OV.AddDiv (parentDiv, 'ov_dialog_section');
         section.style.marginTop = '20px';
         OV.AddDiv (section, 'ov_dialog_inner_title', 'Embedding Code');
         let optionsSection = OV.AddDiv (section, 'ov_dialog_section');
         let embeddingCodeInput = AddCopyableTextInput (section, () => {
+            eventHandler.HandleEvent ('model_shared', 'embedding_code');
             return GetEmbeddingCode (embeddingCodeParams);
         });
         AddCheckboxLine (optionsSection, 'Use current camera position', 'embed_camera', (checked) => {
@@ -96,7 +98,7 @@ OV.ShowSharingDialog = function (importer, settings, camera)
         embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
     }
 
-    if (!importer.GetFileList ().IsOnlyUrlSource ()) {
+    if (!fileList.IsOnlyUrlSource ()) {
         return OV.ShowMessageDialog (
             'Sharing Failed',
             'Sharing works only if you load files by url. Please upload your model files to a web server, open them by url, and try embedding again.',
@@ -104,7 +106,7 @@ OV.ShowSharingDialog = function (importer, settings, camera)
         );
     }
 
-    let files = importer.GetFileList ().GetFiles ();
+    let files = fileList.GetFiles ();
     let modelFiles = [];
     for (let fileIndex = 0; fileIndex < files.length; fileIndex++) {
         let file = files[fileIndex];
@@ -139,8 +141,8 @@ OV.ShowSharingDialog = function (importer, settings, camera)
         }
     ]);
 
-    AddSharingLinkTab (contentDiv, sharingLinkParams);
-    AddEmbeddingCodeTab (contentDiv, settings, embeddingCodeParams);
+    AddSharingLinkTab (contentDiv, sharingLinkParams, eventHandler);
+    AddEmbeddingCodeTab (contentDiv, settings, embeddingCodeParams, eventHandler);
 
     dialog.Show ();
     return dialog;

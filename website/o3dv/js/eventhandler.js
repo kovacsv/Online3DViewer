@@ -5,11 +5,11 @@ OV.EventHandler = class
         this.eventHandler = eventHandler;
     }
 
-    HandleEvent (name, parameters)
+    HandleEvent (eventName, eventData)
     {
         if (this.eventHandler === undefined || this.eventHandler === null) {
             return;
         }
-        this.eventHandler (name, parameters);
+        this.eventHandler (eventName, eventData);
     }
 };

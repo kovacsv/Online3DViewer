@@ -2,213 +2,221 @@
 <html>
 
 <head>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<meta name="viewport" content="width=device-width, user-scalable=no">
-	<link rel="icon" type="image/png" href="assets/images/3dviewer_net_favicon.ico">
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <link rel="icon" type="image/png" href="assets/images/3dviewer_net_favicon.ico">
 
-	<title>Online 3D Viewer</title>
+    <title>Online 3D Viewer</title>
 
-	<!-- website libs start -->
-	<link rel="stylesheet" type="text/css" href="../libs/pickr.monolith.min.css">
-	<script type="text/javascript" src="../libs/pickr.es5.min.js"></script>
-	<script type="text/javascript" src="../libs/three.min.js"></script>
-	<!-- website libs end -->
+    <!-- website libs start -->
+    <link rel="stylesheet" type="text/css" href="../libs/pickr.monolith.min.css">
+    <script type="text/javascript" src="../libs/pickr.es5.min.js"></script>
+    <script type="text/javascript" src="../libs/three.min.js"></script>
+    <!-- website libs end -->
 
-	<!-- meta start -->
-	<!-- meta end -->
+    <!-- meta start -->
+    <!-- meta end -->
 
-	<!-- engine start -->
-	<script type="text/javascript" src="../source/core/core.js"></script>
-	<script type="text/javascript" src="../source/core/taskrunner.js"></script>
-	<script type="text/javascript" src="../source/geometry/geometry.js"></script>
-	<script type="text/javascript" src="../source/geometry/coord2d.js"></script>
-	<script type="text/javascript" src="../source/geometry/coord3d.js"></script>
-	<script type="text/javascript" src="../source/geometry/coord4d.js"></script>
-	<script type="text/javascript" src="../source/geometry/quaternion.js"></script>
-	<script type="text/javascript" src="../source/geometry/box3d.js"></script>
-	<script type="text/javascript" src="../source/geometry/octree.js"></script>
-	<script type="text/javascript" src="../source/geometry/matrix.js"></script>
-	<script type="text/javascript" src="../source/geometry/transformation.js"></script>
-	<script type="text/javascript" src="../source/geometry/tween.js"></script>
-	<script type="text/javascript" src="../source/io/binaryreader.js"></script>
-	<script type="text/javascript" src="../source/io/binarywriter.js"></script>
-	<script type="text/javascript" src="../source/io/textwriter.js"></script>
-	<script type="text/javascript" src="../source/io/bufferutils.js"></script>
-	<script type="text/javascript" src="../source/io/fileutils.js"></script>
-	<script type="text/javascript" src="../source/io/externallibs.js"></script>
-	<script type="text/javascript" src="../source/model/color.js"></script>
-	<script type="text/javascript" src="../source/model/material.js"></script>
-	<script type="text/javascript" src="../source/model/triangle.js"></script>
-	<script type="text/javascript" src="../source/model/property.js"></script>
-	<script type="text/javascript" src="../source/model/object.js"></script>
-	<script type="text/javascript" src="../source/model/mesh.js"></script>
-	<script type="text/javascript" src="../source/model/meshbuffer.js"></script>
-	<script type="text/javascript" src="../source/model/node.js"></script>
-	<script type="text/javascript" src="../source/model/meshinstance.js"></script>
-	<script type="text/javascript" src="../source/model/model.js"></script>
-	<script type="text/javascript" src="../source/model/topology.js"></script>
-	<script type="text/javascript" src="../source/model/meshutils.js"></script>
-	<script type="text/javascript" src="../source/model/modelutils.js"></script>
-	<script type="text/javascript" src="../source/model/modelfinalization.js"></script>
-	<script type="text/javascript" src="../source/model/quantities.js"></script>
-	<script type="text/javascript" src="../source/model/generator.js"></script>
-	<script type="text/javascript" src="../source/import/importerutils.js"></script>
-	<script type="text/javascript" src="../source/import/importerbase.js"></script>
-	<script type="text/javascript" src="../source/import/importerobj.js"></script>
-	<script type="text/javascript" src="../source/import/importerstl.js"></script>
-	<script type="text/javascript" src="../source/import/importeroff.js"></script>
-	<script type="text/javascript" src="../source/import/importerply.js"></script>
-	<script type="text/javascript" src="../source/import/importer3ds.js"></script>
-	<script type="text/javascript" src="../source/import/importergltf.js"></script>
-	<script type="text/javascript" src="../source/import/importero3dv.js"></script>
-	<script type="text/javascript" src="../source/import/importerthree.js"></script>
-	<script type="text/javascript" src="../source/import/importersvg.js"></script>
-	<script type="text/javascript" src="../source/import/importer3dm.js"></script>
-	<script type="text/javascript" src="../source/import/importerifc.js"></script>
-	<script type="text/javascript" src="../source/import/filelist.js"></script>
-	<script type="text/javascript" src="../source/import/importer.js"></script>
-	<script type="text/javascript" src="../source/export/exportermodel.js"></script>
-	<script type="text/javascript" src="../source/export/exporterbase.js"></script>
-	<script type="text/javascript" src="../source/export/exporterobj.js"></script>
-	<script type="text/javascript" src="../source/export/exporterstl.js"></script>
-	<script type="text/javascript" src="../source/export/exporterply.js"></script>
-	<script type="text/javascript" src="../source/export/exporteroff.js"></script>
-	<script type="text/javascript" src="../source/export/exportergltf.js"></script>
-	<script type="text/javascript" src="../source/export/exporter3dm.js"></script>
-	<script type="text/javascript" src="../source/export/exporter.js"></script>
-	<script type="text/javascript" src="../source/threejs/threeutils.js"></script>
-	<script type="text/javascript" src="../source/threejs/threeconverter.js"></script>
-	<script type="text/javascript" src="../source/threejs/threemodelloader.js"></script>
-	<script type="text/javascript" src="../source/parameters/parameterlist.js"></script>
-	<script type="text/javascript" src="../source/viewer/domutils.js"></script>
-	<script type="text/javascript" src="../source/viewer/navigation.js"></script>
-	<script type="text/javascript" src="../source/viewer/viewergeometry.js"></script>
-	<script type="text/javascript" src="../source/viewer/viewer.js"></script>
-	<script type="text/javascript" src="../source/viewer/measuretool.js"></script>
-	<script type="text/javascript" src="../source/viewer/embeddedviewer.js"></script>
-	<!-- engine end -->
+    <!-- engine start -->
+    <script type="text/javascript" src="../source/core/core.js"></script>
+    <script type="text/javascript" src="../source/core/taskrunner.js"></script>
+    <script type="text/javascript" src="../source/geometry/geometry.js"></script>
+    <script type="text/javascript" src="../source/geometry/coord2d.js"></script>
+    <script type="text/javascript" src="../source/geometry/coord3d.js"></script>
+    <script type="text/javascript" src="../source/geometry/coord4d.js"></script>
+    <script type="text/javascript" src="../source/geometry/quaternion.js"></script>
+    <script type="text/javascript" src="../source/geometry/box3d.js"></script>
+    <script type="text/javascript" src="../source/geometry/octree.js"></script>
+    <script type="text/javascript" src="../source/geometry/matrix.js"></script>
+    <script type="text/javascript" src="../source/geometry/transformation.js"></script>
+    <script type="text/javascript" src="../source/geometry/tween.js"></script>
+    <script type="text/javascript" src="../source/io/binaryreader.js"></script>
+    <script type="text/javascript" src="../source/io/binarywriter.js"></script>
+    <script type="text/javascript" src="../source/io/textwriter.js"></script>
+    <script type="text/javascript" src="../source/io/bufferutils.js"></script>
+    <script type="text/javascript" src="../source/io/fileutils.js"></script>
+    <script type="text/javascript" src="../source/io/externallibs.js"></script>
+    <script type="text/javascript" src="../source/model/color.js"></script>
+    <script type="text/javascript" src="../source/model/material.js"></script>
+    <script type="text/javascript" src="../source/model/triangle.js"></script>
+    <script type="text/javascript" src="../source/model/property.js"></script>
+    <script type="text/javascript" src="../source/model/object.js"></script>
+    <script type="text/javascript" src="../source/model/mesh.js"></script>
+    <script type="text/javascript" src="../source/model/meshbuffer.js"></script>
+    <script type="text/javascript" src="../source/model/node.js"></script>
+    <script type="text/javascript" src="../source/model/meshinstance.js"></script>
+    <script type="text/javascript" src="../source/model/model.js"></script>
+    <script type="text/javascript" src="../source/model/topology.js"></script>
+    <script type="text/javascript" src="../source/model/meshutils.js"></script>
+    <script type="text/javascript" src="../source/model/modelutils.js"></script>
+    <script type="text/javascript" src="../source/model/modelfinalization.js"></script>
+    <script type="text/javascript" src="../source/model/quantities.js"></script>
+    <script type="text/javascript" src="../source/model/generator.js"></script>
+    <script type="text/javascript" src="../source/import/importerutils.js"></script>
+    <script type="text/javascript" src="../source/import/importerbase.js"></script>
+    <script type="text/javascript" src="../source/import/importerobj.js"></script>
+    <script type="text/javascript" src="../source/import/importerstl.js"></script>
+    <script type="text/javascript" src="../source/import/importeroff.js"></script>
+    <script type="text/javascript" src="../source/import/importerply.js"></script>
+    <script type="text/javascript" src="../source/import/importer3ds.js"></script>
+    <script type="text/javascript" src="../source/import/importergltf.js"></script>
+    <script type="text/javascript" src="../source/import/importero3dv.js"></script>
+    <script type="text/javascript" src="../source/import/importerthree.js"></script>
+    <script type="text/javascript" src="../source/import/importersvg.js"></script>
+    <script type="text/javascript" src="../source/import/importer3dm.js"></script>
+    <script type="text/javascript" src="../source/import/importerifc.js"></script>
+    <script type="text/javascript" src="../source/import/filelist.js"></script>
+    <script type="text/javascript" src="../source/import/importer.js"></script>
+    <script type="text/javascript" src="../source/export/exportermodel.js"></script>
+    <script type="text/javascript" src="../source/export/exporterbase.js"></script>
+    <script type="text/javascript" src="../source/export/exporterobj.js"></script>
+    <script type="text/javascript" src="../source/export/exporterstl.js"></script>
+    <script type="text/javascript" src="../source/export/exporterply.js"></script>
+    <script type="text/javascript" src="../source/export/exporteroff.js"></script>
+    <script type="text/javascript" src="../source/export/exportergltf.js"></script>
+    <script type="text/javascript" src="../source/export/exporter3dm.js"></script>
+    <script type="text/javascript" src="../source/export/exporter.js"></script>
+    <script type="text/javascript" src="../source/threejs/threeutils.js"></script>
+    <script type="text/javascript" src="../source/threejs/threeconverter.js"></script>
+    <script type="text/javascript" src="../source/threejs/threemodelloader.js"></script>
+    <script type="text/javascript" src="../source/parameters/parameterlist.js"></script>
+    <script type="text/javascript" src="../source/viewer/domutils.js"></script>
+    <script type="text/javascript" src="../source/viewer/navigation.js"></script>
+    <script type="text/javascript" src="../source/viewer/viewergeometry.js"></script>
+    <script type="text/javascript" src="../source/viewer/viewer.js"></script>
+    <script type="text/javascript" src="../source/viewer/measuretool.js"></script>
+    <script type="text/javascript" src="../source/viewer/embeddedviewer.js"></script>
+    <!-- engine end -->
 
-	<!-- website start -->
-	<link rel="stylesheet" type="text/css" href="o3dv/css/icons.css">
-	<link rel="stylesheet" type="text/css" href="o3dv/css/themes.css">
-	<link rel="stylesheet" type="text/css" href="o3dv/css/core.css">
-	<link rel="stylesheet" type="text/css" href="o3dv/css/controls.css">
-	<link rel="stylesheet" type="text/css" href="o3dv/css/dialogs.css">
-	<link rel="stylesheet" type="text/css" href="o3dv/css/treeview.css">
-	<link rel="stylesheet" type="text/css" href="o3dv/css/panelset.css">
-	<link rel="stylesheet" type="text/css" href="o3dv/css/navigator.css">
-	<link rel="stylesheet" type="text/css" href="o3dv/css/sidebar.css">
-	<link rel="stylesheet" type="text/css" href="o3dv/css/website.css">
-	<link rel="stylesheet" type="text/css" href="o3dv/css/embed.css">
-	<script type="text/javascript" src="o3dv/js/featureset.js"></script>
-	<script type="text/javascript" src="o3dv/js/eventhandler.js"></script>
-	<script type="text/javascript" src="o3dv/js/utils.js"></script>
-	<script type="text/javascript" src="o3dv/js/cookies.js"></script>
-	<script type="text/javascript" src="o3dv/js/settings.js"></script>
-	<script type="text/javascript" src="o3dv/js/toolbar.js"></script>
-	<script type="text/javascript" src="o3dv/js/treeview.js"></script>
-	<script type="text/javascript" src="o3dv/js/splitter.js"></script>
-	<script type="text/javascript" src="o3dv/js/modal.js"></script>
-	<script type="text/javascript" src="o3dv/js/dialogs.js"></script>
-	<script type="text/javascript" src="o3dv/js/openurldialog.js"></script>
-	<script type="text/javascript" src="o3dv/js/exportdialog.js"></script>
-	<script type="text/javascript" src="o3dv/js/sharingdialog.js"></script>
-	<script type="text/javascript" src="o3dv/js/panelset.js"></script>
-	<script type="text/javascript" src="o3dv/js/navigatoritems.js"></script>
-	<script type="text/javascript" src="o3dv/js/navigatorpanel.js"></script>
-	<script type="text/javascript" src="o3dv/js/navigatorfilespanel.js"></script>
-	<script type="text/javascript" src="o3dv/js/navigatormaterialspanel.js"></script>
-	<script type="text/javascript" src="o3dv/js/navigatormeshespanel.js"></script>
-	<script type="text/javascript" src="o3dv/js/navigator.js"></script>
-	<script type="text/javascript" src="o3dv/js/sidebarpanel.js"></script>
-	<script type="text/javascript" src="o3dv/js/sidebardetailspanel.js"></script>
-	<script type="text/javascript" src="o3dv/js/sidebarsettingspanel.js"></script>
-	<script type="text/javascript" src="o3dv/js/sidebarmeasurepanel.js"></script>
-	<script type="text/javascript" src="o3dv/js/sidebar.js"></script>
-	<script type="text/javascript" src="o3dv/js/hashhandler.js"></script>
-	<script type="text/javascript" src="o3dv/js/threemodelloaderui.js"></script>
-	<script type="text/javascript" src="o3dv/js/themehandler.js"></script>
-	<script type="text/javascript" src="o3dv/js/website.js"></script>
-	<script type="text/javascript" src="o3dv/js/embed.js"></script>
-	<!-- website end -->
+    <!-- website start -->
+    <link rel="stylesheet" type="text/css" href="o3dv/css/icons.css">
+    <link rel="stylesheet" type="text/css" href="o3dv/css/themes.css">
+    <link rel="stylesheet" type="text/css" href="o3dv/css/core.css">
+    <link rel="stylesheet" type="text/css" href="o3dv/css/controls.css">
+    <link rel="stylesheet" type="text/css" href="o3dv/css/dialogs.css">
+    <link rel="stylesheet" type="text/css" href="o3dv/css/treeview.css">
+    <link rel="stylesheet" type="text/css" href="o3dv/css/panelset.css">
+    <link rel="stylesheet" type="text/css" href="o3dv/css/navigator.css">
+    <link rel="stylesheet" type="text/css" href="o3dv/css/sidebar.css">
+    <link rel="stylesheet" type="text/css" href="o3dv/css/website.css">
+    <link rel="stylesheet" type="text/css" href="o3dv/css/embed.css">
+    <script type="text/javascript" src="o3dv/js/featureset.js"></script>
+    <script type="text/javascript" src="o3dv/js/eventhandler.js"></script>
+    <script type="text/javascript" src="o3dv/js/utils.js"></script>
+    <script type="text/javascript" src="o3dv/js/cookies.js"></script>
+    <script type="text/javascript" src="o3dv/js/settings.js"></script>
+    <script type="text/javascript" src="o3dv/js/toolbar.js"></script>
+    <script type="text/javascript" src="o3dv/js/treeview.js"></script>
+    <script type="text/javascript" src="o3dv/js/splitter.js"></script>
+    <script type="text/javascript" src="o3dv/js/modal.js"></script>
+    <script type="text/javascript" src="o3dv/js/dialogs.js"></script>
+    <script type="text/javascript" src="o3dv/js/openurldialog.js"></script>
+    <script type="text/javascript" src="o3dv/js/exportdialog.js"></script>
+    <script type="text/javascript" src="o3dv/js/sharingdialog.js"></script>
+    <script type="text/javascript" src="o3dv/js/panelset.js"></script>
+    <script type="text/javascript" src="o3dv/js/navigatoritems.js"></script>
+    <script type="text/javascript" src="o3dv/js/navigatorpanel.js"></script>
+    <script type="text/javascript" src="o3dv/js/navigatorfilespanel.js"></script>
+    <script type="text/javascript" src="o3dv/js/navigatormaterialspanel.js"></script>
+    <script type="text/javascript" src="o3dv/js/navigatormeshespanel.js"></script>
+    <script type="text/javascript" src="o3dv/js/navigator.js"></script>
+    <script type="text/javascript" src="o3dv/js/sidebarpanel.js"></script>
+    <script type="text/javascript" src="o3dv/js/sidebardetailspanel.js"></script>
+    <script type="text/javascript" src="o3dv/js/sidebarsettingspanel.js"></script>
+    <script type="text/javascript" src="o3dv/js/sidebarmeasurepanel.js"></script>
+    <script type="text/javascript" src="o3dv/js/sidebar.js"></script>
+    <script type="text/javascript" src="o3dv/js/hashhandler.js"></script>
+    <script type="text/javascript" src="o3dv/js/threemodelloaderui.js"></script>
+    <script type="text/javascript" src="o3dv/js/themehandler.js"></script>
+    <script type="text/javascript" src="o3dv/js/website.js"></script>
+    <script type="text/javascript" src="o3dv/js/embed.js"></script>
+    <!-- website end -->
 
-	<!-- externals start -->
-	<script type="text/javascript">
-		OV.ExternalLibLocation = '../libs';
-	</script>
-	<!-- externals end -->
+    <!-- externals start -->
+    <script type="text/javascript">
+        OV.ExternalLibLocation = '../libs';
+    </script>
+    <!-- externals end -->
 
-	<!-- analytics start -->
-	<!-- analytics end -->
+    <!-- analytics start -->
+    <script type="text/javascript">
+        window.viewerEventHandler = (eventName, eventData) => {
+            console.log ({
+                eventName : eventName,
+                eventData : eventData
+            });
+        };
+    </script>
+    <!-- analytics end -->
 
-	<script type="text/javascript">
-		window.addEventListener ('load', function () {
-			let website = new OV.Website ({
-				headerDiv : document.getElementById ('header'),
-				toolbarDiv : document.getElementById ('toolbar'),
-				mainDiv : document.getElementById ('main'),
-				introDiv : document.getElementById ('intro'),
-				fileNameDiv : document.getElementById ('main_file_name'),
-				navigatorDiv : document.getElementById ('main_navigator'),
-				navigatorSplitterDiv : document.getElementById ('main_navigator_splitter'),
-				sidebarDiv : document.getElementById ('main_sidebar'),
-				sidebarSplitterDiv : document.getElementById ('main_sidebar_splitter'),
-				viewerDiv : document.getElementById ('main_viewer'),
-				fileInput : document.getElementById ('open_file'),
-				eventHandler : window.gtagEventHandler
-			});
-			website.Load ();
-		});
-	</script>
+    <script type="text/javascript">
+        window.addEventListener ('load', function () {
+            let website = new OV.Website ({
+                headerDiv : document.getElementById ('header'),
+                toolbarDiv : document.getElementById ('toolbar'),
+                mainDiv : document.getElementById ('main'),
+                introDiv : document.getElementById ('intro'),
+                fileNameDiv : document.getElementById ('main_file_name'),
+                navigatorDiv : document.getElementById ('main_navigator'),
+                navigatorSplitterDiv : document.getElementById ('main_navigator_splitter'),
+                sidebarDiv : document.getElementById ('main_sidebar'),
+                sidebarSplitterDiv : document.getElementById ('main_sidebar_splitter'),
+                viewerDiv : document.getElementById ('main_viewer'),
+                fileInput : document.getElementById ('open_file'),
+                eventHandler : window.viewerEventHandler
+            });
+            website.Load ();
+        });
+    </script>
 
-	<!-- script start -->
-	<!-- script end -->
+    <!-- script start -->
+    <!-- script end -->
 
 </head>
 
 <body>
-	<input type="file" id="open_file" style="display:none;" multiple></input>
-	<div class="header" id="header">
-		<div class="title">
-			<div class="title_left">
-				<a href="index.html">
-					<svg class="logo_image"><use href="assets/images/3dviewer_net_logo_text.svg#logo"></use></svg>
-				</a>
-			</div>
-			<div class="title_right" id="header_buttons"></div>
-			<div class="main_file_name only_full_width" id="main_file_name"></div>
-		</div>
-		<div class="toolbar" id="toolbar"></div>
-	</div>
-	<div class="main" id="main">
-		<div class="main_navigator ov_panel_set_container only_full_width" id="main_navigator"></div>
-		<div class="main_splitter only_full_width" id="main_navigator_splitter"></div>
-		<div class="main_viewer" id="main_viewer"></div>
-		<div class="main_splitter only_full_width" id="main_sidebar_splitter"></div>
-		<div class="main_sidebar ov_panel_set_right_container only_full_width" id="main_sidebar"></div>
-	</div>
-	<div class="intro ov_thin_scrollbar" id="intro">
-		<div class="intro_section only_full_width only_full_height">
-			<svg class="intro_logo"><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>
-		</div>
-		<div class="intro_section intro_big_text">
-			Drag and drop your 3D models here.<br>
-			<b>obj, 3ds, stl, ply, gltf, glb, off, 3dm, fbx, <a target="_blank" href="info/index.html#supported_file_formats">and more</a></b>
-		</div>
-		<div class="intro_section">
-			Or you can use the browse button above.
-		</div>
-		<div class="intro_section">
-			<div>Example models:</div>
-			<div class="example_models">
-				<a href="index.html#model=assets/models/logo.obj,assets/models/logo.mtl">logo</a>
-				<span style="color:#aaaaaa;"> | </span>
-				<a href="index.html#model=assets/models/solids.obj,assets/models/solids.mtl">solids</a>
-				<span style="color:#aaaaaa;"> | </span>
-				<a href="index.html#model=assets/models/DamagedHelmet.glb">helmet</a>
-			</div>
-		</div>
-	</div>
+    <input type="file" id="open_file" style="display:none;" multiple></input>
+    <div class="header" id="header">
+        <div class="title">
+            <div class="title_left">
+                <a href="index.html">
+                    <svg class="logo_image"><use href="assets/images/3dviewer_net_logo_text.svg#logo"></use></svg>
+                </a>
+            </div>
+            <div class="title_right" id="header_buttons"></div>
+            <div class="main_file_name only_full_width" id="main_file_name"></div>
+        </div>
+        <div class="toolbar" id="toolbar"></div>
+    </div>
+    <div class="main" id="main">
+        <div class="main_navigator ov_panel_set_container only_full_width" id="main_navigator"></div>
+        <div class="main_splitter only_full_width" id="main_navigator_splitter"></div>
+        <div class="main_viewer" id="main_viewer"></div>
+        <div class="main_splitter only_full_width" id="main_sidebar_splitter"></div>
+        <div class="main_sidebar ov_panel_set_right_container only_full_width" id="main_sidebar"></div>
+    </div>
+    <div class="intro ov_thin_scrollbar" id="intro">
+        <div class="intro_section only_full_width only_full_height">
+            <svg class="intro_logo"><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>
+        </div>
+        <div class="intro_section intro_big_text">
+            Drag and drop your 3D models here.<br>
+            <b>obj, 3ds, stl, ply, gltf, glb, off, 3dm, fbx, <a target="_blank" href="info/index.html#supported_file_formats">and more</a></b>
+        </div>
+        <div class="intro_section">
+            Or you can use the browse button above.
+        </div>
+        <div class="intro_section">
+            <div>Example models:</div>
+            <div class="example_models">
+                <a href="index.html#model=assets/models/logo.obj,assets/models/logo.mtl">logo</a>
+                <span style="color:#aaaaaa;"> | </span>
+                <a href="index.html#model=assets/models/solids.obj,assets/models/solids.mtl">solids</a>
+                <span style="color:#aaaaaa;"> | </span>
+                <a href="index.html#model=assets/models/DamagedHelmet.glb">helmet</a>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

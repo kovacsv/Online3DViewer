@@ -169,9 +169,10 @@ OV.ImageExporterUI = class extends OV.ExporterUI
 
 OV.ExportDialog = class
 {
-    constructor (callbacks)
+    constructor (callbacks, eventHandler)
     {
         this.callbacks = callbacks;
+        this.eventHandler = eventHandler;
         this.selectedExporter = null;
         this.parametersDiv = null;
 
@@ -243,6 +244,7 @@ OV.ExportDialog = class
                     this.callbacks.onDialog (filesDialog);
                 }
             });
+            this.eventHandler.HandleEvent ('model_exported', this.selectedExporter.GetName ());
         } else if (this.selectedExporter.GetType () === OV.ExportType.Image) {
             this.selectedExporter.ExportImage (viewer);
         }
