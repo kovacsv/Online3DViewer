@@ -250,14 +250,14 @@ OV.Importer3ds = class extends OV.ImporterBase
                 hasLinColor = true;
             } else if (chunkId === OV.CHUNK3DS.MAT_COLOR_F) {
                 if (!hasLinColor) {
-                    color.r = parseInt (reader.ReadFloat32 () * 255.0, 10);
-                    color.g = parseInt (reader.ReadFloat32 () * 255.0, 10);
-                    color.b = parseInt (reader.ReadFloat32 () * 255.0, 10);
+                    color.r = OV.ColorComponentFromFloat (reader.ReadFloat32 ());
+                    color.g = OV.ColorComponentFromFloat (reader.ReadFloat32 ());
+                    color.b = OV.ColorComponentFromFloat (reader.ReadFloat32 ());
                 }
             } else if (chunkId === OV.CHUNK3DS.MAT_LIN_COLOR_F) {
-                color.r = parseInt (reader.ReadFloat32 () * 255.0, 10);
-                color.g = parseInt (reader.ReadFloat32 () * 255.0, 10);
-                color.b = parseInt (reader.ReadFloat32 () * 255.0, 10);
+                color.r = OV.ColorComponentFromFloat (reader.ReadFloat32 ());
+                color.g = OV.ColorComponentFromFloat (reader.ReadFloat32 ());
+                color.b = OV.ColorComponentFromFloat (reader.ReadFloat32 ());
                 hasLinColor = true;
             } else {
                 this.SkipChunk (reader, chunkLength);

@@ -82,11 +82,7 @@ OV.GetShadingType = function (model)
 
 OV.ConvertThreeColorToColor = function (threeColor)
 {
-    return new OV.Color (
-        parseInt (Math.round (threeColor.r * 255.0), 10),
-        parseInt (Math.round (threeColor.g * 255.0), 10),
-        parseInt (Math.round (threeColor.b * 255.0), 10)
-    );
+    return OV.ColorFromFloatComponents (threeColor.r, threeColor.g, threeColor.b);
 };
 
 OV.ConvertColorToThreeColor = function (color)

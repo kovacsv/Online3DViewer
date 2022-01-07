@@ -20,6 +20,20 @@ OV.Color = class
     }
 };
 
+OV.ColorComponentFromFloat = function (component)
+{
+    return parseInt (Math.round (component * 255.0), 10);
+};
+
+OV.ColorFromFloatComponents = function (r, g, b)
+{
+    return new OV.Color (
+        OV.ColorComponentFromFloat (r),
+        OV.ColorComponentFromFloat (g),
+        OV.ColorComponentFromFloat (b)
+    );
+};
+
 OV.SRGBToLinear = function (component)
 {
     if (component < 0.04045) {

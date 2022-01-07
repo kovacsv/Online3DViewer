@@ -193,15 +193,6 @@ OV.ImporterObj = class extends OV.ImporterBase
 
     ProcessMaterialParameter (keyword, parameters, line)
     {
-        function CreateColor (parameters)
-        {
-            return new OV.Color (
-                parseInt (parseFloat (parameters[0] * 255.0), 10),
-                parseInt (parseFloat (parameters[1] * 255.0), 10),
-                parseInt (parseFloat (parameters[2] * 255.0), 10)
-            );
-        }
-
         function CreateTexture (keyword, line, callbacks)
         {
             let texture = new OV.TextureMap ();
@@ -275,19 +266,19 @@ OV.ImporterObj = class extends OV.ImporterBase
             if (this.currentMaterial === null || parameters.length < 3) {
                 return true;
             }
-            this.currentMaterial.ambient = CreateColor (parameters);
+            this.currentMaterial.ambient = OV.ColorFromFloatComponents (parameters[0], parameters[1], parameters[2]);
             return true;
         } else if (keyword === 'kd') {
             if (this.currentMaterial === null || parameters.length < 3) {
                 return true;
             }
-            this.currentMaterial.color = CreateColor (parameters);
+            this.currentMaterial.color = OV.ColorFromFloatComponents (parameters[0], parameters[1], parameters[2]);
             return true;
         } else if (keyword === 'ks') {
             if (this.currentMaterial === null || parameters.length < 3) {
                 return true;
             }
-            this.currentMaterial.specular = CreateColor (parameters);
+            this.currentMaterial.specular = OV.ColorFromFloatComponents (parameters[0], parameters[1], parameters[2]);
             return true;
         } else if (keyword === 'ns') {
             if (this.currentMaterial === null || parameters.length < 1) {

@@ -39,10 +39,10 @@ OV.GltfConstants =
 
 OV.GetGltfColor = function (color)
 {
-    return new OV.Color (
-        parseInt (Math.round (OV.LinearToSRGB (color[0]) * 255.0), 10),
-        parseInt (Math.round (OV.LinearToSRGB (color[1]) * 255.0), 10),
-        parseInt (Math.round (OV.LinearToSRGB (color[2]) * 255.0), 10)
+    return OV.ColorFromFloatComponents (
+        OV.LinearToSRGB (color[0]),
+        OV.LinearToSRGB (color[1]),
+        OV.LinearToSRGB (color[2])
     );
 };
 
@@ -54,7 +54,7 @@ OV.GetGltfVertexColor = function (color, componentType)
         if (componentType !== OV.GltfComponentType.FLOAT) {
             normalized /= 255.0;
         }
-        return parseInt (Math.round (OV.LinearToSRGB (normalized) * 255.0), 10);
+        return OV.ColorComponentFromFloat (OV.LinearToSRGB (normalized));
     }
 
     return new OV.Color (

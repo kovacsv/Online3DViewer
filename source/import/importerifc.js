@@ -194,11 +194,7 @@ OV.ImporterIfc = class extends OV.ImporterBase
 
     GetMaterialIndexByColor (ifcColor)
     {
-        const color = new OV.Color (
-            parseInt (ifcColor.x * 255.0, 10),
-            parseInt (ifcColor.y * 255.0, 10),
-            parseInt (ifcColor.z * 255.0, 10)
-        );
+        const color = OV.ColorFromFloatComponents (ifcColor.x, ifcColor.y, ifcColor.z);
 
         const materialName = 'Color ' +
             OV.IntegerToHexString (color.r) +
