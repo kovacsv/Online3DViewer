@@ -169,7 +169,8 @@ OV.AddRangeSlider = function (parentElement, min, max)
 
 OV.AddSelect = function (parentElement, options, selectedIndex, onChange)
 {
-    let select = OV.AddDomElement (parentElement, 'select', 'ov_select');
+    let container = OV.AddDiv (parentElement, 'ov_select_container');
+    let select = OV.AddDomElement (container, 'select', 'ov_select');
     for (let option of options) {
         OV.AddDomElement (select, 'option', null, option);
     }

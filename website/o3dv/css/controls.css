@@ -128,14 +128,35 @@ input.ov_checkbox:checked
 	border: 0px;
 }
 
+div.ov_select_container
+{
+	position: relative;
+}
+
+div.ov_select_container:after
+{
+	font-family: "O3DVIcons";
+	font-size: 18px;
+    content: "\f101";
+	position: absolute;
+    right: 6px;
+    top: 6px;
+	pointer-events: none;
+}
+
 select.ov_select
 {
 	color: var(--ov_dialog_foreground_color);
 	background: var(--ov_dialog_background_color);
 	font-family: Quicksand, Helvetica, sans-serif;
 	font-size: 16px;
-	padding: 3px;
+	margin: 0px;
+	padding: 5px;
 	border: 1px solid var(--ov_border_color);
+	border-radius: 5px;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
 }
 
 input.ov_slider
