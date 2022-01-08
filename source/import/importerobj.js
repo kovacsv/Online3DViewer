@@ -1,30 +1,30 @@
-OV.ObjMeshData = class
+OV.ObjMeshConverter = class
 {
     constructor (mesh)
     {
         this.mesh = mesh;
-        this.globalToCurrentVertices = new Map ();
-        this.globalToCurrentNormals = new Map ();
-        this.globalToCurrentUvs = new Map ();
+        this.globalToMeshVertices = new Map ();
+        this.globalToMeshNormals = new Map ();
+        this.globalToMeshUvs = new Map ();
     }
 
-    GetLocalVertexIndex (globalIndex, globalVertices)
+    AddVertex (globalIndex, globalVertices)
     {
-        return this.GetLocalIndex (globalIndex, globalVertices, this.globalToCurrentVertices, (val) => {
+        return this.GetLocalIndex (globalIndex, globalVertices, this.globalToMeshVertices, (val) => {
             return this.mesh.AddVertex (new OV.Coord3D (val.x, val.y, val.z));
         });
     }
 
-    GetLocalNormalIndex (globalIndex, globalNormals)
+    AddNormal (globalIndex, globalNormals)
     {
-        return this.GetLocalIndex (globalIndex, globalNormals, this.globalToCurrentNormals, (val) => {
+        return this.GetLocalIndex (globalIndex, globalNormals, this.globalToMeshNormals, (val) => {
             return this.mesh.AddNormal (new OV.Coord3D (val.x, val.y, val.z));
         });
     }
 
-    GetLocalUVIndex (globalIndex, globalUvs)
+    AddUV (globalIndex, globalUvs)
     {
-        return this.GetLocalIndex (globalIndex, globalUvs, this.globalToCurrentUvs, (val) => {
+        return this.GetLocalIndex (globalIndex, globalUvs, this.globalToMeshUvs, (val) => {
             return this.mesh.AddTextureUV (new OV.Coord2D (val.x, val.y));
         });
     }
@@ -34,17 +34,17 @@ OV.ObjMeshData = class
         this.mesh.AddTriangle (triangle);
     }
 
-    GetLocalIndex (globalIndex, globalValueArray, globalToCurrentIndices, valueAdderFunc)
+    GetLocalIndex (globalIndex, globalValueArray, globalToMeshIndices, valueAdderFunc)
     {
         if (isNaN (globalIndex) || globalIndex < 0 || globalIndex >= globalValueArray.length) {
             return null;
         }
-        if (globalToCurrentIndices.has (globalIndex)) {
-            return globalToCurrentIndices.get (globalIndex);
+        if (globalToMeshIndices.has (globalIndex)) {
+            return globalToMeshIndices.get (globalIndex);
         } else {
             let globalValue = globalValueArray[globalIndex];
             let localIndex = valueAdderFunc (globalValue);
-            globalToCurrentIndices.set (globalIndex, localIndex);
+            globalToMeshIndices.set (globalIndex, localIndex);
             return localIndex;
         }
     }
@@ -73,11 +73,11 @@ OV.ImporterObj = class extends OV.ImporterBase
         this.globalNormals = null;
         this.globalUvs = null;
 
-        this.currentMeshData = null;
+        this.currentMeshConverter = null;
         this.currentMaterial = null;
         this.currentMaterialIndex = null;
 
-        this.meshNameToMeshData = null;
+        this.meshNameToConverter = null;
         this.materialNameToIndex = null;
     }
 
@@ -87,11 +87,11 @@ OV.ImporterObj = class extends OV.ImporterBase
         this.globalNormals = [];
         this.globalUvs = [];
 
-        this.currentMeshData = null;
+        this.currentMeshConverter = null;
         this.currentMaterial = null;
         this.currentMaterialIndex = null;
 
-        this.meshNameToMeshData = new Map ();
+        this.meshNameToConverter = new Map ();
         this.materialNameToIndex = new Map ();
     }
 
@@ -131,14 +131,14 @@ OV.ImporterObj = class extends OV.ImporterBase
 
     AddNewMesh (name)
     {
-        if (this.meshNameToMeshData.has (name)) {
-            this.currentMeshData = this.meshNameToMeshData.get (name);
+        if (this.meshNameToConverter.has (name)) {
+            this.currentMeshConverter = this.meshNameToConverter.get (name);
         } else {
             let mesh = new OV.Mesh ();
             mesh.SetName (name);
             this.model.AddMeshToRootNode (mesh);
-            this.currentMeshData = new OV.ObjMeshData (mesh);
-            this.meshNameToMeshData.set (name, this.currentMeshData);
+            this.currentMeshConverter = new OV.ObjMeshConverter (mesh);
+            this.meshNameToConverter.set (name, this.currentMeshConverter);
         }
     }
 
@@ -331,23 +331,23 @@ OV.ImporterObj = class extends OV.ImporterBase
             }
         }
 
-        if (this.currentMeshData === null) {
+        if (this.currentMeshConverter === null) {
             this.AddNewMesh ('');
         }
 
         for (let i = 0; i < vertices.length - 2; i++) {
-            let v0 = this.currentMeshData.GetLocalVertexIndex (vertices[0], this.globalVertices);
-            let v1 = this.currentMeshData.GetLocalVertexIndex (vertices[i + 1], this.globalVertices);
-            let v2 = this.currentMeshData.GetLocalVertexIndex (vertices[i + 2], this.globalVertices);
+            let v0 = this.currentMeshConverter.AddVertex (vertices[0], this.globalVertices);
+            let v1 = this.currentMeshConverter.AddVertex (vertices[i + 1], this.globalVertices);
+            let v2 = this.currentMeshConverter.AddVertex (vertices[i + 2], this.globalVertices);
             if (v0 === null || v1 === null || v2 === null) {
                 this.SetError ('Invalid vertex index.');
                 break;
             }
             let triangle = new OV.Triangle (v0, v1, v2);
             if (normals.length === vertices.length) {
-                let n0 = this.currentMeshData.GetLocalNormalIndex (normals[0], this.globalNormals);
-                let n1 = this.currentMeshData.GetLocalNormalIndex (normals[i + 1], this.globalNormals);
-                let n2 = this.currentMeshData.GetLocalNormalIndex (normals[i + 2], this.globalNormals);
+                let n0 = this.currentMeshConverter.AddNormal (normals[0], this.globalNormals);
+                let n1 = this.currentMeshConverter.AddNormal (normals[i + 1], this.globalNormals);
+                let n2 = this.currentMeshConverter.AddNormal (normals[i + 2], this.globalNormals);
                 if (n0 === null || n1 === null || n2 === null) {
                     this.SetError ('Invalid normal index.');
                     break;
@@ -355,9 +355,9 @@ OV.ImporterObj = class extends OV.ImporterBase
                 triangle.SetNormals (n0, n1, n2);
             }
             if (uvs.length === vertices.length) {
-                let u0 = this.currentMeshData.GetLocalUVIndex (uvs[0], this.globalUvs);
-                let u1 = this.currentMeshData.GetLocalUVIndex (uvs[i + 1], this.globalUvs);
-                let u2 = this.currentMeshData.GetLocalUVIndex (uvs[i + 2], this.globalUvs);
+                let u0 = this.currentMeshConverter.AddUV (uvs[0], this.globalUvs);
+                let u1 = this.currentMeshConverter.AddUV (uvs[i + 1], this.globalUvs);
+                let u2 = this.currentMeshConverter.AddUV (uvs[i + 2], this.globalUvs);
                 if (u0 === null || u1 === null || u2 === null) {
                     this.SetError ('Invalid uv index.');
                     break;
@@ -367,7 +367,7 @@ OV.ImporterObj = class extends OV.ImporterBase
             if (this.currentMaterialIndex !== null) {
                 triangle.mat = this.currentMaterialIndex;
             }
-            this.currentMeshData.AddTriangle (triangle);
+            this.currentMeshConverter.AddTriangle (triangle);
         }
     }
 };
