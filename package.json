@@ -1,7 +1,7 @@
 {
 	"name": "online-3d-viewer",
 	"description": "Online 3D Viewer",
-	"version": "0.8.3",
+	"version": "0.8.4",
 	"repository": "github:kovacsv/Online3DViewer",
 	"license": "MIT",
 	"devDependencies": {
