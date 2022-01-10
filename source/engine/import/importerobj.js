@@ -9,7 +9,7 @@ import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
 import { NameFromLine, ParametersFromLine, ReadLines, UpdateMaterialTransparency } from './importerutils.js';
 
-export class ObjMeshConverter
+class ObjMeshConverter
 {
     constructor (mesh)
     {

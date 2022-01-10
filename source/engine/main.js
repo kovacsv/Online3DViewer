@@ -22,14 +22,14 @@ import { BezierTweenFunction, LinearTweenFunction, ParabolicTweenFunction, Tween
 import { File, FileList } from './import/filelist.js';
 import { ImportSettings, ImportError, ImportResult, ImporterFileAccessor, Importer, ImportErrorCode } from './import/importer.js';
 import { Importer3dm } from './import/importer3dm.js';
-import { Importer3dsNode, Importer3dsNodeList, Importer3ds, CHUNK3DS } from './import/importer3ds.js';
+import { Importer3ds } from './import/importer3ds.js';
 import { ImporterBase } from './import/importerbase.js';
-import { GltfBufferReader, GltfExtensions, ImporterGltf, GetGltfColor, GetGltfVertexColor, GltfComponentType, GltfDataType, GltfRenderMode, GltfConstants } from './import/importergltf.js';
+import { ImporterGltf } from './import/importergltf.js';
 import { ImporterIfc } from './import/importerifc.js';
 import { ImporterO3dv } from './import/importero3dv.js';
-import { ObjMeshConverter, ImporterObj } from './import/importerobj.js';
+import { ImporterObj } from './import/importerobj.js';
 import { ImporterOff } from './import/importeroff.js';
-import { PlyHeader, PlyMaterialHandler, ImporterPly, PlyHeaderCheckResult } from './import/importerply.js';
+import { ImporterPly } from './import/importerply.js';
 import { ImporterStl } from './import/importerstl.js';
 import { ImporterThreeSvg } from './import/importersvg.js';
 import { ImporterThreeBase, ImporterThreeFbx, ImporterThreeDae, ImporterThreeWrl, ImporterThree3mf } from './import/importerthree.js';
@@ -48,9 +48,9 @@ import { MeshPrimitiveBuffer, MeshBuffer, ConvertMeshToMeshBuffer } from './mode
 import { MeshInstanceId, MeshInstance } from './model/meshinstance.js';
 import { GetMeshType, CalculateTriangleNormal, TransformMesh, FlipMeshTrianglesOrientation, MeshType } from './model/meshutils.js';
 import { Model } from './model/model.js';
-import { ModelFinalizer, FinalizeModel, CheckModel } from './model/modelfinalization.js';
+import { FinalizeModel, CheckModel } from './model/modelfinalization.js';
 import { IsModelEmpty, GetBoundingBox, GetTopology, IsSolid, HasDefaultMaterial, ReplaceDefaultMaterialColor } from './model/modelutils.js';
-import { NodeIdGenerator, Node, NodeType } from './model/node.js';
+import { Node, NodeType } from './model/node.js';
 import { Object3D, ModelObject3D } from './model/object.js';
 import { Property, PropertyGroup, PropertyType } from './model/property.js';
 import { GetTriangleArea, GetTetrahedronSignedVolume, CalculateVolume, CalculateSurfaceArea } from './model/quantities.js';
@@ -141,29 +141,14 @@ export {
     Importer,
     ImportErrorCode,
     Importer3dm,
-    Importer3dsNode,
-    Importer3dsNodeList,
     Importer3ds,
-    CHUNK3DS,
     ImporterBase,
-    GltfBufferReader,
-    GltfExtensions,
     ImporterGltf,
-    GetGltfColor,
-    GetGltfVertexColor,
-    GltfComponentType,
-    GltfDataType,
-    GltfRenderMode,
-    GltfConstants,
     ImporterIfc,
     ImporterO3dv,
-    ObjMeshConverter,
     ImporterObj,
     ImporterOff,
-    PlyHeader,
-    PlyMaterialHandler,
     ImporterPly,
-    PlyHeaderCheckResult,
     ImporterStl,
     ImporterThreeSvg,
     ImporterThreeBase,
@@ -235,7 +220,6 @@ export {
     FlipMeshTrianglesOrientation,
     MeshType,
     Model,
-    ModelFinalizer,
     FinalizeModel,
     CheckModel,
     IsModelEmpty,
@@ -244,7 +228,6 @@ export {
     IsSolid,
     HasDefaultMaterial,
     ReplaceDefaultMaterialColor,
-    NodeIdGenerator,
     Node,
     NodeType,
     Object3D,

@@ -14,7 +14,7 @@ import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
 import { UpdateMaterialTransparency } from './importerutils.js';
 
-export const CHUNK3DS =
+const CHUNK3DS =
 {
     MAIN3DS : 0x4D4D,
     EDIT3DS : 0x3D3D,
@@ -60,7 +60,7 @@ export const CHUNK3DS =
     OBJECT_ID : 0xB030
 };
 
-export class Importer3dsNode
+class Importer3dsNode
 {
     constructor ()
     {
@@ -76,7 +76,7 @@ export class Importer3dsNode
     }
 }
 
-export class Importer3dsNodeList
+class Importer3dsNodeList
 {
     constructor ()
     {

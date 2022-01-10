@@ -1,12 +1,6 @@
 import { Transformation } from '../geometry/transformation.js';
 
-export const NodeType =
-{
-    GroupNode : 0,
-    MeshNode : 1
-};
-
-export class NodeIdGenerator
+class NodeIdGenerator
 {
     constructor ()
     {
@@ -20,6 +14,12 @@ export class NodeIdGenerator
         return id;
     }
 }
+
+export const NodeType =
+{
+    GroupNode : 0,
+    MeshNode : 1
+};
 
 export class Node
 {

@@ -9,7 +9,7 @@ import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
 import { ParametersFromLine, ReadLines, UpdateMaterialTransparency } from './importerutils.js';
 
-export const PlyHeaderCheckResult =
+const PlyHeaderCheckResult =
 {
     Ok : 1,
     NoVertices : 2,
@@ -17,7 +17,7 @@ export const PlyHeaderCheckResult =
     UnknownError : 4
 };
 
-export class PlyHeader
+class PlyHeader
 {
     constructor ()
     {
@@ -103,7 +103,7 @@ export class PlyHeader
     }
 }
 
-export class PlyMaterialHandler
+class PlyMaterialHandler
 {
     constructor (model)
     {

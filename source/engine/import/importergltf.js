@@ -16,7 +16,7 @@ import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
 
-export const GltfComponentType =
+const GltfComponentType =
 {
     BYTE : 5120,
     UNSIGNED_BYTE : 5121,
@@ -26,7 +26,7 @@ export const GltfComponentType =
     FLOAT  : 5126
 };
 
-export const GltfDataType =
+const GltfDataType =
 {
     SCALAR : 0,
     VEC2 : 1,
@@ -37,7 +37,7 @@ export const GltfDataType =
     MAT4  : 6
 };
 
-export const GltfRenderMode =
+const GltfRenderMode =
 {
     POINTS : 0,
     LINES : 1,
@@ -48,14 +48,14 @@ export const GltfRenderMode =
     TRIANGLE_FAN : 6
 };
 
-export const GltfConstants =
+const GltfConstants =
 {
     GLTF_STRING : 0x46546C67,
     JSON_CHUNK_TYPE : 0x4E4F534A,
     BINARY_CHUNK_TYPE : 0x004E4942
 };
 
-export function GetGltfColor (color)
+function GetGltfColor (color)
 {
     return ColorFromFloatComponents (
         LinearToSRGB (color[0]),
@@ -64,7 +64,7 @@ export function GetGltfColor (color)
     );
 }
 
-export function GetGltfVertexColor (color, componentType)
+function GetGltfVertexColor (color, componentType)
 {
     function GetColorComponent (component, componentType)
     {
@@ -82,7 +82,7 @@ export function GetGltfVertexColor (color, componentType)
     );
 }
 
-export class GltfBufferReader
+class GltfBufferReader
 {
     constructor (buffer)
     {
@@ -260,7 +260,7 @@ export class GltfBufferReader
     }
 }
 
-export class GltfExtensions
+class GltfExtensions
 {
     constructor ()
     {

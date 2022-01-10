@@ -4,7 +4,7 @@ import { Color } from './color.js';
 import { PhongMaterial } from './material.js';
 import { CalculateTriangleNormal, GetMeshType, MeshType } from './meshutils.js';
 
-export class ModelFinalizer
+class ModelFinalizer
 {
     constructor (params)
     {

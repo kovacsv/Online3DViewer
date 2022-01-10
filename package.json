@@ -25,7 +25,7 @@
 		"updatelibs": "npm install && node tools/run_python.js tools/updatelibs.py",
 		"generate_icon_font": "node tools/run_python.js tools/generate_icon_font.py",
 		"update_engine_exports": "node tools/run_python.js tools/update_engine_exports.py",
-		"create_dist": "npm run lint && npm run test && npm run create_package",
+		"create_dist": "npm run create_package && npm run lint && npm run test",
 		"create_package": "npm run build_engine_prod && npm run build_website_prod && npm run build_css_prod && node tools/run_python.js tools/create_package.py",
 		"build_dev": "npm run build_engine_dev && npm run build_website_dev",
 		"build_css_prod": "cleancss -o build/o3dv.website.min.css website/css/*",
