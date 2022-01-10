@@ -1,12 +1,16 @@
-var assert = require ('assert');
-var testUtils = require ('../utils/testutils.js');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+import { GetModelWithOneMesh, GetTetrahedronMesh, GetTwoCubesConnectingInOneEdgeModel, GetTwoCubesConnectingInOneFaceModel, GetTwoCubesConnectingInOneVertexModel } from '../utils/testutils.js';
+
+export default function suite ()
+{
 
 describe ('Model Utils', function () {
     it ('Mesh Bounding Box', function () {
         var cube = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
         let cubeBounds = OV.GetBoundingBox (cube);
-        assert (OV.CoordIsEqual3D (cubeBounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (cubeBounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (cubeBounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (cubeBounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
     });
 
     it ('Mesh Instance Bounding Box', function () {
@@ -16,8 +20,8 @@ describe ('Model Utils', function () {
         node.SetTransformation (transformation);
         let cubeInstance = new OV.MeshInstance (null, node, cube);
         let cubeInstanceBounds = OV.GetBoundingBox (cubeInstance);
-        assert (OV.CoordIsEqual3D (cubeInstanceBounds.min, new OV.Coord3D (2.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (cubeInstanceBounds.max, new OV.Coord3D (3.0, 1.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (cubeInstanceBounds.min, new OV.Coord3D (2.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (cubeInstanceBounds.max, new OV.Coord3D (3.0, 1.0, 1.0)));
     });
 
     it ('Model Bounding Box', function () {
@@ -40,22 +44,22 @@ describe ('Model Utils', function () {
         OV.FinalizeModel (model);
 
         let mesh1Bounds = OV.GetBoundingBox (model.GetMesh (0));
-        assert (OV.CoordIsEqual3D (mesh1Bounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (mesh1Bounds.max, new OV.Coord3D (1.0, 1.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (mesh1Bounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (mesh1Bounds.max, new OV.Coord3D (1.0, 1.0, 0.0)));
 
         let mesh2Bounds = OV.GetBoundingBox (model.GetMesh (1));
-        assert (OV.CoordIsEqual3D (mesh2Bounds.min, new OV.Coord3D (0.0, 0.0, 1.0)));
-        assert (OV.CoordIsEqual3D (mesh2Bounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (mesh2Bounds.min, new OV.Coord3D (0.0, 0.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (mesh2Bounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
 
         let modelBounds = OV.GetBoundingBox (model);
-        assert (OV.CoordIsEqual3D (modelBounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (modelBounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (modelBounds.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (modelBounds.max, new OV.Coord3D (1.0, 1.0, 1.0)));
     });
 
     it ('Tetrahedron Topology Calculation', function () {
-        let tetrahedron = testUtils.GetModelWithOneMesh (testUtils.GetTetrahedronMesh ());
+        let tetrahedron = GetModelWithOneMesh (GetTetrahedronMesh ());
         let topology = OV.GetTopology (tetrahedron);
-        assert (OV.IsSolid (tetrahedron));
+        assert.ok (OV.IsSolid (tetrahedron));
         assert.strictEqual (topology.vertices.length, 4);
         assert.strictEqual (topology.edges.length, 6);
         assert.strictEqual (topology.triangleEdges.length, 4 * 3);
@@ -70,8 +74,8 @@ describe ('Model Utils', function () {
     });
 
     it ('Cube Topology Calculation', function () {
-        let cube = testUtils.GetModelWithOneMesh (OV.GenerateCuboid (null, 1.0, 1.0, 1.0));
-        assert (OV.IsSolid (cube));
+        let cube = GetModelWithOneMesh (OV.GenerateCuboid (null, 1.0, 1.0, 1.0));
+        assert.ok (OV.IsSolid (cube));
 
         let topology = OV.GetTopology (cube);
         assert.strictEqual (topology.vertices.length, 8);
@@ -106,23 +110,25 @@ describe ('Model Utils', function () {
     });
 
     it ('Two Cubes Connecting in One Vertex Topology Calculation', function () {
-        const model = testUtils.GetTwoCubesConnectingInOneVertexModel ();
+        const model = GetTwoCubesConnectingInOneVertexModel ();
         let topology = OV.GetTopology (model);
         assert.strictEqual (topology.vertices.length, 15);
-        assert (OV.IsSolid (model));
+        assert.ok (OV.IsSolid (model));
     });
 
     it ('Two Cubes Connecting in One Edge Topology Calculation', function () {
-        const model = testUtils.GetTwoCubesConnectingInOneEdgeModel ();
+        const model = GetTwoCubesConnectingInOneEdgeModel ();
         let topology = OV.GetTopology (model);
         assert.strictEqual (topology.vertices.length, 14);
-        assert (OV.IsSolid (model));
+        assert.ok (OV.IsSolid (model));
     });
 
     it ('Two Cubes Connecting in One Face Topology Calculation', function () {
-        const model = testUtils.GetTwoCubesConnectingInOneFaceModel ();
+        const model = GetTwoCubesConnectingInOneFaceModel ();
         let topology = OV.GetTopology (model);
         assert.strictEqual (topology.vertices.length, 12);
-        assert (OV.IsSolid (model));
+        assert.ok (OV.IsSolid (model));
     });
 });
+
+}

@@ -1,5 +1,8 @@
-var assert = require ('assert');
-var testUtils = require ('../utils/testutils.js');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+
+export default function suite ()
+{
 
 describe ('Mesh Buffer', function () {
     it ('Mesh To Buffer Simple', function () {
@@ -145,7 +148,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model);
-        assert (OV.CheckModel (model));
+        assert.ok (OV.CheckModel (model));
 
         let buffer = OV.ConvertMeshToMeshBuffer (mesh);
         assert.strictEqual (buffer.primitives.length, 1);
@@ -183,7 +186,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model);
-        assert (OV.CheckModel (model));
+        assert.ok (OV.CheckModel (model));
 
         let buffer = OV.ConvertMeshToMeshBuffer (mesh);
         assert.strictEqual (buffer.primitives.length, 1);
@@ -223,7 +226,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model);
-        assert (OV.CheckModel (model));
+        assert.ok (OV.CheckModel (model));
 
         let buffer = OV.ConvertMeshToMeshBuffer (mesh);
         assert.strictEqual (buffer.primitives.length, 1);
@@ -265,7 +268,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model);
-        assert (OV.CheckModel (model));
+        assert.ok (OV.CheckModel (model));
 
         let buffer = OV.ConvertMeshToMeshBuffer (mesh);
         assert.strictEqual (buffer.primitives.length, 2);
@@ -313,7 +316,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model);
-        assert (OV.CheckModel (model));
+        assert.ok (OV.CheckModel (model));
 
         let buffer = OV.ConvertMeshToMeshBuffer (mesh);
         assert.strictEqual (buffer.primitives.length, 1);
@@ -354,7 +357,7 @@ describe ('Mesh Buffer', function () {
 
         model.AddMesh (mesh);
         OV.FinalizeModel (model);
-        assert (OV.CheckModel (model));
+        assert.ok (OV.CheckModel (model));
 
         let buffer = OV.ConvertMeshToMeshBuffer (mesh);
         assert.strictEqual (buffer.primitives.length, 1);
@@ -364,3 +367,5 @@ describe ('Mesh Buffer', function () {
         assert.strictEqual (buffer.primitives[0].uvs.length, 30 * 2);
     });
 });
+
+}

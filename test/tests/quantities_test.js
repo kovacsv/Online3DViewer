@@ -1,38 +1,42 @@
-var assert = require ('assert');
-var testUtils = require ('../utils/testutils.js');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+import { GetCubeWithOneMissingFaceMesh, GetModelWithOneMesh, GetTetrahedronMesh, GetTwoCubesConnectingInOneEdgeModel, GetTwoCubesConnectingInOneFaceModel, GetTwoCubesConnectingInOneVertexModel } from '../utils/testutils.js';
+
+export default function suite ()
+{
 
 describe ('Quantities', function () {
     it ('Cube Volume Calculation', function () {
         const mesh = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
-        const model = testUtils.GetModelWithOneMesh (mesh);
-        assert (OV.IsSolid (mesh));
-        assert (OV.IsSolid (model));
-        assert (OV.IsEqual (OV.CalculateVolume (mesh), 1.0));
-        assert (OV.IsEqual (OV.CalculateVolume (model), 1.0));
+        const model = GetModelWithOneMesh (mesh);
+        assert.ok (OV.IsSolid (mesh));
+        assert.ok (OV.IsSolid (model));
+        assert.ok (OV.IsEqual (OV.CalculateVolume (mesh), 1.0));
+        assert.ok (OV.IsEqual (OV.CalculateVolume (model), 1.0));
     });
 
     it ('Cube with Missing Face Volume Calculation', function () {
-        const mesh = testUtils.GetCubeWithOneMissingFaceMesh ();
-        const model = testUtils.GetModelWithOneMesh (mesh);
-        assert (!OV.IsSolid (model));
+        const mesh = GetCubeWithOneMissingFaceMesh ();
+        const model = GetModelWithOneMesh (mesh);
+        assert.ok (!OV.IsSolid (model));
     });
 
     it ('Two Cubes Connecting in One Vertex Volume Calculation', function () {
-        const model = testUtils.GetTwoCubesConnectingInOneVertexModel ();
-        assert (OV.IsSolid (model));
-        assert (OV.IsEqual (OV.CalculateVolume (model), 2.0));
+        const model = GetTwoCubesConnectingInOneVertexModel ();
+        assert.ok (OV.IsSolid (model));
+        assert.ok (OV.IsEqual (OV.CalculateVolume (model), 2.0));
     });
 
     it ('Two Cubes Connecting in One Edge Volume Calculation', function () {
-        const model = testUtils.GetTwoCubesConnectingInOneEdgeModel ();
-        assert (OV.IsSolid (model));
-        assert (OV.IsEqual (OV.CalculateVolume (model), 2.0));
+        const model = GetTwoCubesConnectingInOneEdgeModel ();
+        assert.ok (OV.IsSolid (model));
+        assert.ok (OV.IsEqual (OV.CalculateVolume (model), 2.0));
     });
 
     it ('Two Cubes Connecting in One Face Volume Calculation', function () {
-        const model = testUtils.GetTwoCubesConnectingInOneFaceModel ();
-        assert (OV.IsSolid (model));
-        assert (OV.IsEqual (OV.CalculateVolume (model), 2.0));
+        const model = GetTwoCubesConnectingInOneFaceModel ();
+        assert.ok (OV.IsSolid (model));
+        assert.ok (OV.IsEqual (OV.CalculateVolume (model), 2.0));
     });
 
     it ('Cube with Wrongly Oriented Triangle Volume Calculation', function () {
@@ -57,47 +61,47 @@ describe ('Quantities', function () {
         mesh.AddTriangle (new OV.Triangle (0, 2, 1));
         mesh.AddTriangle (new OV.Triangle (4, 5, 6));
         mesh.AddTriangle (new OV.Triangle (4, 7, 6));
-        const model = testUtils.GetModelWithOneMesh (mesh);
-        assert (!OV.IsSolid (mesh));
-        assert (!OV.IsSolid (model));
+        const model = GetModelWithOneMesh (mesh);
+        assert.ok (!OV.IsSolid (mesh));
+        assert.ok (!OV.IsSolid (model));
     });
 
     it ('Cube Surface Area Calculation', function () {
         const mesh = OV.GenerateCuboid (null, 1.0, 1.0, 1.0);
-        const model = testUtils.GetModelWithOneMesh (mesh);
-        assert (OV.IsSolid (mesh));
-        assert (OV.IsSolid (model));
-        assert (OV.IsEqual (OV.CalculateSurfaceArea (mesh), 6.0));
-        assert (OV.IsEqual (OV.CalculateSurfaceArea (model), 6.0));
+        const model = GetModelWithOneMesh (mesh);
+        assert.ok (OV.IsSolid (mesh));
+        assert.ok (OV.IsSolid (model));
+        assert.ok (OV.IsEqual (OV.CalculateSurfaceArea (mesh), 6.0));
+        assert.ok (OV.IsEqual (OV.CalculateSurfaceArea (model), 6.0));
     });
 
     it ('Cube with Missing Face Surface Area Calculation', function () {
-        const mesh = testUtils.GetCubeWithOneMissingFaceMesh ();
-        const model = testUtils.GetModelWithOneMesh (mesh);
-        assert (!OV.IsSolid (mesh));
-        assert (!OV.IsSolid (model));
-        assert (OV.IsEqual (OV.CalculateSurfaceArea (mesh), 5.0));
-        assert (OV.IsEqual (OV.CalculateSurfaceArea (model), 5.0));
+        const mesh = GetCubeWithOneMissingFaceMesh ();
+        const model = GetModelWithOneMesh (mesh);
+        assert.ok (!OV.IsSolid (mesh));
+        assert.ok (!OV.IsSolid (model));
+        assert.ok (OV.IsEqual (OV.CalculateSurfaceArea (mesh), 5.0));
+        assert.ok (OV.IsEqual (OV.CalculateSurfaceArea (model), 5.0));
     });
 
     it ('Tetrahedron Volume Calculation', function () {
         const edgeLength = OV.CoordDistance3D (new OV.Coord3D (1.0, 1.0, 1.0), new OV.Coord3D (-1.0, -1.0, 1.0));
-        const mesh = testUtils.GetTetrahedronMesh ();
-        const model = testUtils.GetModelWithOneMesh (mesh);
-        assert (OV.IsSolid (mesh));
-        assert (OV.IsSolid (model));
-        assert (OV.IsEqual (OV.CalculateVolume (mesh), Math.pow (edgeLength, 3.0) / (6.0 * Math.sqrt (2))));
-        assert (OV.IsEqual (OV.CalculateVolume (model), Math.pow (edgeLength, 3.0) / (6.0 * Math.sqrt (2))));
+        const mesh = GetTetrahedronMesh ();
+        const model = GetModelWithOneMesh (mesh);
+        assert.ok (OV.IsSolid (mesh));
+        assert.ok (OV.IsSolid (model));
+        assert.ok (OV.IsEqual (OV.CalculateVolume (mesh), Math.pow (edgeLength, 3.0) / (6.0 * Math.sqrt (2))));
+        assert.ok (OV.IsEqual (OV.CalculateVolume (model), Math.pow (edgeLength, 3.0) / (6.0 * Math.sqrt (2))));
     });
 
     it ('Tetrahedron Surface Area Calculation', function () {
         const edgeLength = OV.CoordDistance3D (new OV.Coord3D (1.0, 1.0, 1.0), new OV.Coord3D (-1.0, -1.0, 1.0));
-        const mesh = testUtils.GetTetrahedronMesh ();
-        const model = testUtils.GetModelWithOneMesh (mesh);
-        assert (OV.IsSolid (mesh));
-        assert (OV.IsSolid (model));
-        assert (OV.IsEqual (OV.CalculateSurfaceArea (mesh), Math.sqrt (3) * Math.pow (edgeLength, 2.0)));
-        assert (OV.IsEqual (OV.CalculateSurfaceArea (model), Math.sqrt (3) * Math.pow (edgeLength, 2.0)));
+        const mesh = GetTetrahedronMesh ();
+        const model = GetModelWithOneMesh (mesh);
+        assert.ok (OV.IsSolid (mesh));
+        assert.ok (OV.IsSolid (model));
+        assert.ok (OV.IsEqual (OV.CalculateSurfaceArea (mesh), Math.sqrt (3) * Math.pow (edgeLength, 2.0)));
+        assert.ok (OV.IsEqual (OV.CalculateSurfaceArea (model), Math.sqrt (3) * Math.pow (edgeLength, 2.0)));
     });
 
     it ('Cube Scaled Volume and Area Calculation', function () {
@@ -106,8 +110,10 @@ describe ('Quantities', function () {
         let node = new OV.Node ();
         node.SetTransformation (transformation);
         const meshInstance = new OV.MeshInstance (null, node, mesh);
-        assert (OV.IsSolid (meshInstance));
-        assert (OV.IsEqual (OV.CalculateVolume (meshInstance), 8.0));
-        assert (OV.IsEqual (OV.CalculateSurfaceArea (meshInstance), 24.0));
+        assert.ok (OV.IsSolid (meshInstance));
+        assert.ok (OV.IsEqual (OV.CalculateVolume (meshInstance), 8.0));
+        assert.ok (OV.IsEqual (OV.CalculateSurfaceArea (meshInstance), 24.0));
     });
 });
+
+}

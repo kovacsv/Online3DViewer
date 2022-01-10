@@ -4,28 +4,35 @@
 	"version": "0.8.4",
 	"repository": "github:kovacsv/Online3DViewer",
 	"license": "MIT",
+	"type": "module",
 	"devDependencies": {
 		"clean-css-cli": "^5.5.0",
 		"docdash": "^1.2.0",
+		"esbuild": "^0.14.11",
 		"eslint": "^8.5.0",
 		"fantasticon": "^1.2.2",
-		"google-closure-compiler": "^20211201.0.0",
 		"http-server": "^14.0.0",
 		"jsdoc": "^3.6.7",
 		"mocha": "^9.1.3",
 		"oslllo-svg-fixer": "^1.4.0",
-		"rewire": "^6.0.0",
 		"svgo": "^2.3.1"
 	},
 	"scripts": {
 		"start": "http-server",
 		"test": "mocha test",
-		"lint": "eslint source && eslint website",
-		"doc": "jsdoc -c tools/jsdoc.json",
-		"build": "npm run lint && npm run doc && node tools/run_python.js tools/build.py",
-		"update": "node tools/run_python.js tools/update.py",
+		"lint": "eslint source",
+		"docs": "jsdoc -c tools/jsdoc.json",
 		"updatelibs": "npm install && node tools/run_python.js tools/updatelibs.py",
-		"svg": "node tools/run_python.js tools/svg.py"
+		"generate_icon_font": "node tools/run_python.js tools/generate_icon_font.py",
+		"update_engine_exports": "node tools/run_python.js tools/update_engine_exports.py",
+		"create_dist": "npm run lint && npm run test && npm run create_package",
+		"create_package": "npm run build_engine_prod && npm run build_website_prod && npm run build_css_prod && node tools/run_python.js tools/create_package.py",
+		"build_dev": "npm run build_engine_dev && npm run build_website_dev",
+		"build_css_prod": "cleancss -o build/o3dv.website.min.css website/css/*",
+		"build_engine_dev": "npm run update_engine_exports && esbuild source/engine/main.js --bundle --minify --global-name=OV --sourcemap --outfile=build/o3dv.min-dev.js",
+		"build_engine_prod": "npm run update_engine_exports && esbuild source/engine/main.js --bundle --minify --global-name=OV --outfile=build/o3dv.min.js",
+		"build_website_dev": "esbuild source/website/index.js --bundle --minify --global-name=OV --sourcemap --outfile=build/o3dv.website.min-dev.js",
+		"build_website_prod": "esbuild source/website/index.js --bundle --minify --global-name=OV --outfile=build/o3dv.website.min.js"
 	},
 	"dependencies": {
 		"@simonwep/pickr": "1.8.2",
@@ -52,13 +59,13 @@
 			"WebIFC": "readonly"
 		},
 		"parserOptions": {
-			"ecmaVersion": 12
+			"ecmaVersion": 12,
+			"sourceType": "module"
 		},
 		"rules": {
 			"semi": "error",
 			"no-var": "error",
 			"guard-for-in": "error",
-			"no-use-before-define": "error",
 			"no-new": "error",
 			"no-new-object": "error",
 			"no-new-func": "error",
@@ -77,7 +84,8 @@
 			"no-undef": "error",
 			"no-extend-native": "error",
 			"eqeqeq": "error",
-			"no-unused-vars": "off"
+			"no-unused-vars": "off",
+			"no-use-before-define": "off"
 		}
 	}
 }

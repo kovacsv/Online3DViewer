@@ -1,4 +1,8 @@
-var assert = require ('assert');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+
+export default function suite ()
+{
 
 function GetLines (str)
 {
@@ -14,8 +18,8 @@ describe ('File Utils', function () {
         assert.strictEqual (OV.GetFileExtension ('file'), '');
         assert.strictEqual (OV.GetFileExtension ('file.obj'), 'obj');
         assert.strictEqual (OV.GetFileExtension ('file.OBJ'), 'obj');
-    });    
-    
+    });
+
     it ('Get File Name', function () {
         assert.strictEqual (OV.GetFileName ('file'), 'file');
         assert.strictEqual (OV.GetFileName ('file.obj'), 'file.obj');
@@ -26,7 +30,7 @@ describe ('File Utils', function () {
         assert.strictEqual (OV.GetFileName ('folder\\file'), 'file');
         assert.strictEqual (OV.GetFileName ('folder\\file.obj'), 'file.obj');
         assert.strictEqual (OV.GetFileName ('folder\\file.OBJ'), 'file.OBJ');
-    });    
+    });
 
     it ('Read Lines', function () {
         assert.deepStrictEqual (GetLines (''), []);
@@ -39,3 +43,5 @@ describe ('File Utils', function () {
         assert.deepStrictEqual (GetLines ('\r\napple\r\n'), ['apple']);
     });
 });
+
+}

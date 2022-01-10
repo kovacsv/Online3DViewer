@@ -1,4 +1,8 @@
-var assert = require ('assert');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+
+export default function suite ()
+{
 
 describe ('Parameter List', function () {
     it ('Parameter list builder', function () {
@@ -76,3 +80,5 @@ describe ('Parameter List', function () {
         });
     });
 });
+
+}

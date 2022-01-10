@@ -1,6 +1,10 @@
-let assert = require ('assert');
-let testFiles = require ('../utils/testfiles.js');
-let testUtils = require ('../utils/testutils.js');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+import { ImportGltfFile } from '../utils/testfiles.js';
+import { ModelNodesToTree, ModelToObjectSimple } from '../utils/testutils.js';
+
+export default function suite ()
+{
 
 //const util = require('util')
 //console.log (util.inspect(testUtils.ModelToObjectSimple (model), {showHidden: false, depth: null}))
@@ -16,9 +20,9 @@ describe ('Gltf Importer', function () {
         let processed = 0;
         for (let i = 0; i < testFileList.length; i++) {
             let testFile = testFileList[i];
-            testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
-                assert (OV.CheckModel (model));
-                assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+            ImportGltfFile (testFile[0], testFile[1], function (model) {
+                assert.ok (OV.CheckModel (model));
+                assert.deepStrictEqual (ModelNodesToTree (model), {
                     name : '<Root>',
                     childNodes : [
                         {
@@ -29,7 +33,7 @@ describe ('Gltf Importer', function () {
                     ],
                     meshNames : []
                 });
-                assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+                assert.deepStrictEqual (ModelToObjectSimple (model), {
                     name : '',
                     materials : [
                         { name : '' }
@@ -67,9 +71,9 @@ describe ('Gltf Importer', function () {
         let processed = 0;
         for (let i = 0; i < testFileList.length; i++) {
             let testFile = testFileList[i];
-            testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
-                assert (OV.CheckModel (model));
-                assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+            ImportGltfFile (testFile[0], testFile[1], function (model) {
+                assert.ok (OV.CheckModel (model));
+                assert.deepStrictEqual (ModelNodesToTree (model), {
                     name : '<Root>',
                     childNodes : [
                         {
@@ -86,7 +90,7 @@ describe ('Gltf Importer', function () {
                     ],
                     meshNames : []
                 });
-                assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+                assert.deepStrictEqual (ModelToObjectSimple (model), {
                     name : '',
                     materials : [
                         { name : 'Red' }
@@ -123,9 +127,9 @@ describe ('Gltf Importer', function () {
         let processed = 0;
         for (let i = 0; i < testFileList.length; i++) {
             let testFile = testFileList[i];
-            testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
-                assert (OV.CheckModel (model));
-                assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+            ImportGltfFile (testFile[0], testFile[1], function (model) {
+                assert.ok (OV.CheckModel (model));
+                assert.deepStrictEqual (ModelNodesToTree (model), {
                     name : '<Root>',
                     childNodes : [
                         {
@@ -142,7 +146,7 @@ describe ('Gltf Importer', function () {
                     ],
                     meshNames : []
                 });
-                assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+                assert.deepStrictEqual (ModelToObjectSimple (model), {
                     name : '',
                     materials : [
                         { name : 'Default' }
@@ -179,9 +183,9 @@ describe ('Gltf Importer', function () {
         let processed = 0;
         for (let i = 0; i < testFileList.length; i++) {
             let testFile = testFileList[i];
-            testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
-                assert (OV.CheckModel (model));
-                assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+            ImportGltfFile (testFile[0], testFile[1], function (model) {
+                assert.ok (OV.CheckModel (model));
+                assert.deepStrictEqual (ModelNodesToTree (model), {
                     name : '<Root>',
                     childNodes : [
                         {
@@ -198,7 +202,7 @@ describe ('Gltf Importer', function () {
                     ],
                     meshNames : []
                 });
-                assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+                assert.deepStrictEqual (ModelToObjectSimple (model), {
                     name : '',
                     materials : [
                         { name : '' }
@@ -235,9 +239,9 @@ describe ('Gltf Importer', function () {
         let processed = 0;
         for (let i = 0; i < testFileList.length; i++) {
             let testFile = testFileList[i];
-            testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
-                assert (OV.CheckModel (model));
-                assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+            ImportGltfFile (testFile[0], testFile[1], function (model) {
+                assert.ok (OV.CheckModel (model));
+                assert.deepStrictEqual (ModelNodesToTree (model), {
                     name : '<Root>',
                     childNodes : [
                         {
@@ -254,7 +258,7 @@ describe ('Gltf Importer', function () {
                     ],
                     meshNames : []
                 });
-                assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+                assert.deepStrictEqual (ModelToObjectSimple (model), {
                     name : '',
                     materials : [
                         { name : 'Texture' }
@@ -290,9 +294,9 @@ describe ('Gltf Importer', function () {
         let processed = 0;
         for (let i = 0; i < testFileList.length; i++) {
             let testFile = testFileList[i];
-            testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
-                assert (OV.CheckModel (model));
-                assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+            ImportGltfFile (testFile[0], testFile[1], function (model) {
+                assert.ok (OV.CheckModel (model));
+                assert.deepStrictEqual (ModelNodesToTree (model), {
                     name : '<Root>',
                     childNodes : [
                         {
@@ -308,7 +312,7 @@ describe ('Gltf Importer', function () {
                     ],
                     meshNames : []
                 });
-                assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+                assert.deepStrictEqual (ModelToObjectSimple (model), {
                     name : '',
                     materials : [
                         { name : '' }
@@ -357,9 +361,9 @@ describe ('Gltf Importer', function () {
         let processed = 0;
         for (let i = 0; i < testFileList.length; i++) {
             let testFile = testFileList[i];
-            testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
-                assert (OV.CheckModel (model));
-                assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+            ImportGltfFile (testFile[0], testFile[1], function (model) {
+                assert.ok (OV.CheckModel (model));
+                assert.deepStrictEqual (ModelToObjectSimple (model), {
                     name : '',
                     materials : [
                         { name : 'BaseMaterial' },
@@ -548,9 +552,9 @@ describe ('Gltf Importer', function () {
         let processed = 0;
         for (let i = 0; i < testFileList.length; i++) {
             let testFile = testFileList[i];
-            testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
-                assert (OV.CheckModel (model));
-                assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+            ImportGltfFile (testFile[0], testFile[1], function (model) {
+                assert.ok (OV.CheckModel (model));
+                assert.deepStrictEqual (ModelToObjectSimple (model), {
                     name : '',
                     materials : [
                         { name : '' }
@@ -585,9 +589,9 @@ describe ('Gltf Importer', function () {
         let processed = 0;
         for (let i = 0; i < testFileList.length; i++) {
             let testFile = testFileList[i];
-            testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
-                assert (OV.CheckModel (model));
-                assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+            ImportGltfFile (testFile[0], testFile[1], function (model) {
+                assert.ok (OV.CheckModel (model));
+                assert.deepStrictEqual (ModelToObjectSimple (model), {
                     name : '',
                     materials : [
                         { name : '' }
@@ -623,9 +627,9 @@ describe ('Gltf Importer', function () {
         let processed = 0;
         for (let i = 0; i < testFileList.length; i++) {
             let testFile = testFileList[i];
-            testFiles.ImportGltfFile (testFile[0], testFile[1], function (model) {
-                assert (OV.CheckModel (model));
-                assert.deepStrictEqual (testUtils.ModelToObjectSimple (model), {
+            ImportGltfFile (testFile[0], testFile[1], function (model) {
+                assert.ok (OV.CheckModel (model));
+                assert.deepStrictEqual (ModelToObjectSimple (model), {
                     name : '',
                     materials : [
                         { name : '' }
@@ -653,3 +657,5 @@ describe ('Gltf Importer', function () {
         }
     });
 });
+
+}

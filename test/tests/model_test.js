@@ -1,5 +1,9 @@
-var assert = require ('assert');
-var testUtils = require ('../utils/testutils.js');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+import { GetHierarchicalModelNoFinalization, GetTranslatedRotatedCubesModel, ModelNodesToTree } from '../utils/testutils.js';
+
+export default function suite ()
+{
 
 describe ('Model', function () {
     it ('Default Initialization', function () {
@@ -209,20 +213,20 @@ describe ('Model Finalization', function () {
     });
 
     it ('Remove Empty Nodes Recursively', function () {
-        let model = testUtils.GetHierarchicalModelNoFinalization ();
+        let model = GetHierarchicalModelNoFinalization ();
         OV.FinalizeModel (model);
         assert.strictEqual (model.MeshCount (), 0);
         assert.strictEqual (model.MeshInstanceCount (), 0);
-        assert (model.GetRootNode ().IsEmpty ());
+        assert.ok (model.GetRootNode ().IsEmpty ());
     });
 });
 
 describe ('Color Conversion', function () {
     it ('Color equality check', function () {
-        assert (OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (10, 20, 30)));
-        assert (!OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (11, 20, 30)));
-        assert (!OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (10, 21, 30)));
-        assert (!OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (10, 20, 31)));
+        assert.ok (OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (10, 20, 30)));
+        assert.ok (!OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (11, 20, 30)));
+        assert.ok (!OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (10, 21, 30)));
+        assert.ok (!OV.ColorIsEqual (new OV.Color (10, 20, 30), new OV.Color (10, 20, 31)));
     });
 
     it ('Color hex string conversion', function () {
@@ -235,8 +239,8 @@ describe ('Color Conversion', function () {
 
 describe ('Node Hierarchy', function () {
     it ('Enumerate hierarchy', function () {
-        let model = testUtils.GetHierarchicalModelNoFinalization ();
-        let modelTree = testUtils.ModelNodesToTree (model);
+        let model = GetHierarchicalModelNoFinalization ();
+        let modelTree = ModelNodesToTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
             childNodes : [
@@ -267,9 +271,9 @@ describe ('Node Hierarchy', function () {
     });
 
     it ('Remove mesh', function () {
-        let model = testUtils.GetHierarchicalModelNoFinalization ();
+        let model = GetHierarchicalModelNoFinalization ();
         model.RemoveMesh (2);
-        let modelTree = testUtils.ModelNodesToTree (model);
+        let modelTree = ModelNodesToTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
             childNodes : [
@@ -300,8 +304,8 @@ describe ('Node Hierarchy', function () {
     });
 
     it ('Enumerate mesh instances', function () {
-        let model = testUtils.GetTranslatedRotatedCubesModel ();
-        let modelTree = testUtils.ModelNodesToTree (model);
+        let model = GetTranslatedRotatedCubesModel ();
+        let modelTree = ModelNodesToTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
             childNodes : [
@@ -336,19 +340,19 @@ describe ('Node Hierarchy', function () {
         let boundingBox2 = OV.GetBoundingBox (meshInstances[1]);
         let boundingBox3 = OV.GetBoundingBox (meshInstances[2]);
 
-        assert (OV.CoordIsEqual3D (boundingBox1.min, new OV.Coord3D (0.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox1.max, new OV.Coord3D (1.0, 1.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox1.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox1.max, new OV.Coord3D (1.0, 1.0, 1.0)));
 
-        assert (OV.CoordIsEqual3D (boundingBox2.min, new OV.Coord3D (2.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox2.max, new OV.Coord3D (3.0, 1.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox2.min, new OV.Coord3D (2.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox2.max, new OV.Coord3D (3.0, 1.0, 1.0)));
 
-        assert (OV.CoordIsEqual3D (boundingBox3.min, new OV.Coord3D (-1.0, 2.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox3.max, new OV.Coord3D (0.0, 3.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox3.min, new OV.Coord3D (-1.0, 2.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox3.max, new OV.Coord3D (0.0, 3.0, 1.0)));
     });
 
     it ('Enumerate transformed mesh instances', function () {
-        let model = testUtils.GetTranslatedRotatedCubesModel ();
-        let modelTree = testUtils.ModelNodesToTree (model);
+        let model = GetTranslatedRotatedCubesModel ();
+        let modelTree = ModelNodesToTree (model);
         assert.deepStrictEqual (modelTree, {
             name : '<Root>',
             childNodes : [
@@ -383,18 +387,18 @@ describe ('Node Hierarchy', function () {
         let boundingBox2 = OV.GetBoundingBox (meshes[1]);
         let boundingBox3 = OV.GetBoundingBox (meshes[2]);
 
-        assert (OV.CoordIsEqual3D (boundingBox1.min, new OV.Coord3D (0.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox1.max, new OV.Coord3D (1.0, 1.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox1.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox1.max, new OV.Coord3D (1.0, 1.0, 1.0)));
 
-        assert (OV.CoordIsEqual3D (boundingBox2.min, new OV.Coord3D (2.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox2.max, new OV.Coord3D (3.0, 1.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox2.min, new OV.Coord3D (2.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox2.max, new OV.Coord3D (3.0, 1.0, 1.0)));
 
-        assert (OV.CoordIsEqual3D (boundingBox3.min, new OV.Coord3D (-1.0, 2.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox3.max, new OV.Coord3D (0.0, 3.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox3.min, new OV.Coord3D (-1.0, 2.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox3.max, new OV.Coord3D (0.0, 3.0, 1.0)));
     });
 
     it ('Instance counters', function () {
-        let model = testUtils.GetTranslatedRotatedCubesModel ();
+        let model = GetTranslatedRotatedCubesModel ();
         OV.FinalizeModel (model);
         assert.strictEqual (model.MeshCount (), 1);
         assert.strictEqual (model.MeshInstanceCount (), 3);
@@ -405,13 +409,15 @@ describe ('Node Hierarchy', function () {
     });
 
     it ('Instance enumeration', function () {
-        let model = testUtils.GetTranslatedRotatedCubesModel ();
+        let model = GetTranslatedRotatedCubesModel ();
         let meshInstances = [];
         model.EnumerateMeshInstances ((meshInstance) => {
             meshInstances.push (meshInstance);
         });
-        assert (meshInstances[0].GetId ().IsEqual (new OV.MeshInstanceId (0, 0)));
-        assert (meshInstances[1].GetId ().IsEqual (new OV.MeshInstanceId (1, 0)));
-        assert (meshInstances[2].GetId ().IsEqual (new OV.MeshInstanceId (3, 0)));
+        assert.ok (meshInstances[0].GetId ().IsEqual (new OV.MeshInstanceId (0, 0)));
+        assert.ok (meshInstances[1].GetId ().IsEqual (new OV.MeshInstanceId (1, 0)));
+        assert.ok (meshInstances[2].GetId ().IsEqual (new OV.MeshInstanceId (3, 0)));
     });
 });
+
+}

@@ -1,4 +1,8 @@
-var assert = require ('assert');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+
+export default function suite ()
+{
 
 function CreateTestModel ()
 {
@@ -43,8 +47,8 @@ describe ('Exporter Model', function () {
         let exporterModel = new OV.ExporterModel (model);
         assert.strictEqual (exporterModel.MeshInstanceCount (), 3);
         let boundingBox = GetExporterModelBoundingBox (exporterModel);
-        assert (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (0.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (3.0, 1.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (3.0, 1.0, 1.0)));
     });
 
     it ('Model filter test', function () {
@@ -57,8 +61,8 @@ describe ('Exporter Model', function () {
         let exporterModel = new OV.ExporterModel (model, settings);
         assert.strictEqual (exporterModel.MeshInstanceCount (), 2);
         let boundingBox = GetExporterModelBoundingBox (exporterModel);
-        assert (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (0.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (2.0, 1.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (0.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (2.0, 1.0, 1.0)));
     });
 
     it ('Model transformation test', function () {
@@ -71,8 +75,8 @@ describe ('Exporter Model', function () {
         let exporterModel = new OV.ExporterModel (model, settings);
         assert.strictEqual (exporterModel.MeshInstanceCount (), 3);
         let boundingBox = GetExporterModelBoundingBox (exporterModel);
-        assert (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (-1.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (0.0, 1.0, 3.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (-1.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (0.0, 1.0, 3.0)));
     });
 
     it ('Model filter and transformation test', function () {
@@ -88,7 +92,9 @@ describe ('Exporter Model', function () {
         let exporterModel = new OV.ExporterModel (model, settings);
         assert.strictEqual (exporterModel.MeshInstanceCount (), 2);
         let boundingBox = GetExporterModelBoundingBox (exporterModel);
-        assert (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (-1.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (0.0, 1.0, 2.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (-1.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (0.0, 1.0, 2.0)));
     });
 });
+
+}

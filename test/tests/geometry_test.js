@@ -1,4 +1,8 @@
-var assert = require ('assert');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+
+export default function suite ()
+{
 
 function SeededRandom (from, to, seed)
 {
@@ -8,31 +12,31 @@ function SeededRandom (from, to, seed)
 
 describe ('Comparison', function () {
     it ('IsEqual', function () {
-        assert (OV.IsEqual (1.0, 1.0));
-        assert (OV.IsEqual (1.0, 1.000000001));
-        assert (!OV.IsEqual (1.0, 1.0001));
+        assert.ok (OV.IsEqual (1.0, 1.0));
+        assert.ok (OV.IsEqual (1.0, 1.000000001));
+        assert.ok (!OV.IsEqual (1.0, 1.0001));
     });
 
     it ('IsGreater', function () {
-        assert (OV.IsGreater (1.0, 0.0));
-        assert (OV.IsGreater (1.0001, 1.0));
-        assert (!OV.IsGreater (1.000000001, 1.0));
+        assert.ok (OV.IsGreater (1.0, 0.0));
+        assert.ok (OV.IsGreater (1.0001, 1.0));
+        assert.ok (!OV.IsGreater (1.000000001, 1.0));
 
-        assert (OV.IsGreaterOrEqual (1.0001, 1.0));
-        assert (OV.IsGreaterOrEqual (1.000000001, 1.0));
-        assert (OV.IsGreaterOrEqual (0.999999999, 1.0));
-        assert (!OV.IsGreaterOrEqual (0.999, 1.0));
+        assert.ok (OV.IsGreaterOrEqual (1.0001, 1.0));
+        assert.ok (OV.IsGreaterOrEqual (1.000000001, 1.0));
+        assert.ok (OV.IsGreaterOrEqual (0.999999999, 1.0));
+        assert.ok (!OV.IsGreaterOrEqual (0.999, 1.0));
     });
 
     it ('IsLower', function () {
-        assert (OV.IsLower (0.0, 1.0));
-        assert (OV.IsLower (1.0, 1.0001));
-        assert (!OV.IsLower (1.0, 1.000000001));
+        assert.ok (OV.IsLower (0.0, 1.0));
+        assert.ok (OV.IsLower (1.0, 1.0001));
+        assert.ok (!OV.IsLower (1.0, 1.000000001));
 
-        assert (OV.IsLowerOrEqual (1.0, 1.0001));
-        assert (OV.IsLowerOrEqual (1.0, 1.000000001));
-        assert (OV.IsLowerOrEqual (1.0, 0.999999999));
-        assert (!OV.IsLowerOrEqual (1.0, 0.999));
+        assert.ok (OV.IsLowerOrEqual (1.0, 1.0001));
+        assert.ok (OV.IsLowerOrEqual (1.0, 1.000000001));
+        assert.ok (OV.IsLowerOrEqual (1.0, 0.999999999));
+        assert.ok (!OV.IsLowerOrEqual (1.0, 0.999));
     });
 });
 
@@ -80,37 +84,37 @@ describe ('Transformation', function() {
         let coord = new OV.Coord3D (1.0, 2.0, 3.0);
 
         let tr = new OV.Transformation ();
-        assert (tr.IsIdentity ());
-        assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (1.0, 2.0, 3.0)));
+        assert.ok (tr.IsIdentity ());
+        assert.ok (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (1.0, 2.0, 3.0)));
 
         tr.AppendMatrix (new OV.Matrix ().CreateScale (3.0, 4.0, 5.0));
-        assert (!tr.IsIdentity ());
-        assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (3.0, 8.0, 15.0)));
+        assert.ok (!tr.IsIdentity ());
+        assert.ok (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (3.0, 8.0, 15.0)));
 
         tr.AppendMatrix (new OV.Matrix ().CreateRotation (rotation.x, rotation.y, rotation.z, rotation.w));
-        assert (!tr.IsIdentity ());
-        assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (15.0, 8.0, -3.0)));
+        assert.ok (!tr.IsIdentity ());
+        assert.ok (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (15.0, 8.0, -3.0)));
 
         tr.AppendMatrix (new OV.Matrix ().CreateTranslation (4.0, 5.0, 6.0));
-        assert (!tr.IsIdentity ());
-        assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
+        assert.ok (!tr.IsIdentity ());
+        assert.ok (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
 
         let tr2 = new OV.Transformation ();
         tr2.SetMatrix (new OV.Matrix ().ComposeTRS (new OV.Coord3D (4.0, 5.0, 6.0), rotation, new OV.Coord3D (3.0, 4.0, 5.0)));
-        assert (OV.CoordIsEqual3D (tr2.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
+        assert.ok (OV.CoordIsEqual3D (tr2.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
     });
 
     it ('Append Test', function () {
         let coord = new OV.Coord3D (1.0, 2.0, 3.0);
 
         let tr = new OV.Transformation ();
-        assert (tr.IsIdentity ());
-        assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (1.0, 2.0, 3.0)));
+        assert.ok (tr.IsIdentity ());
+        assert.ok (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (1.0, 2.0, 3.0)));
 
         let tr2 = new OV.Transformation (new OV.Matrix ().CreateScale (3.0, 4.0, 5.0));
         tr.Append (tr2);
-        assert (!tr.IsIdentity ());
-        assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (3.0, 8.0, 15.0)));
+        assert.ok (!tr.IsIdentity ());
+        assert.ok (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (3.0, 8.0, 15.0)));
     });
 
     it ('TRS Compose Test', function () {
@@ -119,7 +123,7 @@ describe ('Transformation', function() {
 
         let tr = new OV.Transformation ();
         tr.SetMatrix (new OV.Matrix ().ComposeTRS (new OV.Coord3D (4.0, 5.0, 6.0), rotation, new OV.Coord3D (3.0, 4.0, 5.0)));
-        assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
+        assert.ok (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
     });
 
     it ('TRS Compose Test 2', function () {
@@ -128,12 +132,12 @@ describe ('Transformation', function() {
 
         let tr = new OV.Transformation ();
         tr.SetMatrix (new OV.Matrix ().ComposeTRS (new OV.Coord3D (4.0, 5.0, 6.0), rotation, new OV.Coord3D (3.0, 4.0, 5.0)));
-        assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
+        assert.ok (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
 
         let trs = tr.GetMatrix ().DecomposeTRS ();
         let tr2 = new OV.Transformation ();
         tr2.SetMatrix (new OV.Matrix ().ComposeTRS (trs.translation, trs.rotation, trs.scale));
-        assert (OV.CoordIsEqual3D (tr2.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
+        assert.ok (OV.CoordIsEqual3D (tr2.TransformCoord3D (coord), new OV.Coord3D (19.0, 13.0, 3.0)));
     });
 
     it ('Default Quaternion Test', function () {
@@ -141,7 +145,7 @@ describe ('Transformation', function() {
 
         let tr = new OV.Transformation ();
         tr.SetMatrix (new OV.Matrix ().CreateRotation (0.0, 0.0, 0.0, 1.0));
-        assert (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), coord));
+        assert.ok (OV.CoordIsEqual3D (tr.TransformCoord3D (coord), coord));
     });
 
     it ('Clone Test', function () {
@@ -154,25 +158,25 @@ describe ('Transformation', function() {
 
 describe ('Tween', function() {
     it ('Linear Tween Function', function () {
-        assert (OV.IsEqual (OV.LinearTweenFunction (10.0, 0, 10), 0.0));
-        assert (OV.IsEqual (OV.LinearTweenFunction (10.0, 1, 10), 1.0));
-        assert (OV.IsEqual (OV.LinearTweenFunction (10.0, 5, 10), 5.0));
-        assert (OV.IsEqual (OV.LinearTweenFunction (10.0, 9, 10), 9.0));
-        assert (OV.IsEqual (OV.LinearTweenFunction (10.0, 10, 10), 10.0));
+        assert.ok (OV.IsEqual (OV.LinearTweenFunction (10.0, 0, 10), 0.0));
+        assert.ok (OV.IsEqual (OV.LinearTweenFunction (10.0, 1, 10), 1.0));
+        assert.ok (OV.IsEqual (OV.LinearTweenFunction (10.0, 5, 10), 5.0));
+        assert.ok (OV.IsEqual (OV.LinearTweenFunction (10.0, 9, 10), 9.0));
+        assert.ok (OV.IsEqual (OV.LinearTweenFunction (10.0, 10, 10), 10.0));
     });
 
     it ('Bezier Tween Function', function () {
-        assert (OV.IsEqual (OV.BezierTweenFunction (10.0, 0, 10), 0.0));
-        assert (OV.IsEqual (OV.BezierTweenFunction (10.0, 1, 10), 0.28));
-        assert (OV.IsEqual (OV.BezierTweenFunction (10.0, 5, 10), 5.0));
-        assert (OV.IsEqual (OV.BezierTweenFunction (10.0, 9, 10), 9.72));
-        assert (OV.IsEqual (OV.BezierTweenFunction (10.0, 10, 10), 10.0));
+        assert.ok (OV.IsEqual (OV.BezierTweenFunction (10.0, 0, 10), 0.0));
+        assert.ok (OV.IsEqual (OV.BezierTweenFunction (10.0, 1, 10), 0.28));
+        assert.ok (OV.IsEqual (OV.BezierTweenFunction (10.0, 5, 10), 5.0));
+        assert.ok (OV.IsEqual (OV.BezierTweenFunction (10.0, 9, 10), 9.72));
+        assert.ok (OV.IsEqual (OV.BezierTweenFunction (10.0, 10, 10), 10.0));
     });
 
     it ('Parabolic Tween Function', function () {
-        assert (OV.IsEqual (OV.ParabolicTweenFunction (10.0, 0, 10), 0.0));
-        assert (OV.IsEqual (OV.ParabolicTweenFunction (10.0, 5, 10), 5.0));
-        assert (OV.IsEqual (OV.ParabolicTweenFunction (10.0, 10, 10), 10.0));
+        assert.ok (OV.IsEqual (OV.ParabolicTweenFunction (10.0, 0, 10), 0.0));
+        assert.ok (OV.IsEqual (OV.ParabolicTweenFunction (10.0, 5, 10), 5.0));
+        assert.ok (OV.IsEqual (OV.ParabolicTweenFunction (10.0, 10, 10), 10.0));
     });
 
     it ('Linear Tween Coordinates', function () {
@@ -180,10 +184,10 @@ describe ('Tween', function() {
         let end = new OV.Coord3D (9.0, 0.0, 0.0);
         let segments = OV.TweenCoord3D (beg, end, 10, OV.LinearTweenFunction);
         assert.strictEqual (segments.length, 10);
-        assert (OV.CoordIsEqual3D (segments[0], beg));
-        assert (OV.CoordIsEqual3D (segments[1], new OV.Coord3D (1.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (segments[5], new OV.Coord3D (5.0, 0.0, 0.0)));
-        assert (OV.CoordIsEqual3D (segments[segments.length - 1], end));
+        assert.ok (OV.CoordIsEqual3D (segments[0], beg));
+        assert.ok (OV.CoordIsEqual3D (segments[1], new OV.Coord3D (1.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (segments[5], new OV.Coord3D (5.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (segments[segments.length - 1], end));
     });
 });
 
@@ -195,8 +199,8 @@ describe ('Octree', function() {
         ));
 
         let p1 = new OV.Coord3D (0.0, 0.0, 0.0);
-        assert (octree.AddPoint (p1, 'p1'));
-        assert (!octree.AddPoint (p1, 'p2'));
+        assert.ok (octree.AddPoint (p1, 'p1'));
+        assert.ok (!octree.AddPoint (p1, 'p2'));
         assert.strictEqual (octree.FindPoint (p1), 'p1')
     });
 
@@ -216,15 +220,15 @@ describe ('Octree', function() {
         let p8 = new OV.Coord3D (-2.0, -2.0, 2.0);
         let p9 = new OV.Coord3D (-2.0, -2.0, -2.0);
 
-        assert (octree.AddPoint (p1, 'p1'));
-        assert (octree.AddPoint (p2, 'p2'));
-        assert (octree.AddPoint (p3, 'p3'));
-        assert (octree.AddPoint (p4, 'p4'));
-        assert (octree.AddPoint (p5, 'p5'));
-        assert (octree.AddPoint (p6, 'p6'));
-        assert (octree.AddPoint (p7, 'p7'));
-        assert (octree.AddPoint (p8, 'p8'));
-        assert (octree.AddPoint (p9, 'p9'));
+        assert.ok (octree.AddPoint (p1, 'p1'));
+        assert.ok (octree.AddPoint (p2, 'p2'));
+        assert.ok (octree.AddPoint (p3, 'p3'));
+        assert.ok (octree.AddPoint (p4, 'p4'));
+        assert.ok (octree.AddPoint (p5, 'p5'));
+        assert.ok (octree.AddPoint (p6, 'p6'));
+        assert.ok (octree.AddPoint (p7, 'p7'));
+        assert.ok (octree.AddPoint (p8, 'p8'));
+        assert.ok (octree.AddPoint (p9, 'p9'));
 
         assert.strictEqual (octree.FindPoint (p1), 'p1');
         assert.strictEqual (octree.FindPoint (p2), 'p2');
@@ -247,9 +251,9 @@ describe ('Octree', function() {
         let p2 = new OV.Coord3D (-10.0, -10.0, -10.0);
         let p3 = new OV.Coord3D (20.0, 20.0, 20.0);
 
-        assert (octree.AddPoint (p1, 'p1'));
-        assert (octree.AddPoint (p2, 'p2'));
-        assert (!octree.AddPoint (p3, 'p3'));
+        assert.ok (octree.AddPoint (p1, 'p1'));
+        assert.ok (octree.AddPoint (p2, 'p2'));
+        assert.ok (!octree.AddPoint (p3, 'p3'));
 
         assert.strictEqual (octree.FindPoint (p1), 'p1');
         assert.strictEqual (octree.FindPoint (p2), 'p2');
@@ -276,7 +280,7 @@ describe ('Octree', function() {
         }
         for (let i = 0; i < count; i++) {
             let point = points[i];
-            assert (octree.AddPoint (point, i.toString ()));
+            assert.ok (octree.AddPoint (point, i.toString ()));
         }
         for (let i = 0; i < count; i++) {
             let point = points[i];
@@ -284,3 +288,5 @@ describe ('Octree', function() {
         }
     });
 });
+
+}

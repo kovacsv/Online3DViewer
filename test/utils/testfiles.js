@@ -1,78 +1,76 @@
-var testUtils = require ('./testutils.js');
-var path = require ('path');
+import * as OV from '../../source/engine/main.js';
+import { GetArrayBufferFileContent } from './testutils.js';
+import * as path from 'path';
 
-module.exports =
+export function ImportFile (importer, folder, fileName, onReady)
 {
-    ImportObjFile : function (fileName, onReady)
-    {
-        var importer = new OV.ImporterObj ();
-        this.ImportFile (importer, 'obj', fileName, onReady);
-    },
+    let content = GetArrayBufferFileContent (path.join (folder, fileName));
+    var extension = OV.GetFileExtension (fileName);
+    let fileAccessor = new OV.ImporterFileAccessor (function (filePath) {
+        let fileContent = GetArrayBufferFileContent (path.join (folder, filePath));
+        return fileContent;
+    });
+    importer.Import (fileName, extension, content, {
+        getDefaultMaterialColor () {
+            return new OV.Color (0, 0, 0);
+        },
+        getFileBuffer : function (filePath) {
+            return fileAccessor.GetFileBuffer (filePath);
+        },
+        getTextureBuffer : function (filePath) {
+            return fileAccessor.GetTextureBuffer (filePath);
+        },
+        onSuccess : function () {
+            let model = importer.GetModel ();
+            onReady (model);
+        },
+        onError : function () {
+            onReady (model);
+        },
+        onComplete : function () {
 
-    ImportStlFile : function (fileName, onReady)
-    {
-        var importer = new OV.ImporterStl ();
-        this.ImportFile (importer, 'stl', fileName, onReady);
-    },
+        }
+    });
+}
 
-    ImportOffFile : function (fileName, onReady)
-    {
-        var importer = new OV.ImporterOff ();
-        this.ImportFile (importer, 'off', fileName, onReady);
-    },
+export function ImportObjFile (fileName, onReady)
+{
+    var importer = new OV.ImporterObj ();
+    ImportFile (importer, 'obj', fileName, onReady);
+}
 
-    ImportPlyFile : function (fileName, onReady)
-    {
-        var importer = new OV.ImporterPly ();
-        this.ImportFile (importer, 'ply', fileName, onReady);
-    },
+export function ImportStlFile (fileName, onReady)
+{
+    var importer = new OV.ImporterStl ();
+    ImportFile (importer, 'stl', fileName, onReady);
+}
 
-    Import3dsFile : function (fileName, onReady)
-    {
-        var importer = new OV.Importer3ds ();
-        this.ImportFile (importer, '3ds', fileName, onReady);
-    },
+export function ImportOffFile (fileName, onReady)
+{
+    var importer = new OV.ImporterOff ();
+    ImportFile (importer, 'off', fileName, onReady);
+}
 
-    ImportGltfFile : function (folderName, fileName, onReady)
-    {
-        var importer = new OV.ImporterGltf ();
-        this.ImportFile (importer, 'gltf/' + folderName, fileName, onReady);
-    },
+export function ImportPlyFile (fileName, onReady)
+{
+    var importer = new OV.ImporterPly ();
+    ImportFile (importer, 'ply', fileName, onReady);
+}
 
-    ImportO3dvFile : function (fileName, onReady)
-    {
-        var importer = new OV.ImporterO3dv ();
-        this.ImportFile (importer, 'o3dv', fileName, onReady);
-    },
+export function Import3dsFile (fileName, onReady)
+{
+    var importer = new OV.Importer3ds ();
+    ImportFile (importer, '3ds', fileName, onReady);
+}
 
-    ImportFile : function (importer, folder, fileName, onReady)
-    {
-        let content = testUtils.GetArrayBufferFileContent (path.join (folder, fileName));
-        var extension = OV.GetFileExtension (fileName);
-        let fileAccessor = new OV.ImporterFileAccessor (function (filePath) {
-            let fileContent = testUtils.GetArrayBufferFileContent (path.join (folder, filePath));
-            return fileContent;
-        });
-        importer.Import (fileName, extension, content, {
-            getDefaultMaterialColor () {
-                return new OV.Color (0, 0, 0);
-            },
-            getFileBuffer : function (filePath) {
-                return fileAccessor.GetFileBuffer (filePath);
-            },
-            getTextureBuffer : function (filePath) {
-                return fileAccessor.GetTextureBuffer (filePath);
-            },
-            onSuccess : function () {
-                let model = importer.GetModel ();
-                onReady (model);
-            },
-            onError : function () {
-                onReady (model);
-            },
-            onComplete : function () {
+export function ImportGltfFile (folderName, fileName, onReady)
+{
+    var importer = new OV.ImporterGltf ();
+    ImportFile (importer, 'gltf/' + folderName, fileName, onReady);
+}
 
-            }
-        });
-    }
+export function ImportO3dvFile (fileName, onReady)
+{
+    var importer = new OV.ImporterO3dv ();
+    ImportFile (importer, 'o3dv', fileName, onReady);
 }

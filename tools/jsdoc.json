@@ -1,6 +1,6 @@
 {
 	"source": {
-		"include": ["source", "website"]
+		"include": ["source"]
 	},
     "opts": {
         "template": "node_modules/docdash/",

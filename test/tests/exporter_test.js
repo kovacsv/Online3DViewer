@@ -1,4 +1,8 @@
-var assert = require ('assert');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+
+export default function suite ()
+{
 
 function CreateTestModel ()
 {
@@ -353,7 +357,7 @@ describe ('Exporter', function () {
                 },
                 onSuccess () {
                     let importedModel = importer.GetModel ();
-                    assert (OV.CheckModel (importedModel));
+                    assert.ok (OV.CheckModel (importedModel));
                     assert.strictEqual (importedModel.MaterialCount (), 2);
                     assert.strictEqual (importedModel.MeshCount (), 2);
                     assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
@@ -388,7 +392,7 @@ describe ('Exporter', function () {
                 },
                 onSuccess () {
                     let importedModel = importer.GetModel ();
-                    assert (OV.CheckModel (importedModel));
+                    assert.ok (OV.CheckModel (importedModel));
                     assert.strictEqual (importedModel.MaterialCount (), 2);
                     assert.strictEqual (importedModel.MeshCount (), 2);
                     assert.strictEqual (importedModel.GetMesh (0).GetName (), 'TestMesh1');
@@ -401,3 +405,5 @@ describe ('Exporter', function () {
         });
     });
 });
+
+}

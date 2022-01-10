@@ -1,4 +1,4 @@
-let childProcess = require ('child_process');
+import * as childProcess from 'child_process';
 
 let pythonExecutable = 'python';
 if (process.platform !== 'win32') {

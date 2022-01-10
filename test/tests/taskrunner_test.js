@@ -1,4 +1,8 @@
-var assert = require ('assert');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+
+export default function suite ()
+{
 
 describe ('Task Runner', function () {
     it ('Run task zero times', function (done) {
@@ -55,5 +59,7 @@ describe ('Task Runner', function () {
                 done ();
             }
         });
-    });     
+    });
 });
+
+}

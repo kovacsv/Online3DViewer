@@ -1,4 +1,8 @@
-var assert = require ('assert');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+
+export default function suite ()
+{
 
 describe ('Property Test', function () {
     it ('Property Group', function() {
@@ -38,3 +42,5 @@ describe ('Property Test', function () {
         assert.strictEqual (model.GetPropertyGroup (2).GetProperty (0).value, 3.5);
     });
 });
+
+}

@@ -1,4 +1,8 @@
-var assert = require ('assert');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+
+export default function suite ()
+{
 
 describe ('Mesh', function() {
     it ('Default Initialization', function () {
@@ -58,10 +62,10 @@ describe ('Mesh', function() {
         assert.strictEqual (triangle.v0, 1);
         assert.strictEqual (triangle.v1, 2);
         assert.strictEqual (triangle.v2, 3);
-        assert (triangle.HasVertices ());
-        assert (!triangle.HasVertexColors ());
-        assert (!triangle.HasNormals ());
-        assert (!triangle.HasTextureUVs ());
+        assert.ok (triangle.HasVertices ());
+        assert.ok (!triangle.HasVertexColors ());
+        assert.ok (!triangle.HasNormals ());
+        assert.ok (!triangle.HasTextureUVs ());
         assert.strictEqual (triangle.c0, null);
         assert.strictEqual (triangle.c1, null);
         assert.strictEqual (triangle.c2, null);
@@ -94,9 +98,11 @@ describe ('Mesh', function() {
         transformation.AppendMatrix (new OV.Matrix ().CreateRotation (rotation.x, rotation.y, rotation.z, rotation.w));
         transformation.AppendMatrix (new OV.Matrix ().CreateTranslation (0.0, 0.0, 1.0));
         OV.TransformMesh (mesh, transformation);
-        assert (OV.CoordIsEqual3D (mesh.GetVertex (0), new OV.Coord3D (0.0, 0.0, 1.0)));
-        assert (OV.CoordIsEqual3D (mesh.GetVertex (1), new OV.Coord3D (0.0, 0.0, 3.0)));
-        assert (OV.CoordIsEqual3D (mesh.GetVertex (2), new OV.Coord3D (0.0, 1.0, 3.0)));
-        assert (OV.CoordIsEqual3D (mesh.GetNormal (0), new OV.Coord3D (-1.0, 0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual3D (mesh.GetVertex (0), new OV.Coord3D (0.0, 0.0, 1.0)));
+        assert.ok (OV.CoordIsEqual3D (mesh.GetVertex (1), new OV.Coord3D (0.0, 0.0, 3.0)));
+        assert.ok (OV.CoordIsEqual3D (mesh.GetVertex (2), new OV.Coord3D (0.0, 1.0, 3.0)));
+        assert.ok (OV.CoordIsEqual3D (mesh.GetNormal (0), new OV.Coord3D (-1.0, 0.0, 0.0)));
     });
 });
+
+}

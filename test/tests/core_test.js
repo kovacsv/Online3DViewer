@@ -1,4 +1,8 @@
-var assert = require ('assert');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+
+export default function suite ()
+{
 
 describe ('Core', function () {
     it ('Is defined', function () {
@@ -43,3 +47,5 @@ describe ('Core', function () {
         assert.deepStrictEqual (dest3, {a : null, b : null, c : 6});
     });
 });
+
+}

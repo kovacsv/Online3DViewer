@@ -1,4 +1,8 @@
-var assert = require ('assert');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+
+export default function suite ()
+{
 
 describe ('Node', function() {
     it ('Default Initialization', function () {
@@ -10,14 +14,14 @@ describe ('Node', function() {
 
     it ('Is Empty', function () {
         let node = new OV.Node ();
-        assert (node.IsEmpty ());
+        assert.ok (node.IsEmpty ());
         node.AddMeshIndex (0);
-        assert (!node.IsEmpty ());
+        assert.ok (!node.IsEmpty ());
 
         let node2 = new OV.Node ();
-        assert (node2.IsEmpty ());
+        assert.ok (node2.IsEmpty ());
         node2.AddChildNode (new OV.Node ());
-        assert (!node2.IsEmpty ());
+        assert.ok (!node2.IsEmpty ());
     });
 
     it ('Set Name', function () {
@@ -28,10 +32,10 @@ describe ('Node', function() {
 
     it ('Set Transformation', function () {
         let node = new OV.Node ();
-        assert (node.GetTransformation ().IsIdentity ());
+        assert.ok (node.GetTransformation ().IsIdentity ());
         let tr = new OV.Transformation (new OV.Matrix ().CreateScale (3.0, 4.0, 5.0));
         node.SetTransformation (tr);
-        assert (!node.GetTransformation ().IsIdentity ());
+        assert.ok (!node.GetTransformation ().IsIdentity ());
     });
 
     it ('Add Mesh Indices', function () {
@@ -133,10 +137,10 @@ describe ('Node', function() {
         node2.AddChildNode (node3);
 
         let nodeTr = node3.GetWorldTransformation ();
-        assert (OV.TransformationIsEqual (node1.GetTransformation (), tr1));
-        assert (OV.TransformationIsEqual (node2.GetTransformation (), tr2));
-        assert (OV.TransformationIsEqual (node3.GetTransformation (), tr3));
-        assert (OV.TransformationIsEqual (nodeTr, refTr));
+        assert.ok (OV.TransformationIsEqual (node1.GetTransformation (), tr1));
+        assert.ok (OV.TransformationIsEqual (node2.GetTransformation (), tr2));
+        assert.ok (OV.TransformationIsEqual (node3.GetTransformation (), tr3));
+        assert.ok (OV.TransformationIsEqual (nodeTr, refTr));
     });
 
     it ('Id Generator', function () {
@@ -160,3 +164,5 @@ describe ('Node', function() {
         assert.strictEqual (node4.GetId (), 3);
     });
 });
+
+}

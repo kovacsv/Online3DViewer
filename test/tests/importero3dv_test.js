@@ -1,12 +1,16 @@
-var assert = require ('assert');
-var testFiles = require ('../utils/testfiles.js');
-var testUtils = require ('../utils/testutils.js');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+import { ImportO3dvFile } from '../utils/testfiles.js';
+import { ModelNodesToTree } from '../utils/testutils.js';
+
+export default function suite ()
+{
 
 describe ('O3dv Importer', function () {
     it ('translateandrotate.o3dv', function (done) {
-        testFiles.ImportO3dvFile ('translateandrotate.o3dv', function (model) {
-            assert (OV.CheckModel (model));
-            assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+        ImportO3dvFile ('translateandrotate.o3dv', function (model) {
+            assert.ok (OV.CheckModel (model));
+            assert.deepStrictEqual (ModelNodesToTree (model), {
                 name : '<Root>',
                 childNodes : [
                     {
@@ -48,17 +52,17 @@ describe ('O3dv Importer', function () {
 
             assert.strictEqual (model.MeshInstanceCount (), 3);
             let boundingBox = OV.GetBoundingBox (model);
-            assert (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (-1.0, 0.0, 0.0)));
-            assert (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (3.0, 3.0, 1.0)));
+            assert.ok (OV.CoordIsEqual3D (boundingBox.min, new OV.Coord3D (-1.0, 0.0, 0.0)));
+            assert.ok (OV.CoordIsEqual3D (boundingBox.max, new OV.Coord3D (3.0, 3.0, 1.0)));
 
             done ();
         });
     });
 
     it ('solids.o3dv', function (done) {
-        testFiles.ImportO3dvFile ('solids.o3dv', function (model) {
-            assert (OV.CheckModel (model));
-            assert.deepStrictEqual (testUtils.ModelNodesToTree (model), {
+        ImportO3dvFile ('solids.o3dv', function (model) {
+            assert.ok (OV.CheckModel (model));
+            assert.deepStrictEqual (ModelNodesToTree (model), {
                 name : '<Root>',
                 childNodes : [
                     {
@@ -111,9 +115,9 @@ describe ('O3dv Importer', function () {
             assert.strictEqual (model.MeshCount (), 5);
             assert.strictEqual (model.MeshInstanceCount (), 5);
 
-            assert (OV.IsSolid (model));
-            assert (OV.IsEqual (OV.CalculateVolume (model), 8.707448863695035));
-            assert (OV.IsEqual (OV.CalculateSurfaceArea (model), 39.636169009449105));
+            assert.ok (OV.IsSolid (model));
+            assert.ok (OV.IsEqual (OV.CalculateVolume (model), 8.707448863695035));
+            assert.ok (OV.IsEqual (OV.CalculateSurfaceArea (model), 39.636169009449105));
 
             assert.strictEqual (model.PropertyGroupCount (), 1);
             assert.strictEqual (model.GetPropertyGroup (0).PropertyCount (), 2);
@@ -128,3 +132,5 @@ describe ('O3dv Importer', function () {
         });
     });
 });
+
+}

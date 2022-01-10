@@ -1,9 +1,13 @@
-var assert = require ('assert');
-var testUtils = require ('../utils/testutils.js');
+import * as assert from 'assert';
+import * as OV from '../../source/engine/main.js';
+import { GetArrayBufferFileContent } from '../utils/testutils.js';
+
+export default function suite ()
+{
 
 describe ('IO Test', function () {
     it ('Binary Reader', function () {
-        let buffer = testUtils.GetArrayBufferFileContent ('bin/binary_content.bin');
+        let buffer = GetArrayBufferFileContent ('bin/binary_content.bin');
         let reader = new OV.BinaryReader (buffer, true);
 
         assert.strictEqual (reader.GetByteLength (), 166);
@@ -75,7 +79,7 @@ describe ('IO Test', function () {
         writer.WriteUnsignedInteger32 (6);
         writer.WriteFloat32 (7.5);
         writer.WriteDouble64 (8.5);
-        assert (writer.End ());
+        assert.ok (writer.End ());
 
         let reader = new OV.BinaryReader (writer.GetBuffer (), true);
         assert.strictEqual (reader.GetByteLength (), 27);
@@ -115,3 +119,5 @@ describe ('IO Test', function () {
         assert.strictEqual (OV.GetFileExtension ('https://example.com/file.ext?param1=param2'), 'ext');
     });
 });
+
+}
