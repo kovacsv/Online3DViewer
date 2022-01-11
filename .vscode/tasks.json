@@ -8,8 +8,13 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": [],
             "label": "npm: build_website_dev"
+        },
+        {
+            "type": "npm",
+            "script": "build_engine_dev",
+            "group": "build",
+            "label": "npm: build_engine_dev"
         }
     ]
 }
