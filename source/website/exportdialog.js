@@ -9,6 +9,7 @@ import { AddDiv, AddSelect, ClearDomElement } from '../engine/viewer/domutils.js
 import { ShowMessageDialog } from './dialogs.js';
 import { ButtonDialog, ProgressDialog } from './modal.js';
 import { DownloadArrayBufferAsFile, DownloadUrlAsFile } from './utils.js';
+import { CookieGetStringVal, CookieSetStringVal } from './cookiehandler.js';
 
 export const ExportType =
 {
@@ -222,8 +223,13 @@ export class ExportDialog
         let formatRow = AddDiv (contentDiv, 'ov_dialog_row');
         this.parametersDiv = AddDiv (contentDiv);
         let formatNames = this.exporters.map (exporter => exporter.GetName ());
-        let defaultFormatIndex = 6;
+        let defaultFormat = CookieGetStringVal ('ov_last_export_format', 'glTF Binary (.glb)');
+        let defaultFormatIndex = formatNames.indexOf (defaultFormat);
+        if (defaultFormatIndex === -1) {
+            defaultFormatIndex = 6;
+        }
         AddSelect (formatRow, formatNames, defaultFormatIndex, (selectedIndex) => {
+            CookieSetStringVal ('ov_last_export_format', formatNames[selectedIndex]);
             this.OnFormatSelected (selectedIndex);
         });
         this.OnFormatSelected (defaultFormatIndex);
