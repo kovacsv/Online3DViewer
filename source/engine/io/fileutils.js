@@ -19,11 +19,11 @@ export function GetFileName (filePath)
 	}
 	let fileName = filePath;
 	if (firstSeparator !== -1) {
-		fileName = filePath.substr (firstSeparator + 1);
+		fileName = filePath.substring (firstSeparator + 1);
 	}
 	let firstParamIndex = fileName.indexOf ('?');
 	if (firstParamIndex !== -1) {
-		fileName = fileName.substr (0, firstParamIndex);
+		fileName = fileName.substring (0, firstParamIndex);
 	}
 	return decodeURI (fileName);
 }
@@ -35,7 +35,7 @@ export function GetFileExtension (filePath)
 	if (firstPoint === -1) {
 		return '';
 	}
-	let extension = fileName.substr (firstPoint + 1);
+	let extension = fileName.substring (firstPoint + 1);
 	return extension.toLowerCase ();
 }
 
@@ -102,7 +102,7 @@ export function TransformFileHostUrls (urls)
             url = url.replace ('www.dropbox.com', 'dl.dropbox.com');
             let separatorPos = url.indexOf ('?');
             if (separatorPos !== -1) {
-                url = url.substr (0, separatorPos);
+                url = url.substring (0, separatorPos);
             }
             urls[i] = url;
         } else if (url.search (/github\.com/u) !== -1) {
@@ -110,7 +110,7 @@ export function TransformFileHostUrls (urls)
             url = url.replace ('/blob', '');
             let separatorPos = url.indexOf ('?');
             if (separatorPos !== -1) {
-                url = url.substr (0, separatorPos);
+                url = url.substring (0, separatorPos);
             }
             urls[i] = url;
         }

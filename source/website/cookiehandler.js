@@ -15,7 +15,7 @@ export function CookieGetStringVal (key, defVal)
     for (let i = 0; i < cookieParts.length; i++) {
         let currentCookie = cookieParts[i].trim ();
         if (currentCookie.startsWith (key + '=')) {
-            return currentCookie.substr (key.length + 1);
+            return currentCookie.substring (key.length + 1);
         }
     }
     return defVal;

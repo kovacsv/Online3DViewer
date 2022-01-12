@@ -170,7 +170,7 @@ export class ImporterPly extends ImporterBase
         if (checkResult === PlyHeaderCheckResult.Ok) {
             if (header.format === 'ascii') {
                 let contentString = ArrayBufferToUtf8String (fileContent);
-                contentString = contentString.substr (headerString.length);
+                contentString = contentString.substring (headerString.length);
                 this.ReadAsciiContent (header, contentString);
             } else if (header.format === 'binary_little_endian' || header.format === 'binary_big_endian') {
                 this.ReadBinaryContent (header, fileContent, headerString.length);

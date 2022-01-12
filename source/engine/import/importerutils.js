@@ -2,10 +2,10 @@ import { IsLower } from '../geometry/geometry.js';
 
 export function NameFromLine (line, startIndex, commentChar)
 {
-	let name = line.substr (startIndex);
+	let name = line.substring (startIndex);
 	let commentStart = name.indexOf (commentChar);
 	if (commentStart !== -1) {
-		name = name.substr (0, commentStart);
+		name = name.substring (0, commentStart);
 	}
 	return name.trim ();
 }
@@ -15,7 +15,7 @@ export function ParametersFromLine (line, commentChar)
 	if (commentChar !== null) {
 		let commentStart = line.indexOf (commentChar);
 		if (commentStart !== -1) {
-			line = line.substr (0, commentStart).trim ();
+			line = line.substring (0, commentStart).trim ();
 		}
 	}
 	return line.split (/\s+/u);
@@ -34,11 +34,11 @@ export function ReadLines (str, onLine)
 	let cursor = 0;
 	let next = str.indexOf ('\n', cursor);
 	while (next !== -1) {
-		LineFound (str.substr (cursor, next - cursor), onLine);
+		LineFound (str.substring (cursor, next), onLine);
 		cursor = next + 1;
 		next = str.indexOf ('\n', cursor);
 	}
-	LineFound (str.substr (cursor), onLine);
+	LineFound (str.substring (cursor), onLine);
 }
 
 export function IsPowerOfTwo (x)

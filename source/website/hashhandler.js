@@ -68,7 +68,7 @@ export class HashHandler
 
     GetHash ()
     {
-        return window.location.hash.substr (1);
+        return window.location.hash.substring (1);
     }
 
     SetHash (hash)

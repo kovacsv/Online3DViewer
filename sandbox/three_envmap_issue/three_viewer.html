@@ -112,7 +112,7 @@
 		window.onload = function () {
 			let scriptElement = document.createElement ('script');
 			scriptElement.type = 'text/javascript';
-			scriptElement.src = window.location.hash.substr (1);
+			scriptElement.src = window.location.hash.substring (1);
 			scriptElement.onload = () => {
 				Sandbox3D ();
 			};

@@ -48,8 +48,8 @@ export function Base64DataURIToArrayBuffer (uri)
 		return null;
 	}
 
-	let mimeType = uri.substr (dataPrefix.length, mimeSeparator - 5);
-	let base64String = atob (uri.substr (bufferSeparator + 1));
+	let mimeType = uri.substring (dataPrefix.length, dataPrefix.length + mimeSeparator - 5);
+	let base64String = atob (uri.substring (bufferSeparator + 1));
 	let buffer = new ArrayBuffer (base64String.length);
 	let bufferView = new Uint8Array (buffer);
 	for (let i = 0; i < base64String.length; i++) {

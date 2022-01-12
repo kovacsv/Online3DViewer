@@ -244,7 +244,7 @@ export class ParameterListParser
         for (let i = 0; i < urlParts.length; i++) {
             let urlPart = urlParts[i];
             if (urlPart.startsWith (keywordToken)) {
-                return urlPart.substr (keywordToken.length);
+                return urlPart.substring (keywordToken.length);
             }
         }
         return null;
