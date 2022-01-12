@@ -3,7 +3,6 @@ import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
 import { Viewer } from '../engine/viewer/viewer.js';
 import { MeasureTool } from '../engine/viewer/measuretool.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
-import { CookieHandler } from './cookies.js';
 import { CalculatePopupPositionToScreen, ShowListPopup } from './dialogs.js';
 import { EventHandler } from './eventhandler.js';
 import { HashHandler } from './hashhandler.js';
@@ -19,6 +18,7 @@ import { ShowOpenUrlDialog } from './openurldialog.js';
 import { ShowSharingDialog } from './sharingdialog.js';
 import { HasDefaultMaterial, ReplaceDefaultMaterialColor } from '../engine/model/modelutils.js';
 import { Direction } from '../engine/geometry/geometry.js';
+import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 
 export const WebsiteUIState =
 {
@@ -37,7 +37,6 @@ export class Website
         this.viewer = new Viewer ();
         this.measureTool = new MeasureTool ();
         this.hashHandler = new HashHandler ();
-        this.cookieHandler = new CookieHandler ();
         this.toolbar = new Toolbar (this.parameters.toolbarDiv);
         this.navigator = new Navigator (this.parameters.navigatorDiv, this.parameters.navigatorSplitterDiv);
         this.sidebar = new Sidebar (this.parameters.sidebarDiv, this.parameters.sidebarSplitterDiv, this.settings, this.measureTool);
@@ -52,7 +51,7 @@ export class Website
 
     Load ()
     {
-        this.settings.LoadFromCookies (this.cookieHandler);
+        this.settings.LoadFromCookies ();
         this.SwitchTheme (this.settings.themeId, false);
         this.eventHandler.HandleEvent ('theme_on_load', this.settings.themeId === Theme.Light ? 'light' : 'dark');
 
@@ -426,13 +425,13 @@ export class Website
 
     UpdateGridDisplay ()
     {
-        this.settings.SaveToCookies (this.cookieHandler);
+        this.settings.SaveToCookies ();
         this.viewer.SetGridSettings (this.settings.showGrid);
     }
 
     UpdateEdgeDisplay ()
     {
-        this.settings.SaveToCookies (this.cookieHandler);
+        this.settings.SaveToCookies ();
         this.viewer.SetEdgeSettings (this.settings.showEdges, this.settings.edgeColor, this.settings.edgeThreshold);
     }
 
@@ -440,9 +439,8 @@ export class Website
     {
         this.settings.themeId = newThemeId;
         this.themeHandler.SwitchTheme (this.settings.themeId);
-        this.settings.SaveToCookies (this.cookieHandler);
+        this.settings.SaveToCookies ();
         if (resetColors) {
-            this.settings.SaveToCookies (this.cookieHandler);
             this.viewer.SetBackgroundColor (this.settings.backgroundColor);
             let modelLoader = this.modelLoaderUI.GetModelLoader ();
             if (modelLoader.GetDefaultMaterial () !== null) {
@@ -603,11 +601,11 @@ export class Website
     {
         this.sidebar.Init ({
             onBackgroundColorChange : () => {
-                this.settings.SaveToCookies (this.cookieHandler);
+                this.settings.SaveToCookies ();
                 this.viewer.SetBackgroundColor (this.settings.backgroundColor);
             },
             onDefaultColorChange : () => {
-                this.settings.SaveToCookies (this.cookieHandler);
+                this.settings.SaveToCookies ();
                 let modelLoader = this.modelLoaderUI.GetModelLoader ();
                 if (modelLoader.GetDefaultMaterial () !== null) {
                     ReplaceDefaultMaterialColor (this.model, this.settings.defaultColor);
@@ -639,7 +637,7 @@ export class Website
                 this.Resize ();
             },
             onShowHidePanels : (show) => {
-                this.cookieHandler.SetBoolVal ('ov_show_sidebar', show);
+                CookieSetBoolVal ('ov_show_sidebar', show);
             }
         });
     }
@@ -738,22 +736,22 @@ export class Website
                 this.Resize ();
             },
             onShowHidePanels : (show) => {
-                this.cookieHandler.SetBoolVal ('ov_show_navigator', show);
+                CookieSetBoolVal ('ov_show_navigator', show);
             }
         });
     }
 
     UpdatePanelsVisibility ()
     {
-        let showNavigator = this.cookieHandler.GetBoolVal ('ov_show_navigator', true);
-        let showSidebar = this.cookieHandler.GetBoolVal ('ov_show_sidebar', true);
+        let showNavigator = CookieGetBoolVal ('ov_show_navigator', true);
+        let showSidebar = CookieGetBoolVal ('ov_show_sidebar', true);
         this.navigator.ShowPanels (showNavigator);
         this.sidebar.ShowPanels (showSidebar);
     }
 
     InitCookieConsent ()
     {
-        let accepted = this.cookieHandler.GetBoolVal ('ov_cookie_consent', false);
+        let accepted = CookieGetBoolVal ('ov_cookie_consent', false);
         if (accepted) {
             return;
         }
@@ -763,7 +761,7 @@ export class Website
         AddDiv (popupDiv, 'ov_floating_panel_text', text);
         let acceptButton = AddDiv (popupDiv, 'ov_button ov_floating_panel_button', 'Accept');
         acceptButton.addEventListener ('click', () => {
-            this.cookieHandler.SetBoolVal ('ov_cookie_consent', true);
+            CookieSetBoolVal ('ov_cookie_consent', true);
             popupDiv.remove ();
         });
     }
