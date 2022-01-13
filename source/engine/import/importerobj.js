@@ -1,8 +1,9 @@
+import { VertexColors } from 'three';
 import { Coord2D } from '../geometry/coord2d.js';
 import { Coord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
 import { ArrayBufferToUtf8String } from '../io/bufferutils.js';
-import { ColorFromFloatComponents } from '../model/color.js';
+import { Color, ColorFromFloatComponents } from '../model/color.js';
 import { PhongMaterial, TextureMap } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
 import { Triangle } from '../model/triangle.js';
@@ -15,6 +16,7 @@ class ObjMeshConverter
     {
         this.mesh = mesh;
         this.globalToMeshVertices = new Map ();
+        this.globalToMeshVertexColors = new Map ();
         this.globalToMeshNormals = new Map ();
         this.globalToMeshUvs = new Map ();
     }
@@ -23,6 +25,13 @@ class ObjMeshConverter
     {
         return this.GetLocalIndex (globalIndex, globalVertices, this.globalToMeshVertices, (val) => {
             return this.mesh.AddVertex (new Coord3D (val.x, val.y, val.z));
+        });
+    }
+
+    AddVertexColor (globalIndex, globalVertexColors)
+    {
+        return this.GetLocalIndex (globalIndex, globalVertexColors, this.globalToMeshVertexColors, (val) => {
+            return this.mesh.AddVertexColor (new Color (val.r, val.g, val.b));
         });
     }
 
@@ -61,6 +70,15 @@ class ObjMeshConverter
     }
 }
 
+function CreateColor (r, g, b)
+{
+    return ColorFromFloatComponents (
+        parseFloat (r),
+        parseFloat (g),
+        parseFloat (b)
+    );
+}
+
 export class ImporterObj extends ImporterBase
 {
     constructor ()
@@ -81,6 +99,7 @@ export class ImporterObj extends ImporterBase
     ClearContent ()
     {
         this.globalVertices = null;
+        this.globalVertexColors = null;
         this.globalNormals = null;
         this.globalUvs = null;
 
@@ -95,6 +114,7 @@ export class ImporterObj extends ImporterBase
     ResetContent ()
     {
         this.globalVertices = [];
+        this.globalVertexColors = [];
         this.globalNormals = [];
         this.globalUvs = [];
 
@@ -171,6 +191,9 @@ export class ImporterObj extends ImporterBase
                 parseFloat (parameters[1]),
                 parseFloat (parameters[2])
             ));
+            if (parameters.length >= 6) {
+                this.globalVertexColors.push (CreateColor (parameters[3], parameters[4], parameters[5]));
+            }
             return true;
         } else if (keyword === 'vn') {
             if (parameters.length < 3) {
@@ -277,19 +300,19 @@ export class ImporterObj extends ImporterBase
             if (this.currentMaterial === null || parameters.length < 3) {
                 return true;
             }
-            this.currentMaterial.ambient = ColorFromFloatComponents (parameters[0], parameters[1], parameters[2]);
+            this.currentMaterial.ambient = CreateColor (parameters[0], parameters[1], parameters[2]);
             return true;
         } else if (keyword === 'kd') {
             if (this.currentMaterial === null || parameters.length < 3) {
                 return true;
             }
-            this.currentMaterial.color = ColorFromFloatComponents (parameters[0], parameters[1], parameters[2]);
+            this.currentMaterial.color = CreateColor (parameters[0], parameters[1], parameters[2]);
             return true;
         } else if (keyword === 'ks') {
             if (this.currentMaterial === null || parameters.length < 3) {
                 return true;
             }
-            this.currentMaterial.specular = ColorFromFloatComponents (parameters[0], parameters[1], parameters[2]);
+            this.currentMaterial.specular = CreateColor (parameters[0], parameters[1], parameters[2]);
             return true;
         } else if (keyword === 'ns') {
             if (this.currentMaterial === null || parameters.length < 1) {
@@ -328,12 +351,16 @@ export class ImporterObj extends ImporterBase
         }
 
         let vertices = [];
+        let colors = [];
         let normals = [];
         let uvs = [];
 
         for (let i = 0; i < parameters.length; i++) {
             let vertexParams = parameters[i].split ('/');
             vertices.push (GetRelativeIndex (parseInt (vertexParams[0], 10), this.globalVertices.length));
+            if (this.globalVertices.length === this.globalVertexColors.length) {
+                colors.push (GetRelativeIndex (parseInt (vertexParams[0], 10), this.globalVertices.length));
+            }
             if (vertexParams.length > 1 && vertexParams[1].length > 0) {
                 uvs.push (GetRelativeIndex (parseInt (vertexParams[1], 10), this.globalUvs.length));
             }
@@ -354,7 +381,20 @@ export class ImporterObj extends ImporterBase
                 this.SetError ('Invalid vertex index.');
                 break;
             }
+
             let triangle = new Triangle (v0, v1, v2);
+
+            if (colors.length === vertices.length) {
+                let c0 = this.currentMeshConverter.AddVertexColor (colors[0], this.globalVertexColors);
+                let c1 = this.currentMeshConverter.AddVertexColor (colors[i + 1], this.globalVertexColors);
+                let c2 = this.currentMeshConverter.AddVertexColor (colors[i + 2], this.globalVertexColors);
+                if (c0 === null || c1 === null || c2 === null) {
+                    this.SetError ('Invalid vertex color index.');
+                    break;
+                }
+                triangle.SetVertexColors (c0, c1, c2);
+            }
+
             if (normals.length === vertices.length) {
                 let n0 = this.currentMeshConverter.AddNormal (normals[0], this.globalNormals);
                 let n1 = this.currentMeshConverter.AddNormal (normals[i + 1], this.globalNormals);
@@ -365,6 +405,7 @@ export class ImporterObj extends ImporterBase
                 }
                 triangle.SetNormals (n0, n1, n2);
             }
+
             if (uvs.length === vertices.length) {
                 let u0 = this.currentMeshConverter.AddUV (uvs[0], this.globalUvs);
                 let u1 = this.currentMeshConverter.AddUV (uvs[i + 1], this.globalUvs);
@@ -375,9 +416,11 @@ export class ImporterObj extends ImporterBase
                 }
                 triangle.SetTextureUVs (u0, u1, u2);
             }
+
             if (this.currentMaterialIndex !== null) {
                 triangle.mat = this.currentMaterialIndex;
             }
+
             this.currentMeshConverter.AddTriangle (triangle);
         }
     }
