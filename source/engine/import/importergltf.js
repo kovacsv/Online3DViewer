@@ -543,7 +543,7 @@ export class ImporterGltf extends ImporterBase
                 }
             }
             if (buffer === null) {
-                this.SetError ('One  of the requested buffers is missing.');
+                this.SetError ('One of the requested buffers is missing.');
                 onFinish ();
                 return;
             }
