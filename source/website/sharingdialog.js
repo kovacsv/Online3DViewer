@@ -4,8 +4,9 @@ import { CreateUrlBuilder } from '../engine/parameters/parameterlist.js';
 import { ShowMessageDialog } from './dialogs.js';
 import { ButtonDialog } from './modal.js';
 import { CopyToClipboard } from './utils.js';
+import { HandleEvent } from './eventhandler.js';
 
-export function ShowSharingDialog (fileList, settings, camera, eventHandler)
+export function ShowSharingDialog (fileList, settings, camera)
 {
     function AddCheckboxLine (parentDiv, text, id, onChange)
     {
@@ -60,25 +61,25 @@ export function ShowSharingDialog (fileList, settings, camera, eventHandler)
         return input;
     }
 
-    function AddSharingLinkTab (parentDiv, sharingLinkParams, eventHandler)
+    function AddSharingLinkTab (parentDiv, sharingLinkParams)
     {
         let section = AddDiv (parentDiv, 'ov_dialog_section');
         AddDiv (section, 'ov_dialog_inner_title', 'Sharing Link');
         let sharingLinkInput = AddCopyableTextInput (section, () => {
-            eventHandler.HandleEvent ('model_shared', 'sharing_link');
+            HandleEvent ('model_shared', 'sharing_link');
             return GetSharingLink (sharingLinkParams);
         });
         sharingLinkInput.value = GetSharingLink (sharingLinkParams);
     }
 
-    function AddEmbeddingCodeTab (parentDiv, settings, embeddingCodeParams, eventHandler)
+    function AddEmbeddingCodeTab (parentDiv, settings, embeddingCodeParams)
     {
         let section = AddDiv (parentDiv, 'ov_dialog_section');
         section.style.marginTop = '20px';
         AddDiv (section, 'ov_dialog_inner_title', 'Embedding Code');
         let optionsSection = AddDiv (section, 'ov_dialog_section');
         let embeddingCodeInput = AddCopyableTextInput (section, () => {
-            eventHandler.HandleEvent ('model_shared', 'embedding_code');
+            HandleEvent ('model_shared', 'embedding_code');
             return GetEmbeddingCode (embeddingCodeParams);
         });
         AddCheckboxLine (optionsSection, 'Use current camera position', 'embed_camera', (checked) => {
@@ -148,8 +149,8 @@ export function ShowSharingDialog (fileList, settings, camera, eventHandler)
         }
     ]);
 
-    AddSharingLinkTab (contentDiv, sharingLinkParams, eventHandler);
-    AddEmbeddingCodeTab (contentDiv, settings, embeddingCodeParams, eventHandler);
+    AddSharingLinkTab (contentDiv, sharingLinkParams);
+    AddEmbeddingCodeTab (contentDiv, settings, embeddingCodeParams);
 
     dialog.Show ();
     return dialog;

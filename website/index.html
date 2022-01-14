@@ -34,12 +34,12 @@
 
     <!-- analytics start -->
     <script type="text/javascript">
-        window.viewerEventHandler = (eventName, eventData) => {
+        OV.SetWebsiteEventHandler ((eventName, eventData) => {
             console.log ({
                 eventName : eventName,
                 eventData : eventData
             });
-        };
+        });
     </script>
     <!-- analytics end -->
 

@@ -10,6 +10,7 @@ import { ShowMessageDialog } from './dialogs.js';
 import { ButtonDialog, ProgressDialog } from './modal.js';
 import { DownloadArrayBufferAsFile, DownloadUrlAsFile } from './utils.js';
 import { CookieGetStringVal, CookieSetStringVal } from './cookiehandler.js';
+import { HandleEvent } from './eventhandler.js';
 
 export const ExportType =
 {
@@ -176,10 +177,9 @@ export class ImageExporterUI extends ExporterUI
 
 export class ExportDialog
 {
-    constructor (callbacks, eventHandler)
+    constructor (callbacks)
     {
         this.callbacks = callbacks;
-        this.eventHandler = eventHandler;
         this.selectedExporter = null;
         this.parametersDiv = null;
 
@@ -256,7 +256,7 @@ export class ExportDialog
                     this.callbacks.onDialog (filesDialog);
                 }
             });
-            this.eventHandler.HandleEvent ('model_exported', this.selectedExporter.GetName ());
+            HandleEvent ('model_exported', this.selectedExporter.GetName ());
         } else if (this.selectedExporter.GetType () === ExportType.Image) {
             this.selectedExporter.ExportImage (viewer);
         }

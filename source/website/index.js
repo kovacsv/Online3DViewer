@@ -1,8 +1,14 @@
 import { SetExternalLibLocation } from '../engine/io/externallibs.js';
 import { CreateDomElement } from '../engine/viewer/domutils.js';
 import { AddSvgIconElement, InstallTooltip } from './utils.js';
+import { SetEventHandler } from './eventhandler.js';
 import { Embed } from './embed.js';
 import { Website } from './website.js';
+
+export function SetWebsiteEventHandler (eventHandler)
+{
+    SetEventHandler (eventHandler);
+}
 
 export function StartWebsite (externalLibLocation)
 {
@@ -19,8 +25,7 @@ export function StartWebsite (externalLibLocation)
             sidebarDiv : document.getElementById ('main_sidebar'),
             sidebarSplitterDiv : document.getElementById ('main_sidebar_splitter'),
             viewerDiv : document.getElementById ('main_viewer'),
-            fileInput : document.getElementById ('open_file'),
-            eventHandler : window.viewerEventHandler
+            fileInput : document.getElementById ('open_file')
         });
         website.Load ();
     });

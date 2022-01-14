@@ -1,15 +1,14 @@
-export class EventHandler
-{
-    constructor (eventHandler)
-    {
-        this.eventHandler = eventHandler;
-    }
+let eventHandlerFunc = null;
 
-    HandleEvent (eventName, eventData)
-    {
-        if (this.eventHandler === undefined || this.eventHandler === null) {
-            return;
-        }
-        this.eventHandler (eventName, eventData);
+export function SetEventHandler (eventHandler)
+{
+    eventHandlerFunc = eventHandler;
+}
+
+export function HandleEvent (eventName, eventLabel)
+{
+    if (eventHandlerFunc === undefined || eventHandlerFunc === null) {
+        return;
     }
+    eventHandlerFunc (eventName, eventLabel);
 }

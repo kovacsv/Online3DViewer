@@ -4,7 +4,7 @@ import { Viewer } from '../engine/viewer/viewer.js';
 import { MeasureTool } from '../engine/viewer/measuretool.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToScreen, ShowListPopup } from './dialogs.js';
-import { EventHandler } from './eventhandler.js';
+import { HandleEvent } from './eventhandler.js';
 import { HashHandler } from './hashhandler.js';
 import { Navigator, Selection, SelectionType } from './navigator.js';
 import { Settings, Theme } from './settings.js';
@@ -40,7 +40,6 @@ export class Website
         this.toolbar = new Toolbar (this.parameters.toolbarDiv);
         this.navigator = new Navigator (this.parameters.navigatorDiv, this.parameters.navigatorSplitterDiv);
         this.sidebar = new Sidebar (this.parameters.sidebarDiv, this.parameters.sidebarSplitterDiv, this.settings, this.measureTool);
-        this.eventHandler = new EventHandler (this.parameters.eventHandler);
         this.modelLoaderUI = new ThreeModelLoaderUI ();
         this.themeHandler = new ThemeHandler ();
         this.highlightColor = new THREE.Color (0x8ec9f0);
@@ -53,7 +52,7 @@ export class Website
     {
         this.settings.LoadFromCookies ();
         this.SwitchTheme (this.settings.themeId, false);
-        this.eventHandler.HandleEvent ('theme_on_load', this.settings.themeId === Theme.Light ? 'light' : 'dark');
+        HandleEvent ('theme_on_load', this.settings.themeId === Theme.Light ? 'light' : 'dark');
 
         this.InitViewer ();
         this.InitMeasureTool ();
@@ -282,7 +281,7 @@ export class Website
             if (defaultColor !== null) {
                 importSettings.defaultColor = defaultColor;
             }
-            this.eventHandler.HandleEvent ('model_load_started', 'hash');
+            HandleEvent ('model_load_started', 'hash');
             this.LoadModelFromUrlList (urls, importSettings);
         } else {
             this.ClearModel ();
@@ -386,7 +385,7 @@ export class Website
                 this.SetUIState (WebsiteUIState.Model);
                 this.OnModelLoaded (importResult, threeObject);
                 let importedExtension = GetFileExtension (importResult.mainFile);
-                this.eventHandler.HandleEvent ('model_loaded', importedExtension);
+                HandleEvent ('model_loaded', importedExtension);
             },
             onRender : () =>
             {
@@ -403,11 +402,11 @@ export class Website
                 }
                 let extensionsStr = extensions.join (',');
                 if (importError.code === ImportErrorCode.NoImportableFile) {
-                    this.eventHandler.HandleEvent ('no_importable_file', extensionsStr);
+                    HandleEvent ('no_importable_file', extensionsStr);
                 } else if (importError.code === ImportErrorCode.FailedToLoadFile) {
-                    this.eventHandler.HandleEvent ('failed_to_load_file', extensionsStr);
+                    HandleEvent ('failed_to_load_file', extensionsStr);
                 } else if (importError.code === ImportErrorCode.ImportFailed) {
-                    this.eventHandler.HandleEvent ('import_failed', extensionsStr);
+                    HandleEvent ('import_failed', extensionsStr);
                 }
             }
         });
@@ -558,16 +557,16 @@ export class Website
                 onDialog : (dialog) => {
                     this.dialog = dialog;
                 }
-            }, this.eventHandler);
+            });
             exportDialog.Show (this.model, this.viewer);
         });
         AddButton (this.toolbar, 'share', 'Share model', ['only_full_width', 'only_on_model'], () => {
-            this.dialog = ShowSharingDialog (importer.GetFileList (), this.settings, this.viewer.GetCamera (), this.eventHandler);
+            this.dialog = ShowSharingDialog (importer.GetFileList (), this.settings, this.viewer.GetCamera ());
         });
 
         this.parameters.fileInput.addEventListener ('change', (ev) => {
             if (ev.target.files.length > 0) {
-                this.eventHandler.HandleEvent ('model_load_started', 'open_file');
+                HandleEvent ('model_load_started', 'open_file');
                 this.LoadModelFromFileList (ev.target.files);
             }
         });
@@ -590,7 +589,7 @@ export class Website
             ev.preventDefault ();
             GetFilesFromDataTransfer (ev.dataTransfer, (files) => {
                 if (files.length > 0) {
-                    this.eventHandler.HandleEvent ('model_load_started', 'drop');
+                    HandleEvent ('model_load_started', 'drop');
                     this.LoadModelFromFileList (files);
                 }
             });
@@ -617,11 +616,11 @@ export class Website
                 this.UpdateGridDisplay ();
             },
             onEdgeDisplayChange : () => {
-                this.eventHandler.HandleEvent ('edge_display_changed', this.settings.showEdges ? 'on' : 'off');
+                HandleEvent ('edge_display_changed', this.settings.showEdges ? 'on' : 'off');
                 this.UpdateEdgeDisplay ();
             },
             onThemeChange : () => {
-                this.eventHandler.HandleEvent ('theme_changed', this.settings.themeId === Theme.Light ? 'light' : 'dark');
+                HandleEvent ('theme_changed', this.settings.themeId === Theme.Light ? 'light' : 'dark');
                 this.SwitchTheme (this.settings.themeId, true);
             },
             onMeasureToolActivedChange : (isActivated) => {
