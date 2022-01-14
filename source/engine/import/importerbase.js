@@ -51,7 +51,7 @@ export class ImporterBase
         }
 
         if (IsModelEmpty (this.model)) {
-            this.error = true;
+            this.SetError ('The model doesn\'t contain any meshes.');
             callbacks.onError ();
             callbacks.onComplete ();
             return;

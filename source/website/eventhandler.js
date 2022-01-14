@@ -5,10 +5,10 @@ export function SetEventHandler (eventHandler)
     eventHandlerFunc = eventHandler;
 }
 
-export function HandleEvent (eventName, eventLabel)
+export function HandleEvent (eventName, eventLabel, eventParams)
 {
     if (eventHandlerFunc === undefined || eventHandlerFunc === null) {
         return;
     }
-    eventHandlerFunc (eventName, eventLabel);
+    eventHandlerFunc (eventName, eventLabel, eventParams);
 }

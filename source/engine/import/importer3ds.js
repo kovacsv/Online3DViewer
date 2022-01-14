@@ -649,7 +649,7 @@ export class Importer3ds extends ImporterBase
     ReadChunks (reader, endByte, onChunk)
     {
         while (reader.GetPosition () <= endByte - 6) {
-            let chunkId = reader.ReadUnsignedInteger16 ();
+        let chunkId = reader.ReadUnsignedInteger16 ();
             let chunkLength = reader.ReadUnsignedInteger32 ();
             onChunk (chunkId, chunkLength);
         }

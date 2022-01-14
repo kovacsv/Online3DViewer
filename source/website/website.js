@@ -406,7 +406,9 @@ export class Website
                 } else if (importError.code === ImportErrorCode.FailedToLoadFile) {
                     HandleEvent ('failed_to_load_file', extensionsStr);
                 } else if (importError.code === ImportErrorCode.ImportFailed) {
-                    HandleEvent ('import_failed', extensionsStr);
+                    HandleEvent ('import_failed', extensionsStr, {
+                        error_message : importError.message
+                    });
                 }
             }
         });
