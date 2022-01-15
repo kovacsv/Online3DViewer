@@ -398,7 +398,11 @@ export class Website
                 let importer = this.modelLoaderUI.GetImporter ();
                 let fileList = importer.GetFileList ().GetFiles ();
                 for (let i = 0; i < fileList.length; i++) {
-                    extensions.push (fileList[i].extension);
+                    let extension = fileList[i].extension;
+                    if (extension.length === 0) {
+                        extension = '(no ext)';
+                    }
+                    extensions.push (extension);
                 }
                 let extensionsStr = extensions.join (',');
                 if (importError.code === ImportErrorCode.NoImportableFile) {

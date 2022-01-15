@@ -246,7 +246,10 @@ export function GetFilesFromDataTransfer (dataTransfer, onReady)
     if (getAsEntryFunc !== null) {
         let entries = [];
         for (let item of dataTransfer.items) {
-            entries.push (getAsEntryFunc.call (item));
+            let entry = getAsEntryFunc.call (item);
+            if (entry !== null) {
+                entries.push (entry);
+            }
         }
         GetFileObjectsFromEntries (entries, (allEntries) => {
             onReady (allEntries);
