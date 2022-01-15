@@ -40,7 +40,6 @@ describe ('Comparison', function () {
     });
 });
 
-
 describe ('Coord', function () {
     it ('Length', function () {
         var c = new OV.Coord3D (2.0, 0.0, 0.0);
@@ -61,6 +60,18 @@ describe ('Coord', function () {
         assert.strictEqual (c.x, 1.0);
         assert.strictEqual (c.y, 0.0);
         assert.strictEqual (c.z, 0.0);
+    });
+});
+
+describe ('Quaternion', function () {
+    it ('Create Quaternion', function () {
+        let q1 = OV.QuaternionFromAxisAngle (new OV.Coord3D (1.0, 0.0, 0.0), Math.PI / 2.0);
+        let q2 = OV.QuaternionFromXYZ (Math.PI / 2.0, 0.0, 0.0, 'XYZ');
+        assert.ok (OV.QuaternionIsEqual (q1, q2));
+        assert.ok (OV.IsEqual (q1.x, 0.7071067811865475));
+        assert.ok (OV.IsEqual (q1.y, 0.0));
+        assert.ok (OV.IsEqual (q1.z, 0.0));
+        assert.ok (OV.IsEqual (q1.w, 0.7071067811865475));
     });
 });
 

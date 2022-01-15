@@ -16,7 +16,7 @@ import { Coord4D } from './geometry/coord4d.js';
 import { IsZero, IsLower, IsGreater, IsLowerOrEqual, IsGreaterOrEqual, IsEqual, IsEqualEps, IsPositive, IsNegative, Eps, BigEps, RadDeg, DegRad, Direction } from './geometry/geometry.js';
 import { Matrix, MatrixIsEqual } from './geometry/matrix.js';
 import { OctreeNode, Octree } from './geometry/octree.js';
-import { Quaternion, ArrayToQuaternion, QuaternionFromAxisAngle } from './geometry/quaternion.js';
+import { Quaternion, QuaternionIsEqual, ArrayToQuaternion, QuaternionFromAxisAngle, QuaternionFromXYZ } from './geometry/quaternion.js';
 import { Transformation, TransformationIsEqual } from './geometry/transformation.js';
 import { BezierTweenFunction, LinearTweenFunction, ParabolicTweenFunction, TweenCoord3D } from './geometry/tween.js';
 import { File, FileList } from './import/filelist.js';
@@ -124,8 +124,10 @@ export {
     OctreeNode,
     Octree,
     Quaternion,
+    QuaternionIsEqual,
     ArrayToQuaternion,
     QuaternionFromAxisAngle,
+    QuaternionFromXYZ,
     Transformation,
     TransformationIsEqual,
     BezierTweenFunction,
