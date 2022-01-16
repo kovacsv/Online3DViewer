@@ -399,9 +399,6 @@ export class Website
                 let fileList = importer.GetFileList ().GetFiles ();
                 for (let i = 0; i < fileList.length; i++) {
                     let extension = fileList[i].extension;
-                    if (extension.length === 0) {
-                        extension = '(no ext)';
-                    }
                     extensions.push (extension);
                 }
                 let extensionsStr = extensions.join (',');
