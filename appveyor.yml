@@ -15,7 +15,7 @@ build_script:
   - npm run create_package
 
 artifacts:
-  - path: dist\final\package\*
+  - path: build\final\package\*
 
 deploy:
   description: 'News:\n- ...'
