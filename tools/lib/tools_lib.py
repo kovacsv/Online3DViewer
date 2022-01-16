@@ -13,6 +13,13 @@ def WriteContentToFile (filePath, content):
 	fileObject.write (content)
 	fileObject.close ()
 
+def GetEOLCharFromFile (filePath):
+	content = GetFileContent (filePath)
+	if content.count ('\r\n') > 0:
+		return '\r\n'
+	else:
+		return '\n'
+
 def RunCommand (executable, arguments):
 	command = executable + ' "' + '" "'.join (arguments) + '"'
 	return os.system (command)

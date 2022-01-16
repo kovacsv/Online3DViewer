@@ -10,10 +10,6 @@ def Main (argv):
 	rootDir = os.path.dirname (toolsDir)
 	os.chdir (rootDir)
 
-	config = None
-	with open (os.path.join (toolsDir, 'config.json')) as configJson:
-		config = json.load (configJson)
-
 	engineFiles = []
 	sourceFolder = os.path.join (rootDir, 'source', 'engine')
 	for dirName in os.listdir (sourceFolder):
@@ -25,6 +21,9 @@ def Main (argv):
 				'dirName': dirName,
 				'fileName': fileName
 			})
+
+	mainFilePath = os.path.join (sourceFolder, 'main.js')
+	eolChar = Tools.GetEOLCharFromFile (mainFilePath)
 
 	exportedSymbols = []
 	mainFileContent = ''
@@ -38,20 +37,20 @@ def Main (argv):
 		if len (matches) == 0:
 			continue
 		relativePath = './' + engineFile['dirName'] + '/' + engineFile['fileName']
-		mainFileContent += 'import { ' + ', '.join (matches) + ' } from \'' + relativePath + '\';\n'
+		mainFileContent += 'import { ' + ', '.join (matches) + ' } from \'' + relativePath + '\';' + eolChar
 		for match in matches:
 			exportedSymbols.append (match)
 
-	mainFileContent += '\nexport {\n'
+	mainFileContent += eolChar + 'export {' + eolChar
 	for i in range (0, len (exportedSymbols)):
 		exportedSymbol = exportedSymbols[i]
 		mainFileContent += '    ' + exportedSymbol
 		if i < len (exportedSymbols) - 1:
 			mainFileContent += ','
-		mainFileContent += '\n'
-	mainFileContent += '};\n'
+		mainFileContent += eolChar
+	mainFileContent += '};' + eolChar
 
-	Tools.WriteContentToFile (os.path.join (sourceFolder, 'main.js'), mainFileContent)
+	Tools.WriteContentToFile (mainFilePath, mainFileContent)
 	return 0
 
 sys.exit (Main (sys.argv))
