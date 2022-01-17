@@ -38,9 +38,6 @@ export class TextureMap
         if (this.name !== rhs.name) {
             return false;
         }
-        if (this.name !== rhs.name) {
-            return false;
-        }
         if (this.url !== rhs.url) {
             return false;
         }
@@ -259,9 +256,6 @@ export class PhysicalMaterial extends FaceMaterial
 
 export function TextureIsEqual (a, b)
 {
-    if (a.name !== b.name) {
-        return false;
-    }
     if (a.name !== b.name) {
         return false;
     }

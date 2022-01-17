@@ -86,7 +86,7 @@ export class UpVector
         if (this.direction === Direction.X) {
             newCamera.up = new Coord3D (1.0, 0.0, 0.0);
             newCamera.eye = newEye;
-        } if (this.direction === Direction.Y) {
+        } else if (this.direction === Direction.Y) {
             newCamera.up = new Coord3D (0.0, 1.0, 0.0);
             newCamera.eye = newEye;
         } else if (this.direction === Direction.Z) {

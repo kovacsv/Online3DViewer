@@ -514,9 +514,8 @@ export class Navigation
 
 	OnMouseWheel (ev)
 	{
-		ev.preventDefault ();
-
 		let params = ev || window.event;
+		params.preventDefault ();
 
 		let delta = -params.deltaY / 40;
 		let ratio = 0.1;
