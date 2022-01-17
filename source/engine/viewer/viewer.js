@@ -3,13 +3,13 @@ import { Direction } from '../geometry/geometry.js';
 import { ColorToHexString } from '../model/color.js';
 import { ShadingType } from '../threejs/threeutils.js';
 import { GetDomElementInnerDimensions } from './domutils.js';
-import { Camera, CameraIsEqual3D, Navigation } from './navigation.js';
+import { Camera, Navigation } from './navigation.js';
 import { ViewerExtraGeometry, ViewerGeometry } from './viewergeometry.js';
 
 export function GetDefaultCamera (direction)
 {
     if (direction === Direction.X) {
-        return new CameraIsEqual3D (
+        return new Camera (
             new Coord3D (2.0, -3.0, 1.5),
             new Coord3D (0.0, 0.0, 0.0),
             new Coord3D (1.0, 0.0, 0.0)

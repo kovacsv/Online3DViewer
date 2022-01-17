@@ -1,4 +1,3 @@
-import { VertexColors } from 'three';
 import { Coord2D } from '../geometry/coord2d.js';
 import { Coord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';

@@ -1,9 +1,6 @@
 import os
 import sys
-import re
 import shutil
-
-from lib import tools_lib as Tools
 
 pickrFileMap = [
     [os.path.join ('@simonwep', 'pickr', 'LICENSE'), os.path.join ('pickr.license.md')],

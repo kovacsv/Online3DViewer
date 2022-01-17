@@ -186,7 +186,7 @@ export class ImporterThreeBase extends ImporterBase
                 }
                 for (let i = 0; i < threeMesh.geometry.groups.length; i++) {
                     let group = threeMesh.geometry.groups[i];
-                    let groupEnd = group.start;
+                    let groupEnd = null;
                     if (group.count === Infinity) {
                         groupEnd = mesh.TriangleCount ();
                     } else {

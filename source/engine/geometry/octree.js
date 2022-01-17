@@ -97,7 +97,7 @@ export class OctreeNode
                 new Coord3D (minX, minY, minZ),
                 new Coord3D (minX + sizeX, minY + sizeY, minZ + sizeZ)
             );
-            node.childNodes.push (new OctreeNode (box, node.level + 1, node.options));
+            node.childNodes.push (new OctreeNode (box, node.level + 1));
         }
 
         let min = this.boundingBox.min;
@@ -145,7 +145,7 @@ export class Octree
                 this.options.maxTreeDepth = options.maxTreeDepth;
             }
         }
-        this.rootNode = new OctreeNode (boundingBox, 0, this.options);
+        this.rootNode = new OctreeNode (boundingBox, 0);
     }
 
     AddPoint (point, data)

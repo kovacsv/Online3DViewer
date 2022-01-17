@@ -1,6 +1,6 @@
 import { Color, ColorToHexString } from '../engine/model/color.js';
 import { CreateObjectUrl } from '../engine/io/bufferutils.js';
-import { AddDiv, CreateDiv, AddDomElement, CreateDomElement, GetDomElementOuterWidth, SetDomElementOuterWidth } from '../engine/viewer/domutils.js';
+import { AddDiv, CreateDiv, AddDomElement, GetDomElementOuterWidth, SetDomElementOuterWidth } from '../engine/viewer/domutils.js';
 import { CreateVerticalSplitter } from './splitter.js';
 
 export function GetNameOrDefault (originalName, defaultName)

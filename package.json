@@ -10,6 +10,7 @@
 		"docdash": "^1.2.0",
 		"esbuild": "^0.14.11",
 		"eslint": "^8.5.0",
+		"eslint-plugin-unused-imports": "^2.0.0",
 		"fantasticon": "^1.2.2",
 		"http-server": "^14.0.0",
 		"jsdoc": "^3.6.7",
@@ -61,6 +62,9 @@
 			"ecmaVersion": 12,
 			"sourceType": "module"
 		},
+		"plugins": [
+			"unused-imports"
+		],
 		"rules": {
 			"semi": "error",
 			"no-var": "error",
@@ -76,7 +80,7 @@
 			"comma-spacing": "error",
 			"prefer-arrow-callback": "error",
 			"quotes": [
-				"error",
+			"error",
 				"single"
 			],
 			"block-scoped-var": "error",
@@ -84,7 +88,8 @@
 			"no-extend-native": "error",
 			"eqeqeq": "error",
 			"no-unused-vars": "off",
-			"no-use-before-define": "off"
+			"no-use-before-define": "off",
+			"unused-imports/no-unused-imports": "error"
 		}
 	}
 }
