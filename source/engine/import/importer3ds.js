@@ -305,10 +305,6 @@ export class Importer3ds extends ImporterBase
         this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === CHUNK3DS.OBJ_TRIMESH) {
                 this.ReadMeshChunk (reader, chunkLength, objectName);
-            } else if (chunkId === CHUNK3DS.OBJ_LIGHT) {
-                this.SkipChunk (reader, chunkLength);
-            } else if (chunkId === CHUNK3DS.OBJ_CAMERA) {
-                this.SkipChunk (reader, chunkLength);
             } else {
                 this.SkipChunk (reader, chunkLength);
             }

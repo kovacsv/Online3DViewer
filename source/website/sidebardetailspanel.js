@@ -43,16 +43,10 @@ export class SidebarDetailsPanel extends SidebarPanel
                 return null;
             }
             const volume = CalculateVolume (object3D);
-            if (volume === null) {
-                return null;
-            }
             return new Property (PropertyType.Number, null, volume);
         });
         this.AddCalculatedProperty (table, 'Surface', () => {
             const surfaceArea = CalculateSurfaceArea (object3D);
-            if (surfaceArea === null) {
-                return null;
-            }
             return new Property (PropertyType.Number, null, surfaceArea);
         });
         if (object3D.PropertyGroupCount () > 0) {
