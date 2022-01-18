@@ -1,6 +1,6 @@
 import { Coord3D } from '../geometry/coord3d.js';
 import { Color } from '../model/color.js';
-import { Camera } from '../viewer/navigation.js';
+import { Camera } from '../viewer/camera.js';
 
 export let ParameterConverter =
 {

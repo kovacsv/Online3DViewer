@@ -1,32 +1,9 @@
 import { Coord2D, CoordDistance2D, SubCoord2D } from '../geometry/coord2d.js';
-import { CoordDistance3D, CoordIsEqual3D, CrossVector3D, SubCoord3D, VectorAngle3D } from '../geometry/coord3d.js';
+import { CoordDistance3D, CrossVector3D, SubCoord3D, VectorAngle3D } from '../geometry/coord3d.js';
 import { DegRad, IsGreater, IsLower, IsZero } from '../geometry/geometry.js';
 import { ParabolicTweenFunction, TweenCoord3D } from '../geometry/tween.js';
+import { CameraIsEqual3D } from './camera.js';
 import { GetDomElementClientCoordinates } from './domutils.js';
-
-export class Camera
-{
-    constructor (eye, center, up)
-    {
-        this.eye = eye;
-        this.center = center;
-        this.up = up;
-    }
-
-    Clone ()
-    {
-        return new Camera (
-            this.eye.Clone (),
-            this.center.Clone (),
-            this.up.Clone ()
-        );
-    }
-}
-
-export function CameraIsEqual3D (a, b)
-{
-	return CoordIsEqual3D (a.eye, b.eye) && CoordIsEqual3D (a.center, b.center) && CoordIsEqual3D (a.up, b.up);
-}
 
 export class MouseInteraction
 {

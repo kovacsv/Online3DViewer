@@ -2,8 +2,9 @@ import { Coord3D, CoordDistance3D, SubCoord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
 import { ColorToHexString } from '../model/color.js';
 import { ShadingType } from '../threejs/threeutils.js';
+import { Camera } from './camera.js';
 import { GetDomElementInnerDimensions } from './domutils.js';
-import { Camera, Navigation } from './navigation.js';
+import { Navigation } from './navigation.js';
 import { ViewerExtraGeometry, ViewerGeometry } from './viewergeometry.js';
 
 export function GetDefaultCamera (direction)
