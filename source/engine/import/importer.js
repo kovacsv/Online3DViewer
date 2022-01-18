@@ -133,7 +133,7 @@ export class Importer
 
     LoadFiles (fileList, fileSource, onReady)
     {
-        let newFileList = new FileList (this.importers);
+        let newFileList = new FileList ();
         if (fileSource === FileSource.Url) {
             newFileList.FillFromFileUrls (fileList);
         } else if (fileSource === FileSource.File) {
