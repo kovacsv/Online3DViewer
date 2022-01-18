@@ -60,10 +60,11 @@ import { ParameterListBuilder, ParameterListParser, CreateUrlBuilder, CreateUrlP
 import { ModelToThreeConversionParams, ModelToThreeConversionOutput, ThreeConversionStateHandler, ThreeNodeTree, ConvertModelToThreeObject } from './threejs/threeconverter.js';
 import { ThreeModelLoader } from './threejs/threemodelloader.js';
 import { HasHighpDriverIssue, GetShadingType, ConvertThreeColorToColor, ConvertColorToThreeColor, ConvertThreeGeometryToMesh, ShadingType } from './threejs/threeutils.js';
+import { Camera, CameraIsEqual3D } from './viewer/camera.js';
 import { GetIntegerFromStyle, GetDomElementExternalWidth, GetDomElementExternalHeight, GetDomElementInnerDimensions, GetDomElementClientCoordinates, CreateDomElement, AddDomElement, AddDiv, ClearDomElement, InsertDomElementBefore, InsertDomElementAfter, ShowDomElement, IsDomElementVisible, SetDomElementWidth, SetDomElementHeight, GetDomElementOuterWidth, GetDomElementOuterHeight, SetDomElementOuterWidth, SetDomElementOuterHeight, AddCheckbox, AddRangeSlider, AddSelect, AddToggle, CreateDiv } from './viewer/domutils.js';
 import { EmbeddedViewer, Init3DViewerElement, Init3DViewerElements } from './viewer/embeddedviewer.js';
 import { MeasureTool } from './viewer/measuretool.js';
-import { Camera, MouseInteraction, TouchInteraction, ClickDetector, Navigation, CameraIsEqual3D, NavigationType } from './viewer/navigation.js';
+import { MouseInteraction, TouchInteraction, ClickDetector, Navigation, NavigationType } from './viewer/navigation.js';
 import { UpVector, ShadingModel, Viewer, GetDefaultCamera, TraverseThreeObject, GetShadingTypeOfObject } from './viewer/viewer.js';
 import { ViewerGeometry, ViewerExtraGeometry, SetThreeMeshPolygonOffset } from './viewer/viewergeometry.js';
 
@@ -265,6 +266,8 @@ export {
     ConvertColorToThreeColor,
     ConvertThreeGeometryToMesh,
     ShadingType,
+    Camera,
+    CameraIsEqual3D,
     GetIntegerFromStyle,
     GetDomElementExternalWidth,
     GetDomElementExternalHeight,
@@ -293,12 +296,10 @@ export {
     Init3DViewerElement,
     Init3DViewerElements,
     MeasureTool,
-    Camera,
     MouseInteraction,
     TouchInteraction,
     ClickDetector,
     Navigation,
-    CameraIsEqual3D,
     NavigationType,
     UpVector,
     ShadingModel,
