@@ -1,0 +1,83 @@
+{
+	"root" : 0,
+	"nodes" : [
+		{
+			"children" : [1, 2, 3, 4]
+		},
+		{
+			"transformation" : {
+				"translation" : [0.0, 0.0, 0.0]
+			},
+			"mesh" : 0
+		},
+		{
+			"transformation" : {
+				"translation" : [2.0, 0.0, 0.0]
+			},
+			"mesh" : 1
+		},
+		{
+			"transformation" : {
+				"translation" : [4.0, 0.0, 0.0]
+			},
+			"mesh" : 2
+		},
+		{
+			"transformation" : {
+				"translation" : [6.0, 0.0, 0.0]
+			},
+			"mesh" : 3
+		}
+	],
+	"materials" : [
+		{
+			"name" : "Blue",
+			"color" : [0, 0, 200]
+		}
+	],
+	"meshes" : [
+		{
+			"name" : "Cube",
+			"type" : "cuboid",
+			"material" : 0,
+			"parameters" : {
+				"size_x" : 1.0,
+				"size_y" : 1.0,
+				"size_z" : 1.0
+			}
+		},
+		{
+			"name" : "Cylinder",
+			"type" : "cylinder",
+			"material" : 0,
+			"parameters" : {
+				"radius" : 0.5,
+				"height" : 1.0,
+				"segments" : 25,
+				"smooth" : true
+			}
+		},
+		{
+			"name" : "Sphere",
+			"type" : "sphere",
+			"material" : 0,
+			"parameters" : {
+				"radius" : 0.5,
+				"segments" : 25,
+				"smooth" : true
+			}
+		},
+		{
+			"name" : "Cone",
+			"type" : "cone",
+			"material" : 0,
+			"parameters" : {
+				"top_radius" : 0.2,
+				"bottom_radius" : 0.5,
+				"height" : 1.0,
+				"segments" : 25,
+				"smooth" : true
+			}
+		}
+	]
+}

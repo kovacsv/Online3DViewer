@@ -6,7 +6,7 @@ import { ArrayToQuaternion, Quaternion } from '../geometry/quaternion.js';
 import { Transformation } from '../geometry/transformation.js';
 import { ArrayBufferToUtf8String } from '../io/bufferutils.js';
 import { ArrayToColor } from '../model/color.js';
-import { GenerateCuboid, GenerateCylinder, GeneratePlatonicSolid, GenerateSphere, GeneratorParams } from '../model/generator.js';
+import { GenerateCone, GenerateCuboid, GenerateCylinder, GeneratePlatonicSolid, GenerateSphere, GeneratorParams } from '../model/generator.js';
 import { PhysicalMaterial } from '../model/material.js';
 import { Node, NodeType } from '../model/node.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
@@ -111,6 +111,13 @@ export class ImporterO3dv extends ImporterBase
             let segments = ValueOrDefault (parameters.segments, 25);
             let smooth = ValueOrDefault (parameters.smooth, true);
             mesh = GenerateCylinder (genParams, parameters.radius, parameters.height, segments, smooth);
+        } else if (meshContent.type === 'cone') {
+            if (parameters.top_radius === undefined || parameters.bottom_radius === undefined || parameters.height === undefined) {
+                return;
+            }
+            let segments = ValueOrDefault (parameters.segments, 25);
+            let smooth = ValueOrDefault (parameters.smooth, true);
+            mesh = GenerateCone (genParams, parameters.top_radius, parameters.bottom_radius, parameters.height, segments, smooth);
         } else if (meshContent.type === 'sphere') {
             if (parameters.radius === undefined) {
                 return;

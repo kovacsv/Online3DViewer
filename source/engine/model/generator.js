@@ -1,6 +1,6 @@
 import { Coord2D } from '../geometry/coord2d.js';
 import { Coord3D } from '../geometry/coord3d.js';
-import { IsZero } from '../geometry/geometry.js';
+import { IsPositive, IsNegative, IsZero } from '../geometry/geometry.js';
 import { Mesh } from './mesh.js';
 import { Triangle } from './triangle.js';
 
@@ -164,8 +164,20 @@ export class GeneratorHelper
     }
 }
 
+function GetCylindricalCoord (radius, angle)
+{
+    return new Coord2D (
+        radius * Math.cos (angle),
+        radius * Math.sin (angle)
+    );
+}
+
 export function GenerateCuboid (genParams, xSize, ySize, zSize)
 {
+    if (!IsPositive (xSize) || !IsPositive (ySize) || !IsPositive (zSize)) {
+        return null;
+    }
+
     let generator = new Generator (genParams);
     let vertices = [
         new Coord2D (0.0, 0.0),
@@ -178,30 +190,71 @@ export function GenerateCuboid (genParams, xSize, ySize, zSize)
     return generator.GetMesh ();
 }
 
-export function GenerateCylinder (genParams, radius, height, segments, smooth)
+export function GenerateCone (genParams, topRadius, bottomRadius, height, segments, smooth)
 {
-    function GetCylindricalCoord (radius, angle)
-    {
-        return new Coord2D (
-            radius * Math.cos (angle),
-            radius * Math.sin (angle)
-        );
+    if (IsNegative (topRadius) || IsNegative (bottomRadius)) {
+        return null;
     }
 
-    if (segments < 3) {
+    if (!IsPositive (height) || segments < 3) {
+        return null;
+    }
+
+    let isZeroTop = IsZero (topRadius);
+    let isZeroBottom = IsZero (bottomRadius);
+    if (isZeroTop && isZeroBottom) {
         return null;
     }
 
     let generator = new Generator (genParams);
-    let baseVertices = [];
-	const step = 2.0 * Math.PI / segments;
-	for (let i = 0; i < segments; i++) {
-        let cylindrical = GetCylindricalCoord (radius, i * step);
-		baseVertices.push (cylindrical);
-	}
     let helper = new GeneratorHelper (generator);
-    helper.GenerateExtrude (baseVertices, height, smooth ? 1 : null);
+    const step = 2.0 * Math.PI / segments;
+    const curve = (smooth ? 1 : null);
+
+    let topPolygon = [];
+    if (isZeroTop) {
+        topPolygon.push (generator.AddVertex (0.0, 0.0, height));
+    } else {
+        for (let i = 0; i < segments; i++) {
+            let topVertex = GetCylindricalCoord (topRadius, i * step);
+            topPolygon.push (generator.AddVertex (topVertex.x, topVertex.y, height));
+        }
+    }
+
+    let bottomPolygon = [];
+    if (isZeroBottom) {
+        bottomPolygon.push (generator.AddVertex (0.0, 0.0, 0.0));
+    } else {
+        for (let i = 0; i < segments; i++) {
+            let bottomVertex = GetCylindricalCoord (bottomRadius, i * step);
+            bottomPolygon.push (generator.AddVertex (bottomVertex.x, bottomVertex.y, 0.0));
+        }
+    }
+
+    if (isZeroTop) {
+        generator.SetCurve (curve);
+        helper.GenerateTriangleFan (bottomPolygon, topPolygon[0]);
+        generator.ResetCurve ();
+        generator.AddConvexPolygonInverted (bottomPolygon);
+    } else if (isZeroBottom) {
+        generator.SetCurve (curve);
+        helper.GenerateTriangleFan (topPolygon.slice ().reverse (), bottomPolygon[0]);
+        generator.ResetCurve ();
+        generator.AddConvexPolygon (topPolygon);
+    } else {
+        generator.SetCurve (curve);
+        helper.GenerateSurfaceBetweenPolygons (bottomPolygon, topPolygon);
+        generator.ResetCurve ();
+        generator.AddConvexPolygonInverted (bottomPolygon);
+        generator.AddConvexPolygon (topPolygon);
+    }
+
     return generator.GetMesh ();
+}
+
+export function GenerateCylinder (genParams, radius, height, segments, smooth)
+{
+    return GenerateCone (genParams, radius, radius, height, segments, smooth);
 }
 
 export function GenerateSphere (genParams, radius, segments, smooth)
@@ -215,7 +268,7 @@ export function GenerateSphere (genParams, radius, segments, smooth)
         );
     }
 
-    if (segments < 3) {
+    if (!IsPositive (radius) || segments < 3) {
         return null;
     }
 
@@ -261,7 +314,7 @@ export function GeneratePlatonicSolid (genParams, type, radius)
         generator.AddVertex (vertex.x, vertex.y, vertex.z);
     }
 
-    if (IsZero (radius)) {
+    if (!IsPositive (radius)) {
         return null;
     }
 

@@ -41,7 +41,7 @@ import { SetExternalLibLocation, LoadExternalLibrary } from './io/externallibs.j
 import { GetFileName, GetFileExtension, RequestUrl, ReadFile, TransformFileHostUrls, FileSource, FileFormat } from './io/fileutils.js';
 import { TextWriter } from './io/textwriter.js';
 import { Color, ColorComponentFromFloat, ColorFromFloatComponents, SRGBToLinear, LinearToSRGB, IntegerToHexString, ColorToHexString, HexStringToColor, ArrayToColor, ColorIsEqual } from './model/color.js';
-import { GeneratorParams, Generator, GeneratorHelper, GenerateCuboid, GenerateCylinder, GenerateSphere, GeneratePlatonicSolid } from './model/generator.js';
+import { GeneratorParams, Generator, GeneratorHelper, GenerateCuboid, GenerateCone, GenerateCylinder, GenerateSphere, GeneratePlatonicSolid } from './model/generator.js';
 import { TextureMap, MaterialBase, FaceMaterial, PhongMaterial, PhysicalMaterial, TextureMapIsEqual, TextureIsEqual, MaterialType } from './model/material.js';
 import { Mesh } from './model/mesh.js';
 import { MeshPrimitiveBuffer, MeshBuffer, ConvertMeshToMeshBuffer } from './model/meshbuffer.js';
@@ -200,6 +200,7 @@ export {
     Generator,
     GeneratorHelper,
     GenerateCuboid,
+    GenerateCone,
     GenerateCylinder,
     GenerateSphere,
     GeneratePlatonicSolid,

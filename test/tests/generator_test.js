@@ -26,6 +26,24 @@ describe ('Generator', function () {
         assert.ok (OV.IsEqualEps (OV.CalculateVolume (cylinder), Math.PI * 0.5 * 0.5 * 1.0, 0.1));
     });
 
+    it ('Cone with Default Parameters', function () {
+        const cone = OV.GenerateCone (null, 0.2, 0.5, 1.0, 20, false);
+        assert.ok (OV.IsSolid (cone));
+        assert.ok (OV.IsEqualEps (OV.CalculateVolume (cone), Math.PI / 3.0 * 1.0 * (0.2 * 0.2 + 0.2 * 0.5 + 0.5 * 0.5), 0.1));
+    });
+
+    it ('Cone Zero Top', function () {
+        const cone = OV.GenerateCone (null, 0.0, 0.5, 1.0, 20, false);
+        assert.ok (OV.IsSolid (cone));
+        assert.ok (OV.IsEqualEps (OV.CalculateVolume (cone), 0.5 * 0.5 * Math.PI * 1.0 / 3.0, 1.0));
+    });
+
+    it ('Cone Zero Bottom', function () {
+        const cone = OV.GenerateCone (null, 0.5, 0.0, 1.0, 20, false);
+        assert.ok (OV.IsSolid (cone));
+        assert.ok (OV.IsEqualEps (OV.CalculateVolume (cone), 0.5 * 0.5 * Math.PI * 1.0 / 3.0, 1.0));
+    });
+
     it ('Sphere with Default Parameters', function () {
         const cylinder = OV.GenerateSphere (null, 0.5, 20, false);
         assert.ok (OV.IsSolid (cylinder));
