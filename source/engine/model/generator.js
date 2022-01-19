@@ -115,22 +115,6 @@ export class GeneratorHelper
         this.generator = generator;
     }
 
-    GenerateExtrude (vertices, height, curve)
-    {
-        let topPolygon = [];
-        let bottomPolygon = [];
-        for (let i = 0; i < vertices.length; i++) {
-            const vertex = vertices[i];
-            bottomPolygon.push (this.generator.AddVertex (vertex.x, vertex.y, 0.0));
-            topPolygon.push (this.generator.AddVertex (vertex.x, vertex.y, height));
-        }
-        this.generator.SetCurve (curve);
-        this.GenerateSurfaceBetweenPolygons (bottomPolygon, topPolygon);
-        this.generator.ResetCurve ();
-        this.generator.AddConvexPolygonInverted (bottomPolygon);
-        this.generator.AddConvexPolygon (topPolygon);
-    }
-
     GenerateSurfaceBetweenPolygons (startIndices, endIndices)
     {
         if (startIndices.length !== endIndices.length) {
@@ -179,14 +163,23 @@ export function GenerateCuboid (genParams, xSize, ySize, zSize)
     }
 
     let generator = new Generator (genParams);
-    let vertices = [
-        new Coord2D (0.0, 0.0),
-        new Coord2D (xSize, 0.0),
-        new Coord2D (xSize, ySize),
-        new Coord2D (0.0, ySize),
-    ];
-    let helper = new GeneratorHelper (generator);
-    helper.GenerateExtrude (vertices, zSize, null);
+
+    generator.AddVertex (0.0, 0.0, 0.0);
+    generator.AddVertex (xSize, 0.0, 0.0);
+    generator.AddVertex (xSize, ySize, 0.0);
+    generator.AddVertex (0.0, ySize, 0.0);
+    generator.AddVertex (0.0, 0.0, zSize);
+    generator.AddVertex (xSize, 0.0, zSize);
+    generator.AddVertex (xSize, ySize, zSize);
+    generator.AddVertex (0.0, ySize, zSize);
+
+    generator.AddConvexPolygon ([0, 3, 2, 1]);
+    generator.AddConvexPolygon ([0, 1, 5, 4]);
+    generator.AddConvexPolygon ([1, 2, 6, 5]);
+    generator.AddConvexPolygon ([2, 3, 7, 6]);
+    generator.AddConvexPolygon ([3, 0, 4, 7]);
+    generator.AddConvexPolygon ([4, 5, 6, 7]);
+
     return generator.GetMesh ();
 }
 
