@@ -199,7 +199,7 @@ export class Importer
     {
         if (mainFile === null || mainFile.file === null || mainFile.file.content === null) {
             let error = new ImportError (ImportErrorCode.FailedToLoadFile);
-            if (mainFile.file !== null) {
+            if (mainFile !== null && mainFile.file !== null) {
                 error.mainFile = mainFile.file.name;
             }
             callbacks.onImportError (error);
