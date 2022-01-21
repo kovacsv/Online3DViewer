@@ -1,5 +1,6 @@
 import { Quaternion } from './quaternion.js';
 import { Coord3D, VectorLength3D } from './coord3d.js';
+import { Coord4D } from './coord4d.js';
 import { IsEqual, IsNegative } from './geometry.js';
 import { QuaternionFromAxisAngle } from './quaternion.js';
 
@@ -314,12 +315,32 @@ export class Matrix
         return new Matrix (result);
     }
 
+    Transpose ()
+    {
+        let result = [
+            this.matrix[0], this.matrix[4], this.matrix[8], this.matrix[12],
+            this.matrix[1], this.matrix[5], this.matrix[9], this.matrix[13],
+            this.matrix[2], this.matrix[6], this.matrix[10], this.matrix[14],
+            this.matrix[3], this.matrix[7], this.matrix[11], this.matrix[15]
+        ];
+        return new Matrix (result);
+    }
+
+    InvertTranspose ()
+    {
+        let result = this.Invert ();
+        if (result === null) {
+            return null;
+        }
+        return result.Transpose ();
+    }
+
     MultiplyVector (vector)
     {
-        let a00 = vector[0];
-        let a01 = vector[1];
-        let a02 = vector[2];
-        let a03 = vector[3];
+        let a00 = vector.x;
+        let a01 = vector.y;
+        let a02 = vector.z;
+        let a03 = vector.w;
 
         let b00 = this.matrix[0];
         let b01 = this.matrix[1];
@@ -338,12 +359,12 @@ export class Matrix
         let b32 = this.matrix[14];
         let b33 = this.matrix[15];
 
-        let result = [
+        let result = new Coord4D (
             a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30,
             a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31,
             a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32,
             a00 * b03 + a01 * b13 + a02 * b23 + a03 * b33
-        ];
+        );
         return result;
     }
 

@@ -1,5 +1,4 @@
-import { Coord3D, CrossVector3D, SubCoord3D } from '../geometry/coord3d.js';
-import { Matrix } from '../geometry/matrix.js';
+import { CrossVector3D, SubCoord3D } from '../geometry/coord3d.js';
 import { Transformation } from '../geometry/transformation.js';
 
 export const MeshType =
@@ -40,15 +39,16 @@ export function TransformMesh (mesh, transformation)
     }
 
     if (mesh.NormalCount () > 0) {
-        let trs = transformation.GetMatrix ().DecomposeTRS ();
-        let normalMatrix = new Matrix ().ComposeTRS (new Coord3D (0.0, 0.0, 0.0), trs.rotation, new Coord3D (1.0, 1.0, 1.0));
-        let normalTransformation = new Transformation (normalMatrix);
-        for (let i = 0; i < mesh.NormalCount (); i++) {
-            let normal = mesh.GetNormal (i);
-            let transformed = normalTransformation.TransformCoord3D (normal);
-            normal.x = transformed.x;
-            normal.y = transformed.y;
-            normal.z = transformed.z;
+        let normalMatrix = transformation.GetMatrix ().InvertTranspose ();
+        if (normalMatrix !== null) {
+            let normalTransformation = new Transformation (normalMatrix);
+            for (let i = 0; i < mesh.NormalCount (); i++) {
+                let normal = mesh.GetNormal (i);
+                let transformed = normalTransformation.TransformCoord3D (normal);
+                normal.x = transformed.x;
+                normal.y = transformed.y;
+                normal.z = transformed.z;
+            }
         }
     }
 }

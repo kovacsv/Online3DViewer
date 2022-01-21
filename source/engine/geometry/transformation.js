@@ -1,4 +1,5 @@
 import { Coord3D } from './coord3d.js';
+import { Coord4D } from './coord4d.js';
 import { Matrix, MatrixIsEqual } from './matrix.js';
 
 export class Transformation
@@ -43,8 +44,9 @@ export class Transformation
 
     TransformCoord3D (coord)
     {
-        let resultVector = this.matrix.MultiplyVector ([coord.x, coord.y, coord.z, 1.0]);
-        let result = new Coord3D (resultVector[0], resultVector[1], resultVector[2]);
+        let coord4D = new Coord4D (coord.x, coord.y, coord.z, 1.0);
+        let resultCoord4D = this.matrix.MultiplyVector (coord4D);
+        let result = new Coord3D (resultCoord4D.x, resultCoord4D.y, resultCoord4D.z);
         return result;
     }
 
