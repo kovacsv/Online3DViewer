@@ -50,6 +50,7 @@ describe ('Importer Test', function () {
             },
             error : function (importer, importError) {
                 assert.strictEqual (importError.code, OV.ImportErrorCode.FailedToLoadFile);
+                assert.strictEqual (importError.mainFile, 'missing.obj');
                 done ();
             }
         });
@@ -80,6 +81,7 @@ describe ('Importer Test', function () {
             },
             error : function (importer, importError) {
                 assert.strictEqual (importError.code, OV.ImportErrorCode.ImportFailed);
+                assert.strictEqual (importError.mainFile, 'wrong.3ds');
                 done ();
             }
         });

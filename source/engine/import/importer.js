@@ -33,10 +33,11 @@ export const ImportErrorCode =
 
 export class ImportError
 {
-    constructor (code, message)
+    constructor (code)
     {
         this.code = code;
-        this.message = message;
+        this.mainFile = null;
+        this.message = null;
     }
 }
 
@@ -172,7 +173,7 @@ export class Importer
     {
         let importableFiles = this.GetImportableFiles (this.fileList);
         if (importableFiles.length === 0) {
-            callbacks.onImportError (new ImportError (ImportErrorCode.NoImportableFile, null));
+            callbacks.onImportError (new ImportError (ImportErrorCode.NoImportableFile));
             return;
         }
 
@@ -183,7 +184,7 @@ export class Importer
             let fileNames = importableFiles.map (importableFile => importableFile.file.name);
             callbacks.onSelectMainFile (fileNames, (mainFileIndex) => {
                 if (mainFileIndex === null) {
-                    callbacks.onImportError (new ImportError (ImportErrorCode.NoImportableFile, null));
+                    callbacks.onImportError (new ImportError (ImportErrorCode.NoImportableFile));
                     return;
                 }
                 RunTaskAsync (() => {
@@ -197,7 +198,11 @@ export class Importer
     ImportLoadedMainFile (mainFile, settings, callbacks)
     {
         if (mainFile === null || mainFile.file === null || mainFile.file.content === null) {
-            callbacks.onImportError (new ImportError (ImportErrorCode.FailedToLoadFile, null));
+            let error = new ImportError (ImportErrorCode.FailedToLoadFile);
+            if (mainFile.file !== null) {
+                error.mainFile = mainFile.file.name;
+            }
+            callbacks.onImportError (error);
             return;
         }
 
@@ -242,8 +247,10 @@ export class Importer
                 callbacks.onImportSuccess (result);
             },
             onError : () => {
-                let message = importer.GetErrorMessage ();
-                callbacks.onImportError (new ImportError (ImportErrorCode.ImportFailed, message));
+                let error = new ImportError (ImportErrorCode.ImportFailed);
+                error.mainFile = mainFile.file.name;
+                error.message = importer.GetErrorMessage ();
+                callbacks.onImportError (error);
             },
             onComplete : () => {
                 importer.Clear ();

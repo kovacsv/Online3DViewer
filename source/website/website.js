@@ -394,20 +394,25 @@ export class Website
             onError : (importError) =>
             {
                 this.SetUIState (WebsiteUIState.Intro);
-                let extensions = [];
-                let importer = this.modelLoaderUI.GetImporter ();
-                let fileList = importer.GetFileList ().GetFiles ();
-                for (let i = 0; i < fileList.length; i++) {
-                    let extension = fileList[i].extension;
-                    extensions.push (extension);
+                let extensionStr = null;
+                if (importError.mainFile !== null) {
+                    extensionStr = GetFileExtension (importError.mainFile);
+                } else {
+                    let extensions = [];
+                    let importer = this.modelLoaderUI.GetImporter ();
+                    let fileList = importer.GetFileList ().GetFiles ();
+                    for (let i = 0; i < fileList.length; i++) {
+                        let extension = fileList[i].extension;
+                        extensions.push (extension);
+                    }
+                    extensionStr = extensions.join (',');
                 }
-                let extensionsStr = extensions.join (',');
                 if (importError.code === ImportErrorCode.NoImportableFile) {
-                    HandleEvent ('no_importable_file', extensionsStr);
+                    HandleEvent ('no_importable_file', extensionStr);
                 } else if (importError.code === ImportErrorCode.FailedToLoadFile) {
-                    HandleEvent ('failed_to_load_file', extensionsStr);
+                    HandleEvent ('failed_to_load_file', extensionStr);
                 } else if (importError.code === ImportErrorCode.ImportFailed) {
-                    HandleEvent ('import_failed', extensionsStr, {
+                    HandleEvent ('import_failed', extensionStr, {
                         error_message : importError.message
                     });
                 }
