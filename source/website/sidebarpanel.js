@@ -8,17 +8,24 @@ export class SidebarPanel extends Panel
         super (parentDiv);
         this.callbacks = null;
 
-        this.titleDiv = AddDiv (this.panelDiv, 'ov_sidebar_title');
-        this.contentDiv = AddDiv (this.panelDiv, 'ov_sidebar_content ov_thin_scrollbar');
+        this.titleDiv = null;
+        if (this.HasTitle ()) {
+            this.titleDiv = AddDiv (this.panelDiv, 'ov_sidebar_title');
+            AddDiv (this.titleDiv, 'ov_sidebar_title_text', this.GetName ());
+            this.titleDiv.setAttribute ('title', this.GetName ());
+        }
 
-        let panelName = this.GetName ();
-        AddDiv (this.titleDiv, 'ov_sidebar_title_text', this.GetName ());
-        this.titleDiv.setAttribute ('title', panelName);
+        this.contentDiv = AddDiv (this.panelDiv, 'ov_sidebar_content ov_thin_scrollbar');
     }
 
     GetName ()
     {
         return null;
+    }
+
+    HasTitle ()
+    {
+        return true;
     }
 
     Clear ()

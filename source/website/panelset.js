@@ -11,6 +11,11 @@ export class Panel
         this.visible = false;
     }
 
+    GetName ()
+    {
+        return null;
+    }
+
     GetIcon ()
     {
         return null;

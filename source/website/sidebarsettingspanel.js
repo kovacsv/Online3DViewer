@@ -1,10 +1,9 @@
 import { Color, ColorToHexString } from '../engine/model/color.js';
 import { AddDiv, AddDomElement, AddRangeSlider, AddToggle, ShowDomElement, GetDomElementOuterHeight, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
-import { FeatureSet } from './featureset.js';
 import { Settings, Theme } from './settings.js';
 import { SidebarPanel } from './sidebarpanel.js';
 
-export function AddColorPicker (parentDiv, defaultColor, predefinedColors, onChange)
+function AddColorPicker (parentDiv, defaultColor, predefinedColors, onChange)
 {
     let pickr = Pickr.create ({
         el : parentDiv,
@@ -41,111 +40,75 @@ export function AddColorPicker (parentDiv, defaultColor, predefinedColors, onCha
     return pickr;
 }
 
-export class SettingsColorSection
+class SettingsSection
 {
-    constructor (parentDiv)
+    constructor (parentDiv, title)
     {
         this.parentDiv = parentDiv;
-        this.contentDiv = null;
-        this.pickr = null;
+        this.contentDiv = AddDiv (this.parentDiv, 'ov_sidebar_settings_section');
+        AddDiv (this.contentDiv, 'ov_sidebar_title', title);
     }
 
-    Init (title, description, color, predefinedColors, onChange)
+    Init (settings, callbacks)
     {
-        this.contentDiv = AddDiv (this.parentDiv, 'ov_sidebar_settings_content');
-        let titleDiv = AddDiv (this.contentDiv, 'ov_sidebar_subtitle');
-        let colorInput = AddDiv (titleDiv, 'ov_color_picker');
-        AddDiv (titleDiv, 'ov_sidebar_subtitle', title);
-        this.pickr = AddColorPicker (colorInput, color, predefinedColors, (color) => {
-            onChange (color);
-        });
-        AddDiv (this.contentDiv, 'ov_sidebar_settings_padded', description);
+
     }
 
-    Show (show)
+    Update (settings)
     {
-        ShowDomElement (this.contentDiv, show);
-    }
 
-    Update (color)
-    {
-        if (this.pickr === null) {
-            return;
-        }
-        this.pickr.setColor ('#' + ColorToHexString (color));
     }
 
     Clear ()
     {
-        if (this.pickr === null) {
-            return;
-        }
-        this.pickr.hide ();
+
     }
 }
 
-export class SettingsGridDisplaySection
+class SettingsModelDisplaySection extends SettingsSection
 {
     constructor (parentDiv)
     {
-        this.parentDiv = parentDiv;
-        this.gridDisplayToggle = null;
-    }
+        super (parentDiv, 'Model Display');
 
-    Init (showGrid, onChange)
-    {
-        let contentDiv = AddDiv (this.parentDiv, 'ov_sidebar_settings_content');
-        let titleDiv = AddDiv (contentDiv, 'ov_sidebar_subtitle');
+        this.backgroundColorPicker = null;
 
-        this.showGridToggle = AddToggle (titleDiv, 'ov_sidebar_subtitle_toggle');
-        this.showGridToggle.OnChange (() => {
-            onChange (this.showGridToggle.GetStatus ());
-        });
-        AddDiv (titleDiv, 'ov_sidebar_subtitle_text', 'Show Grid');
-        this.showGridToggle.SetStatus (showGrid);
-    }
-
-    Update (showGrid)
-    {
-        if (this.showGridToggle === null) {
-            return;
-        }
-        this.showGridToggle.SetStatus (showGrid);
-    }
-}
-
-export class SettingsEdgeDisplaySection
-{
-    constructor (parentDiv)
-    {
-        this.parentDiv = parentDiv;
         this.edgeDisplayToggle = null;
-        this.pickr = null;
+        this.edgeColorPicker = null;
         this.thresholdSlider = null;
         this.thresholdSliderValue = null;
         this.edgeSettingsDiv = null;
     }
 
-    Init (showEdges, edgeColor, edgeThreshold, callbacks)
+    Init (settings, callbacks)
     {
-        let contentDiv = AddDiv (this.parentDiv, 'ov_sidebar_settings_content');
-        let titleDiv = AddDiv (contentDiv, 'ov_sidebar_subtitle');
+        let backgroundColorDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
+        let backgroundColorInput = AddDiv (backgroundColorDiv, 'ov_color_picker');
+        AddDiv (backgroundColorDiv, null, 'Background Color');
+        let predefinedBackgroundColors = ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'];
+        this.backgroundColorPicker = AddColorPicker (backgroundColorInput, settings.backgroundColor, predefinedBackgroundColors, (color) => {
+            settings.backgroundColor = color;
+            callbacks.onBackgroundColorChange ();
+        });
 
-        this.edgeDisplayToggle = AddToggle (titleDiv, 'ov_sidebar_subtitle_toggle');
-        AddDiv (titleDiv, 'ov_sidebar_subtitle_text', 'Show Edges');
+        let edgeParameterDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
+        this.edgeDisplayToggle = AddToggle (edgeParameterDiv, 'ov_sidebar_parameter_toggle');
+        AddDiv (edgeParameterDiv, 'ov_sidebar_parameter_text', 'Show Edges');
 
-        this.edgeSettingsDiv = AddDiv (contentDiv, 'ov_sidebar_settings_padded');
+        this.edgeSettingsDiv = AddDiv (this.contentDiv, 'ov_sidebar_settings_padded');
         this.edgeDisplayToggle.OnChange (() => {
             ShowDomElement (this.edgeSettingsDiv, this.edgeDisplayToggle.GetStatus ());
-            callbacks.onShowEdgesChange (this.edgeDisplayToggle.GetStatus () ? true : false);
+            settings.showEdges = this.edgeDisplayToggle.GetStatus ();
+            callbacks.onShowEdgesChange ();
         });
 
         let edgeColorRow = AddDiv (this.edgeSettingsDiv, 'ov_sidebar_settings_row');
         let predefinedEdgeColors = ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'];
 
-        let colorInput = AddDiv (edgeColorRow, 'ov_color_picker');
-        this.pickr = AddColorPicker (colorInput, edgeColor, predefinedEdgeColors, (color) => {
-            callbacks.onEdgeColorChange (color);
+        let edgeColorInput = AddDiv (edgeColorRow, 'ov_color_picker');
+        this.edgeColorPicker = AddColorPicker (edgeColorInput, settings.edgeColor, predefinedEdgeColors, (color) => {
+            settings.edgeColor = color;
+            callbacks.onEdgeColorChange ();
         });
         AddDiv (edgeColorRow, null, 'Edge Color');
 
@@ -157,73 +120,115 @@ export class SettingsEdgeDisplaySection
             this.thresholdSliderValue.innerHTML = this.thresholdSlider.value;
         });
         this. thresholdSlider.addEventListener ('change', () => {
-            callbacks.onEdgeThresholdChange (this.thresholdSlider.value);
+            settings.edgeThreshold = this.thresholdSlider.value;
+            callbacks.onEdgeThresholdChange ();
         });
-        this.thresholdSlider.value = edgeThreshold;
-        this.thresholdSliderValue.innerHTML = edgeThreshold;
+        this.thresholdSlider.value = settings.edgeThreshold;
+        this.thresholdSliderValue.innerHTML = settings.edgeThreshold;
 
-        this.edgeDisplayToggle.SetStatus (showEdges);
-        this.ShowEdgeSettings (showEdges);
+        this.edgeDisplayToggle.SetStatus (settings.showEdges);
+        ShowDomElement (this.edgeSettingsDiv, settings.showEdges);
     }
 
-    Update (showEdges, edgeColor, edgeThreshold)
+    Update (settings)
     {
-        if (this.edgeDisplayToggle === null) {
-            return;
+        if (this.backgroundColorPicker !== null) {
+            this.backgroundColorPicker.setColor ('#' + ColorToHexString (settings.backgroundColor));
         }
 
-        this.edgeDisplayToggle.SetStatus (showEdges);
-        this.ShowEdgeSettings (showEdges);
+        if (this.edgeDisplayToggle !== null) {
+            this.edgeDisplayToggle.SetStatus (settings.showEdges);
+            ShowDomElement (this.edgeSettingsDiv, settings.showEdges);
 
-        this.pickr.setColor ('#' + ColorToHexString (edgeColor));
-        this.thresholdSlider.value = edgeThreshold;
-        this.thresholdSliderValue.innerHTML = edgeThreshold;
-    }
-
-    ShowEdgeSettings (show)
-    {
-        ShowDomElement (this.edgeSettingsDiv, show);
+            this.edgeColorPicker.setColor ('#' + ColorToHexString (settings.edgeColor));
+            this.thresholdSlider.value = settings.edgeThreshold;
+            this.thresholdSliderValue.innerHTML = settings.edgeThreshold;
+        }
     }
 
     Clear ()
     {
-        if (this.pickr === null) {
-            return;
+        if (this.backgroundColorPicker !== null) {
+            this.backgroundColorPicker.hide ();
         }
-        this.pickr.hide ();
+
+        if (this.edgeColorPicker !== null) {
+            this.edgeColorPicker.hide ();
+        }
     }
 }
 
-export class SettingsThemeSection
+class SettingsImportParametersSection extends SettingsSection
 {
     constructor (parentDiv)
     {
-        this.parentDiv = parentDiv;
+        super (parentDiv, 'Import Settings');
+        this.defaultColorPicker = null;
+    }
+
+    Init (settings, callbacks)
+    {
+        let defaultColorDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
+        let defaultColorInput = AddDiv (defaultColorDiv, 'ov_color_picker');
+        AddDiv (defaultColorDiv, null, 'Default Color');
+        let predefinedDefaultColors = ['#ffffff', '#e3e3e3', '#cc3333', '#fac832', '#4caf50', '#3393bd', '#9b27b0', '#fda4b8'];
+        this.defaultColorPicker = AddColorPicker (defaultColorInput, settings.defaultColor, predefinedDefaultColors, (color) => {
+            settings.defaultColor = color;
+            callbacks.onDefaultColorChange ();
+        });
+    }
+
+    Update (settings)
+    {
+        if (this.defaultColorPicker !== null) {
+            this.defaultColorPicker.setColor ('#' + ColorToHexString (settings.defaultColor));
+        }
+    }
+
+    UpdateVisibility (hasDefaultMaterial)
+    {
+        if (this.contentDiv !== null) {
+            ShowDomElement (this.contentDiv, hasDefaultMaterial);
+        }
+    }
+
+    Clear ()
+    {
+        if (this.defaultColorPicker !== null) {
+            this.defaultColorPicker.hide ();
+        }
+    }
+}
+
+class SettingsAppearanceSection extends SettingsSection
+{
+    constructor (parentDiv)
+    {
+        super (parentDiv, 'Appearance');
         this.darkModeToggle = null;
     }
 
-    Init (themeId, onChange)
+    Init (settings, callbacks)
     {
-        let contentDiv = AddDiv (this.parentDiv, 'ov_sidebar_settings_content');
-        let titleDiv = AddDiv (contentDiv, 'ov_sidebar_subtitle');
+        let darkModeParameterDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
 
-        this.darkModeToggle = AddToggle (titleDiv, 'ov_sidebar_subtitle_toggle');
+        this.darkModeToggle = AddToggle (darkModeParameterDiv, 'ov_sidebar_parameter_toggle');
         this.darkModeToggle.OnChange (() => {
-            onChange (this.darkModeToggle.GetStatus () ? Theme.Dark : Theme.Light);
+            settings.themeId = (this.darkModeToggle.GetStatus () ? Theme.Dark : Theme.Light);
+            callbacks.onThemeChange ();
         });
-        AddDiv (titleDiv, 'ov_sidebar_subtitle_text', 'Dark Mode');
+        AddDiv (darkModeParameterDiv, null, 'Dark Mode');
 
-        let isDarkMode = (themeId === Theme.Dark);
+        let isDarkMode = (settings.themeId === Theme.Dark);
         this.darkModeToggle.SetStatus (isDarkMode);
     }
 
-    Update (themeId)
+    Update (settings)
     {
-        if (this.darkModeToggle === null) {
-            return;
+        if (this.darkModeToggle !== null) {
+            let isDarkMode = (settings.themeId === Theme.Dark);
+            this.darkModeToggle.SetStatus (isDarkMode);
         }
-        let isDarkMode = (themeId === Theme.Dark);
-        this.darkModeToggle.SetStatus (isDarkMode);
     }
 }
 
@@ -235,14 +240,9 @@ export class SidebarSettingsPanel extends SidebarPanel
         this.settings = settings;
 
         this.sectionsDiv = AddDiv (this.contentDiv, 'ov_sidebar_settings_sections ov_thin_scrollbar');
-        this.backgroundColorSection = new SettingsColorSection (this.sectionsDiv);
-        this.defaultColorSection = new SettingsColorSection (this.sectionsDiv);
-        this.gridDisplaySection = null;
-        if (FeatureSet.ShowGrid) {
-            this.gridDisplaySection = new SettingsGridDisplaySection (this.sectionsDiv);
-        }
-        this.edgeDisplaySection = new SettingsEdgeDisplaySection (this.sectionsDiv);
-        this.themeSection = new SettingsThemeSection (this.sectionsDiv);
+        this.modelDisplaySection = new SettingsModelDisplaySection (this.sectionsDiv);
+        this.importParametersSection = new SettingsImportParametersSection (this.sectionsDiv);
+        this.appearanceSection = new SettingsAppearanceSection (this.sectionsDiv);
 
         this.resetToDefaultsButton = AddDiv (this.contentDiv, 'ov_button ov_sidebar_button outline', 'Reset to Default');
         this.resetToDefaultsButton.addEventListener ('click', () => {
@@ -255,6 +255,11 @@ export class SidebarSettingsPanel extends SidebarPanel
         return 'Settings';
     }
 
+    HasTitle ()
+    {
+        return false;
+    }
+
     GetIcon ()
     {
         return 'settings';
@@ -262,94 +267,53 @@ export class SidebarSettingsPanel extends SidebarPanel
 
     Clear ()
     {
-        this.backgroundColorSection.Clear ();
-        this.defaultColorSection.Clear ();
-        this.edgeDisplaySection.Clear ();
+        this.modelDisplaySection.Clear ();
+        this.importParametersSection.Clear ();
+        this.appearanceSection.Clear ();
     }
 
     Init (callbacks)
     {
         super.Init (callbacks);
-        this.backgroundColorSection.Init (
-            'Background Color',
-            'Affects only the visualization.',
-            this.settings.backgroundColor,
-            ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'],
-            (newColor) => {
-                this.SetBackgroundColor (newColor, false);
+        this.modelDisplaySection.Init (this.settings, {
+            onBackgroundColorChange : () => {
+                callbacks.onBackgroundColorChange ();
+            },
+            onShowEdgesChange : () => {
+                callbacks.onEdgeDisplayChange ();
+            },
+            onEdgeColorChange : () => {
+                callbacks.onEdgeDisplayChange ();
+            },
+            onEdgeThresholdChange : () => {
+                callbacks.onEdgeDisplayChange ();
             }
-        );
-        this.defaultColorSection.Init (
-            'Default Color',
-            'Appears when the model doesn\'t have materials.',
-            this.settings.defaultColor,
-            ['#ffffff', '#e3e3e3', '#cc3333', '#fac832', '#4caf50', '#3393bd', '#9b27b0', '#fda4b8'],
-            (newColor) => {
-                this.SetDefaultColor (newColor, false);
+        });
+        this.importParametersSection.Init (this.settings, {
+            onDefaultColorChange : () => {
+                callbacks.onDefaultColorChange ();
             }
-        );
-        if (this.gridDisplaySection !== null) {
-            this.gridDisplaySection.Init (this.settings.showGrid, (showGrid) => {
-                this.settings.showGrid = showGrid;
-                callbacks.onGridDisplayChange ();
-            });
-        }
-        this.edgeDisplaySection.Init (
-            this.settings.showEdges,
-            this.settings.edgeColor,
-            this.settings.edgeThreshold,
-            {
-                onShowEdgesChange : (showEdges) => {
-                    this.settings.showEdges = showEdges;
-                    callbacks.onEdgeDisplayChange ();
-                },
-                onEdgeColorChange : (edgeColor) => {
-                    this.settings.edgeColor = edgeColor;
-                    callbacks.onEdgeDisplayChange ();
-                },
-                onEdgeThresholdChange : (edgeThreshold) => {
-                    this.settings.edgeThreshold = edgeThreshold;
-                    callbacks.onEdgeDisplayChange ();
+        });
+        this.appearanceSection.Init (this.settings, {
+            onThemeChange : () => {
+                if (this.settings.themeId === Theme.Light) {
+                    this.settings.backgroundColor = new Color (255, 255, 255);
+                    this.settings.defaultColor = new Color (200, 200, 200);
+                } else if (this.settings.themeId === Theme.Dark) {
+                    this.settings.backgroundColor = new Color (42, 43, 46);
+                    this.settings.defaultColor = new Color (200, 200, 200);
                 }
+                this.modelDisplaySection.Update (this.settings);
+                this.importParametersSection.Update (this.settings);
+                callbacks.onThemeChange ();
             }
-        );
-        this.themeSection.Init (this.settings.themeId, (themeId) => {
-            this.settings.themeId = themeId;
-            if (themeId === Theme.Light) {
-                this.SetBackgroundColor (new Color (255, 255, 255), true);
-                this.SetDefaultColor (new Color (200, 200, 200), true);
-            } else if (themeId === Theme.Dark) {
-                this.SetBackgroundColor (new Color (42, 43, 46), true);
-                this.SetDefaultColor (new Color (200, 200, 200), true);
-            }
-            callbacks.onThemeChange ();
         });
     }
 
     UpdateSettings (hasDefaultMaterial)
     {
-        this.defaultColorSection.Show (hasDefaultMaterial);
+        this.importParametersSection.UpdateVisibility (hasDefaultMaterial);
         this.Resize ();
-    }
-
-    SetBackgroundColor (color, setInput)
-    {
-        this.settings.backgroundColor = color;
-        if (setInput) {
-            this.backgroundColorSection.Update (color);
-        } else {
-            this.callbacks.onBackgroundColorChange ();
-        }
-    }
-
-    SetDefaultColor (color, setInput)
-    {
-        this.settings.defaultColor = color;
-        if (setInput) {
-            this.defaultColorSection.Update (color);
-        } else {
-            this.callbacks.onDefaultColorChange ();
-        }
     }
 
     ResetToDefaults ()
@@ -364,25 +328,17 @@ export class SidebarSettingsPanel extends SidebarPanel
         this.settings.edgeThreshold = defaultSettings.edgeThreshold;
         this.settings.themeId = defaultSettings.themeId;
 
-        this.backgroundColorSection.Update (defaultSettings.backgroundColor);
-        this.defaultColorSection.Update (defaultSettings.defaultColor);
-        if (this.gridDisplaySection !== null) {
-            this.gridDisplaySection.Update (defaultSettings.showGrid);
-        }
-        this.edgeDisplaySection.Update (defaultSettings.showEdges, defaultSettings.edgeColor, defaultSettings.edgeThreshold);
-        this.themeSection.Update (defaultSettings.themeId);
+        this.modelDisplaySection.Update (this.settings);
+        this.importParametersSection.Update (this.settings);
+        this.appearanceSection.Update (this.settings);
 
-        if (this.gridDisplaySection !== null) {
-            this.callbacks.onGridDisplayChange ();
-        }
         this.callbacks.onThemeChange ();
     }
 
     Resize ()
     {
-        let titleHeight = GetDomElementOuterHeight (this.titleDiv);
         let resetButtonHeight = GetDomElementOuterHeight (this.resetToDefaultsButton);
         let height = this.parentDiv.offsetHeight;
-        SetDomElementOuterHeight (this.sectionsDiv, height - titleHeight - resetButtonHeight);
+        SetDomElementOuterHeight (this.sectionsDiv, height - resetButtonHeight);
     }
 }

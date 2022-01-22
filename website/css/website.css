@@ -99,7 +99,7 @@ div.intro div.intro_big_text
 
 div.main
 {
-	overflow: auto;
+	overflow: hidden;
 	display: none;
 }
 
