@@ -38,9 +38,10 @@ export class EmbeddedViewer
             );
         }
 
-        if (this.parameters.environmentMap) {
-            // TODO
-            this.viewer.SetEnvironmentMapSettings (this.parameters.environmentMap, false);
+        if (this.parameters.environmentSettings) {
+            let environmentMap = this.parameters.environmentSettings.environmentMap;
+            let backgroundIsEnvMap = this.parameters.environmentSettings.backgroundIsEnvMap;
+            this.viewer.SetEnvironmentMapSettings (environmentMap, backgroundIsEnvMap);
         }
 
         window.addEventListener ('resize', () => {
@@ -160,12 +161,16 @@ export function Init3DViewerElements (onReady)
             edgeSettings = ParameterConverter.StringToEdgeSettings (edgeSettingsParams);
         }
 
-        let environmentMap = null;
-        let environmentMapParams = element.getAttribute ('environmentmap');
-        if (environmentMapParams) {
-            let environmentMapParts = environmentMapParams.split (',');
-            if (environmentMapParts.length === 6) {
-                environmentMap = environmentMapParts;
+        let environmentSettings = null;
+        let environmentSettingsParams = element.getAttribute ('environmentsettings');
+        if (environmentSettingsParams) {
+            let environmentSettingsParts = environmentSettingsParams.split (',');
+            if (environmentSettingsParts.length === 6) {
+                // TODO: background is env map
+                environmentSettings = {
+                    environmentMap : environmentSettingsParts,
+                    backgroundIsEnvMap : false
+                };
             }
         }
 
@@ -180,7 +185,7 @@ export function Init3DViewerElements (onReady)
             backgroundColor : backgroundColor,
             defaultColor : defaultColor,
             edgeSettings : edgeSettings,
-            environmentMap : environmentMap
+            environmentSettings : environmentSettings
         });
     }
 

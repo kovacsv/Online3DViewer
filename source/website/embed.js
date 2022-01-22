@@ -29,22 +29,6 @@ export class Embed
                 return;
             }
             TransformFileHostUrls (urls);
-            // let envMapName = this.hashHandler.GetEnvironmentMapNameFromHash ();
-            // if (envMapName === null) {
-            //     envMapName = 'fishermans_bastion';
-            // }
-            // let envMapPath = 'assets/envmaps/' + envMapName + '/';
-            // let envMapTextures = [
-            //     envMapPath + 'posx.jpg',
-            //     envMapPath + 'negx.jpg',
-            //     envMapPath + 'posy.jpg',
-            //     envMapPath + 'negy.jpg',
-            //     envMapPath + 'posz.jpg',
-            //     envMapPath + 'negz.jpg'
-            // ];
-            // // TODO
-            // this.viewer.SetEnvironmentMapSettings (envMapTextures, false);
-
 
             let envMapName = 'fishermans_bastion';
             let bgIsEnvMap = false;
