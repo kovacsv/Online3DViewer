@@ -5,6 +5,7 @@ import { AddDomElement } from '../engine/viewer/domutils.js';
 import { Viewer } from '../engine/viewer/viewer.js';
 import { HashHandler } from './hashhandler.js';
 import { ThreeModelLoaderUI } from './threemodelloaderui.js';
+import { Direction } from '../engine/geometry/geometry.js';
 
 export class Embed
 {
@@ -19,15 +20,28 @@ export class Embed
     Load ()
     {
         let canvas = AddDomElement (this.parameters.viewerDiv, 'canvas');
-        this.InitViewer (canvas);
+        this.viewer.Init (canvas);
         this.Resize ();
 
         if (this.hashHandler.HasHash ()) {
-        let urls = this.hashHandler.GetModelFilesFromHash ();
+            let urls = this.hashHandler.GetModelFilesFromHash ();
             if (urls === null) {
                 return;
             }
             TransformFileHostUrls (urls);
+            let envMapName = this.hashHandler.GetEnvironmentMapNameFromHash ();
+            if (envMapName === null) {
+                envMapName = 'fishermans_bastion';
+            }
+            let envMapPath = 'assets/envmaps/' + envMapName + '/';
+            this.viewer.SetEnvironmentMap ([
+                envMapPath + 'posx.jpg',
+                envMapPath + 'negx.jpg',
+                envMapPath + 'posy.jpg',
+                envMapPath + 'negy.jpg',
+                envMapPath + 'posz.jpg',
+                envMapPath + 'negz.jpg'
+            ]);
             let background = this.hashHandler.GetBackgroundFromHash ();
             if (background !== null) {
                 this.viewer.SetBackgroundColor (background);
@@ -52,7 +66,7 @@ export class Embed
                 },
                 onFinish : (importResult, threeObject) =>
                 {
-                    this.OnModelFinished (importResult, threeObject);
+                    this.OnModelFinished (threeObject);
                 },
                 onRender : () =>
                 {
@@ -80,7 +94,7 @@ export class Embed
         this.viewer.Resize (windowWidth, windowHeight);
     }
 
-    OnModelFinished (importResult, threeObject)
+    OnModelFinished (threeObject)
     {
         this.viewer.SetMainObject (threeObject);
         let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
@@ -91,21 +105,8 @@ export class Embed
         if (camera !== null) {
             this.viewer.SetCamera (camera);
         } else {
-            this.viewer.SetUpVector (importResult.upVector, false);
+            this.viewer.SetUpVector (Direction.Y, false);
         }
         this.viewer.FitSphereToWindow (boundingSphere, false);
-    }
-
-    InitViewer (canvas)
-    {
-        this.viewer.Init (canvas);
-        this.viewer.SetEnvironmentMap ([
-            'assets/envmaps/fishermans_bastion/posx.jpg',
-            'assets/envmaps/fishermans_bastion/negx.jpg',
-            'assets/envmaps/fishermans_bastion/posy.jpg',
-            'assets/envmaps/fishermans_bastion/negy.jpg',
-            'assets/envmaps/fishermans_bastion/posz.jpg',
-            'assets/envmaps/fishermans_bastion/negz.jpg'
-        ]);
     }
 }

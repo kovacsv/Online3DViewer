@@ -1,0 +1,33 @@
+{
+	"root" : 0,
+	"nodes" : [
+		{
+			"children" : [1]
+		},
+		{
+			"transformation" : {
+				"translation" : [0.0, 0.0, 0.0]
+			},
+			"mesh" : 0
+		}
+	],
+	"materials" : [
+		{
+			"name" : "Black",
+			"color" : [255, 255, 255],
+			"metalness" : 1.0,
+			"roughness" : 0.0
+		}
+	],
+	"meshes" : [
+		{
+			"name" : "Sphere",
+			"type" : "sphere",
+			"material" : 0,
+			"parameters" : {
+				"radius" : 1.0,
+				"segments" : 40
+			}
+		}
+	]
+}

@@ -51,6 +51,9 @@ export class Sidebar
         });
 
         this.settingsPanel.Init ({
+            onEnvironmentMapChange : () => {
+                this.callbacks.onEnvironmentMapChange ();
+            },
             onBackgroundColorChange : () => {
                 this.callbacks.onBackgroundColorChange ();
             },
@@ -79,9 +82,9 @@ export class Sidebar
         });
     }
 
-    UpdateSettings (hasDefaultMaterial)
+    UpdateSettings (isPhysicallyBased, hasDefaultMaterial)
     {
-        this.settingsPanel.UpdateSettings (hasDefaultMaterial);
+        this.settingsPanel.UpdateSettings (isPhysicallyBased, hasDefaultMaterial);
     }
 
     UpdateMeasureTool ()

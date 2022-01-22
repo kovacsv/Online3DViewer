@@ -1,4 +1,5 @@
 import { IsDefined } from '../core/core.js';
+import { Direction } from '../geometry/geometry.js';
 import { ImportErrorCode, ImportSettings } from '../import/importer.js';
 import { FileSource, TransformFileHostUrls } from '../io/fileutils.js';
 import { ParameterConverter } from '../parameters/parameterlist.js';
@@ -86,7 +87,7 @@ export class EmbeddedViewer
                 if (this.parameters.camera) {
                     this.viewer.SetCamera (this.parameters.camera);
                 } else {
-                    this.viewer.SetUpVector (importResult.upVector, false);
+                    this.viewer.SetUpVector (Direction.Y, false);
                 }
                 this.viewer.FitSphereToWindow (boundingSphere, false);
             },

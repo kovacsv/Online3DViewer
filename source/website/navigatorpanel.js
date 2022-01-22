@@ -11,9 +11,9 @@ export class NavigatorPopupButton
         this.callbacks = null;
         this.popup = null;
 
-        this.button = AddDiv (this.parentDiv, 'ov_navigator_info_button');
-        this.buttonText = AddDiv (this.button, 'ov_navigator_info_button_text');
-        AddSvgIconElement (this.button, 'arrow_right', 'ov_navigator_info_button_icon');
+        this.button = AddDiv (this.parentDiv, 'ov_panel_button');
+        this.buttonText = AddDiv (this.button, 'ov_panel_button_text');
+        AddSvgIconElement (this.button, 'arrow_right', 'ov_panel_button_icon');
         this.button.addEventListener ('click', () => {
             this.OnButtonClick ();
         });

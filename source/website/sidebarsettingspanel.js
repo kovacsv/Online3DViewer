@@ -1,7 +1,10 @@
 import { Color, ColorToHexString } from '../engine/model/color.js';
-import { AddDiv, AddDomElement, AddRangeSlider, AddToggle, ShowDomElement, GetDomElementOuterHeight, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
+import { AddDiv, AddDomElement, AddRangeSlider, AddToggle, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
+import { CalculatePopupPositionToElementTopLeft } from './dialogs.js';
+import { PopupDialog } from './modal.js';
 import { Settings, Theme } from './settings.js';
 import { SidebarPanel } from './sidebarpanel.js';
+import { AddSvgIconElement } from './utils.js';
 
 function AddColorPicker (parentDiv, defaultColor, predefinedColors, onChange)
 {
@@ -40,6 +43,66 @@ function AddColorPicker (parentDiv, defaultColor, predefinedColors, onChange)
     return pickr;
 }
 
+class EnvironmentMapPopup extends PopupDialog
+{
+    constructor ()
+    {
+        super ();
+    }
+
+    ShowPopup (buttonDiv, defaultEnvMapName, callbacks)
+    {
+        let contentDiv = super.Init (() => {
+            return CalculatePopupPositionToElementTopLeft (buttonDiv, contentDiv);
+        });
+
+        let envMapImages = [
+            {
+                element: null,
+                name: 'fishermans_bastion'
+            },
+            {
+                element: null,
+                name: 'citadella'
+            },
+            {
+                element: null,
+                name: 'maskonaive'
+            },
+            {
+                element: null,
+                name: 'teide'
+            },
+            {
+                element: null,
+                name: 'ice_river'
+            },
+            {
+                element: null,
+                name: 'park'
+            }
+        ];
+
+        for (let envMapImage of envMapImages) {
+            envMapImage.element = AddDomElement (contentDiv, 'img', 'ov_environment_map_preview');
+            envMapImage.element.setAttribute ('src', 'assets/envmaps/' + envMapImage.name + '.jpg');
+            if (envMapImage.name === defaultEnvMapName) {
+                envMapImage.element.classList.add ('selected');
+            }
+            envMapImage.element.addEventListener ('click', () => {
+                for (let otherImage of envMapImages) {
+                    otherImage.element.classList.remove ('selected');
+                }
+                envMapImage.element.classList.add ('selected');
+                callbacks.onEnvironmentMapChange (envMapImage.name);
+            });
+        }
+
+        contentDiv.classList.add ('sidebar');
+        this.Show ();
+    }
+}
+
 class SettingsSection
 {
     constructor (parentDiv, title)
@@ -71,6 +134,9 @@ class SettingsModelDisplaySection extends SettingsSection
     {
         super (parentDiv, 'Model Display');
 
+        this.environmentMapButton = null;
+        this.environmentMapPopup = null;
+
         this.backgroundColorPicker = null;
 
         this.edgeDisplayToggle = null;
@@ -82,6 +148,19 @@ class SettingsModelDisplaySection extends SettingsSection
 
     Init (settings, callbacks)
     {
+        this.environmentMapButton = AddDiv (this.contentDiv, 'ov_panel_button');
+        AddSvgIconElement (this.environmentMapButton, 'arrow_left', 'ov_panel_button_left_icon');
+        AddDiv (this.environmentMapButton, 'ov_panel_button_text', 'Environment Map');
+        this.environmentMapButton.addEventListener ('click', () => {
+            this.environmentMapPopup = new EnvironmentMapPopup ();
+            this.environmentMapPopup.ShowPopup (this.environmentMapButton, settings.environmentMapName, {
+                onEnvironmentMapChange : (selectedEnvMap) => {
+                    settings.environmentMapName = selectedEnvMap;
+                    callbacks.onEnvironmentMapChange ();
+                }
+            });
+        });
+
         let backgroundColorDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
         let backgroundColorInput = AddDiv (backgroundColorDiv, 'ov_color_picker');
         AddDiv (backgroundColorDiv, null, 'Background Color');
@@ -130,6 +209,11 @@ class SettingsModelDisplaySection extends SettingsSection
         ShowDomElement (this.edgeSettingsDiv, settings.showEdges);
     }
 
+    UpdateVisibility (isPhysicallyBased)
+    {
+        ShowDomElement (this.environmentMapButton, isPhysicallyBased);
+    }
+
     Update (settings)
     {
         if (this.backgroundColorPicker !== null) {
@@ -148,6 +232,11 @@ class SettingsModelDisplaySection extends SettingsSection
 
     Clear ()
     {
+        if (this.environmentMapPopup !== null) {
+            this.environmentMapPopup.Hide ();
+            this.environmentMapPopup = null;
+        }
+
         if (this.backgroundColorPicker !== null) {
             this.backgroundColorPicker.hide ();
         }
@@ -244,7 +333,7 @@ export class SidebarSettingsPanel extends SidebarPanel
         this.importParametersSection = new SettingsImportParametersSection (this.sectionsDiv);
         this.appearanceSection = new SettingsAppearanceSection (this.sectionsDiv);
 
-        this.resetToDefaultsButton = AddDiv (this.contentDiv, 'ov_button ov_sidebar_button outline', 'Reset to Default');
+        this.resetToDefaultsButton = AddDiv (this.contentDiv, 'ov_button ov_panel_button outline', 'Reset to Default');
         this.resetToDefaultsButton.addEventListener ('click', () => {
             this.ResetToDefaults ();
         });
@@ -276,6 +365,9 @@ export class SidebarSettingsPanel extends SidebarPanel
     {
         super.Init (callbacks);
         this.modelDisplaySection.Init (this.settings, {
+            onEnvironmentMapChange : () => {
+                callbacks.onEnvironmentMapChange ();
+            },
             onBackgroundColorChange : () => {
                 callbacks.onBackgroundColorChange ();
             },
@@ -310,8 +402,9 @@ export class SidebarSettingsPanel extends SidebarPanel
         });
     }
 
-    UpdateSettings (hasDefaultMaterial)
+    UpdateSettings (isPhysicallyBased, hasDefaultMaterial)
     {
+        this.modelDisplaySection.UpdateVisibility (isPhysicallyBased);
         this.importParametersSection.UpdateVisibility (hasDefaultMaterial);
         this.Resize ();
     }
@@ -337,7 +430,7 @@ export class SidebarSettingsPanel extends SidebarPanel
 
     Resize ()
     {
-        let resetButtonHeight = GetDomElementOuterHeight (this.resetToDefaultsButton);
+        let resetButtonHeight = this.resetToDefaultsButton.offsetHeight;
         let height = this.parentDiv.offsetHeight;
         SetDomElementOuterHeight (this.sectionsDiv, height - resetButtonHeight);
     }

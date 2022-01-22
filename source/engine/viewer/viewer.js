@@ -133,6 +133,11 @@ export class ShadingModel
     SetType (type)
     {
         this.type = type;
+        this.UpdateShading ();
+    }
+
+    UpdateShading ()
+    {
         if (this.type === ShadingType.Phong) {
             this.ambientLight.color.set (0x888888);
             this.directionalLight.color.set (0x888888);
@@ -265,6 +270,8 @@ export class Viewer
         this.shading.SetEnvironment (textures, () => {
             this.Render ();
         });
+        this.shading.UpdateShading ();
+        this.Render ();
     }
 
     GetCanvas ()
@@ -516,6 +523,11 @@ export class Viewer
     InitShading  ()
     {
         this.shading = new ShadingModel (this.scene);
+    }
+
+    GetShadingType ()
+    {
+        return this.shading.type;
     }
 
     GetImageSize ()

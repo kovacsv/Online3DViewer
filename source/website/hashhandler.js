@@ -54,6 +54,12 @@ export class HashHandler
         return parser.GetBackgroundColor ();
     }
 
+    GetEnvironmentMapNameFromHash ()
+    {
+        let parser = CreateUrlParser (this.GetHash ());
+        return parser.GetEnvironmentMapName ();
+    }
+
     GetDefaultColorFromHash ()
     {
         let parser = CreateUrlParser (this.GetHash ());

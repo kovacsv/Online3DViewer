@@ -53,6 +53,15 @@ export function ShowListPopup (items, callbacks)
     return popup;
 }
 
+export function CalculatePopupPositionToElementTopLeft (elementDiv, contentDiv)
+{
+    let offset = elementDiv.getBoundingClientRect ();
+    return {
+        x : offset.left - contentDiv.offsetWidth,
+        y : offset.top
+    };
+}
+
 export function CalculatePopupPositionToElementBottomRight (elementDiv, contentDiv)
 {
     let offset = elementDiv.getBoundingClientRect ();

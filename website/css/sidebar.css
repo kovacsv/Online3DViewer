@@ -104,3 +104,24 @@ div.ov_sidebar_content button.pcr-button
 	outline: none;
 	float: left;
 }
+
+img.ov_environment_map_preview
+{
+	width: 160px;
+	height: 90px;
+	display: block;
+	float: left;
+	padding: 1px;
+	border: 5px solid transparent;
+	cursor: pointer;
+}
+
+img.ov_environment_map_preview.selected
+{
+	border: 5px solid var(--ov_button_color);
+}
+
+div.ov_popup.sidebar
+{
+	width: 344px;
+}

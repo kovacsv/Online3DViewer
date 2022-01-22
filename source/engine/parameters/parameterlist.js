@@ -156,6 +156,12 @@ export class ParameterListBuilder
         return this;
     }
 
+    AddEnvironmentMapName (envMapName)
+    {
+        this.AddUrlPart ('envmap', envMapName);
+        return this;
+    }
+
     AddBackgroundColor (background)
     {
         this.AddUrlPart ('backgroundcolor', ParameterConverter.ColorToString (background));
@@ -214,6 +220,12 @@ export class ParameterListParser
     {
         let keywordParams = this.GetKeywordParams ('camera');
         return ParameterConverter.StringToCamera (keywordParams);
+    }
+
+    GetEnvironmentMapName ()
+    {
+        let envMapName = this.GetKeywordParams ('envmap');
+        return envMapName;
     }
 
     GetBackgroundColor ()

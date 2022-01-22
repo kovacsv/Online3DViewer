@@ -28,7 +28,7 @@ export class SidebarMeasurePanel extends SidebarPanel
         super.Init (callbacks);
 
         let isActive = false;
-        let activateButton = AddDiv (this.contentDiv, 'ov_button ov_sidebar_button', 'Activate');
+        let activateButton = AddDiv (this.contentDiv, 'ov_button ov_panel_button', 'Activate');
         activateButton.addEventListener ('click', () => {
             isActive = !isActive;
             if (isActive) {

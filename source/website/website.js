@@ -19,6 +19,7 @@ import { ShowSharingDialog } from './sharingdialog.js';
 import { HasDefaultMaterial, ReplaceDefaultMaterialColor } from '../engine/model/modelutils.js';
 import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
+import { ShadingType } from '../engine/threejs/threeutils.js';
 
 export const WebsiteUIState =
 {
@@ -174,7 +175,7 @@ export class Website
         this.model = importResult.model;
         this.parameters.fileNameDiv.innerHTML = importResult.mainFile;
         this.viewer.SetMainObject (threeObject);
-        this.viewer.SetUpVector (importResult.upVector, false);
+        this.viewer.SetUpVector (Direction.Y, false);
         this.navigator.FillTree (importResult);
         this.UpdateSidebar ();
         this.FitModelToWindow (true);
@@ -336,8 +337,10 @@ export class Website
 
     UpdateSidebar ()
     {
+        let shadingType = this.viewer.GetShadingType ();
+        let isPhysicallyBased = (shadingType === ShadingType.Physical);
         let hasDefaultMaterial = HasDefaultMaterial (this.model);
-        this.sidebar.UpdateSettings (hasDefaultMaterial);
+        this.sidebar.UpdateSettings (isPhysicallyBased, hasDefaultMaterial);
     }
 
     UpdateMeshesVisibility ()
@@ -442,6 +445,19 @@ export class Website
         this.viewer.SetEdgeSettings (this.settings.showEdges, this.settings.edgeColor, this.settings.edgeThreshold);
     }
 
+    UpdateEnvironmentMap ()
+    {
+        let envMapPath = 'assets/envmaps/' + this.settings.environmentMapName + '/';
+        this.viewer.SetEnvironmentMap ([
+            envMapPath + 'posx.jpg',
+            envMapPath + 'negx.jpg',
+            envMapPath + 'posy.jpg',
+            envMapPath + 'negy.jpg',
+            envMapPath + 'posz.jpg',
+            envMapPath + 'negz.jpg'
+        ]);
+    }
+
     SwitchTheme (newThemeId, resetColors)
     {
         this.settings.themeId = newThemeId;
@@ -464,14 +480,7 @@ export class Website
         this.viewer.SetGridSettings (this.settings.showGrid);
         this.viewer.SetEdgeSettings (this.settings.showEdges, this.settings.edgeColor, this.settings.edgeThreshold);
         this.viewer.SetBackgroundColor (this.settings.backgroundColor);
-        this.viewer.SetEnvironmentMap ([
-            'assets/envmaps/fishermans_bastion/posx.jpg',
-            'assets/envmaps/fishermans_bastion/negx.jpg',
-            'assets/envmaps/fishermans_bastion/posy.jpg',
-            'assets/envmaps/fishermans_bastion/negy.jpg',
-            'assets/envmaps/fishermans_bastion/posz.jpg',
-            'assets/envmaps/fishermans_bastion/negz.jpg'
-        ]);
+        this.UpdateEnvironmentMap ();
     }
 
     InitMeasureTool ()
@@ -607,6 +616,10 @@ export class Website
     InitSidebar ()
     {
         this.sidebar.Init ({
+            onEnvironmentMapChange : () => {
+                this.settings.SaveToCookies ();
+                this.UpdateEnvironmentMap ();
+            },
             onBackgroundColorChange : () => {
                 this.settings.SaveToCookies ();
                 this.viewer.SetBackgroundColor (this.settings.backgroundColor);

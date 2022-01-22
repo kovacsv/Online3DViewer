@@ -56,38 +56,10 @@ div.ov_navigator_info_panel
 	overflow: auto;
 }
 
-div.ov_navigator_info_panel div.ov_navigator_info_button
-{
-	cursor: pointer;
-	margin-top: 10px;
-	border: 1px solid var(--ov_border_color);
-	border-radius: 5px;
-	overflow: auto;
-}
-
-div.ov_navigator_info_panel div.ov_navigator_info_button_text
-{
-	padding: 5px;
-	float: left;
-}
-
-div.ov_navigator_info_panel div.ov_navigator_info_button_icon
-{
-	color: var(--ov_light_icon_color);
-	padding: 6px;
-	float: right;
-}
-
-
 @media (hover)
 {
 
 div.ov_navigator_info_panel div.ov_navigator_info_panel_title:hover
-{
-	background: var(--ov_hover_color);
-}
-
-div.ov_navigator_info_panel div.ov_navigator_info_button:hover
 {
 	background: var(--ov_hover_color);
 }

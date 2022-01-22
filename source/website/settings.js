@@ -1,5 +1,5 @@
 import { Color } from '../engine/model/color.js';
-import { CookieGetBoolVal, CookieGetColorVal, CookieGetIntVal, CookieSetBoolVal, CookieSetColorVal, CookieSetIntVal } from './cookiehandler.js';
+import { CookieGetBoolVal, CookieGetColorVal, CookieGetIntVal, CookieGetStringVal, CookieSetBoolVal, CookieSetColorVal, CookieSetIntVal, CookieSetStringVal } from './cookiehandler.js';
 
 export const Theme =
 {
@@ -11,6 +11,7 @@ export class Settings
 {
     constructor ()
     {
+        this.environmentMapName = 'fishermans_bastion';
         this.backgroundColor = new Color (255, 255, 255);
         this.defaultColor = new Color (200, 200, 200);
         this.showGrid = false;
@@ -22,6 +23,7 @@ export class Settings
 
     LoadFromCookies ()
     {
+        this.environmentMapName = CookieGetStringVal ('ov_environment_map', 'fishermans_bastion');
         this.backgroundColor = CookieGetColorVal ('ov_background_color', new Color (255, 255, 255));
         this.defaultColor = CookieGetColorVal ('ov_default_color', new Color (200, 200, 200));
         this.showGrid = CookieGetBoolVal ('ov_show_grid', false);
@@ -33,6 +35,7 @@ export class Settings
 
     SaveToCookies ()
     {
+        CookieSetStringVal ('ov_environment_map', this.environmentMapName);
         CookieSetColorVal ('ov_background_color', this.backgroundColor);
         CookieSetColorVal ('ov_default_color', this.defaultColor);
         CookieSetBoolVal ('ov_show_grid', this.showGrid);

@@ -29,6 +29,7 @@ export function ShowSharingDialog (fileList, settings, camera)
         let builder = CreateUrlBuilder ();
         builder.AddModelUrls (params.files);
         builder.AddCamera (params.camera);
+        builder.AddEnvironmentMapName (params.environmentMapName);
         builder.AddBackgroundColor (params.backgroundColor);
         builder.AddDefaultColor (params.defaultColor);
         builder.AddEdgeSettings (params.edgeSettings);
@@ -86,6 +87,10 @@ export function ShowSharingDialog (fileList, settings, camera)
             embeddingCodeParams.camera = checked ? camera : null;
             embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
         });
+        AddCheckboxLine (optionsSection, 'Use overridden environment map', 'embed_envmap', (checked) => {
+            embeddingCodeParams.environmentMapName = checked ? settings.environmentMapName : null;
+            embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
+        });
         AddCheckboxLine (optionsSection, 'Use overridden background color', 'embed_background', (checked) => {
             embeddingCodeParams.backgroundColor = checked ? settings.backgroundColor : null;
             embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
@@ -130,6 +135,7 @@ export function ShowSharingDialog (fileList, settings, camera)
     let embeddingCodeParams = {
         files : modelFiles,
         camera : camera,
+        environmentMapName : settings.environmentMapName,
         backgroundColor : settings.backgroundColor,
         defaultColor : settings.defaultColor,
         edgeSettings : {

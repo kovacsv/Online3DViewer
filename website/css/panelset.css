@@ -28,8 +28,43 @@ div.ov_panel_set_right_container div.ov_panel_set_content
     overflow: auto;
 }
 
+div.ov_panel_button
+{
+	cursor: pointer;
+	margin-top: 10px;
+	border: 1px solid var(--ov_border_color);
+	border-radius: 5px;
+	overflow: auto;
+}
+
+div.ov_panel_button_text
+{
+	padding: 5px;
+	float: left;
+}
+
+div.ov_panel_button_icon
+{
+	color: var(--ov_light_icon_color);
+	padding: 6px;
+	float: right;
+}
+
+div.ov_panel_button_left_icon
+{
+	color: var(--ov_light_icon_color);
+	padding: 6px;
+	float: left;
+}
+
 @media (hover)
 {
+
+div.ov_panel_button:hover
+{
+    background: var(--ov_hover_color);
+}
+
 
 div.ov_panel_set_menu div.ov_panel_set_menu_button:hover
 {
