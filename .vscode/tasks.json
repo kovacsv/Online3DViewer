@@ -15,6 +15,12 @@
             "script": "build_engine_dev",
             "group": "build",
             "label": "npm: build_engine_dev"
+        },
+        {
+            "type": "npm",
+            "script": "lint",
+            "group": "build",
+            "label": "npm: lint"
         }
     ]
 }

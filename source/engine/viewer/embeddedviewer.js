@@ -162,14 +162,18 @@ export function Init3DViewerElements (onReady)
         }
 
         let environmentSettings = null;
-        let environmentSettingsParams = element.getAttribute ('environmentsettings');
-        if (environmentSettingsParams) {
-            let environmentSettingsParts = environmentSettingsParams.split (',');
-            if (environmentSettingsParts.length === 6) {
-                // TODO: background is env map
+        let environmentMapParams = element.getAttribute ('environmentmap');
+        if (environmentMapParams) {
+            let environmentMapParts = environmentMapParams.split (',');
+            if (environmentMapParts.length === 6) {
+                let backgroundIsEnvMap = false;
+                let backgroundIsEnvMapParam = element.getAttribute ('environmentmapbg');
+                if (backgroundIsEnvMapParam && backgroundIsEnvMapParam === 'true') {
+                    backgroundIsEnvMap = true;
+                }
                 environmentSettings = {
-                    environmentMap : environmentSettingsParts,
-                    backgroundIsEnvMap : false
+                    environmentMap : environmentMapParts,
+                    backgroundIsEnvMap : backgroundIsEnvMap
                 };
             }
         }

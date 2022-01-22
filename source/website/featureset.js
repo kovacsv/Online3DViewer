@@ -1,5 +1,6 @@
 export const FeatureSet =
 {
     ShowGrid : false,
-    MeasureTool : false
+    MeasureTool : false,
+    EnvironmentMap : false
 };

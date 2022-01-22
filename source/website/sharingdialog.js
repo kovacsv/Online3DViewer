@@ -95,7 +95,7 @@ export function ShowSharingDialog (fileList, settings, camera)
             HandleEvent ('model_shared', 'embedding_code');
             return GetEmbeddingCode (modelFiles, useCurrentSettings, settings, camera);
         });
-        AddCheckboxLine (optionsSection, 'Use current settings instead of defaults', 'embed_current_settings', (checked) => {
+        AddCheckboxLine (optionsSection, 'Use customized settings', 'embed_current_settings', (checked) => {
             useCurrentSettings = checked;
             embeddingCodeInput.value = GetEmbeddingCode (modelFiles, useCurrentSettings, settings, camera);
         });

@@ -1,6 +1,7 @@
 import { Color, ColorToHexString } from '../engine/model/color.js';
 import { AddDiv, AddDomElement, AddRangeSlider, AddToggle, AddCheckbox, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToElementTopLeft } from './dialogs.js';
+import { FeatureSet } from './featureset.js';
 import { PopupDialog } from './modal.js';
 import { Settings, Theme } from './settings.js';
 import { SidebarPanel } from './sidebarpanel.js';
@@ -154,17 +155,19 @@ class SettingsModelDisplaySection extends SettingsSection
 
     Init (settings, callbacks)
     {
-        this.environmentMapButton = AddDiv (this.contentDiv, 'ov_panel_button');
-        AddSvgIconElement (this.environmentMapButton, 'arrow_left', 'ov_panel_button_left_icon');
-        AddDiv (this.environmentMapButton, 'ov_panel_button_text', 'Environment Map');
-        this.environmentMapButton.addEventListener ('click', () => {
-            this.environmentMapPopup = new EnvironmentMapPopup ();
-            this.environmentMapPopup.ShowPopup (this.environmentMapButton, settings, {
-                onEnvironmentMapChange : () => {
-                    callbacks.onEnvironmentMapChange ();
-                }
+        if (FeatureSet.EnvironmentMap) {
+            this.environmentMapButton = AddDiv (this.contentDiv, 'ov_panel_button');
+            AddSvgIconElement (this.environmentMapButton, 'arrow_left', 'ov_panel_button_left_icon');
+            AddDiv (this.environmentMapButton, 'ov_panel_button_text', 'Environment Map');
+            this.environmentMapButton.addEventListener ('click', () => {
+                this.environmentMapPopup = new EnvironmentMapPopup ();
+                this.environmentMapPopup.ShowPopup (this.environmentMapButton, settings, {
+                    onEnvironmentMapChange : () => {
+                        callbacks.onEnvironmentMapChange ();
+                    }
+                });
             });
-        });
+        }
 
         let backgroundColorDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
         let backgroundColorInput = AddDiv (backgroundColorDiv, 'ov_color_picker');
@@ -216,7 +219,9 @@ class SettingsModelDisplaySection extends SettingsSection
 
     UpdateVisibility (isPhysicallyBased)
     {
-        ShowDomElement (this.environmentMapButton, isPhysicallyBased);
+        if (this.environmentMapButton !== null) {
+            ShowDomElement (this.environmentMapButton, isPhysicallyBased);
+        }
     }
 
     Update (settings)

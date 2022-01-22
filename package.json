@@ -21,7 +21,7 @@
 	"scripts": {
 		"start": "http-server",
 		"test": "mocha test",
-		"lint": "eslint source",
+		"lint": "eslint source --fix",
 		"docs": "jsdoc -c tools/jsdoc.json",
 		"generate_icon_font": "node tools/run_python.js tools/generate_icon_font.py",
 		"update_engine_exports": "node tools/run_python.js tools/update_engine_exports.py",
