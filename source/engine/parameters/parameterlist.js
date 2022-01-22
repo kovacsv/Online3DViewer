@@ -101,6 +101,34 @@ export let ParameterConverter =
         return color;
     },
 
+    EnvironmentSettingsToString (environmentSettings)
+    {
+        if (environmentSettings === null) {
+            return null;
+        }
+        let environmentSettingsParameters = [
+            environmentSettings.environmentMapName,
+            environmentSettings.backgroundIsEnvMap ? 'on' : 'off'
+        ].join (',');
+        return environmentSettingsParameters;
+    },
+
+    StringToEnvironmentSettings : function (str)
+    {
+        if (str === null || str.length === 0) {
+            return null;
+        }
+        let paramParts = str.split (',');
+        if (paramParts.length !== 2) {
+            return null;
+        }
+        let environmentSettings = {
+            environmentMapName : paramParts[0],
+            backgroundIsEnvMap : paramParts[1] === 'on' ? true : false
+        };
+        return environmentSettings;
+    },
+
     EdgeSettingsToString : function (edgeSettings)
     {
         if (edgeSettings === null) {
@@ -156,9 +184,9 @@ export class ParameterListBuilder
         return this;
     }
 
-    AddEnvironmentMapName (envMapName)
+    AddEnvironmentSettings (envSettings)
     {
-        this.AddUrlPart ('envmap', envMapName);
+        this.AddUrlPart ('envsettings', ParameterConverter.EnvironmentSettingsToString (envSettings));
         return this;
     }
 
@@ -222,10 +250,10 @@ export class ParameterListParser
         return ParameterConverter.StringToCamera (keywordParams);
     }
 
-    GetEnvironmentMapName ()
+    GetEnvironmentSettings ()
     {
-        let envMapName = this.GetKeywordParams ('envmap');
-        return envMapName;
+        let environmentSettingsParams = this.GetKeywordParams ('envsettings');
+        return ParameterConverter.StringToEnvironmentSettings (environmentSettingsParams);
     }
 
     GetBackgroundColor ()

@@ -12,6 +12,7 @@ export class Settings
     constructor ()
     {
         this.environmentMapName = 'fishermans_bastion';
+        this.backgroundIsEnvMap = false;
         this.backgroundColor = new Color (255, 255, 255);
         this.defaultColor = new Color (200, 200, 200);
         this.showGrid = false;
@@ -24,6 +25,7 @@ export class Settings
     LoadFromCookies ()
     {
         this.environmentMapName = CookieGetStringVal ('ov_environment_map', 'fishermans_bastion');
+        this.backgroundIsEnvMap = CookieGetBoolVal ('ov_background_is_envmap', false);
         this.backgroundColor = CookieGetColorVal ('ov_background_color', new Color (255, 255, 255));
         this.defaultColor = CookieGetColorVal ('ov_default_color', new Color (200, 200, 200));
         this.showGrid = CookieGetBoolVal ('ov_show_grid', false);
@@ -36,6 +38,7 @@ export class Settings
     SaveToCookies ()
     {
         CookieSetStringVal ('ov_environment_map', this.environmentMapName);
+        CookieSetBoolVal ('ov_background_is_envmap', this.backgroundIsEnvMap);
         CookieSetColorVal ('ov_background_color', this.backgroundColor);
         CookieSetColorVal ('ov_default_color', this.defaultColor);
         CookieSetBoolVal ('ov_show_grid', this.showGrid);

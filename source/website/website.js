@@ -448,14 +448,15 @@ export class Website
     UpdateEnvironmentMap ()
     {
         let envMapPath = 'assets/envmaps/' + this.settings.environmentMapName + '/';
-        this.viewer.SetEnvironmentMap ([
+        let envMapTextures = [
             envMapPath + 'posx.jpg',
             envMapPath + 'negx.jpg',
             envMapPath + 'posy.jpg',
             envMapPath + 'negy.jpg',
             envMapPath + 'posz.jpg',
             envMapPath + 'negz.jpg'
-        ]);
+        ];
+        this.viewer.SetEnvironmentMapSettings (envMapTextures, this.settings.backgroundIsEnvMap);
     }
 
     SwitchTheme (newThemeId, resetColors)

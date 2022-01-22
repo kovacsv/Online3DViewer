@@ -29,19 +29,41 @@ export class Embed
                 return;
             }
             TransformFileHostUrls (urls);
-            let envMapName = this.hashHandler.GetEnvironmentMapNameFromHash ();
-            if (envMapName === null) {
-                envMapName = 'fishermans_bastion';
+            // let envMapName = this.hashHandler.GetEnvironmentMapNameFromHash ();
+            // if (envMapName === null) {
+            //     envMapName = 'fishermans_bastion';
+            // }
+            // let envMapPath = 'assets/envmaps/' + envMapName + '/';
+            // let envMapTextures = [
+            //     envMapPath + 'posx.jpg',
+            //     envMapPath + 'negx.jpg',
+            //     envMapPath + 'posy.jpg',
+            //     envMapPath + 'negy.jpg',
+            //     envMapPath + 'posz.jpg',
+            //     envMapPath + 'negz.jpg'
+            // ];
+            // // TODO
+            // this.viewer.SetEnvironmentMapSettings (envMapTextures, false);
+
+
+            let envMapName = 'fishermans_bastion';
+            let bgIsEnvMap = false;
+            let environmentSettings = this.hashHandler.GetEnvironmentSettingsFromHash ();
+            if (environmentSettings !== null) {
+                envMapName = environmentSettings.environmentMapName;
+                bgIsEnvMap = environmentSettings.backgroundIsEnvMap;
             }
             let envMapPath = 'assets/envmaps/' + envMapName + '/';
-            this.viewer.SetEnvironmentMap ([
+            let envMapTextures = [
                 envMapPath + 'posx.jpg',
                 envMapPath + 'negx.jpg',
                 envMapPath + 'posy.jpg',
                 envMapPath + 'negy.jpg',
                 envMapPath + 'posz.jpg',
                 envMapPath + 'negz.jpg'
-            ]);
+            ];
+            this.viewer.SetEnvironmentMapSettings (envMapTextures, bgIsEnvMap);
+
             let background = this.hashHandler.GetBackgroundFromHash ();
             if (background !== null) {
                 this.viewer.SetBackgroundColor (background);

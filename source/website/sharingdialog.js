@@ -16,34 +16,6 @@ export function ShowSharingDialog (fileList, settings, camera)
         });
     }
 
-    function GetSharingLink (params)
-    {
-        let builder = CreateUrlBuilder ();
-        builder.AddModelUrls (params.files);
-        let hashParameters = builder.GetParameterList ();
-        return 'https://3dviewer.net#' + hashParameters;
-    }
-
-    function GetEmbeddingCode (params)
-    {
-        let builder = CreateUrlBuilder ();
-        builder.AddModelUrls (params.files);
-        builder.AddCamera (params.camera);
-        builder.AddEnvironmentMapName (params.environmentMapName);
-        builder.AddBackgroundColor (params.backgroundColor);
-        builder.AddDefaultColor (params.defaultColor);
-        builder.AddEdgeSettings (params.edgeSettings);
-        let hashParameters = builder.GetParameterList ();
-
-        let embeddingCode = '';
-        embeddingCode += '<iframe';
-        embeddingCode += ' width="640" height="480"';
-        embeddingCode += ' style="border:1px solid #eeeeee;"';
-        embeddingCode += ' src="https://3dviewer.net/embed.html#' + hashParameters + '">';
-        embeddingCode += '</iframe>';
-        return embeddingCode;
-    }
-
     function AddCopyableTextInput (parentDiv, getText)
     {
         let copyText = 'Copy';
@@ -62,53 +34,73 @@ export function ShowSharingDialog (fileList, settings, camera)
         return input;
     }
 
-    function AddSharingLinkTab (parentDiv, sharingLinkParams)
+    function AddSharingLinkTab (parentDiv, modelFiles)
     {
+        function GetSharingLink (modelFiles)
+        {
+            let builder = CreateUrlBuilder ();
+            builder.AddModelUrls (modelFiles);
+            let hashParameters = builder.GetParameterList ();
+            return 'https://3dviewer.net#' + hashParameters;
+        }
+
         let section = AddDiv (parentDiv, 'ov_dialog_section');
         AddDiv (section, 'ov_dialog_inner_title', 'Sharing Link');
         let sharingLinkInput = AddCopyableTextInput (section, () => {
             HandleEvent ('model_shared', 'sharing_link');
-            return GetSharingLink (sharingLinkParams);
+            return GetSharingLink (modelFiles);
         });
-        sharingLinkInput.value = GetSharingLink (sharingLinkParams);
+        sharingLinkInput.value = GetSharingLink (modelFiles);
     }
 
-    function AddEmbeddingCodeTab (parentDiv, settings, embeddingCodeParams)
+    function AddEmbeddingCodeTab (parentDiv, modelFiles, settings, camera)
     {
+        function GetEmbeddingCode (modelFiles, useCurrentSettings, settings, camera)
+        {
+            let builder = CreateUrlBuilder ();
+            builder.AddModelUrls (modelFiles);
+            if (useCurrentSettings) {
+                builder.AddCamera (camera);
+                let environmentSettings = {
+                    environmentMapName : settings.environmentMapName,
+                    backgroundIsEnvMap : settings.backgroundIsEnvMap
+                };
+                builder.AddEnvironmentSettings (environmentSettings);
+                builder.AddBackgroundColor (settings.backgroundColor);
+                builder.AddDefaultColor (settings.defaultColor);
+                let edgeSettings = {
+                    showEdges : settings.showEdges,
+                    edgeColor : settings.edgeColor,
+                    edgeThreshold : settings.edgeThreshold
+                };
+                builder.AddEdgeSettings (edgeSettings);
+            }
+            let hashParameters = builder.GetParameterList ();
+
+            let embeddingCode = '';
+            embeddingCode += '<iframe';
+            embeddingCode += ' width="640" height="480"';
+            embeddingCode += ' style="border:1px solid #eeeeee;"';
+            embeddingCode += ' src="https://3dviewer.net/embed.html#' + hashParameters + '">';
+            embeddingCode += '</iframe>';
+            return embeddingCode;
+        }
+
+        let useCurrentSettings = true;
         let section = AddDiv (parentDiv, 'ov_dialog_section');
         section.style.marginTop = '20px';
         AddDiv (section, 'ov_dialog_inner_title', 'Embedding Code');
         let optionsSection = AddDiv (section, 'ov_dialog_section');
         let embeddingCodeInput = AddCopyableTextInput (section, () => {
             HandleEvent ('model_shared', 'embedding_code');
-            return GetEmbeddingCode (embeddingCodeParams);
+            return GetEmbeddingCode (modelFiles, useCurrentSettings, settings, camera);
         });
-        AddCheckboxLine (optionsSection, 'Use current camera position', 'embed_camera', (checked) => {
-            embeddingCodeParams.camera = checked ? camera : null;
-            embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
+        AddCheckboxLine (optionsSection, 'Use current settings instead of defaults', 'embed_current_settings', (checked) => {
+            useCurrentSettings = checked;
+            embeddingCodeInput.value = GetEmbeddingCode (modelFiles, useCurrentSettings, settings, camera);
         });
-        AddCheckboxLine (optionsSection, 'Use overridden environment map', 'embed_envmap', (checked) => {
-            embeddingCodeParams.environmentMapName = checked ? settings.environmentMapName : null;
-            embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
-        });
-        AddCheckboxLine (optionsSection, 'Use overridden background color', 'embed_background', (checked) => {
-            embeddingCodeParams.backgroundColor = checked ? settings.backgroundColor : null;
-            embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
-        });
-        AddCheckboxLine (optionsSection, 'Use overridden default color', 'embed_color', (checked) => {
-            embeddingCodeParams.defaultColor = checked ? settings.defaultColor : null;
-            embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
-        });
-        AddCheckboxLine (optionsSection, 'Use overridden edge display', 'embed_edge_display', (checked) => {
-            const edgeSettings = {
-                showEdges : settings.edgeSettings,
-                edgeColor : settings.edgeColor,
-                edgeThreshold : settings.edgeThreshold
-            };
-            embeddingCodeParams.edgeSettings = checked ? edgeSettings : null;
-            embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
-        });
-        embeddingCodeInput.value = GetEmbeddingCode (embeddingCodeParams);
+
+        embeddingCodeInput.value = GetEmbeddingCode (modelFiles, useCurrentSettings, settings, camera);
     }
 
     if (!fileList.IsOnlyUrlSource ()) {
@@ -128,23 +120,6 @@ export function ShowSharingDialog (fileList, settings, camera)
         }
     }
 
-    let sharingLinkParams = {
-        files : modelFiles
-    };
-
-    let embeddingCodeParams = {
-        files : modelFiles,
-        camera : camera,
-        environmentMapName : settings.environmentMapName,
-        backgroundColor : settings.backgroundColor,
-        defaultColor : settings.defaultColor,
-        edgeSettings : {
-            showEdges : settings.showEdges,
-            edgeColor : settings.edgeColor,
-            edgeThreshold : settings.edgeThreshold
-        }
-    };
-
     let dialog = new ButtonDialog ();
     let contentDiv = dialog.Init ('Share', [
         {
@@ -155,8 +130,8 @@ export function ShowSharingDialog (fileList, settings, camera)
         }
     ]);
 
-    AddSharingLinkTab (contentDiv, sharingLinkParams);
-    AddEmbeddingCodeTab (contentDiv, settings, embeddingCodeParams);
+    AddSharingLinkTab (contentDiv, modelFiles);
+    AddEmbeddingCodeTab (contentDiv, modelFiles, settings, camera);
 
     dialog.Show ();
     return dialog;

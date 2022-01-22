@@ -125,6 +125,7 @@ export class ShadingModel
         this.ambientLight = new THREE.AmbientLight (0x888888);
         this.directionalLight = new THREE.DirectionalLight (0x888888);
         this.environment = null;
+        this.backgroundIsEnvMap = false;
 
         this.scene.add (this.ambientLight);
         this.scene.add (this.directionalLight);
@@ -142,19 +143,26 @@ export class ShadingModel
             this.ambientLight.color.set (0x888888);
             this.directionalLight.color.set (0x888888);
             this.scene.environment = null;
+            this.scene.background = null;
         } else if (this.type === ShadingType.Physical) {
             this.ambientLight.color.set (0x000000);
             this.directionalLight.color.set (0x555555);
             this.scene.environment = this.environment;
+            if (this.backgroundIsEnvMap) {
+                this.scene.background = this.environment;
+            } else {
+                this.scene.background = null;
+            }
         }
     }
 
-    SetEnvironment (textures, onLoaded)
+    SetEnvironment (textures, useAsBackground, onLoaded)
     {
         let loader = new THREE.CubeTextureLoader ();
         this.environment = loader.load (textures, () => {
             onLoaded ();
         });
+        this.backgroundIsEnvMap = useAsBackground;
     }
 
     UpdateByCamera (camera)
@@ -245,6 +253,15 @@ export class Viewer
     {
         this.navigation.SetContextMenuHandler (onContext);
     }
+    
+    SetEnvironmentMapSettings (textures, useAsBackground)
+    {
+        this.shading.SetEnvironment (textures, useAsBackground, () => {
+            this.Render ();
+        });
+        this.shading.UpdateShading ();
+        this.Render ();
+    }
 
     SetBackgroundColor (color)
     {
@@ -262,15 +279,6 @@ export class Viewer
     SetEdgeSettings (show, color, threshold)
     {
         this.geometry.SetEdgeSettings (show, color, threshold);
-        this.Render ();
-    }
-
-    SetEnvironmentMap (textures)
-    {
-        this.shading.SetEnvironment (textures, () => {
-            this.Render ();
-        });
-        this.shading.UpdateShading ();
         this.Render ();
     }
 

@@ -39,7 +39,8 @@ export class EmbeddedViewer
         }
 
         if (this.parameters.environmentMap) {
-            this.viewer.SetEnvironmentMap (this.parameters.environmentMap);
+            // TODO
+            this.viewer.SetEnvironmentMapSettings (this.parameters.environmentMap, false);
         }
 
         window.addEventListener ('resize', () => {

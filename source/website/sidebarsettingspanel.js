@@ -1,5 +1,5 @@
 import { Color, ColorToHexString } from '../engine/model/color.js';
-import { AddDiv, AddDomElement, AddRangeSlider, AddToggle, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
+import { AddDiv, AddDomElement, AddRangeSlider, AddToggle, AddCheckbox, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToElementTopLeft } from './dialogs.js';
 import { PopupDialog } from './modal.js';
 import { Settings, Theme } from './settings.js';
@@ -50,7 +50,7 @@ class EnvironmentMapPopup extends PopupDialog
         super ();
     }
 
-    ShowPopup (buttonDiv, defaultEnvMapName, callbacks)
+    ShowPopup (buttonDiv, settings, callbacks)
     {
         let contentDiv = super.Init (() => {
             return CalculatePopupPositionToElementTopLeft (buttonDiv, contentDiv);
@@ -86,7 +86,7 @@ class EnvironmentMapPopup extends PopupDialog
         for (let envMapImage of envMapImages) {
             envMapImage.element = AddDomElement (contentDiv, 'img', 'ov_environment_map_preview');
             envMapImage.element.setAttribute ('src', 'assets/envmaps/' + envMapImage.name + '.jpg');
-            if (envMapImage.name === defaultEnvMapName) {
+            if (envMapImage.name === settings.environmentMapName) {
                 envMapImage.element.classList.add ('selected');
             }
             envMapImage.element.addEventListener ('click', () => {
@@ -94,9 +94,15 @@ class EnvironmentMapPopup extends PopupDialog
                     otherImage.element.classList.remove ('selected');
                 }
                 envMapImage.element.classList.add ('selected');
-                callbacks.onEnvironmentMapChange (envMapImage.name);
+                settings.environmentMapName = envMapImage.name;
+                callbacks.onEnvironmentMapChange ();
             });
         }
+
+        let backgroundIsEnvMapCheckbox = AddCheckbox (contentDiv, 'use_as_background', 'Use as background', settings.backgroundIsEnvMap, () => {
+            settings.backgroundIsEnvMap = backgroundIsEnvMapCheckbox.checked;
+            callbacks.onEnvironmentMapChange ();
+        });
 
         contentDiv.classList.add ('sidebar');
         this.Show ();
@@ -153,9 +159,8 @@ class SettingsModelDisplaySection extends SettingsSection
         AddDiv (this.environmentMapButton, 'ov_panel_button_text', 'Environment Map');
         this.environmentMapButton.addEventListener ('click', () => {
             this.environmentMapPopup = new EnvironmentMapPopup ();
-            this.environmentMapPopup.ShowPopup (this.environmentMapButton, settings.environmentMapName, {
-                onEnvironmentMapChange : (selectedEnvMap) => {
-                    settings.environmentMapName = selectedEnvMap;
+            this.environmentMapPopup.ShowPopup (this.environmentMapButton, settings, {
+                onEnvironmentMapChange : () => {
                     callbacks.onEnvironmentMapChange ();
                 }
             });
@@ -413,6 +418,8 @@ export class SidebarSettingsPanel extends SidebarPanel
     {
         let defaultSettings = new Settings ();
 
+        this.settings.environmentMapName = defaultSettings.environmentMapName;
+        this.settings.backgroundIsEnvMap = defaultSettings.backgroundIsEnvMap;
         this.settings.backgroundColor = defaultSettings.backgroundColor;
         this.settings.defaultColor = defaultSettings.defaultColor;
         this.settings.showGrid = defaultSettings.showGrid;
@@ -425,6 +432,7 @@ export class SidebarSettingsPanel extends SidebarPanel
         this.importParametersSection.Update (this.settings);
         this.appearanceSection.Update (this.settings);
 
+        this.callbacks.onEnvironmentMapChange ();
         this.callbacks.onThemeChange ();
     }
 
