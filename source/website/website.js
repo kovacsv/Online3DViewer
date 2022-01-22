@@ -465,12 +465,12 @@ export class Website
         this.viewer.SetEdgeSettings (this.settings.showEdges, this.settings.edgeColor, this.settings.edgeThreshold);
         this.viewer.SetBackgroundColor (this.settings.backgroundColor);
         this.viewer.SetEnvironmentMap ([
-            'assets/envmaps/grayclouds/posx.jpg',
-            'assets/envmaps/grayclouds/negx.jpg',
-            'assets/envmaps/grayclouds/posy.jpg',
-            'assets/envmaps/grayclouds/negy.jpg',
-            'assets/envmaps/grayclouds/posz.jpg',
-            'assets/envmaps/grayclouds/negz.jpg'
+            'assets/envmaps/fishermans_bastion/posx.jpg',
+            'assets/envmaps/fishermans_bastion/negx.jpg',
+            'assets/envmaps/fishermans_bastion/posy.jpg',
+            'assets/envmaps/fishermans_bastion/negy.jpg',
+            'assets/envmaps/fishermans_bastion/posz.jpg',
+            'assets/envmaps/fishermans_bastion/negz.jpg'
         ]);
     }
 
