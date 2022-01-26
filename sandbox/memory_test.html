@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+
+	<title>Online 3D Viewer</title>
+
+	<script type='text/javascript'>
+		class Coord
+		{
+			constructor (x, y, z)
+			{
+				this.x = x;
+				this.y = y;
+				this.z = z;
+			}
+		};
+
+		let numberOfCoords = 1000000;
+		let vector = null;
+
+		function ArrayOfCoords ()
+		{
+			vector = [];
+			for (let i = 0; i < numberOfCoords; i++) {
+				vector.push (new Coord (1.0, 2.0, 3.0));
+			}
+			alert ('ready');
+		}
+
+		function ArrayOfNumbers ()
+		{
+			vector = [];
+			for (let i = 0; i < numberOfCoords; i++) {
+				vector.push (1.0, 2.0, 3.0);
+			}
+			alert ('ready');
+		}
+	</script>
+</head>
+
+<body>
+	<input type="button" value="ArrayOfCoords" onclick="ArrayOfCoords ()"/>
+	<input type="button" value="ArrayOfNumbers" onclick="ArrayOfNumbers ()"/>
+</body>
+
+</html>
