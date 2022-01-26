@@ -23,6 +23,7 @@
 		"test": "mocha test",
 		"lint": "eslint source --fix",
 		"docs": "jsdoc -c tools/jsdoc.json",
+		"update_libs": "node tools/run_python.js tools/update_libs.py",
 		"generate_icon_font": "node tools/run_python.js tools/generate_icon_font.py",
 		"update_engine_exports": "node tools/run_python.js tools/update_engine_exports.py",
 		"create_dist": "npm run create_package && npm run lint && npm run test",
