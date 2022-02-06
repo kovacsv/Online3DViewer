@@ -228,8 +228,19 @@ div.ov_progress div.ov_progress_img svg
 {
 	width: 80px;
 	height: 80px;
-	margin-bottom: 10px;
+	margin-top: 5px;
+	margin-bottom: 15px;
 	display: inline-block;
+	animation: ov_progress_img_kf 5.0s linear infinite;
+}
+
+@keyframes ov_progress_img_kf {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }
 
 div.ov_progress div.ov_progress_text
