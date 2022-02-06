@@ -8,7 +8,8 @@
 	"scripts": {
 		"start": "http-server",
 		"test": "mocha test",
-		"lint": "eslint source --fix",
+		"lint": "eslint source",
+		"lint_fix": "eslint source --fix",
 		"docs": "jsdoc -c tools/jsdoc.json",
 		"update_libs": "node tools/run_python.js tools/update_libs.py",
 		"generate_icon_font": "node tools/run_python.js tools/generate_icon_font.py",

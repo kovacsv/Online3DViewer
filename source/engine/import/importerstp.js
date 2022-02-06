@@ -3,7 +3,7 @@ import { GetExternalLibPath } from '../io/externallibs.js';
 import { ConvertThreeGeometryToMesh } from '../threejs/threeutils.js';
 import { ImporterBase } from './importerbase.js';
 
-export class ImporterStep extends ImporterBase
+export class ImporterStp extends ImporterBase
 {
     constructor ()
     {

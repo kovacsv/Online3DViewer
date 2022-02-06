@@ -30,8 +30,8 @@ import { ImporterO3dv } from './import/importero3dv.js';
 import { ImporterObj } from './import/importerobj.js';
 import { ImporterOff } from './import/importeroff.js';
 import { ImporterPly } from './import/importerply.js';
-import { ImporterStep } from './import/importerstep.js';
 import { ImporterStl } from './import/importerstl.js';
+import { ImporterStp } from './import/importerstp.js';
 import { ImporterThreeSvg } from './import/importersvg.js';
 import { ImporterThreeBase, ImporterThreeFbx, ImporterThreeDae, ImporterThreeWrl, ImporterThree3mf } from './import/importerthree.js';
 import { NameFromLine, ParametersFromLine, ReadLines, IsPowerOfTwo, NextPowerOfTwo, UpdateMaterialTransparency } from './import/importerutils.js';
@@ -153,8 +153,8 @@ export {
     ImporterObj,
     ImporterOff,
     ImporterPly,
-    ImporterStep,
     ImporterStl,
+    ImporterStp,
     ImporterThreeSvg,
     ImporterThreeBase,
     ImporterThreeFbx,
