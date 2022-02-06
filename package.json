@@ -41,7 +41,8 @@
 		"fflate": "0.7.3",
 		"rhino3dm": "7.11.1",
 		"three": "0.137.5",
-		"web-ifc": "0.0.33"
+		"web-ifc": "0.0.33",
+		"occt-import-js" : "0.0.4"
 	},
 	"eslintConfig": {
 		"env": {
@@ -57,7 +58,8 @@
 			"THREE": "readonly",
 			"DracoDecoderModule": "readonly",
 			"rhino3dm": "readonly",
-			"WebIFC": "readonly"
+			"WebIFC": "readonly",
+			"occtimportjs" : "readonly"
 		},
 		"parserOptions": {
 			"ecmaVersion": 12,

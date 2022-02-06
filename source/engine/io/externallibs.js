@@ -6,6 +6,14 @@ export function SetExternalLibLocation (newExternalLibLocation)
     externalLibLocation = newExternalLibLocation;
 }
 
+export function GetExternalLibPath (libName)
+{
+    if (externalLibLocation === null) {
+        return null;
+    }
+    return externalLibLocation + '/' + libName;
+}
+
 export function LoadExternalLibrary (libName)
 {
     return new Promise ((resolve, reject) => {
@@ -21,7 +29,7 @@ export function LoadExternalLibrary (libName)
 
         let scriptElement = document.createElement ('script');
         scriptElement.type = 'text/javascript';
-        scriptElement.src = externalLibLocation + '/' + libName;
+        scriptElement.src = GetExternalLibPath (libName);
         scriptElement.onload = () => {
             loadedExternalLibs.add (libName);
             resolve ();

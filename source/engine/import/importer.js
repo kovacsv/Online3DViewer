@@ -12,6 +12,7 @@ import { ImporterO3dv } from './importero3dv.js';
 import { ImporterObj } from './importerobj.js';
 import { ImporterOff } from './importeroff.js';
 import { ImporterPly } from './importerply.js';
+import { ImporterStep } from './importerstep.js';
 import { ImporterStl } from './importerstl.js';
 import { ImporterThree3mf, ImporterThreeDae, ImporterThreeFbx, ImporterThreeWrl } from './importerthree.js';
 
@@ -106,6 +107,7 @@ export class Importer
             new ImporterO3dv (),
             new Importer3dm (),
             new ImporterIfc (),
+            new ImporterStep (),
             new ImporterThreeFbx (),
             new ImporterThreeDae (),
             new ImporterThreeWrl (),
