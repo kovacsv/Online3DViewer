@@ -1,5 +1,5 @@
 import { Direction } from '../geometry/geometry.js';
-import { GetExternalLibPath, LoadExternalLibrary } from '../io/externallibs.js';
+import { GetExternalLibPath } from '../io/externallibs.js';
 import { ConvertThreeGeometryToMesh } from '../threejs/threeutils.js';
 import { ImporterBase } from './importerbase.js';
 
