@@ -7,17 +7,17 @@ export class TaskRunner
         this.callbacks = null;
     }
 
-	Run (count, callbacks)
-	{
+    Run (count, callbacks)
+    {
         this.count = count;
-		this.current = 0;
+        this.current = 0;
         this.callbacks = callbacks;
         if (count === 0) {
             this.TaskReady ();
         } else {
             this.RunOnce ();
         }
-	}
+    }
 
     RunBatch (count, batchCount, callbacks)
     {
