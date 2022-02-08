@@ -78,6 +78,10 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 		if os.path.exists (scriptFile):
 			scriptContent = Tools.GetFileContent (scriptFile)
 			replacer.ReplaceTokenContent ('<!-- script start -->', '<!-- script end -->', scriptContent)
+		introFile = os.path.join (rootDir, 'tools', 'website_intro_data.txt')
+		if os.path.exists (introFile):
+			introContent = Tools.GetFileContent (introFile)
+			replacer.ReplaceTokenContent ('<!-- intro start -->', '<!-- intro end -->', introContent)
 		replacer.WriteToFile (htmlFilePath)
 
 def CreatePackage (rootDir, websiteDir, packageDir, version):

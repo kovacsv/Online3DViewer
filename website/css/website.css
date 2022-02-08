@@ -291,13 +291,13 @@ div.ov_toolbar div.ov_toolbar_button:hover
 
 div.intro div.intro_section
 {
-	font-size: 16px;
+	font-size: 18px;
 	line-height: 20px;
 }
 
 div.intro div.intro_big_text
 {
-	font-size: 18px;
+	font-size: 23px;
 	line-height: 30px;
 }
 
@@ -329,7 +329,7 @@ div.ov_bottom_floating_panel
 
 div.intro div.intro_section
 {
-	margin: 15px 0px;
+	margin: 18px 0px;
 }
 
 }
