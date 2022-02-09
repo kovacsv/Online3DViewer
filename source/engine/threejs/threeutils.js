@@ -106,7 +106,8 @@ export function ConvertThreeGeometryToMesh (threeGeometry, materialIndex)
     let mesh = new Mesh ();
 
     let vertices = threeGeometry.attributes.position.array;
-    for (let i = 0; i < vertices.length; i += 3) {
+    let vertexItemSize = threeGeometry.attributes.position.itemSize || 3;
+    for (let i = 0; i < vertices.length; i += vertexItemSize) {
         let x = vertices[i];
         let y = vertices[i + 1];
         let z = vertices[i + 2];
@@ -116,8 +117,8 @@ export function ConvertThreeGeometryToMesh (threeGeometry, materialIndex)
     let hasVertexColors = (threeGeometry.attributes.color !== undefined);
     if (hasVertexColors) {
         let colors = threeGeometry.attributes.color.array;
-        let itemSize = threeGeometry.attributes.color.itemSize;
-        for (let i = 0; i < colors.length; i += itemSize) {
+        let colorItemSize = threeGeometry.attributes.color.itemSize || 3;
+        for (let i = 0; i < colors.length; i += colorItemSize) {
             let threeColor = new THREE.Color (colors[i], colors[i + 1], colors[i + 2]);
             mesh.AddVertexColor (ConvertThreeColorToColor (threeColor));
         }
@@ -126,7 +127,8 @@ export function ConvertThreeGeometryToMesh (threeGeometry, materialIndex)
     let hasNormals = (threeGeometry.attributes.normal !== undefined);
     if (hasNormals) {
         let normals = threeGeometry.attributes.normal.array;
-        for (let i = 0; i < normals.length; i += 3) {
+        let normalItemSize = threeGeometry.attributes.normal.itemSize || 3;
+        for (let i = 0; i < normals.length; i += normalItemSize) {
             let x = normals[i];
             let y = normals[i + 1];
             let z = normals[i + 2];
@@ -137,7 +139,8 @@ export function ConvertThreeGeometryToMesh (threeGeometry, materialIndex)
     let hasUVs = (threeGeometry.attributes.uv !== undefined);
     if (hasUVs) {
         let uvs = threeGeometry.attributes.uv.array;
-        for (let i = 0; i < uvs.length; i += 2) {
+        let uvItemSize = threeGeometry.attributes.uv.itemSize || 2;
+        for (let i = 0; i < uvs.length; i += uvItemSize) {
             let x = uvs[i];
             let y = uvs[i + 1];
             mesh.AddTextureUV (new Coord2D (x, y));
