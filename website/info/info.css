@@ -1,15 +1,9 @@
-@font-face
-{
-	font-family: Quicksand;
-	src: url('../css/Quicksand/Quicksand-Regular.ttf');
-}
-
 html, body
 {
 	color: #000000;
 	background: #ffffff;
 	font-size: 16px;
-	font-family: Quicksand, Helvetica, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 	scroll-behavior: smooth
 }
 
