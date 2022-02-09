@@ -37,11 +37,15 @@ def Main (argv):
 	websiteIconFontDir = os.path.join (websiteCssDir, 'O3DVIcons')
 	if not os.path.exists (websiteIconFontDir):
 		os.makedirs (websiteIconFontDir)
-	shutil.copy (os.path.join (iconFontDir, 'O3DVIcons.woff'), websiteIconFontDir)
 
 	websiteIconsCssPath = os.path.join (websiteCssDir, 'icons.css')
 	shutil.copy (os.path.join (iconFontDir, 'O3DVIcons.css'), websiteIconsCssPath)
 	Tools.ReplaceStringInFile (websiteIconsCssPath, './O3DVIcons.woff', 'O3DVIcons/O3DVIcons.woff')
+	shutil.copy (os.path.join (iconFontDir, 'O3DVIcons.woff'), websiteIconFontDir)
+
+	infoCssDir = os.path.join (rootDir, 'website', 'info')
+	shutil.copy (os.path.join (iconFontDir, 'O3DVIcons.css'), os.path.join (infoCssDir, 'icons.css'))
+	shutil.copy (os.path.join (iconFontDir, 'O3DVIcons.woff'), os.path.join (infoCssDir, 'O3DVIcons.woff'))
 
 	shutil.rmtree (tempDir)
 

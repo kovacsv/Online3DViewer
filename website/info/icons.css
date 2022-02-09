@@ -1,6 +1,6 @@
 @font-face {
     font-family: "O3DVIcons";
-    src: url("O3DVIcons/O3DVIcons.woff?01bd85707830dedc06defe6d5374c240") format("woff");
+    src: url("./O3DVIcons.woff?01bd85707830dedc06defe6d5374c240") format("woff");
 }
 
 i[class^="icon-"]:before, i[class*=" icon-"]:before {
