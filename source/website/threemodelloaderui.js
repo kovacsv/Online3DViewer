@@ -72,13 +72,13 @@ export class ThreeModelLoaderUI
             return ShowMessageDialog (
                 'Something went wrong',
                 'No importable file found.',
-                importError.message
+                null
             );
         } else if (importError.code === ImportErrorCode.FailedToLoadFile) {
             return ShowMessageDialog (
                 'Something went wrong',
                 'Failed to load file for import.',
-                importError.message
+                'The remote server refused to fulfill the request. Check if the url is correct, and make sure that CORS requests are allowed on the remote server.'
             );
         } else if (importError.code === ImportErrorCode.ImportFailed) {
             return ShowMessageDialog (
@@ -90,7 +90,7 @@ export class ThreeModelLoaderUI
             return ShowMessageDialog (
                 'Something went wrong',
                 'Unknown error.',
-                importError.message
+                null
             );
         }
     }
