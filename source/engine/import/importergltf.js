@@ -890,7 +890,8 @@ export class ImporterGltf extends ImporterBase
                 vertexIndices.push (data);
             });
         } else {
-            for (let i = 0; i < mesh.VertexCount (); i++) {
+            let primitiveVertexCount = mesh.VertexCount () - vertexOffset;
+            for (let i = 0; i < primitiveVertexCount; i++) {
                 vertexIndices.push (i);
             }
         }
@@ -926,7 +927,11 @@ export class ImporterGltf extends ImporterBase
 
     AddTriangle (primitive, mesh, v0, v1, v2, hasVertexColors, hasNormals, hasUVs, vertexOffset, vertexColorOffset, normalOffset, uvOffset)
     {
-        let triangle = new Triangle (vertexOffset + v0, vertexOffset + v1, vertexOffset + v2);
+        let triangle = new Triangle (
+            vertexOffset + v0,
+            vertexOffset + v1,
+            vertexOffset + v2
+        );
         if (hasVertexColors) {
             triangle.SetVertexColors (
                 vertexColorOffset + v0,
