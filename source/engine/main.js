@@ -24,6 +24,7 @@ import { ImportSettings, ImportError, ImportResult, ImporterFileAccessor, Import
 import { Importer3dm } from './import/importer3dm.js';
 import { Importer3ds } from './import/importer3ds.js';
 import { ImporterBase } from './import/importerbase.js';
+import { ImporterBim } from './import/importerbim.js';
 import { ImporterGltf } from './import/importergltf.js';
 import { ImporterIfc } from './import/importerifc.js';
 import { ImporterO3dv } from './import/importero3dv.js';
@@ -147,6 +148,7 @@ export {
     Importer3dm,
     Importer3ds,
     ImporterBase,
+    ImporterBim,
     ImporterGltf,
     ImporterIfc,
     ImporterO3dv,

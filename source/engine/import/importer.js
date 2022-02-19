@@ -14,6 +14,7 @@ import { ImporterOff } from './importeroff.js';
 import { ImporterPly } from './importerply.js';
 import { ImporterStp } from './importerstp.js';
 import { ImporterStl } from './importerstl.js';
+import { ImporterBim } from './importerbim.js';
 import { ImporterThree3mf, ImporterThreeDae, ImporterThreeFbx, ImporterThreeWrl } from './importerthree.js';
 
 export class ImportSettings
@@ -105,6 +106,7 @@ export class Importer
             new Importer3ds (),
             new ImporterGltf (),
             new ImporterO3dv (),
+            new ImporterBim (),
             new Importer3dm (),
             new ImporterIfc (),
             new ImporterStp (),
