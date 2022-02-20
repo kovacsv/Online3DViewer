@@ -17,7 +17,7 @@ export let ParameterConverter =
     NumberToString (number)
     {
         let precision = 5;
-        return number.toPrecision (precision);
+        return number.toFixed (precision);
     },
 
     StringToNumber (str)

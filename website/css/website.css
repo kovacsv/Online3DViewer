@@ -273,10 +273,16 @@ div.ov_bottom_floating_panel div.ov_floating_panel_button
 
 div.ov_measure_panel
 {
-	background: red;
+	padding: 10px;
 	position: absolute;
 	left : 0px;
 	top : 0px;
+}
+
+div.ov_measure_panel div.ov_measure_value
+{
+	float: left;
+	margin-right: 10px;
 }
 
 @media (hover)

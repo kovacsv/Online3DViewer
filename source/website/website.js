@@ -202,7 +202,10 @@ export class Website
 
     OnModelMouseMoved (mouseCoordinates)
     {
-
+        if (this.measureTool.IsActive ()) {
+            this.measureTool.MouseMove (mouseCoordinates);
+            return;
+        }
     }
 
     OnModelContextMenu (globalMouseCoordinates, mouseCoordinates)

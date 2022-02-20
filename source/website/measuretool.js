@@ -1,5 +1,93 @@
-import { BigEps, IsEqualEps } from '../engine/geometry/geometry.js';
-import { AddDiv } from '../engine/viewer/domutils.js';
+import { BigEps, IsEqualEps, RadDeg } from '../engine/geometry/geometry.js';
+import { AddDiv, ClearDomElement } from '../engine/viewer/domutils.js';
+import { AddSvgIconElement } from './utils.js';
+
+function GetFaceWorldNormal (intersection)
+{
+    let normalMatrix = new THREE.Matrix4 ();
+    intersection.object.updateWorldMatrix (true, false);
+    normalMatrix.extractRotation (intersection.object.matrixWorld);
+    let faceNormal = intersection.face.normal.clone ();
+    faceNormal.applyMatrix4 (normalMatrix);
+    return faceNormal;
+}
+
+function CreateMaterial (color)
+{
+    return new THREE.LineBasicMaterial ({
+        color : color,
+        depthTest : false
+    });
+}
+
+function CreateLineFromPoints (points, material)
+{
+    let geometry = new THREE.BufferGeometry ().setFromPoints (points);
+    return new THREE.Line (geometry, material);
+}
+
+class Marker
+{
+    constructor (intersection, color, radius)
+    {
+        this.intersection = null;
+        this.markerObject = new THREE.Object3D ();
+
+        let material = CreateMaterial (color);
+        let circleCurve = new THREE.EllipseCurve (0.0, 0.0, radius, radius, 0.0, 2.0 * Math.PI, false, 0.0);
+        this.markerObject.add (CreateLineFromPoints (circleCurve.getPoints (50), material));
+        this.markerObject.add (CreateLineFromPoints ([new THREE.Vector3 (-radius, 0.0, 0.0), new THREE.Vector3 (radius, 0.0, 0.0)], material));
+        this.markerObject.add (CreateLineFromPoints ([new THREE.Vector3 (0.0, -radius, 0.0), new THREE.Vector3 (0.0, radius, 0.0)], material));
+
+        this.UpdatePosition (intersection);
+    }
+
+    UpdatePosition (intersection)
+    {
+        this.intersection = intersection;
+        let faceNormal = GetFaceWorldNormal (this.intersection);
+        this.markerObject.updateMatrixWorld (true);
+        this.markerObject.position.set (0.0, 0.0, 0.0);
+        this.markerObject.lookAt (faceNormal);
+        this.markerObject.position.set (this.intersection.point.x, this.intersection.point.y, this.intersection.point.z);
+    }
+
+    Show (show)
+    {
+        this.markerObject.visible = show;
+    }
+
+    GetIntersection ()
+    {
+        return this.intersection;
+    }
+
+    GetObject ()
+    {
+        return this.markerObject;
+    }
+}
+
+function CalculateMarkerValues (aMarker, bMarker)
+{
+    const aIntersection = aMarker.GetIntersection ();
+    const bIntersection = bMarker.GetIntersection ();
+    let result = {
+        pointsDistance : null,
+        parallelFacesDistance : null,
+        facesAngle : null
+    };
+
+    const aNormal = GetFaceWorldNormal (aIntersection);
+    const bNormal = GetFaceWorldNormal (bIntersection);
+    result.pointsDistance = aIntersection.point.distanceTo (bIntersection.point);
+    result.facesAngle = aNormal.angleTo (bNormal);
+    if (IsEqualEps (result.facesAngle, 0.0, BigEps) || IsEqualEps (result.facesAngle, Math.PI, BigEps)) {
+        let aPlane = new THREE.Plane ().setFromNormalAndCoplanarPoint (aNormal, aIntersection.point);
+        result.parallelFacesDistance = Math.abs (aPlane.distanceToPoint (bIntersection.point));
+    }
+    return result;
+}
 
 export class MeasureTool
 {
@@ -8,6 +96,7 @@ export class MeasureTool
         this.viewer = viewer;
         this.isActive = false;
         this.markers = [];
+        this.tempMarker = null;
 
         this.panel = null;
         this.button = null;
@@ -57,82 +146,72 @@ export class MeasureTool
         this.UpdatePanel ();
     }
 
-    AddMarker (intersection)
+    MouseMove (mouseCoordinates)
     {
-        this.markers.push (intersection);
-        this.GenerateMarker (intersection);
+        let intersection = this.viewer.GetMeshIntersectionUnderMouse (mouseCoordinates);
+        if (intersection === null) {
+            if (this.tempMarker !== null) {
+                this.tempMarker.Show (false);
+                this.viewer.Render ();
+            }
+            return;
+        }
+        if (this.tempMarker === null) {
+            this.tempMarker = this.GenerateMarker (intersection, 0x00cc00);
+        }
+        this.tempMarker.UpdatePosition (intersection);
+        this.tempMarker.Show (true);
+        this.viewer.Render ();
     }
 
-    GenerateMarker (intersection)
+    AddMarker (intersection)
+    {
+        let marker = this.GenerateMarker (intersection, 0xcc0000);
+        this.markers.push (marker);
+        if (this.markers.length === 2) {
+            let material = CreateMaterial (0x0000cc);
+            let aPoint = this.markers[0].GetIntersection ().point;
+            let bPoint = this.markers[1].GetIntersection ().point;
+            this.viewer.AddExtraObject (CreateLineFromPoints ([aPoint, bPoint], material));
+        }
+    }
+
+    GenerateMarker (intersection, color)
     {
         let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
             return true;
         });
 
-        let coneHeight = boundingSphere.radius / 5.0;
-        let coneRadius = coneHeight / 2.0;
-
-        let coneGeometry = new THREE.ConeGeometry (coneRadius, coneHeight, 32);
-        coneGeometry.translate (0.0, -coneHeight / 2.0, 0.0);
-        coneGeometry.rotateX (-Math.PI / 2);
-
-        let coneMaterial = this.viewer.CreateHighlightMaterial (0xcc0000);
-        coneMaterial.opacity = 0.6;
-        coneMaterial.transparent = true;
-        let cone = new THREE.Mesh (coneGeometry, coneMaterial);
-
-        let faceNormal = this.GetFaceWorldNormal (intersection);
-        cone.lookAt (faceNormal);
-        cone.position.set (intersection.point.x, intersection.point.y, intersection.point.z);
-
-        this.viewer.AddExtraObject (cone);
-    }
-
-    GetFaceWorldNormal (intersection)
-    {
-        let normalMatrix = new THREE.Matrix4 ();
-        intersection.object.updateWorldMatrix (true, false);
-        normalMatrix.extractRotation (intersection.object.matrixWorld);
-        let faceNormal = intersection.face.normal.clone ();
-        faceNormal.applyMatrix4 (normalMatrix);
-        return faceNormal;
+        let radius = boundingSphere.radius / 20.0;
+        let marker = new Marker (intersection, color, radius);
+        this.viewer.AddExtraObject (marker.GetObject ());
+        return marker;
     }
 
     UpdatePanel ()
     {
+        ClearDomElement (this.panel);
         if (this.markers.length === 0) {
             this.panel.innerHTML = 'Select a point to start measuring.';
         } else if (this.markers.length === 1) {
             this.panel.innerHTML = 'Select another point to start measuring.';
         } else {
-            let calcResult = this.Calculate ();
-            this.panel.innerHTML = JSON.stringify (calcResult);
+            const precision = 5;
+            let calcResult = CalculateMarkerValues (this.markers[0], this.markers[1]);
+            if (calcResult.pointsDistance !== null) {
+                AddSvgIconElement (this.panel, 'measure', 'left_inline');
+                AddDiv (this.panel, 'ov_measure_value', calcResult.pointsDistance.toFixed (precision));
+            }
+            if (calcResult.parallelFacesDistance !== null) {
+                AddSvgIconElement (this.panel, 'measure', 'left_inline');
+                AddDiv (this.panel, 'ov_measure_value', calcResult.parallelFacesDistance.toFixed (precision));
+            }
+            if (calcResult.facesAngle !== null) {
+                let degreeValue = calcResult.facesAngle * RadDeg;
+                AddSvgIconElement (this.panel, 'measure', 'left_inline');
+                AddDiv (this.panel, 'ov_measure_value', degreeValue.toFixed (precision));
+            }
         }
-    }
-
-    Calculate ()
-    {
-        if (this.markers.length !== 2) {
-            return null;
-        }
-
-        const a = this.markers[0];
-        const b = this.markers[1];
-        let result = {
-            pointsDistance : null,
-            parallelFacesDistance : null,
-            facesAngle : null
-        };
-
-        const aNormal = this.GetFaceWorldNormal (a);
-        const bNormal = this.GetFaceWorldNormal (b);
-        result.pointsDistance = a.point.distanceTo (b.point);
-        result.facesAngle = aNormal.angleTo (bNormal);
-        if (IsEqualEps (result.facesAngle, 0.0, BigEps) || IsEqualEps (result.facesAngle, Math.PI, BigEps)) {
-            let aPlane = new THREE.Plane ().setFromNormalAndCoplanarPoint (aNormal, a.point);
-            result.parallelFacesDistance = Math.abs (aPlane.distanceToPoint (b.point));
-        }
-        return result;
     }
 
     Resize ()
@@ -144,11 +223,13 @@ export class MeasureTool
         let rect = canvas.getBoundingClientRect ();
         this.panel.style.left = rect.left + 'px';
         this.panel.style.top = rect.top + 'px';
+        this.panel.style.width = (rect.right - rect.left) + 'px';
     }
 
     ClearMarkers ()
     {
         this.viewer.ClearExtra ();
         this.markers = [];
+        this.tempMarker = null;
     }
 }
