@@ -1,14 +1,12 @@
 import { ShowDomElement, SetDomElementWidth, SetDomElementHeight, GetDomElementOuterWidth, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
-import { FeatureSet } from './featureset.js';
 import { PanelSet } from './panelset.js';
 import { SidebarDetailsPanel } from './sidebardetailspanel.js';
-import { SidebarMeasurePanel } from './sidebarmeasurepanel.js';
 import { SidebarSettingsPanel } from './sidebarsettingspanel.js';
 import { InstallVerticalSplitter } from './utils.js';
 
 export class Sidebar
 {
-    constructor (mainDiv, splitterDiv, settings, measureTool)
+    constructor (mainDiv, splitterDiv, settings)
     {
         this.mainDiv = mainDiv;
         this.splitterDiv = splitterDiv;
@@ -16,13 +14,9 @@ export class Sidebar
 
         this.detailsPanel = new SidebarDetailsPanel (this.panelSet.GetContentDiv ());
         this.settingsPanel = new SidebarSettingsPanel (this.panelSet.GetContentDiv (), settings);
-        this.measurePanel = new SidebarMeasurePanel (this.panelSet.GetContentDiv (), measureTool);
 
         this.panelSet.AddPanel (this.detailsPanel);
         this.panelSet.AddPanel (this.settingsPanel);
-        if (FeatureSet.MeasureTool) {
-            this.panelSet.AddPanel (this.measurePanel);
-        }
         this.panelSet.ShowPanel (this.detailsPanel);
     }
 
@@ -71,12 +65,6 @@ export class Sidebar
             }
         });
 
-        this.measurePanel.Init ({
-            onActivatedChange : (isActivated) => {
-                this.callbacks.onMeasureToolActivedChange (isActivated);
-            }
-        });
-
         InstallVerticalSplitter (this.splitterDiv, this.mainDiv, true, () => {
             this.callbacks.onResize ();
         });
@@ -85,11 +73,6 @@ export class Sidebar
     UpdateSettings (isPhysicallyBased, hasDefaultMaterial)
     {
         this.settingsPanel.UpdateSettings (isPhysicallyBased, hasDefaultMaterial);
-    }
-
-    UpdateMeasureTool ()
-    {
-        this.measurePanel.UpdateMeasureTool ();
     }
 
     Resize (height)

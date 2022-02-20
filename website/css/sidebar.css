@@ -83,17 +83,6 @@ div.ov_sidebar_content div.ov_sidebar_settings_padded
 	overflow: hidden;
 }
 
-div.ov_sidebar_content div.ov_sidebar_measure_name
-{
-	font-weight: bold;
-	margin-bottom: 5px;
-}
-
-div.ov_sidebar_content div.ov_sidebar_measure_value
-{
-	margin-bottom: 10px;
-}
-
 div.ov_sidebar_content button.pcr-button
 {
 	width: 30px;

@@ -78,7 +78,7 @@ export class Toolbar
     {
         let button = new ToolbarButton (image, imageTitle, () => {
             button.SetSelected (!button.IsSelected ());
-            onClick ();
+            onClick (button.IsSelected ());
         });
         button.AddDomElements (this.mainDiv);
         button.SetSelected (isSelected);

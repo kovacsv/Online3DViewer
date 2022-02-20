@@ -271,6 +271,14 @@ div.ov_bottom_floating_panel div.ov_floating_panel_button
 	float: right;
 }
 
+div.ov_measure_panel
+{
+	background: red;
+	position: absolute;
+	left : 0px;
+	top : 0px;
+}
+
 @media (hover)
 {
 

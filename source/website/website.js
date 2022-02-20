@@ -1,7 +1,6 @@
 import { FileSource, GetFileExtension, TransformFileHostUrls } from '../engine/io/fileutils.js';
 import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
 import { Viewer } from '../engine/viewer/viewer.js';
-import { MeasureTool } from '../engine/viewer/measuretool.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToScreen, ShowListPopup } from './dialogs.js';
 import { HandleEvent } from './eventhandler.js';
@@ -20,6 +19,8 @@ import { HasDefaultMaterial, ReplaceDefaultMaterialColor } from '../engine/model
 import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { ShadingType } from '../engine/threejs/threeutils.js';
+import { FeatureSet } from './featureset.js';
+import { MeasureTool } from './measuretool.js';
 
 export const WebsiteUIState =
 {
@@ -36,11 +37,11 @@ export class Website
         this.parameters = parameters;
         this.settings = new Settings ();
         this.viewer = new Viewer ();
-        this.measureTool = new MeasureTool ();
+        this.measureTool = new MeasureTool (this.viewer);
         this.hashHandler = new HashHandler ();
         this.toolbar = new Toolbar (this.parameters.toolbarDiv);
         this.navigator = new Navigator (this.parameters.navigatorDiv, this.parameters.navigatorSplitterDiv);
-        this.sidebar = new Sidebar (this.parameters.sidebarDiv, this.parameters.sidebarSplitterDiv, this.settings, this.measureTool);
+        this.sidebar = new Sidebar (this.parameters.sidebarDiv, this.parameters.sidebarSplitterDiv, this.settings);
         this.modelLoaderUI = new ThreeModelLoaderUI ();
         this.themeHandler = new ThemeHandler ();
         this.highlightColor = new THREE.Color (0x8ec9f0);
@@ -56,7 +57,6 @@ export class Website
         HandleEvent ('theme_on_load', this.settings.themeId === Theme.Light ? 'light' : 'dark');
 
         this.InitViewer ();
-        this.InitMeasureTool ();
         this.InitToolbar ();
         this.InitDragAndDrop ();
         this.InitSidebar ();
@@ -109,6 +109,7 @@ export class Website
         this.navigator.Resize (contentHeight);
         this.sidebar.Resize (contentHeight);
         this.viewer.Resize (contentWidth - safetyMargin, contentHeight);
+        this.measureTool.Resize ();
     }
 
     OnSmallWidthChanged ()
@@ -166,8 +167,7 @@ export class Website
         this.navigator.Clear ();
         this.sidebar.Clear ();
 
-        this.measureTool.Clear ();
-        this.sidebar.UpdateMeasureTool ();
+        this.measureTool.SetActive (false);
     }
 
     OnModelLoaded (importResult, threeObject)
@@ -189,7 +189,6 @@ export class Website
 
         if (this.measureTool.IsActive ()) {
             this.measureTool.Click (mouseCoordinates);
-            this.sidebar.UpdateMeasureTool ();
             return;
         }
 
@@ -484,17 +483,23 @@ export class Website
         this.UpdateEnvironmentMap ();
     }
 
-    InitMeasureTool ()
-    {
-        this.measureTool.Init (this.viewer, this.highlightColor);
-    }
-
     InitToolbar ()
     {
         function AddButton (toolbar, imageName, imageTitle, classNames, onClick)
         {
             let button = toolbar.AddImageButton (imageName, imageTitle, () => {
                 onClick ();
+            });
+            for (let className of classNames) {
+                button.AddClass (className);
+            }
+            return button;
+        }
+
+        function AddPushButton (toolbar, imageName, imageTitle, classNames, onClick)
+        {
+            let button = toolbar.AddImagePushButton (imageName, imageTitle, false, (isSelected) => {
+                onClick (isSelected);
             });
             for (let className of classNames) {
                 button.AddClass (className);
@@ -566,6 +571,15 @@ export class Website
                 this.viewer.SetFixUpVector (false);
             }
         });
+        if (FeatureSet.MeasureTool) {
+            AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
+            let measureToolButton = AddPushButton (this.toolbar, 'measure', 'Measure', ['only_full_width', 'only_on_model'], (isSelected) => {
+                HandleEvent ('measure_tool_activated', isSelected ? 'on' : 'off');
+                this.navigator.SetSelection (null);
+                this.measureTool.SetActive (isSelected);
+            });
+            this.measureTool.SetButton (measureToolButton);
+        }
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         AddButton (this.toolbar, 'export', 'Export model', ['only_full_width', 'only_on_model'], () => {
             let exportDialog = new ExportDialog ({
@@ -645,7 +659,7 @@ export class Website
                 HandleEvent ('theme_changed', this.settings.themeId === Theme.Light ? 'light' : 'dark');
                 this.SwitchTheme (this.settings.themeId, true);
             },
-            onMeasureToolActivedChange : (isActivated) => {
+            /* onMeasureToolActivedChange : (isActivated) => {
                 if (isActivated) {
                     this.navigator.SetSelection (null);
                     this.measureTool.SetActive (true);
@@ -653,7 +667,7 @@ export class Website
                     this.measureTool.SetActive (false);
                 }
                 this.sidebar.UpdateMeasureTool ();
-            },
+            },*/
             onResize : () => {
                 this.Resize ();
             },
