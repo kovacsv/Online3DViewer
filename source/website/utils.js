@@ -156,6 +156,12 @@ export function CreateInlineColorCircle (color)
     return circleDiv;
 }
 
+export function IsDarkTextNeededForColor (color)
+{
+    let intensity = color.r * 0.299 + color.g * 0.587 + color.b * 0.114;
+    return intensity > 186.0;
+}
+
 export function InstallVerticalSplitter (splitterDiv, resizedDiv, flipped, onResize)
 {
     let originalWidth = null;

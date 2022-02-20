@@ -1,6 +1,6 @@
 import { BigEps, IsEqualEps, RadDeg } from '../engine/geometry/geometry.js';
 import { AddDiv, ClearDomElement } from '../engine/viewer/domutils.js';
-import { AddSvgIconElement } from './utils.js';
+import { AddSvgIconElement, IsDarkTextNeededForColor } from './utils.js';
 
 function GetFaceWorldNormal (intersection)
 {
@@ -91,9 +91,10 @@ function CalculateMarkerValues (aMarker, bMarker)
 
 export class MeasureTool
 {
-    constructor (viewer)
+    constructor (viewer, settings)
     {
         this.viewer = viewer;
+        this.settings = settings;
         this.isActive = false;
         this.markers = [];
         this.tempMarker = null;
@@ -120,7 +121,7 @@ export class MeasureTool
         this.isActive = isActive;
         this.button.SetSelected (isActive);
         if (this.isActive) {
-            this.panel = AddDiv (document.body, 'ov_measure_panel', 'hejj');
+            this.panel = AddDiv (document.body, 'ov_measure_panel');
             this.UpdatePanel ();
             this.Resize ();
         } else {
@@ -192,13 +193,17 @@ export class MeasureTool
     {
         function AddValue (panel, icon, title, value)
         {
-            const precision = 5;
             let svgIcon = AddSvgIconElement (panel, icon, 'left_inline');
             svgIcon.title = title;
-            AddDiv (panel, 'ov_measure_value', value.toFixed (precision));
+            AddDiv (panel, 'ov_measure_value', value);
         }
 
         ClearDomElement (this.panel);
+        if (IsDarkTextNeededForColor (this.settings.backgroundColor)) {
+            this.panel.style.color = '#000000';
+        } else {
+            this.panel.style.color = '#ffffff';
+        }
         if (this.markers.length === 0) {
             this.panel.innerHTML = 'Select a point.';
         } else if (this.markers.length === 1) {
@@ -207,14 +212,14 @@ export class MeasureTool
             let calcResult = CalculateMarkerValues (this.markers[0], this.markers[1]);
 
             if (calcResult.pointsDistance !== null) {
-                AddValue (this.panel, 'measure', 'Distance of points', calcResult.pointsDistance);
+                AddValue (this.panel, 'measure', 'Distance of points', calcResult.pointsDistance.toFixed (3));
             }
             if (calcResult.parallelFacesDistance !== null) {
-                AddValue (this.panel, 'measure', 'Distance of parallel faces', calcResult.parallelFacesDistance);
+                AddValue (this.panel, 'measure', 'Distance of parallel faces', calcResult.parallelFacesDistance.toFixed (3));
             }
             if (calcResult.facesAngle !== null) {
                 let degreeValue = calcResult.facesAngle * RadDeg;
-                AddValue (this.panel, 'measure', 'Angle of faces', degreeValue);
+                AddValue (this.panel, 'measure', 'Angle of faces', degreeValue.toFixed (1) + '\xB0');
             }
         }
     }

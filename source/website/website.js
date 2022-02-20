@@ -37,7 +37,7 @@ export class Website
         this.parameters = parameters;
         this.settings = new Settings ();
         this.viewer = new Viewer ();
-        this.measureTool = new MeasureTool (this.viewer);
+        this.measureTool = new MeasureTool (this.viewer, this.settings);
         this.hashHandler = new HashHandler ();
         this.toolbar = new Toolbar (this.parameters.toolbarDiv);
         this.navigator = new Navigator (this.parameters.navigatorDiv, this.parameters.navigatorSplitterDiv);
