@@ -12,10 +12,10 @@ function GetFaceWorldNormal (intersection)
     return faceNormal;
 }
 
-function CreateMaterial (color)
+function CreateMaterial ()
 {
     return new THREE.LineBasicMaterial ({
-        color : color,
+        color : 0x000000,
         depthTest : false
     });
 }
@@ -28,12 +28,12 @@ function CreateLineFromPoints (points, material)
 
 class Marker
 {
-    constructor (intersection, color, radius)
+    constructor (intersection, radius)
     {
         this.intersection = null;
         this.markerObject = new THREE.Object3D ();
 
-        let material = CreateMaterial (color);
+        let material = CreateMaterial ();
         let circleCurve = new THREE.EllipseCurve (0.0, 0.0, radius, radius, 0.0, 2.0 * Math.PI, false, 0.0);
         this.markerObject.add (CreateLineFromPoints (circleCurve.getPoints (50), material));
         this.markerObject.add (CreateLineFromPoints ([new THREE.Vector3 (-radius, 0.0, 0.0), new THREE.Vector3 (radius, 0.0, 0.0)], material));
@@ -157,7 +157,7 @@ export class MeasureTool
             return;
         }
         if (this.tempMarker === null) {
-            this.tempMarker = this.GenerateMarker (intersection, 0x00cc00);
+            this.tempMarker = this.GenerateMarker (intersection);
         }
         this.tempMarker.UpdatePosition (intersection);
         this.tempMarker.Show (true);
@@ -166,24 +166,24 @@ export class MeasureTool
 
     AddMarker (intersection)
     {
-        let marker = this.GenerateMarker (intersection, 0xcc0000);
+        let marker = this.GenerateMarker (intersection);
         this.markers.push (marker);
         if (this.markers.length === 2) {
-            let material = CreateMaterial (0x0000cc);
+            let material = CreateMaterial ();
             let aPoint = this.markers[0].GetIntersection ().point;
             let bPoint = this.markers[1].GetIntersection ().point;
             this.viewer.AddExtraObject (CreateLineFromPoints ([aPoint, bPoint], material));
         }
     }
 
-    GenerateMarker (intersection, color)
+    GenerateMarker (intersection)
     {
         let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
             return true;
         });
 
         let radius = boundingSphere.radius / 20.0;
-        let marker = new Marker (intersection, color, radius);
+        let marker = new Marker (intersection, radius);
         this.viewer.AddExtraObject (marker.GetObject ());
         return marker;
     }
