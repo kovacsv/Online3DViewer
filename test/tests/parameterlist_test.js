@@ -25,10 +25,10 @@ describe ('Parameter List', function () {
             edgeThreshold : 15
         }).GetParameterList ();
         assert.strictEqual (urlParams1, 'model=a.txt,b.txt');
-        assert.strictEqual (urlParams2, 'camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000');
-        assert.strictEqual (urlParams3, 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000');
-        assert.strictEqual (urlParams4, 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$defaultcolor=1,2,3');
-        assert.strictEqual (urlParams5, 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$backgroundcolor=4,5,6$defaultcolor=1,2,3');
+        assert.strictEqual (urlParams2, 'camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000');
+        assert.strictEqual (urlParams3, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000');
+        assert.strictEqual (urlParams4, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000$defaultcolor=1,2,3');
+        assert.strictEqual (urlParams5, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000$backgroundcolor=4,5,6$defaultcolor=1,2,3');
         assert.strictEqual (urlParams6, 'edgesettings=on,1,2,3,15');
     });
 
