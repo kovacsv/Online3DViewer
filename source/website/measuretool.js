@@ -190,26 +190,31 @@ export class MeasureTool
 
     UpdatePanel ()
     {
+        function AddValue (panel, icon, title, value)
+        {
+            const precision = 5;
+            let svgIcon = AddSvgIconElement (panel, icon, 'left_inline');
+            svgIcon.title = title;
+            AddDiv (panel, 'ov_measure_value', value.toFixed (precision));
+        }
+
         ClearDomElement (this.panel);
         if (this.markers.length === 0) {
-            this.panel.innerHTML = 'Select a point to start measuring.';
+            this.panel.innerHTML = 'Select a point.';
         } else if (this.markers.length === 1) {
-            this.panel.innerHTML = 'Select another point to start measuring.';
+            this.panel.innerHTML = 'Select another point.';
         } else {
-            const precision = 5;
             let calcResult = CalculateMarkerValues (this.markers[0], this.markers[1]);
+
             if (calcResult.pointsDistance !== null) {
-                AddSvgIconElement (this.panel, 'measure', 'left_inline');
-                AddDiv (this.panel, 'ov_measure_value', calcResult.pointsDistance.toFixed (precision));
+                AddValue (this.panel, 'measure', 'Distance of points', calcResult.pointsDistance);
             }
             if (calcResult.parallelFacesDistance !== null) {
-                AddSvgIconElement (this.panel, 'measure', 'left_inline');
-                AddDiv (this.panel, 'ov_measure_value', calcResult.parallelFacesDistance.toFixed (precision));
+                AddValue (this.panel, 'measure', 'Distance of parallel faces', calcResult.parallelFacesDistance);
             }
             if (calcResult.facesAngle !== null) {
                 let degreeValue = calcResult.facesAngle * RadDeg;
-                AddSvgIconElement (this.panel, 'measure', 'left_inline');
-                AddDiv (this.panel, 'ov_measure_value', degreeValue.toFixed (precision));
+                AddValue (this.panel, 'measure', 'Angle of faces', degreeValue);
             }
         }
     }
