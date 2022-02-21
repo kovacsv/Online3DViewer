@@ -54,9 +54,6 @@ export class Sidebar
             onDefaultColorChange : () => {
                 this.callbacks.onDefaultColorChange ();
             },
-            onGridDisplayChange : () => {
-                this.callbacks.onGridDisplayChange ();
-            },
             onEdgeDisplayChange : () => {
                 this.callbacks.onEdgeDisplayChange ();
             },

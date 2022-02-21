@@ -427,7 +427,6 @@ export class SidebarSettingsPanel extends SidebarPanel
         this.settings.backgroundIsEnvMap = defaultSettings.backgroundIsEnvMap;
         this.settings.backgroundColor = defaultSettings.backgroundColor;
         this.settings.defaultColor = defaultSettings.defaultColor;
-        this.settings.showGrid = defaultSettings.showGrid;
         this.settings.showEdges = defaultSettings.showEdges;
         this.settings.edgeColor = defaultSettings.edgeColor;
         this.settings.edgeThreshold = defaultSettings.edgeThreshold;

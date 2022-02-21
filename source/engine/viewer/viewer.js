@@ -253,7 +253,7 @@ export class Viewer
     {
         this.navigation.SetContextMenuHandler (onContext);
     }
-    
+
     SetEnvironmentMapSettings (textures, useAsBackground)
     {
         this.shading.SetEnvironment (textures, useAsBackground, () => {
@@ -267,12 +267,6 @@ export class Viewer
     {
         let hexColor = '#' + ColorToHexString (color);
         this.renderer.setClearColor (hexColor, 1.0);
-        this.Render ();
-    }
-
-    SetGridSettings (show)
-    {
-        this.geometry.SetGridSettings (show);
         this.Render ();
     }
 

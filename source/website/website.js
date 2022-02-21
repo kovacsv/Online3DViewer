@@ -435,12 +435,6 @@ export class Website
         }
     }
 
-    UpdateGridDisplay ()
-    {
-        this.settings.SaveToCookies ();
-        this.viewer.SetGridSettings (this.settings.showGrid);
-    }
-
     UpdateEdgeDisplay ()
     {
         this.settings.SaveToCookies ();
@@ -480,7 +474,6 @@ export class Website
     {
         let canvas = AddDomElement (this.parameters.viewerDiv, 'canvas');
         this.viewer.Init (canvas);
-        this.viewer.SetGridSettings (this.settings.showGrid);
         this.viewer.SetEdgeSettings (this.settings.showEdges, this.settings.edgeColor, this.settings.edgeThreshold);
         this.viewer.SetBackgroundColor (this.settings.backgroundColor);
         this.UpdateEnvironmentMap ();
@@ -651,9 +644,6 @@ export class Website
                 }
                 this.viewer.Render ();
             },
-            onGridDisplayChange : () => {
-                this.UpdateGridDisplay ();
-            },
             onEdgeDisplayChange : () => {
                 HandleEvent ('edge_display_changed', this.settings.showEdges ? 'on' : 'off');
                 this.UpdateEdgeDisplay ();
@@ -662,15 +652,6 @@ export class Website
                 HandleEvent ('theme_changed', this.settings.themeId === Theme.Light ? 'light' : 'dark');
                 this.SwitchTheme (this.settings.themeId, true);
             },
-            /* onMeasureToolActivedChange : (isActivated) => {
-                if (isActivated) {
-                    this.navigator.SetSelection (null);
-                    this.measureTool.SetActive (true);
-                } else {
-                    this.measureTool.SetActive (false);
-                }
-                this.sidebar.UpdateMeasureTool ();
-            },*/
             onResize : () => {
                 this.Resize ();
             },
