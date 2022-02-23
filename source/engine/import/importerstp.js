@@ -34,7 +34,7 @@ export class ImporterStp extends ImporterBase
     ImportContent (fileContent, onFinish)
     {
         if (this.worker === null) {
-            let workerPath = GetExternalLibPath ('loaders/occt-import-js-worker.js');
+            let workerPath = GetExternalLibPath ('loaders/occt-import-js-worker-cdn.js');
             this.worker = new Worker (workerPath);
         }
 

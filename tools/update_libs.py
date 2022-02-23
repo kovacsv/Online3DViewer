@@ -1,6 +1,9 @@
 import os
 import sys
 import shutil
+import json
+
+from lib import tools_lib as Tools
 
 pickrFileMap = [
     [os.path.join ('@simonwep', 'pickr', 'LICENSE'), os.path.join ('pickr.license.md')],
@@ -67,13 +70,27 @@ def Main (argv):
     nodeModulesDir = os.path.join (rootDir, 'node_modules')
     libsDir = os.path.join (rootDir, 'libs')
 
+    package = None
+    with open (os.path.join (rootDir, 'package.json')) as packageJson:
+        package = json.load (packageJson)
+
     UpdateModule (pickrFileMap, nodeModulesDir, libsDir)
     UpdateModule (threeJsFileMap, nodeModulesDir, libsDir)
     UpdateModule (dracoFileMap, nodeModulesDir, libsDir)
     UpdateModule (rhino3dmFileMap, nodeModulesDir, libsDir)
     UpdateModule (fflateFileMap, nodeModulesDir, libsDir)
     UpdateModule (webIfcFileMap, nodeModulesDir, libsDir)
+
     UpdateModule (occtImportJsFileMap, nodeModulesDir, libsDir)
+    occtImportJsVersion = package['dependencies']['occt-import-js']
+    occtWorkerFile = os.path.join (libsDir, 'loaders', 'occt-import-js-worker.js')
+    occtWorkerCdnFile = os.path.join (libsDir, 'loaders', 'occt-import-js-worker-cdn.js')
+    shutil.copy (occtWorkerFile, occtWorkerCdnFile)
+    Tools.ReplaceStringInFile (
+        occtWorkerCdnFile,
+        'occt-import-js.js',
+        'https://cdn.jsdelivr.net/npm/occt-import-js@' + occtImportJsVersion + '/dist/occt-import-js.js'
+    )
 
     return 0
 
