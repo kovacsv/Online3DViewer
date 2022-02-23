@@ -74,6 +74,7 @@ export class ImporterThreeBase extends ImporterBase
         LoadLibraries (libraries, () => {
             this.LoadModel (fileContent, onFinish);
         }, () => {
+            this.SetError ('Failed to load three.js loader.');
             onFinish ();
         });
     }

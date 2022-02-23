@@ -285,7 +285,7 @@ class GltfExtensions
                     callbacks.onSuccess ();
                 });
             }).catch (() => {
-                callbacks.onError ();
+                callbacks.onError ('Failed to load draco decoder.');
             });
         } else {
             callbacks.onSuccess ();
@@ -616,8 +616,8 @@ export class ImporterGltf extends ImporterBase
                 this.ImportModel (gltf);
                 onFinish ();
             },
-            onError : () => {
-                this.SetError ('Failed to load draco decoder.');
+            onError : (message) => {
+                this.SetError (message);
                 onFinish ();
             }
         });

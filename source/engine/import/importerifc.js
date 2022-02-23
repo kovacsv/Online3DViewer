@@ -51,6 +51,7 @@ export class ImporterIfc extends ImporterBase
                     onFinish ();
                 });
             }).catch (() => {
+                this.SetError ('Failed to load web-ifc.');
                 onFinish ();
             });
 		} else {
