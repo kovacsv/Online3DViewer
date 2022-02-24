@@ -112,7 +112,7 @@ export class Embed
             this.viewer.SetCamera (camera);
         } else {
             this.viewer.SetUpVector (Direction.Y, false);
+            this.viewer.FitSphereToWindow (boundingSphere, false);
         }
-        this.viewer.FitSphereToWindow (boundingSphere, false);
     }
 }
