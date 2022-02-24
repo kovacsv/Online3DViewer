@@ -39,11 +39,16 @@ export class ImporterStp extends ImporterBase
         }
 
         let onModelConverted = (ev) => {
-            console.log ('converted');
             this.ImportStepContent (ev.data, onFinish);
             this.worker.removeEventListener ('message', onModelConverted);
         };
+
         this.worker.addEventListener ('message', onModelConverted);
+        this.worker.addEventListener ('error', (ev) => {
+            this.worker = null;
+            this.SetError ('Failed to load occt-import-js.');
+            onFinish ();
+        });
 
         let fileBuffer = new Uint8Array (fileContent);
         this.worker.postMessage (fileBuffer);
