@@ -1,6 +1,6 @@
 @font-face {
     font-family: "O3DVIcons";
-    src: url("O3DVIcons/O3DVIcons.woff?01bd85707830dedc06defe6d5374c240") format("woff");
+    src: url("O3DVIcons/O3DVIcons.woff?43ee2533396d2125f154730cabd87b6e") format("woff");
 }
 
 i[class^="icon-"]:before, i[class*=" icon-"]:before {
@@ -86,48 +86,57 @@ i[class^="icon-"]:before, i[class*=" icon-"]:before {
 .icon-materials:before {
     content: "\f118";
 }
-.icon-measure:before {
+.icon-measure_angle:before {
     content: "\f119";
 }
-.icon-meshes:before {
+.icon-measure_distance_parallel:before {
     content: "\f11a";
 }
-.icon-missing_files:before {
+.icon-measure_distance:before {
     content: "\f11b";
 }
-.icon-model:before {
+.icon-measure:before {
     content: "\f11c";
 }
-.icon-open_url:before {
+.icon-meshes:before {
     content: "\f11d";
 }
-.icon-open:before {
+.icon-missing_files:before {
     content: "\f11e";
 }
-.icon-settings:before {
+.icon-model:before {
     content: "\f11f";
 }
-.icon-share:before {
+.icon-open_url:before {
     content: "\f120";
 }
-.icon-tree_mesh:before {
+.icon-open:before {
     content: "\f121";
 }
-.icon-tree_view:before {
+.icon-settings:before {
     content: "\f122";
 }
-.icon-twitter:before {
+.icon-share:before {
     content: "\f123";
 }
-.icon-up_y:before {
+.icon-tree_mesh:before {
     content: "\f124";
 }
-.icon-up_z:before {
+.icon-tree_view:before {
     content: "\f125";
 }
-.icon-visible:before {
+.icon-twitter:before {
     content: "\f126";
 }
-.icon-warning:before {
+.icon-up_y:before {
     content: "\f127";
+}
+.icon-up_z:before {
+    content: "\f128";
+}
+.icon-visible:before {
+    content: "\f129";
+}
+.icon-warning:before {
+    content: "\f12a";
 }

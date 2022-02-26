@@ -634,6 +634,9 @@ export class Website
             onBackgroundColorChange : () => {
                 this.settings.SaveToCookies ();
                 this.viewer.SetBackgroundColor (this.settings.backgroundColor);
+                if (this.measureTool.IsActive ()) {
+                    this.measureTool.UpdatePanel ();
+                }
             },
             onDefaultColorChange : () => {
                 this.settings.SaveToCookies ();

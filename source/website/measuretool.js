@@ -212,14 +212,14 @@ export class MeasureTool
             let calcResult = CalculateMarkerValues (this.markers[0], this.markers[1]);
 
             if (calcResult.pointsDistance !== null) {
-                AddValue (this.panel, 'measure', 'Distance of points', calcResult.pointsDistance.toFixed (3));
+                AddValue (this.panel, 'measure_distance', 'Distance of points', calcResult.pointsDistance.toFixed (3));
             }
             if (calcResult.parallelFacesDistance !== null) {
-                AddValue (this.panel, 'measure', 'Distance of parallel faces', calcResult.parallelFacesDistance.toFixed (3));
+                AddValue (this.panel, 'measure_distance_parallel', 'Distance of parallel faces', calcResult.parallelFacesDistance.toFixed (3));
             }
             if (calcResult.facesAngle !== null) {
                 let degreeValue = calcResult.facesAngle * RadDeg;
-                AddValue (this.panel, 'measure', 'Angle of faces', degreeValue.toFixed (1) + '\xB0');
+                AddValue (this.panel, 'measure_angle', 'Angle of faces', degreeValue.toFixed (1) + '\xB0');
             }
         }
     }
