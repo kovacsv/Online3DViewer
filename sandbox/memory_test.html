@@ -19,6 +19,7 @@
 		};
 
 		let numberOfCoords = 1000000;
+		let numberOfNumbers = 100000000;
 		let vector = null;
 
 		function ArrayOfCoords ()
@@ -30,11 +31,29 @@
 			alert ('ready');
 		}
 
-		function ArrayOfNumbers ()
+		function ArrayOfCoordComponents ()
 		{
 			vector = [];
 			for (let i = 0; i < numberOfCoords; i++) {
 				vector.push (1.0, 2.0, 3.0);
+			}
+			alert ('ready');
+		}
+
+		function ArrayOfNumbers ()
+		{
+			vector = [];
+			for (let i = 0; i < numberOfNumbers; i++) {
+				vector.push (1.0);
+			}
+			alert ('ready');
+		}
+
+		function ArrayOfNumbersFloat32Arr ()
+		{
+			vector = new Float32Array (numberOfNumbers);
+			for (let i = 0; i < numberOfNumbers; i++) {
+				vector[i] = 1.0;
 			}
 			alert ('ready');
 		}
@@ -43,7 +62,9 @@
 
 <body>
 	<input type="button" value="ArrayOfCoords" onclick="ArrayOfCoords ()"/>
+	<input type="button" value="ArrayOfNumbers" onclick="ArrayOfCoordComponents ()"/>
 	<input type="button" value="ArrayOfNumbers" onclick="ArrayOfNumbers ()"/>
+	<input type="button" value="ArrayOfNumbersFloat32Arr" onclick="ArrayOfNumbersFloat32Arr ()"/>
 </body>
 
 </html>
