@@ -19,7 +19,6 @@ import { HasDefaultMaterial, ReplaceDefaultMaterialColor } from '../engine/model
 import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { ShadingType } from '../engine/threejs/threeutils.js';
-import { FeatureSet } from './featureset.js';
 import { MeasureTool } from './measuretool.js';
 
 export const WebsiteUIState =
@@ -567,15 +566,13 @@ export class Website
                 this.viewer.SetFixUpVector (false);
             }
         });
-        if (FeatureSet.MeasureTool) {
-            AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-            let measureToolButton = AddPushButton (this.toolbar, 'measure', 'Measure', ['only_full_width', 'only_on_model'], (isSelected) => {
-                HandleEvent ('measure_tool_activated', isSelected ? 'on' : 'off');
-                this.navigator.SetSelection (null);
-                this.measureTool.SetActive (isSelected);
-            });
-            this.measureTool.SetButton (measureToolButton);
-        }
+        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
+        let measureToolButton = AddPushButton (this.toolbar, 'measure', 'Measure', ['only_full_width', 'only_on_model'], (isSelected) => {
+            HandleEvent ('measure_tool_activated', isSelected ? 'on' : 'off');
+            this.navigator.SetSelection (null);
+            this.measureTool.SetActive (isSelected);
+        });
+        this.measureTool.SetButton (measureToolButton);
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         AddButton (this.toolbar, 'export', 'Export model', ['only_full_width', 'only_on_model'], () => {
             let exportDialog = new ExportDialog ({

@@ -15,7 +15,7 @@ function GetFaceWorldNormal (intersection)
 function CreateMaterial ()
 {
     return new THREE.LineBasicMaterial ({
-        color : 0x000000,
+        color : 0x263238,
         depthTest : false
     });
 }
