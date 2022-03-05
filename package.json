@@ -43,7 +43,7 @@
 		"rhino3dm": "7.14.0",
 		"three": "0.138.3",
 		"web-ifc": "0.0.33",
-		"occt-import-js" : "0.0.4"
+		"occt-import-js" : "0.0.5"
 	},
 	"eslintConfig": {
 		"env": {

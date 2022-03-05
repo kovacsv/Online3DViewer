@@ -1,4 +1,5 @@
 import { IsLower } from '../geometry/geometry.js';
+import { ColorToHexString } from '../model/color.js';
 
 export function NameFromLine (line, startIndex, commentChar)
 {
@@ -60,5 +61,26 @@ export function UpdateMaterialTransparency (material)
 	material.transparent = false;
 	if (IsLower (material.opacity, 1.0)) {
 		material.transparent = true;
+	}
+}
+
+export class ColorToMaterialConverter
+{
+	constructor (createMaterialFunc)
+	{
+		this.createMaterialFunc = createMaterialFunc;
+		this.colorToMaterialIndex = new Map ();
+	}
+
+	GetMaterialIndex (color)
+	{
+		let colorKey = ColorToHexString (color);
+		if (this.colorToMaterialIndex.has (colorKey)) {
+			return this.colorToMaterialIndex.get (colorKey);
+		} else {
+			let materialIndex = this.createMaterialFunc (color);
+			this.colorToMaterialIndex.set (colorKey, materialIndex);
+			return materialIndex;
+		}
 	}
 }
