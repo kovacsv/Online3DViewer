@@ -3,6 +3,7 @@ div.ov_sidebar_title
 	font-weight: bold;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+	padding-top: 10px;
 	padding-bottom: 10px;
 	margin-bottom: 10px;
 	border-bottom: 1px solid var(--ov_border_color);

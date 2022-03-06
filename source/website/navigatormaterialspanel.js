@@ -4,7 +4,7 @@ import { MaterialItem } from './navigatoritems.js';
 import { NavigatorPanel, NavigatorPopupButton } from './navigatorpanel.js';
 import { GetMaterialName, GetMeshName } from './utils.js';
 
-export class NavigatorMeshesPopupButton extends NavigatorPopupButton
+class NavigatorMeshesPopupButton extends NavigatorPopupButton
 {
     constructor (parentDiv)
     {

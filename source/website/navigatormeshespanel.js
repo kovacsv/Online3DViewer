@@ -1,12 +1,19 @@
 import { NodeType } from '../engine/model/node.js';
 import { MeshInstanceId } from '../engine/model/meshinstance.js';
-import { AddDiv, CreateDiv, ShowDomElement, ClearDomElement, InsertDomElementBefore, SetDomElementHeight, GetDomElementOuterHeight } from '../engine/viewer/domutils.js';
+import { AddDiv, CreateDiv, ShowDomElement, ClearDomElement, InsertDomElementBefore, SetDomElementHeight, GetDomElementOuterHeight, IsDomElementVisible } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToElementBottomRight, ShowListPopup } from './dialogs.js';
 import { MeshItem, NavigatorItemRecurse, NodeItem } from './navigatoritems.js';
 import { NavigatorPanel, NavigatorPopupButton } from './navigatorpanel.js';
 import { AddSvgIconElement, GetMaterialName, GetMeshName, GetNodeName, SetSvgIconImageElement } from './utils.js';
 
-export class NavigatorMaterialsPopupButton extends NavigatorPopupButton
+const MeshesPanelMode =
+{
+    Simple : 0,
+    FlatList : 1,
+    TreeView : 2
+};
+
+class NavigatorMaterialsPopupButton extends NavigatorPopupButton
 {
     constructor (parentDiv)
     {
@@ -66,11 +73,11 @@ export class NavigatorMeshesPanel extends NavigatorPanel
         this.nodeIdToItem = new Map ();
         this.meshInstanceIdToItem = new Map ();
         this.rootItem = null;
-        this.showTree = false;
+        this.mode = MeshesPanelMode.Simple;
         this.buttons = null;
 
-        this.titleDiv.classList.add ('nomargin');
         this.treeView.AddClass ('tight');
+        this.titleButtonsDiv = AddDiv (this.titleDiv, 'ov_navigator_tree_title_buttons');
         this.buttonsDiv = CreateDiv ('ov_navigator_buttons');
         InsertDomElementBefore (this.buttonsDiv, this.treeDiv);
 
@@ -90,8 +97,11 @@ export class NavigatorMeshesPanel extends NavigatorPanel
 
     Resize ()
     {
-        let titleHeight = this.titleDiv.offsetHeight;
-        let buttonsHeight = GetDomElementOuterHeight (this.buttonsDiv);
+        let titleHeight = GetDomElementOuterHeight (this.titleDiv);
+        let buttonsHeight = 0;
+        if (IsDomElementVisible (this.buttonsDiv)) {
+            buttonsHeight = GetDomElementOuterHeight (this.buttonsDiv);
+        }
         let popupHeight = GetDomElementOuterHeight (this.popupDiv);
         let height = this.parentDiv.offsetHeight;
         SetDomElementHeight (this.treeDiv, height - titleHeight - buttonsHeight - popupHeight);
@@ -100,6 +110,7 @@ export class NavigatorMeshesPanel extends NavigatorPanel
     Clear ()
     {
         this.ClearMeshTree ();
+        ClearDomElement (this.titleButtonsDiv);
         ClearDomElement (this.buttonsDiv);
         this.buttons = null;
     }
@@ -133,10 +144,36 @@ export class NavigatorMeshesPanel extends NavigatorPanel
     {
         super.Fill (importResult);
 
-        const model = importResult.model;
-        this.FillButtons (importResult);
-        this.FillMeshTree (model);
+        const rootNode = importResult.model.GetRootNode ();
+        let isHierarchical = false;
+        for (let childNode of rootNode.GetChildNodes ()) {
+            if (childNode.GetType () === NodeType.GroupNode) {
+                isHierarchical = true;
+                break;
+            }
+        }
+        if (this.mode === MeshesPanelMode.Simple) {
+            if (isHierarchical) {
+                this.mode = MeshesPanelMode.FlatList;
+            }
+        } else if (this.mode === MeshesPanelMode.FlatList || this.mode === MeshesPanelMode.TreeView) {
+            if (!isHierarchical) {
+                this.mode = MeshesPanelMode.Simple;
+            }
+        }
 
+        this.FillButtons (importResult);
+        if (this.mode === MeshesPanelMode.Simple) {
+            ShowDomElement (this.buttonsDiv, false);
+            this.titleDiv.classList.add ('withbuttons');
+            this.titleDiv.classList.remove ('nomargin');
+        } else {
+            ShowDomElement (this.buttonsDiv, true);
+            this.titleDiv.classList.remove ('withbuttons');
+            this.titleDiv.classList.add ('nomargin');
+        }
+
+        this.FillMeshTree (importResult.model);
         this.Resize ();
     }
 
@@ -156,8 +193,9 @@ export class NavigatorMeshesPanel extends NavigatorPanel
             });
         }
 
-        function UpdateButtonsStatus (buttons, showTree, isHierarchical)
+        function UpdateButtonsStatus (buttons, mode)
         {
+            let showTree = (mode === MeshesPanelMode.TreeView);
             if (showTree) {
                 buttons.flatList.iconDiv.classList.remove ('selected');
                 buttons.treeView.iconDiv.classList.add ('selected');
@@ -165,13 +203,12 @@ export class NavigatorMeshesPanel extends NavigatorPanel
                 buttons.flatList.iconDiv.classList.add ('selected');
                 buttons.treeView.iconDiv.classList.remove ('selected');
             }
-            let showExpandButtons = showTree && isHierarchical;
-            ShowDomElement (buttons.separator, showExpandButtons);
-            ShowDomElement (buttons.expandAll.div, showExpandButtons);
-            ShowDomElement (buttons.collapseAll.div, showExpandButtons);
+            ShowDomElement (buttons.separator, showTree);
+            ShowDomElement (buttons.expandAll.div, showTree);
+            ShowDomElement (buttons.collapseAll.div, showTree);
         }
 
-        function UpdateView (panel, importResult, isHierarchical)
+        function UpdateView (panel, importResult)
         {
             let hiddenMeshInstanceIds = [];
             panel.EnumerateMeshItems ((meshItem) => {
@@ -189,7 +226,7 @@ export class NavigatorMeshesPanel extends NavigatorPanel
                 meshItem.SetVisible (false, NavigatorItemRecurse.Parents);
             }
 
-            UpdateButtonsStatus (panel.buttons, panel.showTree, isHierarchical);
+            UpdateButtonsStatus (panel.buttons, panel.mode);
             panel.callbacks.onViewTypeChanged ();
         }
 
@@ -233,62 +270,65 @@ export class NavigatorMeshesPanel extends NavigatorPanel
             }
         };
 
-        const rootNode = importResult.model.GetRootNode ();
-        let isHierarchical = false;
-        for (let childNode of rootNode.GetChildNodes ()) {
-            if (childNode.GetType () === NodeType.GroupNode) {
-                isHierarchical = true;
-                break;
-            }
+        if (this.mode === MeshesPanelMode.Simple) {
+            CreateButton (this.titleButtonsDiv, this.buttons.showHideMeshes, 'right', () => {
+                let nodeId = this.rootItem.GetNodeId ();
+                this.callbacks.onNodeShowHide (nodeId);
+            });
+
+            CreateButton (this.titleButtonsDiv, this.buttons.fitToWindow, 'right', () => {
+                let nodeId = this.rootItem.GetNodeId ();
+                this.callbacks.onNodeFitToWindow (nodeId);
+            });
+        } else {
+            CreateButton (this.buttonsDiv, this.buttons.flatList, null, () => {
+                if (this.mode === MeshesPanelMode.FlatList) {
+                    return;
+                }
+                this.mode = MeshesPanelMode.FlatList;
+                UpdateView (this, importResult);
+            });
+
+            CreateButton (this.buttonsDiv, this.buttons.treeView, null, () => {
+                if (this.mode === MeshesPanelMode.TreeView) {
+                    return;
+                }
+                this.mode = MeshesPanelMode.TreeView;
+                UpdateView (this, importResult);
+            });
+
+            this.buttons.separator = AddDiv (this.buttonsDiv, 'ov_navigator_buttons_separator');
+
+            CreateButton (this.buttonsDiv, this.buttons.expandAll, null, () => {
+                this.rootItem.ExpandAll (true);
+            });
+
+            CreateButton (this.buttonsDiv, this.buttons.collapseAll, null, () => {
+                this.rootItem.ExpandAll (false);
+            });
+
+            CreateButton (this.buttonsDiv, this.buttons.showHideMeshes, 'right', () => {
+                let nodeId = this.rootItem.GetNodeId ();
+                this.callbacks.onNodeShowHide (nodeId);
+            });
+
+            CreateButton (this.buttonsDiv, this.buttons.fitToWindow, 'right', () => {
+                let nodeId = this.rootItem.GetNodeId ();
+                this.callbacks.onNodeFitToWindow (nodeId);
+            });
+
+            UpdateButtonsStatus (this.buttons, this.mode);
         }
-
-        CreateButton (this.buttonsDiv, this.buttons.flatList, null, () => {
-            if (!this.showTree) {
-                return;
-            }
-            this.showTree = false;
-            UpdateView (this, importResult, isHierarchical);
-        });
-
-        CreateButton (this.buttonsDiv, this.buttons.treeView, null, () => {
-            if (this.showTree) {
-                return;
-            }
-            this.showTree = true;
-            UpdateView (this, importResult, isHierarchical);
-        });
-
-        this.buttons.separator = AddDiv (this.buttonsDiv, 'ov_navigator_buttons_separator');
-
-        CreateButton (this.buttonsDiv, this.buttons.expandAll, null, () => {
-            this.rootItem.ExpandAll (true);
-        });
-
-        CreateButton (this.buttonsDiv, this.buttons.collapseAll, null, () => {
-            this.rootItem.ExpandAll (false);
-        });
-
-        CreateButton (this.buttonsDiv, this.buttons.showHideMeshes, 'right', () => {
-            let nodeId = this.rootItem.GetNodeId ();
-            this.callbacks.onNodeShowHide (nodeId);
-        });
-
-        CreateButton (this.buttonsDiv, this.buttons.fitToWindow, 'right', () => {
-            let nodeId = this.rootItem.GetNodeId ();
-            this.callbacks.onNodeFitToWindow (nodeId);
-        });
-
-        UpdateButtonsStatus (this.buttons, this.showTree, isHierarchical);
     }
 
     FillMeshTree (model)
     {
-        function AddMeshToNodeTree (panel, model, node, meshIndex, parentItem, showTree)
+        function AddMeshToNodeTree (panel, model, node, meshIndex, parentItem, mode)
         {
             let mesh = model.GetMesh (meshIndex);
             let meshName = GetMeshName (mesh.GetName ());
             let meshInstanceId = new MeshInstanceId (node.GetId (), meshIndex);
-            let meshItemIcon = showTree ? 'tree_mesh' : null;
+            let meshItemIcon = (mode === MeshesPanelMode.TreeView ? 'tree_mesh' : null);
             let meshItem = new MeshItem (meshName, meshItemIcon, meshInstanceId, {
                 onShowHide : (selectedMeshId) => {
                     panel.callbacks.onMeshShowHide (selectedMeshId);
@@ -339,33 +379,33 @@ export class NavigatorMeshesPanel extends NavigatorPanel
             return rootItem;
         }
 
-        function AddModelNodeToTree (panel, model, node, parentItem, showTree)
+        function AddModelNodeToTree (panel, model, node, parentItem, mode)
         {
             let meshNodes = [];
             for (let childNode of node.GetChildNodes ()) {
-                if (showTree) {
+                if (mode === MeshesPanelMode.TreeView) {
                     if (childNode.GetType () === NodeType.GroupNode) {
                         let nodeItem = CreateNodeItem (panel, childNode);
                         parentItem.AddChild (nodeItem);
-                        AddModelNodeToTree (panel, model, childNode, nodeItem, showTree);
+                        AddModelNodeToTree (panel, model, childNode, nodeItem, mode);
                     } else if (childNode.GetType () === NodeType.MeshNode) {
                         meshNodes.push (childNode);
                     }
                 } else {
-                    AddModelNodeToTree (panel, model, childNode, parentItem, showTree);
+                    AddModelNodeToTree (panel, model, childNode, parentItem, mode);
                 }
             }
             for (let meshNode of meshNodes) {
-                AddModelNodeToTree (panel, model, meshNode, parentItem, showTree);
+                AddModelNodeToTree (panel, model, meshNode, parentItem, mode);
             }
             for (let meshIndex of node.GetMeshIndices ()) {
-                AddMeshToNodeTree (panel, model, node, meshIndex, parentItem, showTree);
+                AddMeshToNodeTree (panel, model, node, meshIndex, parentItem, mode);
             }
         }
 
         let rootNode = model.GetRootNode ();
         this.rootItem = CreateDummyRootItem (this, rootNode);
-        AddModelNodeToTree (this, model, rootNode, this.rootItem, this.showTree);
+        AddModelNodeToTree (this, model, rootNode, this.rootItem, this.mode);
     }
 
     UpdateMaterialList (materialInfoArray)
