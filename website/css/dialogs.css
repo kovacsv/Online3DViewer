@@ -249,6 +249,21 @@ div.ov_progress div.ov_progress_text
 	text-align: center;
 }
 
+div.ov_snapshot_dialog_left
+{
+	width: 140px;
+	float: left;
+}
+
+img.ov_snapshot_dialog_preview
+{
+	background: var(--ov_border_color);
+	width: 250px;
+	height: 140px;
+	object-fit: contain;
+	float: right;
+}
+
 @media (hover)
 {
 

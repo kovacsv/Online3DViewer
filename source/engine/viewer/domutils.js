@@ -150,6 +150,22 @@ export function AddCheckbox (parentElement, id, text, isChecked, onChange)
     return check;
 }
 
+export function AddRadioButton (parentElement, id, name, text, isChecked, onChange)
+{
+    let label = AddDomElement (parentElement, 'label');
+    label.setAttribute ('for', id);
+    let radio = AddDomElement (label, 'input', 'ov_radio_button');
+    radio.setAttribute ('type', 'radio');
+    radio.setAttribute ('id', id);
+    radio.setAttribute ('name', name);
+    radio.checked = isChecked;
+    AddDomElement (label, 'span', null, text);
+    if (onChange) {
+        radio.addEventListener ('change', onChange);
+    }
+    return radio;
+}
+
 export function AddRangeSlider (parentElement, min, max)
 {
     let slider = AddDomElement (parentElement, 'input', 'ov_slider');
