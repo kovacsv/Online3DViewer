@@ -7,7 +7,7 @@ import { Exporter } from '../engine/export/exporter.js';
 import { ExporterModel, ExporterSettings } from '../engine/export/exportermodel.js';
 import { AddDiv, AddSelect, ClearDomElement } from '../engine/viewer/domutils.js';
 import { ShowMessageDialog } from './dialogs.js';
-import { ButtonDialog, ProgressDialog } from './modal.js';
+import { ButtonDialog, ProgressDialog } from './dialog.js';
 import { DownloadArrayBufferAsFile, DownloadUrlAsFile } from './utils.js';
 import { CookieGetStringVal, CookieSetStringVal } from './cookiehandler.js';
 import { HandleEvent } from './eventhandler.js';
@@ -90,30 +90,29 @@ export class ModelExporterUI extends ExporterUI
 
         let exporterModel = new ExporterModel (model, settings);
         if (exporterModel.MeshInstanceCount () === 0) {
-            let errorDialog = ShowMessageDialog (
+            ShowMessageDialog (
                 'Export Failed',
                 'The model doesn\'t contain any meshes.',
                 null
             );
-            callbacks.onDialog (errorDialog);
             return;
         }
 
         let progressDialog = new ProgressDialog ();
         progressDialog.Init ('Exporting Model');
-        progressDialog.Show ();
+        progressDialog.Open ();
 
         RunTaskAsync (() => {
             let exporter = new Exporter ();
             exporter.Export (model, settings, this.format, this.extension, {
                 onError : () => {
-                    progressDialog.Hide ();
+                    progressDialog.Close ();
                 },
                 onSuccess : (files) => {
                     if (files.length === 0) {
-                        progressDialog.Hide ();
+                        progressDialog.Close ();
                     } else if (files.length === 1) {
-                        progressDialog.Hide ();
+                        progressDialog.Close ();
                         let file = files[0];
                         DownloadArrayBufferAsFile (file.GetBufferContent (), file.GetName ());
                     } else if (files.length > 1) {
@@ -124,10 +123,10 @@ export class ModelExporterUI extends ExporterUI
                             }
                             let zippedContent = fflate.zipSync (filesInZip);
                             let zippedBuffer = zippedContent.buffer;
-                            progressDialog.Hide ();
+                            progressDialog.Close ();
                             DownloadArrayBufferAsFile (zippedBuffer, 'model.zip');
                         }).catch (() => {
-                            progressDialog.Hide ();
+                            progressDialog.Close ();
                         });
                     }
                 }
@@ -197,7 +196,7 @@ export class ExportDialog
         ];
     }
 
-    Show (model, viewer)
+    Open (model, viewer)
     {
         let mainDialog = new ButtonDialog ();
         let contentDiv = mainDialog.Init ('Export', [
@@ -205,13 +204,13 @@ export class ExportDialog
                 name : 'Close',
                 subClass : 'outline',
                 onClick () {
-                    mainDialog.Hide ();
+                    mainDialog.Close ();
                 }
             },
             {
                 name : 'Export',
                 onClick : () => {
-                    mainDialog.Hide ();
+                    mainDialog.Close ();
                     this.ExportFormat (model, viewer);
                 }
             }
@@ -234,8 +233,7 @@ export class ExportDialog
         });
         this.OnFormatSelected (defaultFormatIndex);
 
-        mainDialog.Show ();
-        this.callbacks.onDialog (mainDialog);
+        mainDialog.Open ();
     }
 
     OnFormatSelected (selectedIndex)
@@ -251,9 +249,6 @@ export class ExportDialog
             this.selectedExporter.ExportModel (model, {
                 isMeshVisible : (meshInstanceId) => {
                     return this.callbacks.isMeshVisible (meshInstanceId);
-                },
-                onDialog : (filesDialog) => {
-                    this.callbacks.onDialog (filesDialog);
                 }
             });
             HandleEvent ('model_exported', this.selectedExporter.GetName ());

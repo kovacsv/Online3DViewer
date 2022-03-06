@@ -1,7 +1,7 @@
 import { AddDiv } from '../engine/viewer/domutils.js';
 import { ThreeModelLoader } from '../engine/threejs/threemodelloader.js';
 import { ShowMessageDialog } from './dialogs.js';
-import { ButtonDialog, ProgressDialog } from './modal.js';
+import { ButtonDialog, ProgressDialog } from './dialog.js';
 import { AddSvgIconElement } from './utils.js';
 import { ImportErrorCode } from '../engine/import/importer.js';
 
@@ -26,12 +26,12 @@ export class ThreeModelLoaderUI
                 callbacks.onStart ();
                 progressDialog = new ProgressDialog ();
                 progressDialog.Init ('Loading Model');
-                progressDialog.Show ();
+                progressDialog.Open ();
             },
             onSelectMainFile : (fileNames, selectFile) => {
-                progressDialog.Hide ();
+                progressDialog.Close ();
                 this.modalDialog = this.ShowFileSelectorDialog (fileNames, (index) => {
-                    progressDialog.Show ();
+                    progressDialog.Open ();
                     selectFile (index);
                 });
             },
@@ -42,14 +42,14 @@ export class ThreeModelLoaderUI
                 progressDialog.SetText ('Visualizing Model');
             },
             onModelFinished : (importResult, threeObject) => {
-                progressDialog.Hide ();
+                progressDialog.Close ();
                 callbacks.onFinish (importResult, threeObject);
             },
             onTextureLoaded : () => {
                 callbacks.onRender ();
             },
             onLoadError : (importError) => {
-                progressDialog.Hide ();
+                progressDialog.Close ();
                 callbacks.onError (importError);
                 this.modalDialog = this.ShowErrorDialog (importError);
             },
@@ -103,7 +103,7 @@ export class ThreeModelLoaderUI
                 name : 'Cancel',
                 subClass : 'outline',
                 onClick () {
-                    dialog.Hide ();
+                    dialog.Close ();
                 }
             }
         ]);
@@ -124,19 +124,19 @@ export class ThreeModelLoaderUI
             AddDiv (fileLink, 'ov_dialog_file_link_text', fileName);
             fileLink.addEventListener ('click', () => {
                 dialog.SetCloseHandler (null);
-                dialog.Hide ();
+                dialog.Close ();
                 onSelect (i);
             });
         }
 
-        dialog.Show ();
+        dialog.Open ();
         return dialog;
     }
 
     CloseDialogIfOpen ()
     {
         if (this.modalDialog !== null) {
-            this.modalDialog.Hide ();
+            this.modalDialog.Close ();
             this.modalDialog = null;
         }
     }

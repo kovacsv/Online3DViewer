@@ -1,5 +1,5 @@
 import { AddDiv } from '../engine/viewer/domutils.js';
-import { ButtonDialog, ListPopup } from './modal.js';
+import { ButtonDialog, ListPopup } from './dialog.js';
 
 export function ShowMessageDialog (title, message, subMessage)
 {
@@ -8,7 +8,7 @@ export function ShowMessageDialog (title, message, subMessage)
         {
             name : 'OK',
             onClick () {
-                dialog.Hide ();
+                dialog.Close ();
             }
         }
     ]);
@@ -16,7 +16,7 @@ export function ShowMessageDialog (title, message, subMessage)
     if (subMessage !== null) {
         AddDiv (contentDiv, 'ov_dialog_submessage', subMessage);
     }
-    dialog.Show ();
+    dialog.Open ();
     return dialog;
 }
 
@@ -44,12 +44,12 @@ export function ShowListPopup (items, callbacks)
                 }
             },
             onClick : function () {
-                popup.Hide ();
+                popup.Close ();
                 callbacks.onClick (i);
             }
         });
     }
-    popup.Show ();
+    popup.Open ();
     return popup;
 }
 

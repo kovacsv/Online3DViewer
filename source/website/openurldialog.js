@@ -1,6 +1,6 @@
 import { ReadLines } from '../engine/import/importerutils.js';
 import { AddDiv, CreateDomElement } from '../engine/viewer/domutils.js';
-import { ButtonDialog } from './modal.js';
+import { ButtonDialog } from './dialog.js';
 
 export function ShowOpenUrlDialog (onOk)
 {
@@ -11,7 +11,7 @@ export function ShowOpenUrlDialog (onOk)
             name : 'Cancel',
             subClass : 'outline',
             onClick () {
-                dialog.Hide ();
+                dialog.Close ();
             }
         },
         {
@@ -21,7 +21,7 @@ export function ShowOpenUrlDialog (onOk)
                 ReadLines (urlsTextArea.value, (line) => {
                     urls.push (line);
                 });
-                dialog.Hide ();
+                dialog.Close ();
                 onOk (urls);
             }
         }
@@ -29,7 +29,7 @@ export function ShowOpenUrlDialog (onOk)
     let text = 'Here you can load models based on their urls. You can add more lines if your model builds up from multiple files.';
     AddDiv (contentDiv, 'ov_dialog_section', text);
     contentDiv.appendChild (urlsTextArea);
-    dialog.Show ();
+    dialog.Open ();
     urlsTextArea.focus ();
     return dialog;
 }

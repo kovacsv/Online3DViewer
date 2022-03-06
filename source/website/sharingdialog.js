@@ -2,7 +2,7 @@ import { FileSource } from '../engine/io/fileutils.js';
 import { AddDiv, AddDomElement, AddCheckbox } from '../engine/viewer/domutils.js';
 import { CreateUrlBuilder } from '../engine/parameters/parameterlist.js';
 import { ShowMessageDialog } from './dialogs.js';
-import { ButtonDialog } from './modal.js';
+import { ButtonDialog } from './dialog.js';
 import { CopyToClipboard } from './utils.js';
 import { HandleEvent } from './eventhandler.js';
 
@@ -125,7 +125,7 @@ export function ShowSharingDialog (fileList, settings, camera)
         {
             name : 'Close',
             onClick () {
-                dialog.Hide ();
+                dialog.Close ();
             }
         }
     ]);
@@ -133,6 +133,6 @@ export function ShowSharingDialog (fileList, settings, camera)
     AddSharingLinkTab (contentDiv, modelFiles);
     AddEmbeddingCodeTab (contentDiv, modelFiles, settings, camera);
 
-    dialog.Show ();
+    dialog.Open ();
     return dialog;
 }

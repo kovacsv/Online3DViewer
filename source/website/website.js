@@ -20,6 +20,7 @@ import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { ShadingType } from '../engine/threejs/threeutils.js';
 import { MeasureTool } from './measuretool.js';
+import { CloseAllDialogs } from './dialog.js';
 
 export const WebsiteUIState =
 {
@@ -46,7 +47,6 @@ export class Website
         this.highlightColor = new THREE.Color (0x8ec9f0);
         this.uiState = WebsiteUIState.Undefined;
         this.model = null;
-        this.dialog = null;
     }
 
     Load ()
@@ -156,7 +156,7 @@ export class Website
 
     ClearModel ()
     {
-        this.HidePopups ();
+        CloseAllDialogs ();
 
         this.model = null;
         this.viewer.Clear ();
@@ -257,7 +257,7 @@ export class Website
                 });
             }
         }
-        this.dialog = ShowListPopup (items, {
+        ShowListPopup (items, {
             calculatePosition : (contentDiv) => {
                 return CalculatePopupPositionToScreen (globalMouseCoordinates, contentDiv);
             },
@@ -287,14 +287,6 @@ export class Website
         } else {
             this.ClearModel ();
             this.SetUIState (WebsiteUIState.Intro);
-        }
-    }
-
-    HidePopups ()
-    {
-        if (this.dialog !== null) {
-            this.dialog.Hide ();
-            this.dialog = null;
         }
     }
 
@@ -538,7 +530,7 @@ export class Website
             this.OpenFileBrowserDialog ();
         });
         AddButton (this.toolbar, 'open_url', 'Open model from a url', [], () => {
-            this.dialog = ShowOpenUrlDialog ((urls) => {
+            ShowOpenUrlDialog ((urls) => {
                 if (urls.length > 0) {
                     this.hashHandler.SetModelFilesToHash (urls);
                 }
@@ -577,15 +569,12 @@ export class Website
             let exportDialog = new ExportDialog ({
                 isMeshVisible : (meshInstanceId) => {
                     return this.navigator.IsMeshVisible (meshInstanceId);
-                },
-                onDialog : (dialog) => {
-                    this.dialog = dialog;
                 }
             });
-            exportDialog.Show (this.model, this.viewer);
+            exportDialog.Open (this.model, this.viewer);
         });
         AddButton (this.toolbar, 'share', 'Share model', ['only_full_width', 'only_on_model'], () => {
-            this.dialog = ShowSharingDialog (importer.GetFileList (), this.settings, this.viewer.GetCamera ());
+            ShowSharingDialog (importer.GetFileList (), this.settings, this.viewer.GetCamera ());
         });
 
         this.parameters.fileInput.addEventListener ('change', (ev) => {

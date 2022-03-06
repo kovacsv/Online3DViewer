@@ -32,7 +32,7 @@ export class NavigatorPopupButton
     Clear ()
     {
         if (this.popup !== null) {
-            this.popup.Hide ();
+            this.popup.Close ();
             this.popup = null;
         }
     }

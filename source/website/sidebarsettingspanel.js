@@ -2,7 +2,7 @@ import { Color, ColorToHexString } from '../engine/model/color.js';
 import { AddDiv, AddDomElement, AddRangeSlider, AddToggle, AddCheckbox, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToElementTopLeft } from './dialogs.js';
 import { FeatureSet } from './featureset.js';
-import { PopupDialog } from './modal.js';
+import { PopupDialog } from './dialog.js';
 import { Settings, Theme } from './settings.js';
 import { SidebarPanel } from './sidebarpanel.js';
 import { AddSvgIconElement } from './utils.js';
@@ -106,7 +106,7 @@ class EnvironmentMapPopup extends PopupDialog
         });
 
         contentDiv.classList.add ('sidebar');
-        this.Show ();
+        this.Open ();
     }
 }
 
@@ -243,7 +243,7 @@ class SettingsModelDisplaySection extends SettingsSection
     Clear ()
     {
         if (this.environmentMapPopup !== null) {
-            this.environmentMapPopup.Hide ();
+            this.environmentMapPopup.Close ();
             this.environmentMapPopup = null;
         }
 

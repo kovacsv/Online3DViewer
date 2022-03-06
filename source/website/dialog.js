@@ -1,7 +1,29 @@
 import { AddDiv, CreateDiv } from '../engine/viewer/domutils.js';
 import { AddSvgIconElement, CreateInlineColorCircle, IsHoverEnabled } from './utils.js';
 
-export class Modal
+let currentDialog = null;
+
+export function CloseAllDialogs ()
+{
+    if (currentDialog === null) {
+        return;
+    }
+    currentDialog.Close ();
+    currentDialog = null;
+}
+
+function OnCloseDialog ()
+{
+    currentDialog = null;
+}
+
+function OnOpenDialog (dialog)
+{
+    CloseAllDialogs ();
+    currentDialog = dialog;
+}
+
+class Dialog
 {
     constructor ()
     {
@@ -40,6 +62,12 @@ export class Modal
 
     Open ()
     {
+        if (this.isOpen) {
+            return;
+        }
+
+        OnOpenDialog (this);
+
         this.overlayDiv = AddDiv (document.body, 'ov_modal_overlay');
         document.body.appendChild (this.modalDiv);
 
@@ -69,6 +97,8 @@ export class Modal
             return;
         }
 
+        OnCloseDialog ();
+
         window.removeEventListener ('resize', this.resizeHandler);
         if (this.closeHandler !== null) {
             this.closeHandler ();
@@ -80,11 +110,6 @@ export class Modal
         this.overlayDiv = null;
         this.resizeHandler = null;
         this.isOpen = false;
-    }
-
-    IsOpen ()
-    {
-        return this.isOpen;
     }
 
     Resize ()
@@ -103,56 +128,18 @@ export class Modal
     }
 }
 
-export class Dialog
-{
-    constructor ()
-    {
-        this.modal = new Modal ();
-    }
-
-    GetContentDiv ()
-    {
-        return this.modal.GetContentDiv ();
-    }
-
-    SetCloseable (closeable)
-    {
-        this.modal.SetCloseable (closeable);
-    }
-
-    SetCloseHandler (closeHandler)
-    {
-        this.modal.SetCloseHandler (closeHandler);
-    }
-
-    SetPositionCalculator (positionCalculator)
-    {
-        this.modal.SetPositionCalculator (positionCalculator);
-    }
-
-    Show ()
-    {
-        this.modal.Open ();
-    }
-
-    Hide ()
-    {
-        this.modal.Close ();
-    }
-}
-
 export class ProgressDialog extends Dialog
 {
     constructor ()
     {
         super ();
-        this.modal.SetCloseable (false);
+        this.SetCloseable (false);
         this.textDiv = null;
     }
 
     Init (text)
     {
-        let contentDiv = this.modal.GetContentDiv ();
+        let contentDiv = this.GetContentDiv ();
         contentDiv.classList.add ('ov_progress');
 
         AddDiv (contentDiv, 'ov_progress_img', '<svg><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>');
@@ -186,7 +173,7 @@ export class ButtonDialog extends Dialog
             });
         }
 
-        let contentDiv = this.modal.GetContentDiv ();
+        let contentDiv = this.GetContentDiv ();
         contentDiv.classList.add ('ov_dialog');
 
         AddDiv (contentDiv, 'ov_dialog_title', title);
@@ -210,9 +197,9 @@ export class PopupDialog extends Dialog
 
     Init (positionCalculator)
     {
-        let contentDiv = this.modal.GetContentDiv ();
+        let contentDiv = this.GetContentDiv ();
         contentDiv.classList.add ('ov_popup');
-        this.modal.SetPositionCalculator (positionCalculator);
+        this.SetPositionCalculator (positionCalculator);
         return contentDiv;
     }
 }
