@@ -63,7 +63,7 @@ import { ModelToThreeConversionParams, ModelToThreeConversionOutput, ThreeConver
 import { ThreeModelLoader } from './threejs/threemodelloader.js';
 import { HasHighpDriverIssue, GetShadingType, ConvertThreeColorToColor, ConvertColorToThreeColor, ConvertThreeGeometryToMesh, ShadingType } from './threejs/threeutils.js';
 import { Camera, CameraIsEqual3D } from './viewer/camera.js';
-import { GetIntegerFromStyle, GetDomElementExternalWidth, GetDomElementExternalHeight, GetDomElementInnerDimensions, GetDomElementClientCoordinates, CreateDomElement, AddDomElement, AddDiv, ClearDomElement, InsertDomElementBefore, InsertDomElementAfter, ShowDomElement, IsDomElementVisible, SetDomElementWidth, SetDomElementHeight, GetDomElementOuterWidth, GetDomElementOuterHeight, SetDomElementOuterWidth, SetDomElementOuterHeight, AddCheckbox, AddRangeSlider, AddSelect, AddToggle, CreateDiv } from './viewer/domutils.js';
+import { GetIntegerFromStyle, GetDomElementExternalWidth, GetDomElementExternalHeight, GetDomElementInnerDimensions, GetDomElementClientCoordinates, CreateDomElement, AddDomElement, AddDiv, ClearDomElement, InsertDomElementBefore, InsertDomElementAfter, ShowDomElement, IsDomElementVisible, SetDomElementWidth, SetDomElementHeight, GetDomElementOuterWidth, GetDomElementOuterHeight, SetDomElementOuterWidth, SetDomElementOuterHeight, AddCheckbox, AddRadioButton, AddRangeSlider, AddSelect, AddToggle, CreateDiv } from './viewer/domutils.js';
 import { EmbeddedViewer, Init3DViewerElement, Init3DViewerElements } from './viewer/embeddedviewer.js';
 import { MouseInteraction, TouchInteraction, ClickDetector, Navigation, NavigationType } from './viewer/navigation.js';
 import { UpVector, ShadingModel, Viewer, GetDefaultCamera, TraverseThreeObject, GetShadingTypeOfObject } from './viewer/viewer.js';
@@ -294,6 +294,7 @@ export {
     SetDomElementOuterWidth,
     SetDomElementOuterHeight,
     AddCheckbox,
+    AddRadioButton,
     AddRangeSlider,
     AddSelect,
     AddToggle,
