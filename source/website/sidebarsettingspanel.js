@@ -1,5 +1,6 @@
 import { Color, ColorToHexString } from '../engine/model/color.js';
-import { AddDiv, AddDomElement, AddRangeSlider, AddToggle, AddCheckbox, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
+import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
+import { AddRangeSlider, AddToggle, AddCheckbox } from '../website/utils.js';
 import { CalculatePopupPositionToElementTopLeft } from './dialogs.js';
 import { FeatureSet } from './featureset.js';
 import { PopupDialog } from './dialog.js';

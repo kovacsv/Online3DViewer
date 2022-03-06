@@ -1,5 +1,6 @@
 import { FileSource } from '../engine/io/fileutils.js';
-import { AddDiv, AddDomElement, AddCheckbox } from '../engine/viewer/domutils.js';
+import { AddDiv, AddDomElement } from '../engine/viewer/domutils.js';
+import { AddCheckbox } from '../website/utils.js';
 import { CreateUrlBuilder } from '../engine/parameters/parameterlist.js';
 import { ShowMessageDialog } from './dialogs.js';
 import { ButtonDialog } from './dialog.js';
