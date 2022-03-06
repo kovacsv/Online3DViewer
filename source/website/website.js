@@ -203,7 +203,6 @@ export class Website
     {
         if (this.measureTool.IsActive ()) {
             this.measureTool.MouseMove (mouseCoordinates);
-            return;
         }
     }
 

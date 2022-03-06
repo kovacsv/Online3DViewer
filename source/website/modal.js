@@ -6,6 +6,10 @@ export class Modal
     constructor ()
     {
         this.modalDiv = CreateDiv ('ov_modal');
+        this.modalDiv.addEventListener ('mousemove', (ev) => {
+            ev.stopPropagation ();
+        });
+
         this.overlayDiv = null;
         this.resizeHandler = null;
         this.positionCalculator = null;
@@ -45,6 +49,9 @@ export class Modal
             this.overlayDiv.addEventListener ('click', (ev) => {
                 ev.preventDefault ();
                 this.Close ();
+            });
+            this.overlayDiv.addEventListener ('mousemove', (ev) => {
+                ev.stopPropagation ();
             });
             this.overlayDiv.addEventListener ('contextmenu', (ev) => {
                 ev.preventDefault ();

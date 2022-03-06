@@ -194,6 +194,10 @@ export class ViewerGeometry
             return null;
         }
 
+        if (mouseCoords.x < 0.0 || mouseCoords.x > width || mouseCoords.y < 0.0 || mouseCoords.y > height) {
+            return null;
+        }
+
         let raycaster = new THREE.Raycaster ();
         let mousePos = new THREE.Vector2 ();
         mousePos.x = (mouseCoords.x / width) * 2 - 1;
