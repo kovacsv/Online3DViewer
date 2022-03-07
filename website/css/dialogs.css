@@ -258,8 +258,9 @@ div.ov_snapshot_dialog_left
 img.ov_snapshot_dialog_preview
 {
 	background: var(--ov_border_color);
-	width: 250px;
-	height: 140px;
+	border: 1px solid var(--ov_border_color);
+	width: 240px;
+	height: 135px;
 	object-fit: contain;
 	float: right;
 }

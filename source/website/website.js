@@ -11,7 +11,7 @@ import { Sidebar } from './sidebar.js';
 import { ThemeHandler } from './themehandler.js';
 import { ThreeModelLoaderUI } from './threemodelloaderui.js';
 import { Toolbar } from './toolbar.js';
-import { ShowExportDialog } from './exportdialog.js';
+import { ShowExportDialog, ShowSnapshotDialog } from './exportdialog.js';
 import { AddSmallWidthChangeEventListener, GetFilesFromDataTransfer, IsSmallWidth } from './utils.js';
 import { ShowOpenUrlDialog } from './openurldialog.js';
 import { ShowSharingDialog } from './sharingdialog.js';
@@ -565,6 +565,9 @@ export class Website
         });
         this.measureTool.SetButton (measureToolButton);
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
+        AddButton (this.toolbar, 'snapshot', 'Create snapshot', ['only_full_width', 'only_on_model'], () => {
+            ShowSnapshotDialog (this.viewer);
+        });
         AddButton (this.toolbar, 'export', 'Export model', ['only_full_width', 'only_on_model'], () => {
             ShowExportDialog (this.model, this.viewer, {
                 isMeshVisible : (meshInstanceId) => {

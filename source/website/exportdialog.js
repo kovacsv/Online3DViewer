@@ -13,22 +13,15 @@ import { DownloadArrayBufferAsFile, DownloadUrlAsFile } from './utils.js';
 import { CookieGetStringVal, CookieSetStringVal } from './cookiehandler.js';
 import { HandleEvent } from './eventhandler.js';
 
-const ExportType =
+class ModelExporterUI
 {
-    Model : 0,
-    Image : 1
-};
-
-class ExporterUI
-{
-    constructor (name)
+    constructor (name, format, extension)
     {
         this.name = name;
-    }
-
-    GetType ()
-    {
-        return null;
+        this.format = format;
+        this.extension = extension;
+        this.visibleOnlySelect = null;
+        this.rotationSelect = null;
     }
 
     GetName ()
@@ -38,38 +31,16 @@ class ExporterUI
 
     GenerateParametersUI (parametersDiv)
     {
+        function AddSelectItem (parametersDiv, name, values, defaultIndex)
+        {
+            let parameterRow = AddDiv (parametersDiv, 'ov_dialog_row');
+            AddDiv (parameterRow, 'ov_dialog_row_name', name);
+            let parameterValueDiv = AddDiv (parameterRow, 'ov_dialog_row_value');
+            return AddSelect (parameterValueDiv, values, defaultIndex);
+        }
 
-    }
-
-    AddSelectItem (parametersDiv, name, values, defaultIndex)
-    {
-        let parameterRow = AddDiv (parametersDiv, 'ov_dialog_row');
-        AddDiv (parameterRow, 'ov_dialog_row_name', name);
-        let parameterValueDiv = AddDiv (parameterRow, 'ov_dialog_row_value');
-        return AddSelect (parameterValueDiv, values, defaultIndex);
-    }
-}
-
-class ModelExporterUI extends ExporterUI
-{
-    constructor (name, format, extension)
-    {
-        super (name);
-        this.format = format;
-        this.extension = extension;
-        this.visibleOnlySelect = null;
-        this.rotationSelect = null;
-    }
-
-    GetType ()
-    {
-        return ExportType.Model;
-    }
-
-    GenerateParametersUI (parametersDiv)
-    {
-        this.visibleOnlySelect = this.AddSelectItem (parametersDiv, 'Scope', ['Entire Model', 'Visible Only'], 1);
-        this.rotationSelect = this.AddSelectItem (parametersDiv, 'Rotation', ['No Rotation', '-90 Degrees', '90 Degrees'], 0);
+        this.visibleOnlySelect = AddSelectItem (parametersDiv, 'Scope', ['Entire Model', 'Visible Only'], 1);
+        this.rotationSelect = AddSelectItem (parametersDiv, 'Rotation', ['No Rotation', '-90 Degrees', '90 Degrees'], 0);
     }
 
     ExportModel (model, callbacks)
@@ -136,45 +107,6 @@ class ModelExporterUI extends ExporterUI
     }
 }
 
-class ImageExporterUI extends ExporterUI
-{
-    constructor (name, extension)
-    {
-        super (name);
-        this.extension = extension;
-        this.sizeSelect = null;
-        this.sizes = [
-            { name : 'Current size', value : null },
-            { name : '1280 x 720', value : [1280, 720] },
-            { name : '1920 x 1080', value : [1920, 1080] }
-        ];
-    }
-
-    GetType ()
-    {
-        return ExportType.Image;
-    }
-
-    GenerateParametersUI (parametersDiv)
-    {
-        let sizeNames = this.sizes.map (size => size.name);
-        this.sizeSelect = this.AddSelectItem (parametersDiv, 'Image size', sizeNames, 1);
-    }
-
-    ExportImage (viewer)
-    {
-        let selectedSize = this.sizes[this.sizeSelect.selectedIndex];
-        let url = null;
-        if (selectedSize.value === null) {
-            let size = viewer.GetImageSize ();
-            url = viewer.GetImageAsDataUrl (size.width, size.height);
-        } else {
-            url = viewer.GetImageAsDataUrl (selectedSize.value[0], selectedSize.value[1]);
-        }
-        DownloadUrlAsFile (url, 'model.' + this.extension);
-    }
-}
-
 class ExportDialog
 {
     constructor (callbacks)
@@ -192,8 +124,7 @@ class ExportDialog
             new ModelExporterUI ('glTF Text (.gltf)', FileFormat.Text, 'gltf'),
             new ModelExporterUI ('glTF Binary (.glb)', FileFormat.Binary, 'glb'),
             new ModelExporterUI ('Object File Format Text (.off)', FileFormat.Text, 'off'),
-            new ModelExporterUI ('Rhinoceros 3D (.3dm)', FileFormat.Binary, '3dm'),
-            new ImageExporterUI ('PNG Image (.png)', 'png')
+            new ModelExporterUI ('Rhinoceros 3D (.3dm)', FileFormat.Binary, '3dm')
         ];
     }
 
@@ -246,16 +177,12 @@ class ExportDialog
 
     ExportFormat (model, viewer)
     {
-        if (this.selectedExporter.GetType () === ExportType.Model) {
-            this.selectedExporter.ExportModel (model, {
-                isMeshVisible : (meshInstanceId) => {
-                    return this.callbacks.isMeshVisible (meshInstanceId);
-                }
-            });
-            HandleEvent ('model_exported', this.selectedExporter.GetName ());
-        } else if (this.selectedExporter.GetType () === ExportType.Image) {
-            this.selectedExporter.ExportImage (viewer);
-        }
+        this.selectedExporter.ExportModel (model, {
+            isMeshVisible : (meshInstanceId) => {
+                return this.callbacks.isMeshVisible (meshInstanceId);
+            }
+        });
+        HandleEvent ('model_exported', this.selectedExporter.GetName ());
     }
 }
 
@@ -318,6 +245,7 @@ export function ShowSnapshotDialog (viewer)
             name : 'Create',
             onClick () {
                 dialog.Close ();
+                HandleEvent ('snapshot_created', sizes[selectedIndex].name);
                 let url = GetImageUrl (viewer, sizes[selectedIndex]);
                 DownloadUrlAsFile (url, 'model.png');
             }
@@ -327,7 +255,7 @@ export function ShowSnapshotDialog (viewer)
     let optionsDiv = AddDiv (contentDiv, 'ov_snapshot_dialog_left');
     let previewImage = CreateDomElement ('img', 'ov_snapshot_dialog_preview');
 
-    let lastSnapshotSizeName = CookieGetStringVal ('ov_last_snapshot_size', sizes[0].name);
+    let lastSnapshotSizeName = CookieGetStringVal ('ov_last_snapshot_size', sizes[1].name);
     for (let i = 0; i < sizes.length; i++) {
         if (lastSnapshotSizeName === sizes[i].name) {
             selectedIndex = i;
