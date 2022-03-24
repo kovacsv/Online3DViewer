@@ -3,8 +3,6 @@ import sys
 import shutil
 import json
 
-from lib import tools_lib as Tools
-
 pickrFileMap = [
     [os.path.join ('@simonwep', 'pickr', 'LICENSE'), os.path.join ('pickr.license.md')],
     [os.path.join ('@simonwep', 'pickr', 'dist', 'pickr.es5.min.js'), os.path.join ('pickr.es5.min.js')],
@@ -80,17 +78,7 @@ def Main (argv):
     UpdateModule (rhino3dmFileMap, nodeModulesDir, libsDir)
     UpdateModule (fflateFileMap, nodeModulesDir, libsDir)
     UpdateModule (webIfcFileMap, nodeModulesDir, libsDir)
-
     UpdateModule (occtImportJsFileMap, nodeModulesDir, libsDir)
-    occtImportJsVersion = package['dependencies']['occt-import-js']
-    occtWorkerFile = os.path.join (libsDir, 'loaders', 'occt-import-js-worker.js')
-    occtWorkerCdnFile = os.path.join (libsDir, 'loaders', 'occt-import-js-worker-cdn.js')
-    shutil.copy (occtWorkerFile, occtWorkerCdnFile)
-    Tools.ReplaceStringInFile (
-        occtWorkerCdnFile,
-        'occt-import-js.js',
-        'https://cdn.jsdelivr.net/npm/occt-import-js@' + occtImportJsVersion + '/dist/occt-import-js.js'
-    )
 
     return 0
 
