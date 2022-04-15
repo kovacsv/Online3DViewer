@@ -116,3 +116,10 @@ export function TransformFileHostUrls (urls)
         }
     }
 }
+
+export function IsUrl (str)
+{
+	const regex = /^https?:\/\/\S+$/g;
+	const match = str.match (regex);
+	return match !== null;
+}

@@ -42,6 +42,20 @@ describe ('File Utils', function () {
         assert.deepStrictEqual (GetLines ('apple\r\n'), ['apple']);
         assert.deepStrictEqual (GetLines ('\r\napple\r\n'), ['apple']);
     });
+
+    it ('Is URL', function () {
+        assert.ok (!OV.IsUrl (''));
+        assert.ok (!OV.IsUrl ('google'));
+        assert.ok (!OV.IsUrl ('google.com'));
+        assert.ok (!OV.IsUrl ('the http://google.com'));
+        assert.ok (!OV.IsUrl ('http://google.com the'));
+        assert.ok (OV.IsUrl ('http://google.com'));
+        assert.ok (OV.IsUrl ('https://google.com'));
+        assert.ok (OV.IsUrl ('http://www.google.com'));
+        assert.ok (OV.IsUrl ('https://www.google.com'));
+        assert.ok (OV.IsUrl ('https://www.google.com#param1=a&param2=b'));
+        assert.ok (OV.IsUrl ('https://www.google.com?param1=a&param2=a'));
+    });
 });
 
 }

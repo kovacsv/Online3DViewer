@@ -40,7 +40,7 @@ import { BinaryReader } from './io/binaryreader.js';
 import { BinaryWriter } from './io/binarywriter.js';
 import { ArrayBufferToUtf8String, ArrayBufferToAsciiString, AsciiStringToArrayBuffer, Utf8StringToArrayBuffer, Base64DataURIToArrayBuffer, GetFileExtensionFromMimeType, CreateObjectUrl, CreateObjectUrlWithMimeType, RevokeObjectUrl } from './io/bufferutils.js';
 import { SetExternalLibLocation, GetExternalLibPath, LoadExternalLibrary } from './io/externallibs.js';
-import { GetFileName, GetFileExtension, RequestUrl, ReadFile, TransformFileHostUrls, FileSource, FileFormat } from './io/fileutils.js';
+import { GetFileName, GetFileExtension, RequestUrl, ReadFile, TransformFileHostUrls, IsUrl, FileSource, FileFormat } from './io/fileutils.js';
 import { TextWriter } from './io/textwriter.js';
 import { Color, ColorComponentFromFloat, ColorFromFloatComponents, SRGBToLinear, LinearToSRGB, IntegerToHexString, ColorToHexString, HexStringToColor, ArrayToColor, ColorIsEqual } from './model/color.js';
 import { GeneratorParams, Generator, GeneratorHelper, GenerateCuboid, GenerateCone, GenerateCylinder, GenerateSphere, GeneratePlatonicSolid } from './model/generator.js';
@@ -188,6 +188,7 @@ export {
     RequestUrl,
     ReadFile,
     TransformFileHostUrls,
+    IsUrl,
     FileSource,
     FileFormat,
     TextWriter,
