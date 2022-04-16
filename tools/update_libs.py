@@ -1,7 +1,6 @@
 import os
 import sys
 import shutil
-import json
 
 pickrFileMap = [
     [os.path.join ('@simonwep', 'pickr', 'LICENSE'), os.path.join ('pickr.license.md')],
@@ -67,10 +66,6 @@ def Main (argv):
 
     nodeModulesDir = os.path.join (rootDir, 'node_modules')
     libsDir = os.path.join (rootDir, 'libs')
-
-    package = None
-    with open (os.path.join (rootDir, 'package.json')) as packageJson:
-        package = json.load (packageJson)
 
     UpdateModule (pickrFileMap, nodeModulesDir, libsDir)
     UpdateModule (threeJsFileMap, nodeModulesDir, libsDir)

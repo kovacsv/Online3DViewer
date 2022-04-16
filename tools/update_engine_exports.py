@@ -1,6 +1,5 @@
 import os
 import sys
-import json
 import re
 
 from lib import tools_lib as Tools
