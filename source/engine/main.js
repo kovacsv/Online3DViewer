@@ -3,6 +3,7 @@ import { TaskRunner, RunTaskAsync, RunTasks, RunTasksBatch, WaitWhile } from './
 import { Exporter } from './export/exporter.js';
 import { Exporter3dm } from './export/exporter3dm.js';
 import { ExportedFile, ExporterBase } from './export/exporterbase.js';
+import { ExporterBim } from './export/exporterbim.js';
 import { ExporterGltf } from './export/exportergltf.js';
 import { ExporterSettings, ExporterModel } from './export/exportermodel.js';
 import { ExporterObj } from './export/exporterobj.js';
@@ -54,7 +55,7 @@ import { FinalizeModel, CheckModel } from './model/modelfinalization.js';
 import { IsModelEmpty, GetBoundingBox, GetTopology, IsSolid, HasDefaultMaterial, ReplaceDefaultMaterialColor } from './model/modelutils.js';
 import { Node, NodeType } from './model/node.js';
 import { Object3D, ModelObject3D } from './model/object.js';
-import { Property, PropertyGroup, PropertyType } from './model/property.js';
+import { Property, PropertyGroup, PropertyToString, PropertyType } from './model/property.js';
 import { GetTriangleArea, GetTetrahedronSignedVolume, CalculateVolume, CalculateSurfaceArea } from './model/quantities.js';
 import { TopologyVertex, TopologyEdge, TopologyTriangleEdge, TopologyTriangle, Topology } from './model/topology.js';
 import { Triangle } from './model/triangle.js';
@@ -82,6 +83,7 @@ export {
     Exporter3dm,
     ExportedFile,
     ExporterBase,
+    ExporterBim,
     ExporterGltf,
     ExporterSettings,
     ExporterModel,
@@ -244,6 +246,7 @@ export {
     ModelObject3D,
     Property,
     PropertyGroup,
+    PropertyToString,
     PropertyType,
     GetTriangleArea,
     GetTetrahedronSignedVolume,

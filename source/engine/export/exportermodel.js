@@ -23,6 +23,11 @@ export class ExporterModel
         this.settings = settings || new ExporterSettings ();
     }
 
+    GetModel ()
+    {
+        return this.model;
+    }
+
     MaterialCount ()
     {
         return this.model.MaterialCount ();

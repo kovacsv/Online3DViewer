@@ -133,16 +133,20 @@ function ExportImport (model, format, extension, onReady)
     });
 }
 
+function CheckModelBounds (model, model2)
+{
+    let modelBounds = OV.GetBoundingBox (model);
+    let model2Bounds = OV.GetBoundingBox (model2);
+    assert.ok (OV.CoordIsEqual3D (modelBounds.min, model2Bounds.min));
+    assert.ok (OV.CoordIsEqual3D (modelBounds.max, model2Bounds.max));
+}
+
 function CheckSingleMeshModel (model, model2)
 {
     assert.strictEqual (model2.MaterialCount (), 1);
     assert.strictEqual (model2.MeshInstanceCount (), 1);
     assert.strictEqual (model.TriangleCount (), model2.TriangleCount ());
-
-    let modelBounds = OV.GetBoundingBox (model);
-    let model2Bounds = OV.GetBoundingBox (model2);
-    assert.ok (OV.CoordIsEqual3D (modelBounds.min, model2Bounds.min));
-    assert.ok (OV.CoordIsEqual3D (modelBounds.max, model2Bounds.max));
+    CheckModelBounds (model, model2);
 }
 
 function CheckModel (model, model2)
@@ -150,11 +154,7 @@ function CheckModel (model, model2)
     assert.strictEqual (model.MaterialCount (), model2.MaterialCount ());
     assert.strictEqual (model.MeshInstanceCount (), model2.MeshInstanceCount ());
     assert.strictEqual (model.TriangleCount (), model2.TriangleCount ());
-
-    let modelBounds = OV.GetBoundingBox (model);
-    let model2Bounds = OV.GetBoundingBox (model2);
-    assert.ok (OV.CoordIsEqual3D (modelBounds.min, model2Bounds.min));
-    assert.ok (OV.CoordIsEqual3D (modelBounds.max, model2Bounds.max));
+    CheckModelBounds (model, model2);
 }
 
 describe ('Export-Import Test', function () {
@@ -218,6 +218,17 @@ describe ('Export-Import Test', function () {
         let model = CreateTestModel ();
         ExportImport (model, OV.FileFormat.Text, 'off', (model2) => {
             CheckSingleMeshModel (model, model2);
+            done ();
+        });
+    });
+
+    it ('Export-Import Bim', function (done) {
+        let model = CreateTestModel ();
+        ExportImport (model, OV.FileFormat.Text, 'bim', (model2) => {
+            assert.strictEqual (model2.MaterialCount (), 2);
+            assert.strictEqual (model.MeshInstanceCount (), model2.MeshInstanceCount ());
+            assert.strictEqual (model.TriangleCount (), model2.TriangleCount ());
+            CheckModelBounds (model, model2);
             done ();
         });
     });

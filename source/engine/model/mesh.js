@@ -141,6 +141,7 @@ export class Mesh extends ModelObject3D
         let cloned = new Mesh ();
 
         cloned.SetName (this.GetName ());
+        this.CloneProperties (cloned);
 
         for (let i = 0; i < this.VertexCount (); i++) {
             let vertex = this.GetVertex (i);

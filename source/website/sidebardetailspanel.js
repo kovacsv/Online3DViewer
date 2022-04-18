@@ -2,7 +2,7 @@ import { RunTaskAsync } from '../engine/core/taskrunner.js';
 import { SubCoord3D } from '../engine/geometry/coord3d.js';
 import { GetBoundingBox, IsSolid } from '../engine/model/modelutils.js';
 import { CalculateVolume, CalculateSurfaceArea } from '../engine/model/quantities.js';
-import { Property, PropertyType } from '../engine/model/property.js';
+import { Property, PropertyToString, PropertyType } from '../engine/model/property.js';
 import { AddDiv, AddDomElement, ClearDomElement } from '../engine/viewer/domutils.js';
 import { SidebarPanel } from './sidebarpanel.js';
 import { CreateInlineColorCircle } from './utils.js';
@@ -164,24 +164,15 @@ export class SidebarDetailsPanel extends SidebarPanel
                 valueHtml = '<a target="_blank" href="' + property.value + '">' + property.value + '</a>';
                 valueTitle = property.value;
             } else {
-                valueHtml = property.value;
+                valueHtml = PropertyToString (property);
             }
-        } else if (property.type === PropertyType.Integer) {
-            valueHtml = property.value.toLocaleString ();
-        } else if (property.type === PropertyType.Number) {
-            valueHtml = property.value.toLocaleString (undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            });
-        } else if (property.type === PropertyType.Boolean) {
-            valueHtml = property.value ? 'True' : 'False';
-        } else if (property.type === PropertyType.Percent) {
-            valueHtml = parseInt (property.value * 100, 10).toString () + '%';
         } else if (property.type === PropertyType.Color) {
             let hexString = '#' + ColorToHexString (property.value);
             let colorCircle = CreateInlineColorCircle (property.value);
             targetDiv.appendChild (colorCircle);
             AddDomElement (targetDiv, 'span', null, hexString);
+        } else {
+            valueHtml = PropertyToString (property);
         }
         if (valueHtml !== null) {
             targetDiv.innerHTML = valueHtml;

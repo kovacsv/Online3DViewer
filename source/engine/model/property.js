@@ -1,3 +1,5 @@
+import { ColorToHexString } from './color.js';
+
 export const PropertyType =
 {
     Text : 1,
@@ -15,6 +17,16 @@ export class Property
         this.type = type;
         this.name = name;
         this.value = value;
+    }
+
+    Clone ()
+    {
+        const clonable = (this.type === PropertyType.Color);
+        if (clonable) {
+            return new Property (this.type, this.name, this.value.Clone ());
+        } else {
+            return new Property (this.type, this.name, this.value);
+        }
     }
 }
 
@@ -40,4 +52,34 @@ export class PropertyGroup
     {
         return this.properties[index];
     }
+
+    Clone ()
+    {
+        let cloned = new PropertyGroup (this.name);
+        for (let property of this.properties) {
+            cloned.AddProperty (property.Clone ());
+        }
+        return cloned;
+    }
+}
+
+export function PropertyToString (property)
+{
+    if (property.type === PropertyType.Text) {
+        return property.value;
+    } else if (property.type === PropertyType.Integer) {
+        return property.value.toLocaleString ();
+    } else if (property.type === PropertyType.Number) {
+        return property.value.toLocaleString (undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    } else if (property.type === PropertyType.Boolean) {
+        return property.value ? 'True' : 'False';
+    } else if (property.type === PropertyType.Percent) {
+        return parseInt (property.value * 100, 10).toString () + '%';
+    } else if (property.type === PropertyType.Color) {
+        return '#' + ColorToHexString (property.value);
+    }
+    return null;
 }

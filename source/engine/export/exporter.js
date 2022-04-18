@@ -1,4 +1,5 @@
 import { Exporter3dm } from './exporter3dm.js';
+import { ExporterBim } from './exporterbim.js';
 import { ExporterGltf } from './exportergltf.js';
 import { ExporterModel } from './exportermodel.js';
 import { ExporterObj } from './exporterobj.js';
@@ -16,7 +17,8 @@ export class Exporter
             new ExporterPly (),
             new ExporterOff (),
             new ExporterGltf (),
-            new Exporter3dm ()
+            new Exporter3dm (),
+            new ExporterBim ()
         ];
     }
 

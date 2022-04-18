@@ -80,4 +80,11 @@ export class ModelObject3D extends Object3D
     {
         return this.propertyGroups[index];
     }
+
+    CloneProperties (target)
+    {
+        for (let propertyGroup of this.propertyGroups) {
+            target.AddPropertyGroup (propertyGroup.Clone ());
+        }
+    }
 }
