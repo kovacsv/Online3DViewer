@@ -13,6 +13,19 @@ import { DownloadArrayBufferAsFile } from './utils.js';
 import { CookieGetStringVal, CookieSetStringVal } from './cookiehandler.js';
 import { HandleEvent } from './eventhandler.js';
 
+function AddSelectWithCookieSave (parentElement, cookieKey, options, defaultSelectedIndex, onChange)
+{
+    let previousOption = CookieGetStringVal (cookieKey, null);
+    let previousOptionIndex = options.indexOf (previousOption);
+    let selectedIndex = (previousOptionIndex !== -1 ? previousOptionIndex : defaultSelectedIndex);
+    return AddSelect (parentElement, options, selectedIndex, (newSelectedIndex) => {
+        CookieSetStringVal (cookieKey, options[newSelectedIndex]);
+        if (onChange) {
+            onChange (newSelectedIndex);
+        }
+    });
+}
+
 class ModelExporterUI
 {
     constructor (name, format, extension)
@@ -31,16 +44,16 @@ class ModelExporterUI
 
     GenerateParametersUI (parametersDiv)
     {
-        function AddSelectItem (parametersDiv, name, values, defaultIndex)
+        function AddSelectItem (parametersDiv, name, cookieKey, values, defaultIndex)
         {
             let parameterRow = AddDiv (parametersDiv, 'ov_dialog_row');
             AddDiv (parameterRow, 'ov_dialog_row_name', name);
             let parameterValueDiv = AddDiv (parameterRow, 'ov_dialog_row_value');
-            return AddSelect (parameterValueDiv, values, defaultIndex);
+            return AddSelectWithCookieSave (parameterValueDiv, cookieKey, values, defaultIndex);
         }
 
-        this.visibleOnlySelect = AddSelectItem (parametersDiv, 'Scope', ['Entire Model', 'Visible Only'], 1);
-        this.rotationSelect = AddSelectItem (parametersDiv, 'Rotation', ['No Rotation', '-90 Degrees', '90 Degrees'], 0);
+        this.visibleOnlySelect = AddSelectItem (parametersDiv, 'Scope', 'ov_last_scope', ['Entire Model', 'Visible Only'], 1);
+        this.rotationSelect = AddSelectItem (parametersDiv, 'Rotation', 'ov_last_rotation', ['No Rotation', '-90 Degrees', '90 Degrees'], 0);
     }
 
     ExportModel (model, callbacks)
@@ -124,7 +137,8 @@ class ExportDialog
             new ModelExporterUI ('glTF Text (.gltf)', FileFormat.Text, 'gltf'),
             new ModelExporterUI ('glTF Binary (.glb)', FileFormat.Binary, 'glb'),
             new ModelExporterUI ('Object File Format Text (.off)', FileFormat.Text, 'off'),
-            new ModelExporterUI ('Rhinoceros 3D (.3dm)', FileFormat.Binary, '3dm')
+            new ModelExporterUI ('Rhinoceros 3D (.3dm)', FileFormat.Binary, '3dm'),
+            new ModelExporterUI ('Dotbim (.bim)', FileFormat.Text, 'bim')
         ];
     }
 
@@ -154,16 +168,10 @@ class ExportDialog
         let formatRow = AddDiv (contentDiv, 'ov_dialog_row');
         this.parametersDiv = AddDiv (contentDiv);
         let formatNames = this.exporters.map (exporter => exporter.GetName ());
-        let defaultFormat = CookieGetStringVal ('ov_last_export_format', 'glTF Binary (.glb)');
-        let defaultFormatIndex = formatNames.indexOf (defaultFormat);
-        if (defaultFormatIndex === -1) {
-            defaultFormatIndex = 6;
-        }
-        AddSelect (formatRow, formatNames, defaultFormatIndex, (selectedIndex) => {
-            CookieSetStringVal ('ov_last_export_format', formatNames[selectedIndex]);
+        let formatSelector = AddSelectWithCookieSave (formatRow, 'ov_last_export_format', formatNames, 6, (selectedIndex) => {
             this.OnFormatSelected (selectedIndex);
         });
-        this.OnFormatSelected (defaultFormatIndex);
+        this.OnFormatSelected (formatSelector.selectedIndex);
 
         mainDialog.Open ();
     }
