@@ -265,6 +265,25 @@ export function GetFilesFromDataTransfer (dataTransfer, onReady)
     }
 }
 
+export function AddNumberInput (parentElement, className, onChange)
+{
+    let numberInput = AddDomElement (parentElement, 'input', className);
+    numberInput.setAttribute ('type', 'text');
+    let onChangeTimeout = null;
+    numberInput.addEventListener ('input', () => {
+        numberInput.value = numberInput.value.replace (/[^0-9]/g, '');
+        if (onChange) {
+            if (onChangeTimeout !== null) {
+                clearTimeout (onChangeTimeout);
+            }
+            onChangeTimeout = setTimeout (() => {
+                onChange (numberInput.value);
+            }, 1000);
+        }
+    });
+    return numberInput;
+}
+
 export function AddCheckbox (parentElement, id, text, isChecked, onChange)
 {
     let label = AddDomElement (parentElement, 'label');

@@ -6,6 +6,7 @@ export class ThemeHandler
         this.css = {
             '--ov_foreground_color': {},
             '--ov_background_color': {},
+            '--ov_disabled_foreground_color': {},
             '--ov_button_color': {},
             '--ov_button_hover_color': {},
             '--ov_button_text_color': {},

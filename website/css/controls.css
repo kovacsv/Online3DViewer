@@ -79,7 +79,18 @@ div.ov_tooltip
 	box-shadow: var(--ov_shadow);
 }
 
-input.ov_dialog_text
+input[type=text]
+{
+	color: var(--ov_dialog_foreground_color);
+	background: var(--ov_dialog_background_color);
+}
+
+input[type=text]:disabled
+{
+	color: var(--ov_disabled_foreground_color);
+}
+
+textarea
 {
 	color: var(--ov_dialog_foreground_color);
 	background: var(--ov_dialog_background_color);

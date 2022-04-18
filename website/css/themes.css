@@ -2,6 +2,7 @@
 {
     --ov_foreground_color: #000000;
     --ov_background_color: #ffffff;
+	--ov_disabled_foreground_color: #cccccc;
     --ov_button_color: #3393bd;
     --ov_button_hover_color: #146a8f;
     --ov_button_text_color: #ffffff;
@@ -27,6 +28,7 @@
 
     --ov_foreground_color_dark: #fafafa;
     --ov_background_color_dark: #2a2b2e;
+	--ov_disabled_foreground_color_dark: #888888;
     --ov_button_color_dark: #3393bd;
     --ov_button_hover_color_dark: #146a8f;
     --ov_button_text_color_dark: #ffffff;

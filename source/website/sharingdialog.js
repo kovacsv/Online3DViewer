@@ -22,7 +22,8 @@ export function ShowSharingDialog (fileList, settings, camera)
         let copyText = 'Copy';
         let copiedText = 'Copied';
         let container = AddDiv (parentDiv, 'ov_dialog_copyable_input');
-        let input = AddDomElement (container, 'input', 'ov_dialog_text');
+        let input = AddDomElement (container, 'input', null);
+        input.setAttribute ('type', 'text');
         input.readOnly = true;
         let button = AddDiv (container, 'ov_button outline ov_dialog_copyable_input_button', copyText);
         button.addEventListener ('click', () => {
