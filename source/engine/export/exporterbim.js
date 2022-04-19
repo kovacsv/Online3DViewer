@@ -45,7 +45,19 @@ export class ExporterBim extends ExporterBase
                         g : material.color.g,
                         b : material.color.b,
                         a : ColorComponentFromFloat (material.opacity)
-                    }
+                    },
+                    vector : {
+                        x : 0.0,
+                        y : 0.0,
+                        z : 0.0
+                    },
+                    rotation : {
+                        qx: 0.0,
+                        qy: 0.0,
+                        qz: 0.0,
+                        qw: 1.0
+                    },
+                    guid : '00000000-0000-0000-0000-000000000000'
                 };
                 this.ExportProperties (mesh, bimElement);
                 bimContent.meshes.push (bimMesh);
