@@ -23,7 +23,7 @@ const GltfComponentType =
     SHORT : 5122,
     UNSIGNED_SHORT : 5123,
     UNSIGNED_INT : 5125,
-    FLOAT  : 5126
+    FLOAT : 5126
 };
 
 const GltfDataType =
@@ -69,8 +69,10 @@ function GetGltfVertexColor (color, componentType)
     function GetColorComponent (component, componentType)
     {
         let normalized = component;
-        if (componentType !== GltfComponentType.FLOAT) {
+        if (componentType === GltfComponentType.UNSIGNED_BYTE) {
             normalized /= 255.0;
+        } else if (componentType === GltfComponentType.UNSIGNED_SHORT) {
+            normalized /= 65535.0;
         }
         return ColorComponentFromFloat (LinearToSRGB (normalized));
     }

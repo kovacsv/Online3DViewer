@@ -28,8 +28,7 @@ class ModelFinalizer
 
     FinalizeMaterials (model)
     {
-        let hasVertexColors = (model.VertexColorCount () > 0);
-        if (!hasVertexColors) {
+        if (model.VertexColorCount () === 0) {
             return;
         }
 
