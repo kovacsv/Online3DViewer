@@ -4,6 +4,17 @@ import { ConvertMeshToMeshBuffer } from '../model/meshbuffer.js';
 import { PropertyToString } from '../model/property.js';
 import { ExportedFile, ExporterBase } from './exporterbase.js';
 
+function GenerateGuid ()
+{
+    // https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
+    let template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
+    return template.replace (/[xy]/g, (c) => {
+        let r = Math.random () * 16 | 0;
+        let v = (c === 'x') ? r : (r & 0x3 | 0x8);
+        return v.toString (16);
+    });
+}
+
 export class ExporterBim extends ExporterBase
 {
     constructor ()
@@ -57,7 +68,7 @@ export class ExporterBim extends ExporterBase
                         qz: 0.0,
                         qw: 1.0
                     },
-                    guid : '00000000-0000-0000-0000-000000000000'
+                    guid : GenerateGuid ()
                 };
                 this.ExportProperties (mesh, bimElement);
                 bimContent.meshes.push (bimMesh);
