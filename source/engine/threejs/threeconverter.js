@@ -304,6 +304,7 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 		}
 
 		let threeMesh = new THREE.Mesh (threeGeometry, meshThreeMaterials);
+		threeMesh.name = mesh.GetName ();
 		threeMesh.userData = {
 			originalMeshId : meshInstanceId,
 			originalMaterials : meshOriginalMaterials,
