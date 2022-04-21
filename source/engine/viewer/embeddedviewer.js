@@ -44,6 +44,8 @@ export class EmbeddedViewer
             this.viewer.SetEnvironmentMapSettings (environmentMap, backgroundIsEnvMap);
         }
 
+        this.model = null;
+
         window.addEventListener ('resize', () => {
             this.Resize ();
         });
@@ -63,6 +65,7 @@ export class EmbeddedViewer
             settings.defaultColor = this.parameters.defaultColor;
         }
 
+        this.model = null;
         let progressDiv = null;
         let loader = new ThreeModelLoader ();
         loader.LoadModel (modelUrls, FileSource.Url, settings, {
@@ -92,6 +95,11 @@ export class EmbeddedViewer
                     this.viewer.SetUpVector (Direction.Y, false);
                 }
                 this.viewer.FitSphereToWindow (boundingSphere, false);
+
+                this.model = importResult.model;
+                if (this.parameters.onModelLoaded) {
+                    this.parameters.onModelLoaded ();
+                }
             },
             onTextureLoaded : () => {
                 this.viewer.Render ();
@@ -116,6 +124,11 @@ export class EmbeddedViewer
     GetViewer ()
     {
         return this.viewer;
+    }
+
+    GetModel ()
+    {
+        return this.model;
     }
 
     Resize ()
