@@ -12,17 +12,6 @@ export default function SetGlobals ()
 
     };
 
-    var objectUrlCounter = 0;
-    global.URL = {
-        createObjectURL : function () {
-            objectUrlCounter += 1;
-            return 'ObjectUrl:' + objectUrlCounter.toString ();
-        },
-        revokeObjectURL : function () {
-
-        }
-    };
-
     global.FileObject = function (folderName, fileName, fileContent)
     {
         this.name = path.join (folderName, fileName);

@@ -15,15 +15,12 @@ function CreateTestModel ()
     material1.specular = new OV.Color (51, 51, 51);
     material1.diffuseMap = new OV.TextureMap ();
     material1.diffuseMap.name = 'textures/texture1.png';
-    material1.diffuseMap.url = 'texture1_url';
     material1.diffuseMap.buffer = new ArrayBuffer (1);
     material1.specularMap = new OV.TextureMap ();
     material1.specularMap.name = 'textures/texture2.png';
-    material1.specularMap.url = 'texture2_url';
     material1.specularMap.buffer = new ArrayBuffer (2);
     material1.bumpMap = new OV.TextureMap ();
     material1.bumpMap.name = 'textures/texture3.png';
-    material1.bumpMap.url = 'texture3_url';
     material1.bumpMap.buffer = new ArrayBuffer (3);
     model.AddMaterial (material1);
 
@@ -352,9 +349,6 @@ describe ('Exporter', function () {
                     }
                     return null;
                 },
-                getTextureBuffer (filePath) {
-                    return null;
-                },
                 onSuccess () {
                     let importedModel = importer.GetModel ();
                     assert.ok (OV.CheckModel (importedModel));
@@ -385,9 +379,6 @@ describe ('Exporter', function () {
                     return new OV.Color (0, 0, 0);
                 },
                 getFileBuffer (filePath) {
-                    return null;
-                },
-                getTextureBuffer (filePath) {
                     return null;
                 },
                 onSuccess () {

@@ -1,5 +1,6 @@
 import { RunTasksBatch } from '../core/taskrunner.js';
 import { IsEqual } from '../geometry/geometry.js';
+import { CreateObjectUrl, CreateObjectUrlWithMimeType } from '../main.js';
 import { MaterialType } from '../model/material.js';
 import { MeshInstanceId } from '../model/meshinstance.js';
 import { GetMeshType, MeshType } from '../model/meshutils.js';
@@ -18,6 +19,7 @@ export class ModelToThreeConversionOutput
 	constructor ()
 	{
 		this.defaultMaterial = null;
+		this.objectUrls = [];
 	}
 }
 
@@ -106,14 +108,21 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 			threeTexture.repeat.y = texture.scale.y;
 		}
 
-		function LoadTexture (stateHandler, threeMaterial, texture, onTextureLoaded)
+		function LoadTexture (stateHandler, threeMaterial, texture, output, onTextureLoaded)
 		{
 			if (texture === null || !texture.IsValid ()) {
 				return;
 			}
 			let loader = new THREE.TextureLoader ();
 			stateHandler.OnTextureNeeded ();
-			loader.load (texture.url,
+			let textureObjectUrl = null;
+			if (texture.mimeType !== null) {
+				textureObjectUrl = CreateObjectUrlWithMimeType (texture.buffer, texture.mimeType);
+			} else {
+				textureObjectUrl = CreateObjectUrl (texture.buffer);
+			}
+			output.objectUrls.push (textureObjectUrl);
+			loader.load (textureObjectUrl,
 				(threeTexture) => {
 					SetTextureParameters (texture, threeTexture);
 					threeMaterial.needsUpdate = true;
@@ -156,7 +165,7 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 				}
 				threeMaterial.specular = specularColor;
 				threeMaterial.shininess = material.shininess * 100.0;
-				LoadTexture (stateHandler, threeMaterial, material.specularMap, (threeTexture) => {
+				LoadTexture (stateHandler, threeMaterial, material.specularMap, output, (threeTexture) => {
 					threeMaterial.specularMap = threeTexture;
 				});
 			}
@@ -165,7 +174,7 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 			if (material.type === MaterialType.Physical) {
 				threeMaterial.metalness = material.metalness;
 				threeMaterial.roughness = material.roughness;
-				LoadTexture (stateHandler, threeMaterial, material.metalnessMap, (threeTexture) => {
+				LoadTexture (stateHandler, threeMaterial, material.metalnessMap, output, (threeTexture) => {
 					threeMaterial.metalness = 1.0;
 					threeMaterial.roughness = 1.0;
 					threeMaterial.metalnessMap = threeTexture;
@@ -177,19 +186,19 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 		let emissiveColor = ConvertColorToThreeColor (material.emissive);
 		threeMaterial.emissive = emissiveColor;
 
-		LoadTexture (stateHandler, threeMaterial, material.diffuseMap, (threeTexture) => {
+		LoadTexture (stateHandler, threeMaterial, material.diffuseMap, output, (threeTexture) => {
 			if (!material.multiplyDiffuseMap) {
 				threeMaterial.color.setRGB (1.0, 1.0, 1.0);
 			}
 			threeMaterial.map = threeTexture;
 		});
-		LoadTexture (stateHandler, threeMaterial, material.bumpMap, (threeTexture) => {
+		LoadTexture (stateHandler, threeMaterial, material.bumpMap, output, (threeTexture) => {
 			threeMaterial.bumpMap = threeTexture;
 		});
-		LoadTexture (stateHandler, threeMaterial, material.normalMap, (threeTexture) => {
+		LoadTexture (stateHandler, threeMaterial, material.normalMap, output, (threeTexture) => {
 			threeMaterial.normalMap = threeTexture;
 		});
-		LoadTexture (stateHandler, threeMaterial, material.emissiveMap, (threeTexture) => {
+		LoadTexture (stateHandler, threeMaterial, material.emissiveMap, output, (threeTexture) => {
 			threeMaterial.emissiveMap = threeTexture;
 		});
 

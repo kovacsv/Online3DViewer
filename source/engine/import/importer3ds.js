@@ -224,12 +224,9 @@ export class Importer3ds extends ImporterBase
         this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {
             if (chunkId === CHUNK3DS.MAT_TEXMAP_NAME) {
                 let textureName = this.ReadName (reader);
-                let textureBuffer = this.callbacks.getTextureBuffer (textureName);
+                let textureBuffer = this.callbacks.getFileBuffer (textureName);
                 texture.name = textureName;
-                if (textureBuffer !== null) {
-                    texture.url = textureBuffer.url;
-                    texture.buffer = textureBuffer.buffer;
-                }
+                texture.buffer = textureBuffer;
             } else if (chunkId === CHUNK3DS.MAT_TEXMAP_UOFFSET) {
                 texture.offset.x = reader.ReadFloat32 ();
             } else if (chunkId === CHUNK3DS.MAT_TEXMAP_VOFFSET) {

@@ -10,7 +10,6 @@ function CreateTestModel ()
     {
         let texture = new OV.TextureMap ();
         texture.name = name;
-        texture.url = url;
         texture.buffer = new ArrayBuffer (1);
         return texture;
     }

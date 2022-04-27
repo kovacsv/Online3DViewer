@@ -438,7 +438,6 @@ describe ('Obj Importer', function () {
 
     it ('two_materials_same_texture.obj', function (done) {
         ImportObjFile ('two_materials_same_texture.obj', function (model) {
-            assert.strictEqual (model.GetMaterial (0).diffuseMap.url, model.GetMaterial (1).diffuseMap.url);
             assert.strictEqual (model.GetMaterial (0).diffuseMap.buffer.byteLength, model.GetMaterial (1).diffuseMap.buffer.byteLength);
             assert.ok (OV.CheckModel (model));
             assert.deepStrictEqual (ModelToObject (model), {

@@ -1,5 +1,6 @@
 import { Direction } from '../geometry/geometry.js';
 import { Importer } from '../import/importer.js';
+import { RevokeObjectUrl } from '../main.js';
 import { ConvertModelToThreeObject, ModelToThreeConversionOutput, ModelToThreeConversionParams } from './threeconverter.js';
 import { ConvertColorToThreeColor, HasHighpDriverIssue } from './threeutils.js';
 
@@ -10,6 +11,7 @@ export class ThreeModelLoader
         this.importer = new Importer ();
         this.inProgress = false;
         this.defaultMaterial = null;
+        this.objectUrls = null;
         this.hasHighpDriverIssue = HasHighpDriverIssue ();
     }
 
@@ -26,6 +28,7 @@ export class ThreeModelLoader
 
         this.inProgress = true;
         callbacks.onLoadStart ();
+        this.RevokeObjectUrls ();
         this.importer.ImportFiles (files, fileSource, settings, {
             onFilesLoaded : () => {
                 callbacks.onImportStart ();
@@ -48,6 +51,7 @@ export class ThreeModelLoader
                     },
                     onModelLoaded : (threeObject) => {
                         this.defaultMaterial = output.defaultMaterial;
+                        this.objectUrls = output.objectUrls;
                         if (importResult.upVector === Direction.X) {
                             let rotation = new THREE.Quaternion ().setFromAxisAngle (new THREE.Vector3 (0.0, 0.0, 1.0), Math.PI / 2.0);
                             threeObject.quaternion.multiply (rotation);
@@ -82,5 +86,16 @@ export class ThreeModelLoader
         if (this.defaultMaterial !== null && !this.defaultMaterial.vertexColors) {
             this.defaultMaterial.color = ConvertColorToThreeColor (defaultColor);
         }
+    }
+
+    RevokeObjectUrls ()
+    {
+        if (this.objectUrls === null) {
+            return;
+        }
+        for (let objectUrl of this.objectUrls) {
+            RevokeObjectUrl (objectUrl);
+        }
+        this.objectUrls = null;
     }
 }

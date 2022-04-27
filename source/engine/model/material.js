@@ -7,7 +7,7 @@ export class TextureMap
     constructor ()
     {
         this.name = null;
-        this.url = null;
+        this.mimeType = null;
         this.buffer = null;
         this.offset = new Coord2D (0.0, 0.0);
         this.scale = new Coord2D (1.0, 1.0);
@@ -16,7 +16,7 @@ export class TextureMap
 
     IsValid ()
     {
-        return this.name !== null && this.url !== null && this.buffer !== null;
+        return this.name !== null && this.buffer !== null;
     }
 
     HasTransformation ()
@@ -38,7 +38,7 @@ export class TextureMap
         if (this.name !== rhs.name) {
             return false;
         }
-        if (this.url !== rhs.url) {
+        if (this.mimeType !== rhs.mimeType) {
             return false;
         }
         if (!CoordIsEqual2D (this.offset, rhs.offset)) {
@@ -158,22 +158,6 @@ export class FaceMaterial extends MaterialBase
         }
         return true;
     }
-
-    EnumerateTextureMaps (enumerator)
-    {
-        if (this.diffuseMap !== null) {
-            enumerator (this.diffuseMap);
-        }
-        if (this.bumpMap !== null) {
-            enumerator (this.bumpMap);
-        }
-        if (this.normalMap !== null) {
-            enumerator (this.normalMap);
-        }
-        if (this.emissiveMap !== null) {
-            enumerator (this.emissiveMap);
-        }
-    }
 }
 
 export class PhongMaterial extends FaceMaterial
@@ -207,14 +191,6 @@ export class PhongMaterial extends FaceMaterial
         }
         return true;
     }
-
-    EnumerateTextureMaps (enumerator)
-    {
-        super.EnumerateTextureMaps (enumerator);
-        if (this.specularMap !== null) {
-            enumerator (this.specularMap);
-        }
-    }
 }
 
 export class PhysicalMaterial extends FaceMaterial
@@ -244,14 +220,6 @@ export class PhysicalMaterial extends FaceMaterial
         }
         return true;
     }
-
-    EnumerateTextureMaps (enumerator)
-    {
-        super.EnumerateTextureMaps (enumerator);
-        if (this.metalnessMap !== null) {
-            enumerator (this.metalnessMap);
-        }
-    }
 }
 
 export function TextureIsEqual (a, b)
@@ -259,7 +227,7 @@ export function TextureIsEqual (a, b)
     if (a.name !== b.name) {
         return false;
     }
-    if (a.url !== b.url) {
+    if (a.mimeType !== b.mimeType) {
         return false;
     }
     if (!CoordIsEqual2D (a.offset, b.offset)) {

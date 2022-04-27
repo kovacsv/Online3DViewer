@@ -6,7 +6,7 @@ import { Matrix } from '../geometry/matrix.js';
 import { ArrayToQuaternion } from '../geometry/quaternion.js';
 import { Transformation } from '../geometry/transformation.js';
 import { BinaryReader } from '../io/binaryreader.js';
-import { ArrayBufferToUtf8String, Base64DataURIToArrayBuffer, CreateObjectUrlWithMimeType, GetFileExtensionFromMimeType } from '../io/bufferutils.js';
+import { ArrayBufferToUtf8String, Base64DataURIToArrayBuffer, GetFileExtensionFromMimeType } from '../io/bufferutils.js';
 import { LoadExternalLibrary } from '../io/externallibs.js';
 import { Color, ColorComponentFromFloat, ColorFromFloatComponents, LinearToSRGB } from '../model/color.js';
 import { PhongMaterial, PhysicalMaterial, TextureMap } from '../model/material.js';
@@ -751,7 +751,7 @@ export class ImporterGltf extends ImporterBase
         } else {
             textureParams = {
                 name : null,
-                url : null,
+                mimeType : null,
                 buffer : null
             };
             let textureIndexString = gltfImageIndex.toString ();
@@ -759,15 +759,12 @@ export class ImporterGltf extends ImporterBase
                 let base64Buffer = Base64DataURIToArrayBuffer (gltfImage.uri);
                 if (base64Buffer !== null) {
                     textureParams.name = 'Embedded_' + textureIndexString + '.' + GetFileExtensionFromMimeType (base64Buffer.mimeType);
-                    textureParams.url = CreateObjectUrlWithMimeType (base64Buffer.buffer, base64Buffer.mimeType);
+                    textureParams.mimeType = base64Buffer.mimeType;
                     textureParams.buffer = base64Buffer.buffer;
                 } else {
-                    let textureBuffer = this.callbacks.getTextureBuffer (gltfImage.uri);
+                    let textureBuffer = this.callbacks.getFileBuffer (gltfImage.uri);
                     textureParams.name = gltfImage.uri;
-                    if (textureBuffer !== null) {
-                        textureParams.url = textureBuffer.url;
-                        textureParams.buffer = textureBuffer.buffer;
-                    }
+                    textureParams.buffer = textureBuffer;
                 }
             } else if (gltfImage.bufferView !== undefined) {
                 let bufferView = gltf.bufferViews[gltfImage.bufferView];
@@ -775,7 +772,7 @@ export class ImporterGltf extends ImporterBase
                 if (reader !== null) {
                     let buffer = reader.ReadArrayBuffer (bufferView.byteLength);
                     textureParams.name = 'Binary_' + textureIndexString + '.' + GetFileExtensionFromMimeType (gltfImage.mimeType);
-                    textureParams.url = CreateObjectUrlWithMimeType (buffer, gltfImage.mimeType);
+                    textureParams.mimeType = gltfImage.mimeType;
                     textureParams.buffer = buffer;
                 }
             }
@@ -783,7 +780,7 @@ export class ImporterGltf extends ImporterBase
         }
 
         texture.name = textureParams.name;
-        texture.url = textureParams.url;
+        texture.mimeType = textureParams.mimeType;
         texture.buffer = textureParams.buffer;
 
         this.gltfExtensions.ProcessTexture (gltfTextureRef, texture);

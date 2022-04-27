@@ -17,9 +17,6 @@ export function ImportFile (importer, folder, fileName, onReady)
         getFileBuffer : function (filePath) {
             return fileAccessor.GetFileBuffer (filePath);
         },
-        getTextureBuffer : function (filePath) {
-            return fileAccessor.GetTextureBuffer (filePath);
-        },
         onSuccess : function () {
             let model = importer.GetModel ();
             onReady (model);

@@ -1,5 +1,4 @@
 import { RunTaskAsync } from '../core/taskrunner.js';
-import { CreateObjectUrl, RevokeObjectUrl } from '../io/bufferutils.js';
 import { LoadExternalLibrary } from '../io/externallibs.js';
 import { FileSource, GetFileName } from '../io/fileutils.js';
 import { Color } from '../model/color.js';
@@ -61,7 +60,6 @@ export class ImporterFileAccessor
     {
         this.getBufferCallback = getBufferCallback;
         this.fileBuffers = new Map ();
-        this.textureBuffers = new Map ();
     }
 
     GetFileBuffer (filePath)
@@ -72,24 +70,6 @@ export class ImporterFileAccessor
         }
         let buffer = this.getBufferCallback (fileName);
         this.fileBuffers.set (fileName, buffer);
-        return buffer;
-    }
-
-    GetTextureBuffer (filePath)
-    {
-        let fileName = GetFileName (filePath);
-        if (this.textureBuffers.has (fileName)) {
-            return this.textureBuffers.get (fileName);
-        }
-        let buffer = null;
-        let textureBuffer = this.getBufferCallback (fileName);
-        if (textureBuffer !== null) {
-            buffer = {
-                url : CreateObjectUrl (textureBuffer),
-                buffer : textureBuffer
-            };
-        }
-        this.textureBuffers.set (fileName, buffer);
         return buffer;
     }
 }
@@ -210,7 +190,6 @@ export class Importer
             return;
         }
 
-        this.RevokeModelUrls ();
         this.model = null;
         this.usedFiles = [];
         this.missingFiles = [];
@@ -236,9 +215,6 @@ export class Importer
             },
             getFileBuffer : (filePath) => {
                 return fileAccessor.GetFileBuffer (filePath);
-            },
-            getTextureBuffer : (filePath) => {
-                return fileAccessor.GetTextureBuffer (filePath);
             },
             onSuccess : () => {
                 this.model = importer.GetModel ();
@@ -331,20 +307,5 @@ export class Importer
             }
         }
         return importableFiles;
-    }
-
-    RevokeModelUrls ()
-    {
-        if (this.model === null) {
-            return;
-        }
-        for (let i = 0; i < this.model.MaterialCount (); i++) {
-            let material = this.model.GetMaterial (i);
-            material.EnumerateTextureMaps ((texture) => {
-                if (texture.url !== null) {
-                    RevokeObjectUrl (texture.url);
-                }
-            });
-        }
     }
 }

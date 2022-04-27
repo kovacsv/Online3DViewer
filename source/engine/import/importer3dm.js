@@ -290,12 +290,9 @@ export class Importer3dm extends ImporterBase
             if (rhinoTexture) {
                 let texture = new TextureMap ();
                 let textureName = GetFileName (rhinoTexture.fileName);
-                let textureBuffer = callbacks.getTextureBuffer (textureName);
+                let textureBuffer = callbacks.getFileBuffer (textureName);
                 texture.name = textureName;
-                if (textureBuffer !== null) {
-                    texture.url = textureBuffer.url;
-                    texture.buffer = textureBuffer.buffer;
-                }
+                texture.buffer = textureBuffer;
                 material.diffuseMap = texture;
             }
 

@@ -259,7 +259,7 @@ export class ImporterThreeBase extends ImporterBase
                     textureName = 'Embedded_' + threeMap.id.toString () + '.' + GetFileExtensionFromMimeType (base64Buffer.mimeType);
                 }
                 texture.name = textureName;
-                texture.url = dataUrl;
+                texture.mimeType = base64Buffer.mimeType;
                 texture.buffer = base64Buffer.buffer;
                 texture.rotation = threeMap.rotation;
                 texture.offset.x = threeMap.offset.x;

@@ -230,12 +230,9 @@ export class ImporterObj extends ImporterBase
         {
             let texture = new TextureMap ();
             let textureName = NameFromLine (line, keyword.length, '#');
-            let textureBuffer = callbacks.getTextureBuffer (textureName);
+            let textureBuffer = callbacks.getFileBuffer (textureName);
             texture.name = textureName;
-            if (textureBuffer !== null) {
-                texture.url = textureBuffer.url;
-                texture.buffer = textureBuffer.buffer;
-            }
+            texture.buffer = textureBuffer;
             return texture;
         }
 
