@@ -55,6 +55,9 @@ export function ShowSnapshotDialog (viewer)
         AddDiv (line, 'ov_snapshot_dialog_param_name', text);
         let numberInput = AddNumberInput (line, 'ov_dialog_text', onChange);
         numberInput.classList.add ('ov_snapshot_dialog_param_value');
+        numberInput.addEventListener ('focus', () => {
+            numberInput.setSelectionRange (0, numberInput.value.length);
+        });
         return numberInput;
     }
 
