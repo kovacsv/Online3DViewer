@@ -93,8 +93,7 @@ export class ExporterBim extends ExporterBase
                 info[property.name] = PropertyToString (property);
             }
         }
-        if (Object.keys (info).length !== 0) {
-            targetObject.info = info;
-        }
+
+        targetObject.info = info;
     }
 }
