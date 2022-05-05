@@ -53,13 +53,22 @@ export class EmbeddedViewer
 
     LoadModelFromUrls (modelUrls)
     {
-        this.viewer.Clear ();
+        TransformFileHostUrls (modelUrls);
+        this.LoadModelInternal (modelUrls, FileSource.Url);
+    }
 
-        if (modelUrls === null || modelUrls.length === 0) {
+    LoadModelFromFileList (fileList)
+    {
+        this.LoadModelInternal (fileList, FileSource.File);
+    }
+
+    LoadModelInternal (fileList, fileSource)
+    {
+        if (fileList === null || fileList.length === 0) {
             return null;
         }
-        TransformFileHostUrls (modelUrls);
 
+        this.viewer.Clear ();
         let settings = new ImportSettings ();
         if (this.parameters.defaultColor) {
             settings.defaultColor = this.parameters.defaultColor;
@@ -68,7 +77,7 @@ export class EmbeddedViewer
         this.model = null;
         let progressDiv = null;
         let loader = new ThreeModelLoader ();
-        loader.LoadModel (modelUrls, FileSource.Url, settings, {
+        loader.LoadModel (fileList, fileSource, settings, {
             onLoadStart : () => {
                 this.canvas.style.display = 'none';
                 progressDiv = document.createElement ('div');

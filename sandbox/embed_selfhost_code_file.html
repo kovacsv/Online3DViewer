@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+	<title>Online 3D Viewer</title>
+
+	<script type="text/javascript" src="../../libs/three.min.js"></script>
+	<script type="text/javascript" src="../build/o3dv.min-dev.js"></script>
+
+    <style>
+        div.online_3d_viewer
+        {
+            float: left;
+            border: 1px solid #eeeeee;
+            width: 640px;
+            height: 480px;
+        }
+    </style>
+
+    <script type='text/javascript'>
+        window.addEventListener ('load', () => {
+            // get the parent element of the viewer
+            let parentDiv = document.getElementById ('viewer');
+
+            // initialize the viewer with the parent element and some parameters
+            let viewer = new OV.EmbeddedViewer (parentDiv, {
+                camera : new OV.Camera (
+                    new OV.Coord3D (-1.5, 2.0, 3.0),
+                    new OV.Coord3D (0.0, 0.0, 0.0),
+                    new OV.Coord3D (0.0, 1.0, 0.0)
+                ),
+                backgroundColor : new OV.Color (255, 255, 255),
+                defaultColor : new OV.Color (200, 200, 200),
+                edgeSettings : {
+                    showEdges : false,
+                    edgeColor : new OV.Color (0, 0, 0),
+                    edgeThreshold : 1
+                },
+                environmentSettings : {
+                    environmentMap : [
+                        '../website/assets/envmaps/fishermans_bastion/posx.jpg',
+                        '../website/assets/envmaps/fishermans_bastion/negx.jpg',
+                        '../website/assets/envmaps/fishermans_bastion/posy.jpg',
+                        '../website/assets/envmaps/fishermans_bastion/negy.jpg',
+                        '../website/assets/envmaps/fishermans_bastion/posz.jpg',
+                        '../website/assets/envmaps/fishermans_bastion/negz.jpg'
+                    ],
+                    backgroundIsEnvMap : false
+                }
+            });
+
+            // load a model selected by file input
+            let fileInput = document.getElementById ('open_file');
+            fileInput.addEventListener ('change', (ev) => {
+                if (ev.target.files.length > 0) {
+                    viewer.LoadModelFromFileList (ev.target.files);
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div>
+        <input type="file" id="open_file" multiple></input>
+    </div>
+    <div class="online_3d_viewer" id="viewer">
+    </div>
+</body>
+
+</html>
