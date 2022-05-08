@@ -12,6 +12,7 @@
 input, select, textarea
 {
 	outline: none;
+	font-family: Quicksand;
 }
 
 html, body
