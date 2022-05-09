@@ -159,7 +159,6 @@ select.ov_select
 {
 	color: var(--ov_dialog_foreground_color);
 	background: var(--ov_dialog_background_color);
-	font-family: Quicksand, Helvetica, sans-serif;
 	font-size: 16px;
 	margin: 0px;
 	padding: 5px;

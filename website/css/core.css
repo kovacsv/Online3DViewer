@@ -52,7 +52,7 @@ li
 
 input, select, textarea
 {
-	font-family: Quicksand;
+	font-family: Quicksand, Helvetica, sans-serif;
 	font-size: 16px;
 	outline: none;
 }
