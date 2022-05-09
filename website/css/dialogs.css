@@ -138,7 +138,7 @@ div.ov_dialog div.ov_dialog_copyable_input
 div.ov_dialog div.ov_dialog_copyable_input input
 {
 	width: 70%;
-	margin-top: 6px;
+	margin-top: 3px;
 	box-sizing: border-box;
 	float: left;
 	border: 0px;
@@ -271,7 +271,7 @@ div.ov_snapshot_dialog_param_name
 {
 	width: 60px;
 	margin-left: 30px;
-	margin-top: 3px;
+	margin-top: 6px;
 	float: left;
 }
 

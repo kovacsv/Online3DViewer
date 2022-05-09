@@ -9,12 +9,6 @@
 	src: url('Quicksand/Quicksand-Regular.ttf');
 }
 
-input, select, textarea
-{
-	outline: none;
-	font-family: Quicksand;
-}
-
 html, body
 {
 	color: var(--ov_foreground_color);
@@ -54,6 +48,13 @@ li
 .only_on_model
 {
 	display: var(--ov_only_on_model_display);
+}
+
+input, select, textarea
+{
+	font-family: Quicksand;
+	font-size: 16px;
+	outline: none;
 }
 
 @media (hover)
