@@ -29,11 +29,11 @@ export class ImporterIfc extends ImporterBase
         return Direction.Y;
     }
 
-	ClearContent ()
-	{
+    ClearContent ()
+    {
         this.materialNameToIndex = null;
         this.expressIDToMesh = null;
-	}
+    }
 
     ResetContent ()
     {
@@ -43,8 +43,8 @@ export class ImporterIfc extends ImporterBase
 
     ImportContent (fileContent, onFinish)
     {
-		if (this.ifc === null) {
-			LoadExternalLibrary ('loaders/web-ifc-api-browser.js').then (() => {
+        if (this.ifc === null) {
+            LoadExternalLibrary ('loaders/web-ifc-api-browser.js').then (() => {
                 this.ifc = new WebIFC.IfcAPI ();
                 this.ifc.Init ().then (() => {
                     this.ImportIfcContent (fileContent);
@@ -54,16 +54,16 @@ export class ImporterIfc extends ImporterBase
                 this.SetError ('Failed to load web-ifc.');
                 onFinish ();
             });
-		} else {
-			this.ImportIfcContent (fileContent);
-			onFinish ();
-		}
+        } else {
+            this.ImportIfcContent (fileContent);
+            onFinish ();
+        }
     }
 
-	ImportIfcContent (fileContent)
-	{
+    ImportIfcContent (fileContent)
+    {
         const fileBuffer = new Uint8Array (fileContent);
-		const modelID = this.ifc.OpenModel (fileBuffer, {
+        const modelID = this.ifc.OpenModel (fileBuffer, {
             COORDINATE_TO_ORIGIN : true
         });
         const ifcMeshes = this.ifc.LoadAllGeometry (modelID);
@@ -75,7 +75,7 @@ export class ImporterIfc extends ImporterBase
         }
         this.ImportProperties (modelID);
         this.ifc.CloseModel (modelID);
-	}
+    }
 
     ImportIfcMesh (modelID, ifcMesh)
     {
@@ -219,9 +219,9 @@ export class ImporterIfc extends ImporterBase
         if (this.materialNameToIndex.has (materialName)) {
             return this.materialNameToIndex.get (materialName);
         } else {
-			let material = new PhongMaterial ();
+            let material = new PhongMaterial ();
             material.name = materialName;
-			material.color = color;
+            material.color = color;
             material.opacity = ifcColor.w;
             UpdateMaterialTransparency (material);
             let materialIndex = this.model.AddMaterial (material);
