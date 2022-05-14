@@ -11,7 +11,7 @@
 		"lint": "eslint source",
 		"lint_fix": "eslint source --fix",
 		"docs": "jsdoc -c tools/jsdoc.json",
-		"update_libs": "node tools/run_python.js tools/update_libs.py",
+		"update_libs": "npm install && node tools/run_python.js tools/update_libs.py",
 		"generate_icon_font": "node tools/run_python.js tools/generate_icon_font.py",
 		"update_engine_exports": "node tools/run_python.js tools/update_engine_exports.py",
 		"create_dist": "npm run create_package && npm run lint && npm run test",
@@ -41,7 +41,7 @@
 		"draco3d": "1.5.2",
 		"fflate": "0.7.3",
 		"rhino3dm": "7.14.0",
-		"three": "0.140.0",
+		"three": "0.140.2",
 		"web-ifc": "0.0.33",
 		"occt-import-js" : "0.0.6"
 	},
