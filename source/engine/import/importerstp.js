@@ -77,7 +77,7 @@ export class ImporterStp extends ImporterBase
     ImportNode (stepContent, occtNode, parentNode, colorToMaterial)
     {
         for (let nodeMeshIndex of occtNode.meshes) {
-            let occtMesh = stepContent.meshes[nodeMeshIndex]
+            let occtMesh = stepContent.meshes[nodeMeshIndex];
             let mesh = this.ImportMesh (occtMesh, colorToMaterial);
             let meshIndex = this.model.AddMesh (mesh);
             parentNode.AddMeshIndex (meshIndex);
