@@ -1,10 +1,16 @@
 {
 	"name": "online-3d-viewer",
 	"description": "Online 3D Viewer",
-	"version": "0.8.11",
+	"version": "0.8.11-beta2",
 	"repository": "github:kovacsv/Online3DViewer",
 	"license": "MIT",
 	"type": "module",
+	"module": "./build/o3dv.min.esm.js",
+	"files": [
+		"build/o3dv.min.js",
+		"build/o3dv.min.esm.js",
+		"libs/loaders/*"
+	],
 	"scripts": {
 		"start": "http-server",
 		"test": "mocha test",
@@ -15,11 +21,11 @@
 		"generate_icon_font": "node tools/run_python.js tools/generate_icon_font.py",
 		"update_engine_exports": "node tools/run_python.js tools/update_engine_exports.py",
 		"create_dist": "npm run create_package && npm run lint && npm run test",
-		"create_package": "npm run build_engine_prod && npm run build_website_prod && npm run build_css_prod && npm run lint && node tools/run_python.js tools/create_package.py",
-		"build_dev": "npm run build_engine_dev && npm run build_website_dev",
+		"create_package": "npm run build_engine_prod && npm run build_engine_prod_esm && npm run build_website_prod && npm run build_css_prod && node tools/run_python.js tools/create_package.py",
 		"build_css_prod": "cleancss -o build/o3dv.website.min.css website/css/*",
 		"build_engine_dev": "npm run update_engine_exports && esbuild source/engine/main.js --bundle --minify --global-name=OV --sourcemap --outfile=build/o3dv.min-dev.js",
 		"build_engine_prod": "npm run update_engine_exports && esbuild source/engine/main.js --bundle --minify --global-name=OV --outfile=build/o3dv.min.js",
+		"build_engine_prod_esm": "npm run update_engine_exports && esbuild source/engine/main.js --bundle --minify --format=esm --outfile=build/o3dv.min.esm.js",
 		"build_website_dev": "esbuild source/website/index.js --bundle --minify --global-name=OV --sourcemap --outfile=build/o3dv.website.min-dev.js",
 		"build_website_prod": "esbuild source/website/index.js --bundle --minify --global-name=OV --outfile=build/o3dv.website.min.js"
 	},

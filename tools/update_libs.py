@@ -18,11 +18,6 @@ rhino3dmFileMap = [
     [os.path.join ('rhino3dm', 'rhino3dm.wasm'), os.path.join ('loaders', 'rhino3dm.wasm')],
 ]
 
-fflateFileMap = [
-    [os.path.join ('fflate', 'LICENSE'), os.path.join ('loaders', 'fflate.license.md')],
-    [os.path.join ('fflate', 'umd', 'index.js'), os.path.join ('loaders', 'fflate.min.js')],
-]
-
 webIfcFileMap = [
     [os.path.join ('web-ifc', 'web-ifc-api-browser.js'), os.path.join ('loaders', 'web-ifc-api-browser.js')],
     [os.path.join ('web-ifc', 'web-ifc.wasm'), os.path.join ('loaders', 'web-ifc.wasm')],
@@ -59,7 +54,6 @@ def Main (argv):
     UpdateModule (pickrFileMap, nodeModulesDir, libsDir)
     UpdateModule (dracoFileMap, nodeModulesDir, libsDir)
     UpdateModule (rhino3dmFileMap, nodeModulesDir, libsDir)
-    UpdateModule (fflateFileMap, nodeModulesDir, libsDir)
     UpdateModule (webIfcFileMap, nodeModulesDir, libsDir)
     UpdateModule (occtImportJsFileMap, nodeModulesDir, libsDir)
 

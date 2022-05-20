@@ -1,6 +1,6 @@
 import { RunTasksBatch } from '../core/taskrunner.js';
 import { IsEqual } from '../geometry/geometry.js';
-import { CreateObjectUrl, CreateObjectUrlWithMimeType } from '../main.js';
+import { CreateObjectUrl, CreateObjectUrlWithMimeType } from '../io/bufferutils.js';
 import { MaterialType } from '../model/material.js';
 import { MeshInstanceId } from '../model/meshinstance.js';
 import { GetMeshType, MeshType } from '../model/meshutils.js';
