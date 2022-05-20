@@ -2,7 +2,6 @@ import { RunTaskAsync } from '../engine/core/taskrunner.js';
 import { Coord3D } from '../engine/geometry/coord3d.js';
 import { Matrix } from '../engine/geometry/matrix.js';
 import { FileFormat } from '../engine/io/fileutils.js';
-import { LoadExternalLibrary } from '../engine/io/externallibs.js';
 import { Exporter } from '../engine/export/exporter.js';
 import { ExporterModel, ExporterSettings } from '../engine/export/exportermodel.js';
 import { AddDiv, ClearDomElement } from '../engine/viewer/domutils.js';
@@ -12,6 +11,8 @@ import { ShowMessageDialog } from './dialogs.js';
 import { DownloadArrayBufferAsFile } from './utils.js';
 import { CookieGetStringVal, CookieSetStringVal } from './cookiehandler.js';
 import { HandleEvent } from './eventhandler.js';
+
+import * as fflate from 'fflate';
 
 function AddSelectWithCookieSave (parentElement, cookieKey, options, defaultSelectedIndex, onChange)
 {
@@ -101,18 +102,14 @@ class ModelExporterUI
                         let file = files[0];
                         DownloadArrayBufferAsFile (file.GetBufferContent (), file.GetName ());
                     } else if (files.length > 1) {
-                        LoadExternalLibrary ('loaders/fflate.min.js').then (() => {
-                            let filesInZip = {};
-                            for (let file of files) {
-                                filesInZip[file.name] = new Uint8Array (file.content);
-                            }
-                            let zippedContent = fflate.zipSync (filesInZip);
-                            let zippedBuffer = zippedContent.buffer;
-                            progressDialog.Close ();
-                            DownloadArrayBufferAsFile (zippedBuffer, 'model.zip');
-                        }).catch (() => {
-                            progressDialog.Close ();
-                        });
+                        let filesInZip = {};
+                        for (let file of files) {
+                            filesInZip[file.name] = new Uint8Array (file.content);
+                        }
+                        let zippedContent = fflate.zipSync (filesInZip);
+                        let zippedBuffer = zippedContent.buffer;
+                        progressDialog.Close ();
+                        DownloadArrayBufferAsFile (zippedBuffer, 'model.zip');
                     }
                 }
             });

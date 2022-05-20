@@ -2,6 +2,8 @@ import { BigEps, IsEqualEps, RadDeg } from '../engine/geometry/geometry.js';
 import { AddDiv, ClearDomElement } from '../engine/viewer/domutils.js';
 import { AddSvgIconElement, IsDarkTextNeededForColor } from './utils.js';
 
+import * as THREE from 'three';
+
 function GetFaceWorldNormal (intersection)
 {
     let normalMatrix = new THREE.Matrix4 ();

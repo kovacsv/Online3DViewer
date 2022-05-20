@@ -23,6 +23,8 @@ import { ShadingType } from '../engine/threejs/threeutils.js';
 import { MeasureTool } from './measuretool.js';
 import { CloseAllDialogs } from './dialog.js';
 
+import * as THREE from 'three';
+
 export const WebsiteUIState =
 {
     Undefined : 0,

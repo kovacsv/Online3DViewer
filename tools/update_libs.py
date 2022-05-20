@@ -8,17 +8,6 @@ pickrFileMap = [
     [os.path.join ('@simonwep', 'pickr', 'dist', 'themes', 'monolith.min.css'), os.path.join ('pickr.monolith.min.css')]
 ]
 
-threeJsFileMap = [
-    [os.path.join ('three', 'LICENSE'), os.path.join ('three.license.md')],
-    [os.path.join ('three', 'build', 'three.min.js'), os.path.join ('three.min.js')],
-    [os.path.join ('three', 'examples', 'js', 'libs', 'chevrotain.min.js'), os.path.join ('three_loaders', 'chevrotain.min.js')],
-    [os.path.join ('three', 'examples', 'js', 'loaders', '3MFLoader.js'), os.path.join ('three_loaders', '3MFLoader.js')],
-    [os.path.join ('three', 'examples', 'js', 'loaders', 'ColladaLoader.js'), os.path.join ('three_loaders', 'ColladaLoader.js')],
-    [os.path.join ('three', 'examples', 'js', 'loaders', 'FBXLoader.js'), os.path.join ('three_loaders', 'FBXLoader.js')],
-    [os.path.join ('three', 'examples', 'js', 'loaders', 'VRMLLoader.js'), os.path.join ('three_loaders', 'VRMLLoader.js')],
-    [os.path.join ('three', 'examples', 'js', 'loaders', 'SVGLoader.js'), os.path.join ('three_loaders', 'SVGLoader.js')]
-]
-
 dracoFileMap = [
     [os.path.join ('draco3d', 'draco_decoder_nodejs.js'), os.path.join ('loaders', 'draco_decoder.js')],
     [os.path.join ('draco3d', 'draco_decoder.wasm'), os.path.join ('loaders', 'draco_decoder.wasm')],
@@ -68,7 +57,6 @@ def Main (argv):
     libsDir = os.path.join (rootDir, 'libs')
 
     UpdateModule (pickrFileMap, nodeModulesDir, libsDir)
-    UpdateModule (threeJsFileMap, nodeModulesDir, libsDir)
     UpdateModule (dracoFileMap, nodeModulesDir, libsDir)
     UpdateModule (rhino3dmFileMap, nodeModulesDir, libsDir)
     UpdateModule (fflateFileMap, nodeModulesDir, libsDir)

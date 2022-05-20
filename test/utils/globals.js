@@ -89,11 +89,6 @@ export default function SetGlobals ()
                             };
                             element.onload ();
                         });
-                    } else if (element.src.indexOf ('fflate') !== -1) {
-                        import ('fflate').then (mod => {
-                            global.fflate = mod;
-                            element.onload ();
-                        });
                     } else {
                         element.onerror ();
                     }

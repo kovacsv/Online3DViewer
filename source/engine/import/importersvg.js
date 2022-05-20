@@ -1,5 +1,6 @@
 import { Direction } from '../geometry/geometry.js';
 import { ImporterThreeBase } from './importerthree.js';
+import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 
 export class ImporterThreeSvg extends ImporterThreeBase
 {
@@ -18,16 +19,9 @@ export class ImporterThreeSvg extends ImporterThreeBase
         return Direction.Z;
     }
 
-    GetExternalLibraries ()
-    {
-        return [
-            'three_loaders/SVGLoader.js'
-        ];
-    }
-
     CreateLoader (manager)
     {
-        return new THREE.SVGLoader (manager);
+        return new SVGLoader (manager);
     }
 
     GetMainObject (loadedObject)
@@ -71,7 +65,7 @@ export class ImporterThreeSvg extends ImporterThreeBase
         object.rotation.x = Math.PI;
 
         for (let path of loadedObject.paths) {
-            const shapes = THREE.SVGLoader.createShapes (path);
+            const shapes = SVGLoader.createShapes (path);
             if (ShowFill (path)) {
                 let pathStyle = path.userData.style;
                 let pathMaterial = GetOrCreateMaterial (materials, pathStyle.fill, pathStyle.opacity);

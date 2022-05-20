@@ -7,6 +7,8 @@ import { GetDomElementInnerDimensions } from './domutils.js';
 import { Navigation } from './navigation.js';
 import { ViewerExtraGeometry, ViewerGeometry } from './viewergeometry.js';
 
+import * as THREE from 'three';
+
 export function GetDefaultCamera (direction)
 {
     if (direction === Direction.X) {

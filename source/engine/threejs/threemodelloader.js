@@ -4,6 +4,8 @@ import { RevokeObjectUrl } from '../main.js';
 import { ConvertModelToThreeObject, ModelToThreeConversionOutput, ModelToThreeConversionParams } from './threeconverter.js';
 import { ConvertColorToThreeColor, HasHighpDriverIssue } from './threeutils.js';
 
+import * as THREE from 'three';
+
 export class ThreeModelLoader
 {
     constructor ()

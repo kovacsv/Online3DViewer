@@ -1,5 +1,4 @@
 import { RunTaskAsync } from '../core/taskrunner.js';
-import { LoadExternalLibrary } from '../io/externallibs.js';
 import { FileSource, GetFileName } from '../io/fileutils.js';
 import { Color } from '../model/color.js';
 import { File, FileList } from './filelist.js';
@@ -15,6 +14,8 @@ import { ImporterStp } from './importerstp.js';
 import { ImporterStl } from './importerstl.js';
 import { ImporterBim } from './importerbim.js';
 import { ImporterThree3mf, ImporterThreeDae, ImporterThreeFbx, ImporterThreeWrl } from './importerthree.js';
+
+import * as fflate from 'fflate';
 
 export class ImportSettings
 {
@@ -251,23 +252,19 @@ export class Importer
             onReady ();
             return;
         }
-        LoadExternalLibrary ('loaders/fflate.min.js').then (() => {
-            for (let i = 0; i < archives.length; i++) {
-                const archiveFile = archives[i];
-                const archiveBuffer = new Uint8Array (archiveFile.content);
-                const decompressed = fflate.unzipSync (archiveBuffer);
-                for (const fileName in decompressed) {
-                    if (Object.prototype.hasOwnProperty.call (decompressed, fileName)) {
-                        let file = new File (fileName, FileSource.Decompressed);
-                        file.SetContent (decompressed[fileName].buffer);
-                        fileList.AddFile (file);
-                    }
+        for (let i = 0; i < archives.length; i++) {
+            const archiveFile = archives[i];
+            const archiveBuffer = new Uint8Array (archiveFile.content);
+            const decompressed = fflate.unzipSync (archiveBuffer);
+            for (const fileName in decompressed) {
+                if (Object.prototype.hasOwnProperty.call (decompressed, fileName)) {
+                    let file = new File (fileName, FileSource.Decompressed);
+                    file.SetContent (decompressed[fileName].buffer);
+                    fileList.AddFile (file);
                 }
             }
-            onReady ();
-        }).catch (() => {
-            onReady ();
-        });
+        }
+        onReady ();
     }
 
     GetFileList ()

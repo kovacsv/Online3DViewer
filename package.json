@@ -20,8 +20,8 @@
 		"build_css_prod": "cleancss -o build/o3dv.website.min.css website/css/*",
 		"build_engine_dev": "npm run update_engine_exports && esbuild source/engine/main.js --bundle --minify --global-name=OV --sourcemap --outfile=build/o3dv.min-dev.js",
 		"build_engine_prod": "npm run update_engine_exports && esbuild source/engine/main.js --bundle --minify --global-name=OV --outfile=build/o3dv.min.js",
-		"build_website_dev": "esbuild source/website/index.js --bundle --minify --global-name=OV --sourcemap --outfile=build/o3dv.website.min-dev.js",
-		"build_website_prod": "esbuild source/website/index.js --bundle --minify --global-name=OV --outfile=build/o3dv.website.min.js"
+		"build_website_dev": "esbuild source/website/index.js --bundle --minify --global-name=OV --tree-shaking=false --sourcemap --outfile=build/o3dv.website.min-dev.js",
+		"build_website_prod": "esbuild source/website/index.js --bundle --minify --global-name=OV --tree-shaking=true --outfile=build/o3dv.website.min.js"
 	},
 	"devDependencies": {
 		"clean-css-cli": "^5.5.2",

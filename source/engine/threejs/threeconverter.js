@@ -6,6 +6,8 @@ import { MeshInstanceId } from '../model/meshinstance.js';
 import { GetMeshType, MeshType } from '../model/meshutils.js';
 import { ConvertColorToThreeColor, GetShadingType, ShadingType } from './threeutils.js';
 
+import * as THREE from 'three';
+
 export class ModelToThreeConversionParams
 {
 	constructor ()

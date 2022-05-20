@@ -37,7 +37,6 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 	shutil.copytree (os.path.join (rootDir, 'website', 'info'), os.path.join (websiteDir, 'info'))
 
 	websiteLibFiles = config['website_lib_files']
-	embedLibFiles = config['embed_lib_files']
 	websiteFiles = [
 		'o3dv/o3dv.website.min.css',
 		'o3dv/o3dv.website.min.js'
@@ -54,7 +53,6 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 		htmlFilePath = os.path.join (websiteDir, htmlFileName)
 		replacer = Tools.TokenReplacer (htmlFilePath, False)
 		replacer.ReplaceTokenFileLinks ('<!-- website libs start -->', '<!-- website libs end -->', websiteLibFiles, version)
-		replacer.ReplaceTokenFileLinks ('<!-- embed libs start -->', '<!-- embed libs end -->', embedLibFiles, version)
 		replacer.ReplaceTokenFileLinks ('<!-- website start -->', '<!-- website end -->', websiteFiles, version)
 		initScriptContent = ''
 		initScriptContent += '<script type="text/javascript">' + replacer.eolChar
@@ -92,10 +90,6 @@ def CreatePackage (rootDir, websiteDir, packageDir, version):
 	zip = zipfile.ZipFile (zipPath, mode = 'w', compression = zipfile.ZIP_DEFLATED)
 	for lib in os.listdir (os.path.join (websiteDir, 'libs', 'loaders')):
 		zip.write (os.path.join (websiteDir, 'libs', 'loaders', lib), 'libs/loaders/' + lib)
-	for lib in os.listdir (os.path.join (websiteDir, 'libs', 'three_loaders')):
-		zip.write (os.path.join (websiteDir, 'libs', 'three_loaders', lib), 'libs/three_loaders/' + lib)
-	zip.write (os.path.join (websiteDir, 'libs', 'three.min.js'), 'three.min.js')
-	zip.write (os.path.join (websiteDir, 'libs', 'three.license.md'), 'three.license.md')
 	zip.write (os.path.join (rootDir, 'build', 'o3dv.min.js'), 'o3dv.min.js')
 	zip.write (os.path.join (rootDir, 'LICENSE.md'), 'o3dv.license.md')
 	zip.close ()

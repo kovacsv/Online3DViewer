@@ -2,7 +2,6 @@ path_classifiers:
   library:
     - libs/*.js
     - libs/loaders/*.js
-    - libs/three_loaders/*.js
   test:
     - test
     - sandbox

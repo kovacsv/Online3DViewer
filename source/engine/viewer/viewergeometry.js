@@ -1,6 +1,8 @@
 import { Color } from '../model/color.js';
 import { ConvertColorToThreeColor } from '../threejs/threeutils.js';
 
+import * as THREE from 'three';
+
 export function SetThreeMeshPolygonOffset (mesh, offset)
 {
     function SetMaterialsPolygonOffset (materials, offset)

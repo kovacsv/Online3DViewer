@@ -3,23 +3,24 @@ import { Direction } from '../geometry/geometry.js';
 import { Matrix } from '../geometry/matrix.js';
 import { Transformation } from '../geometry/transformation.js';
 import { Base64DataURIToArrayBuffer, CreateObjectUrl, GetFileExtensionFromMimeType } from '../io/bufferutils.js';
-import { LoadExternalLibrary } from '../io/externallibs.js';
 import { GetFileExtension, GetFileName } from '../io/fileutils.js';
 import { PhongMaterial, TextureMap } from '../model/material.js';
 import { Node, NodeType } from '../model/node.js';
 import { ConvertThreeColorToColor, ConvertThreeGeometryToMesh } from '../threejs/threeutils.js';
 import { ImporterBase } from './importerbase.js';
 
+import * as THREE from 'three';
+import { TGALoader } from 'three/examples/jsm/loaders/TGALoader.js';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader.js';
+import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
+import { ThreeMFLoader } from 'three/examples/jsm/loaders/3MFLoader.js';
+
 export class ImporterThreeBase extends ImporterBase
 {
     constructor ()
     {
         super ();
-    }
-
-    GetExternalLibraries ()
-    {
-        return null;
     }
 
     CreateLoader (manager)
@@ -53,30 +54,7 @@ export class ImporterThreeBase extends ImporterBase
 
     ImportContent (fileContent, onFinish)
     {
-        async function LoadLibraries (libraries, onFinish, onError)
-        {
-            try {
-                for (let i = 0; i < libraries.length; i++) {
-                    await LoadExternalLibrary (libraries[i]);
-                }
-            } catch (err) {
-                onError ();
-            }
-            onFinish ();
-        }
-
-        const libraries = this.GetExternalLibraries ();
-        if (libraries === null) {
-            onFinish ();
-            return;
-        }
-
-        LoadLibraries (libraries, () => {
-            this.LoadModel (fileContent, onFinish);
-        }, () => {
-            this.SetError ('Failed to load three.js loader.');
-            onFinish ();
-        });
+        this.LoadModel (fileContent, onFinish);
     }
 
     LoadModel (fileContent, onFinish)
@@ -307,19 +285,10 @@ export class ImporterThreeFbx extends ImporterThreeBase
         return Direction.Y;
     }
 
-    GetExternalLibraries ()
-    {
-        return [
-            'loaders/fflate.min.js',
-            'three_loaders/TGALoader.js',
-            'three_loaders/FBXLoader.js'
-        ];
-    }
-
     CreateLoader (manager)
     {
-        manager.addHandler (/\.tga$/i, new THREE.TGALoader (manager));
-        return new THREE.FBXLoader (manager);
+        manager.addHandler (/\.tga$/i, new TGALoader (manager));
+        return new FBXLoader (manager);
     }
 
     GetMainObject (loadedObject)
@@ -345,18 +314,10 @@ export class ImporterThreeDae extends ImporterThreeBase
         return Direction.Y;
     }
 
-    GetExternalLibraries ()
-    {
-        return [
-            'three_loaders/TGALoader.js',
-            'three_loaders/ColladaLoader.js'
-        ];
-    }
-
     CreateLoader (manager)
     {
-        manager.addHandler (/\.tga$/i, new THREE.TGALoader (manager));
-        return new THREE.ColladaLoader (manager);
+        manager.addHandler (/\.tga$/i, new TGALoader (manager));
+        return new ColladaLoader (manager);
     }
 
     GetMainObject (loadedObject)
@@ -382,17 +343,9 @@ export class ImporterThreeWrl extends ImporterThreeBase
         return Direction.Y;
     }
 
-    GetExternalLibraries ()
-    {
-        return [
-            'three_loaders/chevrotain.min.js',
-            'three_loaders/VRMLLoader.js'
-        ];
-    }
-
     CreateLoader (manager)
     {
-        return new THREE.VRMLLoader (manager);
+        return new VRMLLoader (manager);
     }
 
     GetMainObject (loadedObject)
@@ -434,17 +387,9 @@ export class ImporterThree3mf extends ImporterThreeBase
         return Direction.Z;
     }
 
-    GetExternalLibraries ()
-    {
-        return [
-            'loaders/fflate.min.js',
-            'three_loaders/3MFLoader.js'
-        ];
-    }
-
     CreateLoader (manager)
     {
-        return new THREE.ThreeMFLoader (manager);
+        return new ThreeMFLoader (manager);
     }
 
     GetMainObject (loadedObject)

@@ -5,6 +5,8 @@ import { MaterialType } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
 import { Triangle } from '../model/triangle.js';
 
+import * as THREE from 'three';
+
 // Some mobile devices say that they support mediump, but in reality they don't. At the end
 // all materials rendered as black. This hack renders a single plane with red material and
 // it checks if it's really red. If it's not, then probably there is a driver issue.
