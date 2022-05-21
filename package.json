@@ -1,14 +1,14 @@
 {
 	"name": "online-3d-viewer",
 	"description": "Online 3D Viewer",
-	"version": "0.8.11-beta3",
+	"version": "0.8.11-beta4",
 	"repository": "github:kovacsv/Online3DViewer",
 	"license": "MIT",
 	"type": "module",
-	"module": "./build/o3dv.min.esm.js",
+	"module": "./build/o3dv.esm.js",
 	"files": [
 		"build/o3dv.min.js",
-		"build/o3dv.min.esm.js",
+		"build/o3dv.esm.js",
 		"libs/loaders/*"
 	],
 	"scripts": {
