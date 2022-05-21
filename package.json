@@ -1,11 +1,17 @@
 {
 	"name": "online-3d-viewer",
-	"description": "Online 3D Viewer",
 	"version": "0.8.11",
-	"repository": "github:kovacsv/Online3DViewer",
+	"description": "Online 3D Viewer",
 	"license": "MIT",
 	"type": "module",
+	"main": "./source/engine/main.js",
 	"module": "./source/engine/main.js",
+	"repository": "github:kovacsv/Online3DViewer",
+	"keywords": [
+		"3d", "viewer",
+		"obj", "3ds", "stl", "ply", "gltf", "glb", "off",
+		"3dm", "fbx", "dae", "wrl", "3mf", "ifc", "stp", "bim"
+	],
 	"files": [
 		"source/engine/*",
 		"libs/loaders/*"
