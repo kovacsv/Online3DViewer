@@ -13,7 +13,8 @@
 	],
 	"files": [
 		"source/engine/*",
-		"libs/loaders/*"
+		"libs/loaders/*",
+		"website/assets/envmaps/*"
 	],
 	"scripts": {
 		"start": "http-server",

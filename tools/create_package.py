@@ -88,8 +88,15 @@ def CreatePackage (rootDir, websiteDir, packageDir, version):
 
 	zipPath = os.path.join (packageDir, 'o3dv_' + version + '.zip')
 	zip = zipfile.ZipFile (zipPath, mode = 'w', compression = zipfile.ZIP_DEFLATED)
-	for lib in os.listdir (os.path.join (websiteDir, 'libs', 'loaders')):
-		zip.write (os.path.join (websiteDir, 'libs', 'loaders', lib), 'libs/loaders/' + lib)
+	for file in os.listdir (os.path.join (websiteDir, 'libs', 'loaders')):
+		zip.write (os.path.join (websiteDir, 'libs', 'loaders', file), 'libs/loaders/' + file)
+	for file in os.listdir (os.path.join (websiteDir, 'assets', 'envmaps')):
+		filePath = os.path.join (websiteDir, 'assets', 'envmaps', file)
+		if os.path.isdir (filePath):
+			for fileInDir in os.listdir (filePath):
+				zip.write (os.path.join (filePath, fileInDir), 'envmaps/' + file + '/' + fileInDir)
+		else:
+			zip.write (filePath, 'envmaps/' + file)
 	zip.write (os.path.join (rootDir, 'build', 'o3dv.min.js'), 'o3dv.min.js')
 	zip.write (os.path.join (rootDir, 'LICENSE.md'), 'o3dv.license.md')
 	zip.close ()
