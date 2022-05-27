@@ -20,7 +20,7 @@ jobs:
       - run: npm install
       - run: npm run create_dist
       - uses: ncipollo/release-action@v1
-      with:
+        with:
           artifacts: "build/final/package/*"
           bodyFile: ".github/workflows/release_template.md"
           draft: true
