@@ -1,3 +1,4 @@
+import { IsObjectEmpty } from '../core/core.js';
 import { Coord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
 import { ArrayBufferToUtf8String } from '../io/bufferutils.js';
@@ -165,7 +166,7 @@ export class ImporterBim extends ImporterBase
             group.AddProperty (property);
         }
 
-        if (!source.info) {
+        if (!source.info || IsObjectEmpty (source.info)) {
             return;
         }
 
