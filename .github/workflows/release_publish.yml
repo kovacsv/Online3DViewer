@@ -6,7 +6,6 @@ on:
     - '*'
 
 jobs:
-
   build:
     runs-on: windows-latest
     permissions:
