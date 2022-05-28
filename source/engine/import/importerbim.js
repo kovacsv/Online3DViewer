@@ -71,32 +71,29 @@ export class ImporterBim extends ImporterBase
 
     ImportElement (bimElement)
     {
-        let materialIndex = null;
-        if (bimElement.color) {
-            let colorKey =
-                IntegerToHexString (bimElement.color.r) +
-                IntegerToHexString (bimElement.color.g) +
-                IntegerToHexString (bimElement.color.b) +
-                IntegerToHexString (bimElement.color.a);
-            if (this.colorToMaterialIndex.has (colorKey)) {
-                materialIndex = this.colorToMaterialIndex.get (colorKey);
-            } else {
-                let material = new PhongMaterial ();
-                material.name = colorKey;
-                material.color = new Color (bimElement.color.r, bimElement.color.g, bimElement.color.b);
-                if (bimElement.color.a < 255) {
-                    material.opacity = bimElement.color.a / 255.0;
-                    UpdateMaterialTransparency (material);
-                }
-                materialIndex = this.model.AddMaterial (material);
-                this.colorToMaterialIndex.set (colorKey, materialIndex);
-            }
-        }
+        let defaultMaterialIndex = this.GetMaterialIndexForColor (
+            bimElement.color.r,
+            bimElement.color.g,
+            bimElement.color.b,
+            bimElement.color.a
+        );
 
         let rootNode = this.model.GetRootNode ();
 
         let bimMesh = this.meshIdToMesh.get (bimElement.mesh_id);
-        let mesh = this.ImportMesh (bimMesh, materialIndex);
+        let mesh = this.ImportMesh (bimMesh, (triangleIndex) => {
+            if (bimElement.face_colors) {
+                let faceMaterialIndex = this.GetMaterialIndexForColor (
+                    bimElement.face_colors[triangleIndex * 4 + 0],
+                    bimElement.face_colors[triangleIndex * 4 + 1],
+                    bimElement.face_colors[triangleIndex * 4 + 2],
+                    bimElement.face_colors[triangleIndex * 4 + 3]
+                );
+                return faceMaterialIndex;
+            } else {
+                return defaultMaterialIndex;
+            }
+        });
         let meshIndex = this.model.AddMesh (mesh);
 
         let elementNode = new Node ();
@@ -128,7 +125,7 @@ export class ImporterBim extends ImporterBase
         return mesh;
     }
 
-    ImportMesh (bimMesh, materialIndex)
+    ImportMesh (bimMesh, getMaterialIndex)
     {
         let mesh = new Mesh ();
 
@@ -146,9 +143,7 @@ export class ImporterBim extends ImporterBase
                 bimMesh.indices[i + 1],
                 bimMesh.indices[i + 2]
             );
-            if (materialIndex !== null) {
-                triangle.SetMaterial (materialIndex);
-            }
+            triangle.SetMaterial (getMaterialIndex (i / 3));
             mesh.AddTriangle (triangle);
         }
 
@@ -182,5 +177,24 @@ export class ImporterBim extends ImporterBase
             }
         }
         target.AddPropertyGroup (propertyGroup);
+    }
+
+    GetMaterialIndexForColor (r, g, b, a)
+    {
+        let colorKey = IntegerToHexString (r) + IntegerToHexString (g) + IntegerToHexString (b) + IntegerToHexString (a);
+        if (this.colorToMaterialIndex.has (colorKey)) {
+            return this.colorToMaterialIndex.get (colorKey);
+        } else {
+            let material = new PhongMaterial ();
+            material.name = colorKey;
+            material.color = new Color (r, g, b);
+            if (a < 255) {
+                material.opacity = a / 255.0;
+                UpdateMaterialTransparency (material);
+            }
+            let materialIndex = this.model.AddMaterial (material);
+            this.colorToMaterialIndex.set (colorKey, materialIndex);
+            return materialIndex;
+        }
     }
 }

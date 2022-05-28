@@ -1,6 +1,5 @@
 import { FileFormat } from '../io/fileutils.js';
 import { ColorComponentFromFloat } from '../model/color.js';
-import { ConvertMeshToMeshBuffer } from '../model/meshbuffer.js';
 import { PropertyToString } from '../model/property.js';
 import { ExportedFile, ExporterBase } from './exporterbase.js';
 
@@ -39,42 +38,77 @@ export class ExporterBim extends ExporterBase
 
         let meshId = 0;
         exporterModel.EnumerateTransformedMeshes ((mesh) => {
-            let meshBuffer = ConvertMeshToMeshBuffer (mesh);
-            for (let primitiveIndex = 0; primitiveIndex < meshBuffer.PrimitiveCount (); primitiveIndex++) {
-                let primitive = meshBuffer.GetPrimitive (primitiveIndex);
-                let material = exporterModel.GetMaterial (primitive.material);
-                let bimMesh = {
-                    mesh_id : meshId,
-                    coordinates : primitive.vertices,
-                    indices : primitive.indices
+            let bimMesh = {
+                mesh_id : meshId,
+                coordinates : [],
+                indices : []
+            };
+
+            mesh.EnumerateVertices ((vertex) => {
+                bimMesh.coordinates.push (vertex.x, vertex.y, vertex.z);
+            });
+            mesh.EnumerateTriangleVertexIndices ((v0, v1, v2) => {
+                bimMesh.indices.push (v0, v1, v2);
+            });
+
+            let bimElement = {
+                mesh_id : meshId,
+                type : 'Other',
+                color : {
+                    r : 200,
+                    g : 200,
+                    b : 200,
+                    a : 255
+                },
+                vector : {
+                    x : 0.0,
+                    y : 0.0,
+                    z : 0.0
+                },
+                rotation : {
+                    qx: 0.0,
+                    qy: 0.0,
+                    qz: 0.0,
+                    qw: 1.0
+                },
+                guid : GenerateGuid ()
+            };
+
+            let defaultColor = null;
+            let hasOnlyOneColor = true;
+            let faceColors = [];
+            for (let i = 0; i < mesh.TriangleCount (); i++) {
+                let triangle = mesh.GetTriangle (i);
+                let material = exporterModel.GetMaterial (triangle.mat);
+                let faceColor = {
+                    r : material.color.r,
+                    g : material.color.g,
+                    b : material.color.b,
+                    a : ColorComponentFromFloat (material.opacity),
                 };
-                let bimElement = {
-                    mesh_id : meshId,
-                    type : 'Other',
-                    color : {
-                        r : material.color.r,
-                        g : material.color.g,
-                        b : material.color.b,
-                        a : ColorComponentFromFloat (material.opacity)
-                    },
-                    vector : {
-                        x : 0.0,
-                        y : 0.0,
-                        z : 0.0
-                    },
-                    rotation : {
-                        qx: 0.0,
-                        qy: 0.0,
-                        qz: 0.0,
-                        qw: 1.0
-                    },
-                    guid : GenerateGuid ()
-                };
-                this.ExportProperties (mesh, bimElement);
-                bimContent.meshes.push (bimMesh);
-                bimContent.elements.push (bimElement);
-                meshId += 1;
+                faceColors.push (faceColor.r, faceColor.g, faceColor.b, faceColor.a);
+                if (hasOnlyOneColor) {
+                    if (defaultColor === null) {
+                        defaultColor = faceColor;
+                    } else {
+                        if (defaultColor.r !== faceColor.r || defaultColor.g !== faceColor.g || defaultColor.b !== faceColor.b || defaultColor.a !== faceColor.a) {
+                            hasOnlyOneColor = false;
+                            defaultColor = null;
+                        }
+                    }
+                }
             }
+
+            if (hasOnlyOneColor) {
+                bimElement.color = defaultColor;
+            } else {
+                bimElement.face_colors = faceColors;
+            }
+
+            this.ExportProperties (mesh, bimElement);
+            bimContent.meshes.push (bimMesh);
+            bimContent.elements.push (bimElement);
+            meshId += 1;
         });
 
         let bimFile = new ExportedFile ('model.bim');
