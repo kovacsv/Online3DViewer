@@ -4,6 +4,7 @@
 	"description": "Online 3D Viewer",
 	"license": "MIT",
 	"type": "module",
+	"main": "./build/o3dv.min.js",
 	"module": "./source/engine/main.js",
 	"repository": "github:kovacsv/Online3DViewer",
 	"keywords": [
@@ -12,6 +13,7 @@
 		"3dm", "fbx", "dae", "wrl", "3mf", "ifc", "stp", "bim"
 	],
 	"files": [
+		"build/o3dv.min.js",
 		"source/engine/*",
 		"libs/loaders/*",
 		"website/assets/envmaps/*"
