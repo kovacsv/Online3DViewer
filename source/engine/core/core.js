@@ -30,5 +30,5 @@ export function IsObjectEmpty (obj)
 
 export function EscapeHtmlChars (str)
 {
-    return str.replaceAll ('<', '&lt;').replaceAll ('>', '&gt;');
+    return str.replace (/</g, '&lt;').replace (/>/g, '&gt;');
 }
