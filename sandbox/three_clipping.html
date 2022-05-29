@@ -23,6 +23,7 @@
 			let renderer = new THREE.WebGLRenderer (parameters);
 			renderer.setClearColor ('#ffffff', 1);
 			renderer.setSize (width, height);
+			renderer.localClippingEnabled = true;
 
 			let scene = new THREE.Scene ();
 
@@ -41,7 +42,11 @@
 
 			let box = new THREE.BoxGeometry (1.0, 1.0, 1.0);
 			let material = new THREE.MeshPhongMaterial ({
-				color : 0xcc0000
+				color : 0xcc0000,
+				side : THREE.DoubleSide,
+				clippingPlanes : [
+					new THREE.Plane (new THREE.Vector3 (0.0, 0.0, -1.0), 0.0)
+				]
 			});
 
 			let mesh = new THREE.Mesh (box, material);
