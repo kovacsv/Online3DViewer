@@ -1,4 +1,4 @@
-import { IsDefined, ValueOrDefault, CopyObjectAttributes, IsObjectEmpty } from './core/core.js';
+import { IsDefined, ValueOrDefault, CopyObjectAttributes, IsObjectEmpty, EscapeHtmlChars } from './core/core.js';
 import { TaskRunner, RunTaskAsync, RunTasks, RunTasksBatch, WaitWhile } from './core/taskrunner.js';
 import { Exporter } from './export/exporter.js';
 import { Exporter3dm } from './export/exporter3dm.js';
@@ -75,6 +75,7 @@ export {
     ValueOrDefault,
     CopyObjectAttributes,
     IsObjectEmpty,
+    EscapeHtmlChars,
     TaskRunner,
     RunTaskAsync,
     RunTasks,

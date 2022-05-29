@@ -27,3 +27,8 @@ export function IsObjectEmpty (obj)
 {
     return Object.keys (obj).length === 0;
 }
+
+export function EscapeHtmlChars (str)
+{
+    return str.replaceAll ('<', '&lt;').replaceAll ('>', '&gt;');
+}

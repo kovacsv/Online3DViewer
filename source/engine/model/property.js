@@ -1,3 +1,4 @@
+import { EscapeHtmlChars } from '../core/core.js';
 import { ColorToHexString } from './color.js';
 
 export const PropertyType =
@@ -66,7 +67,7 @@ export class PropertyGroup
 export function PropertyToString (property)
 {
     if (property.type === PropertyType.Text) {
-        return property.value;
+        return EscapeHtmlChars (property.value);
     } else if (property.type === PropertyType.Integer) {
         return property.value.toLocaleString ();
     } else if (property.type === PropertyType.Number) {
