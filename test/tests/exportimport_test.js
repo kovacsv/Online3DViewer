@@ -245,15 +245,7 @@ describe ('Export-Import Vertex Colors Test', function () {
         model.AddMeshToRootNode (mesh);
         OV.FinalizeModel (model);
         ExportImport (model, OV.FileFormat.Binary, 'glb', (model2) => {
-            assert.strictEqual (model2.MeshCount (), 1);
-            let mesh2 = model2.GetMesh (0);
-            assert.strictEqual (mesh2.VertexCount (), 3);
-            assert.strictEqual (mesh2.VertexColorCount (), 3);
-            assert.strictEqual (mesh2.TriangleCount (), 1);
-            let triangle2 = mesh2.GetTriangle (0);
-            assert.strictEqual (triangle2.c0, 0);
-            assert.strictEqual (triangle2.c1, 1);
-            assert.strictEqual (triangle2.c2, 2);
+            CheckModel (model, model2);
             done ();
         });
     });
