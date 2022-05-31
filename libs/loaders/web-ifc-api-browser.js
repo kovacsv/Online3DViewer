@@ -131,18 +131,10 @@ var WebIFC = (() => {
           var quit_ = function(status, toThrow) {
             throw toThrow;
           };
-          var ENVIRONMENT_IS_WEB = false;
-          var ENVIRONMENT_IS_WORKER = false;
-          var ENVIRONMENT_IS_NODE = false;
-          var ENVIRONMENT_IS_SHELL = false;
-          ENVIRONMENT_IS_WEB = typeof window === "object";
-          ENVIRONMENT_IS_WORKER = typeof importScripts === "function";
-          ENVIRONMENT_IS_NODE = typeof process === "object" && typeof process.versions === "object" && typeof process.versions.node === "string";
-          ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_WORKER;
+          var ENVIRONMENT_IS_WEB = typeof window === "object";
+          var ENVIRONMENT_IS_WORKER = typeof importScripts === "function";
+          var ENVIRONMENT_IS_NODE = typeof process === "object" && typeof process.versions === "object" && typeof process.versions.node === "string";
           var ENVIRONMENT_IS_PTHREAD = Module["ENVIRONMENT_IS_PTHREAD"] || false;
-          if (ENVIRONMENT_IS_PTHREAD) {
-            buffer = Module["buffer"];
-          }
           var scriptDirectory = "";
           function locateFile(path) {
             if (Module["locateFile"]) {
@@ -175,6 +167,19 @@ var WebIFC = (() => {
               assert(ret.buffer);
               return ret;
             };
+            readAsync = function readAsync2(filename, onload, onerror) {
+              if (!nodeFS)
+                nodeFS = __require("fs");
+              if (!nodePath)
+                nodePath = __require("path");
+              filename = nodePath["normalize"](filename);
+              nodeFS["readFile"](filename, function(err2, data) {
+                if (err2)
+                  onerror(err2);
+                else
+                  onload(data.buffer);
+              });
+            };
             if (process["argv"].length > 1) {
               thisProgram = process["argv"][1].replace(/\\/g, "/");
             }
@@ -185,7 +190,11 @@ var WebIFC = (() => {
               }
             });
             process["on"]("unhandledRejection", abort);
-            quit_ = function(status) {
+            quit_ = function(status, toThrow) {
+              if (keepRuntimeAlive()) {
+                process["exitCode"] = status;
+                throw toThrow;
+              }
               process["exit"](status);
             };
             Module["inspect"] = function() {
@@ -199,37 +208,6 @@ var WebIFC = (() => {
               throw e;
             }
             global.Worker = nodeWorkerThreads.Worker;
-          } else if (ENVIRONMENT_IS_SHELL) {
-            if (typeof read != "undefined") {
-              read_ = function shell_read(f) {
-                return read(f);
-              };
-            }
-            readBinary = function readBinary2(f) {
-              var data;
-              if (typeof readbuffer === "function") {
-                return new Uint8Array(readbuffer(f));
-              }
-              data = read(f, "binary");
-              assert(typeof data === "object");
-              return data;
-            };
-            if (typeof scriptArgs != "undefined") {
-              arguments_ = scriptArgs;
-            } else if (typeof arguments != "undefined") {
-              arguments_ = arguments;
-            }
-            if (typeof quit === "function") {
-              quit_ = function(status) {
-                quit(status);
-              };
-            }
-            if (typeof print !== "undefined") {
-              if (typeof console === "undefined")
-                console = {};
-              console.log = print;
-              console.warn = console.error = typeof printErr !== "undefined" ? printErr : print;
-            }
           } else if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
             if (ENVIRONMENT_IS_WORKER) {
               scriptDirectory = self.location.href;
@@ -261,15 +239,28 @@ var WebIFC = (() => {
                 assert(ret.buffer);
                 return ret;
               };
+              readAsync = function readAsync2(filename, onload, onerror) {
+                if (!nodeFS)
+                  nodeFS = __require("fs");
+                if (!nodePath)
+                  nodePath = __require("path");
+                filename = nodePath["normalize"](filename);
+                nodeFS["readFile"](filename, function(err2, data) {
+                  if (err2)
+                    onerror(err2);
+                  else
+                    onload(data.buffer);
+                });
+              };
             } else {
-              read_ = function shell_read(url) {
+              read_ = function(url) {
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", url, false);
                 xhr.send(null);
                 return xhr.responseText;
               };
               if (ENVIRONMENT_IS_WORKER) {
-                readBinary = function readBinary2(url) {
+                readBinary = function(url) {
                   var xhr = new XMLHttpRequest();
                   xhr.open("GET", url, false);
                   xhr.responseType = "arraybuffer";
@@ -277,11 +268,11 @@ var WebIFC = (() => {
                   return new Uint8Array(xhr.response);
                 };
               }
-              readAsync = function readAsync2(url, onload, onerror) {
+              readAsync = function(url, onload, onerror) {
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", url, true);
                 xhr.responseType = "arraybuffer";
-                xhr.onload = function xhr_onload() {
+                xhr.onload = function() {
                   if (xhr.status == 200 || xhr.status == 0 && xhr.response) {
                     onload(xhr.response);
                     return;
@@ -340,51 +331,62 @@ var WebIFC = (() => {
           var wasmBinary;
           if (Module["wasmBinary"])
             wasmBinary = Module["wasmBinary"];
-          var noExitRuntime;
-          if (Module["noExitRuntime"])
-            noExitRuntime = Module["noExitRuntime"];
+          var noExitRuntime = Module["noExitRuntime"] || true;
           if (typeof WebAssembly !== "object") {
             abort("no native wasm support detected");
           }
           var wasmMemory;
           var wasmModule;
-          var threadInfoStruct = 0;
-          var selfThreadId = 0;
           var ABORT = false;
-          var EXITSTATUS = 0;
+          var EXITSTATUS;
           function assert(condition, text) {
             if (!condition) {
               abort("Assertion failed: " + text);
             }
           }
+          function TextDecoderWrapper(encoding) {
+            var textDecoder = new TextDecoder(encoding);
+            this.decode = function(data) {
+              if (data.buffer instanceof SharedArrayBuffer) {
+                data = new Uint8Array(data);
+              }
+              return textDecoder.decode.call(textDecoder, data);
+            };
+          }
+          var UTF8Decoder = typeof TextDecoder !== "undefined" ? new TextDecoderWrapper("utf8") : void 0;
           function UTF8ArrayToString(heap, idx, maxBytesToRead) {
             idx >>>= 0;
             var endIdx = idx + maxBytesToRead;
-            var str = "";
-            while (!(idx >= endIdx)) {
-              var u0 = heap[idx++ >>> 0];
-              if (!u0)
-                return str;
-              if (!(u0 & 128)) {
-                str += String.fromCharCode(u0);
-                continue;
-              }
-              var u1 = heap[idx++ >>> 0] & 63;
-              if ((u0 & 224) == 192) {
-                str += String.fromCharCode((u0 & 31) << 6 | u1);
-                continue;
-              }
-              var u2 = heap[idx++ >>> 0] & 63;
-              if ((u0 & 240) == 224) {
-                u0 = (u0 & 15) << 12 | u1 << 6 | u2;
-              } else {
-                u0 = (u0 & 7) << 18 | u1 << 12 | u2 << 6 | heap[idx++ >>> 0] & 63;
-              }
-              if (u0 < 65536) {
-                str += String.fromCharCode(u0);
-              } else {
-                var ch = u0 - 65536;
-                str += String.fromCharCode(55296 | ch >> 10, 56320 | ch & 1023);
+            var endPtr = idx;
+            while (heap[endPtr >>> 0] && !(endPtr >= endIdx))
+              ++endPtr;
+            if (endPtr - idx > 16 && heap.subarray && UTF8Decoder) {
+              return UTF8Decoder.decode(heap.subarray(idx >>> 0, endPtr >>> 0));
+            } else {
+              var str = "";
+              while (idx < endPtr) {
+                var u0 = heap[idx++ >>> 0];
+                if (!(u0 & 128)) {
+                  str += String.fromCharCode(u0);
+                  continue;
+                }
+                var u1 = heap[idx++ >>> 0] & 63;
+                if ((u0 & 224) == 192) {
+                  str += String.fromCharCode((u0 & 31) << 6 | u1);
+                  continue;
+                }
+                var u2 = heap[idx++ >>> 0] & 63;
+                if ((u0 & 240) == 224) {
+                  u0 = (u0 & 15) << 12 | u1 << 6 | u2;
+                } else {
+                  u0 = (u0 & 7) << 18 | u1 << 12 | u2 << 6 | heap[idx++ >>> 0] & 63;
+                }
+                if (u0 < 65536) {
+                  str += String.fromCharCode(u0);
+                } else {
+                  var ch = u0 - 65536;
+                  str += String.fromCharCode(55296 | ch >> 10, 56320 | ch & 1023);
+                }
               }
             }
             return str;
@@ -452,15 +454,26 @@ var WebIFC = (() => {
             }
             return len;
           }
+          var UTF16Decoder = typeof TextDecoder !== "undefined" ? new TextDecoderWrapper("utf-16le") : void 0;
           function UTF16ToString(ptr, maxBytesToRead) {
-            var str = "";
-            for (var i = 0; !(i >= maxBytesToRead / 2); ++i) {
-              var codeUnit = GROWABLE_HEAP_I16()[ptr + i * 2 >> 1];
-              if (codeUnit == 0)
-                break;
-              str += String.fromCharCode(codeUnit);
+            var endPtr = ptr;
+            var idx = endPtr >> 1;
+            var maxIdx = idx + maxBytesToRead / 2;
+            while (!(idx >= maxIdx) && GROWABLE_HEAP_U16()[idx >>> 0])
+              ++idx;
+            endPtr = idx << 1;
+            if (endPtr - ptr > 32 && UTF16Decoder) {
+              return UTF16Decoder.decode(GROWABLE_HEAP_U8().subarray(ptr >>> 0, endPtr >>> 0));
+            } else {
+              var str = "";
+              for (var i = 0; !(i >= maxBytesToRead / 2); ++i) {
+                var codeUnit = GROWABLE_HEAP_I16()[ptr + i * 2 >>> 1];
+                if (codeUnit == 0)
+                  break;
+                str += String.fromCharCode(codeUnit);
+              }
+              return str;
             }
-            return str;
           }
           function stringToUTF16(str, outPtr, maxBytesToWrite) {
             if (maxBytesToWrite === void 0) {
@@ -473,10 +486,10 @@ var WebIFC = (() => {
             var numCharsToWrite = maxBytesToWrite < str.length * 2 ? maxBytesToWrite / 2 : str.length;
             for (var i = 0; i < numCharsToWrite; ++i) {
               var codeUnit = str.charCodeAt(i);
-              GROWABLE_HEAP_I16()[outPtr >> 1] = codeUnit;
+              GROWABLE_HEAP_I16()[outPtr >>> 1] = codeUnit;
               outPtr += 2;
             }
-            GROWABLE_HEAP_I16()[outPtr >> 1] = 0;
+            GROWABLE_HEAP_I16()[outPtr >>> 1] = 0;
             return outPtr - startPtr;
           }
           function lengthBytesUTF16(str) {
@@ -486,7 +499,7 @@ var WebIFC = (() => {
             var i = 0;
             var str = "";
             while (!(i >= maxBytesToRead / 4)) {
-              var utf32 = GROWABLE_HEAP_I32()[ptr + i * 4 >> 2];
+              var utf32 = GROWABLE_HEAP_I32()[ptr + i * 4 >>> 2];
               if (utf32 == 0)
                 break;
               ++i;
@@ -514,12 +527,12 @@ var WebIFC = (() => {
                 var trailSurrogate = str.charCodeAt(++i);
                 codeUnit = 65536 + ((codeUnit & 1023) << 10) | trailSurrogate & 1023;
               }
-              GROWABLE_HEAP_I32()[outPtr >> 2] = codeUnit;
+              GROWABLE_HEAP_I32()[outPtr >>> 2] = codeUnit;
               outPtr += 4;
               if (outPtr + 4 > endPtr)
                 break;
             }
-            GROWABLE_HEAP_I32()[outPtr >> 2] = 0;
+            GROWABLE_HEAP_I32()[outPtr >>> 2] = 0;
             return outPtr - startPtr;
           }
           function lengthBytesUTF32(str) {
@@ -533,14 +546,14 @@ var WebIFC = (() => {
             return len;
           }
           function writeArrayToMemory(array, buffer2) {
-            GROWABLE_HEAP_I8().set(array, buffer2);
+            GROWABLE_HEAP_I8().set(array, buffer2 >>> 0);
           }
           function writeAsciiToMemory(str, buffer2, dontAddNull) {
             for (var i = 0; i < str.length; ++i) {
-              GROWABLE_HEAP_I8()[buffer2++ >> 0] = str.charCodeAt(i);
+              GROWABLE_HEAP_I8()[buffer2++ >>> 0] = str.charCodeAt(i);
             }
             if (!dontAddNull)
-              GROWABLE_HEAP_I8()[buffer2 >> 0] = 0;
+              GROWABLE_HEAP_I8()[buffer2 >>> 0] = 0;
           }
           function alignUp(x, multiple) {
             if (x % multiple > 0) {
@@ -549,6 +562,9 @@ var WebIFC = (() => {
             return x;
           }
           var buffer, HEAP8, HEAPU8, HEAP16, HEAPU16, HEAP32, HEAPU32, HEAPF32, HEAPF64;
+          if (ENVIRONMENT_IS_PTHREAD) {
+            buffer = Module["buffer"];
+          }
           function updateGlobalBufferAndViews(buf) {
             buffer = buf;
             Module["HEAP8"] = HEAP8 = new Int8Array(buf);
@@ -591,8 +607,10 @@ var WebIFC = (() => {
           var __ATPOSTRUN__ = [];
           var runtimeInitialized = false;
           var runtimeExited = false;
-          if (ENVIRONMENT_IS_PTHREAD)
-            runtimeInitialized = true;
+          var runtimeKeepaliveCounter = 0;
+          function keepRuntimeAlive() {
+            return noExitRuntime || runtimeKeepaliveCounter > 0;
+          }
           function preRun() {
             if (ENVIRONMENT_IS_PTHREAD)
               return;
@@ -607,15 +625,17 @@ var WebIFC = (() => {
           }
           function initRuntime() {
             runtimeInitialized = true;
+            if (ENVIRONMENT_IS_PTHREAD)
+              return;
             if (!Module["noFSInit"] && !FS.init.initialized)
               FS.init();
+            FS.ignorePermissions = false;
             TTY.init();
             callRuntimeCallbacks(__ATINIT__);
           }
           function preMain() {
             if (ENVIRONMENT_IS_PTHREAD)
               return;
-            FS.ignorePermissions = false;
             callRuntimeCallbacks(__ATMAIN__);
           }
           function exitRuntime() {
@@ -638,6 +658,9 @@ var WebIFC = (() => {
           function addOnPreRun(cb) {
             __ATPRERUN__.unshift(cb);
           }
+          function addOnInit(cb) {
+            __ATINIT__.unshift(cb);
+          }
           function addOnPostRun(cb) {
             __ATPOSTRUN__.unshift(cb);
           }
@@ -648,7 +671,6 @@ var WebIFC = (() => {
             return id;
           }
           function addRunDependency(id) {
-            assert(!ENVIRONMENT_IS_PTHREAD, "addRunDependency cannot be used in a pthread worker");
             runDependencies++;
             if (Module["monitorRunDependencies"]) {
               Module["monitorRunDependencies"](runDependencies);
@@ -688,28 +710,25 @@ var WebIFC = (() => {
             readyPromiseReject(e);
             throw e;
           }
-          function hasPrefix(str, prefix) {
-            return String.prototype.startsWith ? str.startsWith(prefix) : str.indexOf(prefix) === 0;
-          }
           var dataURIPrefix = "data:application/octet-stream;base64,";
           function isDataURI(filename) {
-            return hasPrefix(filename, dataURIPrefix);
+            return filename.startsWith(dataURIPrefix);
           }
-          var fileURIPrefix = "file://";
           function isFileURI(filename) {
-            return hasPrefix(filename, fileURIPrefix);
+            return filename.startsWith("file://");
           }
-          var wasmBinaryFile = "web-ifc-mt.wasm";
+          var wasmBinaryFile;
+          wasmBinaryFile = "web-ifc-mt.wasm";
           if (!isDataURI(wasmBinaryFile)) {
             wasmBinaryFile = locateFile(wasmBinaryFile);
           }
-          function getBinary() {
+          function getBinary(file) {
             try {
-              if (wasmBinary) {
+              if (file == wasmBinaryFile && wasmBinary) {
                 return new Uint8Array(wasmBinary);
               }
               if (readBinary) {
-                return readBinary(wasmBinaryFile);
+                return readBinary(file);
               } else {
                 throw "both async and sync fetching of the wasm failed";
               }
@@ -718,24 +737,38 @@ var WebIFC = (() => {
             }
           }
           function getBinaryPromise() {
-            if (!wasmBinary && (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) && typeof fetch === "function" && !isFileURI(wasmBinaryFile)) {
-              return fetch(wasmBinaryFile, { credentials: "same-origin" }).then(function(response) {
-                if (!response["ok"]) {
-                  throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
+            if (!wasmBinary && (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER)) {
+              if (typeof fetch === "function" && !isFileURI(wasmBinaryFile)) {
+                return fetch(wasmBinaryFile, { credentials: "same-origin" }).then(function(response) {
+                  if (!response["ok"]) {
+                    throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
+                  }
+                  return response["arrayBuffer"]();
+                }).catch(function() {
+                  return getBinary(wasmBinaryFile);
+                });
+              } else {
+                if (readAsync) {
+                  return new Promise(function(resolve, reject) {
+                    readAsync(wasmBinaryFile, function(response) {
+                      resolve(new Uint8Array(response));
+                    }, reject);
+                  });
                 }
-                return response["arrayBuffer"]();
-              }).catch(function() {
-                return getBinary();
-              });
+              }
             }
-            return Promise.resolve().then(getBinary);
+            return Promise.resolve().then(function() {
+              return getBinary(wasmBinaryFile);
+            });
           }
           function createWasm() {
             var info = { "a": asmLibraryArg };
             function receiveInstance(instance, module2) {
               var exports3 = instance.exports;
               Module["asm"] = exports3;
-              wasmTable = Module["asm"]["pa"];
+              wasmTable = Module["asm"]["ta"];
+              addOnInit(Module["asm"]["oa"]);
+              PThread.tlsInitFunctions.push(Module["asm"]["sa"]);
               wasmModule = module2;
               if (!ENVIRONMENT_IS_PTHREAD) {
                 var numWorkersToLoad = PThread.unusedWorkers.length;
@@ -750,12 +783,13 @@ var WebIFC = (() => {
             if (!ENVIRONMENT_IS_PTHREAD) {
               addRunDependency("wasm-instantiate");
             }
-            function receiveInstantiatedSource(output) {
-              receiveInstance(output["instance"], output["module"]);
+            function receiveInstantiationResult(result) {
+              receiveInstance(result["instance"], result["module"]);
             }
             function instantiateArrayBuffer(receiver) {
               return getBinaryPromise().then(function(binary) {
-                return WebAssembly.instantiate(binary, info);
+                var result = WebAssembly.instantiate(binary, info);
+                return result;
               }).then(receiver, function(reason) {
                 err("failed to asynchronously prepare wasm: " + reason);
                 abort(reason);
@@ -765,14 +799,14 @@ var WebIFC = (() => {
               if (!wasmBinary && typeof WebAssembly.instantiateStreaming === "function" && !isDataURI(wasmBinaryFile) && !isFileURI(wasmBinaryFile) && typeof fetch === "function") {
                 return fetch(wasmBinaryFile, { credentials: "same-origin" }).then(function(response) {
                   var result = WebAssembly.instantiateStreaming(response, info);
-                  return result.then(receiveInstantiatedSource, function(reason) {
+                  return result.then(receiveInstantiationResult, function(reason) {
                     err("wasm streaming compile failed: " + reason);
                     err("falling back to ArrayBuffer instantiation");
-                    return instantiateArrayBuffer(receiveInstantiatedSource);
+                    return instantiateArrayBuffer(receiveInstantiationResult);
                   });
                 });
               } else {
-                return instantiateArrayBuffer(receiveInstantiatedSource);
+                return instantiateArrayBuffer(receiveInstantiationResult);
               }
             }
             if (Module["instantiateWasm"]) {
@@ -789,12 +823,12 @@ var WebIFC = (() => {
           }
           var tempDouble;
           var tempI64;
-          var ASM_CONSTS = { 41793: function($0, $1) {
-            setTimeout(function() {
-              _do_emscripten_dispatch_to_thread($0, $1);
-            }, 0);
-          }, 41871: function() {
+          var ASM_CONSTS = { 44848: function() {
             throw "Canceled!";
+          }, 44866: function($0, $1) {
+            setTimeout(function() {
+              __emscripten_do_dispatch_to_thread($0, $1);
+            }, 0);
           } };
           function initPthreadsJS() {
             PThread.initRuntime();
@@ -818,32 +852,6 @@ var WebIFC = (() => {
               }
             }
           }
-          function dynCallLegacy(sig, ptr, args) {
-            if (args && args.length) {
-              return Module["dynCall_" + sig].apply(null, [ptr].concat(args));
-            }
-            return Module["dynCall_" + sig].call(null, ptr);
-          }
-          function dynCall(sig, ptr, args) {
-            if (sig.indexOf("j") != -1) {
-              return dynCallLegacy(sig, ptr, args);
-            }
-            return wasmTable.get(ptr).apply(null, args);
-          }
-          Module["dynCall"] = dynCall;
-          var __pthread_ptr = 0;
-          var __pthread_is_main_runtime_thread = 0;
-          var __pthread_is_main_browser_thread = 0;
-          function registerPthreadPtr(pthreadPtr, isMainBrowserThread, isMainRuntimeThread) {
-            pthreadPtr = pthreadPtr | 0;
-            isMainBrowserThread = isMainBrowserThread | 0;
-            isMainRuntimeThread = isMainRuntimeThread | 0;
-            __pthread_ptr = pthreadPtr;
-            __pthread_is_main_browser_thread = isMainBrowserThread;
-            __pthread_is_main_runtime_thread = isMainRuntimeThread;
-          }
-          Module["registerPthreadPtr"] = registerPthreadPtr;
-          var ERRNO_CODES = { EPERM: 63, ENOENT: 44, ESRCH: 71, EINTR: 27, EIO: 29, ENXIO: 60, E2BIG: 1, ENOEXEC: 45, EBADF: 8, ECHILD: 12, EAGAIN: 6, EWOULDBLOCK: 6, ENOMEM: 48, EACCES: 2, EFAULT: 21, ENOTBLK: 105, EBUSY: 10, EEXIST: 20, EXDEV: 75, ENODEV: 43, ENOTDIR: 54, EISDIR: 31, EINVAL: 28, ENFILE: 41, EMFILE: 33, ENOTTY: 59, ETXTBSY: 74, EFBIG: 22, ENOSPC: 51, ESPIPE: 70, EROFS: 69, EMLINK: 34, EPIPE: 64, EDOM: 18, ERANGE: 68, ENOMSG: 49, EIDRM: 24, ECHRNG: 106, EL2NSYNC: 156, EL3HLT: 107, EL3RST: 108, ELNRNG: 109, EUNATCH: 110, ENOCSI: 111, EL2HLT: 112, EDEADLK: 16, ENOLCK: 46, EBADE: 113, EBADR: 114, EXFULL: 115, ENOANO: 104, EBADRQC: 103, EBADSLT: 102, EDEADLOCK: 16, EBFONT: 101, ENOSTR: 100, ENODATA: 116, ETIME: 117, ENOSR: 118, ENONET: 119, ENOPKG: 120, EREMOTE: 121, ENOLINK: 47, EADV: 122, ESRMNT: 123, ECOMM: 124, EPROTO: 65, EMULTIHOP: 36, EDOTDOT: 125, EBADMSG: 9, ENOTUNIQ: 126, EBADFD: 127, EREMCHG: 128, ELIBACC: 129, ELIBBAD: 130, ELIBSCN: 131, ELIBMAX: 132, ELIBEXEC: 133, ENOSYS: 52, ENOTEMPTY: 55, ENAMETOOLONG: 37, ELOOP: 32, EOPNOTSUPP: 138, EPFNOSUPPORT: 139, ECONNRESET: 15, ENOBUFS: 42, EAFNOSUPPORT: 5, EPROTOTYPE: 67, ENOTSOCK: 57, ENOPROTOOPT: 50, ESHUTDOWN: 140, ECONNREFUSED: 14, EADDRINUSE: 3, ECONNABORTED: 13, ENETUNREACH: 40, ENETDOWN: 38, ETIMEDOUT: 73, EHOSTDOWN: 142, EHOSTUNREACH: 23, EINPROGRESS: 26, EALREADY: 7, EDESTADDRREQ: 17, EMSGSIZE: 35, EPROTONOSUPPORT: 66, ESOCKTNOSUPPORT: 137, EADDRNOTAVAIL: 4, ENETRESET: 39, EISCONN: 30, ENOTCONN: 53, ETOOMANYREFS: 141, EUSERS: 136, EDQUOT: 19, ESTALE: 72, ENOTSUP: 138, ENOMEDIUM: 148, EILSEQ: 25, EOVERFLOW: 61, ECANCELED: 11, ENOTRECOVERABLE: 56, EOWNERDEAD: 62, ESTRPIPE: 135 };
           function _emscripten_futex_wake(addr, count) {
             if (addr <= 0 || addr > GROWABLE_HEAP_I8().length || addr & true || count < 0)
               return -28;
@@ -851,10 +859,10 @@ var WebIFC = (() => {
               return 0;
             if (count >= 2147483647)
               count = Infinity;
-            var mainThreadWaitAddress = Atomics.load(GROWABLE_HEAP_I32(), PThread.mainThreadFutex >> 2);
+            var mainThreadWaitAddress = Atomics.load(GROWABLE_HEAP_I32(), __emscripten_main_thread_futex >> 2);
             var mainThreadWoken = 0;
             if (mainThreadWaitAddress == addr) {
-              var loadedAddr = Atomics.compareExchange(GROWABLE_HEAP_I32(), PThread.mainThreadFutex >> 2, mainThreadWaitAddress, 0);
+              var loadedAddr = Atomics.compareExchange(GROWABLE_HEAP_I32(), __emscripten_main_thread_futex >> 2, mainThreadWaitAddress, 0);
               if (loadedAddr == mainThreadWaitAddress) {
                 --count;
                 mainThreadWoken = 1;
@@ -873,7 +881,7 @@ var WebIFC = (() => {
               throw "Internal Error! killThread() can only ever be called from main application thread!";
             if (!pthread_ptr)
               throw "Internal Error! Null pthread_ptr in killThread!";
-            GROWABLE_HEAP_I32()[pthread_ptr + 12 >> 2] = 0;
+            GROWABLE_HEAP_I32()[pthread_ptr + 12 >>> 2] = 0;
             var pthread = PThread.pthreads[pthread_ptr];
             pthread.worker.terminate();
             PThread.freeThreadData(pthread);
@@ -893,68 +901,58 @@ var WebIFC = (() => {
               throw "Internal Error! cleanupThread() can only ever be called from main application thread!";
             if (!pthread_ptr)
               throw "Internal Error! Null pthread_ptr in cleanupThread!";
-            GROWABLE_HEAP_I32()[pthread_ptr + 12 >> 2] = 0;
             var pthread = PThread.pthreads[pthread_ptr];
             if (pthread) {
+              GROWABLE_HEAP_I32()[pthread_ptr + 12 >>> 2] = 0;
               var worker = pthread.worker;
               PThread.returnWorkerToPool(worker);
             }
           }
-          var PThread = { MAIN_THREAD_ID: 1, mainThreadInfo: { schedPolicy: 0, schedPrio: 0 }, unusedWorkers: [], runningWorkers: [], initMainThreadBlock: function() {
+          var PThread = { unusedWorkers: [], runningWorkers: [], tlsInitFunctions: [], initMainThreadBlock: function() {
             var pthreadPoolSize = navigator.hardwareConcurrency;
             for (var i = 0; i < pthreadPoolSize; ++i) {
               PThread.allocateUnusedWorker();
             }
           }, initRuntime: function() {
-            PThread.mainThreadBlock = _malloc(232);
-            for (var i = 0; i < 232 / 4; ++i)
-              GROWABLE_HEAP_U32()[PThread.mainThreadBlock / 4 + i] = 0;
-            GROWABLE_HEAP_I32()[PThread.mainThreadBlock + 12 >> 2] = PThread.mainThreadBlock;
-            var headPtr = PThread.mainThreadBlock + 156;
-            GROWABLE_HEAP_I32()[headPtr >> 2] = headPtr;
+            var tb = _malloc(228);
+            for (var i = 0; i < 228 / 4; ++i)
+              GROWABLE_HEAP_U32()[tb / 4 + i >>> 0] = 0;
+            GROWABLE_HEAP_I32()[tb + 12 >>> 2] = tb;
+            var headPtr = tb + 152;
+            GROWABLE_HEAP_I32()[headPtr >>> 2] = headPtr;
             var tlsMemory = _malloc(512);
             for (var i = 0; i < 128; ++i)
-              GROWABLE_HEAP_U32()[tlsMemory / 4 + i] = 0;
-            Atomics.store(GROWABLE_HEAP_U32(), PThread.mainThreadBlock + 104 >> 2, tlsMemory);
-            Atomics.store(GROWABLE_HEAP_U32(), PThread.mainThreadBlock + 40 >> 2, PThread.mainThreadBlock);
-            Atomics.store(GROWABLE_HEAP_U32(), PThread.mainThreadBlock + 44 >> 2, 42);
-            PThread.initShared();
-            registerPthreadPtr(PThread.mainThreadBlock, !ENVIRONMENT_IS_WORKER, 1);
-            _emscripten_register_main_browser_thread_id(PThread.mainThreadBlock);
+              GROWABLE_HEAP_U32()[tlsMemory / 4 + i >>> 0] = 0;
+            Atomics.store(GROWABLE_HEAP_U32(), tb + 100 >> 2, tlsMemory);
+            Atomics.store(GROWABLE_HEAP_U32(), tb + 40 >> 2, tb);
+            __emscripten_thread_init(tb, !ENVIRONMENT_IS_WORKER, 1);
+            _emscripten_register_main_browser_thread_id(tb);
           }, initWorker: function() {
-            PThread.initShared();
-            readyPromiseResolve(Module);
-          }, initShared: function() {
-            PThread.mainThreadFutex = _main_thread_futex;
-          }, pthreads: {}, threadExitHandlers: [], setThreadStatus: function() {
-          }, runExitHandlers: function() {
+          }, pthreads: {}, threadExitHandlers: [], runExitHandlers: function() {
             while (PThread.threadExitHandlers.length > 0) {
               PThread.threadExitHandlers.pop()();
             }
-            if (ENVIRONMENT_IS_PTHREAD && threadInfoStruct)
-              ___pthread_tsd_run_dtors();
+            ___pthread_tsd_run_dtors();
+          }, runExitHandlersAndDeinitThread: function(tb, exitCode) {
+            Atomics.store(GROWABLE_HEAP_U32(), tb + 56 >> 2, 1);
+            Atomics.store(GROWABLE_HEAP_U32(), tb + 60 >> 2, 0);
+            PThread.runExitHandlers();
+            Atomics.store(GROWABLE_HEAP_U32(), tb + 4 >> 2, exitCode);
+            Atomics.store(GROWABLE_HEAP_U32(), tb + 0 >> 2, 1);
+            _emscripten_futex_wake(tb + 0, 2147483647);
+            __emscripten_thread_init(0, 0, 0);
+          }, setExitStatus: function(status) {
+            EXITSTATUS = status;
           }, threadExit: function(exitCode) {
             var tb = _pthread_self();
             if (tb) {
-              Atomics.store(GROWABLE_HEAP_U32(), tb + 4 >> 2, exitCode);
-              Atomics.store(GROWABLE_HEAP_U32(), tb + 0 >> 2, 1);
-              Atomics.store(GROWABLE_HEAP_U32(), tb + 60 >> 2, 1);
-              Atomics.store(GROWABLE_HEAP_U32(), tb + 64 >> 2, 0);
-              PThread.runExitHandlers();
-              _emscripten_futex_wake(tb + 0, 2147483647);
-              registerPthreadPtr(0, 0, 0);
-              threadInfoStruct = 0;
+              PThread.runExitHandlersAndDeinitThread(tb, exitCode);
               if (ENVIRONMENT_IS_PTHREAD) {
                 postMessage({ "cmd": "exit" });
               }
             }
           }, threadCancel: function() {
-            PThread.runExitHandlers();
-            Atomics.store(GROWABLE_HEAP_U32(), threadInfoStruct + 4 >> 2, -1);
-            Atomics.store(GROWABLE_HEAP_U32(), threadInfoStruct + 0 >> 2, 1);
-            _emscripten_futex_wake(threadInfoStruct + 0, 2147483647);
-            threadInfoStruct = selfThreadId = 0;
-            registerPthreadPtr(0, 0, 0);
+            PThread.runExitHandlersAndDeinitThread(_pthread_self(), -1);
             postMessage({ "cmd": "cancelDone" });
           }, terminateAllThreads: function() {
             for (var t in PThread.pthreads) {
@@ -980,8 +978,8 @@ var WebIFC = (() => {
             if (!pthread)
               return;
             if (pthread.threadInfoStruct) {
-              var tlsMemory = GROWABLE_HEAP_I32()[pthread.threadInfoStruct + 104 >> 2];
-              GROWABLE_HEAP_I32()[pthread.threadInfoStruct + 104 >> 2] = 0;
+              var tlsMemory = GROWABLE_HEAP_I32()[pthread.threadInfoStruct + 100 >>> 2];
+              GROWABLE_HEAP_I32()[pthread.threadInfoStruct + 100 >>> 2] = 0;
               _free(tlsMemory);
               _free(pthread.threadInfoStruct);
             }
@@ -992,12 +990,25 @@ var WebIFC = (() => {
             if (pthread.worker)
               pthread.worker.pthread = null;
           }, returnWorkerToPool: function(worker) {
-            delete PThread.pthreads[worker.pthread.thread];
-            PThread.unusedWorkers.push(worker);
-            PThread.runningWorkers.splice(PThread.runningWorkers.indexOf(worker), 1);
-            PThread.freeThreadData(worker.pthread);
-            worker.pthread = void 0;
+            PThread.runWithoutMainThreadQueuedCalls(function() {
+              delete PThread.pthreads[worker.pthread.threadInfoStruct];
+              PThread.unusedWorkers.push(worker);
+              PThread.runningWorkers.splice(PThread.runningWorkers.indexOf(worker), 1);
+              PThread.freeThreadData(worker.pthread);
+              worker.pthread = void 0;
+            });
+          }, runWithoutMainThreadQueuedCalls: function(func) {
+            GROWABLE_HEAP_I32()[__emscripten_allow_main_runtime_queued_calls >>> 2] = 0;
+            try {
+              func();
+            } finally {
+              GROWABLE_HEAP_I32()[__emscripten_allow_main_runtime_queued_calls >>> 2] = 1;
+            }
           }, receiveObjectTransfer: function(data) {
+          }, threadInit: function() {
+            for (var i in PThread.tlsInitFunctions) {
+              PThread.tlsInitFunctions[i]();
+            }
           }, loadWasmModuleToWorker: function(worker, onFinishedLoading) {
             worker.onmessage = function(e) {
               var d = e["data"];
@@ -1039,9 +1050,17 @@ var WebIFC = (() => {
               } else if (cmd === "alert") {
                 alert("Thread " + d["threadId"] + ": " + d["text"]);
               } else if (cmd === "exit") {
-                var detached = worker.pthread && Atomics.load(GROWABLE_HEAP_U32(), worker.pthread.thread + 68 >> 2);
+                var detached = worker.pthread && Atomics.load(GROWABLE_HEAP_U32(), worker.pthread.threadInfoStruct + 64 >> 2);
                 if (detached) {
                   PThread.returnWorkerToPool(worker);
+                }
+              } else if (cmd === "exitProcess") {
+                try {
+                  exit(d["returnCode"]);
+                } catch (e2) {
+                  if (e2 instanceof ExitStatus)
+                    return;
+                  throw e2;
                 }
               } else if (cmd === "cancelDone") {
                 PThread.returnWorkerToPool(worker);
@@ -1076,10 +1095,7 @@ var WebIFC = (() => {
               PThread.allocateUnusedWorker();
               PThread.loadWasmModuleToWorker(PThread.unusedWorkers[0]);
             }
-            if (PThread.unusedWorkers.length > 0)
-              return PThread.unusedWorkers.pop();
-            else
-              return null;
+            return PThread.unusedWorkers.pop();
           }, busySpinWait: function(msecs) {
             var t = performance.now() + msecs;
             while (performance.now() < t) {
@@ -1090,10 +1106,10 @@ var WebIFC = (() => {
             stackRestore(stackTop);
           }
           Module["establishStackSpace"] = establishStackSpace;
-          function getNoExitRuntime() {
-            return noExitRuntime;
+          function invokeEntryPoint(ptr, arg) {
+            return wasmTable.get(ptr)(arg);
           }
-          Module["getNoExitRuntime"] = getNoExitRuntime;
+          Module["invokeEntryPoint"] = invokeEntryPoint;
           function ___assert_fail(condition, filename, line, func) {
             abort("Assertion failed: " + UTF8ToString(condition) + ", at: " + [filename ? UTF8ToString(filename) : "unknown filename", line, func ? UTF8ToString(func) : "unknown function"]);
           }
@@ -1107,15 +1123,13 @@ var WebIFC = (() => {
             _emscripten_get_now = function() {
               return performance.now() - Module["__performance_now_clock_drift"];
             };
-          } else if (typeof dateNow !== "undefined") {
-            _emscripten_get_now = dateNow;
           } else
             _emscripten_get_now = function() {
               return performance.now();
             };
           var _emscripten_get_now_is_monotonic = true;
           function setErrNo(value) {
-            GROWABLE_HEAP_I32()[___errno_location() >> 2] = value;
+            GROWABLE_HEAP_I32()[___errno_location() >>> 2] = value;
             return value;
           }
           function _clock_gettime(clk_id, tp) {
@@ -1128,49 +1142,53 @@ var WebIFC = (() => {
               setErrNo(28);
               return -1;
             }
-            GROWABLE_HEAP_I32()[tp >> 2] = now / 1e3 | 0;
-            GROWABLE_HEAP_I32()[tp + 4 >> 2] = now % 1e3 * 1e3 * 1e3 | 0;
+            GROWABLE_HEAP_I32()[tp >>> 2] = now / 1e3 | 0;
+            GROWABLE_HEAP_I32()[tp + 4 >>> 2] = now % 1e3 * 1e3 * 1e3 | 0;
             return 0;
           }
-          var ExceptionInfoAttrs = { DESTRUCTOR_OFFSET: 0, REFCOUNT_OFFSET: 4, TYPE_OFFSET: 8, CAUGHT_OFFSET: 12, RETHROWN_OFFSET: 13, SIZE: 16 };
           function ___cxa_allocate_exception(size) {
-            return _malloc(size + ExceptionInfoAttrs.SIZE) + ExceptionInfoAttrs.SIZE;
+            return _malloc(size + 16) + 16;
           }
           function _atexit(func, arg) {
             if (ENVIRONMENT_IS_PTHREAD)
               return _emscripten_proxy_to_main_thread_js(1, 1, func, arg);
           }
+          function ___cxa_thread_atexit(routine, arg) {
+            PThread.threadExitHandlers.push(function() {
+              wasmTable.get(routine)(arg);
+            });
+          }
           function ExceptionInfo(excPtr) {
             this.excPtr = excPtr;
-            this.ptr = excPtr - ExceptionInfoAttrs.SIZE;
+            this.ptr = excPtr - 16;
             this.set_type = function(type) {
-              GROWABLE_HEAP_I32()[this.ptr + ExceptionInfoAttrs.TYPE_OFFSET >> 2] = type;
+              GROWABLE_HEAP_I32()[this.ptr + 4 >>> 2] = type;
             };
             this.get_type = function() {
-              return GROWABLE_HEAP_I32()[this.ptr + ExceptionInfoAttrs.TYPE_OFFSET >> 2];
+              return GROWABLE_HEAP_I32()[this.ptr + 4 >>> 2];
             };
             this.set_destructor = function(destructor) {
-              GROWABLE_HEAP_I32()[this.ptr + ExceptionInfoAttrs.DESTRUCTOR_OFFSET >> 2] = destructor;
+              GROWABLE_HEAP_I32()[this.ptr + 8 >>> 2] = destructor;
             };
             this.get_destructor = function() {
-              return GROWABLE_HEAP_I32()[this.ptr + ExceptionInfoAttrs.DESTRUCTOR_OFFSET >> 2];
+              return GROWABLE_HEAP_I32()[this.ptr + 8 >>> 2];
             };
             this.set_refcount = function(refcount) {
-              GROWABLE_HEAP_I32()[this.ptr + ExceptionInfoAttrs.REFCOUNT_OFFSET >> 2] = refcount;
+              GROWABLE_HEAP_I32()[this.ptr >>> 2] = refcount;
             };
             this.set_caught = function(caught) {
               caught = caught ? 1 : 0;
-              GROWABLE_HEAP_I8()[this.ptr + ExceptionInfoAttrs.CAUGHT_OFFSET >> 0] = caught;
+              GROWABLE_HEAP_I8()[this.ptr + 12 >>> 0] = caught;
             };
             this.get_caught = function() {
-              return GROWABLE_HEAP_I8()[this.ptr + ExceptionInfoAttrs.CAUGHT_OFFSET >> 0] != 0;
+              return GROWABLE_HEAP_I8()[this.ptr + 12 >>> 0] != 0;
             };
             this.set_rethrown = function(rethrown) {
               rethrown = rethrown ? 1 : 0;
-              GROWABLE_HEAP_I8()[this.ptr + ExceptionInfoAttrs.RETHROWN_OFFSET >> 0] = rethrown;
+              GROWABLE_HEAP_I8()[this.ptr + 13 >>> 0] = rethrown;
             };
             this.get_rethrown = function() {
-              return GROWABLE_HEAP_I8()[this.ptr + ExceptionInfoAttrs.RETHROWN_OFFSET >> 0] != 0;
+              return GROWABLE_HEAP_I8()[this.ptr + 13 >>> 0] != 0;
             };
             this.init = function(type, destructor) {
               this.set_type(type);
@@ -1180,10 +1198,10 @@ var WebIFC = (() => {
               this.set_rethrown(false);
             };
             this.add_ref = function() {
-              Atomics.add(GROWABLE_HEAP_I32(), this.ptr + ExceptionInfoAttrs.REFCOUNT_OFFSET >> 2, 1);
+              Atomics.add(GROWABLE_HEAP_I32(), this.ptr + 0 >> 2, 1);
             };
             this.release_ref = function() {
-              var prev = Atomics.sub(GROWABLE_HEAP_I32(), this.ptr + ExceptionInfoAttrs.REFCOUNT_OFFSET >> 2, 1);
+              var prev = Atomics.sub(GROWABLE_HEAP_I32(), this.ptr + 0 >> 2, 1);
               return prev === 1;
             };
           }
@@ -1388,12 +1406,12 @@ var WebIFC = (() => {
               var result = null;
               if (ENVIRONMENT_IS_NODE) {
                 var BUFSIZE = 256;
-                var buf = Buffer.alloc ? Buffer.alloc(BUFSIZE) : new Buffer(BUFSIZE);
+                var buf = Buffer.alloc(BUFSIZE);
                 var bytesRead = 0;
                 try {
                   bytesRead = nodeFS.readSync(process.stdin.fd, buf, 0, BUFSIZE, null);
                 } catch (e) {
-                  if (e.toString().indexOf("EOF") != -1)
+                  if (e.toString().includes("EOF"))
                     bytesRead = 0;
                   else
                     throw e;
@@ -1447,11 +1465,15 @@ var WebIFC = (() => {
               tty.output = [];
             }
           } } };
+          function zeroMemory(address, size) {
+            GROWABLE_HEAP_U8().fill(0, address, address + size);
+          }
           function mmapAlloc(size) {
-            var alignedSize = alignMemory(size, 16384);
-            var ptr = _malloc(alignedSize);
-            while (size < alignedSize)
-              GROWABLE_HEAP_I8()[ptr + size++] = 0;
+            size = alignMemory(size, 65536);
+            var ptr = _memalign(65536, size);
+            if (!ptr)
+              return 0;
+            zeroMemory(ptr, size);
             return ptr;
           }
           var MEMFS = { ops_table: null, mount: function(mount) {
@@ -1483,16 +1505,9 @@ var WebIFC = (() => {
             node.timestamp = Date.now();
             if (parent) {
               parent.contents[name2] = node;
+              parent.timestamp = node.timestamp;
             }
             return node;
-          }, getFileDataAsRegularArray: function(node) {
-            if (node.contents && node.contents.subarray) {
-              var arr = [];
-              for (var i = 0; i < node.usedBytes; ++i)
-                arr.push(node.contents[i]);
-              return arr;
-            }
-            return node.contents;
           }, getFileDataAsTypedArray: function(node) {
             if (!node.contents)
               return new Uint8Array(0);
@@ -1512,7 +1527,6 @@ var WebIFC = (() => {
             node.contents = new Uint8Array(newCapacity);
             if (node.usedBytes > 0)
               node.contents.set(oldContents.subarray(0, node.usedBytes), 0);
-            return;
           }, resizeFileStorage: function(node, newSize) {
             newSize >>>= 0;
             if (node.usedBytes == newSize)
@@ -1520,25 +1534,14 @@ var WebIFC = (() => {
             if (newSize == 0) {
               node.contents = null;
               node.usedBytes = 0;
-              return;
-            }
-            if (!node.contents || node.contents.subarray) {
+            } else {
               var oldContents = node.contents;
               node.contents = new Uint8Array(newSize);
               if (oldContents) {
                 node.contents.set(oldContents.subarray(0, Math.min(newSize, node.usedBytes)));
               }
               node.usedBytes = newSize;
-              return;
             }
-            if (!node.contents)
-              node.contents = [];
-            if (node.contents.length > newSize)
-              node.contents.length = newSize;
-            else
-              while (node.contents.length < newSize)
-                node.contents.push(0);
-            node.usedBytes = newSize;
           }, node_ops: { getattr: function(node) {
             var attr = {};
             attr.dev = FS.isChrdev(node.mode) ? node.id : 1;
@@ -1591,17 +1594,21 @@ var WebIFC = (() => {
               }
             }
             delete old_node.parent.contents[old_node.name];
+            old_node.parent.timestamp = Date.now();
             old_node.name = new_name;
             new_dir.contents[new_name] = old_node;
+            new_dir.timestamp = old_node.parent.timestamp;
             old_node.parent = new_dir;
           }, unlink: function(parent, name2) {
             delete parent.contents[name2];
+            parent.timestamp = Date.now();
           }, rmdir: function(parent, name2) {
             var node = FS.lookupNode(parent, name2);
             for (var i in node.contents) {
               throw new FS.ErrnoError(55);
             }
             delete parent.contents[name2];
+            parent.timestamp = Date.now();
           }, readdir: function(node) {
             var entries = [".", ".."];
             for (var key2 in node.contents) {
@@ -1681,7 +1688,9 @@ var WebIFC = (() => {
             MEMFS.expandFileStorage(stream.node, offset + length);
             stream.node.usedBytes = Math.max(stream.node.usedBytes, offset + length);
           }, mmap: function(stream, address, length, position, prot, flags) {
-            assert(address === 0);
+            if (address !== 0) {
+              throw new FS.ErrnoError(28);
+            }
             if (!FS.isFile(stream.node.mode)) {
               throw new FS.ErrnoError(43);
             }
@@ -1705,7 +1714,7 @@ var WebIFC = (() => {
                 throw new FS.ErrnoError(48);
               }
               ptr >>>= 0;
-              GROWABLE_HEAP_I8().set(contents, ptr);
+              GROWABLE_HEAP_I8().set(contents, ptr >>> 0);
             }
             return { ptr, allocated };
           }, msync: function(stream, buffer2, offset, length, mmapFlags) {
@@ -1718,6 +1727,23 @@ var WebIFC = (() => {
             var bytesWritten = MEMFS.stream_ops.write(stream, buffer2, 0, length, offset, false);
             return 0;
           } } };
+          function asyncLoad(url, onload, onerror, noRunDep) {
+            var dep = !noRunDep ? getUniqueRunDependency("al " + url) : "";
+            readAsync(url, function(arrayBuffer) {
+              assert(arrayBuffer, 'Loading data file "' + url + '" failed (no arrayBuffer).');
+              onload(new Uint8Array(arrayBuffer));
+              if (dep)
+                removeRunDependency(dep);
+            }, function(event) {
+              if (onerror) {
+                onerror();
+              } else {
+                throw 'Loading data file "' + url + '" failed.';
+              }
+            });
+            if (dep)
+              addRunDependency(dep);
+          }
           var FS = { root: null, mounts: [], devices: {}, streams: [], nextInode: 1, nameTable: null, currentPath: "/", initialized: false, ignorePermissions: true, trackingDelegate: {}, tracking: { openFlags: { READ: 1, WRITE: 2 } }, ErrnoError: null, genericErrors: {}, filesystems: null, syncFSRequests: 0, lookupPath: function(path, opts) {
             path = PATH_FS.resolve(FS.cwd(), path);
             opts = opts || {};
@@ -1852,11 +1878,11 @@ var WebIFC = (() => {
             if (FS.ignorePermissions) {
               return 0;
             }
-            if (perms.indexOf("r") !== -1 && !(node.mode & 292)) {
+            if (perms.includes("r") && !(node.mode & 292)) {
               return 2;
-            } else if (perms.indexOf("w") !== -1 && !(node.mode & 146)) {
+            } else if (perms.includes("w") && !(node.mode & 146)) {
               return 2;
-            } else if (perms.indexOf("x") !== -1 && !(node.mode & 73)) {
+            } else if (perms.includes("x") && !(node.mode & 73)) {
               return 2;
             }
             return 0;
@@ -2050,7 +2076,7 @@ var WebIFC = (() => {
               var current = FS.nameTable[hash];
               while (current) {
                 var next = current.name_next;
-                if (mounts.indexOf(current.mount) !== -1) {
+                if (mounts.includes(current.mount)) {
                   FS.destroyNode(current);
                 }
                 current = next;
@@ -2653,10 +2679,10 @@ var WebIFC = (() => {
             FS.mkdir("/dev/shm/tmp");
           }, createSpecialDirectories: function() {
             FS.mkdir("/proc");
-            FS.mkdir("/proc/self");
+            var proc_self = FS.mkdir("/proc/self");
             FS.mkdir("/proc/self/fd");
             FS.mount({ mount: function() {
-              var node = FS.createNode("/proc/self", "fd", 16384 | 511, 73);
+              var node = FS.createNode(proc_self, "fd", 16384 | 511, 73);
               node.node_ops = { lookup: function(parent, name2) {
                 var fd = +name2;
                 var stream = FS.getStream(fd);
@@ -3033,7 +3059,7 @@ var WebIFC = (() => {
             }
             addRunDependency(dep);
             if (typeof url == "string") {
-              Browser.asyncLoad(url, function(byteArray) {
+              asyncLoad(url, function(byteArray) {
                 processData(byteArray);
               }, onerror);
             } else {
@@ -3135,20 +3161,26 @@ var WebIFC = (() => {
             };
             openRequest.onerror = onerror;
           } };
-          var SYSCALLS = { mappings: {}, DEFAULT_POLLMASK: 5, umask: 511, calculateAt: function(dirfd, path) {
-            if (path[0] !== "/") {
-              var dir;
-              if (dirfd === -100) {
-                dir = FS.cwd();
-              } else {
-                var dirstream = FS.getStream(dirfd);
-                if (!dirstream)
-                  throw new FS.ErrnoError(8);
-                dir = dirstream.path;
-              }
-              path = PATH.join2(dir, path);
+          var SYSCALLS = { mappings: {}, DEFAULT_POLLMASK: 5, umask: 511, calculateAt: function(dirfd, path, allowEmpty) {
+            if (path[0] === "/") {
+              return path;
             }
-            return path;
+            var dir;
+            if (dirfd === -100) {
+              dir = FS.cwd();
+            } else {
+              var dirstream = FS.getStream(dirfd);
+              if (!dirstream)
+                throw new FS.ErrnoError(8);
+              dir = dirstream.path;
+            }
+            if (path.length == 0) {
+              if (!allowEmpty) {
+                throw new FS.ErrnoError(44);
+              }
+              return dir;
+            }
+            return PATH.join2(dir, path);
           }, doStat: function(func, path, buf) {
             try {
               var stat = func(path);
@@ -3158,25 +3190,25 @@ var WebIFC = (() => {
               }
               throw e;
             }
-            GROWABLE_HEAP_I32()[buf >> 2] = stat.dev;
-            GROWABLE_HEAP_I32()[buf + 4 >> 2] = 0;
-            GROWABLE_HEAP_I32()[buf + 8 >> 2] = stat.ino;
-            GROWABLE_HEAP_I32()[buf + 12 >> 2] = stat.mode;
-            GROWABLE_HEAP_I32()[buf + 16 >> 2] = stat.nlink;
-            GROWABLE_HEAP_I32()[buf + 20 >> 2] = stat.uid;
-            GROWABLE_HEAP_I32()[buf + 24 >> 2] = stat.gid;
-            GROWABLE_HEAP_I32()[buf + 28 >> 2] = stat.rdev;
-            GROWABLE_HEAP_I32()[buf + 32 >> 2] = 0;
-            tempI64 = [stat.size >>> 0, (tempDouble = stat.size, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0)], GROWABLE_HEAP_I32()[buf + 40 >> 2] = tempI64[0], GROWABLE_HEAP_I32()[buf + 44 >> 2] = tempI64[1];
-            GROWABLE_HEAP_I32()[buf + 48 >> 2] = 4096;
-            GROWABLE_HEAP_I32()[buf + 52 >> 2] = stat.blocks;
-            GROWABLE_HEAP_I32()[buf + 56 >> 2] = stat.atime.getTime() / 1e3 | 0;
-            GROWABLE_HEAP_I32()[buf + 60 >> 2] = 0;
-            GROWABLE_HEAP_I32()[buf + 64 >> 2] = stat.mtime.getTime() / 1e3 | 0;
-            GROWABLE_HEAP_I32()[buf + 68 >> 2] = 0;
-            GROWABLE_HEAP_I32()[buf + 72 >> 2] = stat.ctime.getTime() / 1e3 | 0;
-            GROWABLE_HEAP_I32()[buf + 76 >> 2] = 0;
-            tempI64 = [stat.ino >>> 0, (tempDouble = stat.ino, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0)], GROWABLE_HEAP_I32()[buf + 80 >> 2] = tempI64[0], GROWABLE_HEAP_I32()[buf + 84 >> 2] = tempI64[1];
+            GROWABLE_HEAP_I32()[buf >>> 2] = stat.dev;
+            GROWABLE_HEAP_I32()[buf + 4 >>> 2] = 0;
+            GROWABLE_HEAP_I32()[buf + 8 >>> 2] = stat.ino;
+            GROWABLE_HEAP_I32()[buf + 12 >>> 2] = stat.mode;
+            GROWABLE_HEAP_I32()[buf + 16 >>> 2] = stat.nlink;
+            GROWABLE_HEAP_I32()[buf + 20 >>> 2] = stat.uid;
+            GROWABLE_HEAP_I32()[buf + 24 >>> 2] = stat.gid;
+            GROWABLE_HEAP_I32()[buf + 28 >>> 2] = stat.rdev;
+            GROWABLE_HEAP_I32()[buf + 32 >>> 2] = 0;
+            tempI64 = [stat.size >>> 0, (tempDouble = stat.size, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0)], GROWABLE_HEAP_I32()[buf + 40 >>> 2] = tempI64[0], GROWABLE_HEAP_I32()[buf + 44 >>> 2] = tempI64[1];
+            GROWABLE_HEAP_I32()[buf + 48 >>> 2] = 4096;
+            GROWABLE_HEAP_I32()[buf + 52 >>> 2] = stat.blocks;
+            GROWABLE_HEAP_I32()[buf + 56 >>> 2] = stat.atime.getTime() / 1e3 | 0;
+            GROWABLE_HEAP_I32()[buf + 60 >>> 2] = 0;
+            GROWABLE_HEAP_I32()[buf + 64 >>> 2] = stat.mtime.getTime() / 1e3 | 0;
+            GROWABLE_HEAP_I32()[buf + 68 >>> 2] = 0;
+            GROWABLE_HEAP_I32()[buf + 72 >>> 2] = stat.ctime.getTime() / 1e3 | 0;
+            GROWABLE_HEAP_I32()[buf + 76 >>> 2] = 0;
+            tempI64 = [stat.ino >>> 0, (tempDouble = stat.ino, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0)], GROWABLE_HEAP_I32()[buf + 80 >>> 2] = tempI64[0], GROWABLE_HEAP_I32()[buf + 84 >>> 2] = tempI64[1];
             return 0;
           }, doMsync: function(addr, stream, len, flags, offset) {
             var buffer2 = GROWABLE_HEAP_U8().slice(addr, addr + len);
@@ -3205,9 +3237,9 @@ var WebIFC = (() => {
               return -28;
             var ret = FS.readlink(path);
             var len = Math.min(bufsize, lengthBytesUTF8(ret));
-            var endChar = GROWABLE_HEAP_I8()[buf + len];
+            var endChar = GROWABLE_HEAP_I8()[buf + len >>> 0];
             stringToUTF8(ret, buf, bufsize + 1);
-            GROWABLE_HEAP_I8()[buf + len] = endChar;
+            GROWABLE_HEAP_I8()[buf + len >>> 0] = endChar;
             return len;
           }, doAccess: function(path, amode) {
             if (amode & ~7) {
@@ -3238,8 +3270,8 @@ var WebIFC = (() => {
           }, doReadv: function(stream, iov, iovcnt, offset) {
             var ret = 0;
             for (var i = 0; i < iovcnt; i++) {
-              var ptr = GROWABLE_HEAP_I32()[iov + i * 8 >> 2];
-              var len = GROWABLE_HEAP_I32()[iov + (i * 8 + 4) >> 2];
+              var ptr = GROWABLE_HEAP_I32()[iov + i * 8 >>> 2];
+              var len = GROWABLE_HEAP_I32()[iov + (i * 8 + 4) >>> 2];
               var curr = FS.read(stream, GROWABLE_HEAP_I8(), ptr, len, offset);
               if (curr < 0)
                 return -1;
@@ -3251,8 +3283,8 @@ var WebIFC = (() => {
           }, doWritev: function(stream, iov, iovcnt, offset) {
             var ret = 0;
             for (var i = 0; i < iovcnt; i++) {
-              var ptr = GROWABLE_HEAP_I32()[iov + i * 8 >> 2];
-              var len = GROWABLE_HEAP_I32()[iov + (i * 8 + 4) >> 2];
+              var ptr = GROWABLE_HEAP_I32()[iov + i * 8 >>> 2];
+              var len = GROWABLE_HEAP_I32()[iov + (i * 8 + 4) >>> 2];
               var curr = FS.write(stream, GROWABLE_HEAP_I8(), ptr, len, offset);
               if (curr < 0)
                 return -1;
@@ -3261,7 +3293,7 @@ var WebIFC = (() => {
             return ret;
           }, varargs: void 0, get: function() {
             SYSCALLS.varargs += 4;
-            var ret = GROWABLE_HEAP_I32()[SYSCALLS.varargs - 4 >> 2];
+            var ret = GROWABLE_HEAP_I32()[SYSCALLS.varargs - 4 >>> 2];
             return ret;
           }, getStr: function(ptr) {
             var ret = UTF8ToString(ptr);
@@ -3274,9 +3306,60 @@ var WebIFC = (() => {
           }, get64: function(low, high) {
             return low;
           } };
+          function ___sys_fcntl64(fd, cmd, varargs) {
+            if (ENVIRONMENT_IS_PTHREAD)
+              return _emscripten_proxy_to_main_thread_js(2, 1, fd, cmd, varargs);
+            SYSCALLS.varargs = varargs;
+            try {
+              var stream = SYSCALLS.getStreamFromFD(fd);
+              switch (cmd) {
+                case 0: {
+                  var arg = SYSCALLS.get();
+                  if (arg < 0) {
+                    return -28;
+                  }
+                  var newStream;
+                  newStream = FS.open(stream.path, stream.flags, 0, arg);
+                  return newStream.fd;
+                }
+                case 1:
+                case 2:
+                  return 0;
+                case 3:
+                  return stream.flags;
+                case 4: {
+                  var arg = SYSCALLS.get();
+                  stream.flags |= arg;
+                  return 0;
+                }
+                case 12: {
+                  var arg = SYSCALLS.get();
+                  var offset = 0;
+                  GROWABLE_HEAP_I16()[arg + offset >>> 1] = 2;
+                  return 0;
+                }
+                case 13:
+                case 14:
+                  return 0;
+                case 16:
+                case 8:
+                  return -28;
+                case 9:
+                  setErrNo(28);
+                  return -1;
+                default: {
+                  return -28;
+                }
+              }
+            } catch (e) {
+              if (typeof FS === "undefined" || !(e instanceof FS.ErrnoError))
+                abort(e);
+              return -e.errno;
+            }
+          }
           function ___sys_ioctl(fd, op, varargs) {
             if (ENVIRONMENT_IS_PTHREAD)
-              return _emscripten_proxy_to_main_thread_js(2, 1, fd, op, varargs);
+              return _emscripten_proxy_to_main_thread_js(3, 1, fd, op, varargs);
             SYSCALLS.varargs = varargs;
             try {
               var stream = SYSCALLS.getStreamFromFD(fd);
@@ -3301,7 +3384,7 @@ var WebIFC = (() => {
                   if (!stream.tty)
                     return -59;
                   var argp = SYSCALLS.get();
-                  GROWABLE_HEAP_I32()[argp >> 2] = 0;
+                  GROWABLE_HEAP_I32()[argp >>> 2] = 0;
                   return 0;
                 }
                 case 21520: {
@@ -3334,11 +3417,11 @@ var WebIFC = (() => {
           }
           function ___sys_open(path, flags, varargs) {
             if (ENVIRONMENT_IS_PTHREAD)
-              return _emscripten_proxy_to_main_thread_js(3, 1, path, flags, varargs);
+              return _emscripten_proxy_to_main_thread_js(4, 1, path, flags, varargs);
             SYSCALLS.varargs = varargs;
             try {
               var pathname = SYSCALLS.getStr(path);
-              var mode = SYSCALLS.get();
+              var mode = varargs ? SYSCALLS.get() : 0;
               var stream = FS.open(pathname, flags, mode);
               return stream.fd;
             } catch (e) {
@@ -3356,7 +3439,7 @@ var WebIFC = (() => {
             }
           }
           function simpleReadValueFromPointer(pointer) {
-            return this["fromWireType"](GROWABLE_HEAP_U32()[pointer >> 2]);
+            return this["fromWireType"](GROWABLE_HEAP_U32()[pointer >>> 2]);
           }
           var awaitingDependencies = {};
           var registeredTypes = {};
@@ -3545,6 +3628,8 @@ var WebIFC = (() => {
               }, "argPackAdvance": 8, "readValueFromPointer": simpleReadValueFromPointer, destructorFunction: rawDestructor }];
             });
           }
+          function __embind_register_bigint(primitiveType, name2, size, minRange, maxRange) {
+          }
           function getShiftFromSize(size) {
             switch (size) {
               case 1:
@@ -3570,8 +3655,8 @@ var WebIFC = (() => {
           function readLatin1String(ptr) {
             var ret = "";
             var c = ptr;
-            while (GROWABLE_HEAP_U8()[c]) {
-              ret += embind_charCodes[GROWABLE_HEAP_U8()[c++]];
+            while (GROWABLE_HEAP_U8()[c >>> 0]) {
+              ret += embind_charCodes[GROWABLE_HEAP_U8()[c++ >>> 0]];
             }
             return ret;
           }
@@ -4081,8 +4166,17 @@ var WebIFC = (() => {
               Module[name2].argCount = numArguments;
             }
           }
+          function dynCallLegacy(sig, ptr, args) {
+            var f = Module["dynCall_" + sig];
+            return args && args.length ? f.apply(null, [ptr].concat(args)) : f.call(null, ptr);
+          }
+          function dynCall(sig, ptr, args) {
+            if (sig.includes("j")) {
+              return dynCallLegacy(sig, ptr, args);
+            }
+            return wasmTable.get(ptr).apply(null, args);
+          }
           function getDynCaller(sig, ptr) {
-            assert(sig.indexOf("j") >= 0, "getDynCaller should only be called with i64 sigs");
             var argCache = [];
             return function() {
               argCache.length = arguments.length;
@@ -4095,7 +4189,7 @@ var WebIFC = (() => {
           function embind__requireFunction(signature, rawFunction) {
             signature = readLatin1String(signature);
             function makeDynCaller() {
-              if (signature.indexOf("j") != -1) {
+              if (signature.includes("j")) {
                 return getDynCaller(signature, rawFunction);
               }
               return wasmTable.get(rawFunction);
@@ -4184,7 +4278,7 @@ var WebIFC = (() => {
           function heap32VectorToArray(count, firstElement) {
             var array = [];
             for (var i = 0; i < count; i++) {
-              array.push(GROWABLE_HEAP_I32()[(firstElement >> 2) + i]);
+              array.push(GROWABLE_HEAP_I32()[(firstElement >> 2) + i >>> 0]);
             }
             return array;
           }
@@ -4303,6 +4397,9 @@ var WebIFC = (() => {
             whenDependentTypesAreResolved([], [rawClassType], function(classType) {
               classType = classType[0];
               var humanName = classType.name + "." + methodName;
+              if (methodName.startsWith("@@")) {
+                methodName = Symbol[methodName.substring(2)];
+              }
               if (isPureVirtual) {
                 classType.registeredClass.pureVirtualFunctions.push(methodName);
               }
@@ -4457,11 +4554,11 @@ var WebIFC = (() => {
             switch (shift) {
               case 2:
                 return function(pointer) {
-                  return this["fromWireType"](GROWABLE_HEAP_F32()[pointer >> 2]);
+                  return this["fromWireType"](GROWABLE_HEAP_F32()[pointer >>> 2]);
                 };
               case 3:
                 return function(pointer) {
-                  return this["fromWireType"](GROWABLE_HEAP_F64()[pointer >> 3]);
+                  return this["fromWireType"](GROWABLE_HEAP_F64()[pointer >>> 3]);
                 };
               default:
                 throw new TypeError("Unknown float type: " + name2);
@@ -4496,21 +4593,21 @@ var WebIFC = (() => {
             switch (shift) {
               case 0:
                 return signed ? function readS8FromPointer(pointer) {
-                  return GROWABLE_HEAP_I8()[pointer];
+                  return GROWABLE_HEAP_I8()[pointer >>> 0];
                 } : function readU8FromPointer(pointer) {
-                  return GROWABLE_HEAP_U8()[pointer];
+                  return GROWABLE_HEAP_U8()[pointer >>> 0];
                 };
               case 1:
                 return signed ? function readS16FromPointer(pointer) {
-                  return GROWABLE_HEAP_I16()[pointer >> 1];
+                  return GROWABLE_HEAP_I16()[pointer >>> 1];
                 } : function readU16FromPointer(pointer) {
-                  return GROWABLE_HEAP_U16()[pointer >> 1];
+                  return GROWABLE_HEAP_U16()[pointer >>> 1];
                 };
               case 2:
                 return signed ? function readS32FromPointer(pointer) {
-                  return GROWABLE_HEAP_I32()[pointer >> 2];
+                  return GROWABLE_HEAP_I32()[pointer >>> 2];
                 } : function readU32FromPointer(pointer) {
-                  return GROWABLE_HEAP_U32()[pointer >> 2];
+                  return GROWABLE_HEAP_U32()[pointer >>> 2];
                 };
               default:
                 throw new TypeError("Unknown integer type: " + name2);
@@ -4531,7 +4628,7 @@ var WebIFC = (() => {
                 return value << bitshift >>> bitshift;
               };
             }
-            var isUnsignedType = name2.indexOf("unsigned") != -1;
+            var isUnsignedType = name2.includes("unsigned");
             registerType(primitiveType, { name: name2, "fromWireType": fromWireType, "toWireType": function(destructors, value) {
               if (typeof value !== "number" && typeof value !== "boolean") {
                 throw new TypeError('Cannot convert "' + _embind_repr(value) + '" to ' + this.name);
@@ -4559,13 +4656,13 @@ var WebIFC = (() => {
             name2 = readLatin1String(name2);
             var stdStringIsUTF8 = name2 === "std::string";
             registerType(rawType, { name: name2, "fromWireType": function(value) {
-              var length = GROWABLE_HEAP_U32()[value >> 2];
+              var length = GROWABLE_HEAP_U32()[value >>> 2];
               var str;
               if (stdStringIsUTF8) {
                 var decodeStartPtr = value + 4;
                 for (var i = 0; i <= length; ++i) {
                   var currentBytePtr = value + 4 + i;
-                  if (i == length || GROWABLE_HEAP_U8()[currentBytePtr] == 0) {
+                  if (i == length || GROWABLE_HEAP_U8()[currentBytePtr >>> 0] == 0) {
                     var maxRead = currentBytePtr - decodeStartPtr;
                     var stringSegment = UTF8ToString(decodeStartPtr, maxRead);
                     if (str === void 0) {
@@ -4580,7 +4677,7 @@ var WebIFC = (() => {
               } else {
                 var a = new Array(length);
                 for (var i = 0; i < length; ++i) {
-                  a[i] = String.fromCharCode(GROWABLE_HEAP_U8()[value + 4 + i]);
+                  a[i] = String.fromCharCode(GROWABLE_HEAP_U8()[value + 4 + i >>> 0]);
                 }
                 str = a.join("");
               }
@@ -4607,7 +4704,7 @@ var WebIFC = (() => {
               var length = getLength();
               var ptr = _malloc(4 + length + 1);
               ptr >>>= 0;
-              GROWABLE_HEAP_U32()[ptr >> 2] = length;
+              GROWABLE_HEAP_U32()[ptr >>> 2] = length;
               if (stdStringIsUTF8 && valueIsOfTypeString) {
                 stringToUTF8(value, ptr + 4, length + 1);
               } else {
@@ -4618,11 +4715,11 @@ var WebIFC = (() => {
                       _free(ptr);
                       throwBindingError("String has UTF-16 code units that do not fit in 8 bits");
                     }
-                    GROWABLE_HEAP_U8()[ptr + 4 + i] = charCode;
+                    GROWABLE_HEAP_U8()[ptr + 4 + i >>> 0] = charCode;
                   }
                 } else {
                   for (var i = 0; i < length; ++i) {
-                    GROWABLE_HEAP_U8()[ptr + 4 + i] = value[i];
+                    GROWABLE_HEAP_U8()[ptr + 4 + i >>> 0] = value[i];
                   }
                 }
               }
@@ -4655,7 +4752,7 @@ var WebIFC = (() => {
               shift = 2;
             }
             registerType(rawType, { name: name2, "fromWireType": function(value) {
-              var length = GROWABLE_HEAP_U32()[value >> 2];
+              var length = GROWABLE_HEAP_U32()[value >>> 2];
               var HEAP = getHeap();
               var str;
               var decodeStartPtr = value + 4;
@@ -4682,7 +4779,7 @@ var WebIFC = (() => {
               var length = lengthBytesUTF(value);
               var ptr = _malloc(4 + length + charSize);
               ptr >>>= 0;
-              GROWABLE_HEAP_U32()[ptr >> 2] = length >> shift;
+              GROWABLE_HEAP_U32()[ptr >>> 2] = length >> shift;
               encodeString(value, ptr + 4, length + charSize);
               if (destructors !== null) {
                 destructors.push(_free, ptr);
@@ -4738,13 +4835,13 @@ var WebIFC = (() => {
             returnType = requireRegisteredType(returnType, "emval::as");
             var destructors = [];
             var rd = __emval_register(destructors);
-            GROWABLE_HEAP_I32()[destructorsRef >> 2] = rd;
+            GROWABLE_HEAP_I32()[destructorsRef >>> 2] = rd;
             return returnType["toWireType"](destructors, handle);
           }
           function __emval_lookupTypes(argCount, argTypes) {
             var a = new Array(argCount);
             for (var i = 0; i < argCount; ++i) {
-              a[i] = requireRegisteredType(GROWABLE_HEAP_I32()[(argTypes >> 2) + i], "parameter " + i);
+              a[i] = requireRegisteredType(GROWABLE_HEAP_I32()[(argTypes >> 2) + i >>> 0], "parameter " + i);
             }
             return a;
           }
@@ -4832,6 +4929,20 @@ var WebIFC = (() => {
           function _abort() {
             abort();
           }
+          var readAsmConstArgsArray = [];
+          function readAsmConstArgs(sigPtr, buf) {
+            readAsmConstArgsArray.length = 0;
+            var ch;
+            buf >>= 2;
+            while (ch = GROWABLE_HEAP_U8()[sigPtr++ >>> 0]) {
+              var double = ch < 105;
+              if (double && buf & 1)
+                buf++;
+              readAsmConstArgsArray.push(double ? GROWABLE_HEAP_F64()[buf++ >>> 1] : GROWABLE_HEAP_I32()[buf >>> 0]);
+              ++buf;
+            }
+            return readAsmConstArgsArray;
+          }
           function _emscripten_asm_const_int(code, sigPtr, argbuf) {
             var args = readAsmConstArgs(sigPtr, argbuf);
             return ASM_CONSTS[code].apply(null, args);
@@ -4844,8 +4955,6 @@ var WebIFC = (() => {
             warnOnce("Blocking on the main thread is very dangerous, see https://emscripten.org/docs/porting/pthreads.html#blocking-on-the-main-browser-thread");
           }
           function _emscripten_conditional_set_current_thread_status(expectedStatus, newStatus) {
-            expectedStatus = expectedStatus | 0;
-            newStatus = newStatus | 0;
           }
           function _emscripten_futex_wait(addr, val, timeout) {
             if (addr <= 0 || addr > GROWABLE_HEAP_I8().length || addr & true)
@@ -4865,14 +4974,14 @@ var WebIFC = (() => {
               }
               var tNow = performance.now();
               var tEnd = tNow + timeout;
-              var lastAddr = Atomics.exchange(GROWABLE_HEAP_I32(), PThread.mainThreadFutex >> 2, addr);
+              var lastAddr = Atomics.exchange(GROWABLE_HEAP_I32(), __emscripten_main_thread_futex >> 2, addr);
               while (1) {
                 tNow = performance.now();
                 if (tNow > tEnd) {
-                  lastAddr = Atomics.exchange(GROWABLE_HEAP_I32(), PThread.mainThreadFutex >> 2, 0);
+                  lastAddr = Atomics.exchange(GROWABLE_HEAP_I32(), __emscripten_main_thread_futex >> 2, 0);
                   return -73;
                 }
-                lastAddr = Atomics.exchange(GROWABLE_HEAP_I32(), PThread.mainThreadFutex >> 2, 0);
+                lastAddr = Atomics.exchange(GROWABLE_HEAP_I32(), __emscripten_main_thread_futex >> 2, 0);
                 if (lastAddr == 0) {
                   break;
                 }
@@ -4880,59 +4989,38 @@ var WebIFC = (() => {
                 if (Atomics.load(GROWABLE_HEAP_I32(), addr >> 2) != val) {
                   return -6;
                 }
-                lastAddr = Atomics.exchange(GROWABLE_HEAP_I32(), PThread.mainThreadFutex >> 2, addr);
+                lastAddr = Atomics.exchange(GROWABLE_HEAP_I32(), __emscripten_main_thread_futex >> 2, addr);
               }
               return 0;
             }
           }
-          function _emscripten_is_main_browser_thread() {
-            return __pthread_is_main_browser_thread | 0;
-          }
-          function _emscripten_is_main_runtime_thread() {
-            return __pthread_is_main_runtime_thread | 0;
-          }
           function _emscripten_memcpy_big(dest, src, num) {
-            GROWABLE_HEAP_U8().copyWithin(dest, src, src + num);
+            GROWABLE_HEAP_U8().copyWithin(dest >>> 0, src >>> 0, src + num >>> 0);
           }
           function _emscripten_proxy_to_main_thread_js(index, sync) {
             var numCallArgs = arguments.length - 2;
             var stack = stackSave();
-            var args = stackAlloc(numCallArgs * 8);
+            var serializedNumCallArgs = numCallArgs;
+            var args = stackAlloc(serializedNumCallArgs * 8);
             var b = args >> 3;
             for (var i = 0; i < numCallArgs; i++) {
-              GROWABLE_HEAP_F64()[b + i] = arguments[2 + i];
+              var arg = arguments[2 + i];
+              GROWABLE_HEAP_F64()[b + i >>> 0] = arg;
             }
-            var ret = _emscripten_run_in_main_runtime_thread_js(index, numCallArgs, args, sync);
+            var ret = _emscripten_run_in_main_runtime_thread_js(index, serializedNumCallArgs, args, sync);
             stackRestore(stack);
             return ret;
           }
           var _emscripten_receive_on_main_thread_js_callArgs = [];
-          var readAsmConstArgsArray = [];
-          function readAsmConstArgs(sigPtr, buf) {
-            readAsmConstArgsArray.length = 0;
-            var ch;
-            buf >>= 2;
-            while (ch = GROWABLE_HEAP_U8()[sigPtr++]) {
-              var double = ch < 105;
-              if (double && buf & 1)
-                buf++;
-              readAsmConstArgsArray.push(double ? GROWABLE_HEAP_F64()[buf++ >> 1] : GROWABLE_HEAP_I32()[buf]);
-              ++buf;
-            }
-            return readAsmConstArgsArray;
-          }
           function _emscripten_receive_on_main_thread_js(index, numCallArgs, args) {
             _emscripten_receive_on_main_thread_js_callArgs.length = numCallArgs;
             var b = args >> 3;
             for (var i = 0; i < numCallArgs; i++) {
-              _emscripten_receive_on_main_thread_js_callArgs[i] = GROWABLE_HEAP_F64()[b + i];
+              _emscripten_receive_on_main_thread_js_callArgs[i] = GROWABLE_HEAP_F64()[b + i >>> 0];
             }
             var isEmAsmConst = index < 0;
             var func = !isEmAsmConst ? proxiedFunctionTable[index] : ASM_CONSTS[-index - 1];
             return func.apply(null, _emscripten_receive_on_main_thread_js_callArgs);
-          }
-          function _emscripten_get_heap_size() {
-            return GROWABLE_HEAP_U8().length;
           }
           function emscripten_realloc_buffer(size) {
             try {
@@ -4943,20 +5031,19 @@ var WebIFC = (() => {
             }
           }
           function _emscripten_resize_heap(requestedSize) {
+            var oldSize = GROWABLE_HEAP_U8().length;
             requestedSize = requestedSize >>> 0;
-            var oldSize = _emscripten_get_heap_size();
             if (requestedSize <= oldSize) {
               return false;
             }
-            var maxHeapSize = 4294967296;
+            var maxHeapSize = 4294901760;
             if (requestedSize > maxHeapSize) {
               return false;
             }
-            var minHeapSize = 16777216;
             for (var cutDown = 1; cutDown <= 4; cutDown *= 2) {
               var overGrownHeapSize = oldSize * (1 + 0.2 / cutDown);
               overGrownHeapSize = Math.min(overGrownHeapSize, requestedSize + 100663296);
-              var newSize = Math.min(maxHeapSize, alignUp(Math.max(minHeapSize, requestedSize, overGrownHeapSize), 65536));
+              var newSize = Math.min(maxHeapSize, alignUp(Math.max(requestedSize, overGrownHeapSize), 65536));
               var replacement = emscripten_realloc_buffer(newSize);
               if (replacement) {
                 return true;
@@ -5048,9 +5135,9 @@ var WebIFC = (() => {
           }, queueEventHandlerOnThread_iiii: function(targetThread, eventHandlerFunc, eventTypeId, eventData, userData) {
             var stackTop = stackSave();
             var varargs = stackAlloc(12);
-            GROWABLE_HEAP_I32()[varargs >> 2] = eventTypeId;
-            GROWABLE_HEAP_I32()[varargs + 4 >> 2] = eventData;
-            GROWABLE_HEAP_I32()[varargs + 8 >> 2] = userData;
+            GROWABLE_HEAP_I32()[varargs >>> 2] = eventTypeId;
+            GROWABLE_HEAP_I32()[varargs + 4 >>> 2] = eventData;
+            GROWABLE_HEAP_I32()[varargs + 8 >>> 2] = userData;
             __emscripten_call_on_thread(0, targetThread, 637534208, eventHandlerFunc, eventData, varargs);
             stackRestore(stackTop);
           }, getTargetThreadForEventCallback: function(targetThread) {
@@ -5086,9 +5173,9 @@ var WebIFC = (() => {
             if (targetCanvas) {
               targetCanvasPtr = stringToNewUTF8(targetCanvas);
             }
-            GROWABLE_HEAP_I32()[varargs >> 2] = targetCanvasPtr;
-            GROWABLE_HEAP_I32()[varargs + 4 >> 2] = width;
-            GROWABLE_HEAP_I32()[varargs + 8 >> 2] = height;
+            GROWABLE_HEAP_I32()[varargs >>> 2] = targetCanvasPtr;
+            GROWABLE_HEAP_I32()[varargs + 4 >>> 2] = width;
+            GROWABLE_HEAP_I32()[varargs + 8 >>> 2] = height;
             __emscripten_call_on_thread(0, targetThread, 657457152, 0, targetCanvasPtr, varargs);
             stackRestore(stackTop);
           }
@@ -5113,8 +5200,8 @@ var WebIFC = (() => {
             if (!canvas)
               return -4;
             if (canvas.canvasSharedPtr) {
-              GROWABLE_HEAP_I32()[canvas.canvasSharedPtr >> 2] = width;
-              GROWABLE_HEAP_I32()[canvas.canvasSharedPtr + 4 >> 2] = height;
+              GROWABLE_HEAP_I32()[canvas.canvasSharedPtr >>> 2] = width;
+              GROWABLE_HEAP_I32()[canvas.canvasSharedPtr + 4 >>> 2] = height;
             }
             if (canvas.offscreenCanvas || !canvas.controlTransferredOffscreen) {
               if (canvas.offscreenCanvas)
@@ -5130,7 +5217,7 @@ var WebIFC = (() => {
                 canvas.GLctxObject.GLctx.viewport(0, 0, width, height);
               }
             } else if (canvas.canvasSharedPtr) {
-              var targetThread = GROWABLE_HEAP_I32()[canvas.canvasSharedPtr + 8 >> 2];
+              var targetThread = GROWABLE_HEAP_I32()[canvas.canvasSharedPtr + 8 >>> 2];
               _emscripten_set_offscreencanvas_size_on_target_thread(targetThread, target, width, height);
               return 1;
             } else {
@@ -5140,7 +5227,7 @@ var WebIFC = (() => {
           }
           function _emscripten_set_canvas_element_size_main_thread(target, width, height) {
             if (ENVIRONMENT_IS_PTHREAD)
-              return _emscripten_proxy_to_main_thread_js(4, 1, target, width, height);
+              return _emscripten_proxy_to_main_thread_js(5, 1, target, width, height);
             return _emscripten_set_canvas_element_size_calling_thread(target, width, height);
           }
           function _emscripten_set_canvas_element_size(target, width, height) {
@@ -5152,7 +5239,6 @@ var WebIFC = (() => {
             }
           }
           function _emscripten_set_current_thread_status(newStatus) {
-            newStatus = newStatus | 0;
           }
           function __webgl_enable_ANGLE_instanced_arrays(ctx) {
             var ext = ctx.getExtension("ANGLE_instanced_arrays");
@@ -5199,7 +5285,7 @@ var WebIFC = (() => {
           function __webgl_enable_WEBGL_multi_draw(ctx) {
             return !!(ctx.multiDrawWebgl = ctx.getExtension("WEBGL_multi_draw"));
           }
-          var GL = { counter: 1, buffers: [], programs: [], framebuffers: [], renderbuffers: [], textures: [], uniforms: [], shaders: [], vaos: [], contexts: {}, offscreenCanvases: {}, timerQueriesEXT: [], programInfos: {}, stringCache: {}, unpackAlignment: 4, recordError: function recordError(errorCode) {
+          var GL = { counter: 1, buffers: [], programs: [], framebuffers: [], renderbuffers: [], textures: [], shaders: [], vaos: [], contexts: {}, offscreenCanvases: {}, queries: [], stringCache: {}, unpackAlignment: 4, recordError: function recordError(errorCode) {
             if (!GL.lastError) {
               GL.lastError = errorCode;
             }
@@ -5212,11 +5298,18 @@ var WebIFC = (() => {
           }, getSource: function(shader, count, string, length) {
             var source = "";
             for (var i = 0; i < count; ++i) {
-              var len = length ? GROWABLE_HEAP_I32()[length + i * 4 >> 2] : -1;
-              source += UTF8ToString(GROWABLE_HEAP_I32()[string + i * 4 >> 2], len < 0 ? void 0 : len);
+              var len = length ? GROWABLE_HEAP_I32()[length + i * 4 >>> 2] : -1;
+              source += UTF8ToString(GROWABLE_HEAP_I32()[string + i * 4 >>> 2], len < 0 ? void 0 : len);
             }
             return source;
           }, createContext: function(canvas, webGLContextAttributes) {
+            if (!canvas.getContextSafariWebGL2Fixed) {
+              canvas.getContextSafariWebGL2Fixed = canvas.getContext;
+              canvas.getContext = function(ver, attrs) {
+                var gl = canvas.getContextSafariWebGL2Fixed(ver, attrs);
+                return ver == "webgl" == gl instanceof WebGLRenderingContext ? gl : null;
+              };
+            }
             var ctx = canvas.getContext("webgl", webGLContextAttributes);
             if (!ctx)
               return 0;
@@ -5224,7 +5317,7 @@ var WebIFC = (() => {
             return handle;
           }, registerContext: function(ctx, webGLContextAttributes) {
             var handle = _malloc(8);
-            GROWABLE_HEAP_I32()[handle + 4 >> 2] = _pthread_self();
+            GROWABLE_HEAP_I32()[handle + 4 >>> 2] = _pthread_self();
             var context = { handle, attributes: webGLContextAttributes, version: webGLContextAttributes.majorVersion, GLctx: ctx };
             if (ctx.canvas)
               ctx.canvas.GLctxObject = context;
@@ -5258,46 +5351,22 @@ var WebIFC = (() => {
             __webgl_enable_ANGLE_instanced_arrays(GLctx2);
             __webgl_enable_OES_vertex_array_object(GLctx2);
             __webgl_enable_WEBGL_draw_buffers(GLctx2);
-            GLctx2.disjointTimerQueryExt = GLctx2.getExtension("EXT_disjoint_timer_query");
+            {
+              GLctx2.disjointTimerQueryExt = GLctx2.getExtension("EXT_disjoint_timer_query");
+            }
             __webgl_enable_WEBGL_multi_draw(GLctx2);
-            var automaticallyEnabledExtensions = ["OES_texture_float", "OES_texture_half_float", "OES_standard_derivatives", "OES_vertex_array_object", "WEBGL_compressed_texture_s3tc", "WEBGL_depth_texture", "OES_element_index_uint", "EXT_texture_filter_anisotropic", "EXT_frag_depth", "WEBGL_draw_buffers", "ANGLE_instanced_arrays", "OES_texture_float_linear", "OES_texture_half_float_linear", "EXT_blend_minmax", "EXT_shader_texture_lod", "EXT_texture_norm16", "WEBGL_compressed_texture_pvrtc", "EXT_color_buffer_half_float", "WEBGL_color_buffer_float", "EXT_sRGB", "WEBGL_compressed_texture_etc1", "EXT_disjoint_timer_query", "WEBGL_compressed_texture_etc", "WEBGL_compressed_texture_astc", "EXT_color_buffer_float", "WEBGL_compressed_texture_s3tc_srgb", "EXT_disjoint_timer_query_webgl2", "WEBKIT_WEBGL_compressed_texture_pvrtc"];
             var exts = GLctx2.getSupportedExtensions() || [];
             exts.forEach(function(ext) {
-              if (automaticallyEnabledExtensions.indexOf(ext) != -1) {
+              if (!ext.includes("lose_context") && !ext.includes("debug")) {
                 GLctx2.getExtension(ext);
               }
             });
-          }, populateUniformTable: function(program) {
-            var p = GL.programs[program];
-            var ptable = GL.programInfos[program] = { uniforms: {}, maxUniformLength: 0, maxAttributeLength: -1, maxUniformBlockNameLength: -1 };
-            var utable = ptable.uniforms;
-            var numUniforms = GLctx.getProgramParameter(p, 35718);
-            for (var i = 0; i < numUniforms; ++i) {
-              var u = GLctx.getActiveUniform(p, i);
-              var name2 = u.name;
-              ptable.maxUniformLength = Math.max(ptable.maxUniformLength, name2.length + 1);
-              if (name2.slice(-1) == "]") {
-                name2 = name2.slice(0, name2.lastIndexOf("["));
-              }
-              var loc = GLctx.getUniformLocation(p, name2);
-              if (loc) {
-                var id = GL.getNewId(GL.uniforms);
-                utable[name2] = [u.size, id];
-                GL.uniforms[id] = loc;
-                for (var j = 1; j < u.size; ++j) {
-                  var n = name2 + "[" + j + "]";
-                  loc = GLctx.getUniformLocation(p, n);
-                  id = GL.getNewId(GL.uniforms);
-                  GL.uniforms[id] = loc;
-                }
-              }
-            }
           } };
           var __emscripten_webgl_power_preferences = ["default", "low-power", "high-performance"];
           function _emscripten_webgl_do_create_context(target, attributes) {
             var a = attributes >> 2;
-            var powerPreference = GROWABLE_HEAP_I32()[a + (24 >> 2)];
-            var contextAttributes = { "alpha": !!GROWABLE_HEAP_I32()[a + (0 >> 2)], "depth": !!GROWABLE_HEAP_I32()[a + (4 >> 2)], "stencil": !!GROWABLE_HEAP_I32()[a + (8 >> 2)], "antialias": !!GROWABLE_HEAP_I32()[a + (12 >> 2)], "premultipliedAlpha": !!GROWABLE_HEAP_I32()[a + (16 >> 2)], "preserveDrawingBuffer": !!GROWABLE_HEAP_I32()[a + (20 >> 2)], "powerPreference": __emscripten_webgl_power_preferences[powerPreference], "failIfMajorPerformanceCaveat": !!GROWABLE_HEAP_I32()[a + (28 >> 2)], majorVersion: GROWABLE_HEAP_I32()[a + (32 >> 2)], minorVersion: GROWABLE_HEAP_I32()[a + (36 >> 2)], enableExtensionsByDefault: GROWABLE_HEAP_I32()[a + (40 >> 2)], explicitSwapControl: GROWABLE_HEAP_I32()[a + (44 >> 2)], proxyContextToMainThread: GROWABLE_HEAP_I32()[a + (48 >> 2)], renderViaOffscreenBackBuffer: GROWABLE_HEAP_I32()[a + (52 >> 2)] };
+            var powerPreference = GROWABLE_HEAP_I32()[a + (24 >> 2) >>> 0];
+            var contextAttributes = { "alpha": !!GROWABLE_HEAP_I32()[a + (0 >> 2) >>> 0], "depth": !!GROWABLE_HEAP_I32()[a + (4 >> 2) >>> 0], "stencil": !!GROWABLE_HEAP_I32()[a + (8 >> 2) >>> 0], "antialias": !!GROWABLE_HEAP_I32()[a + (12 >> 2) >>> 0], "premultipliedAlpha": !!GROWABLE_HEAP_I32()[a + (16 >> 2) >>> 0], "preserveDrawingBuffer": !!GROWABLE_HEAP_I32()[a + (20 >> 2) >>> 0], "powerPreference": __emscripten_webgl_power_preferences[powerPreference], "failIfMajorPerformanceCaveat": !!GROWABLE_HEAP_I32()[a + (28 >> 2) >>> 0], majorVersion: GROWABLE_HEAP_I32()[a + (32 >> 2) >>> 0], minorVersion: GROWABLE_HEAP_I32()[a + (36 >> 2) >>> 0], enableExtensionsByDefault: GROWABLE_HEAP_I32()[a + (40 >> 2) >>> 0], explicitSwapControl: GROWABLE_HEAP_I32()[a + (44 >> 2) >>> 0], proxyContextToMainThread: GROWABLE_HEAP_I32()[a + (48 >> 2) >>> 0], renderViaOffscreenBackBuffer: GROWABLE_HEAP_I32()[a + (52 >> 2) >>> 0] };
             var canvas = findCanvasEventTarget(target);
             if (!canvas) {
               return 0;
@@ -5320,7 +5389,10 @@ var WebIFC = (() => {
               var lang = (typeof navigator === "object" && navigator.languages && navigator.languages[0] || "C").replace("-", "_") + ".UTF-8";
               var env = { "USER": "web_user", "LOGNAME": "web_user", "PATH": "/", "PWD": "/", "HOME": "/home/web_user", "LANG": lang, "_": getExecutableName() };
               for (var x in ENV) {
-                env[x] = ENV[x];
+                if (ENV[x] === void 0)
+                  delete env[x];
+                else
+                  env[x] = ENV[x];
               }
               var strings = [];
               for (var x in env) {
@@ -5332,12 +5404,12 @@ var WebIFC = (() => {
           }
           function _environ_get(__environ, environ_buf) {
             if (ENVIRONMENT_IS_PTHREAD)
-              return _emscripten_proxy_to_main_thread_js(5, 1, __environ, environ_buf);
+              return _emscripten_proxy_to_main_thread_js(6, 1, __environ, environ_buf);
             try {
               var bufSize = 0;
               getEnvStrings().forEach(function(string, i) {
                 var ptr = environ_buf + bufSize;
-                GROWABLE_HEAP_I32()[__environ + i * 4 >> 2] = ptr;
+                GROWABLE_HEAP_I32()[__environ + i * 4 >>> 2] = ptr;
                 writeAsciiToMemory(string, ptr);
                 bufSize += string.length + 1;
               });
@@ -5350,15 +5422,15 @@ var WebIFC = (() => {
           }
           function _environ_sizes_get(penviron_count, penviron_buf_size) {
             if (ENVIRONMENT_IS_PTHREAD)
-              return _emscripten_proxy_to_main_thread_js(6, 1, penviron_count, penviron_buf_size);
+              return _emscripten_proxy_to_main_thread_js(7, 1, penviron_count, penviron_buf_size);
             try {
               var strings = getEnvStrings();
-              GROWABLE_HEAP_I32()[penviron_count >> 2] = strings.length;
+              GROWABLE_HEAP_I32()[penviron_count >>> 2] = strings.length;
               var bufSize = 0;
               strings.forEach(function(string) {
                 bufSize += string.length + 1;
               });
-              GROWABLE_HEAP_I32()[penviron_buf_size >> 2] = bufSize;
+              GROWABLE_HEAP_I32()[penviron_buf_size >>> 2] = bufSize;
               return 0;
             } catch (e) {
               if (typeof FS === "undefined" || !(e instanceof FS.ErrnoError))
@@ -5368,7 +5440,7 @@ var WebIFC = (() => {
           }
           function _fd_close(fd) {
             if (ENVIRONMENT_IS_PTHREAD)
-              return _emscripten_proxy_to_main_thread_js(7, 1, fd);
+              return _emscripten_proxy_to_main_thread_js(8, 1, fd);
             try {
               var stream = SYSCALLS.getStreamFromFD(fd);
               FS.close(stream);
@@ -5381,11 +5453,11 @@ var WebIFC = (() => {
           }
           function _fd_read(fd, iov, iovcnt, pnum) {
             if (ENVIRONMENT_IS_PTHREAD)
-              return _emscripten_proxy_to_main_thread_js(8, 1, fd, iov, iovcnt, pnum);
+              return _emscripten_proxy_to_main_thread_js(9, 1, fd, iov, iovcnt, pnum);
             try {
               var stream = SYSCALLS.getStreamFromFD(fd);
               var num = SYSCALLS.doReadv(stream, iov, iovcnt);
-              GROWABLE_HEAP_I32()[pnum >> 2] = num;
+              GROWABLE_HEAP_I32()[pnum >>> 2] = num;
               return 0;
             } catch (e) {
               if (typeof FS === "undefined" || !(e instanceof FS.ErrnoError))
@@ -5395,7 +5467,7 @@ var WebIFC = (() => {
           }
           function _fd_seek(fd, offset_low, offset_high, whence, newOffset) {
             if (ENVIRONMENT_IS_PTHREAD)
-              return _emscripten_proxy_to_main_thread_js(9, 1, fd, offset_low, offset_high, whence, newOffset);
+              return _emscripten_proxy_to_main_thread_js(10, 1, fd, offset_low, offset_high, whence, newOffset);
             try {
               var stream = SYSCALLS.getStreamFromFD(fd);
               var HIGH_OFFSET = 4294967296;
@@ -5405,7 +5477,7 @@ var WebIFC = (() => {
                 return -61;
               }
               FS.llseek(stream, offset, whence);
-              tempI64 = [stream.position >>> 0, (tempDouble = stream.position, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0)], GROWABLE_HEAP_I32()[newOffset >> 2] = tempI64[0], GROWABLE_HEAP_I32()[newOffset + 4 >> 2] = tempI64[1];
+              tempI64 = [stream.position >>> 0, (tempDouble = stream.position, +Math.abs(tempDouble) >= 1 ? tempDouble > 0 ? (Math.min(+Math.floor(tempDouble / 4294967296), 4294967295) | 0) >>> 0 : ~~+Math.ceil((tempDouble - +(~~tempDouble >>> 0)) / 4294967296) >>> 0 : 0)], GROWABLE_HEAP_I32()[newOffset >>> 2] = tempI64[0], GROWABLE_HEAP_I32()[newOffset + 4 >>> 2] = tempI64[1];
               if (stream.getdents && offset === 0 && whence === 0)
                 stream.getdents = null;
               return 0;
@@ -5417,11 +5489,11 @@ var WebIFC = (() => {
           }
           function _fd_write(fd, iov, iovcnt, pnum) {
             if (ENVIRONMENT_IS_PTHREAD)
-              return _emscripten_proxy_to_main_thread_js(10, 1, fd, iov, iovcnt, pnum);
+              return _emscripten_proxy_to_main_thread_js(11, 1, fd, iov, iovcnt, pnum);
             try {
               var stream = SYSCALLS.getStreamFromFD(fd);
               var num = SYSCALLS.doWritev(stream, iov, iovcnt);
-              GROWABLE_HEAP_I32()[pnum >> 2] = num;
+              GROWABLE_HEAP_I32()[pnum >>> 2] = num;
               return 0;
             } catch (e) {
               if (typeof FS === "undefined" || !(e instanceof FS.ErrnoError))
@@ -5429,15 +5501,13 @@ var WebIFC = (() => {
               return e.errno;
             }
           }
-          function _pthread_cleanup_push(routine, arg) {
-            PThread.threadExitHandlers.push(function() {
-              wasmTable.get(routine)(arg);
-            });
-          }
           function spawnThread(threadParams) {
             if (ENVIRONMENT_IS_PTHREAD)
               throw "Internal Error! spawnThread() can only ever be called from main application thread!";
             var worker = PThread.getNewWorker();
+            if (!worker) {
+              return 6;
+            }
             if (worker.pthread !== void 0)
               throw "Internal error!";
             if (!threadParams.pthread_ptr)
@@ -5445,31 +5515,24 @@ var WebIFC = (() => {
             PThread.runningWorkers.push(worker);
             var tlsMemory = _malloc(128 * 4);
             for (var i = 0; i < 128; ++i) {
-              GROWABLE_HEAP_I32()[tlsMemory + i * 4 >> 2] = 0;
+              GROWABLE_HEAP_I32()[tlsMemory + i * 4 >>> 2] = 0;
             }
             var stackHigh = threadParams.stackBase + threadParams.stackSize;
-            var pthread = PThread.pthreads[threadParams.pthread_ptr] = { worker, stackBase: threadParams.stackBase, stackSize: threadParams.stackSize, allocatedOwnStack: threadParams.allocatedOwnStack, thread: threadParams.pthread_ptr, threadInfoStruct: threadParams.pthread_ptr };
+            var pthread = PThread.pthreads[threadParams.pthread_ptr] = { worker, stackBase: threadParams.stackBase, stackSize: threadParams.stackSize, allocatedOwnStack: threadParams.allocatedOwnStack, threadInfoStruct: threadParams.pthread_ptr };
             var tis = pthread.threadInfoStruct >> 2;
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (0 >> 2), 0);
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (4 >> 2), 0);
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (8 >> 2), 0);
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (68 >> 2), threadParams.detached);
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (104 >> 2), tlsMemory);
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (48 >> 2), 0);
+            Atomics.store(GROWABLE_HEAP_U32(), tis + (64 >> 2), threadParams.detached);
+            Atomics.store(GROWABLE_HEAP_U32(), tis + (100 >> 2), tlsMemory);
             Atomics.store(GROWABLE_HEAP_U32(), tis + (40 >> 2), pthread.threadInfoStruct);
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (44 >> 2), 42);
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (108 >> 2), threadParams.stackSize);
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (84 >> 2), threadParams.stackSize);
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (80 >> 2), stackHigh);
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (108 + 8 >> 2), stackHigh);
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (108 + 12 >> 2), threadParams.detached);
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (108 + 20 >> 2), threadParams.schedPolicy);
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (108 + 24 >> 2), threadParams.schedPrio);
+            Atomics.store(GROWABLE_HEAP_U32(), tis + (80 >> 2), threadParams.stackSize);
+            Atomics.store(GROWABLE_HEAP_U32(), tis + (76 >> 2), stackHigh);
+            Atomics.store(GROWABLE_HEAP_U32(), tis + (104 >> 2), threadParams.stackSize);
+            Atomics.store(GROWABLE_HEAP_U32(), tis + (104 + 8 >> 2), stackHigh);
+            Atomics.store(GROWABLE_HEAP_U32(), tis + (104 + 12 >> 2), threadParams.detached);
             var global_libc = _emscripten_get_global_libc();
             var global_locale = global_libc + 40;
-            Atomics.store(GROWABLE_HEAP_U32(), tis + (176 >> 2), global_locale);
+            Atomics.store(GROWABLE_HEAP_U32(), tis + (172 >> 2), global_locale);
             worker.pthread = pthread;
-            var msg = { "cmd": "run", "start_routine": threadParams.startRoutine, "arg": threadParams.arg, "threadInfoStruct": threadParams.pthread_ptr, "selfThreadId": threadParams.pthread_ptr, "parentThreadId": threadParams.parent_pthread_ptr, "stackBase": threadParams.stackBase, "stackSize": threadParams.stackSize };
+            var msg = { "cmd": "run", "start_routine": threadParams.startRoutine, "arg": threadParams.arg, "threadInfoStruct": threadParams.pthread_ptr, "stackBase": threadParams.stackBase, "stackSize": threadParams.stackSize };
             worker.runPthread = function() {
               msg.time = performance.now();
               worker.postMessage(msg, threadParams.transferList);
@@ -5478,31 +5541,8 @@ var WebIFC = (() => {
               worker.runPthread();
               delete worker.runPthread;
             }
-          }
-          function _pthread_getschedparam(thread, policy, schedparam) {
-            if (!policy && !schedparam)
-              return ERRNO_CODES.EINVAL;
-            if (!thread) {
-              err("pthread_getschedparam called with a null thread pointer!");
-              return ERRNO_CODES.ESRCH;
-            }
-            var self2 = GROWABLE_HEAP_I32()[thread + 12 >> 2];
-            if (self2 !== thread) {
-              err("pthread_getschedparam attempted on thread " + thread + ", which does not point to a valid thread, or does not exist anymore!");
-              return ERRNO_CODES.ESRCH;
-            }
-            var schedPolicy = Atomics.load(GROWABLE_HEAP_U32(), thread + 108 + 20 >> 2);
-            var schedPrio = Atomics.load(GROWABLE_HEAP_U32(), thread + 108 + 24 >> 2);
-            if (policy)
-              GROWABLE_HEAP_I32()[policy >> 2] = schedPolicy;
-            if (schedparam)
-              GROWABLE_HEAP_I32()[schedparam >> 2] = schedPrio;
             return 0;
           }
-          function _pthread_self() {
-            return __pthread_ptr | 0;
-          }
-          Module["_pthread_self"] = _pthread_self;
           function _pthread_create(pthread_ptr, attr, start_routine, arg) {
             if (typeof SharedArrayBuffer === "undefined") {
               err("Current environment does not support SharedArrayBuffer, pthreads are not available!");
@@ -5522,27 +5562,11 @@ var WebIFC = (() => {
             var stackSize = 0;
             var stackBase = 0;
             var detached = 0;
-            var schedPolicy = 0;
-            var schedPrio = 0;
-            if (attr) {
-              stackSize = GROWABLE_HEAP_I32()[attr >> 2];
+            if (attr && attr != -1) {
+              stackSize = GROWABLE_HEAP_I32()[attr >>> 2];
               stackSize += 81920;
-              stackBase = GROWABLE_HEAP_I32()[attr + 8 >> 2];
-              detached = GROWABLE_HEAP_I32()[attr + 12 >> 2] !== 0;
-              var inheritSched = GROWABLE_HEAP_I32()[attr + 16 >> 2] === 0;
-              if (inheritSched) {
-                var prevSchedPolicy = GROWABLE_HEAP_I32()[attr + 20 >> 2];
-                var prevSchedPrio = GROWABLE_HEAP_I32()[attr + 24 >> 2];
-                var parentThreadPtr = PThread.currentProxiedOperationCallerThread ? PThread.currentProxiedOperationCallerThread : _pthread_self();
-                _pthread_getschedparam(parentThreadPtr, attr + 20, attr + 24);
-                schedPolicy = GROWABLE_HEAP_I32()[attr + 20 >> 2];
-                schedPrio = GROWABLE_HEAP_I32()[attr + 24 >> 2];
-                GROWABLE_HEAP_I32()[attr + 20 >> 2] = prevSchedPolicy;
-                GROWABLE_HEAP_I32()[attr + 24 >> 2] = prevSchedPrio;
-              } else {
-                schedPolicy = GROWABLE_HEAP_I32()[attr + 20 >> 2];
-                schedPrio = GROWABLE_HEAP_I32()[attr + 24 >> 2];
-              }
+              stackBase = GROWABLE_HEAP_I32()[attr + 8 >>> 2];
+              detached = GROWABLE_HEAP_I32()[attr + 12 >>> 2] !== 0;
             } else {
               stackSize = 2097152;
             }
@@ -5553,24 +5577,23 @@ var WebIFC = (() => {
               stackBase -= stackSize;
               assert(stackBase > 0);
             }
-            var threadInfoStruct2 = _malloc(232);
-            for (var i = 0; i < 232 >> 2; ++i)
-              GROWABLE_HEAP_U32()[(threadInfoStruct2 >> 2) + i] = 0;
-            GROWABLE_HEAP_I32()[pthread_ptr >> 2] = threadInfoStruct2;
-            GROWABLE_HEAP_I32()[threadInfoStruct2 + 12 >> 2] = threadInfoStruct2;
-            var headPtr = threadInfoStruct2 + 156;
-            GROWABLE_HEAP_I32()[headPtr >> 2] = headPtr;
-            var threadParams = { stackBase, stackSize, allocatedOwnStack, schedPolicy, schedPrio, detached, startRoutine: start_routine, pthread_ptr: threadInfoStruct2, parent_pthread_ptr: _pthread_self(), arg, transferList };
+            var threadInfoStruct = _malloc(228);
+            for (var i = 0; i < 228 >> 2; ++i)
+              GROWABLE_HEAP_U32()[(threadInfoStruct >> 2) + i >>> 0] = 0;
+            GROWABLE_HEAP_I32()[pthread_ptr >>> 2] = threadInfoStruct;
+            GROWABLE_HEAP_I32()[threadInfoStruct + 12 >>> 2] = threadInfoStruct;
+            var headPtr = threadInfoStruct + 152;
+            GROWABLE_HEAP_I32()[headPtr >>> 2] = headPtr;
+            var threadParams = { stackBase, stackSize, allocatedOwnStack, detached, startRoutine: start_routine, pthread_ptr: threadInfoStruct, arg, transferList };
             if (ENVIRONMENT_IS_PTHREAD) {
               threadParams.cmd = "spawnThread";
               postMessage(threadParams, transferList);
-            } else {
-              spawnThread(threadParams);
+              return 0;
             }
-            return 0;
+            return spawnThread(threadParams);
           }
-          function _setTempRet0($i) {
-            setTempRet0($i | 0);
+          function _setTempRet0(val) {
+            setTempRet0(val);
           }
           function __isLeapYear(year) {
             return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
@@ -5606,8 +5629,8 @@ var WebIFC = (() => {
             return newDate;
           }
           function _strftime(s, maxsize, format, tm) {
-            var tm_zone = GROWABLE_HEAP_I32()[tm + 40 >> 2];
-            var date = { tm_sec: GROWABLE_HEAP_I32()[tm >> 2], tm_min: GROWABLE_HEAP_I32()[tm + 4 >> 2], tm_hour: GROWABLE_HEAP_I32()[tm + 8 >> 2], tm_mday: GROWABLE_HEAP_I32()[tm + 12 >> 2], tm_mon: GROWABLE_HEAP_I32()[tm + 16 >> 2], tm_year: GROWABLE_HEAP_I32()[tm + 20 >> 2], tm_wday: GROWABLE_HEAP_I32()[tm + 24 >> 2], tm_yday: GROWABLE_HEAP_I32()[tm + 28 >> 2], tm_isdst: GROWABLE_HEAP_I32()[tm + 32 >> 2], tm_gmtoff: GROWABLE_HEAP_I32()[tm + 36 >> 2], tm_zone: tm_zone ? UTF8ToString(tm_zone) : "" };
+            var tm_zone = GROWABLE_HEAP_I32()[tm + 40 >>> 2];
+            var date = { tm_sec: GROWABLE_HEAP_I32()[tm >>> 2], tm_min: GROWABLE_HEAP_I32()[tm + 4 >>> 2], tm_hour: GROWABLE_HEAP_I32()[tm + 8 >>> 2], tm_mday: GROWABLE_HEAP_I32()[tm + 12 >>> 2], tm_mon: GROWABLE_HEAP_I32()[tm + 16 >>> 2], tm_year: GROWABLE_HEAP_I32()[tm + 20 >>> 2], tm_wday: GROWABLE_HEAP_I32()[tm + 24 >>> 2], tm_yday: GROWABLE_HEAP_I32()[tm + 28 >>> 2], tm_isdst: GROWABLE_HEAP_I32()[tm + 32 >>> 2], tm_gmtoff: GROWABLE_HEAP_I32()[tm + 36 >>> 2], tm_zone: tm_zone ? UTF8ToString(tm_zone) : "" };
             var pattern = UTF8ToString(format);
             var EXPANSION_RULES_1 = { "%c": "%a %b %d %H:%M:%S %Y", "%D": "%m/%d/%y", "%F": "%Y-%m-%d", "%h": "%b", "%r": "%I:%M:%S %p", "%R": "%H:%M", "%T": "%H:%M:%S", "%x": "%m/%d/%y", "%X": "%H:%M:%S", "%Ec": "%c", "%EC": "%C", "%Ex": "%m/%d/%y", "%EX": "%H:%M:%S", "%Ey": "%y", "%EY": "%Y", "%Od": "%d", "%Oe": "%e", "%OH": "%H", "%OI": "%I", "%Om": "%m", "%OM": "%M", "%OS": "%S", "%Ou": "%u", "%OU": "%U", "%OV": "%V", "%Ow": "%w", "%OW": "%W", "%Oy": "%y" };
             for (var rule in EXPANSION_RULES_1) {
@@ -5778,7 +5801,7 @@ var WebIFC = (() => {
               return "%";
             } };
             for (var rule in EXPANSION_RULES_2) {
-              if (pattern.indexOf(rule) >= 0) {
+              if (pattern.includes(rule)) {
                 pattern = pattern.replace(new RegExp(rule, "g"), EXPANSION_RULES_2[rule](date));
               }
             }
@@ -5840,7 +5863,7 @@ var WebIFC = (() => {
           UnboundTypeError = Module["UnboundTypeError"] = extendError(Error, "UnboundTypeError");
           init_emval();
           var GLctx;
-          var proxiedFunctionTable = [null, _atexit, ___sys_ioctl, ___sys_open, _emscripten_set_canvas_element_size_main_thread, _environ_get, _environ_sizes_get, _fd_close, _fd_read, _fd_seek, _fd_write];
+          var proxiedFunctionTable = [null, _atexit, ___sys_fcntl64, ___sys_ioctl, ___sys_open, _emscripten_set_canvas_element_size_main_thread, _environ_get, _environ_sizes_get, _fd_close, _fd_read, _fd_seek, _fd_write];
           function intArrayFromString(stringy, dontAddNull, length) {
             var len = length > 0 ? length : lengthBytesUTF8(stringy) + 1;
             var u8array = new Array(len);
@@ -5849,23 +5872,22 @@ var WebIFC = (() => {
               u8array.length = numBytesWritten;
             return u8array;
           }
-          if (!ENVIRONMENT_IS_PTHREAD)
-            __ATINIT__.push({ func: function() {
-              ___wasm_call_ctors();
-            } });
-          var asmLibraryArg = { "p": ___assert_fail, "H": ___cxa_allocate_exception, "G": ___cxa_throw, "ha": ___sys_ioctl, "ia": ___sys_open, "na": __embind_finalize_value_array, "w": __embind_finalize_value_object, "ka": __embind_register_bool, "z": __embind_register_class, "y": __embind_register_class_constructor, "e": __embind_register_class_function, "ja": __embind_register_emval, "ma": __embind_register_enum, "E": __embind_register_enum_value, "N": __embind_register_float, "i": __embind_register_function, "u": __embind_register_integer, "q": __embind_register_memory_view, "O": __embind_register_std_string, "F": __embind_register_std_wstring, "oa": __embind_register_value_array, "l": __embind_register_value_array_element, "x": __embind_register_value_object, "h": __embind_register_value_object_field, "la": __embind_register_void, "$": __emscripten_notify_thread_queue, "s": __emval_as, "P": __emval_call, "b": __emval_decref, "Z": __emval_get_global, "t": __emval_get_property, "o": __emval_incref, "ba": __emval_instanceof, "Q": __emval_is_number, "I": __emval_new_array, "j": __emval_new_cstring, "A": __emval_new_object, "r": __emval_run_destructors, "m": __emval_set_property, "g": __emval_take_value, "K": _abort, "fa": _clock_gettime, "B": _emscripten_asm_const_int, "aa": _emscripten_check_blocking_allowed, "J": _emscripten_conditional_set_current_thread_status, "k": _emscripten_futex_wait, "n": _emscripten_futex_wake, "d": _emscripten_get_now, "D": _emscripten_is_main_browser_thread, "C": _emscripten_is_main_runtime_thread, "U": _emscripten_memcpy_big, "W": _emscripten_receive_on_main_thread_js, "v": _emscripten_resize_heap, "X": _emscripten_set_canvas_element_size, "f": _emscripten_set_current_thread_status, "Y": _emscripten_webgl_create_context, "da": _environ_get, "ea": _environ_sizes_get, "M": _fd_close, "ga": _fd_read, "R": _fd_seek, "L": _fd_write, "T": initPthreadsJS, "a": wasmMemory || Module["wasmMemory"], "V": _pthread_cleanup_push, "_": _pthread_create, "c": _pthread_self, "S": _setTempRet0, "ca": _strftime_l };
+          var asmLibraryArg = { "l": ___assert_fail, "B": ___cxa_allocate_exception, "ka": ___cxa_thread_atexit, "A": ___cxa_throw, "D": ___sys_fcntl64, "V": ___sys_ioctl, "W": ___sys_open, "ma": __embind_finalize_value_array, "s": __embind_finalize_value_object, "O": __embind_register_bigint, "ia": __embind_register_bool, "v": __embind_register_class, "u": __embind_register_class_constructor, "c": __embind_register_class_function, "ha": __embind_register_emval, "la": __embind_register_enum, "y": __embind_register_enum_value, "J": __embind_register_float, "f": __embind_register_function, "p": __embind_register_integer, "k": __embind_register_memory_view, "K": __embind_register_std_string, "z": __embind_register_std_wstring, "na": __embind_register_value_array, "h": __embind_register_value_array_element, "t": __embind_register_value_object, "e": __embind_register_value_object_field, "ja": __embind_register_void, "ea": __emscripten_notify_thread_queue, "n": __emval_as, "L": __emval_call, "b": __emval_decref, "U": __emval_get_global, "o": __emval_get_property, "j": __emval_incref, "ca": __emval_instanceof, "M": __emval_is_number, "C": __emval_new_array, "g": __emval_new_cstring, "w": __emval_new_object, "m": __emval_run_destructors, "i": __emval_set_property, "d": __emval_take_value, "I": _abort, "T": _clock_gettime, "G": _emscripten_asm_const_int, "_": _emscripten_check_blocking_allowed, "F": _emscripten_conditional_set_current_thread_status, "r": _emscripten_futex_wait, "q": _emscripten_futex_wake, "x": _emscripten_get_now, "R": _emscripten_memcpy_big, "$": _emscripten_receive_on_main_thread_js, "S": _emscripten_resize_heap, "aa": _emscripten_set_canvas_element_size, "E": _emscripten_set_current_thread_status, "ba": _emscripten_webgl_create_context, "Y": _environ_get, "Z": _environ_sizes_get, "H": _fd_close, "ga": _fd_read, "N": _fd_seek, "fa": _fd_write, "Q": initPthreadsJS, "a": wasmMemory || Module["wasmMemory"], "da": _pthread_create, "P": _setTempRet0, "X": _strftime_l };
           var asm = createWasm();
           var ___wasm_call_ctors = Module["___wasm_call_ctors"] = function() {
-            return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["qa"]).apply(null, arguments);
+            return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["oa"]).apply(null, arguments);
           };
           var _main = Module["_main"] = function() {
-            return (_main = Module["_main"] = Module["asm"]["ra"]).apply(null, arguments);
+            return (_main = Module["_main"] = Module["asm"]["pa"]).apply(null, arguments);
           };
           var _malloc = Module["_malloc"] = function() {
-            return (_malloc = Module["_malloc"] = Module["asm"]["sa"]).apply(null, arguments);
+            return (_malloc = Module["_malloc"] = Module["asm"]["qa"]).apply(null, arguments);
           };
           var _free = Module["_free"] = function() {
-            return (_free = Module["_free"] = Module["asm"]["ta"]).apply(null, arguments);
+            return (_free = Module["_free"] = Module["asm"]["ra"]).apply(null, arguments);
+          };
+          var _emscripten_tls_init = Module["_emscripten_tls_init"] = function() {
+            return (_emscripten_tls_init = Module["_emscripten_tls_init"] = Module["asm"]["sa"]).apply(null, arguments);
           };
           var ___getTypeName = Module["___getTypeName"] = function() {
             return (___getTypeName = Module["___getTypeName"] = Module["asm"]["ua"]).apply(null, arguments);
@@ -5873,106 +5895,74 @@ var WebIFC = (() => {
           var ___embind_register_native_and_builtin_types = Module["___embind_register_native_and_builtin_types"] = function() {
             return (___embind_register_native_and_builtin_types = Module["___embind_register_native_and_builtin_types"] = Module["asm"]["va"]).apply(null, arguments);
           };
-          var ___errno_location = Module["___errno_location"] = function() {
-            return (___errno_location = Module["___errno_location"] = Module["asm"]["wa"]).apply(null, arguments);
-          };
-          var _emscripten_get_global_libc = Module["_emscripten_get_global_libc"] = function() {
-            return (_emscripten_get_global_libc = Module["_emscripten_get_global_libc"] = Module["asm"]["xa"]).apply(null, arguments);
-          };
-          var ___em_js__initPthreadsJS = Module["___em_js__initPthreadsJS"] = function() {
-            return (___em_js__initPthreadsJS = Module["___em_js__initPthreadsJS"] = Module["asm"]["ya"]).apply(null, arguments);
-          };
-          var stackSave = Module["stackSave"] = function() {
-            return (stackSave = Module["stackSave"] = Module["asm"]["za"]).apply(null, arguments);
-          };
-          var stackRestore = Module["stackRestore"] = function() {
-            return (stackRestore = Module["stackRestore"] = Module["asm"]["Aa"]).apply(null, arguments);
-          };
-          var stackAlloc = Module["stackAlloc"] = function() {
-            return (stackAlloc = Module["stackAlloc"] = Module["asm"]["Ba"]).apply(null, arguments);
-          };
-          var _emscripten_stack_set_limits = Module["_emscripten_stack_set_limits"] = function() {
-            return (_emscripten_stack_set_limits = Module["_emscripten_stack_set_limits"] = Module["asm"]["Ca"]).apply(null, arguments);
-          };
-          var _memalign = Module["_memalign"] = function() {
-            return (_memalign = Module["_memalign"] = Module["asm"]["Da"]).apply(null, arguments);
-          };
-          var _emscripten_main_browser_thread_id = Module["_emscripten_main_browser_thread_id"] = function() {
-            return (_emscripten_main_browser_thread_id = Module["_emscripten_main_browser_thread_id"] = Module["asm"]["Ea"]).apply(null, arguments);
-          };
-          var ___pthread_tsd_run_dtors = Module["___pthread_tsd_run_dtors"] = function() {
-            return (___pthread_tsd_run_dtors = Module["___pthread_tsd_run_dtors"] = Module["asm"]["Fa"]).apply(null, arguments);
-          };
-          var _emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = function() {
-            return (_emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = Module["asm"]["Ga"]).apply(null, arguments);
-          };
           var _emscripten_current_thread_process_queued_calls = Module["_emscripten_current_thread_process_queued_calls"] = function() {
-            return (_emscripten_current_thread_process_queued_calls = Module["_emscripten_current_thread_process_queued_calls"] = Module["asm"]["Ha"]).apply(null, arguments);
+            return (_emscripten_current_thread_process_queued_calls = Module["_emscripten_current_thread_process_queued_calls"] = Module["asm"]["wa"]).apply(null, arguments);
           };
           var _emscripten_register_main_browser_thread_id = Module["_emscripten_register_main_browser_thread_id"] = function() {
-            return (_emscripten_register_main_browser_thread_id = Module["_emscripten_register_main_browser_thread_id"] = Module["asm"]["Ia"]).apply(null, arguments);
+            return (_emscripten_register_main_browser_thread_id = Module["_emscripten_register_main_browser_thread_id"] = Module["asm"]["xa"]).apply(null, arguments);
           };
-          var _do_emscripten_dispatch_to_thread = Module["_do_emscripten_dispatch_to_thread"] = function() {
-            return (_do_emscripten_dispatch_to_thread = Module["_do_emscripten_dispatch_to_thread"] = Module["asm"]["Ja"]).apply(null, arguments);
-          };
-          var _emscripten_async_run_in_main_thread = Module["_emscripten_async_run_in_main_thread"] = function() {
-            return (_emscripten_async_run_in_main_thread = Module["_emscripten_async_run_in_main_thread"] = Module["asm"]["Ka"]).apply(null, arguments);
-          };
-          var _emscripten_sync_run_in_main_thread = Module["_emscripten_sync_run_in_main_thread"] = function() {
-            return (_emscripten_sync_run_in_main_thread = Module["_emscripten_sync_run_in_main_thread"] = Module["asm"]["La"]).apply(null, arguments);
-          };
-          var _emscripten_sync_run_in_main_thread_0 = Module["_emscripten_sync_run_in_main_thread_0"] = function() {
-            return (_emscripten_sync_run_in_main_thread_0 = Module["_emscripten_sync_run_in_main_thread_0"] = Module["asm"]["Ma"]).apply(null, arguments);
-          };
-          var _emscripten_sync_run_in_main_thread_1 = Module["_emscripten_sync_run_in_main_thread_1"] = function() {
-            return (_emscripten_sync_run_in_main_thread_1 = Module["_emscripten_sync_run_in_main_thread_1"] = Module["asm"]["Na"]).apply(null, arguments);
-          };
-          var _emscripten_sync_run_in_main_thread_2 = Module["_emscripten_sync_run_in_main_thread_2"] = function() {
-            return (_emscripten_sync_run_in_main_thread_2 = Module["_emscripten_sync_run_in_main_thread_2"] = Module["asm"]["Oa"]).apply(null, arguments);
-          };
-          var _emscripten_sync_run_in_main_thread_xprintf_varargs = Module["_emscripten_sync_run_in_main_thread_xprintf_varargs"] = function() {
-            return (_emscripten_sync_run_in_main_thread_xprintf_varargs = Module["_emscripten_sync_run_in_main_thread_xprintf_varargs"] = Module["asm"]["Pa"]).apply(null, arguments);
-          };
-          var _emscripten_sync_run_in_main_thread_3 = Module["_emscripten_sync_run_in_main_thread_3"] = function() {
-            return (_emscripten_sync_run_in_main_thread_3 = Module["_emscripten_sync_run_in_main_thread_3"] = Module["asm"]["Qa"]).apply(null, arguments);
+          var __emscripten_do_dispatch_to_thread = Module["__emscripten_do_dispatch_to_thread"] = function() {
+            return (__emscripten_do_dispatch_to_thread = Module["__emscripten_do_dispatch_to_thread"] = Module["asm"]["ya"]).apply(null, arguments);
           };
           var _emscripten_sync_run_in_main_thread_4 = Module["_emscripten_sync_run_in_main_thread_4"] = function() {
-            return (_emscripten_sync_run_in_main_thread_4 = Module["_emscripten_sync_run_in_main_thread_4"] = Module["asm"]["Ra"]).apply(null, arguments);
+            return (_emscripten_sync_run_in_main_thread_4 = Module["_emscripten_sync_run_in_main_thread_4"] = Module["asm"]["za"]).apply(null, arguments);
           };
-          var _emscripten_sync_run_in_main_thread_5 = Module["_emscripten_sync_run_in_main_thread_5"] = function() {
-            return (_emscripten_sync_run_in_main_thread_5 = Module["_emscripten_sync_run_in_main_thread_5"] = Module["asm"]["Sa"]).apply(null, arguments);
-          };
-          var _emscripten_sync_run_in_main_thread_6 = Module["_emscripten_sync_run_in_main_thread_6"] = function() {
-            return (_emscripten_sync_run_in_main_thread_6 = Module["_emscripten_sync_run_in_main_thread_6"] = Module["asm"]["Ta"]).apply(null, arguments);
-          };
-          var _emscripten_sync_run_in_main_thread_7 = Module["_emscripten_sync_run_in_main_thread_7"] = function() {
-            return (_emscripten_sync_run_in_main_thread_7 = Module["_emscripten_sync_run_in_main_thread_7"] = Module["asm"]["Ua"]).apply(null, arguments);
+          var _emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = function() {
+            return (_emscripten_main_thread_process_queued_calls = Module["_emscripten_main_thread_process_queued_calls"] = Module["asm"]["Aa"]).apply(null, arguments);
           };
           var _emscripten_run_in_main_runtime_thread_js = Module["_emscripten_run_in_main_runtime_thread_js"] = function() {
-            return (_emscripten_run_in_main_runtime_thread_js = Module["_emscripten_run_in_main_runtime_thread_js"] = Module["asm"]["Va"]).apply(null, arguments);
+            return (_emscripten_run_in_main_runtime_thread_js = Module["_emscripten_run_in_main_runtime_thread_js"] = Module["asm"]["Ba"]).apply(null, arguments);
           };
           var __emscripten_call_on_thread = Module["__emscripten_call_on_thread"] = function() {
-            return (__emscripten_call_on_thread = Module["__emscripten_call_on_thread"] = Module["asm"]["Wa"]).apply(null, arguments);
+            return (__emscripten_call_on_thread = Module["__emscripten_call_on_thread"] = Module["asm"]["Ca"]).apply(null, arguments);
           };
-          var _emscripten_tls_init = Module["_emscripten_tls_init"] = function() {
-            return (_emscripten_tls_init = Module["_emscripten_tls_init"] = Module["asm"]["Xa"]).apply(null, arguments);
+          var __emscripten_thread_init = Module["__emscripten_thread_init"] = function() {
+            return (__emscripten_thread_init = Module["__emscripten_thread_init"] = Module["asm"]["Da"]).apply(null, arguments);
+          };
+          var _emscripten_get_global_libc = Module["_emscripten_get_global_libc"] = function() {
+            return (_emscripten_get_global_libc = Module["_emscripten_get_global_libc"] = Module["asm"]["Ea"]).apply(null, arguments);
+          };
+          var ___errno_location = Module["___errno_location"] = function() {
+            return (___errno_location = Module["___errno_location"] = Module["asm"]["Fa"]).apply(null, arguments);
+          };
+          var _pthread_self = Module["_pthread_self"] = function() {
+            return (_pthread_self = Module["_pthread_self"] = Module["asm"]["Ga"]).apply(null, arguments);
+          };
+          var ___pthread_tsd_run_dtors = Module["___pthread_tsd_run_dtors"] = function() {
+            return (___pthread_tsd_run_dtors = Module["___pthread_tsd_run_dtors"] = Module["asm"]["Ha"]).apply(null, arguments);
+          };
+          var stackSave = Module["stackSave"] = function() {
+            return (stackSave = Module["stackSave"] = Module["asm"]["Ia"]).apply(null, arguments);
+          };
+          var stackRestore = Module["stackRestore"] = function() {
+            return (stackRestore = Module["stackRestore"] = Module["asm"]["Ja"]).apply(null, arguments);
+          };
+          var stackAlloc = Module["stackAlloc"] = function() {
+            return (stackAlloc = Module["stackAlloc"] = Module["asm"]["Ka"]).apply(null, arguments);
+          };
+          var _emscripten_stack_set_limits = Module["_emscripten_stack_set_limits"] = function() {
+            return (_emscripten_stack_set_limits = Module["_emscripten_stack_set_limits"] = Module["asm"]["La"]).apply(null, arguments);
+          };
+          var _memalign = Module["_memalign"] = function() {
+            return (_memalign = Module["_memalign"] = Module["asm"]["Ma"]).apply(null, arguments);
           };
           var dynCall_jiji = Module["dynCall_jiji"] = function() {
-            return (dynCall_jiji = Module["dynCall_jiji"] = Module["asm"]["Ya"]).apply(null, arguments);
+            return (dynCall_jiji = Module["dynCall_jiji"] = Module["asm"]["Na"]).apply(null, arguments);
           };
           var dynCall_viijii = Module["dynCall_viijii"] = function() {
-            return (dynCall_viijii = Module["dynCall_viijii"] = Module["asm"]["Za"]).apply(null, arguments);
-          };
-          var dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = function() {
-            return (dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = Module["asm"]["_a"]).apply(null, arguments);
+            return (dynCall_viijii = Module["dynCall_viijii"] = Module["asm"]["Oa"]).apply(null, arguments);
           };
           var dynCall_iiiiij = Module["dynCall_iiiiij"] = function() {
-            return (dynCall_iiiiij = Module["dynCall_iiiiij"] = Module["asm"]["$a"]).apply(null, arguments);
+            return (dynCall_iiiiij = Module["dynCall_iiiiij"] = Module["asm"]["Pa"]).apply(null, arguments);
           };
           var dynCall_iiiiijj = Module["dynCall_iiiiijj"] = function() {
-            return (dynCall_iiiiijj = Module["dynCall_iiiiijj"] = Module["asm"]["ab"]).apply(null, arguments);
+            return (dynCall_iiiiijj = Module["dynCall_iiiiijj"] = Module["asm"]["Qa"]).apply(null, arguments);
           };
-          var _main_thread_futex = Module["_main_thread_futex"] = 51928;
+          var dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = function() {
+            return (dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = Module["asm"]["Ra"]).apply(null, arguments);
+          };
+          var __emscripten_allow_main_runtime_queued_calls = Module["__emscripten_allow_main_runtime_queued_calls"] = 44840;
+          var __emscripten_main_thread_futex = Module["__emscripten_main_thread_futex"] = 48292;
           Module["addRunDependency"] = addRunDependency;
           Module["removeRunDependency"] = removeRunDependency;
           Module["FS_createPath"] = FS.createPath;
@@ -5981,10 +5971,10 @@ var WebIFC = (() => {
           Module["FS_createLazyFile"] = FS.createLazyFile;
           Module["FS_createDevice"] = FS.createDevice;
           Module["FS_unlink"] = FS.unlink;
+          Module["keepRuntimeAlive"] = keepRuntimeAlive;
           Module["FS"] = FS;
           Module["PThread"] = PThread;
           Module["PThread"] = PThread;
-          Module["_pthread_self"] = _pthread_self;
           Module["wasmMemory"] = wasmMemory;
           Module["ExitStatus"] = ExitStatus;
           var calledRun;
@@ -6008,19 +5998,15 @@ var WebIFC = (() => {
               var ret = entryFunction(argc, argv);
               exit(ret, true);
             } catch (e) {
-              if (e instanceof ExitStatus) {
+              if (e instanceof ExitStatus || e == "unwind") {
                 return;
-              } else if (e == "unwind") {
-                noExitRuntime = true;
-                return;
-              } else {
-                var toLog = e;
-                if (e && typeof e === "object" && e.stack) {
-                  toLog = [e, e.stack];
-                }
-                err("exception thrown: " + toLog);
-                quit_(1, e);
               }
+              var toLog = e;
+              if (e && typeof e === "object" && e.stack) {
+                toLog = [e, e.stack];
+              }
+              err("exception thrown: " + toLog);
+              quit_(1, e);
             } finally {
               calledMain = true;
             }
@@ -6030,9 +6016,16 @@ var WebIFC = (() => {
             if (runDependencies > 0) {
               return;
             }
-            preRun();
-            if (runDependencies > 0)
+            if (ENVIRONMENT_IS_PTHREAD) {
+              readyPromiseResolve(Module);
+              initRuntime();
+              postMessage({ "cmd": "loaded" });
               return;
+            }
+            preRun();
+            if (runDependencies > 0) {
+              return;
+            }
             function doRun() {
               if (calledRun)
                 return;
@@ -6063,13 +6056,17 @@ var WebIFC = (() => {
           }
           Module["run"] = run;
           function exit(status, implicit) {
-            if (implicit && noExitRuntime && status === 0) {
-              return;
+            EXITSTATUS = status;
+            if (!implicit) {
+              if (ENVIRONMENT_IS_PTHREAD) {
+                postMessage({ "cmd": "exitProcess", "returnCode": status });
+                throw new ExitStatus(status);
+              } else {
+              }
             }
-            if (noExitRuntime) {
+            if (keepRuntimeAlive()) {
             } else {
               PThread.terminateAllThreads();
-              EXITSTATUS = status;
               exitRuntime();
               if (Module["onExit"])
                 Module["onExit"](status);
@@ -6087,13 +6084,11 @@ var WebIFC = (() => {
           var shouldRunNow = true;
           if (Module["noInitialRun"])
             shouldRunNow = false;
-          if (!ENVIRONMENT_IS_PTHREAD)
-            noExitRuntime = true;
-          if (!ENVIRONMENT_IS_PTHREAD) {
-            run();
-          } else {
+          if (ENVIRONMENT_IS_PTHREAD) {
+            noExitRuntime = false;
             PThread.initWorker();
           }
+          run();
           return WebIFCWasm3.ready;
         };
       }();
@@ -6135,14 +6130,9 @@ var WebIFC = (() => {
           var quit_ = function(status, toThrow) {
             throw toThrow;
           };
-          var ENVIRONMENT_IS_WEB = false;
-          var ENVIRONMENT_IS_WORKER = false;
-          var ENVIRONMENT_IS_NODE = false;
-          var ENVIRONMENT_IS_SHELL = false;
-          ENVIRONMENT_IS_WEB = typeof window === "object";
-          ENVIRONMENT_IS_WORKER = typeof importScripts === "function";
-          ENVIRONMENT_IS_NODE = typeof process === "object" && typeof process.versions === "object" && typeof process.versions.node === "string";
-          ENVIRONMENT_IS_SHELL = !ENVIRONMENT_IS_WEB && !ENVIRONMENT_IS_NODE && !ENVIRONMENT_IS_WORKER;
+          var ENVIRONMENT_IS_WEB = typeof window === "object";
+          var ENVIRONMENT_IS_WORKER = typeof importScripts === "function";
+          var ENVIRONMENT_IS_NODE = typeof process === "object" && typeof process.versions === "object" && typeof process.versions.node === "string";
           var scriptDirectory = "";
           function locateFile(path) {
             if (Module["locateFile"]) {
@@ -6175,6 +6165,19 @@ var WebIFC = (() => {
               assert(ret.buffer);
               return ret;
             };
+            readAsync = function readAsync2(filename, onload, onerror) {
+              if (!nodeFS)
+                nodeFS = __require("fs");
+              if (!nodePath)
+                nodePath = __require("path");
+              filename = nodePath["normalize"](filename);
+              nodeFS["readFile"](filename, function(err2, data) {
+                if (err2)
+                  onerror(err2);
+                else
+                  onload(data.buffer);
+              });
+            };
             if (process["argv"].length > 1) {
               thisProgram = process["argv"][1].replace(/\\/g, "/");
             }
@@ -6185,43 +6188,16 @@ var WebIFC = (() => {
               }
             });
             process["on"]("unhandledRejection", abort);
-            quit_ = function(status) {
+            quit_ = function(status, toThrow) {
+              if (keepRuntimeAlive()) {
+                process["exitCode"] = status;
+                throw toThrow;
+              }
               process["exit"](status);
             };
             Module["inspect"] = function() {
               return "[Emscripten Module object]";
             };
-          } else if (ENVIRONMENT_IS_SHELL) {
-            if (typeof read != "undefined") {
-              read_ = function shell_read(f) {
-                return read(f);
-              };
-            }
-            readBinary = function readBinary2(f) {
-              var data;
-              if (typeof readbuffer === "function") {
-                return new Uint8Array(readbuffer(f));
-              }
-              data = read(f, "binary");
-              assert(typeof data === "object");
-              return data;
-            };
-            if (typeof scriptArgs != "undefined") {
-              arguments_ = scriptArgs;
-            } else if (typeof arguments != "undefined") {
-              arguments_ = arguments;
-            }
-            if (typeof quit === "function") {
-              quit_ = function(status) {
-                quit(status);
-              };
-            }
-            if (typeof print !== "undefined") {
-              if (typeof console === "undefined")
-                console = {};
-              console.log = print;
-              console.warn = console.error = typeof printErr !== "undefined" ? printErr : print;
-            }
           } else if (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) {
             if (ENVIRONMENT_IS_WORKER) {
               scriptDirectory = self.location.href;
@@ -6237,14 +6213,14 @@ var WebIFC = (() => {
               scriptDirectory = "";
             }
             {
-              read_ = function shell_read(url) {
+              read_ = function(url) {
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", url, false);
                 xhr.send(null);
                 return xhr.responseText;
               };
               if (ENVIRONMENT_IS_WORKER) {
-                readBinary = function readBinary2(url) {
+                readBinary = function(url) {
                   var xhr = new XMLHttpRequest();
                   xhr.open("GET", url, false);
                   xhr.responseType = "arraybuffer";
@@ -6252,11 +6228,11 @@ var WebIFC = (() => {
                   return new Uint8Array(xhr.response);
                 };
               }
-              readAsync = function readAsync2(url, onload, onerror) {
+              readAsync = function(url, onload, onerror) {
                 var xhr = new XMLHttpRequest();
                 xhr.open("GET", url, true);
                 xhr.responseType = "arraybuffer";
-                xhr.onload = function xhr_onload() {
+                xhr.onload = function() {
                   if (xhr.status == 200 || xhr.status == 0 && xhr.response) {
                     onload(xhr.response);
                     return;
@@ -6286,12 +6262,6 @@ var WebIFC = (() => {
             thisProgram = Module["thisProgram"];
           if (Module["quit"])
             quit_ = Module["quit"];
-          var STACK_ALIGN = 16;
-          function alignMemory(size, factor) {
-            if (!factor)
-              factor = STACK_ALIGN;
-            return Math.ceil(size / factor) * factor;
-          }
           var tempRet0 = 0;
           var setTempRet0 = function(value) {
             tempRet0 = value;
@@ -6299,15 +6269,13 @@ var WebIFC = (() => {
           var wasmBinary;
           if (Module["wasmBinary"])
             wasmBinary = Module["wasmBinary"];
-          var noExitRuntime;
-          if (Module["noExitRuntime"])
-            noExitRuntime = Module["noExitRuntime"];
+          var noExitRuntime = Module["noExitRuntime"] || true;
           if (typeof WebAssembly !== "object") {
             abort("no native wasm support detected");
           }
           var wasmMemory;
           var ABORT = false;
-          var EXITSTATUS = 0;
+          var EXITSTATUS;
           function assert(condition, text) {
             if (!condition) {
               abort("Assertion failed: " + text);
@@ -6534,16 +6502,6 @@ var WebIFC = (() => {
             Module["HEAPF64"] = HEAPF64 = new Float64Array(buf);
           }
           var INITIAL_MEMORY = Module["INITIAL_MEMORY"] || 16777216;
-          if (Module["wasmMemory"]) {
-            wasmMemory = Module["wasmMemory"];
-          } else {
-            wasmMemory = new WebAssembly.Memory({ "initial": INITIAL_MEMORY / 65536, "maximum": 4294967296 / 65536 });
-          }
-          if (wasmMemory) {
-            buffer = wasmMemory.buffer;
-          }
-          INITIAL_MEMORY = buffer.byteLength;
-          updateGlobalBufferAndViews(buffer);
           var wasmTable;
           var __ATPRERUN__ = [];
           var __ATINIT__ = [];
@@ -6551,6 +6509,10 @@ var WebIFC = (() => {
           var __ATPOSTRUN__ = [];
           var runtimeInitialized = false;
           var runtimeExited = false;
+          var runtimeKeepaliveCounter = 0;
+          function keepRuntimeAlive() {
+            return noExitRuntime || runtimeKeepaliveCounter > 0;
+          }
           function preRun() {
             if (Module["preRun"]) {
               if (typeof Module["preRun"] == "function")
@@ -6565,11 +6527,11 @@ var WebIFC = (() => {
             runtimeInitialized = true;
             if (!Module["noFSInit"] && !FS.init.initialized)
               FS.init();
+            FS.ignorePermissions = false;
             TTY.init();
             callRuntimeCallbacks(__ATINIT__);
           }
           function preMain() {
-            FS.ignorePermissions = false;
             callRuntimeCallbacks(__ATMAIN__);
           }
           function exitRuntime() {
@@ -6587,6 +6549,9 @@ var WebIFC = (() => {
           }
           function addOnPreRun(cb) {
             __ATPRERUN__.unshift(cb);
+          }
+          function addOnInit(cb) {
+            __ATINIT__.unshift(cb);
           }
           function addOnPostRun(cb) {
             __ATPOSTRUN__.unshift(cb);
@@ -6635,28 +6600,25 @@ var WebIFC = (() => {
             readyPromiseReject(e);
             throw e;
           }
-          function hasPrefix(str, prefix) {
-            return String.prototype.startsWith ? str.startsWith(prefix) : str.indexOf(prefix) === 0;
-          }
           var dataURIPrefix = "data:application/octet-stream;base64,";
           function isDataURI(filename) {
-            return hasPrefix(filename, dataURIPrefix);
+            return filename.startsWith(dataURIPrefix);
           }
-          var fileURIPrefix = "file://";
           function isFileURI(filename) {
-            return hasPrefix(filename, fileURIPrefix);
+            return filename.startsWith("file://");
           }
-          var wasmBinaryFile = "web-ifc.wasm";
+          var wasmBinaryFile;
+          wasmBinaryFile = "web-ifc.wasm";
           if (!isDataURI(wasmBinaryFile)) {
             wasmBinaryFile = locateFile(wasmBinaryFile);
           }
-          function getBinary() {
+          function getBinary(file) {
             try {
-              if (wasmBinary) {
+              if (file == wasmBinaryFile && wasmBinary) {
                 return new Uint8Array(wasmBinary);
               }
               if (readBinary) {
-                return readBinary(wasmBinaryFile);
+                return readBinary(file);
               } else {
                 throw "both async and sync fetching of the wasm failed";
               }
@@ -6665,33 +6627,49 @@ var WebIFC = (() => {
             }
           }
           function getBinaryPromise() {
-            if (!wasmBinary && (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER) && typeof fetch === "function" && !isFileURI(wasmBinaryFile)) {
-              return fetch(wasmBinaryFile, { credentials: "same-origin" }).then(function(response) {
-                if (!response["ok"]) {
-                  throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
+            if (!wasmBinary && (ENVIRONMENT_IS_WEB || ENVIRONMENT_IS_WORKER)) {
+              if (typeof fetch === "function" && !isFileURI(wasmBinaryFile)) {
+                return fetch(wasmBinaryFile, { credentials: "same-origin" }).then(function(response) {
+                  if (!response["ok"]) {
+                    throw "failed to load wasm binary file at '" + wasmBinaryFile + "'";
+                  }
+                  return response["arrayBuffer"]();
+                }).catch(function() {
+                  return getBinary(wasmBinaryFile);
+                });
+              } else {
+                if (readAsync) {
+                  return new Promise(function(resolve, reject) {
+                    readAsync(wasmBinaryFile, function(response) {
+                      resolve(new Uint8Array(response));
+                    }, reject);
+                  });
                 }
-                return response["arrayBuffer"]();
-              }).catch(function() {
-                return getBinary();
-              });
+              }
             }
-            return Promise.resolve().then(getBinary);
+            return Promise.resolve().then(function() {
+              return getBinary(wasmBinaryFile);
+            });
           }
           function createWasm() {
             var info = { "a": asmLibraryArg };
             function receiveInstance(instance, module2) {
               var exports3 = instance.exports;
               Module["asm"] = exports3;
-              wasmTable = Module["asm"]["ba"];
+              wasmMemory = Module["asm"]["$"];
+              updateGlobalBufferAndViews(wasmMemory.buffer);
+              wasmTable = Module["asm"]["ha"];
+              addOnInit(Module["asm"]["aa"]);
               removeRunDependency("wasm-instantiate");
             }
             addRunDependency("wasm-instantiate");
-            function receiveInstantiatedSource(output) {
-              receiveInstance(output["instance"]);
+            function receiveInstantiationResult(result) {
+              receiveInstance(result["instance"]);
             }
             function instantiateArrayBuffer(receiver) {
               return getBinaryPromise().then(function(binary) {
-                return WebAssembly.instantiate(binary, info);
+                var result = WebAssembly.instantiate(binary, info);
+                return result;
               }).then(receiver, function(reason) {
                 err("failed to asynchronously prepare wasm: " + reason);
                 abort(reason);
@@ -6701,14 +6679,14 @@ var WebIFC = (() => {
               if (!wasmBinary && typeof WebAssembly.instantiateStreaming === "function" && !isDataURI(wasmBinaryFile) && !isFileURI(wasmBinaryFile) && typeof fetch === "function") {
                 return fetch(wasmBinaryFile, { credentials: "same-origin" }).then(function(response) {
                   var result = WebAssembly.instantiateStreaming(response, info);
-                  return result.then(receiveInstantiatedSource, function(reason) {
+                  return result.then(receiveInstantiationResult, function(reason) {
                     err("wasm streaming compile failed: " + reason);
                     err("falling back to ArrayBuffer instantiation");
-                    return instantiateArrayBuffer(receiveInstantiatedSource);
+                    return instantiateArrayBuffer(receiveInstantiationResult);
                   });
                 });
               } else {
-                return instantiateArrayBuffer(receiveInstantiatedSource);
+                return instantiateArrayBuffer(receiveInstantiationResult);
               }
             }
             if (Module["instantiateWasm"]) {
@@ -6744,56 +6722,43 @@ var WebIFC = (() => {
               }
             }
           }
-          function dynCallLegacy(sig, ptr, args) {
-            if (args && args.length) {
-              return Module["dynCall_" + sig].apply(null, [ptr].concat(args));
-            }
-            return Module["dynCall_" + sig].call(null, ptr);
-          }
-          function dynCall(sig, ptr, args) {
-            if (sig.indexOf("j") != -1) {
-              return dynCallLegacy(sig, ptr, args);
-            }
-            return wasmTable.get(ptr).apply(null, args);
-          }
           function ___assert_fail(condition, filename, line, func) {
             abort("Assertion failed: " + UTF8ToString(condition) + ", at: " + [filename ? UTF8ToString(filename) : "unknown filename", line, func ? UTF8ToString(func) : "unknown function"]);
           }
-          var ExceptionInfoAttrs = { DESTRUCTOR_OFFSET: 0, REFCOUNT_OFFSET: 4, TYPE_OFFSET: 8, CAUGHT_OFFSET: 12, RETHROWN_OFFSET: 13, SIZE: 16 };
           function ___cxa_allocate_exception(size) {
-            return _malloc(size + ExceptionInfoAttrs.SIZE) + ExceptionInfoAttrs.SIZE;
+            return _malloc(size + 16) + 16;
           }
           function ExceptionInfo(excPtr) {
             this.excPtr = excPtr;
-            this.ptr = excPtr - ExceptionInfoAttrs.SIZE;
+            this.ptr = excPtr - 16;
             this.set_type = function(type) {
-              HEAP32[this.ptr + ExceptionInfoAttrs.TYPE_OFFSET >>> 2] = type;
+              HEAP32[this.ptr + 4 >>> 2] = type;
             };
             this.get_type = function() {
-              return HEAP32[this.ptr + ExceptionInfoAttrs.TYPE_OFFSET >>> 2];
+              return HEAP32[this.ptr + 4 >>> 2];
             };
             this.set_destructor = function(destructor) {
-              HEAP32[this.ptr + ExceptionInfoAttrs.DESTRUCTOR_OFFSET >>> 2] = destructor;
+              HEAP32[this.ptr + 8 >>> 2] = destructor;
             };
             this.get_destructor = function() {
-              return HEAP32[this.ptr + ExceptionInfoAttrs.DESTRUCTOR_OFFSET >>> 2];
+              return HEAP32[this.ptr + 8 >>> 2];
             };
             this.set_refcount = function(refcount) {
-              HEAP32[this.ptr + ExceptionInfoAttrs.REFCOUNT_OFFSET >>> 2] = refcount;
+              HEAP32[this.ptr >>> 2] = refcount;
             };
             this.set_caught = function(caught) {
               caught = caught ? 1 : 0;
-              HEAP8[this.ptr + ExceptionInfoAttrs.CAUGHT_OFFSET >>> 0] = caught;
+              HEAP8[this.ptr + 12 >>> 0] = caught;
             };
             this.get_caught = function() {
-              return HEAP8[this.ptr + ExceptionInfoAttrs.CAUGHT_OFFSET >>> 0] != 0;
+              return HEAP8[this.ptr + 12 >>> 0] != 0;
             };
             this.set_rethrown = function(rethrown) {
               rethrown = rethrown ? 1 : 0;
-              HEAP8[this.ptr + ExceptionInfoAttrs.RETHROWN_OFFSET >>> 0] = rethrown;
+              HEAP8[this.ptr + 13 >>> 0] = rethrown;
             };
             this.get_rethrown = function() {
-              return HEAP8[this.ptr + ExceptionInfoAttrs.RETHROWN_OFFSET >>> 0] != 0;
+              return HEAP8[this.ptr + 13 >>> 0] != 0;
             };
             this.init = function(type, destructor) {
               this.set_type(type);
@@ -6803,12 +6768,12 @@ var WebIFC = (() => {
               this.set_rethrown(false);
             };
             this.add_ref = function() {
-              var value = HEAP32[this.ptr + ExceptionInfoAttrs.REFCOUNT_OFFSET >>> 2];
-              HEAP32[this.ptr + ExceptionInfoAttrs.REFCOUNT_OFFSET >>> 2] = value + 1;
+              var value = HEAP32[this.ptr >>> 2];
+              HEAP32[this.ptr >>> 2] = value + 1;
             };
             this.release_ref = function() {
-              var prev = HEAP32[this.ptr + ExceptionInfoAttrs.REFCOUNT_OFFSET >>> 2];
-              HEAP32[this.ptr + ExceptionInfoAttrs.REFCOUNT_OFFSET >>> 2] = prev - 1;
+              var prev = HEAP32[this.ptr >>> 2];
+              HEAP32[this.ptr >>> 2] = prev - 1;
               return prev === 1;
             };
           }
@@ -6820,6 +6785,10 @@ var WebIFC = (() => {
             exceptionLast = ptr;
             uncaughtExceptionCount++;
             throw ptr;
+          }
+          function setErrNo(value) {
+            HEAP32[___errno_location() >>> 2] = value;
+            return value;
           }
           var PATH = { splitPath: function(filename) {
             var splitPathRe = /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
@@ -7013,12 +6982,12 @@ var WebIFC = (() => {
               var result = null;
               if (ENVIRONMENT_IS_NODE) {
                 var BUFSIZE = 256;
-                var buf = Buffer.alloc ? Buffer.alloc(BUFSIZE) : new Buffer(BUFSIZE);
+                var buf = Buffer.alloc(BUFSIZE);
                 var bytesRead = 0;
                 try {
                   bytesRead = nodeFS.readSync(process.stdin.fd, buf, 0, BUFSIZE, null);
                 } catch (e) {
-                  if (e.toString().indexOf("EOF") != -1)
+                  if (e.toString().includes("EOF"))
                     bytesRead = 0;
                   else
                     throw e;
@@ -7073,11 +7042,7 @@ var WebIFC = (() => {
             }
           } } };
           function mmapAlloc(size) {
-            var alignedSize = alignMemory(size, 16384);
-            var ptr = _malloc(alignedSize);
-            while (size < alignedSize)
-              HEAP8[ptr + size++ >>> 0] = 0;
-            return ptr;
+            abort();
           }
           var MEMFS = { ops_table: null, mount: function(mount) {
             return MEMFS.createNode(null, "/", 16384 | 511, 0);
@@ -7108,16 +7073,9 @@ var WebIFC = (() => {
             node.timestamp = Date.now();
             if (parent) {
               parent.contents[name2] = node;
+              parent.timestamp = node.timestamp;
             }
             return node;
-          }, getFileDataAsRegularArray: function(node) {
-            if (node.contents && node.contents.subarray) {
-              var arr = [];
-              for (var i = 0; i < node.usedBytes; ++i)
-                arr.push(node.contents[i]);
-              return arr;
-            }
-            return node.contents;
           }, getFileDataAsTypedArray: function(node) {
             if (!node.contents)
               return new Uint8Array(0);
@@ -7137,7 +7095,6 @@ var WebIFC = (() => {
             node.contents = new Uint8Array(newCapacity);
             if (node.usedBytes > 0)
               node.contents.set(oldContents.subarray(0, node.usedBytes), 0);
-            return;
           }, resizeFileStorage: function(node, newSize) {
             newSize >>>= 0;
             if (node.usedBytes == newSize)
@@ -7145,25 +7102,14 @@ var WebIFC = (() => {
             if (newSize == 0) {
               node.contents = null;
               node.usedBytes = 0;
-              return;
-            }
-            if (!node.contents || node.contents.subarray) {
+            } else {
               var oldContents = node.contents;
               node.contents = new Uint8Array(newSize);
               if (oldContents) {
                 node.contents.set(oldContents.subarray(0, Math.min(newSize, node.usedBytes)));
               }
               node.usedBytes = newSize;
-              return;
             }
-            if (!node.contents)
-              node.contents = [];
-            if (node.contents.length > newSize)
-              node.contents.length = newSize;
-            else
-              while (node.contents.length < newSize)
-                node.contents.push(0);
-            node.usedBytes = newSize;
           }, node_ops: { getattr: function(node) {
             var attr = {};
             attr.dev = FS.isChrdev(node.mode) ? node.id : 1;
@@ -7216,17 +7162,21 @@ var WebIFC = (() => {
               }
             }
             delete old_node.parent.contents[old_node.name];
+            old_node.parent.timestamp = Date.now();
             old_node.name = new_name;
             new_dir.contents[new_name] = old_node;
+            new_dir.timestamp = old_node.parent.timestamp;
             old_node.parent = new_dir;
           }, unlink: function(parent, name2) {
             delete parent.contents[name2];
+            parent.timestamp = Date.now();
           }, rmdir: function(parent, name2) {
             var node = FS.lookupNode(parent, name2);
             for (var i in node.contents) {
               throw new FS.ErrnoError(55);
             }
             delete parent.contents[name2];
+            parent.timestamp = Date.now();
           }, readdir: function(node) {
             var entries = [".", ".."];
             for (var key2 in node.contents) {
@@ -7306,7 +7256,9 @@ var WebIFC = (() => {
             MEMFS.expandFileStorage(stream.node, offset + length);
             stream.node.usedBytes = Math.max(stream.node.usedBytes, offset + length);
           }, mmap: function(stream, address, length, position, prot, flags) {
-            assert(address === 0);
+            if (address !== 0) {
+              throw new FS.ErrnoError(28);
+            }
             if (!FS.isFile(stream.node.mode)) {
               throw new FS.ErrnoError(43);
             }
@@ -7343,6 +7295,23 @@ var WebIFC = (() => {
             var bytesWritten = MEMFS.stream_ops.write(stream, buffer2, 0, length, offset, false);
             return 0;
           } } };
+          function asyncLoad(url, onload, onerror, noRunDep) {
+            var dep = !noRunDep ? getUniqueRunDependency("al " + url) : "";
+            readAsync(url, function(arrayBuffer) {
+              assert(arrayBuffer, 'Loading data file "' + url + '" failed (no arrayBuffer).');
+              onload(new Uint8Array(arrayBuffer));
+              if (dep)
+                removeRunDependency(dep);
+            }, function(event) {
+              if (onerror) {
+                onerror();
+              } else {
+                throw 'Loading data file "' + url + '" failed.';
+              }
+            });
+            if (dep)
+              addRunDependency(dep);
+          }
           var FS = { root: null, mounts: [], devices: {}, streams: [], nextInode: 1, nameTable: null, currentPath: "/", initialized: false, ignorePermissions: true, trackingDelegate: {}, tracking: { openFlags: { READ: 1, WRITE: 2 } }, ErrnoError: null, genericErrors: {}, filesystems: null, syncFSRequests: 0, lookupPath: function(path, opts) {
             path = PATH_FS.resolve(FS.cwd(), path);
             opts = opts || {};
@@ -7477,11 +7446,11 @@ var WebIFC = (() => {
             if (FS.ignorePermissions) {
               return 0;
             }
-            if (perms.indexOf("r") !== -1 && !(node.mode & 292)) {
+            if (perms.includes("r") && !(node.mode & 292)) {
               return 2;
-            } else if (perms.indexOf("w") !== -1 && !(node.mode & 146)) {
+            } else if (perms.includes("w") && !(node.mode & 146)) {
               return 2;
-            } else if (perms.indexOf("x") !== -1 && !(node.mode & 73)) {
+            } else if (perms.includes("x") && !(node.mode & 73)) {
               return 2;
             }
             return 0;
@@ -7675,7 +7644,7 @@ var WebIFC = (() => {
               var current = FS.nameTable[hash];
               while (current) {
                 var next = current.name_next;
-                if (mounts.indexOf(current.mount) !== -1) {
+                if (mounts.includes(current.mount)) {
                   FS.destroyNode(current);
                 }
                 current = next;
@@ -8278,10 +8247,10 @@ var WebIFC = (() => {
             FS.mkdir("/dev/shm/tmp");
           }, createSpecialDirectories: function() {
             FS.mkdir("/proc");
-            FS.mkdir("/proc/self");
+            var proc_self = FS.mkdir("/proc/self");
             FS.mkdir("/proc/self/fd");
             FS.mount({ mount: function() {
-              var node = FS.createNode("/proc/self", "fd", 16384 | 511, 73);
+              var node = FS.createNode(proc_self, "fd", 16384 | 511, 73);
               node.node_ops = { lookup: function(parent, name2) {
                 var fd = +name2;
                 var stream = FS.getStream(fd);
@@ -8658,7 +8627,7 @@ var WebIFC = (() => {
             }
             addRunDependency(dep);
             if (typeof url == "string") {
-              Browser.asyncLoad(url, function(byteArray) {
+              asyncLoad(url, function(byteArray) {
                 processData(byteArray);
               }, onerror);
             } else {
@@ -8760,20 +8729,26 @@ var WebIFC = (() => {
             };
             openRequest.onerror = onerror;
           } };
-          var SYSCALLS = { mappings: {}, DEFAULT_POLLMASK: 5, umask: 511, calculateAt: function(dirfd, path) {
-            if (path[0] !== "/") {
-              var dir;
-              if (dirfd === -100) {
-                dir = FS.cwd();
-              } else {
-                var dirstream = FS.getStream(dirfd);
-                if (!dirstream)
-                  throw new FS.ErrnoError(8);
-                dir = dirstream.path;
-              }
-              path = PATH.join2(dir, path);
+          var SYSCALLS = { mappings: {}, DEFAULT_POLLMASK: 5, umask: 511, calculateAt: function(dirfd, path, allowEmpty) {
+            if (path[0] === "/") {
+              return path;
             }
-            return path;
+            var dir;
+            if (dirfd === -100) {
+              dir = FS.cwd();
+            } else {
+              var dirstream = FS.getStream(dirfd);
+              if (!dirstream)
+                throw new FS.ErrnoError(8);
+              dir = dirstream.path;
+            }
+            if (path.length == 0) {
+              if (!allowEmpty) {
+                throw new FS.ErrnoError(44);
+              }
+              return dir;
+            }
+            return PATH.join2(dir, path);
           }, doStat: function(func, path, buf) {
             try {
               var stat = func(path);
@@ -8899,6 +8874,55 @@ var WebIFC = (() => {
           }, get64: function(low, high) {
             return low;
           } };
+          function ___sys_fcntl64(fd, cmd, varargs) {
+            SYSCALLS.varargs = varargs;
+            try {
+              var stream = SYSCALLS.getStreamFromFD(fd);
+              switch (cmd) {
+                case 0: {
+                  var arg = SYSCALLS.get();
+                  if (arg < 0) {
+                    return -28;
+                  }
+                  var newStream;
+                  newStream = FS.open(stream.path, stream.flags, 0, arg);
+                  return newStream.fd;
+                }
+                case 1:
+                case 2:
+                  return 0;
+                case 3:
+                  return stream.flags;
+                case 4: {
+                  var arg = SYSCALLS.get();
+                  stream.flags |= arg;
+                  return 0;
+                }
+                case 12: {
+                  var arg = SYSCALLS.get();
+                  var offset = 0;
+                  HEAP16[arg + offset >>> 1] = 2;
+                  return 0;
+                }
+                case 13:
+                case 14:
+                  return 0;
+                case 16:
+                case 8:
+                  return -28;
+                case 9:
+                  setErrNo(28);
+                  return -1;
+                default: {
+                  return -28;
+                }
+              }
+            } catch (e) {
+              if (typeof FS === "undefined" || !(e instanceof FS.ErrnoError))
+                abort(e);
+              return -e.errno;
+            }
+          }
           function ___sys_ioctl(fd, op, varargs) {
             SYSCALLS.varargs = varargs;
             try {
@@ -8959,7 +8983,7 @@ var WebIFC = (() => {
             SYSCALLS.varargs = varargs;
             try {
               var pathname = SYSCALLS.getStr(path);
-              var mode = SYSCALLS.get();
+              var mode = varargs ? SYSCALLS.get() : 0;
               var stream = FS.open(pathname, flags, mode);
               return stream.fd;
             } catch (e) {
@@ -9165,6 +9189,8 @@ var WebIFC = (() => {
                 return ptr;
               }, "argPackAdvance": 8, "readValueFromPointer": simpleReadValueFromPointer, destructorFunction: rawDestructor }];
             });
+          }
+          function __embind_register_bigint(primitiveType, name2, size, minRange, maxRange) {
           }
           function getShiftFromSize(size) {
             switch (size) {
@@ -9702,8 +9728,17 @@ var WebIFC = (() => {
               Module[name2].argCount = numArguments;
             }
           }
+          function dynCallLegacy(sig, ptr, args) {
+            var f = Module["dynCall_" + sig];
+            return args && args.length ? f.apply(null, [ptr].concat(args)) : f.call(null, ptr);
+          }
+          function dynCall(sig, ptr, args) {
+            if (sig.includes("j")) {
+              return dynCallLegacy(sig, ptr, args);
+            }
+            return wasmTable.get(ptr).apply(null, args);
+          }
           function getDynCaller(sig, ptr) {
-            assert(sig.indexOf("j") >= 0, "getDynCaller should only be called with i64 sigs");
             var argCache = [];
             return function() {
               argCache.length = arguments.length;
@@ -9716,7 +9751,7 @@ var WebIFC = (() => {
           function embind__requireFunction(signature, rawFunction) {
             signature = readLatin1String(signature);
             function makeDynCaller() {
-              if (signature.indexOf("j") != -1) {
+              if (signature.includes("j")) {
                 return getDynCaller(signature, rawFunction);
               }
               return wasmTable.get(rawFunction);
@@ -9924,6 +9959,9 @@ var WebIFC = (() => {
             whenDependentTypesAreResolved([], [rawClassType], function(classType) {
               classType = classType[0];
               var humanName = classType.name + "." + methodName;
+              if (methodName.startsWith("@@")) {
+                methodName = Symbol[methodName.substring(2)];
+              }
               if (isPureVirtual) {
                 classType.registeredClass.pureVirtualFunctions.push(methodName);
               }
@@ -10152,7 +10190,7 @@ var WebIFC = (() => {
                 return value << bitshift >>> bitshift;
               };
             }
-            var isUnsignedType = name2.indexOf("unsigned") != -1;
+            var isUnsignedType = name2.includes("unsigned");
             registerType(primitiveType, { name: name2, "fromWireType": fromWireType, "toWireType": function(destructors, value) {
               if (typeof value !== "number" && typeof value !== "boolean") {
                 throw new TypeError('Cannot convert "' + _embind_repr(value) + '" to ' + this.name);
@@ -10444,17 +10482,11 @@ var WebIFC = (() => {
               var t = process["hrtime"]();
               return t[0] * 1e3 + t[1] / 1e6;
             };
-          } else if (typeof dateNow !== "undefined") {
-            _emscripten_get_now = dateNow;
           } else
             _emscripten_get_now = function() {
               return performance.now();
             };
           var _emscripten_get_now_is_monotonic = true;
-          function setErrNo(value) {
-            HEAP32[___errno_location() >>> 2] = value;
-            return value;
-          }
           function _clock_gettime(clk_id, tp) {
             var now;
             if (clk_id === 0) {
@@ -10472,9 +10504,6 @@ var WebIFC = (() => {
           function _emscripten_memcpy_big(dest, src, num) {
             HEAPU8.copyWithin(dest >>> 0, src >>> 0, src + num >>> 0);
           }
-          function _emscripten_get_heap_size() {
-            return HEAPU8.length;
-          }
           function emscripten_realloc_buffer(size) {
             try {
               wasmMemory.grow(size - buffer.byteLength + 65535 >>> 16);
@@ -10484,17 +10513,16 @@ var WebIFC = (() => {
             }
           }
           function _emscripten_resize_heap(requestedSize) {
+            var oldSize = HEAPU8.length;
             requestedSize = requestedSize >>> 0;
-            var oldSize = _emscripten_get_heap_size();
-            var maxHeapSize = 4294967296;
+            var maxHeapSize = 4294901760;
             if (requestedSize > maxHeapSize) {
               return false;
             }
-            var minHeapSize = 16777216;
             for (var cutDown = 1; cutDown <= 4; cutDown *= 2) {
               var overGrownHeapSize = oldSize * (1 + 0.2 / cutDown);
               overGrownHeapSize = Math.min(overGrownHeapSize, requestedSize + 100663296);
-              var newSize = Math.min(maxHeapSize, alignUp(Math.max(minHeapSize, requestedSize, overGrownHeapSize), 65536));
+              var newSize = Math.min(maxHeapSize, alignUp(Math.max(requestedSize, overGrownHeapSize), 65536));
               var replacement = emscripten_realloc_buffer(newSize);
               if (replacement) {
                 return true;
@@ -10511,7 +10539,10 @@ var WebIFC = (() => {
               var lang = (typeof navigator === "object" && navigator.languages && navigator.languages[0] || "C").replace("-", "_") + ".UTF-8";
               var env = { "USER": "web_user", "LOGNAME": "web_user", "PATH": "/", "PWD": "/", "HOME": "/home/web_user", "LANG": lang, "_": getExecutableName() };
               for (var x in ENV) {
-                env[x] = ENV[x];
+                if (ENV[x] === void 0)
+                  delete env[x];
+                else
+                  env[x] = ENV[x];
               }
               var strings = [];
               for (var x in env) {
@@ -10608,14 +10639,8 @@ var WebIFC = (() => {
               return e.errno;
             }
           }
-          function _pthread_mutexattr_destroy() {
-          }
-          function _pthread_mutexattr_init() {
-          }
-          function _pthread_mutexattr_settype() {
-          }
-          function _setTempRet0($i) {
-            setTempRet0($i | 0);
+          function _setTempRet0(val) {
+            setTempRet0(val);
           }
           function __isLeapYear(year) {
             return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
@@ -10823,7 +10848,7 @@ var WebIFC = (() => {
               return "%";
             } };
             for (var rule in EXPANSION_RULES_2) {
-              if (pattern.indexOf(rule) >= 0) {
+              if (pattern.includes(rule)) {
                 pattern = pattern.replace(new RegExp(rule, "g"), EXPANSION_RULES_2[rule](date));
               }
             }
@@ -10890,46 +10915,43 @@ var WebIFC = (() => {
               u8array.length = numBytesWritten;
             return u8array;
           }
-          __ATINIT__.push({ func: function() {
-            ___wasm_call_ctors();
-          } });
-          var asmLibraryArg = { "z": ___assert_fail, "y": ___cxa_allocate_exception, "x": ___cxa_throw, "V": ___sys_ioctl, "W": ___sys_open, "$": __embind_finalize_value_array, "q": __embind_finalize_value_object, "Y": __embind_register_bool, "t": __embind_register_class, "s": __embind_register_class_constructor, "c": __embind_register_class_function, "X": __embind_register_emval, "_": __embind_register_enum, "v": __embind_register_enum_value, "F": __embind_register_float, "f": __embind_register_function, "o": __embind_register_integer, "k": __embind_register_memory_view, "G": __embind_register_std_string, "w": __embind_register_std_wstring, "aa": __embind_register_value_array, "h": __embind_register_value_array_element, "r": __embind_register_value_object, "e": __embind_register_value_object_field, "Z": __embind_register_void, "m": __emval_as, "H": __emval_call, "b": __emval_decref, "J": __emval_get_global, "n": __emval_get_property, "j": __emval_incref, "N": __emval_instanceof, "I": __emval_is_number, "A": __emval_new_array, "g": __emval_new_cstring, "u": __emval_new_object, "l": __emval_run_destructors, "i": __emval_set_property, "d": __emval_take_value, "C": _abort, "T": _clock_gettime, "M": _emscripten_memcpy_big, "p": _emscripten_resize_heap, "R": _environ_get, "S": _environ_sizes_get, "E": _fd_close, "U": _fd_read, "K": _fd_seek, "D": _fd_write, "a": wasmMemory, "B": _pthread_mutexattr_destroy, "P": _pthread_mutexattr_init, "O": _pthread_mutexattr_settype, "L": _setTempRet0, "Q": _strftime_l };
+          var asmLibraryArg = { "y": ___assert_fail, "x": ___cxa_allocate_exception, "w": ___cxa_throw, "A": ___sys_fcntl64, "O": ___sys_ioctl, "P": ___sys_open, "Z": __embind_finalize_value_array, "o": __embind_finalize_value_object, "J": __embind_register_bigint, "W": __embind_register_bool, "r": __embind_register_class, "q": __embind_register_class_constructor, "b": __embind_register_class_function, "V": __embind_register_emval, "Y": __embind_register_enum, "t": __embind_register_enum_value, "D": __embind_register_float, "e": __embind_register_function, "n": __embind_register_integer, "j": __embind_register_memory_view, "E": __embind_register_std_string, "v": __embind_register_std_wstring, "_": __embind_register_value_array, "g": __embind_register_value_array_element, "p": __embind_register_value_object, "d": __embind_register_value_object_field, "X": __embind_register_void, "l": __emval_as, "F": __emval_call, "a": __emval_decref, "H": __emval_get_global, "m": __emval_get_property, "i": __emval_incref, "L": __emval_instanceof, "G": __emval_is_number, "z": __emval_new_array, "f": __emval_new_cstring, "s": __emval_new_object, "k": __emval_run_destructors, "h": __emval_set_property, "c": __emval_take_value, "C": _abort, "N": _clock_gettime, "M": _emscripten_memcpy_big, "u": _emscripten_resize_heap, "R": _environ_get, "S": _environ_sizes_get, "B": _fd_close, "U": _fd_read, "I": _fd_seek, "T": _fd_write, "K": _setTempRet0, "Q": _strftime_l };
           var asm = createWasm();
           var ___wasm_call_ctors = Module["___wasm_call_ctors"] = function() {
-            return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["ca"]).apply(null, arguments);
+            return (___wasm_call_ctors = Module["___wasm_call_ctors"] = Module["asm"]["aa"]).apply(null, arguments);
           };
           var _main = Module["_main"] = function() {
-            return (_main = Module["_main"] = Module["asm"]["da"]).apply(null, arguments);
+            return (_main = Module["_main"] = Module["asm"]["ba"]).apply(null, arguments);
           };
           var _malloc = Module["_malloc"] = function() {
-            return (_malloc = Module["_malloc"] = Module["asm"]["ea"]).apply(null, arguments);
+            return (_malloc = Module["_malloc"] = Module["asm"]["ca"]).apply(null, arguments);
           };
           var _free = Module["_free"] = function() {
-            return (_free = Module["_free"] = Module["asm"]["fa"]).apply(null, arguments);
+            return (_free = Module["_free"] = Module["asm"]["da"]).apply(null, arguments);
           };
           var ___getTypeName = Module["___getTypeName"] = function() {
-            return (___getTypeName = Module["___getTypeName"] = Module["asm"]["ga"]).apply(null, arguments);
+            return (___getTypeName = Module["___getTypeName"] = Module["asm"]["ea"]).apply(null, arguments);
           };
           var ___embind_register_native_and_builtin_types = Module["___embind_register_native_and_builtin_types"] = function() {
-            return (___embind_register_native_and_builtin_types = Module["___embind_register_native_and_builtin_types"] = Module["asm"]["ha"]).apply(null, arguments);
+            return (___embind_register_native_and_builtin_types = Module["___embind_register_native_and_builtin_types"] = Module["asm"]["fa"]).apply(null, arguments);
           };
           var ___errno_location = Module["___errno_location"] = function() {
-            return (___errno_location = Module["___errno_location"] = Module["asm"]["ia"]).apply(null, arguments);
+            return (___errno_location = Module["___errno_location"] = Module["asm"]["ga"]).apply(null, arguments);
           };
           var dynCall_jiji = Module["dynCall_jiji"] = function() {
-            return (dynCall_jiji = Module["dynCall_jiji"] = Module["asm"]["ja"]).apply(null, arguments);
+            return (dynCall_jiji = Module["dynCall_jiji"] = Module["asm"]["ia"]).apply(null, arguments);
           };
           var dynCall_viijii = Module["dynCall_viijii"] = function() {
-            return (dynCall_viijii = Module["dynCall_viijii"] = Module["asm"]["ka"]).apply(null, arguments);
-          };
-          var dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = function() {
-            return (dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = Module["asm"]["la"]).apply(null, arguments);
+            return (dynCall_viijii = Module["dynCall_viijii"] = Module["asm"]["ja"]).apply(null, arguments);
           };
           var dynCall_iiiiij = Module["dynCall_iiiiij"] = function() {
-            return (dynCall_iiiiij = Module["dynCall_iiiiij"] = Module["asm"]["ma"]).apply(null, arguments);
+            return (dynCall_iiiiij = Module["dynCall_iiiiij"] = Module["asm"]["ka"]).apply(null, arguments);
           };
           var dynCall_iiiiijj = Module["dynCall_iiiiijj"] = function() {
-            return (dynCall_iiiiijj = Module["dynCall_iiiiijj"] = Module["asm"]["na"]).apply(null, arguments);
+            return (dynCall_iiiiijj = Module["dynCall_iiiiijj"] = Module["asm"]["la"]).apply(null, arguments);
+          };
+          var dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = function() {
+            return (dynCall_iiiiiijj = Module["dynCall_iiiiiijj"] = Module["asm"]["ma"]).apply(null, arguments);
           };
           Module["addRunDependency"] = addRunDependency;
           Module["removeRunDependency"] = removeRunDependency;
@@ -10961,19 +10983,15 @@ var WebIFC = (() => {
               var ret = entryFunction(argc, argv);
               exit(ret, true);
             } catch (e) {
-              if (e instanceof ExitStatus) {
+              if (e instanceof ExitStatus || e == "unwind") {
                 return;
-              } else if (e == "unwind") {
-                noExitRuntime = true;
-                return;
-              } else {
-                var toLog = e;
-                if (e && typeof e === "object" && e.stack) {
-                  toLog = [e, e.stack];
-                }
-                err("exception thrown: " + toLog);
-                quit_(1, e);
               }
+              var toLog = e;
+              if (e && typeof e === "object" && e.stack) {
+                toLog = [e, e.stack];
+              }
+              err("exception thrown: " + toLog);
+              quit_(1, e);
             } finally {
               calledMain = true;
             }
@@ -10984,8 +11002,9 @@ var WebIFC = (() => {
               return;
             }
             preRun();
-            if (runDependencies > 0)
+            if (runDependencies > 0) {
               return;
+            }
             function doRun() {
               if (calledRun)
                 return;
@@ -11016,12 +11035,9 @@ var WebIFC = (() => {
           }
           Module["run"] = run;
           function exit(status, implicit) {
-            if (implicit && noExitRuntime && status === 0) {
-              return;
-            }
-            if (noExitRuntime) {
+            EXITSTATUS = status;
+            if (keepRuntimeAlive()) {
             } else {
-              EXITSTATUS = status;
               exitRuntime();
               if (Module["onExit"])
                 Module["onExit"](status);
@@ -11039,7 +11055,6 @@ var WebIFC = (() => {
           var shouldRunNow = true;
           if (Module["noInitialRun"])
             shouldRunNow = false;
-          noExitRuntime = true;
           run();
           return WebIFCWasm3.ready;
         };
@@ -53660,6 +53675,826 @@ var WebIFC = (() => {
     3009204131: "IFCGRID"
   };
 
+  // dist/helpers/types-map.ts
+  var IfcTypesMap = {
+    3821786052: "IFCACTIONREQUEST",
+    2296667514: "IFCACTOR",
+    3630933823: "IFCACTORROLE",
+    4288193352: "IFCACTUATOR",
+    2874132201: "IFCACTUATORTYPE",
+    618182010: "IFCADDRESS",
+    1635779807: "IFCADVANCEDBREP",
+    2603310189: "IFCADVANCEDBREPWITHVOIDS",
+    3406155212: "IFCADVANCEDFACE",
+    1634111441: "IFCAIRTERMINAL",
+    177149247: "IFCAIRTERMINALBOX",
+    1411407467: "IFCAIRTERMINALBOXTYPE",
+    3352864051: "IFCAIRTERMINALTYPE",
+    2056796094: "IFCAIRTOAIRHEATRECOVERY",
+    1871374353: "IFCAIRTOAIRHEATRECOVERYTYPE",
+    3087945054: "IFCALARM",
+    3001207471: "IFCALARMTYPE",
+    325726236: "IFCALIGNMENT",
+    749761778: "IFCALIGNMENT2DHORIZONTAL",
+    3199563722: "IFCALIGNMENT2DHORIZONTALSEGMENT",
+    2483840362: "IFCALIGNMENT2DSEGMENT",
+    3379348081: "IFCALIGNMENT2DVERSEGCIRCULARARC",
+    3239324667: "IFCALIGNMENT2DVERSEGLINE",
+    4263986512: "IFCALIGNMENT2DVERSEGPARABOLICARC",
+    53199957: "IFCALIGNMENT2DVERTICAL",
+    2029264950: "IFCALIGNMENT2DVERTICALSEGMENT",
+    3512275521: "IFCALIGNMENTCURVE",
+    1674181508: "IFCANNOTATION",
+    669184980: "IFCANNOTATIONFILLAREA",
+    639542469: "IFCAPPLICATION",
+    411424972: "IFCAPPLIEDVALUE",
+    130549933: "IFCAPPROVAL",
+    3869604511: "IFCAPPROVALRELATIONSHIP",
+    3798115385: "IFCARBITRARYCLOSEDPROFILEDEF",
+    1310608509: "IFCARBITRARYOPENPROFILEDEF",
+    2705031697: "IFCARBITRARYPROFILEDEFWITHVOIDS",
+    3460190687: "IFCASSET",
+    3207858831: "IFCASYMMETRICISHAPEPROFILEDEF",
+    277319702: "IFCAUDIOVISUALAPPLIANCE",
+    1532957894: "IFCAUDIOVISUALAPPLIANCETYPE",
+    4261334040: "IFCAXIS1PLACEMENT",
+    3125803723: "IFCAXIS2PLACEMENT2D",
+    2740243338: "IFCAXIS2PLACEMENT3D",
+    1967976161: "IFCBSPLINECURVE",
+    2461110595: "IFCBSPLINECURVEWITHKNOTS",
+    2887950389: "IFCBSPLINESURFACE",
+    167062518: "IFCBSPLINESURFACEWITHKNOTS",
+    753842376: "IFCBEAM",
+    2906023776: "IFCBEAMSTANDARDCASE",
+    819618141: "IFCBEAMTYPE",
+    4196446775: "IFCBEARING",
+    3649138523: "IFCBEARINGTYPE",
+    616511568: "IFCBLOBTEXTURE",
+    1334484129: "IFCBLOCK",
+    32344328: "IFCBOILER",
+    231477066: "IFCBOILERTYPE",
+    3649129432: "IFCBOOLEANCLIPPINGRESULT",
+    2736907675: "IFCBOOLEANRESULT",
+    4037036970: "IFCBOUNDARYCONDITION",
+    1136057603: "IFCBOUNDARYCURVE",
+    1560379544: "IFCBOUNDARYEDGECONDITION",
+    3367102660: "IFCBOUNDARYFACECONDITION",
+    1387855156: "IFCBOUNDARYNODECONDITION",
+    2069777674: "IFCBOUNDARYNODECONDITIONWARPING",
+    1260505505: "IFCBOUNDEDCURVE",
+    4182860854: "IFCBOUNDEDSURFACE",
+    2581212453: "IFCBOUNDINGBOX",
+    2713105998: "IFCBOXEDHALFSPACE",
+    644574406: "IFCBRIDGE",
+    963979645: "IFCBRIDGEPART",
+    4031249490: "IFCBUILDING",
+    3299480353: "IFCBUILDINGELEMENT",
+    2979338954: "IFCBUILDINGELEMENTPART",
+    39481116: "IFCBUILDINGELEMENTPARTTYPE",
+    1095909175: "IFCBUILDINGELEMENTPROXY",
+    1909888760: "IFCBUILDINGELEMENTPROXYTYPE",
+    1950629157: "IFCBUILDINGELEMENTTYPE",
+    3124254112: "IFCBUILDINGSTOREY",
+    1177604601: "IFCBUILDINGSYSTEM",
+    2938176219: "IFCBURNER",
+    2188180465: "IFCBURNERTYPE",
+    2898889636: "IFCCSHAPEPROFILEDEF",
+    635142910: "IFCCABLECARRIERFITTING",
+    395041908: "IFCCABLECARRIERFITTINGTYPE",
+    3758799889: "IFCCABLECARRIERSEGMENT",
+    3293546465: "IFCCABLECARRIERSEGMENTTYPE",
+    1051757585: "IFCCABLEFITTING",
+    2674252688: "IFCCABLEFITTINGTYPE",
+    4217484030: "IFCCABLESEGMENT",
+    1285652485: "IFCCABLESEGMENTTYPE",
+    3999819293: "IFCCAISSONFOUNDATION",
+    3203706013: "IFCCAISSONFOUNDATIONTYPE",
+    1123145078: "IFCCARTESIANPOINT",
+    574549367: "IFCCARTESIANPOINTLIST",
+    1675464909: "IFCCARTESIANPOINTLIST2D",
+    2059837836: "IFCCARTESIANPOINTLIST3D",
+    59481748: "IFCCARTESIANTRANSFORMATIONOPERATOR",
+    3749851601: "IFCCARTESIANTRANSFORMATIONOPERATOR2D",
+    3486308946: "IFCCARTESIANTRANSFORMATIONOPERATOR2DNONUNIFORM",
+    3331915920: "IFCCARTESIANTRANSFORMATIONOPERATOR3D",
+    1416205885: "IFCCARTESIANTRANSFORMATIONOPERATOR3DNONUNIFORM",
+    3150382593: "IFCCENTERLINEPROFILEDEF",
+    3902619387: "IFCCHILLER",
+    2951183804: "IFCCHILLERTYPE",
+    3296154744: "IFCCHIMNEY",
+    2197970202: "IFCCHIMNEYTYPE",
+    2611217952: "IFCCIRCLE",
+    2937912522: "IFCCIRCLEHOLLOWPROFILEDEF",
+    1383045692: "IFCCIRCLEPROFILEDEF",
+    1062206242: "IFCCIRCULARARCSEGMENT2D",
+    1677625105: "IFCCIVILELEMENT",
+    3893394355: "IFCCIVILELEMENTTYPE",
+    747523909: "IFCCLASSIFICATION",
+    647927063: "IFCCLASSIFICATIONREFERENCE",
+    2205249479: "IFCCLOSEDSHELL",
+    639361253: "IFCCOIL",
+    2301859152: "IFCCOILTYPE",
+    776857604: "IFCCOLOURRGB",
+    3285139300: "IFCCOLOURRGBLIST",
+    3264961684: "IFCCOLOURSPECIFICATION",
+    843113511: "IFCCOLUMN",
+    905975707: "IFCCOLUMNSTANDARDCASE",
+    300633059: "IFCCOLUMNTYPE",
+    3221913625: "IFCCOMMUNICATIONSAPPLIANCE",
+    400855858: "IFCCOMMUNICATIONSAPPLIANCETYPE",
+    2542286263: "IFCCOMPLEXPROPERTY",
+    3875453745: "IFCCOMPLEXPROPERTYTEMPLATE",
+    3732776249: "IFCCOMPOSITECURVE",
+    15328376: "IFCCOMPOSITECURVEONSURFACE",
+    2485617015: "IFCCOMPOSITECURVESEGMENT",
+    1485152156: "IFCCOMPOSITEPROFILEDEF",
+    3571504051: "IFCCOMPRESSOR",
+    3850581409: "IFCCOMPRESSORTYPE",
+    2272882330: "IFCCONDENSER",
+    2816379211: "IFCCONDENSERTYPE",
+    2510884976: "IFCCONIC",
+    370225590: "IFCCONNECTEDFACESET",
+    1981873012: "IFCCONNECTIONCURVEGEOMETRY",
+    2859738748: "IFCCONNECTIONGEOMETRY",
+    45288368: "IFCCONNECTIONPOINTECCENTRICITY",
+    2614616156: "IFCCONNECTIONPOINTGEOMETRY",
+    2732653382: "IFCCONNECTIONSURFACEGEOMETRY",
+    775493141: "IFCCONNECTIONVOLUMEGEOMETRY",
+    1959218052: "IFCCONSTRAINT",
+    3898045240: "IFCCONSTRUCTIONEQUIPMENTRESOURCE",
+    2185764099: "IFCCONSTRUCTIONEQUIPMENTRESOURCETYPE",
+    1060000209: "IFCCONSTRUCTIONMATERIALRESOURCE",
+    4105962743: "IFCCONSTRUCTIONMATERIALRESOURCETYPE",
+    488727124: "IFCCONSTRUCTIONPRODUCTRESOURCE",
+    1525564444: "IFCCONSTRUCTIONPRODUCTRESOURCETYPE",
+    2559216714: "IFCCONSTRUCTIONRESOURCE",
+    2574617495: "IFCCONSTRUCTIONRESOURCETYPE",
+    3419103109: "IFCCONTEXT",
+    3050246964: "IFCCONTEXTDEPENDENTUNIT",
+    3293443760: "IFCCONTROL",
+    25142252: "IFCCONTROLLER",
+    578613899: "IFCCONTROLLERTYPE",
+    2889183280: "IFCCONVERSIONBASEDUNIT",
+    2713554722: "IFCCONVERSIONBASEDUNITWITHOFFSET",
+    4136498852: "IFCCOOLEDBEAM",
+    335055490: "IFCCOOLEDBEAMTYPE",
+    3640358203: "IFCCOOLINGTOWER",
+    2954562838: "IFCCOOLINGTOWERTYPE",
+    1785450214: "IFCCOORDINATEOPERATION",
+    1466758467: "IFCCOORDINATEREFERENCESYSTEM",
+    3895139033: "IFCCOSTITEM",
+    1419761937: "IFCCOSTSCHEDULE",
+    602808272: "IFCCOSTVALUE",
+    1973544240: "IFCCOVERING",
+    1916426348: "IFCCOVERINGTYPE",
+    3295246426: "IFCCREWRESOURCE",
+    1815067380: "IFCCREWRESOURCETYPE",
+    2506170314: "IFCCSGPRIMITIVE3D",
+    2147822146: "IFCCSGSOLID",
+    539742890: "IFCCURRENCYRELATIONSHIP",
+    3495092785: "IFCCURTAINWALL",
+    1457835157: "IFCCURTAINWALLTYPE",
+    2601014836: "IFCCURVE",
+    2827736869: "IFCCURVEBOUNDEDPLANE",
+    2629017746: "IFCCURVEBOUNDEDSURFACE",
+    1186437898: "IFCCURVESEGMENT2D",
+    3800577675: "IFCCURVESTYLE",
+    1105321065: "IFCCURVESTYLEFONT",
+    2367409068: "IFCCURVESTYLEFONTANDSCALING",
+    3510044353: "IFCCURVESTYLEFONTPATTERN",
+    1213902940: "IFCCYLINDRICALSURFACE",
+    4074379575: "IFCDAMPER",
+    3961806047: "IFCDAMPERTYPE",
+    3426335179: "IFCDEEPFOUNDATION",
+    1306400036: "IFCDEEPFOUNDATIONTYPE",
+    3632507154: "IFCDERIVEDPROFILEDEF",
+    1765591967: "IFCDERIVEDUNIT",
+    1045800335: "IFCDERIVEDUNITELEMENT",
+    2949456006: "IFCDIMENSIONALEXPONENTS",
+    32440307: "IFCDIRECTION",
+    1335981549: "IFCDISCRETEACCESSORY",
+    2635815018: "IFCDISCRETEACCESSORYTYPE",
+    1945343521: "IFCDISTANCEEXPRESSION",
+    1052013943: "IFCDISTRIBUTIONCHAMBERELEMENT",
+    1599208980: "IFCDISTRIBUTIONCHAMBERELEMENTTYPE",
+    562808652: "IFCDISTRIBUTIONCIRCUIT",
+    1062813311: "IFCDISTRIBUTIONCONTROLELEMENT",
+    2063403501: "IFCDISTRIBUTIONCONTROLELEMENTTYPE",
+    1945004755: "IFCDISTRIBUTIONELEMENT",
+    3256556792: "IFCDISTRIBUTIONELEMENTTYPE",
+    3040386961: "IFCDISTRIBUTIONFLOWELEMENT",
+    3849074793: "IFCDISTRIBUTIONFLOWELEMENTTYPE",
+    3041715199: "IFCDISTRIBUTIONPORT",
+    3205830791: "IFCDISTRIBUTIONSYSTEM",
+    1154170062: "IFCDOCUMENTINFORMATION",
+    770865208: "IFCDOCUMENTINFORMATIONRELATIONSHIP",
+    3732053477: "IFCDOCUMENTREFERENCE",
+    395920057: "IFCDOOR",
+    2963535650: "IFCDOORLININGPROPERTIES",
+    1714330368: "IFCDOORPANELPROPERTIES",
+    3242481149: "IFCDOORSTANDARDCASE",
+    526551008: "IFCDOORSTYLE",
+    2323601079: "IFCDOORTYPE",
+    445594917: "IFCDRAUGHTINGPREDEFINEDCOLOUR",
+    4006246654: "IFCDRAUGHTINGPREDEFINEDCURVEFONT",
+    342316401: "IFCDUCTFITTING",
+    869906466: "IFCDUCTFITTINGTYPE",
+    3518393246: "IFCDUCTSEGMENT",
+    3760055223: "IFCDUCTSEGMENTTYPE",
+    1360408905: "IFCDUCTSILENCER",
+    2030761528: "IFCDUCTSILENCERTYPE",
+    3900360178: "IFCEDGE",
+    476780140: "IFCEDGECURVE",
+    1472233963: "IFCEDGELOOP",
+    1904799276: "IFCELECTRICAPPLIANCE",
+    663422040: "IFCELECTRICAPPLIANCETYPE",
+    862014818: "IFCELECTRICDISTRIBUTIONBOARD",
+    2417008758: "IFCELECTRICDISTRIBUTIONBOARDTYPE",
+    3310460725: "IFCELECTRICFLOWSTORAGEDEVICE",
+    3277789161: "IFCELECTRICFLOWSTORAGEDEVICETYPE",
+    264262732: "IFCELECTRICGENERATOR",
+    1534661035: "IFCELECTRICGENERATORTYPE",
+    402227799: "IFCELECTRICMOTOR",
+    1217240411: "IFCELECTRICMOTORTYPE",
+    1003880860: "IFCELECTRICTIMECONTROL",
+    712377611: "IFCELECTRICTIMECONTROLTYPE",
+    1758889154: "IFCELEMENT",
+    4123344466: "IFCELEMENTASSEMBLY",
+    2397081782: "IFCELEMENTASSEMBLYTYPE",
+    1623761950: "IFCELEMENTCOMPONENT",
+    2590856083: "IFCELEMENTCOMPONENTTYPE",
+    1883228015: "IFCELEMENTQUANTITY",
+    339256511: "IFCELEMENTTYPE",
+    2777663545: "IFCELEMENTARYSURFACE",
+    1704287377: "IFCELLIPSE",
+    2835456948: "IFCELLIPSEPROFILEDEF",
+    1658829314: "IFCENERGYCONVERSIONDEVICE",
+    2107101300: "IFCENERGYCONVERSIONDEVICETYPE",
+    2814081492: "IFCENGINE",
+    132023988: "IFCENGINETYPE",
+    3747195512: "IFCEVAPORATIVECOOLER",
+    3174744832: "IFCEVAPORATIVECOOLERTYPE",
+    484807127: "IFCEVAPORATOR",
+    3390157468: "IFCEVAPORATORTYPE",
+    4148101412: "IFCEVENT",
+    211053100: "IFCEVENTTIME",
+    4024345920: "IFCEVENTTYPE",
+    297599258: "IFCEXTENDEDPROPERTIES",
+    4294318154: "IFCEXTERNALINFORMATION",
+    3200245327: "IFCEXTERNALREFERENCE",
+    1437805879: "IFCEXTERNALREFERENCERELATIONSHIP",
+    1209101575: "IFCEXTERNALSPATIALELEMENT",
+    2853485674: "IFCEXTERNALSPATIALSTRUCTUREELEMENT",
+    2242383968: "IFCEXTERNALLYDEFINEDHATCHSTYLE",
+    1040185647: "IFCEXTERNALLYDEFINEDSURFACESTYLE",
+    3548104201: "IFCEXTERNALLYDEFINEDTEXTFONT",
+    477187591: "IFCEXTRUDEDAREASOLID",
+    2804161546: "IFCEXTRUDEDAREASOLIDTAPERED",
+    2556980723: "IFCFACE",
+    2047409740: "IFCFACEBASEDSURFACEMODEL",
+    1809719519: "IFCFACEBOUND",
+    803316827: "IFCFACEOUTERBOUND",
+    3008276851: "IFCFACESURFACE",
+    807026263: "IFCFACETEDBREP",
+    3737207727: "IFCFACETEDBREPWITHVOIDS",
+    24185140: "IFCFACILITY",
+    1310830890: "IFCFACILITYPART",
+    4219587988: "IFCFAILURECONNECTIONCONDITION",
+    3415622556: "IFCFAN",
+    346874300: "IFCFANTYPE",
+    647756555: "IFCFASTENER",
+    2489546625: "IFCFASTENERTYPE",
+    2827207264: "IFCFEATUREELEMENT",
+    2143335405: "IFCFEATUREELEMENTADDITION",
+    1287392070: "IFCFEATUREELEMENTSUBTRACTION",
+    738692330: "IFCFILLAREASTYLE",
+    374418227: "IFCFILLAREASTYLEHATCHING",
+    315944413: "IFCFILLAREASTYLETILES",
+    819412036: "IFCFILTER",
+    1810631287: "IFCFILTERTYPE",
+    1426591983: "IFCFIRESUPPRESSIONTERMINAL",
+    4222183408: "IFCFIRESUPPRESSIONTERMINALTYPE",
+    2652556860: "IFCFIXEDREFERENCESWEPTAREASOLID",
+    2058353004: "IFCFLOWCONTROLLER",
+    3907093117: "IFCFLOWCONTROLLERTYPE",
+    4278956645: "IFCFLOWFITTING",
+    3198132628: "IFCFLOWFITTINGTYPE",
+    182646315: "IFCFLOWINSTRUMENT",
+    4037862832: "IFCFLOWINSTRUMENTTYPE",
+    2188021234: "IFCFLOWMETER",
+    3815607619: "IFCFLOWMETERTYPE",
+    3132237377: "IFCFLOWMOVINGDEVICE",
+    1482959167: "IFCFLOWMOVINGDEVICETYPE",
+    987401354: "IFCFLOWSEGMENT",
+    1834744321: "IFCFLOWSEGMENTTYPE",
+    707683696: "IFCFLOWSTORAGEDEVICE",
+    1339347760: "IFCFLOWSTORAGEDEVICETYPE",
+    2223149337: "IFCFLOWTERMINAL",
+    2297155007: "IFCFLOWTERMINALTYPE",
+    3508470533: "IFCFLOWTREATMENTDEVICE",
+    3009222698: "IFCFLOWTREATMENTDEVICETYPE",
+    900683007: "IFCFOOTING",
+    1893162501: "IFCFOOTINGTYPE",
+    263784265: "IFCFURNISHINGELEMENT",
+    4238390223: "IFCFURNISHINGELEMENTTYPE",
+    1509553395: "IFCFURNITURE",
+    1268542332: "IFCFURNITURETYPE",
+    3493046030: "IFCGEOGRAPHICELEMENT",
+    4095422895: "IFCGEOGRAPHICELEMENTTYPE",
+    987898635: "IFCGEOMETRICCURVESET",
+    3448662350: "IFCGEOMETRICREPRESENTATIONCONTEXT",
+    2453401579: "IFCGEOMETRICREPRESENTATIONITEM",
+    4142052618: "IFCGEOMETRICREPRESENTATIONSUBCONTEXT",
+    3590301190: "IFCGEOMETRICSET",
+    3009204131: "IFCGRID",
+    852622518: "IFCGRIDAXIS",
+    178086475: "IFCGRIDPLACEMENT",
+    2706460486: "IFCGROUP",
+    812098782: "IFCHALFSPACESOLID",
+    3319311131: "IFCHEATEXCHANGER",
+    1251058090: "IFCHEATEXCHANGERTYPE",
+    2068733104: "IFCHUMIDIFIER",
+    1806887404: "IFCHUMIDIFIERTYPE",
+    1484403080: "IFCISHAPEPROFILEDEF",
+    3905492369: "IFCIMAGETEXTURE",
+    3570813810: "IFCINDEXEDCOLOURMAP",
+    2571569899: "IFCINDEXEDPOLYCURVE",
+    178912537: "IFCINDEXEDPOLYGONALFACE",
+    2294589976: "IFCINDEXEDPOLYGONALFACEWITHVOIDS",
+    1437953363: "IFCINDEXEDTEXTUREMAP",
+    2133299955: "IFCINDEXEDTRIANGLETEXTUREMAP",
+    4175244083: "IFCINTERCEPTOR",
+    3946677679: "IFCINTERCEPTORTYPE",
+    3113134337: "IFCINTERSECTIONCURVE",
+    2391368822: "IFCINVENTORY",
+    3741457305: "IFCIRREGULARTIMESERIES",
+    3020489413: "IFCIRREGULARTIMESERIESVALUE",
+    2176052936: "IFCJUNCTIONBOX",
+    4288270099: "IFCJUNCTIONBOXTYPE",
+    572779678: "IFCLSHAPEPROFILEDEF",
+    3827777499: "IFCLABORRESOURCE",
+    428585644: "IFCLABORRESOURCETYPE",
+    1585845231: "IFCLAGTIME",
+    76236018: "IFCLAMP",
+    1051575348: "IFCLAMPTYPE",
+    2655187982: "IFCLIBRARYINFORMATION",
+    3452421091: "IFCLIBRARYREFERENCE",
+    4162380809: "IFCLIGHTDISTRIBUTIONDATA",
+    629592764: "IFCLIGHTFIXTURE",
+    1161773419: "IFCLIGHTFIXTURETYPE",
+    1566485204: "IFCLIGHTINTENSITYDISTRIBUTION",
+    1402838566: "IFCLIGHTSOURCE",
+    125510826: "IFCLIGHTSOURCEAMBIENT",
+    2604431987: "IFCLIGHTSOURCEDIRECTIONAL",
+    4266656042: "IFCLIGHTSOURCEGONIOMETRIC",
+    1520743889: "IFCLIGHTSOURCEPOSITIONAL",
+    3422422726: "IFCLIGHTSOURCESPOT",
+    1281925730: "IFCLINE",
+    3092502836: "IFCLINESEGMENT2D",
+    388784114: "IFCLINEARPLACEMENT",
+    1154579445: "IFCLINEARPOSITIONINGELEMENT",
+    2624227202: "IFCLOCALPLACEMENT",
+    1008929658: "IFCLOOP",
+    1425443689: "IFCMANIFOLDSOLIDBREP",
+    3057273783: "IFCMAPCONVERSION",
+    2347385850: "IFCMAPPEDITEM",
+    1838606355: "IFCMATERIAL",
+    1847130766: "IFCMATERIALCLASSIFICATIONRELATIONSHIP",
+    3708119e3: "IFCMATERIALCONSTITUENT",
+    2852063980: "IFCMATERIALCONSTITUENTSET",
+    760658860: "IFCMATERIALDEFINITION",
+    2022407955: "IFCMATERIALDEFINITIONREPRESENTATION",
+    248100487: "IFCMATERIALLAYER",
+    3303938423: "IFCMATERIALLAYERSET",
+    1303795690: "IFCMATERIALLAYERSETUSAGE",
+    1847252529: "IFCMATERIALLAYERWITHOFFSETS",
+    2199411900: "IFCMATERIALLIST",
+    2235152071: "IFCMATERIALPROFILE",
+    164193824: "IFCMATERIALPROFILESET",
+    3079605661: "IFCMATERIALPROFILESETUSAGE",
+    3404854881: "IFCMATERIALPROFILESETUSAGETAPERING",
+    552965576: "IFCMATERIALPROFILEWITHOFFSETS",
+    3265635763: "IFCMATERIALPROPERTIES",
+    853536259: "IFCMATERIALRELATIONSHIP",
+    1507914824: "IFCMATERIALUSAGEDEFINITION",
+    2597039031: "IFCMEASUREWITHUNIT",
+    377706215: "IFCMECHANICALFASTENER",
+    2108223431: "IFCMECHANICALFASTENERTYPE",
+    1437502449: "IFCMEDICALDEVICE",
+    1114901282: "IFCMEDICALDEVICETYPE",
+    1073191201: "IFCMEMBER",
+    1911478936: "IFCMEMBERSTANDARDCASE",
+    3181161470: "IFCMEMBERTYPE",
+    3368373690: "IFCMETRIC",
+    2998442950: "IFCMIRROREDPROFILEDEF",
+    2706619895: "IFCMONETARYUNIT",
+    2474470126: "IFCMOTORCONNECTION",
+    977012517: "IFCMOTORCONNECTIONTYPE",
+    1918398963: "IFCNAMEDUNIT",
+    3888040117: "IFCOBJECT",
+    219451334: "IFCOBJECTDEFINITION",
+    3701648758: "IFCOBJECTPLACEMENT",
+    2251480897: "IFCOBJECTIVE",
+    4143007308: "IFCOCCUPANT",
+    590820931: "IFCOFFSETCURVE",
+    3388369263: "IFCOFFSETCURVE2D",
+    3505215534: "IFCOFFSETCURVE3D",
+    2485787929: "IFCOFFSETCURVEBYDISTANCES",
+    2665983363: "IFCOPENSHELL",
+    3588315303: "IFCOPENINGELEMENT",
+    3079942009: "IFCOPENINGSTANDARDCASE",
+    4251960020: "IFCORGANIZATION",
+    1411181986: "IFCORGANIZATIONRELATIONSHIP",
+    643959842: "IFCORIENTATIONEXPRESSION",
+    1029017970: "IFCORIENTEDEDGE",
+    144952367: "IFCOUTERBOUNDARYCURVE",
+    3694346114: "IFCOUTLET",
+    2837617999: "IFCOUTLETTYPE",
+    1207048766: "IFCOWNERHISTORY",
+    2529465313: "IFCPARAMETERIZEDPROFILEDEF",
+    2519244187: "IFCPATH",
+    1682466193: "IFCPCURVE",
+    2382730787: "IFCPERFORMANCEHISTORY",
+    3566463478: "IFCPERMEABLECOVERINGPROPERTIES",
+    3327091369: "IFCPERMIT",
+    2077209135: "IFCPERSON",
+    101040310: "IFCPERSONANDORGANIZATION",
+    3021840470: "IFCPHYSICALCOMPLEXQUANTITY",
+    2483315170: "IFCPHYSICALQUANTITY",
+    2226359599: "IFCPHYSICALSIMPLEQUANTITY",
+    1687234759: "IFCPILE",
+    1158309216: "IFCPILETYPE",
+    310824031: "IFCPIPEFITTING",
+    804291784: "IFCPIPEFITTINGTYPE",
+    3612865200: "IFCPIPESEGMENT",
+    4231323485: "IFCPIPESEGMENTTYPE",
+    597895409: "IFCPIXELTEXTURE",
+    2004835150: "IFCPLACEMENT",
+    603570806: "IFCPLANARBOX",
+    1663979128: "IFCPLANAREXTENT",
+    220341763: "IFCPLANE",
+    3171933400: "IFCPLATE",
+    1156407060: "IFCPLATESTANDARDCASE",
+    4017108033: "IFCPLATETYPE",
+    2067069095: "IFCPOINT",
+    4022376103: "IFCPOINTONCURVE",
+    1423911732: "IFCPOINTONSURFACE",
+    2924175390: "IFCPOLYLOOP",
+    2775532180: "IFCPOLYGONALBOUNDEDHALFSPACE",
+    2839578677: "IFCPOLYGONALFACESET",
+    3724593414: "IFCPOLYLINE",
+    3740093272: "IFCPORT",
+    1946335990: "IFCPOSITIONINGELEMENT",
+    3355820592: "IFCPOSTALADDRESS",
+    759155922: "IFCPREDEFINEDCOLOUR",
+    2559016684: "IFCPREDEFINEDCURVEFONT",
+    3727388367: "IFCPREDEFINEDITEM",
+    3778827333: "IFCPREDEFINEDPROPERTIES",
+    3967405729: "IFCPREDEFINEDPROPERTYSET",
+    1775413392: "IFCPREDEFINEDTEXTFONT",
+    677532197: "IFCPRESENTATIONITEM",
+    2022622350: "IFCPRESENTATIONLAYERASSIGNMENT",
+    1304840413: "IFCPRESENTATIONLAYERWITHSTYLE",
+    3119450353: "IFCPRESENTATIONSTYLE",
+    2417041796: "IFCPRESENTATIONSTYLEASSIGNMENT",
+    2744685151: "IFCPROCEDURE",
+    569719735: "IFCPROCEDURETYPE",
+    2945172077: "IFCPROCESS",
+    4208778838: "IFCPRODUCT",
+    673634403: "IFCPRODUCTDEFINITIONSHAPE",
+    2095639259: "IFCPRODUCTREPRESENTATION",
+    3958567839: "IFCPROFILEDEF",
+    2802850158: "IFCPROFILEPROPERTIES",
+    103090709: "IFCPROJECT",
+    653396225: "IFCPROJECTLIBRARY",
+    2904328755: "IFCPROJECTORDER",
+    3843373140: "IFCPROJECTEDCRS",
+    3651124850: "IFCPROJECTIONELEMENT",
+    2598011224: "IFCPROPERTY",
+    986844984: "IFCPROPERTYABSTRACTION",
+    871118103: "IFCPROPERTYBOUNDEDVALUE",
+    1680319473: "IFCPROPERTYDEFINITION",
+    148025276: "IFCPROPERTYDEPENDENCYRELATIONSHIP",
+    4166981789: "IFCPROPERTYENUMERATEDVALUE",
+    3710013099: "IFCPROPERTYENUMERATION",
+    2752243245: "IFCPROPERTYLISTVALUE",
+    941946838: "IFCPROPERTYREFERENCEVALUE",
+    1451395588: "IFCPROPERTYSET",
+    3357820518: "IFCPROPERTYSETDEFINITION",
+    492091185: "IFCPROPERTYSETTEMPLATE",
+    3650150729: "IFCPROPERTYSINGLEVALUE",
+    110355661: "IFCPROPERTYTABLEVALUE",
+    3521284610: "IFCPROPERTYTEMPLATE",
+    1482703590: "IFCPROPERTYTEMPLATEDEFINITION",
+    738039164: "IFCPROTECTIVEDEVICE",
+    2295281155: "IFCPROTECTIVEDEVICETRIPPINGUNIT",
+    655969474: "IFCPROTECTIVEDEVICETRIPPINGUNITTYPE",
+    1842657554: "IFCPROTECTIVEDEVICETYPE",
+    3219374653: "IFCPROXY",
+    90941305: "IFCPUMP",
+    2250791053: "IFCPUMPTYPE",
+    2044713172: "IFCQUANTITYAREA",
+    2093928680: "IFCQUANTITYCOUNT",
+    931644368: "IFCQUANTITYLENGTH",
+    2090586900: "IFCQUANTITYSET",
+    3252649465: "IFCQUANTITYTIME",
+    2405470396: "IFCQUANTITYVOLUME",
+    825690147: "IFCQUANTITYWEIGHT",
+    2262370178: "IFCRAILING",
+    2893384427: "IFCRAILINGTYPE",
+    3024970846: "IFCRAMP",
+    3283111854: "IFCRAMPFLIGHT",
+    2324767716: "IFCRAMPFLIGHTTYPE",
+    1469900589: "IFCRAMPTYPE",
+    1232101972: "IFCRATIONALBSPLINECURVEWITHKNOTS",
+    683857671: "IFCRATIONALBSPLINESURFACEWITHKNOTS",
+    2770003689: "IFCRECTANGLEHOLLOWPROFILEDEF",
+    3615266464: "IFCRECTANGLEPROFILEDEF",
+    2798486643: "IFCRECTANGULARPYRAMID",
+    3454111270: "IFCRECTANGULARTRIMMEDSURFACE",
+    3915482550: "IFCRECURRENCEPATTERN",
+    2433181523: "IFCREFERENCE",
+    4021432810: "IFCREFERENT",
+    3413951693: "IFCREGULARTIMESERIES",
+    1580146022: "IFCREINFORCEMENTBARPROPERTIES",
+    3765753017: "IFCREINFORCEMENTDEFINITIONPROPERTIES",
+    979691226: "IFCREINFORCINGBAR",
+    2572171363: "IFCREINFORCINGBARTYPE",
+    3027567501: "IFCREINFORCINGELEMENT",
+    964333572: "IFCREINFORCINGELEMENTTYPE",
+    2320036040: "IFCREINFORCINGMESH",
+    2310774935: "IFCREINFORCINGMESHTYPE",
+    160246688: "IFCRELAGGREGATES",
+    3939117080: "IFCRELASSIGNS",
+    1683148259: "IFCRELASSIGNSTOACTOR",
+    2495723537: "IFCRELASSIGNSTOCONTROL",
+    1307041759: "IFCRELASSIGNSTOGROUP",
+    1027710054: "IFCRELASSIGNSTOGROUPBYFACTOR",
+    4278684876: "IFCRELASSIGNSTOPROCESS",
+    2857406711: "IFCRELASSIGNSTOPRODUCT",
+    205026976: "IFCRELASSIGNSTORESOURCE",
+    1865459582: "IFCRELASSOCIATES",
+    4095574036: "IFCRELASSOCIATESAPPROVAL",
+    919958153: "IFCRELASSOCIATESCLASSIFICATION",
+    2728634034: "IFCRELASSOCIATESCONSTRAINT",
+    982818633: "IFCRELASSOCIATESDOCUMENT",
+    3840914261: "IFCRELASSOCIATESLIBRARY",
+    2655215786: "IFCRELASSOCIATESMATERIAL",
+    826625072: "IFCRELCONNECTS",
+    1204542856: "IFCRELCONNECTSELEMENTS",
+    3945020480: "IFCRELCONNECTSPATHELEMENTS",
+    4201705270: "IFCRELCONNECTSPORTTOELEMENT",
+    3190031847: "IFCRELCONNECTSPORTS",
+    2127690289: "IFCRELCONNECTSSTRUCTURALACTIVITY",
+    1638771189: "IFCRELCONNECTSSTRUCTURALMEMBER",
+    504942748: "IFCRELCONNECTSWITHECCENTRICITY",
+    3678494232: "IFCRELCONNECTSWITHREALIZINGELEMENTS",
+    3242617779: "IFCRELCONTAINEDINSPATIALSTRUCTURE",
+    886880790: "IFCRELCOVERSBLDGELEMENTS",
+    2802773753: "IFCRELCOVERSSPACES",
+    2565941209: "IFCRELDECLARES",
+    2551354335: "IFCRELDECOMPOSES",
+    693640335: "IFCRELDEFINES",
+    1462361463: "IFCRELDEFINESBYOBJECT",
+    4186316022: "IFCRELDEFINESBYPROPERTIES",
+    307848117: "IFCRELDEFINESBYTEMPLATE",
+    781010003: "IFCRELDEFINESBYTYPE",
+    3940055652: "IFCRELFILLSELEMENT",
+    279856033: "IFCRELFLOWCONTROLELEMENTS",
+    427948657: "IFCRELINTERFERESELEMENTS",
+    3268803585: "IFCRELNESTS",
+    1441486842: "IFCRELPOSITIONS",
+    750771296: "IFCRELPROJECTSELEMENT",
+    1245217292: "IFCRELREFERENCEDINSPATIALSTRUCTURE",
+    4122056220: "IFCRELSEQUENCE",
+    366585022: "IFCRELSERVICESBUILDINGS",
+    3451746338: "IFCRELSPACEBOUNDARY",
+    3523091289: "IFCRELSPACEBOUNDARY1STLEVEL",
+    1521410863: "IFCRELSPACEBOUNDARY2NDLEVEL",
+    1401173127: "IFCRELVOIDSELEMENT",
+    478536968: "IFCRELATIONSHIP",
+    816062949: "IFCREPARAMETRISEDCOMPOSITECURVESEGMENT",
+    1076942058: "IFCREPRESENTATION",
+    3377609919: "IFCREPRESENTATIONCONTEXT",
+    3008791417: "IFCREPRESENTATIONITEM",
+    1660063152: "IFCREPRESENTATIONMAP",
+    2914609552: "IFCRESOURCE",
+    2943643501: "IFCRESOURCEAPPROVALRELATIONSHIP",
+    1608871552: "IFCRESOURCECONSTRAINTRELATIONSHIP",
+    2439245199: "IFCRESOURCELEVELRELATIONSHIP",
+    1042787934: "IFCRESOURCETIME",
+    1856042241: "IFCREVOLVEDAREASOLID",
+    3243963512: "IFCREVOLVEDAREASOLIDTAPERED",
+    4158566097: "IFCRIGHTCIRCULARCONE",
+    3626867408: "IFCRIGHTCIRCULARCYLINDER",
+    2016517767: "IFCROOF",
+    2781568857: "IFCROOFTYPE",
+    2341007311: "IFCROOT",
+    2778083089: "IFCROUNDEDRECTANGLEPROFILEDEF",
+    448429030: "IFCSIUNIT",
+    3053780830: "IFCSANITARYTERMINAL",
+    1768891740: "IFCSANITARYTERMINALTYPE",
+    1054537805: "IFCSCHEDULINGTIME",
+    2157484638: "IFCSEAMCURVE",
+    2042790032: "IFCSECTIONPROPERTIES",
+    4165799628: "IFCSECTIONREINFORCEMENTPROPERTIES",
+    1862484736: "IFCSECTIONEDSOLID",
+    1290935644: "IFCSECTIONEDSOLIDHORIZONTAL",
+    1509187699: "IFCSECTIONEDSPINE",
+    4086658281: "IFCSENSOR",
+    1783015770: "IFCSENSORTYPE",
+    1329646415: "IFCSHADINGDEVICE",
+    4074543187: "IFCSHADINGDEVICETYPE",
+    867548509: "IFCSHAPEASPECT",
+    3982875396: "IFCSHAPEMODEL",
+    4240577450: "IFCSHAPEREPRESENTATION",
+    4124623270: "IFCSHELLBASEDSURFACEMODEL",
+    3692461612: "IFCSIMPLEPROPERTY",
+    3663146110: "IFCSIMPLEPROPERTYTEMPLATE",
+    4097777520: "IFCSITE",
+    1529196076: "IFCSLAB",
+    3127900445: "IFCSLABELEMENTEDCASE",
+    3027962421: "IFCSLABSTANDARDCASE",
+    2533589738: "IFCSLABTYPE",
+    2609359061: "IFCSLIPPAGECONNECTIONCONDITION",
+    3420628829: "IFCSOLARDEVICE",
+    1072016465: "IFCSOLARDEVICETYPE",
+    723233188: "IFCSOLIDMODEL",
+    3856911033: "IFCSPACE",
+    1999602285: "IFCSPACEHEATER",
+    1305183839: "IFCSPACEHEATERTYPE",
+    3812236995: "IFCSPACETYPE",
+    1412071761: "IFCSPATIALELEMENT",
+    710998568: "IFCSPATIALELEMENTTYPE",
+    2706606064: "IFCSPATIALSTRUCTUREELEMENT",
+    3893378262: "IFCSPATIALSTRUCTUREELEMENTTYPE",
+    463610769: "IFCSPATIALZONE",
+    2481509218: "IFCSPATIALZONETYPE",
+    451544542: "IFCSPHERE",
+    4015995234: "IFCSPHERICALSURFACE",
+    1404847402: "IFCSTACKTERMINAL",
+    3112655638: "IFCSTACKTERMINALTYPE",
+    331165859: "IFCSTAIR",
+    4252922144: "IFCSTAIRFLIGHT",
+    1039846685: "IFCSTAIRFLIGHTTYPE",
+    338393293: "IFCSTAIRTYPE",
+    682877961: "IFCSTRUCTURALACTION",
+    3544373492: "IFCSTRUCTURALACTIVITY",
+    2515109513: "IFCSTRUCTURALANALYSISMODEL",
+    1179482911: "IFCSTRUCTURALCONNECTION",
+    2273995522: "IFCSTRUCTURALCONNECTIONCONDITION",
+    1004757350: "IFCSTRUCTURALCURVEACTION",
+    4243806635: "IFCSTRUCTURALCURVECONNECTION",
+    214636428: "IFCSTRUCTURALCURVEMEMBER",
+    2445595289: "IFCSTRUCTURALCURVEMEMBERVARYING",
+    2757150158: "IFCSTRUCTURALCURVEREACTION",
+    3136571912: "IFCSTRUCTURALITEM",
+    1807405624: "IFCSTRUCTURALLINEARACTION",
+    2162789131: "IFCSTRUCTURALLOAD",
+    385403989: "IFCSTRUCTURALLOADCASE",
+    3478079324: "IFCSTRUCTURALLOADCONFIGURATION",
+    1252848954: "IFCSTRUCTURALLOADGROUP",
+    1595516126: "IFCSTRUCTURALLOADLINEARFORCE",
+    609421318: "IFCSTRUCTURALLOADORRESULT",
+    2668620305: "IFCSTRUCTURALLOADPLANARFORCE",
+    2473145415: "IFCSTRUCTURALLOADSINGLEDISPLACEMENT",
+    1973038258: "IFCSTRUCTURALLOADSINGLEDISPLACEMENTDISTORTION",
+    1597423693: "IFCSTRUCTURALLOADSINGLEFORCE",
+    1190533807: "IFCSTRUCTURALLOADSINGLEFORCEWARPING",
+    2525727697: "IFCSTRUCTURALLOADSTATIC",
+    3408363356: "IFCSTRUCTURALLOADTEMPERATURE",
+    530289379: "IFCSTRUCTURALMEMBER",
+    1621171031: "IFCSTRUCTURALPLANARACTION",
+    2082059205: "IFCSTRUCTURALPOINTACTION",
+    734778138: "IFCSTRUCTURALPOINTCONNECTION",
+    1235345126: "IFCSTRUCTURALPOINTREACTION",
+    3689010777: "IFCSTRUCTURALREACTION",
+    2986769608: "IFCSTRUCTURALRESULTGROUP",
+    3657597509: "IFCSTRUCTURALSURFACEACTION",
+    1975003073: "IFCSTRUCTURALSURFACECONNECTION",
+    3979015343: "IFCSTRUCTURALSURFACEMEMBER",
+    2218152070: "IFCSTRUCTURALSURFACEMEMBERVARYING",
+    603775116: "IFCSTRUCTURALSURFACEREACTION",
+    2830218821: "IFCSTYLEMODEL",
+    3958052878: "IFCSTYLEDITEM",
+    3049322572: "IFCSTYLEDREPRESENTATION",
+    148013059: "IFCSUBCONTRACTRESOURCE",
+    4095615324: "IFCSUBCONTRACTRESOURCETYPE",
+    2233826070: "IFCSUBEDGE",
+    2513912981: "IFCSURFACE",
+    699246055: "IFCSURFACECURVE",
+    2028607225: "IFCSURFACECURVESWEPTAREASOLID",
+    3101698114: "IFCSURFACEFEATURE",
+    2809605785: "IFCSURFACEOFLINEAREXTRUSION",
+    4124788165: "IFCSURFACEOFREVOLUTION",
+    2934153892: "IFCSURFACEREINFORCEMENTAREA",
+    1300840506: "IFCSURFACESTYLE",
+    3303107099: "IFCSURFACESTYLELIGHTING",
+    1607154358: "IFCSURFACESTYLEREFRACTION",
+    1878645084: "IFCSURFACESTYLERENDERING",
+    846575682: "IFCSURFACESTYLESHADING",
+    1351298697: "IFCSURFACESTYLEWITHTEXTURES",
+    626085974: "IFCSURFACETEXTURE",
+    2247615214: "IFCSWEPTAREASOLID",
+    1260650574: "IFCSWEPTDISKSOLID",
+    1096409881: "IFCSWEPTDISKSOLIDPOLYGONAL",
+    230924584: "IFCSWEPTSURFACE",
+    1162798199: "IFCSWITCHINGDEVICE",
+    2315554128: "IFCSWITCHINGDEVICETYPE",
+    2254336722: "IFCSYSTEM",
+    413509423: "IFCSYSTEMFURNITUREELEMENT",
+    1580310250: "IFCSYSTEMFURNITUREELEMENTTYPE",
+    3071757647: "IFCTSHAPEPROFILEDEF",
+    985171141: "IFCTABLE",
+    2043862942: "IFCTABLECOLUMN",
+    531007025: "IFCTABLEROW",
+    812556717: "IFCTANK",
+    5716631: "IFCTANKTYPE",
+    3473067441: "IFCTASK",
+    1549132990: "IFCTASKTIME",
+    2771591690: "IFCTASKTIMERECURRING",
+    3206491090: "IFCTASKTYPE",
+    912023232: "IFCTELECOMADDRESS",
+    3824725483: "IFCTENDON",
+    2347447852: "IFCTENDONANCHOR",
+    3081323446: "IFCTENDONANCHORTYPE",
+    3663046924: "IFCTENDONCONDUIT",
+    2281632017: "IFCTENDONCONDUITTYPE",
+    2415094496: "IFCTENDONTYPE",
+    2387106220: "IFCTESSELLATEDFACESET",
+    901063453: "IFCTESSELLATEDITEM",
+    4282788508: "IFCTEXTLITERAL",
+    3124975700: "IFCTEXTLITERALWITHEXTENT",
+    1447204868: "IFCTEXTSTYLE",
+    1983826977: "IFCTEXTSTYLEFONTMODEL",
+    2636378356: "IFCTEXTSTYLEFORDEFINEDFONT",
+    1640371178: "IFCTEXTSTYLETEXTMODEL",
+    280115917: "IFCTEXTURECOORDINATE",
+    1742049831: "IFCTEXTURECOORDINATEGENERATOR",
+    2552916305: "IFCTEXTUREMAP",
+    1210645708: "IFCTEXTUREVERTEX",
+    3611470254: "IFCTEXTUREVERTEXLIST",
+    1199560280: "IFCTIMEPERIOD",
+    3101149627: "IFCTIMESERIES",
+    581633288: "IFCTIMESERIESVALUE",
+    1377556343: "IFCTOPOLOGICALREPRESENTATIONITEM",
+    1735638870: "IFCTOPOLOGYREPRESENTATION",
+    1935646853: "IFCTOROIDALSURFACE",
+    3825984169: "IFCTRANSFORMER",
+    1692211062: "IFCTRANSFORMERTYPE",
+    2595432518: "IFCTRANSITIONCURVESEGMENT2D",
+    1620046519: "IFCTRANSPORTELEMENT",
+    2097647324: "IFCTRANSPORTELEMENTTYPE",
+    2715220739: "IFCTRAPEZIUMPROFILEDEF",
+    2916149573: "IFCTRIANGULATEDFACESET",
+    1229763772: "IFCTRIANGULATEDIRREGULARNETWORK",
+    3593883385: "IFCTRIMMEDCURVE",
+    3026737570: "IFCTUBEBUNDLE",
+    1600972822: "IFCTUBEBUNDLETYPE",
+    1628702193: "IFCTYPEOBJECT",
+    3736923433: "IFCTYPEPROCESS",
+    2347495698: "IFCTYPEPRODUCT",
+    3698973494: "IFCTYPERESOURCE",
+    427810014: "IFCUSHAPEPROFILEDEF",
+    180925521: "IFCUNITASSIGNMENT",
+    630975310: "IFCUNITARYCONTROLELEMENT",
+    3179687236: "IFCUNITARYCONTROLELEMENTTYPE",
+    4292641817: "IFCUNITARYEQUIPMENT",
+    1911125066: "IFCUNITARYEQUIPMENTTYPE",
+    4207607924: "IFCVALVE",
+    728799441: "IFCVALVETYPE",
+    1417489154: "IFCVECTOR",
+    2799835756: "IFCVERTEX",
+    2759199220: "IFCVERTEXLOOP",
+    1907098498: "IFCVERTEXPOINT",
+    1530820697: "IFCVIBRATIONDAMPER",
+    3956297820: "IFCVIBRATIONDAMPERTYPE",
+    2391383451: "IFCVIBRATIONISOLATOR",
+    3313531582: "IFCVIBRATIONISOLATORTYPE",
+    2769231204: "IFCVIRTUALELEMENT",
+    891718957: "IFCVIRTUALGRIDINTERSECTION",
+    926996030: "IFCVOIDINGFEATURE",
+    2391406946: "IFCWALL",
+    4156078855: "IFCWALLELEMENTEDCASE",
+    3512223829: "IFCWALLSTANDARDCASE",
+    1898987631: "IFCWALLTYPE",
+    4237592921: "IFCWASTETERMINAL",
+    1133259667: "IFCWASTETERMINALTYPE",
+    3304561284: "IFCWINDOW",
+    336235671: "IFCWINDOWLININGPROPERTIES",
+    512836454: "IFCWINDOWPANELPROPERTIES",
+    486154966: "IFCWINDOWSTANDARDCASE",
+    1299126871: "IFCWINDOWSTYLE",
+    4009809668: "IFCWINDOWTYPE",
+    4088093105: "IFCWORKCALENDAR",
+    1028945134: "IFCWORKCONTROL",
+    4218914973: "IFCWORKPLAN",
+    3342526732: "IFCWORKSCHEDULE",
+    1236880293: "IFCWORKTIME",
+    2543172580: "IFCZSHAPEPROFILEDEF",
+    1033361043: "IFCZONE"
+  };
+
   // dist/helpers/properties.ts
   var PropsNames = {
     aggregates: {
@@ -53696,6 +54531,9 @@ var WebIFC = (() => {
   var Properties = class {
     constructor(api) {
       this.api = api;
+    }
+    getIfcType(type) {
+      return IfcTypesMap[type];
     }
     getItemProperties(modelID, id, recursive = false) {
       return __async(this, null, function* () {
@@ -53897,6 +54735,7 @@ var WebIFC = (() => {
       this.wasmModule = void 0;
       this.fs = void 0;
       this.wasmPath = "";
+      this.isWasmPathAbsolute = false;
       this.ifcGuidMap = new Map();
       this.properties = new Properties(this);
     }
@@ -53905,6 +54744,9 @@ var WebIFC = (() => {
         if (WebIFCWasm) {
           let locateFileHandler = (path, prefix) => {
             if (path.endsWith(".wasm")) {
+              if (this.isWasmPathAbsolute) {
+                return this.wasmPath + path;
+              }
               return prefix + this.wasmPath + path;
             }
             return prefix + path;
@@ -54074,8 +54916,9 @@ var WebIFC = (() => {
       }
       this.ifcGuidMap.set(modelID, map);
     }
-    SetWasmPath(path) {
+    SetWasmPath(path, absolute = false) {
       this.wasmPath = path;
+      this.isWasmPathAbsolute = absolute;
     }
   };
   return web_ifc_api_exports;
