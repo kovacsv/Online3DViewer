@@ -43,7 +43,7 @@ def Main (argv):
 	Tools.ReplaceStringInFile (websiteIconsCssPath, './O3DVIcons.woff', 'O3DVIcons/O3DVIcons.woff')
 	shutil.copy (os.path.join (iconFontDir, 'O3DVIcons.woff'), websiteIconFontDir)
 
-	infoCssDir = os.path.join (rootDir, 'website', 'info')
+	infoCssDir = os.path.join (rootDir, 'website', 'info', 'css')
 	shutil.copy (os.path.join (iconFontDir, 'O3DVIcons.css'), os.path.join (infoCssDir, 'icons.css'))
 	shutil.copy (os.path.join (iconFontDir, 'O3DVIcons.woff'), os.path.join (infoCssDir, 'O3DVIcons.woff'))
 

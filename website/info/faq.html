@@ -6,10 +6,11 @@
 	<meta name="viewport" content="width=device-width, user-scalable=no">
 	<link rel="icon" type="image/png" href="../assets/images/3dviewer_net_favicon.ico">
 
-	<title>Online 3D Viewer Frequently Asked Questions</title>
+	<title>Online 3D Viewer</title>
 
-	<link rel="stylesheet" type="text/css" href="icons.css">
-	<link rel="stylesheet" type="text/css" href="info.css">
+	<link rel="stylesheet" type="text/css" href="css/icons.css">
+	<link rel="stylesheet" type="text/css" href="css/info.css">
+	<script type="text/javascript" src="js/info.js"></script>
 
 	<!-- meta start -->
 	<!-- meta end -->
@@ -17,113 +18,76 @@
 	<!-- analytics start -->
 	<!-- analytics end -->
 
-	<script type="text/javascript">
-		window.addEventListener ('load', function () {
-            let questions = document.getElementsByClassName ('question');
-            let answers = document.getElementsByClassName ('answer');
-            for (let questionIndex = 0; questionIndex < questions.length; questionIndex++) {
-                let question = questions[questionIndex];
-                let answer = answers[questionIndex];
-                question.addEventListener ('click', () => {
-                    if (answer.style.display === 'block') {
-                        answer.style.display = 'none';
-                    } else {
-                        answer.style.display = 'block';
-                    }
-                });
-            }
-		});
-	</script>
-
 </head>
 
 <body>
-	<div class="main">
-		<h1><a href="faq.html">Online 3D Viewer Frequently Asked Questions</a></h1>
-
-		<p>
-			Here you can find the frequently asked questions for <a href="https://3dviewer.net">Online 3D Viewer</a>.
-            Click on a question to see the answer. If you can't find your answer here, feel free to
-            <a href="https://github.com/kovacsv/Online3DViewer/issues">create an issue on GitHub</a>.
-		</p>
-
-		<h2>Model Loading</h2>
-
-        <h3 class="question">No importable file found - what does that mean?</h3>
-		<div class="answer">
-            <p>
-                It means that none of your files are importable. Online 3D Viewer tries to detect importable files
-                by extension. Check if your format in the <a href="index.html#supported_file_formats">supported file formats list</a>, and make sure that you use the
-                proper extension.
-            </p>
-        </div>
-
-        <h3 class="question">Failed to load file for import - what does that mean?</h3>
-		<div class="answer">
-            <p>
-                It means that an importable file format is detected, but the website failed to load the file. It usually
-                happens when you try to load a model from an external url.
-            </p>
-            <p>
-                To resolve this issue, check if your url works in a browser window.
-                <ul>
-                    <li>
-                        If it works, it means that your url is ok, but the website can't access it. Usually it's caused by a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">CORS (Cross-Origin Resource Sharing)</a> policy violation.
-                        It means that the server that hosts the model doesn't allow requests from a different origin. To resolve this issue, allow CORS requests on the server.
-                    </li>
-                    <li>
-                        If it doesn't work, it means that your url is wrong. Fix the url.
-                    </li>
-                </ul>
-            </p>
-        </div>
-
-        <h3 class="question">Failed to import model - what does that mean?</h3>
-		<div class="answer">
-            <p>
-                It means that an importable file is found, the import process is started, but failed for some reason.
-                If the error message doesn't help, <a href="https://github.com/kovacsv/Online3DViewer/issues">create an issue on GitHub</a>.
-            </p>
-        </div>
-
-        <h3 class="question">Why does my model works fine locally, but not from an url?</h3>
-		<div class="answer">
-            <p>
-                Usually it's caused by a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">CORS (Cross-Origin Resource Sharing)</a> policy violation.
-                It means that the server that hosts the model doesn't allow requests from a different origin. To resolve this issue, allow CORS requests on the server.
-            </p>
-        </div>
-
-		<h2>Model Display</h2>
-
-        <h3 class="question">Why is my model completely gray?</h3>
-		<div class="answer">
-            <p>
-                Some file formats are coming with no material information (e.g. stl). These models will be visualized
-                with a default gray color. You can easily change this color in the settings panel (<i class="icon icon-settings"></i>) on the right.
-            </p>
-            <p>
-                Some file formats are coming in multiple files, and material information can be in a separate file
-                (e.g. obj files are usually working with mtl files). Check the files panel for any missing files (<i class="icon icon-missing_files"></i>), and if you
-                have the file, import it together with the main file.
-            </p>
-        </div>
-
-		<h2>Model Share</h2>
-
-        <h3 class="question">Why does sharing fail?</h3>
-		<div class="answer">
-            <p>
-                Online 3D Viewer doesn't store models, everything happens in your browser. Sharing possible only if your
-                files are coming from an external server. For example you can share a model that is loaded using the
-                open url button (<i class="icon icon-open_url"></i>).
-            </p>
-            <p>
-                When you drag and drop a model, or load it using the open button (<i class="icon icon-open"></i>), the model
-                is not publicly available, so in this case sharing is not possible.
-            </p>
-        </div>
-
+	<script type="text/javascript">
+		GenerateHeader ('FAQ');
+	</script>
+	<div class="frame">
+		<div class="main">
+			<p>
+				Here you can find the frequently asked questions for <a href="https://3dviewer.net">3dviewer.net</a>.
+				If you can't find your answer here, feel free to
+				<a href="https://github.com/kovacsv/Online3DViewer/issues">create an issue on GitHub</a>.
+			</p>
+			<h1 id="model_loading">Model loading</h1>
+			<h2>No importable file found - what does that mean?</h2>
+			<p>
+				It means that none of your files are importable. Online 3D Viewer tries to detect importable files
+				by extension. Check if your format in the <a href="index.html#supported_formats">supported file formats list</a>, and make sure that you use the
+				proper extension.
+			</p>
+			<h2>Failed to load file for import - what does that mean?</h2>
+			<p>
+				It means that an importable file format is detected, but the website failed to load the file. It usually
+				happens when you try to load a model from an external url.
+			</p>
+			<p>
+				To resolve this issue, check if your url works in a browser window.
+				<ul>
+					<li>
+						If it works, it means that your url is ok, but the website can't access it. Usually it's caused by a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">CORS (Cross-Origin Resource Sharing)</a> policy violation.
+						It means that the server that hosts the model doesn't allow requests from a different origin. To resolve this issue, allow CORS requests on the server.
+					</li>
+					<li>
+						If it doesn't work, it means that your url is wrong. Fix the url.
+					</li>
+				</ul>
+			</p>
+			<h2>Failed to import model - what does that mean?</h2>
+			<p>
+				It means that an importable file is found, the import process is started, but failed for some reason.
+				If the error message doesn't help, <a href="https://github.com/kovacsv/Online3DViewer/issues">create an issue on GitHub</a>.
+			</p>
+			<h2>Why does my model works fine locally, but not from an url?</h2>
+			<p>
+				Usually it's caused by a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">CORS (Cross-Origin Resource Sharing)</a> policy violation.
+				It means that the server that hosts the model doesn't allow requests from a different origin. To resolve this issue, allow CORS requests on the server.
+			</p>
+			<h1 id="model_display">Model display</h1>
+			<h2>Why is my model completely gray?</h2>
+			<p>
+				Some file formats are coming with no material information (e.g. stl). These models will be visualized
+				with a default gray color. You can easily change this color in the settings panel (<i class="icon icon-settings"></i>) on the right.
+			</p>
+			<p>
+				Some file formats are coming in multiple files, and material information can be in a separate file
+				(e.g. obj files are usually working with mtl files). Check the files panel for any missing files (<i class="icon icon-missing_files"></i>), and if you
+				have the file, import it together with the main file.
+			</p>
+			<h1 id="model_sharing">Model sharing</h1>
+			<h2>Why does sharing fail?</h2>
+			<p>
+				Online 3D Viewer doesn't store models, everything happens in your browser. Sharing possible only if your
+				files are coming from an external server. For example you can share a model that is loaded using the
+				open url button (<i class="icon icon-open_url"></i>).
+			</p>
+			<p>
+				When you drag and drop a model, or load it using the open button (<i class="icon icon-open"></i>), the model
+				is not publicly available, so in this case sharing is not possible.
+			</p>
+		</div>
 	</div>
 </body>
 

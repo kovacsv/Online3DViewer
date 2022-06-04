@@ -1,0 +1,232 @@
+@font-face
+{
+	font-family: Quicksand;
+	src: url('Quicksand/Quicksand-Regular.ttf');
+}
+
+html, body
+{
+	color: #000000;
+	background: #ffffff;
+	font-size: 16px;
+	font-family: Quicksand, Arial, Helvetica, sans-serif;
+	scroll-behavior: smooth;
+	margin: 0px;
+	padding: 0px;
+}
+
+a
+{
+	color: #3393bd;
+	text-decoration: none;
+}
+
+a:hover
+{
+	text-decoration: underline;
+}
+
+i.icon
+{
+	font-size: 16px;
+	margin: 0px 2px;
+	display: inline-block;
+	position: relative;
+	bottom: -4px;
+}
+
+h1
+{
+	font-size: 25px;
+	margin-top: 50px;
+	margin-bottom: 20px;
+}
+
+h1.first
+{
+	margin-top: 0px;
+}
+
+h2
+{
+	font-size: 19px;
+	margin-top: 30px;
+	margin-bottom: 20px;
+}
+
+p
+{
+	text-align: justify;
+	line-height: 25px;
+	margin-top: 0px;
+	margin-bottom: 15px;
+}
+
+p.info
+{
+	background: #e4f4ff;
+	padding: 10px;
+	border-left: 3px solid #3393bd;
+}
+
+ol, ul
+{
+	padding: 0px 0px 0px 25px;
+}
+
+li
+{
+	text-align: justify;
+	line-height: 25px;
+	margin: 10px 0px;
+}
+
+table
+{
+	width: 100%;
+	border-collapse: collapse;
+}
+
+table td, th
+{
+	text-align: left;
+	padding: 6px 10px;
+	border: 1px solid #dddddd;
+}
+
+table td.hidden
+{
+	display: none;
+}
+
+table th
+{
+	background: #fafafa;
+}
+
+table td.center
+{
+	text-align: center;
+}
+
+table td.green
+{
+	color: #21c23c;
+	font-weight: bold;
+}
+
+table td.red
+{
+	color: #bf233d;
+	font-weight: bold;
+}
+
+div.header
+{
+	margin-bottom: 20px;
+	box-shadow: 0px 0px 10px #dddddd;
+	overflow: auto;
+}
+
+div.frame
+{
+	padding: 15px;
+	width: 920px;
+	margin: 0px auto;
+	overflow: auto;
+}
+
+div.logo
+{
+	float: left;
+}
+
+div.logo img
+{
+	height: 40px;
+	display: block;
+}
+
+div.logo img.logo_with_text
+{
+	display: block;
+}
+
+div.logo img.logo_without_text
+{
+	display: none;
+}
+
+div.menu
+{
+	float: right;
+}
+
+div.menu a
+{
+	color: #000000;
+	padding: 10px;
+	display: block;
+	float: left;
+	text-decoration: none;
+}
+
+div.menu a.active
+{
+	font-weight: bold;
+}
+
+div.main
+{
+	padding: 10px 0px;
+	overflow: auto;
+}
+
+@media only screen and (max-width: 500px)
+{
+
+div.logo img.logo_with_text
+{
+	display: none;
+}
+
+div.logo img.logo_without_text
+{
+	display: block;
+}
+
+div.menu
+{
+	float: left;
+	margin-left: 15px;
+}
+
+}
+
+@media only screen and (max-width: 1000px)
+{
+
+div.frame
+{
+	width: auto;
+}
+
+div.manual_menu
+{
+	display: none;
+}
+
+div.manual_main
+{
+	margin-left: 0px;
+}
+
+table.formats th:nth-child(1),
+table.formats td:nth-child(1),
+table.formats th:nth-child(6),
+table.formats td:nth-child(6)
+{
+	display: none;
+}
+
+}
