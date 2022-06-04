@@ -27,6 +27,15 @@
 	<!-- website end -->
 
 	<!-- analytics start -->
+    <script type="text/javascript">
+        OV.SetWebsiteEventHandler ((eventName, eventLabel, eventParams) => {
+            console.log ({
+                eventName : eventName,
+                eventLabel : eventLabel,
+                eventParams : eventParams
+            });
+        });
+    </script>
 	<!-- analytics end -->
 
     <!-- embed init start -->
