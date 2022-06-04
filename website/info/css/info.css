@@ -195,12 +195,6 @@ div.logo img.logo_without_text
 	display: block;
 }
 
-div.menu
-{
-	float: left;
-	margin-left: 15px;
-}
-
 }
 
 @media only screen and (max-width: 1000px)
