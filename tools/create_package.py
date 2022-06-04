@@ -82,11 +82,11 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 			replacer.ReplaceTokenContent ('<!-- intro start -->', '<!-- intro end -->', introContent)
 		replacer.WriteToFile (htmlFilePath)
 
-def CreatePackage (rootDir, websiteDir, packageDir, version):
+def CreatePackage (rootDir, websiteDir, packageDir):
 	if not os.path.exists (packageDir):
 		os.makedirs (packageDir)
 
-	zipPath = os.path.join (packageDir, 'o3dv_' + version + '.zip')
+	zipPath = os.path.join (packageDir, 'o3dv.zip')
 	zip = zipfile.ZipFile (zipPath, mode = 'w', compression = zipfile.ZIP_DEFLATED)
 	for file in os.listdir (os.path.join (websiteDir, 'libs', 'loaders')):
 		zip.write (os.path.join (websiteDir, 'libs', 'loaders', file), 'libs/loaders/' + file)
@@ -129,7 +129,7 @@ def Main (argv):
 	CreateDestinationDir (config, rootDir, websiteDir, version, testBuild)
 
 	PrintInfo ('Create package.')
-	packageResult = CreatePackage (rootDir, websiteDir, packageDir, version)
+	packageResult = CreatePackage (rootDir, websiteDir, packageDir)
 	if not packageResult:
 		PrintError ('Create package failed.')
 		return 1
