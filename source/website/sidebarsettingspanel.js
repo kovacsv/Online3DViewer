@@ -6,7 +6,7 @@ import { FeatureSet } from './featureset.js';
 import { PopupDialog } from './dialog.js';
 import { Settings, Theme } from './settings.js';
 import { SidebarPanel } from './sidebarpanel.js';
-import { AddSvgIconElement } from './utils.js';
+import { ShadingType } from '../engine/threejs/threeutils.js';
 
 function AddColorPicker (parentDiv, defaultColor, predefinedColors, onChange)
 {
@@ -52,7 +52,7 @@ class EnvironmentMapPopup extends PopupDialog
         super ();
     }
 
-    ShowPopup (buttonDiv, settings, callbacks)
+    ShowPopup (buttonDiv, shadingType, settings, callbacks)
     {
         let contentDiv = super.Init (() => {
             return CalculatePopupPositionToElementTopLeft (buttonDiv, contentDiv);
@@ -85,26 +85,61 @@ class EnvironmentMapPopup extends PopupDialog
             }
         ];
 
-        for (let envMapImage of envMapImages) {
-            envMapImage.element = AddDomElement (contentDiv, 'img', 'ov_environment_map_preview');
-            envMapImage.element.setAttribute ('src', 'assets/envmaps/' + envMapImage.name + '.jpg');
-            if (envMapImage.name === settings.environmentMapName) {
-                envMapImage.element.classList.add ('selected');
-            }
-            envMapImage.element.addEventListener ('click', () => {
-                for (let otherImage of envMapImages) {
-                    otherImage.element.classList.remove ('selected');
+        if (shadingType === ShadingType.Phong) {
+            envMapImages.unshift ({
+                element : null,
+                name : 'noimage'
+            });
+            for (let envMapImage of envMapImages) {
+                envMapImage.element = AddDomElement (contentDiv, 'img', 'ov_environment_map_preview');
+                envMapImage.element.setAttribute ('src', 'assets/envmaps/' + envMapImage.name + '.jpg');
+                let isSelected = false;
+                if (settings.backgroundIsEnvMap) {
+                    isSelected = (envMapImage.name === settings.environmentMapName);
+                } else {
+                    isSelected = (envMapImage.name === 'noimage');
                 }
-                envMapImage.element.classList.add ('selected');
-                settings.environmentMapName = envMapImage.name;
+                if (isSelected) {
+                    envMapImage.element.classList.add ('selected');
+                }
+                envMapImage.element.addEventListener ('click', () => {
+                    for (let otherImage of envMapImages) {
+                        otherImage.element.classList.remove ('selected');
+                    }
+                    envMapImage.element.classList.add ('selected');
+                    if (envMapImage.name === 'noimage') {
+                        settings.backgroundIsEnvMap = false;
+                        settings.environmentMapName = 'fishermans_bastion';
+                    } else {
+                        settings.backgroundIsEnvMap = true;
+                        settings.environmentMapName = envMapImage.name;
+                    }
+                    callbacks.onEnvironmentMapChange ();
+                });
+            }
+        } else if (shadingType === ShadingType.Physical) {
+            let checkboxDiv = AddDiv (contentDiv, 'ov_environment_map_checkbox');
+            let backgroundIsEnvMapCheckbox = AddCheckbox (checkboxDiv, 'use_as_background', 'Use as background', settings.backgroundIsEnvMap, () => {
+                settings.backgroundIsEnvMap = backgroundIsEnvMapCheckbox.checked;
                 callbacks.onEnvironmentMapChange ();
             });
-        }
 
-        let backgroundIsEnvMapCheckbox = AddCheckbox (contentDiv, 'use_as_background', 'Use as background', settings.backgroundIsEnvMap, () => {
-            settings.backgroundIsEnvMap = backgroundIsEnvMapCheckbox.checked;
-            callbacks.onEnvironmentMapChange ();
-        });
+            for (let envMapImage of envMapImages) {
+                envMapImage.element = AddDomElement (contentDiv, 'img', 'ov_environment_map_preview');
+                envMapImage.element.setAttribute ('src', 'assets/envmaps/' + envMapImage.name + '.jpg');
+                if (envMapImage.name === settings.environmentMapName) {
+                    envMapImage.element.classList.add ('selected');
+                }
+                envMapImage.element.addEventListener ('click', () => {
+                    for (let otherImage of envMapImages) {
+                        otherImage.element.classList.remove ('selected');
+                    }
+                    envMapImage.element.classList.add ('selected');
+                    settings.environmentMapName = envMapImage.name;
+                    callbacks.onEnvironmentMapChange ();
+                });
+            }
+        }
 
         contentDiv.classList.add ('sidebar');
         this.Open ();
@@ -142,10 +177,15 @@ class SettingsModelDisplaySection extends SettingsSection
     {
         super (parentDiv, 'Model Display');
 
-        this.environmentMapButton = null;
-        this.environmentMapPopup = null;
-
         this.backgroundColorPicker = null;
+
+        this.environmentMapPhongDiv = null;
+        this.environmentMapPhongInput = null;
+
+        this.environmentMapPbrDiv = null;
+        this.environmentMapPbrInput = null;
+
+        this.environmentMapPopup = null;
 
         this.edgeDisplayToggle = null;
         this.edgeColorPicker = null;
@@ -156,20 +196,6 @@ class SettingsModelDisplaySection extends SettingsSection
 
     Init (settings, callbacks)
     {
-        if (FeatureSet.EnvironmentMap) {
-            this.environmentMapButton = AddDiv (this.contentDiv, 'ov_panel_button');
-            AddSvgIconElement (this.environmentMapButton, 'arrow_left', 'ov_panel_button_left_icon');
-            AddDiv (this.environmentMapButton, 'ov_panel_button_text', 'Environment Map');
-            this.environmentMapButton.addEventListener ('click', () => {
-                this.environmentMapPopup = new EnvironmentMapPopup ();
-                this.environmentMapPopup.ShowPopup (this.environmentMapButton, settings, {
-                    onEnvironmentMapChange : () => {
-                        callbacks.onEnvironmentMapChange ();
-                    }
-                });
-            });
-        }
-
         let backgroundColorDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
         let backgroundColorInput = AddDiv (backgroundColorDiv, 'ov_color_picker');
         AddDiv (backgroundColorDiv, null, 'Background Color');
@@ -178,6 +204,36 @@ class SettingsModelDisplaySection extends SettingsSection
             settings.backgroundColor = color;
             callbacks.onBackgroundColorChange ();
         });
+
+        if (FeatureSet.EnvironmentMap) {
+            this.environmentMapPhongDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
+            this.environmentMapPhongInput = AddDiv (this.environmentMapPhongDiv, 'ov_sidebar_image_picker');
+            AddDiv (this.environmentMapPhongDiv, null, 'Background Image');
+            this.environmentMapPhongInput.addEventListener ('click', () => {
+                this.environmentMapPopup = new EnvironmentMapPopup ();
+                this.environmentMapPopup.ShowPopup (this.environmentMapPhongInput, ShadingType.Phong, settings, {
+                    onEnvironmentMapChange : () => {
+                        this.UpdateEnvironmentMap (settings);
+                        callbacks.onEnvironmentMapChange ();
+                    }
+                });
+            });
+
+            this.environmentMapPbrDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
+            this.environmentMapPbrInput = AddDiv (this.environmentMapPbrDiv, 'ov_sidebar_image_picker');
+            AddDiv (this.environmentMapPbrDiv, null, 'Environment');
+            this.environmentMapPbrInput.addEventListener ('click', () => {
+                this.environmentMapPopup = new EnvironmentMapPopup ();
+                this.environmentMapPopup.ShowPopup (this.environmentMapPbrInput, ShadingType.Physical, settings, {
+                    onEnvironmentMapChange : () => {
+                        this.UpdateEnvironmentMap (settings);
+                        callbacks.onEnvironmentMapChange ();
+                    }
+                });
+            });
+
+            this.UpdateEnvironmentMap (settings);
+        }
 
         let edgeParameterDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
         this.edgeDisplayToggle = AddToggle (edgeParameterDiv, 'ov_sidebar_parameter_toggle');
@@ -220,8 +276,32 @@ class SettingsModelDisplaySection extends SettingsSection
 
     UpdateVisibility (isPhysicallyBased)
     {
-        if (this.environmentMapButton !== null) {
-            ShowDomElement (this.environmentMapButton, isPhysicallyBased);
+        if (this.environmentMapPhongDiv !== null) {
+           ShowDomElement (this.environmentMapPhongDiv, !isPhysicallyBased);
+        }
+        if (this.environmentMapPbrDiv !== null) {
+           ShowDomElement (this.environmentMapPbrDiv, isPhysicallyBased);
+        }
+    }
+
+    UpdateEnvironmentMap (settings)
+    {
+        function UpdateImage (input, image)
+        {
+            input.style.backgroundImage = 'url(\'assets/envmaps/' + image + '.jpg\')';
+        }
+
+        if (this.environmentMapPhongDiv !== null) {
+            if (settings.backgroundIsEnvMap) {
+                UpdateImage (this.environmentMapPhongInput, settings.environmentMapName);
+                this.environmentMapPhongInput.classList.remove ('ov_environment_map_preview_no_color');
+            } else {
+                this.environmentMapPhongInput.style.backgroundImage = null;
+                this.environmentMapPhongInput.classList.add ('ov_environment_map_preview_no_color');
+            }
+        }
+        if (this.environmentMapPbrDiv !== null) {
+            UpdateImage (this.environmentMapPbrInput, settings.environmentMapName);
         }
     }
 
@@ -229,6 +309,10 @@ class SettingsModelDisplaySection extends SettingsSection
     {
         if (this.backgroundColorPicker !== null) {
             this.backgroundColorPicker.setColor ('#' + ColorToHexString (settings.backgroundColor));
+        }
+
+        if (this.environmentMapPbrInput !== null || this.environmentMapPhongDiv !== null) {
+            this.UpdateEnvironmentMap (settings);
         }
 
         if (this.edgeDisplayToggle !== null) {

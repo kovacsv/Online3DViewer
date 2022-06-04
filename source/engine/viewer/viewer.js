@@ -145,16 +145,15 @@ export class ShadingModel
             this.ambientLight.color.set (0x888888);
             this.directionalLight.color.set (0x888888);
             this.scene.environment = null;
-            this.scene.background = null;
         } else if (this.type === ShadingType.Physical) {
             this.ambientLight.color.set (0x000000);
             this.directionalLight.color.set (0x555555);
             this.scene.environment = this.environment;
-            if (this.backgroundIsEnvMap) {
-                this.scene.background = this.environment;
-            } else {
-                this.scene.background = null;
-            }
+        }
+        if (this.backgroundIsEnvMap) {
+            this.scene.background = this.environment;
+        } else {
+            this.scene.background = null;
         }
     }
 

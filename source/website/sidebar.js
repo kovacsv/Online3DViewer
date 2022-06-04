@@ -20,7 +20,7 @@ export class Sidebar
         this.panelSet.ShowPanel (this.detailsPanel);
     }
 
-    IsPanelsVisible ()
+    IsPanelsle ()
     {
         return this.panelSet.IsPanelsVisible ();
     }

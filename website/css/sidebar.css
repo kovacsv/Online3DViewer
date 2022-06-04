@@ -40,6 +40,20 @@ div.ov_sidebar_parameter div.ov_sidebar_parameter_text
 	float: left;
 }
 
+div.ov_sidebar_image_picker
+{
+	background-size: cover;
+	background-position: center center;
+	width: 28px;
+	height: 13px;
+	margin-top: 3px;
+	margin-right: 10px;
+	border: 1px solid var(--ov_border_color);
+	border-radius: 3px;
+	float: left;
+	cursor: pointer;
+}
+
 div.ov_sidebar_content
 {
 	overflow: auto;
@@ -95,6 +109,11 @@ div.ov_sidebar_content button.pcr-button
 	float: left;
 }
 
+div.ov_environment_map_checkbox
+{
+	margin-bottom: 10px;
+}
+
 img.ov_environment_map_preview
 {
 	width: 160px;
@@ -102,13 +121,18 @@ img.ov_environment_map_preview
 	display: block;
 	float: left;
 	padding: 1px;
-	border: 5px solid transparent;
+	border: 5px solid var(--ov_dialog_background_color);
 	cursor: pointer;
 }
 
 img.ov_environment_map_preview.selected
 {
 	border: 5px solid var(--ov_button_color);
+}
+
+div.ov_environment_map_preview_no_color
+{
+	background: linear-gradient(to top left, var(--ov_background_color) calc(50% - 1px), var(--ov_border_color), var(--ov_background_color) calc(50% + 1px) )
 }
 
 div.ov_popup.sidebar
