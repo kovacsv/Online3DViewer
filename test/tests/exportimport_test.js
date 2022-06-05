@@ -116,8 +116,8 @@ function ExportImport (model, format, extension, onReady)
         onSuccess : function (exportedFiles) {
             let importer = new OV.Importer ();
             let settings = new OV.ImportSettings ();
-            let fileObjects = exportedFiles.map (file => new FileObject ('', file.name, file.content));
-            importer.ImportFiles (fileObjects, OV.FileSource.File, settings, {
+            let fileObjects = exportedFiles.map (file => new OV.InputFile (file.name, OV.FileSource.File, new FileObject ('', file.name, file.content)));
+            importer.ImportFiles (fileObjects, settings, {
                 onFilesLoaded : function () {
 
                 },

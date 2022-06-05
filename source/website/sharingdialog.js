@@ -118,7 +118,7 @@ export function ShowSharingDialog (fileList, settings, camera)
     for (let fileIndex = 0; fileIndex < files.length; fileIndex++) {
         let file = files[fileIndex];
         if (file.source === FileSource.Url) {
-            modelFiles.push (file.fileUrl);
+            modelFiles.push (file.data);
         }
     }
 

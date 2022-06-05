@@ -1,4 +1,5 @@
-import { FileSource, GetFileExtension, TransformFileHostUrls } from '../engine/io/fileutils.js';
+import { GetFileExtension, TransformFileHostUrls } from '../engine/io/fileutils.js';
+import { InputFilesFromFileObjects, InputFilesFromUrls } from '../engine/import/filelist.js';
 import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
 import { Viewer } from '../engine/viewer/viewer.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
@@ -358,7 +359,8 @@ export class Website
 
     LoadModelFromUrlList (urls, settings)
     {
-        this.LoadModel (urls, FileSource.Url, settings);
+        let inputFiles = InputFilesFromUrls (urls);
+        this.LoadModelFromInputFiles (inputFiles, settings);
         this.ClearHashIfNotOnlyUrlList ();
     }
 
@@ -366,13 +368,14 @@ export class Website
     {
         let importSettings = new ImportSettings ();
         importSettings.defaultColor = this.settings.defaultColor;
-        this.LoadModel (files, FileSource.File, importSettings);
+        let inputFiles = InputFilesFromFileObjects (files);
+        this.LoadModelFromInputFiles (inputFiles, importSettings);
         this.ClearHashIfNotOnlyUrlList ();
     }
 
-    LoadModel (files, fileSource, settings)
+    LoadModelFromInputFiles (files, settings)
     {
-        this.modelLoaderUI.LoadModel (files, fileSource, settings, {
+        this.modelLoaderUI.LoadModel (files, settings, {
             onStart : () =>
             {
                 this.SetUIState (WebsiteUIState.Loading);

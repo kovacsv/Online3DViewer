@@ -1,7 +1,8 @@
 import { IsDefined } from '../core/core.js';
 import { Direction } from '../geometry/geometry.js';
+import { InputFilesFromFileObjects, InputFilesFromUrls } from '../import/filelist.js';
 import { ImportErrorCode, ImportSettings } from '../import/importer.js';
-import { FileSource, TransformFileHostUrls } from '../io/fileutils.js';
+import { TransformFileHostUrls } from '../io/fileutils.js';
 import { ParameterConverter } from '../parameters/parameterlist.js';
 import { ThreeModelLoader } from '../threejs/threemodelloader.js';
 import { Viewer } from './viewer.js';
@@ -51,20 +52,22 @@ export class EmbeddedViewer
         });
     }
 
-    LoadModelFromUrls (modelUrls)
+    LoadModelFromUrlList (modelUrls)
     {
         TransformFileHostUrls (modelUrls);
-        this.LoadModelInternal (modelUrls, FileSource.Url);
+        let inputFiles = InputFilesFromUrls (modelUrls);
+        this.LoadModelFromInputFiles (inputFiles);
     }
 
     LoadModelFromFileList (fileList)
     {
-        this.LoadModelInternal (fileList, FileSource.File);
+        let inputFiles = InputFilesFromFileObjects (fileList);
+        this.LoadModelFromInputFiles (inputFiles);
     }
 
-    LoadModelInternal (fileList, fileSource)
+    LoadModelFromInputFiles (inputFiles)
     {
-        if (fileList === null || fileList.length === 0) {
+        if (inputFiles === null || inputFiles.length === 0) {
             return null;
         }
 
@@ -77,7 +80,7 @@ export class EmbeddedViewer
         this.model = null;
         let progressDiv = null;
         let loader = new ThreeModelLoader ();
-        loader.LoadModel (fileList, fileSource, settings, {
+        loader.LoadModel (inputFiles, settings, {
             onLoadStart : () => {
                 this.canvas.style.display = 'none';
                 progressDiv = document.createElement ('div');
@@ -151,7 +154,7 @@ export class EmbeddedViewer
 export function Init3DViewerElement (parentElement, modelUrls, parameters)
 {
     let viewer = new EmbeddedViewer (parentElement, parameters);
-    viewer.LoadModelFromUrls (modelUrls);
+    viewer.LoadModelFromUrlList (modelUrls);
     return viewer;
 }
 

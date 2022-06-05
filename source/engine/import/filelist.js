@@ -1,27 +1,44 @@
 import { RunTasks } from '../core/taskrunner.js';
 import { FileFormat, FileSource, GetFileExtension, GetFileName, ReadFile, RequestUrl } from '../io/fileutils.js';
 
-export class File
+export class InputFile
 {
-    constructor (file, source)
+    constructor (name, source, data)
     {
+        this.name = name;
         this.source = source;
-        if (source === FileSource.Url) {
-            this.fileUrl = file;
-            this.fileObject = null;
-            this.name = GetFileName (file);
-            this.extension = GetFileExtension (file);
-        } else if (source === FileSource.File) {
-            this.fileUrl = null;
-            this.fileObject = file;
-            this.name = GetFileName (file.name);
-            this.extension = GetFileExtension (file.name);
-        } else if (source === FileSource.Decompressed) {
-            this.fileUrl = null;
-            this.fileObject = null;
-            this.name = GetFileName (file);
-            this.extension = GetFileExtension (file);
-        }
+        this.data = data;
+    }
+}
+
+export function InputFilesFromUrls (urls)
+{
+    let inputFiles = [];
+    for (let url of urls) {
+        let fileName = GetFileName (url);
+        inputFiles.push (new InputFile (fileName, FileSource.Url, url));
+    }
+    return inputFiles;
+}
+
+export function InputFilesFromFileObjects (fileObjects)
+{
+    let inputFiles = [];
+    for (let fileObject of fileObjects) {
+        let fileName = GetFileName (fileObject.name);
+        inputFiles.push (new InputFile (fileName, FileSource.File, fileObject));
+    }
+    return inputFiles;
+}
+
+export class ImporterFile
+{
+    constructor (name, source, data)
+    {
+        this.name = GetFileName (name);
+        this.extension = GetFileExtension (name);
+        this.source = source;
+        this.data = data;
         this.content = null;
     }
 
@@ -31,25 +48,25 @@ export class File
     }
 }
 
-export class FileList
+export class ImporterFileList
 {
     constructor ()
     {
         this.files = [];
     }
 
-    FillFromFileUrls (fileList)
+    FillFromInputFiles (inputFiles)
     {
-        this.Fill (fileList, FileSource.Url);
+        this.files = [];
+        for (let inputFile of inputFiles) {
+            let file = new ImporterFile (inputFile.name, inputFile.source, inputFile.data);
+            this.files.push (file);
+        }
     }
 
-    FillFromFileObjects (fileList)
+    ExtendFromFileList (fileList)
     {
-        this.Fill (fileList, FileSource.File);
-    }
-
-    ExtendFromFileList (files)
-    {
+        let files = fileList.GetFiles ();
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
             if (!this.ContainsFileByPath (file.name)) {
@@ -104,16 +121,6 @@ export class FileList
         return true;
     }
 
-    Fill (fileList, fileSource)
-    {
-        this.files = [];
-        for (let fileIndex = 0; fileIndex < fileList.length; fileIndex++) {
-            let fileObject = fileList[fileIndex];
-            let file = new File (fileObject, fileSource);
-            this.AddFile (file);
-        }
-    }
-
     AddFile (file)
     {
         this.files.push (file);
@@ -127,9 +134,9 @@ export class FileList
         }
         let loaderPromise = null;
         if (file.source === FileSource.Url) {
-            loaderPromise = RequestUrl (file.fileUrl, FileFormat.Binary);
+            loaderPromise = RequestUrl (file.data, FileFormat.Binary);
         } else if (file.source === FileSource.File) {
-            loaderPromise = ReadFile (file.fileObject, FileFormat.Binary);
+            loaderPromise = ReadFile (file.data, FileFormat.Binary);
         } else {
             complete ();
             return;

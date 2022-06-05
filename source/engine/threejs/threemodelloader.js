@@ -22,7 +22,7 @@ export class ThreeModelLoader
         return this.inProgress;
     }
 
-    LoadModel (files, fileSource, settings, callbacks)
+    LoadModel (inputFiles, settings, callbacks)
     {
         if (this.inProgress) {
             return;
@@ -31,7 +31,7 @@ export class ThreeModelLoader
         this.inProgress = true;
         callbacks.onLoadStart ();
         this.RevokeObjectUrls ();
-        this.importer.ImportFiles (files, fileSource, settings, {
+        this.importer.ImportFiles (inputFiles, settings, {
             onFilesLoaded : () => {
                 callbacks.onImportStart ();
             },

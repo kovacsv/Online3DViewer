@@ -1,5 +1,5 @@
 import { CreateModelUrlParameters } from '../engine/parameters/parameterlist.js';
-import { FileSource, TransformFileHostUrls } from '../engine/io/fileutils.js';
+import { TransformFileHostUrls } from '../engine/io/fileutils.js';
 import { ImportSettings } from '../engine/import/importer.js';
 import { AddDomElement } from '../engine/viewer/domutils.js';
 import { Viewer } from '../engine/viewer/viewer.js';
@@ -7,6 +7,7 @@ import { HashHandler } from './hashhandler.js';
 import { ThreeModelLoaderUI } from './threemodelloaderui.js';
 import { Direction } from '../engine/geometry/geometry.js';
 import { HandleEvent } from './eventhandler.js';
+import { InputFilesFromUrls } from '../engine/import/filelist.js';
 
 export class Embed
 {
@@ -66,7 +67,8 @@ export class Embed
             if (defaultColor !== null) {
                 settings.defaultColor = defaultColor;
             }
-            this.modelLoaderUI.LoadModel (urls, FileSource.Url, settings, {
+            let inputFiles = InputFilesFromUrls (urls);
+            this.modelLoaderUI.LoadModel (inputFiles, settings, {
                 onStart : () =>
                 {
 

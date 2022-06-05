@@ -13,14 +13,14 @@ export class ThreeModelLoaderUI
         this.modalDialog = null;
     }
 
-    LoadModel (files, fileSource, settings, callbacks)
+    LoadModel (inputFiles, settings, callbacks)
     {
         if (this.modelLoader.InProgress ()) {
             return;
         }
 
         let progressDialog = null;
-        this.modelLoader.LoadModel (files, fileSource, settings, {
+        this.modelLoader.LoadModel (inputFiles, settings, {
             onLoadStart : () => {
                 this.CloseDialogIfOpen ();
                 callbacks.onStart ();

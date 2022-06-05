@@ -20,7 +20,7 @@ import { OctreeNode, Octree } from './geometry/octree.js';
 import { Quaternion, QuaternionIsEqual, ArrayToQuaternion, QuaternionFromAxisAngle, QuaternionFromXYZ } from './geometry/quaternion.js';
 import { Transformation, TransformationIsEqual } from './geometry/transformation.js';
 import { BezierTweenFunction, LinearTweenFunction, ParabolicTweenFunction, TweenCoord3D } from './geometry/tween.js';
-import { File, FileList } from './import/filelist.js';
+import { InputFile, ImporterFile, ImporterFileList, InputFilesFromUrls, InputFilesFromFileObjects } from './import/filelist.js';
 import { ImportSettings, ImportError, ImportResult, ImporterFileAccessor, Importer, ImportErrorCode } from './import/importer.js';
 import { Importer3dm } from './import/importer3dm.js';
 import { Importer3ds } from './import/importer3ds.js';
@@ -140,8 +140,11 @@ export {
     LinearTweenFunction,
     ParabolicTweenFunction,
     TweenCoord3D,
-    File,
-    FileList,
+    InputFile,
+    ImporterFile,
+    ImporterFileList,
+    InputFilesFromUrls,
+    InputFilesFromFileObjects,
     ImportSettings,
     ImportError,
     ImportResult,

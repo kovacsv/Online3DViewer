@@ -1,7 +1,7 @@
 import { RunTaskAsync } from '../core/taskrunner.js';
 import { FileSource, GetFileName } from '../io/fileutils.js';
 import { Color } from '../model/color.js';
-import { File, FileList } from './filelist.js';
+import { ImporterFile, ImporterFileList } from './filelist.js';
 import { Importer3dm } from './importer3dm.js';
 import { Importer3ds } from './importer3ds.js';
 import { ImporterGltf } from './importergltf.js';
@@ -96,7 +96,7 @@ export class Importer
             new ImporterThreeWrl (),
             new ImporterThree3mf ()
         ];
-        this.fileList = new FileList ();
+        this.fileList = new ImporterFileList ();
         this.model = null;
         this.usedFiles = [];
         this.missingFiles = [];
@@ -107,9 +107,9 @@ export class Importer
 		this.importers.push (importer);
 	}
 
-    ImportFiles (fileList, fileSource, settings, callbacks)
+    ImportFiles (inputFiles, settings, callbacks)
     {
-        this.LoadFiles (fileList, fileSource, () => {
+        this.LoadFiles (inputFiles, () => {
             callbacks.onFilesLoaded ();
             RunTaskAsync (() => {
                 this.ImportLoadedFiles (settings, callbacks);
@@ -117,14 +117,11 @@ export class Importer
         });
     }
 
-    LoadFiles (fileList, fileSource, onReady)
+    LoadFiles (inputFiles, onReady)
     {
-        let newFileList = new FileList ();
-        if (fileSource === FileSource.Url) {
-            newFileList.FillFromFileUrls (fileList);
-        } else if (fileSource === FileSource.File) {
-            newFileList.FillFromFileObjects (fileList);
-        }
+        let newFileList = new ImporterFileList ();
+        newFileList.FillFromInputFiles (inputFiles);
+
         let reset = false;
         if (this.HasImportableFile (newFileList)) {
             reset = true;
@@ -139,8 +136,7 @@ export class Importer
             if (!foundMissingFile) {
                 reset = true;
             } else {
-                let newFiles = newFileList.GetFiles ();
-                this.fileList.ExtendFromFileList (newFiles);
+                this.fileList.ExtendFromFileList (newFileList);
                 reset = false;
             }
         }
@@ -258,7 +254,7 @@ export class Importer
             const decompressed = fflate.unzipSync (archiveBuffer);
             for (const fileName in decompressed) {
                 if (Object.prototype.hasOwnProperty.call (decompressed, fileName)) {
-                    let file = new File (fileName, FileSource.Decompressed);
+                    let file = new ImporterFile (fileName, FileSource.Decompressed, null);
                     file.SetContent (decompressed[fileName].buffer);
                     fileList.AddFile (file);
                 }

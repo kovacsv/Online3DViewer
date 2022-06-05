@@ -7,7 +7,8 @@ export default function suite ()
 function ImportFilesWithImporter (importer, files, callbacks)
 {
     let settings = new OV.ImportSettings ();
-    importer.ImportFiles (files, OV.FileSource.File, settings, {
+    let inputFiles = OV.InputFilesFromFileObjects (files);
+    importer.ImportFiles (inputFiles, settings, {
         onFilesLoaded : function () {
 
         },
@@ -259,7 +260,8 @@ describe ('Importer Test', function () {
         let theImporter = new OV.Importer ();
         let settings = new OV.ImportSettings ();
         settings.defaultColor = new OV.Color (200, 0, 0);
-        theImporter.ImportFiles (files, OV.FileSource.File, settings, {
+        let inputFiles = OV.InputFilesFromFileObjects (files);
+        theImporter.ImportFiles (inputFiles, settings, {
             onFilesLoaded : function () {
 
             },
