@@ -1,6 +1,6 @@
 import { IsDefined } from '../core/core.js';
 import { Direction } from '../geometry/geometry.js';
-import { InputFilesFromFileObjects, InputFilesFromUrls } from '../import/filelist.js';
+import { InputFilesFromFileObjects, InputFilesFromUrls } from '../import/importerfiles.js';
 import { ImportErrorCode, ImportSettings } from '../import/importer.js';
 import { TransformFileHostUrls } from '../io/fileutils.js';
 import { ParameterConverter } from '../parameters/parameterlist.js';

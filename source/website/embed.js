@@ -7,7 +7,7 @@ import { HashHandler } from './hashhandler.js';
 import { ThreeModelLoaderUI } from './threemodelloaderui.js';
 import { Direction } from '../engine/geometry/geometry.js';
 import { HandleEvent } from './eventhandler.js';
-import { InputFilesFromUrls } from '../engine/import/filelist.js';
+import { InputFilesFromUrls } from '../engine/import/importerfiles.js';
 
 export class Embed
 {

@@ -1,5 +1,5 @@
 import { GetFileExtension, TransformFileHostUrls } from '../engine/io/fileutils.js';
-import { InputFilesFromFileObjects, InputFilesFromUrls } from '../engine/import/filelist.js';
+import { InputFilesFromFileObjects, InputFilesFromUrls } from '../engine/import/importerfiles.js';
 import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
 import { Viewer } from '../engine/viewer/viewer.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
