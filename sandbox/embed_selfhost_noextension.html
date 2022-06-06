@@ -25,13 +25,7 @@
             let parentDiv = document.getElementById ('viewer');
 
             // initialize the viewer with the parent element and some parameters
-            let viewer = new OV.EmbeddedViewer (parentDiv, {
-                camera : new OV.Camera (
-                    new OV.Coord3D (-1.5, 2.0, 3.0),
-                    new OV.Coord3D (0.0, 0.0, 0.0),
-                    new OV.Coord3D (0.0, 1.0, 0.0)
-                )
-            });
+            let viewer = new OV.EmbeddedViewer (parentDiv, {});
 
             // load a model providing model urls
             let inputFiles = [

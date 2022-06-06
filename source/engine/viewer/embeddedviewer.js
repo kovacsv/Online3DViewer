@@ -105,8 +105,8 @@ export class EmbeddedViewer
                     this.viewer.SetCamera (this.parameters.camera);
                 } else {
                     this.viewer.SetUpVector (Direction.Y, false);
+                    this.viewer.FitSphereToWindow (boundingSphere, false);
                 }
-                this.viewer.FitSphereToWindow (boundingSphere, false);
 
                 this.model = importResult.model;
                 if (this.parameters.onModelLoaded) {
