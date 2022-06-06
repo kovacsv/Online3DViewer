@@ -117,9 +117,9 @@ export class EmbeddedViewer
                 this.viewer.Render ();
             },
             onLoadError : (importError) => {
-                let message = 'Unknown error';
+                let message = 'Unknown error.';
                 if (importError.code === ImportErrorCode.NoImportableFile) {
-                    message = 'No importable file found';
+                    message = 'No importable file found.';
                 } else if (importError.code === ImportErrorCode.FailedToLoadFile) {
                     message = 'Failed to load file for import.';
                 } else if (importError.code === ImportErrorCode.ImportFailed) {
