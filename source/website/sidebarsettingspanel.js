@@ -2,7 +2,6 @@ import { Color, ColorToHexString } from '../engine/model/color.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { AddRangeSlider, AddToggle, AddCheckbox } from '../website/utils.js';
 import { CalculatePopupPositionToElementTopLeft } from './dialogs.js';
-import { FeatureSet } from './featureset.js';
 import { PopupDialog } from './dialog.js';
 import { Settings, Theme } from './settings.js';
 import { SidebarPanel } from './sidebarpanel.js';
@@ -205,35 +204,33 @@ class SettingsModelDisplaySection extends SettingsSection
             callbacks.onBackgroundColorChange ();
         });
 
-        if (FeatureSet.EnvironmentMap) {
-            this.environmentMapPhongDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
-            this.environmentMapPhongInput = AddDiv (this.environmentMapPhongDiv, 'ov_sidebar_image_picker');
-            AddDiv (this.environmentMapPhongDiv, null, 'Background Image');
-            this.environmentMapPhongInput.addEventListener ('click', () => {
-                this.environmentMapPopup = new EnvironmentMapPopup ();
-                this.environmentMapPopup.ShowPopup (this.environmentMapPhongInput, ShadingType.Phong, settings, {
-                    onEnvironmentMapChange : () => {
-                        this.UpdateEnvironmentMap (settings);
-                        callbacks.onEnvironmentMapChange ();
-                    }
-                });
+        this.environmentMapPhongDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
+        this.environmentMapPhongInput = AddDiv (this.environmentMapPhongDiv, 'ov_sidebar_image_picker');
+        AddDiv (this.environmentMapPhongDiv, null, 'Background Image');
+        this.environmentMapPhongInput.addEventListener ('click', () => {
+            this.environmentMapPopup = new EnvironmentMapPopup ();
+            this.environmentMapPopup.ShowPopup (this.environmentMapPhongInput, ShadingType.Phong, settings, {
+                onEnvironmentMapChange : () => {
+                    this.UpdateEnvironmentMap (settings);
+                    callbacks.onEnvironmentMapChange ();
+                }
             });
+        });
 
-            this.environmentMapPbrDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
-            this.environmentMapPbrInput = AddDiv (this.environmentMapPbrDiv, 'ov_sidebar_image_picker');
-            AddDiv (this.environmentMapPbrDiv, null, 'Environment');
-            this.environmentMapPbrInput.addEventListener ('click', () => {
-                this.environmentMapPopup = new EnvironmentMapPopup ();
-                this.environmentMapPopup.ShowPopup (this.environmentMapPbrInput, ShadingType.Physical, settings, {
-                    onEnvironmentMapChange : () => {
-                        this.UpdateEnvironmentMap (settings);
-                        callbacks.onEnvironmentMapChange ();
-                    }
-                });
+        this.environmentMapPbrDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
+        this.environmentMapPbrInput = AddDiv (this.environmentMapPbrDiv, 'ov_sidebar_image_picker');
+        AddDiv (this.environmentMapPbrDiv, null, 'Environment');
+        this.environmentMapPbrInput.addEventListener ('click', () => {
+            this.environmentMapPopup = new EnvironmentMapPopup ();
+            this.environmentMapPopup.ShowPopup (this.environmentMapPbrInput, ShadingType.Physical, settings, {
+                onEnvironmentMapChange : () => {
+                    this.UpdateEnvironmentMap (settings);
+                    callbacks.onEnvironmentMapChange ();
+                }
             });
+        });
 
-            this.UpdateEnvironmentMap (settings);
-        }
+        this.UpdateEnvironmentMap (settings);
 
         let edgeParameterDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
         this.edgeDisplayToggle = AddToggle (edgeParameterDiv, 'ov_sidebar_parameter_toggle');
