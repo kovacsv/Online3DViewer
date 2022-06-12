@@ -119,7 +119,7 @@ class EnvironmentMapPopup extends PopupDialog
             }
         } else if (shadingType === ShadingType.Physical) {
             let checkboxDiv = AddDiv (contentDiv, 'ov_environment_map_checkbox');
-            let backgroundIsEnvMapCheckbox = AddCheckbox (checkboxDiv, 'use_as_background', 'Use as background', settings.backgroundIsEnvMap, () => {
+            let backgroundIsEnvMapCheckbox = AddCheckbox (checkboxDiv, 'use_as_background', 'Use as background image', settings.backgroundIsEnvMap, () => {
                 settings.backgroundIsEnvMap = backgroundIsEnvMapCheckbox.checked;
                 callbacks.onEnvironmentMapChange ();
             });
