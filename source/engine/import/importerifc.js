@@ -3,13 +3,12 @@ import { Direction } from '../geometry/geometry.js';
 import { Matrix } from '../geometry/matrix.js';
 import { Transformation } from '../geometry/transformation.js';
 import { LoadExternalLibrary } from '../io/externallibs.js';
-import { ColorFromFloatComponents, IntegerToHexString } from '../model/color.js';
-import { PhongMaterial } from '../model/material.js';
+import { ColorFromFloatComponents } from '../model/color.js';
 import { Mesh } from '../model/mesh.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
-import { UpdateMaterialTransparency } from './importerutils.js';
+import { ColorToMaterialConverter } from './importerutils.js';
 
 export class ImporterIfc extends ImporterBase
 {
@@ -31,14 +30,14 @@ export class ImporterIfc extends ImporterBase
 
     ClearContent ()
     {
-        this.materialNameToIndex = null;
         this.expressIDToMesh = null;
+        this.colorToMaterial = null;
     }
 
     ResetContent ()
     {
-        this.materialNameToIndex = new Map ();
         this.expressIDToMesh = new Map ();
+        this.colorToMaterial = new ColorToMaterialConverter (this.model);
     }
 
     ImportContent (fileContent, onFinish)
@@ -209,25 +208,8 @@ export class ImporterIfc extends ImporterBase
     GetMaterialIndexByColor (ifcColor)
     {
         const color = ColorFromFloatComponents (ifcColor.x, ifcColor.y, ifcColor.z);
-
-        const materialName = 'Color ' +
-            IntegerToHexString (color.r) +
-            IntegerToHexString (color.g) +
-            IntegerToHexString (color.b) +
-            IntegerToHexString (parseInt (ifcColor.w * 255.0, 10));
-
-        if (this.materialNameToIndex.has (materialName)) {
-            return this.materialNameToIndex.get (materialName);
-        } else {
-            let material = new PhongMaterial ();
-            material.name = materialName;
-            material.color = color;
-            material.opacity = ifcColor.w;
-            UpdateMaterialTransparency (material);
-            let materialIndex = this.model.AddMaterial (material);
-            this.materialNameToIndex.set (materialName, materialIndex);
-            return materialIndex;
-        }
+        const alpha = parseInt (ifcColor.w * 255.0, 10);
+        return this.colorToMaterial.GetMaterialIndex (color.r, color.g, color.b, alpha);
     }
 
     GetIFCString (ifcString)
