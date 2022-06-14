@@ -1,5 +1,6 @@
 import { IsLower } from '../geometry/geometry.js';
-import { ColorToHexString } from '../model/color.js';
+import { PhongMaterial } from '../model/material.js';
+import { Color, IntegerToHexString } from '../model/color.js';
 
 export function NameFromLine (line, startIndex, commentChar)
 {
@@ -66,21 +67,36 @@ export function UpdateMaterialTransparency (material)
 
 export class ColorToMaterialConverter
 {
-	constructor (createMaterialFunc)
+	constructor (model)
 	{
-		this.createMaterialFunc = createMaterialFunc;
+		this.model = model;
 		this.colorToMaterialIndex = new Map ();
 	}
 
-	GetMaterialIndex (color)
+	GetMaterialIndex (r, g, b, a)
 	{
-		let colorKey = ColorToHexString (color);
+		let colorKey =
+			IntegerToHexString (r) +
+			IntegerToHexString (g) +
+			IntegerToHexString (b);
+		let hasAlpha = (a !== undefined && a !== null);
+		if (hasAlpha) {
+			colorKey += IntegerToHexString (a);
+		}
+
 		if (this.colorToMaterialIndex.has (colorKey)) {
 			return this.colorToMaterialIndex.get (colorKey);
 		} else {
-			let materialIndex = this.createMaterialFunc (color);
-			this.colorToMaterialIndex.set (colorKey, materialIndex);
-			return materialIndex;
+            let material = new PhongMaterial ();
+            material.name = colorKey.toUpperCase ();
+            material.color = new Color (r, g, b);
+            if (hasAlpha && a < 255) {
+                material.opacity = a / 255.0;
+                UpdateMaterialTransparency (material);
+            }
+            let materialIndex = this.model.AddMaterial (material);
+            this.colorToMaterialIndex.set (colorKey, materialIndex);
+            return materialIndex;
 		}
 	}
 }
