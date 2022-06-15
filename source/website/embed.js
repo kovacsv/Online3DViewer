@@ -6,7 +6,6 @@ import { Viewer } from '../engine/viewer/viewer.js';
 import { HashHandler } from './hashhandler.js';
 import { ThreeModelLoaderUI } from './threemodelloaderui.js';
 import { Direction } from '../engine/geometry/geometry.js';
-import { HandleEvent } from './eventhandler.js';
 import { InputFilesFromUrls } from '../engine/import/importerfiles.js';
 
 export class Embed
@@ -94,10 +93,6 @@ export class Embed
 		window.addEventListener ('resize', () => {
 			this.Resize ();
 		});
-
-        if (window.parent && window.parent.location && window.parent.location !== window.location) {
-            HandleEvent ('embedded', window.parent.location.href);
-        }
     }
 
     Resize ()
