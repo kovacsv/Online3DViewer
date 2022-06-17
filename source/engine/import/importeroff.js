@@ -1,10 +1,11 @@
 import { Coord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
 import { ArrayBufferToUtf8String } from '../io/bufferutils.js';
+import { Color, ColorComponentFromFloat } from '../model/color.js';
 import { Mesh } from '../model/mesh.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
-import { ParametersFromLine, ReadLines } from './importerutils.js';
+import { ColorToMaterialConverter, ParametersFromLine, ReadLines } from './importerutils.js';
 
 export class ImporterOff extends ImporterBase
 {
@@ -27,6 +28,7 @@ export class ImporterOff extends ImporterBase
     {
         this.mesh = null;
         this.status = null;
+        this.colorToMaterial = null;
     }
 
     ResetContent ()
@@ -39,6 +41,7 @@ export class ImporterOff extends ImporterBase
             foundVertex : 0,
             foundFace : 0
         };
+        this.colorToMaterial = new ColorToMaterialConverter (this.model);
     }
 
     ImportContent (fileContent, onFinish)
@@ -54,6 +57,15 @@ export class ImporterOff extends ImporterBase
 
     ProcessLine (line)
     {
+        function CreateColorComponent (str)
+        {
+            if (str.indexOf ('.') !== -1) {
+                return ColorComponentFromFloat (parseFloat (str));
+            } else {
+                return parseInt (str, 10);
+            }
+        }
+
         if (line[0] === '#') {
             return;
         }
@@ -84,20 +96,42 @@ export class ImporterOff extends ImporterBase
                 ));
                 this.status.foundVertex += 1;
             }
+            if (parameters.length >= 6) {
+                this.mesh.AddVertexColor (new Color (
+                    CreateColorComponent (parameters[3]),
+                    CreateColorComponent (parameters[4]),
+                    CreateColorComponent (parameters[5])
+                ));
+            }
             return;
         }
 
+        let hasVertexColors = (this.mesh.VertexCount () ===this.mesh.VertexColorCount ());
         if (this.status.foundFace < this.status.faceCount) {
             if (parameters.length >= 4) {
                 let vertexCount = parseInt (parameters[0], 10);
                 if (parameters.length < vertexCount + 1) {
                     return;
                 }
+                let materialIndex = null;
+                if (!hasVertexColors && parameters.length >= vertexCount + 4) {
+                    let color = new Color (
+                        CreateColorComponent (parameters[vertexCount + 1]),
+                        CreateColorComponent (parameters[vertexCount + 2]),
+                        CreateColorComponent (parameters[vertexCount + 3])
+                    );
+                    materialIndex = this.colorToMaterial.GetMaterialIndex (color.r, color.g, color.b);
+                }
                 for (let i = 0; i < vertexCount - 2; i++) {
                     let v0 = parseInt (parameters[1]);
                     let v1 = parseInt (parameters[i + 2]);
                     let v2 = parseInt (parameters[i + 3]);
                     let triangle = new Triangle (v0, v1, v2);
+                    if (hasVertexColors) {
+                        triangle.SetVertexColors (v0, v1, v2);
+                    } else {
+                        triangle.SetMaterial (materialIndex);
+                    }
                     this.mesh.AddTriangle (triangle);
                 }
                 this.status.foundFace += 1;

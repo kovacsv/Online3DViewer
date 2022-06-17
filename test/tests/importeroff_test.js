@@ -121,7 +121,6 @@ describe ('Off Importer', function () {
             });
             done ();
         });
-
     });
 
     it ('cube.off', function (done) {
@@ -144,6 +143,140 @@ describe ('Off Importer', function () {
                             min : [0, 0, 0],
                             max : [1, 1, 1]
                         }
+                    }
+                ]
+            });
+            done ();
+        });
+    });
+
+    it ('rectangle_vertex_colors_float.off', function (done) {
+        ImportOffFile ('rectangle_vertex_colors_float.off', function (model) {
+            assert.ok (OV.CheckModel (model));
+            assert.strictEqual (model.GetMaterial (0).vertexColors, true);
+            assert.deepStrictEqual (ModelToObject (model), {
+                name : '',
+                materials : [
+                    { name : '' }
+                ],
+                meshes : [
+                    {
+                        name : '',
+                        triangles : [
+                            {
+                                vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
+                                normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                                uvs : [],
+                                mat : 0
+                            },
+                            {
+                                vertices : [0, 0, 0, 1, 1, 0, 0, 1, 0],
+                                normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                                uvs : [],
+                                mat : 0
+                            }
+                        ]
+                    }
+                ]
+            });
+            done ();
+        });
+    });
+
+    it ('rectangle_vertex_colors_float.off', function (done) {
+        ImportOffFile ('rectangle_vertex_colors_float.off', function (model) {
+            assert.ok (OV.CheckModel (model));
+            assert.strictEqual (model.GetMaterial (0).vertexColors, true);
+            assert.deepStrictEqual (ModelToObject (model), {
+                name : '',
+                materials : [
+                    { name : '' }
+                ],
+                meshes : [
+                    {
+                        name : '',
+                        triangles : [
+                            {
+                                vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
+                                normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                                uvs : [],
+                                mat : 0
+                            },
+                            {
+                                vertices : [0, 0, 0, 1, 1, 0, 0, 1, 0],
+                                normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                                uvs : [],
+                                mat : 0
+                            }
+                        ]
+                    }
+                ]
+            });
+            done ();
+        });
+    });
+
+    it ('rectangle_face_colors_int.off', function (done) {
+        ImportOffFile ('rectangle_face_colors_int.off', function (model) {
+            assert.ok (OV.CheckModel (model));
+            assert.ok (OV.ColorIsEqual (model.GetMaterial (0).color, new OV.Color (255, 0, 0)));
+            assert.strictEqual (model.GetMaterial (0).vertexColors, false);
+            assert.deepStrictEqual (ModelToObject (model), {
+                name : '',
+                materials : [
+                    { name : 'FF0000' }
+                ],
+                meshes : [
+                    {
+                        name : '',
+                        triangles : [
+                            {
+                                vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
+                                normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                                uvs : [],
+                                mat : 0
+                            },
+                            {
+                                vertices : [0, 0, 0, 1, 1, 0, 0, 1, 0],
+                                normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                                uvs : [],
+                                mat : 0
+                            }
+                        ]
+                    }
+                ]
+            });
+            done ();
+        });
+    });
+
+    it ('rectangle_face_colors_int.off', function (done) {
+        ImportOffFile ('rectangle_face_colors_float.off', function (model) {
+            assert.ok (OV.CheckModel (model));
+            assert.ok (OV.ColorIsEqual (model.GetMaterial (0).color, new OV.Color (255, 0, 0)));
+            assert.strictEqual (model.GetMaterial (0).vertexColors, false);
+            assert.deepStrictEqual (ModelToObject (model), {
+                name : '',
+                materials : [
+                    { name : 'FF0000' }
+                ],
+                meshes : [
+                    {
+                        name : '',
+                        triangles : [
+                            {
+                                vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
+                                normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                                uvs : [],
+                                mat : 0
+                            },
+                            {
+                                vertices : [0, 0, 0, 1, 1, 0, 0, 1, 0],
+                                normals : [0, 0, 1, 0, 0, 1, 0, 0, 1],
+                                uvs : [],
+                                mat : 0
+                            }
+                        ]
                     }
                 ]
             });
