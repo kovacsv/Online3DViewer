@@ -70,13 +70,13 @@ export function IsTwoManifold (object3D)
     }
 
     if (object3D instanceof Model) {
-        let isSolid = true;
+        let isTwoManifold = true;
         object3D.EnumerateMeshInstances ((meshInstance) => {
-            if (isSolid) {
-                isSolid = IsTwoManifold (meshInstance);
+            if (isTwoManifold) {
+                isTwoManifold = IsTwoManifold (meshInstance);
             }
         });
-        return isSolid;
+        return isTwoManifold;
     } else {
         const topology = GetTopology (object3D);
         for (let edgeIndex = 0; edgeIndex < topology.edges.length; edgeIndex++) {
