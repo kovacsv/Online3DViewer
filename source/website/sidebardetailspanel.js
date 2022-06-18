@@ -1,6 +1,6 @@
 import { RunTaskAsync } from '../engine/core/taskrunner.js';
 import { SubCoord3D } from '../engine/geometry/coord3d.js';
-import { GetBoundingBox, IsSolid } from '../engine/model/modelutils.js';
+import { GetBoundingBox, IsTwoManifold } from '../engine/model/modelutils.js';
 import { CalculateVolume, CalculateSurfaceArea } from '../engine/model/quantities.js';
 import { Property, PropertyToString, PropertyType } from '../engine/model/property.js';
 import { AddDiv, AddDomElement, ClearDomElement } from '../engine/viewer/domutils.js';
@@ -39,7 +39,7 @@ export class SidebarDetailsPanel extends SidebarPanel
         this.AddProperty (table, new Property (PropertyType.Number, 'Size Y', size.y));
         this.AddProperty (table, new Property (PropertyType.Number, 'Size Z', size.z));
         this.AddCalculatedProperty (table, 'Volume', () => {
-            if (!IsSolid (object3D)) {
+            if (!IsTwoManifold (object3D)) {
                 return null;
             }
             const volume = CalculateVolume (object3D);

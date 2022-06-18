@@ -1,6 +1,7 @@
 import { BoundingBoxCalculator3D } from '../geometry/box3d.js';
 import { Octree } from '../geometry/octree.js';
 import { GetMeshType, MeshType } from './meshutils.js';
+import { Model } from './model.js';
 import { Topology } from './topology.js';
 
 export function IsModelEmpty (model)
@@ -48,7 +49,7 @@ export function GetTopology (object3D)
     return topology;
 }
 
-export function IsSolid (object3D)
+export function IsTwoManifold (object3D)
 {
     function GetEdgeOrientationInTriangle (topology, triangleIndex, edgeIndex)
     {
@@ -68,28 +69,30 @@ export function IsSolid (object3D)
         return null;
     }
 
-    const topology = GetTopology (object3D);
-    for (let edgeIndex = 0; edgeIndex < topology.edges.length; edgeIndex++) {
-        const edge = topology.edges[edgeIndex];
-        let triCount = edge.triangles.length;
-        if (triCount === 0 || triCount % 2 !== 0) {
-            return false;
-        }
-        let edgesDirection = 0;
-        for (let triIndex = 0; triIndex < edge.triangles.length; triIndex++) {
-            const triangleIndex = edge.triangles[triIndex];
-            const edgeOrientation = GetEdgeOrientationInTriangle (topology, triangleIndex, edgeIndex);
-            if (edgeOrientation) {
-                edgesDirection += 1;
-            } else {
-                edgesDirection -= 1;
+    if (object3D instanceof Model) {
+        let isSolid = true;
+        object3D.EnumerateMeshInstances ((meshInstance) => {
+            if (isSolid) {
+                isSolid = IsTwoManifold (meshInstance);
+            }
+        });
+        return isSolid;
+    } else {
+        const topology = GetTopology (object3D);
+        for (let edgeIndex = 0; edgeIndex < topology.edges.length; edgeIndex++) {
+            const edge = topology.edges[edgeIndex];
+            if (edge.triangles.length !== 2) {
+                return false;
+            }
+
+            let edgeOrientation1 = GetEdgeOrientationInTriangle (topology, edge.triangles[0], edgeIndex);
+            let edgeOrientation2 = GetEdgeOrientationInTriangle (topology, edge.triangles[1], edgeIndex);
+            if (edgeOrientation1 === null || edgeOrientation2 === null || edgeOrientation1 === edgeOrientation2) {
+                return false;
             }
         }
-        if (edgesDirection !== 0) {
-            return false;
-        }
+        return true;
     }
-    return true;
 }
 
 export function HasDefaultMaterial (model)

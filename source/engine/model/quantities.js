@@ -1,4 +1,5 @@
 import { CoordDistance3D, CrossVector3D, DotVector3D } from '../geometry/coord3d.js';
+import { Model } from './model.js';
 
 export function GetTriangleArea (v0, v1, v2)
 {
@@ -20,11 +21,19 @@ export function GetTetrahedronSignedVolume (v0, v1, v2)
 
 export function CalculateVolume (object3D)
 {
-    let volume = 0.0;
-    object3D.EnumerateTriangleVertices ((v0, v1, v2) => {
-        volume += GetTetrahedronSignedVolume (v0, v1, v2);
-    });
-    return volume;
+    if (object3D instanceof Model) {
+        let volume = 0.0;
+        object3D.EnumerateMeshInstances ((meshInstance) => {
+            volume += CalculateVolume (meshInstance);
+        });
+        return volume;
+    } else {
+        let volume = 0.0;
+        object3D.EnumerateTriangleVertices ((v0, v1, v2) => {
+            volume += GetTetrahedronSignedVolume (v0, v1, v2);
+        });
+        return volume;
+    }
 }
 
 export function CalculateSurfaceArea (object3D)

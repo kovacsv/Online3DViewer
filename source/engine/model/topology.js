@@ -76,6 +76,7 @@ export class Topology
         }
 
         let triangleIndex = this.triangles.length;
+
         let triangle = new TopologyTriangle ();
         triangle.triEdge1 = this.AddTriangleEdge (vertex1, vertex2);
         triangle.triEdge2 = this.AddTriangleEdge (vertex2, vertex3);

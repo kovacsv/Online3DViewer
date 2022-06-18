@@ -52,7 +52,7 @@ import { MeshInstanceId, MeshInstance } from './model/meshinstance.js';
 import { GetMeshType, CalculateTriangleNormal, TransformMesh, FlipMeshTrianglesOrientation, MeshType } from './model/meshutils.js';
 import { Model } from './model/model.js';
 import { FinalizeModel, CheckModel } from './model/modelfinalization.js';
-import { IsModelEmpty, GetBoundingBox, GetTopology, IsSolid, HasDefaultMaterial, ReplaceDefaultMaterialColor } from './model/modelutils.js';
+import { IsModelEmpty, GetBoundingBox, GetTopology, IsTwoManifold, HasDefaultMaterial, ReplaceDefaultMaterialColor } from './model/modelutils.js';
 import { Node, NodeType } from './model/node.js';
 import { Object3D, ModelObject3D } from './model/object.js';
 import { Property, PropertyGroup, PropertyToString, PropertyType } from './model/property.js';
@@ -242,7 +242,7 @@ export {
     IsModelEmpty,
     GetBoundingBox,
     GetTopology,
-    IsSolid,
+    IsTwoManifold,
     HasDefaultMaterial,
     ReplaceDefaultMaterialColor,
     Node,
