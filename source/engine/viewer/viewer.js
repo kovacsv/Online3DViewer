@@ -1,6 +1,6 @@
 import { Coord3D, CoordDistance3D, SubCoord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
-import { RGBColorToHexString } from '../model/color.js';
+import { ColorComponentToFloat } from '../model/color.js';
 import { ShadingType } from '../threejs/threeutils.js';
 import { Camera } from './camera.js';
 import { GetDomElementInnerDimensions } from './domutils.js';
@@ -266,8 +266,13 @@ export class Viewer
 
     SetBackgroundColor (color)
     {
-        let hexColor = '#' + RGBColorToHexString (color);
-        this.renderer.setClearColor (hexColor, 1.0);
+        let bgColor = new THREE.Color (
+            ColorComponentToFloat (color.r),
+            ColorComponentToFloat (color.g),
+            ColorComponentToFloat (color.b)
+        );
+        let alpha = ColorComponentToFloat (color.a);
+        this.renderer.setClearColor (bgColor, alpha);
         this.Render ();
     }
 

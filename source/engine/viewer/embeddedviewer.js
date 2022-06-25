@@ -171,13 +171,13 @@ export function Init3DViewerElements (onReady)
         let backgroundColor = null;
         let backgroundColorParams = element.getAttribute ('backgroundcolor');
         if (backgroundColorParams) {
-            backgroundColor = ParameterConverter.StringToColor (backgroundColorParams);
+            backgroundColor = ParameterConverter.StringToRGBAColor (backgroundColorParams);
         }
 
         let defaultColor = null;
         let defaultColorParams = element.getAttribute ('defaultcolor');
         if (defaultColorParams) {
-            defaultColor = ParameterConverter.StringToColor (defaultColorParams);
+            defaultColor = ParameterConverter.StringToRGBColor (defaultColorParams);
         }
 
         let edgeSettings = null;

@@ -49,18 +49,32 @@ export function CookieSetIntVal (key, value)
     CookieSetStringVal (key, value.toString ());
 }
 
-export function CookieGetColorVal (key, defVal)
+export function CookieGetRGBColorVal (key, defVal)
 {
     let stringVal = CookieGetStringVal (key, null);
     if (stringVal === null) {
         return defVal;
     }
-    return ParameterConverter.StringToColor (stringVal);
+    return ParameterConverter.StringToRGBColor (stringVal);
 }
 
-export function CookieSetColorVal (key, value)
+export function CookieGetRGBAColorVal (key, defVal)
 {
-    CookieSetStringVal (key, ParameterConverter.ColorToString (value));
+    let stringVal = CookieGetStringVal (key, null);
+    if (stringVal === null) {
+        return defVal;
+    }
+    return ParameterConverter.StringToRGBAColor (stringVal);
+}
+
+export function CookieSetRGBColorVal (key, value)
+{
+    CookieSetStringVal (key, ParameterConverter.RGBColorToString (value));
+}
+
+export function CookieSetRGBAColorVal (key, value)
+{
+    CookieSetStringVal (key, ParameterConverter.RGBAColorToString (value));
 }
 
 export function CookieClearVal (key)

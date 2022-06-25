@@ -201,7 +201,7 @@ export class MeasureTool
         }
 
         ClearDomElement (this.panel);
-        if (IsDarkTextNeededForColor (this.settings.backgroundColor)) {
+        if (IsDarkTextNeededForColor (this.settings.backgroundColor.r, this.settings.backgroundColor.g, this.settings.backgroundColor.b)) {
             this.panel.style.color = '#000000';
         } else {
             this.panel.style.color = '#ffffff';

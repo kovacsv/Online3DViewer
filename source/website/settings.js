@@ -1,5 +1,5 @@
-import { RGBColor } from '../engine/model/color.js';
-import { CookieGetBoolVal, CookieGetColorVal, CookieGetIntVal, CookieGetStringVal, CookieSetBoolVal, CookieSetColorVal, CookieSetIntVal, CookieSetStringVal } from './cookiehandler.js';
+import { RGBAColor, RGBColor } from '../engine/model/color.js';
+import { CookieGetBoolVal, CookieGetRGBColorVal, CookieGetIntVal, CookieGetStringVal, CookieSetBoolVal, CookieSetRGBColorVal, CookieSetIntVal, CookieSetStringVal, CookieSetRGBAColorVal, CookieGetRGBAColorVal } from './cookiehandler.js';
 
 export const Theme =
 {
@@ -13,7 +13,7 @@ export class Settings
     {
         this.environmentMapName = 'fishermans_bastion';
         this.backgroundIsEnvMap = false;
-        this.backgroundColor = new RGBColor (255, 255, 255);
+        this.backgroundColor = new RGBAColor (255, 255, 255, 255);
         this.defaultColor = new RGBColor (200, 200, 200);
         this.showEdges = false;
         this.edgeColor = new RGBColor (0, 0, 0);
@@ -25,10 +25,10 @@ export class Settings
     {
         this.environmentMapName = CookieGetStringVal ('ov_environment_map', 'fishermans_bastion');
         this.backgroundIsEnvMap = CookieGetBoolVal ('ov_background_is_envmap', false);
-        this.backgroundColor = CookieGetColorVal ('ov_background_color', new RGBColor (255, 255, 255));
-        this.defaultColor = CookieGetColorVal ('ov_default_color', new RGBColor (200, 200, 200));
+        this.backgroundColor = CookieGetRGBAColorVal ('ov_background_color', new RGBAColor (255, 255, 255, 255));
+        this.defaultColor = CookieGetRGBColorVal ('ov_default_color', new RGBColor (200, 200, 200));
         this.showEdges = CookieGetBoolVal ('ov_show_edges', false);
-        this.edgeColor = CookieGetColorVal ('ov_edge_color', new RGBColor (0, 0, 0));
+        this.edgeColor = CookieGetRGBColorVal ('ov_edge_color', new RGBColor (0, 0, 0));
         this.edgeThreshold = CookieGetIntVal ('ov_edge_threshold', 1);
         this.themeId = CookieGetIntVal ('ov_theme_id', Theme.Light);
     }
@@ -37,10 +37,10 @@ export class Settings
     {
         CookieSetStringVal ('ov_environment_map', this.environmentMapName);
         CookieSetBoolVal ('ov_background_is_envmap', this.backgroundIsEnvMap);
-        CookieSetColorVal ('ov_background_color', this.backgroundColor);
-        CookieSetColorVal ('ov_default_color', this.defaultColor);
+        CookieSetRGBAColorVal ('ov_background_color', this.backgroundColor);
+        CookieSetRGBColorVal ('ov_default_color', this.defaultColor);
         CookieSetBoolVal ('ov_show_edges', this.showEdges);
-        CookieSetColorVal ('ov_edge_color', this.edgeColor);
+        CookieSetRGBColorVal ('ov_edge_color', this.edgeColor);
         CookieSetIntVal ('ov_edge_threshold', this.edgeThreshold);
         CookieSetIntVal ('ov_theme_id', this.themeId);
     }

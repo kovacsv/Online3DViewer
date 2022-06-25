@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+	<title>Online 3D Viewer</title>
+
+	<script type="text/javascript" src="../build/o3dv.min-dev.js"></script>
+
+    <script type='text/javascript'>
+        OV.Init3DViewerElements ();
+    </script>
+
+    <style>
+        html, body
+        {
+            background: url('background.png');
+        }
+
+        iframe, div.online_3d_viewer
+        {
+            float: left;
+            border: 1px solid #eeeeee;
+            margin: 0px 4px 4px 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <iframe
+        src="../../website/embed.html#model=../../website/assets/models/solids.obj,../../website/assets/models/solids.mtl$backgroundcolor=255,0,0"
+        width=360 height=240
+        style="border:1px solid #eeeeee;">
+    </iframe>
+    <iframe
+        src="../../website/embed.html#model=../../website/assets/models/solids.obj,../../website/assets/models/solids.mtl$backgroundcolor=255,0,0,128"
+        width=360 height=240
+        style="border:1px solid #eeeeee;">
+    </iframe>
+    <iframe
+        src="../../website/embed.html#model=../../website/assets/models/solids.obj,../../website/assets/models/solids.mtl$backgroundcolor=255,0,0,128$envsettings=fishermans_bastion,on"
+        width=360 height=240
+        style="border:1px solid #eeeeee;">
+    </iframe>
+    <iframe
+        src="../../website/embed.html#model=../../website/assets/models/solids.obj,../../website/assets/models/solids.mtl$backgroundcolor=255,0,0,0"
+        width=360 height=240
+        style="border:1px solid #eeeeee;">
+    </iframe>
+    <div class="online_3d_viewer"
+		style="width: 360px; height: 240px;"
+        model="../../website/assets/models/solids.obj,../../website/assets/models/solids.mtl"
+        backgroundcolor="255,0,0">
+    </div>
+    <div class="online_3d_viewer"
+		style="width: 360px; height: 240px;"
+        model="../../website/assets/models/solids.obj,../../website/assets/models/solids.mtl"
+        backgroundcolor="255,0,0,128">
+    </div>
+    <div class="online_3d_viewer"
+		style="width: 360px; height: 240px;"
+        model="../../website/assets/models/solids.obj,../../website/assets/models/solids.mtl"
+        backgroundcolor="255,0,0,128"
+        environmentmap="../../website/assets/envmaps/fishermans_bastion/posx.jpg,../../website/assets/envmaps/fishermans_bastion/negx.jpg,../../website/assets/envmaps/fishermans_bastion/posy.jpg,../../website/assets/envmaps/fishermans_bastion/negy.jpg,../../website/assets/envmaps/fishermans_bastion/posz.jpg,../../website/assets/envmaps/fishermans_bastion/negz.jpg"
+        environmentmapbg="true">
+    </div>
+    <div class="online_3d_viewer"
+		style="width: 360px; height: 240px;"
+        model="../../website/assets/models/solids.obj,../../website/assets/models/solids.mtl"
+        backgroundcolor="255,0,0,0">
+    </div>
+</body>
+
+</html>

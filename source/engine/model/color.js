@@ -20,9 +20,38 @@ export class RGBColor
     }
 }
 
+export class RGBAColor
+{
+    constructor (r, g, b, a)
+    {
+        this.r = r; // 0 .. 255
+        this.g = g; // 0 .. 255
+        this.b = b; // 0 .. 255
+        this.a = a; // 0 .. 255
+    }
+
+    Set (r, g, b, a)
+    {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }
+
+    Clone ()
+    {
+        return new RGBAColor (this.r, this.g, this.b, this.a);
+    }
+}
+
 export function ColorComponentFromFloat (component)
 {
     return parseInt (Math.round (component * 255.0), 10);
+}
+
+export function ColorComponentToFloat (component)
+{
+    return component / 255.0;
 }
 
 export function RGBColorFromFloatComponents (r, g, b)

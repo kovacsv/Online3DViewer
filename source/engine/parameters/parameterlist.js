@@ -1,5 +1,5 @@
 import { Coord3D } from '../geometry/coord3d.js';
-import { RGBColor } from '../model/color.js';
+import { RGBAColor, RGBColor } from '../model/color.js';
 import { Camera } from '../viewer/camera.js';
 
 export let ParameterConverter =
@@ -71,20 +71,32 @@ export let ParameterConverter =
         return camera;
     },
 
-    ColorToString : function (color)
+    RGBColorToString : function (color)
     {
         if (color === null) {
             return null;
         }
-        let colorParameters = [
+        return [
             this.IntegerToString (color.r),
             this.IntegerToString (color.g),
             this.IntegerToString (color.b)
         ].join (',');
-        return colorParameters;
     },
 
-    StringToColor : function (str)
+    RGBAColorToString : function (color)
+    {
+        if (color === null) {
+            return null;
+        }
+        return [
+            this.IntegerToString (color.r),
+            this.IntegerToString (color.g),
+            this.IntegerToString (color.b),
+            this.IntegerToString (color.a)
+        ].join (',');
+    },
+
+    StringToRGBColor : function (str)
     {
         if (str === null || str.length === 0) {
             return null;
@@ -93,11 +105,31 @@ export let ParameterConverter =
         if (paramParts.length !== 3) {
             return null;
         }
-        let color = new RGBColor (
+        return new RGBColor (
             this.StringToInteger (paramParts[0]),
             this.StringToInteger (paramParts[1]),
             this.StringToInteger (paramParts[2])
         );
+    },
+
+    StringToRGBAColor : function (str)
+    {
+        if (str === null || str.length === 0) {
+            return null;
+        }
+        let paramParts = str.split (',');
+        if (paramParts.length !== 3 && paramParts.length !== 4) {
+            return null;
+        }
+        let color = new RGBAColor (
+            this.StringToInteger (paramParts[0]),
+            this.StringToInteger (paramParts[1]),
+            this.StringToInteger (paramParts[2]),
+            255
+        );
+        if (paramParts.length === 4) {
+            color.a = this.StringToInteger (paramParts[3]);
+        }
         return color;
     },
 
@@ -136,7 +168,7 @@ export let ParameterConverter =
         }
         let edgeSettingsParameters = [
             edgeSettings.showEdges ? 'on' : 'off',
-            this.ColorToString (edgeSettings.edgeColor),
+            this.RGBColorToString (edgeSettings.edgeColor),
             this.IntegerToString (edgeSettings.edgeThreshold),
         ].join (',');
         return edgeSettingsParameters;
@@ -192,13 +224,13 @@ export class ParameterListBuilder
 
     AddBackgroundColor (background)
     {
-        this.AddUrlPart ('backgroundcolor', ParameterConverter.ColorToString (background));
+        this.AddUrlPart ('backgroundcolor', ParameterConverter.RGBAColorToString (background));
         return this;
     }
 
     AddDefaultColor (color)
     {
-        this.AddUrlPart ('defaultcolor', ParameterConverter.ColorToString (color));
+        this.AddUrlPart ('defaultcolor', ParameterConverter.RGBColorToString (color));
         return this;
     }
 
@@ -259,13 +291,13 @@ export class ParameterListParser
     GetBackgroundColor ()
     {
         let backgroundParams = this.GetKeywordParams ('backgroundcolor');
-        return ParameterConverter.StringToColor (backgroundParams);
+        return ParameterConverter.StringToRGBAColor (backgroundParams);
     }
 
     GetDefaultColor ()
     {
         let colorParams = this.GetKeywordParams ('defaultcolor');
-        return ParameterConverter.StringToColor (colorParams);
+        return ParameterConverter.StringToRGBColor (colorParams);
     }
 
     GetEdgeSettings ()

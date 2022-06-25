@@ -1,4 +1,4 @@
-import { RGBColor, RGBColorToHexString } from '../engine/model/color.js';
+import { RGBColor, RGBColorToHexString, RGBAColor } from '../engine/model/color.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { AddRangeSlider, AddToggle, AddCheckbox } from '../website/utils.js';
 import { CalculatePopupPositionToElementTopLeft } from './dialogs.js';
@@ -34,12 +34,11 @@ function AddColorPicker (parentDiv, defaultColor, predefinedColors, onChange)
     });
     pickr.on ('change', (color, source, instance) => {
         let rgbaColor = color.toRGBA ();
-        let ovColor = new RGBColor (
+        onChange (
             parseInt (rgbaColor[0], 10),
             parseInt (rgbaColor[1], 10),
             parseInt (rgbaColor[2], 10)
         );
-        onChange (ovColor);
     });
     return pickr;
 }
@@ -199,8 +198,8 @@ class SettingsModelDisplaySection extends SettingsSection
         let backgroundColorInput = AddDiv (backgroundColorDiv, 'ov_color_picker');
         AddDiv (backgroundColorDiv, null, 'Background Color');
         let predefinedBackgroundColors = ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'];
-        this.backgroundColorPicker = AddColorPicker (backgroundColorInput, settings.backgroundColor, predefinedBackgroundColors, (color) => {
-            settings.backgroundColor = color;
+        this.backgroundColorPicker = AddColorPicker (backgroundColorInput, settings.backgroundColor, predefinedBackgroundColors, (r, g, b) => {
+            settings.backgroundColor = new RGBAColor (r, g, b, 255);
             callbacks.onBackgroundColorChange ();
         });
 
@@ -247,8 +246,8 @@ class SettingsModelDisplaySection extends SettingsSection
         let predefinedEdgeColors = ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'];
 
         let edgeColorInput = AddDiv (edgeColorRow, 'ov_color_picker');
-        this.edgeColorPicker = AddColorPicker (edgeColorInput, settings.edgeColor, predefinedEdgeColors, (color) => {
-            settings.edgeColor = color;
+        this.edgeColorPicker = AddColorPicker (edgeColorInput, settings.edgeColor, predefinedEdgeColors, (r, g, b) => {
+            settings.edgeColor = new RGBColor (r, g, b);
             callbacks.onEdgeColorChange ();
         });
         AddDiv (edgeColorRow, null, 'Edge Color');
@@ -353,8 +352,8 @@ class SettingsImportParametersSection extends SettingsSection
         let defaultColorInput = AddDiv (defaultColorDiv, 'ov_color_picker');
         AddDiv (defaultColorDiv, null, 'Default Color');
         let predefinedDefaultColors = ['#ffffff', '#e3e3e3', '#cc3333', '#fac832', '#4caf50', '#3393bd', '#9b27b0', '#fda4b8'];
-        this.defaultColorPicker = AddColorPicker (defaultColorInput, settings.defaultColor, predefinedDefaultColors, (color) => {
-            settings.defaultColor = color;
+        this.defaultColorPicker = AddColorPicker (defaultColorInput, settings.defaultColor, predefinedDefaultColors, (r, g, b) => {
+            settings.defaultColor = new RGBColor (r, g, b);
             callbacks.onDefaultColorChange ();
         });
     }
@@ -481,10 +480,10 @@ export class SidebarSettingsPanel extends SidebarPanel
         this.appearanceSection.Init (this.settings, {
             onThemeChange : () => {
                 if (this.settings.themeId === Theme.Light) {
-                    this.settings.backgroundColor = new RGBColor (255, 255, 255);
+                    this.settings.backgroundColor = new RGBAColor (255, 255, 255, 255);
                     this.settings.defaultColor = new RGBColor (200, 200, 200);
                 } else if (this.settings.themeId === Theme.Dark) {
-                    this.settings.backgroundColor = new RGBColor (42, 43, 46);
+                    this.settings.backgroundColor = new RGBAColor (42, 43, 46, 255);
                     this.settings.defaultColor = new RGBColor (200, 200, 200);
                 }
                 this.modelDisplaySection.Update (this.settings);

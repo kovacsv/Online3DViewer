@@ -43,7 +43,7 @@ import { ArrayBufferToUtf8String, ArrayBufferToAsciiString, AsciiStringToArrayBu
 import { SetExternalLibLocation, GetExternalLibPath, LoadExternalLibrary } from './io/externallibs.js';
 import { GetFileName, GetFileExtension, RequestUrl, ReadFile, TransformFileHostUrls, IsUrl, FileSource, FileFormat } from './io/fileutils.js';
 import { TextWriter } from './io/textwriter.js';
-import { RGBColor, ColorComponentFromFloat, RGBColorFromFloatComponents, SRGBToLinear, LinearToSRGB, IntegerToHexString, RGBColorToHexString, HexStringToRGBColor, ArrayToRGBColor, RGBColorIsEqual } from './model/color.js';
+import { RGBColor, RGBAColor, ColorComponentFromFloat, ColorComponentToFloat, RGBColorFromFloatComponents, SRGBToLinear, LinearToSRGB, IntegerToHexString, RGBColorToHexString, HexStringToRGBColor, ArrayToRGBColor, RGBColorIsEqual } from './model/color.js';
 import { GeneratorParams, Generator, GeneratorHelper, GenerateCuboid, GenerateCone, GenerateCylinder, GenerateSphere, GeneratePlatonicSolid } from './model/generator.js';
 import { TextureMap, MaterialBase, FaceMaterial, PhongMaterial, PhysicalMaterial, TextureMapIsEqual, TextureIsEqual, MaterialType } from './model/material.js';
 import { Mesh } from './model/mesh.js';
@@ -200,7 +200,9 @@ export {
     FileFormat,
     TextWriter,
     RGBColor,
+    RGBAColor,
     ColorComponentFromFloat,
+    ColorComponentToFloat,
     RGBColorFromFloatComponents,
     SRGBToLinear,
     LinearToSRGB,
