@@ -247,6 +247,7 @@ export class MeasureTool
                 AddValue (this.panel, 'measure_angle', 'Angle of faces', degreeValue.toFixed (1) + '\xB0');
             }
         }
+        this.Resize ();
     }
 
     Resize ()
@@ -255,10 +256,12 @@ export class MeasureTool
             return;
         }
         let canvas = this.viewer.GetCanvas ();
-        let rect = canvas.getBoundingClientRect ();
-        this.panel.style.left = (rect.left + 1) + 'px';
-        this.panel.style.top = (rect.top + 1) + 'px';
-        this.panel.style.width = (rect.right - rect.left - 2) + 'px';
+        let canvasRect = canvas.getBoundingClientRect ();
+        let panelRect = this.panel.getBoundingClientRect ();
+        let canvasWidth = canvasRect.right - canvasRect.left;
+        let panelWidth = panelRect.right - panelRect.left;
+        this.panel.style.left = (canvasRect.left + (canvasWidth - panelWidth) / 2) + 'px';
+        this.panel.style.top = (canvasRect.top + 10) + 'px';
     }
 
     ClearMarkers ()

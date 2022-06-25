@@ -273,12 +273,9 @@ div.ov_bottom_floating_panel div.ov_floating_panel_button
 
 div.ov_measure_panel
 {
-	padding: 10px;
-	box-sizing: border-box;
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
+	padding: 6px 15px;
 	position: absolute;
+	border-radius: 30px;
 	left : 0px;
 	top : 0px;
 }
@@ -286,6 +283,7 @@ div.ov_measure_panel
 div.ov_measure_panel div.ov_svg_icon
 {
 	color: inherit;
+	margin-bottom: 2px;
 }
 
 div.ov_measure_panel div.ov_measure_value
