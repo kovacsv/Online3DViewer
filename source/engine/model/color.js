@@ -98,6 +98,15 @@ export function RGBColorToHexString (color)
     return r + g + b;
 }
 
+export function RGBAColorToHexString (color)
+{
+    let r = IntegerToHexString (color.r);
+    let g = IntegerToHexString (color.g);
+    let b = IntegerToHexString (color.b);
+    let a = IntegerToHexString (color.a);
+    return r + g + b + a;
+}
+
 export function HexStringToRGBColor (hexString)
 {
     if (hexString.length !== 6) {

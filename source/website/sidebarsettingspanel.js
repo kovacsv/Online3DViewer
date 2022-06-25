@@ -1,4 +1,4 @@
-import { RGBColor, RGBColorToHexString, RGBAColor } from '../engine/model/color.js';
+import { RGBColor, RGBColorToHexString, RGBAColor, RGBAColorToHexString, ColorComponentFromFloat } from '../engine/model/color.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { AddRangeSlider, AddToggle, AddCheckbox } from '../website/utils.js';
 import { CalculatePopupPositionToElementTopLeft } from './dialogs.js';
@@ -7,7 +7,7 @@ import { Settings, Theme } from './settings.js';
 import { SidebarPanel } from './sidebarpanel.js';
 import { ShadingType } from '../engine/threejs/threeutils.js';
 
-function AddColorPicker (parentDiv, defaultColor, predefinedColors, onChange)
+function AddColorPicker (parentDiv, opacity, defaultColor, predefinedColors, onChange)
 {
     let pickr = Pickr.create ({
         el : parentDiv,
@@ -15,10 +15,10 @@ function AddColorPicker (parentDiv, defaultColor, predefinedColors, onChange)
         position : 'left-start',
         swatches : predefinedColors,
         comparison : false,
-        default : '#' + RGBColorToHexString (defaultColor),
+        default : defaultColor,
         components : {
             preview : false,
-            opacity : false,
+            opacity : opacity,
             hue : true,
             interaction: {
                 hex : false,
@@ -37,7 +37,8 @@ function AddColorPicker (parentDiv, defaultColor, predefinedColors, onChange)
         onChange (
             parseInt (rgbaColor[0], 10),
             parseInt (rgbaColor[1], 10),
-            parseInt (rgbaColor[2], 10)
+            parseInt (rgbaColor[2], 10),
+            ColorComponentFromFloat (rgbaColor[3])
         );
     });
     return pickr;
@@ -197,9 +198,10 @@ class SettingsModelDisplaySection extends SettingsSection
         let backgroundColorDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
         let backgroundColorInput = AddDiv (backgroundColorDiv, 'ov_color_picker');
         AddDiv (backgroundColorDiv, null, 'Background Color');
-        let predefinedBackgroundColors = ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'];
-        this.backgroundColorPicker = AddColorPicker (backgroundColorInput, settings.backgroundColor, predefinedBackgroundColors, (r, g, b) => {
-            settings.backgroundColor = new RGBAColor (r, g, b, 255);
+        let predefinedBackgroundColors = ['#ffffffff', '#e3e3e3ff', '#c9c9c9ff', '#898989ff', '#5f5f5fff', '#494949ff', '#383838ff', '#0f0f0fff'];
+        let defaultBackgroundColor = '#' + RGBAColorToHexString (settings.backgroundColor);
+        this.backgroundColorPicker = AddColorPicker (backgroundColorInput, true, defaultBackgroundColor, predefinedBackgroundColors, (r, g, b, a) => {
+            settings.backgroundColor = new RGBAColor (r, g, b, a);
             callbacks.onBackgroundColorChange ();
         });
 
@@ -246,7 +248,8 @@ class SettingsModelDisplaySection extends SettingsSection
         let predefinedEdgeColors = ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'];
 
         let edgeColorInput = AddDiv (edgeColorRow, 'ov_color_picker');
-        this.edgeColorPicker = AddColorPicker (edgeColorInput, settings.edgeColor, predefinedEdgeColors, (r, g, b) => {
+        let defaultEdgeColor = '#' + RGBColorToHexString (settings.edgeColor);
+        this.edgeColorPicker = AddColorPicker (edgeColorInput, false, defaultEdgeColor, predefinedEdgeColors, (r, g, b, a) => {
             settings.edgeColor = new RGBColor (r, g, b);
             callbacks.onEdgeColorChange ();
         });
@@ -304,7 +307,7 @@ class SettingsModelDisplaySection extends SettingsSection
     Update (settings)
     {
         if (this.backgroundColorPicker !== null) {
-            this.backgroundColorPicker.setColor ('#' + RGBColorToHexString (settings.backgroundColor));
+            this.backgroundColorPicker.setColor ('#' + RGBAColorToHexString (settings.backgroundColor));
         }
 
         if (this.environmentMapPbrInput !== null || this.environmentMapPhongDiv !== null) {
@@ -352,7 +355,8 @@ class SettingsImportParametersSection extends SettingsSection
         let defaultColorInput = AddDiv (defaultColorDiv, 'ov_color_picker');
         AddDiv (defaultColorDiv, null, 'Default Color');
         let predefinedDefaultColors = ['#ffffff', '#e3e3e3', '#cc3333', '#fac832', '#4caf50', '#3393bd', '#9b27b0', '#fda4b8'];
-        this.defaultColorPicker = AddColorPicker (defaultColorInput, settings.defaultColor, predefinedDefaultColors, (r, g, b) => {
+        let defaultColor = '#' + RGBColorToHexString (settings.defaultColor);
+        this.defaultColorPicker = AddColorPicker (defaultColorInput, false, defaultColor, predefinedDefaultColors, (r, g, b, a) => {
             settings.defaultColor = new RGBColor (r, g, b);
             callbacks.onDefaultColorChange ();
         });
