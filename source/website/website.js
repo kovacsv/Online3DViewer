@@ -623,6 +623,9 @@ export class Website
             onEnvironmentMapChange : () => {
                 this.settings.SaveToCookies ();
                 this.UpdateEnvironmentMap ();
+                if (this.measureTool.IsActive ()) {
+                    this.measureTool.UpdatePanel ();
+                }
             },
             onBackgroundColorChange : () => {
                 this.settings.SaveToCookies ();
