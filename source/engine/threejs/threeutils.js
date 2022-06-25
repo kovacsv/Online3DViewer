@@ -1,6 +1,6 @@
 import { Coord2D } from '../geometry/coord2d.js';
 import { Coord3D } from '../geometry/coord3d.js';
-import { ColorFromFloatComponents } from '../model/color.js';
+import { RGBColorFromFloatComponents } from '../model/color.js';
 import { MaterialType } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
 import { Triangle } from '../model/triangle.js';
@@ -91,7 +91,7 @@ export function GetShadingType (model)
 
 export function ConvertThreeColorToColor (threeColor)
 {
-    return ColorFromFloatComponents (threeColor.r, threeColor.g, threeColor.b);
+    return RGBColorFromFloatComponents (threeColor.r, threeColor.g, threeColor.b);
 }
 
 export function ConvertColorToThreeColor (color)

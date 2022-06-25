@@ -10,9 +10,9 @@ function CreateTestModel ()
 
     let material1 = new OV.PhongMaterial ();
     material1.name = 'TestMaterial1';
-    material1.ambient = new OV.Color (0, 0, 0);
-    material1.color = new OV.Color (255, 0, 0);
-    material1.specular = new OV.Color (51, 51, 51);
+    material1.ambient = new OV.RGBColor (0, 0, 0);
+    material1.color = new OV.RGBColor (255, 0, 0);
+    material1.specular = new OV.RGBColor (51, 51, 51);
     material1.diffuseMap = new OV.TextureMap ();
     material1.diffuseMap.name = 'textures/texture1.png';
     material1.diffuseMap.buffer = new ArrayBuffer (1);
@@ -26,9 +26,9 @@ function CreateTestModel ()
 
     let material2 = new OV.PhongMaterial ();
     material2.name = 'TestMaterial2';
-    material2.ambient = new OV.Color (0, 0, 0);
-    material2.color = new OV.Color (0, 255, 0);
-    material2.specular = new OV.Color (51, 51, 51);
+    material2.ambient = new OV.RGBColor (0, 0, 0);
+    material2.color = new OV.RGBColor (0, 255, 0);
+    material2.specular = new OV.RGBColor (51, 51, 51);
     model.AddMaterial (material2);
 
     let mesh1 = new OV.Mesh ();
@@ -217,7 +217,7 @@ describe ('Exporter', function () {
             let importer = new OV.ImporterStl ();
             importer.Import (stlFile.GetName (), 'stl', contentBuffer, {
                 getDefaultMaterialColor () {
-                    return new OV.Color (0, 0, 0);
+                    return new OV.RGBColor (0, 0, 0);
                 },
                 onSuccess () {
                     let importedModel = importer.GetModel ();
@@ -311,7 +311,7 @@ describe ('Exporter', function () {
             let importer = new OV.ImporterPly ();
             importer.Import (plyFile.GetName (), 'ply', contentBuffer, {
                 getDefaultMaterialColor () {
-                    return new OV.Color (0, 0, 0);
+                    return new OV.RGBColor (0, 0, 0);
                 },
                 onSuccess () {
                     let importedModel = importer.GetModel ();
@@ -341,7 +341,7 @@ describe ('Exporter', function () {
             let importer = new OV.ImporterGltf ();
             importer.Import (gltfFile.GetName (), 'gltf', contentBuffer, {
                 getDefaultMaterialColor () {
-                    return new OV.Color (0, 0, 0);
+                    return new OV.RGBColor (0, 0, 0);
                 },
                 getFileBuffer (filePath) {
                     if (filePath == 'model.bin') {
@@ -376,7 +376,7 @@ describe ('Exporter', function () {
             let importer = new OV.ImporterGltf ();
             importer.Import (glbFile.GetName (), 'glb', contentBuffer, {
                 getDefaultMaterialColor () {
-                    return new OV.Color (0, 0, 0);
+                    return new OV.RGBColor (0, 0, 0);
                 },
                 getFileBuffer (filePath) {
                     return null;

@@ -5,7 +5,7 @@ import { Matrix } from '../geometry/matrix.js';
 import { ArrayToQuaternion } from '../geometry/quaternion.js';
 import { Transformation } from '../geometry/transformation.js';
 import { BinaryReader } from '../io/binaryreader.js';
-import { Color, ColorComponentFromFloat } from '../model/color.js';
+import { RGBColor, ColorComponentFromFloat } from '../model/color.js';
 import { PhongMaterial, TextureMap } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
 import { FlipMeshTrianglesOrientation, TransformMesh } from '../model/meshutils.js';
@@ -246,7 +246,7 @@ export class Importer3ds extends ImporterBase
 
     ReadColorChunk (reader, length)
     {
-        let color = new Color (0, 0, 0);
+        let color = new RGBColor (0, 0, 0);
         let endByte = this.GetChunkEnd (reader, length);
         let hasLinColor = false;
         this.ReadChunks (reader, endByte, (chunkId, chunkLength) => {

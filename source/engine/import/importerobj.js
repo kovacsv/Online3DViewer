@@ -2,7 +2,7 @@ import { Coord2D } from '../geometry/coord2d.js';
 import { Coord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
 import { ArrayBufferToUtf8String } from '../io/bufferutils.js';
-import { Color, ColorFromFloatComponents } from '../model/color.js';
+import { RGBColor, RGBColorFromFloatComponents } from '../model/color.js';
 import { PhongMaterial, TextureMap } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
 import { Triangle } from '../model/triangle.js';
@@ -30,7 +30,7 @@ class ObjMeshConverter
     AddVertexColor (globalIndex, globalVertexColors)
     {
         return this.GetLocalIndex (globalIndex, globalVertexColors, this.globalToMeshVertexColors, (val) => {
-            return this.mesh.AddVertexColor (new Color (val.r, val.g, val.b));
+            return this.mesh.AddVertexColor (new RGBColor (val.r, val.g, val.b));
         });
     }
 
@@ -71,7 +71,7 @@ class ObjMeshConverter
 
 function CreateColor (r, g, b)
 {
-    return ColorFromFloatComponents (
+    return RGBColorFromFloatComponents (
         parseFloat (r),
         parseFloat (g),
         parseFloat (b)

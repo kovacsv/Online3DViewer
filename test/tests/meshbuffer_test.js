@@ -40,8 +40,8 @@ describe ('Mesh Buffer', function () {
         mesh.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
         mesh.AddVertex (new OV.Coord3D (0.0, 1.0, 0.0));
 
-        mesh.AddVertexColor (new OV.Color (0.1, 0.0, 0.0));
-        mesh.AddVertexColor (new OV.Color (0.2, 0.0, 0.0));
+        mesh.AddVertexColor (new OV.RGBColor (0.1, 0.0, 0.0));
+        mesh.AddVertexColor (new OV.RGBColor (0.2, 0.0, 0.0));
 
         mesh.AddNormal (new OV.Coord3D (0.0, 0.0, 1.0));
         mesh.AddTriangle (new OV.Triangle (0, 1, 2).SetVertexColors (0, 0, 0).SetNormals (0, 0, 0).SetMaterial (0));

@@ -1,7 +1,7 @@
 import { Direction } from '../geometry/geometry.js';
 import { GetExternalLibPath } from '../io/externallibs.js';
 import { Node } from '../model/node.js';
-import { ColorFromFloatComponents } from '../model/color.js';
+import { RGBColorFromFloatComponents } from '../model/color.js';
 import { ConvertThreeGeometryToMesh } from '../threejs/threeutils.js';
 import { ImporterBase } from './importerbase.js';
 import { ColorToMaterialConverter } from './importerutils.js';
@@ -88,7 +88,7 @@ export class ImporterStp extends ImporterBase
     {
         let materialIndex = null;
         if (occtMesh.color) {
-            let color = ColorFromFloatComponents (occtMesh.color[0], occtMesh.color[1], occtMesh.color[2]);
+            let color = RGBColorFromFloatComponents (occtMesh.color[0], occtMesh.color[1], occtMesh.color[2]);
             materialIndex = colorToMaterial.GetMaterialIndex (color.r, color.g, color.b, null);
         }
         let mesh = ConvertThreeGeometryToMesh (occtMesh, materialIndex);
@@ -97,7 +97,7 @@ export class ImporterStp extends ImporterBase
         }
         if (occtMesh.face_colors) {
             for (let faceColorGroup of occtMesh.face_colors) {
-                let faceColor = ColorFromFloatComponents (faceColorGroup.color[0], faceColorGroup.color[1], faceColorGroup.color[2]);
+                let faceColor = RGBColorFromFloatComponents (faceColorGroup.color[0], faceColorGroup.color[1], faceColorGroup.color[2]);
                 let faceMaterialIndex = colorToMaterial.GetMaterialIndex (faceColor.r, faceColor.g, faceColor.b, null);
                 for (let i = faceColorGroup.first; i <= faceColorGroup.last; i++) {
                     let triangle = mesh.GetTriangle (i);

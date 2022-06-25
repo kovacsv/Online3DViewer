@@ -1,4 +1,4 @@
-import { Color } from '../engine/model/color.js';
+import { RGBColor } from '../engine/model/color.js';
 import { CookieGetBoolVal, CookieGetColorVal, CookieGetIntVal, CookieGetStringVal, CookieSetBoolVal, CookieSetColorVal, CookieSetIntVal, CookieSetStringVal } from './cookiehandler.js';
 
 export const Theme =
@@ -13,10 +13,10 @@ export class Settings
     {
         this.environmentMapName = 'fishermans_bastion';
         this.backgroundIsEnvMap = false;
-        this.backgroundColor = new Color (255, 255, 255);
-        this.defaultColor = new Color (200, 200, 200);
+        this.backgroundColor = new RGBColor (255, 255, 255);
+        this.defaultColor = new RGBColor (200, 200, 200);
         this.showEdges = false;
-        this.edgeColor = new Color (0, 0, 0);
+        this.edgeColor = new RGBColor (0, 0, 0);
         this.edgeThreshold = 1;
         this.themeId = Theme.Light;
     }
@@ -25,10 +25,10 @@ export class Settings
     {
         this.environmentMapName = CookieGetStringVal ('ov_environment_map', 'fishermans_bastion');
         this.backgroundIsEnvMap = CookieGetBoolVal ('ov_background_is_envmap', false);
-        this.backgroundColor = CookieGetColorVal ('ov_background_color', new Color (255, 255, 255));
-        this.defaultColor = CookieGetColorVal ('ov_default_color', new Color (200, 200, 200));
+        this.backgroundColor = CookieGetColorVal ('ov_background_color', new RGBColor (255, 255, 255));
+        this.defaultColor = CookieGetColorVal ('ov_default_color', new RGBColor (200, 200, 200));
         this.showEdges = CookieGetBoolVal ('ov_show_edges', false);
-        this.edgeColor = CookieGetColorVal ('ov_edge_color', new Color (0, 0, 0));
+        this.edgeColor = CookieGetColorVal ('ov_edge_color', new RGBColor (0, 0, 0));
         this.edgeThreshold = CookieGetIntVal ('ov_edge_threshold', 1);
         this.themeId = CookieGetIntVal ('ov_theme_id', Theme.Light);
     }

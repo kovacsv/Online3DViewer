@@ -1,6 +1,6 @@
 import { CopyObjectAttributes } from '../core/core.js';
 import { AddCoord3D, Coord3D, CoordIsEqual3D } from '../geometry/coord3d.js';
-import { Color } from './color.js';
+import { RGBColor } from './color.js';
 import { PhongMaterial } from './material.js';
 import { CalculateTriangleNormal, GetMeshType, MeshType } from './meshutils.js';
 
@@ -10,7 +10,7 @@ class ModelFinalizer
     {
         this.params = {
             getDefaultMaterialColor : () => {
-                return new Color (0, 0, 0);
+                return new RGBColor (0, 0, 0);
             }
         };
         CopyObjectAttributes (params, this.params);

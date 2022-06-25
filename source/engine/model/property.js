@@ -1,5 +1,5 @@
 import { EscapeHtmlChars } from '../core/core.js';
-import { ColorToHexString } from './color.js';
+import { RGBColorToHexString } from './color.js';
 
 export const PropertyType =
 {
@@ -80,7 +80,7 @@ export function PropertyToString (property)
     } else if (property.type === PropertyType.Percent) {
         return parseInt (property.value * 100, 10).toString () + '%';
     } else if (property.type === PropertyType.Color) {
-        return '#' + ColorToHexString (property.value);
+        return '#' + RGBColorToHexString (property.value);
     }
     return null;
 }

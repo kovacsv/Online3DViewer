@@ -219,7 +219,7 @@ describe ('Off Importer', function () {
     it ('rectangle_face_colors_int.off', function (done) {
         ImportOffFile ('rectangle_face_colors_int.off', function (model) {
             assert.ok (OV.CheckModel (model));
-            assert.ok (OV.ColorIsEqual (model.GetMaterial (0).color, new OV.Color (255, 0, 0)));
+            assert.ok (OV.RGBColorIsEqual (model.GetMaterial (0).color, new OV.RGBColor (255, 0, 0)));
             assert.strictEqual (model.GetMaterial (0).vertexColors, false);
             assert.deepStrictEqual (ModelToObject (model), {
                 name : '',
@@ -253,7 +253,7 @@ describe ('Off Importer', function () {
     it ('rectangle_face_colors_int.off', function (done) {
         ImportOffFile ('rectangle_face_colors_float.off', function (model) {
             assert.ok (OV.CheckModel (model));
-            assert.ok (OV.ColorIsEqual (model.GetMaterial (0).color, new OV.Color (255, 0, 0)));
+            assert.ok (OV.RGBColorIsEqual (model.GetMaterial (0).color, new OV.RGBColor (255, 0, 0)));
             assert.strictEqual (model.GetMaterial (0).vertexColors, false);
             assert.deepStrictEqual (ModelToObject (model), {
                 name : '',

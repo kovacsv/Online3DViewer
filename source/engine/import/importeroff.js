@@ -1,7 +1,7 @@
 import { Coord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
 import { ArrayBufferToUtf8String } from '../io/bufferutils.js';
-import { Color, ColorComponentFromFloat } from '../model/color.js';
+import { RGBColor, ColorComponentFromFloat } from '../model/color.js';
 import { Mesh } from '../model/mesh.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
@@ -97,7 +97,7 @@ export class ImporterOff extends ImporterBase
                 this.status.foundVertex += 1;
             }
             if (parameters.length >= 6) {
-                this.mesh.AddVertexColor (new Color (
+                this.mesh.AddVertexColor (new RGBColor (
                     CreateColorComponent (parameters[3]),
                     CreateColorComponent (parameters[4]),
                     CreateColorComponent (parameters[5])
@@ -115,7 +115,7 @@ export class ImporterOff extends ImporterBase
                 }
                 let materialIndex = null;
                 if (!hasVertexColors && parameters.length >= vertexCount + 4) {
-                    let color = new Color (
+                    let color = new RGBColor (
                         CreateColorComponent (parameters[vertexCount + 1]),
                         CreateColorComponent (parameters[vertexCount + 2]),
                         CreateColorComponent (parameters[vertexCount + 3])

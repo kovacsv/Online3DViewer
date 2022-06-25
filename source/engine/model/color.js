@@ -1,4 +1,4 @@
-export class Color
+export class RGBColor
 {
     constructor (r, g, b)
     {
@@ -16,7 +16,7 @@ export class Color
 
     Clone ()
     {
-        return new Color (this.r, this.g, this.b);
+        return new RGBColor (this.r, this.g, this.b);
     }
 }
 
@@ -25,9 +25,9 @@ export function ColorComponentFromFloat (component)
     return parseInt (Math.round (component * 255.0), 10);
 }
 
-export function ColorFromFloatComponents (r, g, b)
+export function RGBColorFromFloatComponents (r, g, b)
 {
-    return new Color (
+    return new RGBColor (
         ColorComponentFromFloat (r),
         ColorComponentFromFloat (g),
         ColorComponentFromFloat (b)
@@ -61,7 +61,7 @@ export function IntegerToHexString (intVal)
     return result;
 }
 
-export function ColorToHexString (color)
+export function RGBColorToHexString (color)
 {
     let r = IntegerToHexString (color.r);
     let g = IntegerToHexString (color.g);
@@ -69,7 +69,7 @@ export function ColorToHexString (color)
     return r + g + b;
 }
 
-export function HexStringToColor (hexString)
+export function HexStringToRGBColor (hexString)
 {
     if (hexString.length !== 6) {
         return null;
@@ -78,15 +78,15 @@ export function HexStringToColor (hexString)
     let r = parseInt (hexString.substring (0, 2), 16);
     let g = parseInt (hexString.substring (2, 4), 16);
     let b = parseInt (hexString.substring (4, 6), 16);
-    return new Color (r, g, b);
+    return new RGBColor (r, g, b);
 }
 
-export function ArrayToColor (arr)
+export function ArrayToRGBColor (arr)
 {
-	return new Color (arr[0], arr[1], arr[2]);
+	return new RGBColor (arr[0], arr[1], arr[2]);
 }
 
-export function ColorIsEqual (a, b)
+export function RGBColorIsEqual (a, b)
 {
 	return a.r === b.r && a.g === b.g && a.b === b.b;
 }

@@ -1,6 +1,6 @@
 import { RunTaskAsync } from '../core/taskrunner.js';
 import { FileSource, GetFileName } from '../io/fileutils.js';
-import { Color } from '../model/color.js';
+import { RGBColor } from '../model/color.js';
 import { ImporterFile, ImporterFileList } from './importerfiles.js';
 import { Importer3dm } from './importer3dm.js';
 import { Importer3ds } from './importer3ds.js';
@@ -21,7 +21,7 @@ export class ImportSettings
 {
     constructor ()
     {
-        this.defaultColor = new Color (200, 200, 200);
+        this.defaultColor = new RGBColor (200, 200, 200);
     }
 }
 

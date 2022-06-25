@@ -1,7 +1,7 @@
 import { BinaryWriter } from '../io/binarywriter.js';
 import { Utf8StringToArrayBuffer } from '../io/bufferutils.js';
 import { FileFormat, GetFileExtension, GetFileName } from '../io/fileutils.js';
-import { Color, SRGBToLinear } from '../model/color.js';
+import { RGBColor, SRGBToLinear } from '../model/color.js';
 import { MaterialType } from '../model/material.js';
 import { ConvertMeshToMeshBuffer } from '../model/meshbuffer.js';
 import { ExportedFile, ExporterBase } from './exporterbase.js';
@@ -453,7 +453,7 @@ export class ExporterGltf extends ExporterBase
             let baseColorTexture = GetTextureParams (mainJson, material.diffuseMap, addTexture);
             if (baseColorTexture !== null) {
                 if (!material.multiplyDiffuseMap) {
-                    jsonMaterial.pbrMetallicRoughness.baseColorFactor = ColorToRGBA (new Color (255, 255, 255), material.opacity);
+                    jsonMaterial.pbrMetallicRoughness.baseColorFactor = ColorToRGBA (new RGBColor (255, 255, 255), material.opacity);
                 }
                 jsonMaterial.pbrMetallicRoughness.baseColorTexture = baseColorTexture;
             }

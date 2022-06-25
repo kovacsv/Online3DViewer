@@ -1,5 +1,5 @@
 import { Coord3D } from '../geometry/coord3d.js';
-import { Color } from '../model/color.js';
+import { RGBColor } from '../model/color.js';
 import { Camera } from '../viewer/camera.js';
 
 export let ParameterConverter =
@@ -93,7 +93,7 @@ export let ParameterConverter =
         if (paramParts.length !== 3) {
             return null;
         }
-        let color = new Color (
+        let color = new RGBColor (
             this.StringToInteger (paramParts[0]),
             this.StringToInteger (paramParts[1]),
             this.StringToInteger (paramParts[2])
@@ -153,7 +153,7 @@ export let ParameterConverter =
         }
         let edgeSettings = {
             showEdges : paramParts[0] === 'on' ? true : false,
-            edgeColor : new Color (
+            edgeColor : new RGBColor (
                 this.StringToInteger (paramParts[1]),
                 this.StringToInteger (paramParts[2]),
                 this.StringToInteger (paramParts[3])

@@ -73,7 +73,7 @@ describe ('Property Test', function () {
         group1.AddProperty (new OV.Property (OV.PropertyType.Text, 'name 01', 'value 01'));
         group2.AddProperty (new OV.Property (OV.PropertyType.Integer, 'name 02', 2));
         group3.AddProperty (new OV.Property (OV.PropertyType.Number, 'name 03', 3.5));
-        group3.AddProperty (new OV.Property (OV.PropertyType.Color, 'name 04', new OV.Color (10, 20, 30)));
+        group3.AddProperty (new OV.Property (OV.PropertyType.Color, 'name 04', new OV.RGBColor (10, 20, 30)));
         mesh.AddPropertyGroup (group1);
         mesh.AddPropertyGroup (group2);
         mesh.AddPropertyGroup (group3);
@@ -90,8 +90,8 @@ describe ('Property Test', function () {
         assert.strictEqual (cloned.GetPropertyGroup (2).GetProperty (0).value, 3.5);
         assert.strictEqual (cloned.GetPropertyGroup (2).GetProperty (1).name, 'name 04');
         assert.strictEqual (
-            OV.ColorToHexString (cloned.GetPropertyGroup (2).GetProperty (1).value),
-            OV.ColorToHexString (new OV.Color (10, 20, 30))
+            OV.RGBColorToHexString (cloned.GetPropertyGroup (2).GetProperty (1).value),
+            OV.RGBColorToHexString (new OV.RGBColor (10, 20, 30))
         );
     });
 
@@ -102,7 +102,7 @@ describe ('Property Test', function () {
         assert.strictEqual (OV.PropertyToString (new OV.Property (OV.PropertyType.Boolean, 'name', true)), 'True');
         assert.strictEqual (OV.PropertyToString (new OV.Property (OV.PropertyType.Boolean, 'name', false)), 'False');
         assert.strictEqual (OV.PropertyToString (new OV.Property (OV.PropertyType.Percent, 'name', 0.2)), '20%');
-        assert.strictEqual (OV.PropertyToString (new OV.Property (OV.PropertyType.Color, 'color', new OV.Color (10, 20, 20))), '#0a1414');
+        assert.strictEqual (OV.PropertyToString (new OV.Property (OV.PropertyType.Color, 'color', new OV.RGBColor (10, 20, 20))), '#0a1414');
     });
 });
 

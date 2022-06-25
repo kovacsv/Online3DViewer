@@ -12,7 +12,7 @@ export function ImportFile (importer, folder, fileName, onReady)
     });
     importer.Import (fileName, extension, content, {
         getDefaultMaterialColor () {
-            return new OV.Color (0, 0, 0);
+            return new OV.RGBColor (0, 0, 0);
         },
         getFileBuffer : function (filePath) {
             return fileAccessor.GetFileBuffer (filePath);

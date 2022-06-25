@@ -1,4 +1,4 @@
-import { Color, ColorToHexString } from '../engine/model/color.js';
+import { RGBColor, RGBColorToHexString } from '../engine/model/color.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { AddRangeSlider, AddToggle, AddCheckbox } from '../website/utils.js';
 import { CalculatePopupPositionToElementTopLeft } from './dialogs.js';
@@ -15,7 +15,7 @@ function AddColorPicker (parentDiv, defaultColor, predefinedColors, onChange)
         position : 'left-start',
         swatches : predefinedColors,
         comparison : false,
-        default : '#' + ColorToHexString (defaultColor),
+        default : '#' + RGBColorToHexString (defaultColor),
         components : {
             preview : false,
             opacity : false,
@@ -34,7 +34,7 @@ function AddColorPicker (parentDiv, defaultColor, predefinedColors, onChange)
     });
     pickr.on ('change', (color, source, instance) => {
         let rgbaColor = color.toRGBA ();
-        let ovColor = new Color (
+        let ovColor = new RGBColor (
             parseInt (rgbaColor[0], 10),
             parseInt (rgbaColor[1], 10),
             parseInt (rgbaColor[2], 10)
@@ -305,7 +305,7 @@ class SettingsModelDisplaySection extends SettingsSection
     Update (settings)
     {
         if (this.backgroundColorPicker !== null) {
-            this.backgroundColorPicker.setColor ('#' + ColorToHexString (settings.backgroundColor));
+            this.backgroundColorPicker.setColor ('#' + RGBColorToHexString (settings.backgroundColor));
         }
 
         if (this.environmentMapPbrInput !== null || this.environmentMapPhongDiv !== null) {
@@ -316,7 +316,7 @@ class SettingsModelDisplaySection extends SettingsSection
             this.edgeDisplayToggle.SetStatus (settings.showEdges);
             ShowDomElement (this.edgeSettingsDiv, settings.showEdges);
 
-            this.edgeColorPicker.setColor ('#' + ColorToHexString (settings.edgeColor));
+            this.edgeColorPicker.setColor ('#' + RGBColorToHexString (settings.edgeColor));
             this.thresholdSlider.value = settings.edgeThreshold;
             this.thresholdSliderValue.innerHTML = settings.edgeThreshold;
         }
@@ -362,7 +362,7 @@ class SettingsImportParametersSection extends SettingsSection
     Update (settings)
     {
         if (this.defaultColorPicker !== null) {
-            this.defaultColorPicker.setColor ('#' + ColorToHexString (settings.defaultColor));
+            this.defaultColorPicker.setColor ('#' + RGBColorToHexString (settings.defaultColor));
         }
     }
 
@@ -481,11 +481,11 @@ export class SidebarSettingsPanel extends SidebarPanel
         this.appearanceSection.Init (this.settings, {
             onThemeChange : () => {
                 if (this.settings.themeId === Theme.Light) {
-                    this.settings.backgroundColor = new Color (255, 255, 255);
-                    this.settings.defaultColor = new Color (200, 200, 200);
+                    this.settings.backgroundColor = new RGBColor (255, 255, 255);
+                    this.settings.defaultColor = new RGBColor (200, 200, 200);
                 } else if (this.settings.themeId === Theme.Dark) {
-                    this.settings.backgroundColor = new Color (42, 43, 46);
-                    this.settings.defaultColor = new Color (200, 200, 200);
+                    this.settings.backgroundColor = new RGBColor (42, 43, 46);
+                    this.settings.defaultColor = new RGBColor (200, 200, 200);
                 }
                 this.modelDisplaySection.Update (this.settings);
                 this.importParametersSection.Update (this.settings);

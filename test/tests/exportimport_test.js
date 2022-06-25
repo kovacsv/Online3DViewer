@@ -18,19 +18,19 @@ function CreateTestModel ()
 
     let phongMaterial = new OV.PhongMaterial ();
     phongMaterial.name = 'Phong Material';
-    phongMaterial.emissive = new OV.Color (1, 1, 1);
+    phongMaterial.emissive = new OV.RGBColor (1, 1, 1);
     phongMaterial.opacity = 0.1;
     phongMaterial.transparent = true;
     phongMaterial.alphaTest = 0.2;
     phongMaterial.multiplyDiffuseMap = false;
-    phongMaterial.ambient = new OV.Color (2, 2, 2);
-    phongMaterial.specular = new OV.Color (3, 3, 3);
+    phongMaterial.ambient = new OV.RGBColor (2, 2, 2);
+    phongMaterial.specular = new OV.RGBColor (3, 3, 3);
     phongMaterial.shininess = 0.3;
     model.AddMaterial (phongMaterial);
 
     let phongMaterialTexture = new OV.PhongMaterial ();
     phongMaterialTexture.name = 'Phong Material With Texture';
-    phongMaterialTexture.emissive = new OV.Color (1, 1, 1);
+    phongMaterialTexture.emissive = new OV.RGBColor (1, 1, 1);
     phongMaterialTexture.opacity = 0.1;
     phongMaterialTexture.transparent = true;
     phongMaterialTexture.alphaTest = 0.2;
@@ -39,15 +39,15 @@ function CreateTestModel ()
     phongMaterialTexture.bumpMap = CreateTexture ('bump.png', 'bump_url.png');
     phongMaterialTexture.normalMap = CreateTexture ('normal.png', 'normal_url.png');
     phongMaterialTexture.emissiveMap = CreateTexture ('emissive.png', 'emissive_url.png');
-    phongMaterialTexture.ambient = new OV.Color (2, 2, 2);
-    phongMaterialTexture.specular = new OV.Color (3, 3, 3);
+    phongMaterialTexture.ambient = new OV.RGBColor (2, 2, 2);
+    phongMaterialTexture.specular = new OV.RGBColor (3, 3, 3);
     phongMaterialTexture.shininess = 0.3;
     phongMaterialTexture.specularMap = CreateTexture ('specular.png', 'specular_url.png');
     model.AddMaterial (phongMaterialTexture);
 
     let physicalMaterialTexture = new OV.PhysicalMaterial ();
     physicalMaterialTexture.name = 'Phong Material With Texture';
-    physicalMaterialTexture.emissive = new OV.Color (1, 1, 1);
+    physicalMaterialTexture.emissive = new OV.RGBColor (1, 1, 1);
     physicalMaterialTexture.opacity = 0.1;
     physicalMaterialTexture.transparent = true;
     physicalMaterialTexture.alphaTest = 0.2;
@@ -240,7 +240,7 @@ describe ('Export-Import Vertex Colors Test', function () {
         mesh.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
         mesh.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
         mesh.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
-        mesh.AddVertexColor (new OV.Color (1.0, 0.0, 0.0));
+        mesh.AddVertexColor (new OV.RGBColor (1.0, 0.0, 0.0));
         mesh.AddTriangle (new OV.Triangle (0, 1, 2).SetVertexColors (0, 0, 0));
         model.AddMeshToRootNode (mesh);
         OV.FinalizeModel (model);

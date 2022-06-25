@@ -1,6 +1,6 @@
 import { Coord2D, CoordIsEqual2D } from '../geometry/coord2d.js';
 import { IsEqual } from '../geometry/geometry.js';
-import { Color, ColorIsEqual } from './color.js';
+import { RGBColor, RGBColorIsEqual } from './color.js';
 
 export class TextureMap
 {
@@ -78,7 +78,7 @@ export class MaterialBase
         this.isDefault = false;
 
         this.name = '';
-        this.color = new Color (0, 0, 0);
+        this.color = new RGBColor (0, 0, 0);
 
         this.vertexColors = false;
     }
@@ -94,7 +94,7 @@ export class MaterialBase
         if (this.name !== rhs.name) {
             return false;
         }
-        if (!ColorIsEqual (this.color, rhs.color)) {
+        if (!RGBColorIsEqual (this.color, rhs.color)) {
             return false;
         }
         if (this.vertexColors !== rhs.vertexColors) {
@@ -110,7 +110,7 @@ export class FaceMaterial extends MaterialBase
     {
         super (type);
 
-        this.emissive = new Color (0, 0, 0);
+        this.emissive = new RGBColor (0, 0, 0);
 
         this.opacity = 1.0; // 0.0 .. 1.0
         this.transparent = false;
@@ -129,7 +129,7 @@ export class FaceMaterial extends MaterialBase
         if (!super.IsEqual (rhs)) {
             return false;
         }
-        if (!ColorIsEqual (this.emissive, rhs.emissive)) {
+        if (!RGBColorIsEqual (this.emissive, rhs.emissive)) {
             return false;
         }
         if (!IsEqual (this.opacity, rhs.opacity)) {
@@ -166,8 +166,8 @@ export class PhongMaterial extends FaceMaterial
     {
         super (MaterialType.Phong);
 
-        this.ambient = new Color (0, 0, 0);
-        this.specular = new Color (0, 0, 0);
+        this.ambient = new RGBColor (0, 0, 0);
+        this.specular = new RGBColor (0, 0, 0);
         this.shininess = 0.0; // 0.0 .. 1.0
         this.specularMap = null;
     }
@@ -177,10 +177,10 @@ export class PhongMaterial extends FaceMaterial
         if (!super.IsEqual (rhs)) {
             return false;
         }
-        if (!ColorIsEqual (this.ambient, rhs.ambient)) {
+        if (!RGBColorIsEqual (this.ambient, rhs.ambient)) {
             return false;
         }
-        if (!ColorIsEqual (this.specular, rhs.specular)) {
+        if (!RGBColorIsEqual (this.specular, rhs.specular)) {
             return false;
         }
         if (!IsEqual (this.shininess, rhs.shininess)) {

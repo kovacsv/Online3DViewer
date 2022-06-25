@@ -1,6 +1,6 @@
 import { Coord3D, CoordDistance3D, SubCoord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
-import { ColorToHexString } from '../model/color.js';
+import { RGBColorToHexString } from '../model/color.js';
 import { ShadingType } from '../threejs/threeutils.js';
 import { Camera } from './camera.js';
 import { GetDomElementInnerDimensions } from './domutils.js';
@@ -266,7 +266,7 @@ export class Viewer
 
     SetBackgroundColor (color)
     {
-        let hexColor = '#' + ColorToHexString (color);
+        let hexColor = '#' + RGBColorToHexString (color);
         this.renderer.setClearColor (hexColor, 1.0);
         this.Render ();
     }

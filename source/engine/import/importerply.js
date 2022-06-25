@@ -2,7 +2,7 @@ import { Coord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
 import { BinaryReader } from '../io/binaryreader.js';
 import { ArrayBufferToUtf8String } from '../io/bufferutils.js';
-import { Color, IntegerToHexString } from '../model/color.js';
+import { RGBColor, IntegerToHexString } from '../model/color.js';
 import { PhongMaterial } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
 import { Triangle } from '../model/triangle.js';
@@ -124,7 +124,7 @@ class PlyMaterialHandler
         } else {
             let material = new PhongMaterial ();
             material.name = materialName;
-            material.color = new Color (color[0], color[1], color[2]);
+            material.color = new RGBColor (color[0], color[1], color[2]);
             material.opacity = color[3] / 255.0;
             UpdateMaterialTransparency (material);
             let materialIndex = this.model.AddMaterial (material);
@@ -379,7 +379,7 @@ export class ImporterPly extends ImporterBase
                     let z = ReadByFormat (reader, element.format[2]);
                     let color = SkipAndGetColor (reader, element.format, 3);
                     if (color !== null) {
-                        this.mesh.AddVertexColor (new Color (color[0], color[1], color[2]));
+                        this.mesh.AddVertexColor (new RGBColor (color[0], color[1], color[2]));
                     }
                     this.mesh.AddVertex (new Coord3D (x, y, z));
                 }

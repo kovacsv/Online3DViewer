@@ -259,7 +259,7 @@ describe ('Importer Test', function () {
         ];
         let theImporter = new OV.Importer ();
         let settings = new OV.ImportSettings ();
-        settings.defaultColor = new OV.Color (200, 0, 0);
+        settings.defaultColor = new OV.RGBColor (200, 0, 0);
         let inputFiles = OV.InputFilesFromFileObjects (files);
         theImporter.ImportFiles (inputFiles, settings, {
             onFilesLoaded : function () {
@@ -270,7 +270,7 @@ describe ('Importer Test', function () {
                 assert.deepStrictEqual (importResult.usedFiles, ['single_triangle.stl']);
                 assert.deepStrictEqual (importResult.missingFiles, []);
                 let material = importResult.model.GetMaterial (0);
-                assert.deepStrictEqual (material.color, new OV.Color (200, 0, 0));
+                assert.deepStrictEqual (material.color, new OV.RGBColor (200, 0, 0));
                 done ();
             },
             onImportError : function (importError) {

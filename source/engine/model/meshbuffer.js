@@ -1,6 +1,6 @@
 import { Coord2D, CoordIsEqual2D } from '../geometry/coord2d.js';
 import { CoordIsEqual3D } from '../geometry/coord3d.js';
-import { Color, ColorIsEqual } from './color.js';
+import { RGBColor, RGBColorIsEqual } from './color.js';
 
 export class MeshPrimitiveBuffer
 {
@@ -75,7 +75,7 @@ export function ConvertMeshToMeshBuffer (mesh)
             if (colorIndex !== null) {
                 return mesh.GetVertexColor (colorIndex);
             } else if (forceColors) {
-                return new Color (0, 0, 0);
+                return new RGBColor (0, 0, 0);
             } else {
                 return null;
             }
@@ -132,7 +132,7 @@ export function ConvertMeshToMeshBuffer (mesh)
                     return true;
                 }
                 let color = GetColorOrDefault (mesh, colorIndex, true);
-                return ColorIsEqual (existingColor, color);
+                return RGBColorIsEqual (existingColor, color);
             }
 
             function IsEqualNormal (mesh, normalIndex, existingNormal)

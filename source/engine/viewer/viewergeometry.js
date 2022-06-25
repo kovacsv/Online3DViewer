@@ -1,4 +1,4 @@
-import { Color } from '../model/color.js';
+import { RGBColor } from '../model/color.js';
 import { ConvertColorToThreeColor } from '../threejs/threeutils.js';
 
 import * as THREE from 'three';
@@ -31,7 +31,7 @@ export class ViewerGeometry
 
         this.edgeSettings = {
             showEdges : false,
-            edgeColor : new Color (0, 0, 0),
+            edgeColor : new RGBColor (0, 0, 0),
             edgeThreshold : 1
         };
     }

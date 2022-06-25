@@ -5,7 +5,7 @@ import { Matrix } from '../geometry/matrix.js';
 import { ArrayToQuaternion, Quaternion } from '../geometry/quaternion.js';
 import { Transformation } from '../geometry/transformation.js';
 import { ArrayBufferToUtf8String } from '../io/bufferutils.js';
-import { ArrayToColor } from '../model/color.js';
+import { ArrayToRGBColor } from '../model/color.js';
 import { GenerateCone, GenerateCuboid, GenerateCylinder, GeneratePlatonicSolid, GenerateSphere, GeneratorParams } from '../model/generator.js';
 import { PhysicalMaterial } from '../model/material.js';
 import { Node, NodeType } from '../model/node.js';
@@ -76,7 +76,7 @@ export class ImporterO3dv extends ImporterBase
             material.name = materialContent.name;
         }
         if (materialContent.color !== undefined) {
-            material.color = ArrayToColor (materialContent.color);
+            material.color = ArrayToRGBColor (materialContent.color);
         }
         material.metalness = ValueOrDefault (materialContent.metalness, 0.0);
         material.roughness = ValueOrDefault (materialContent.roughness, 1.0);

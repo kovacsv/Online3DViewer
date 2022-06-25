@@ -26,11 +26,11 @@
 
             // initialize the viewer with the parent element and some parameters
             let viewer = new OV.EmbeddedViewer (parentDiv, {
-                backgroundColor : new OV.Color (255, 255, 255),
-                defaultColor : new OV.Color (200, 200, 200),
+                backgroundColor : new OV.RGBColor (255, 255, 255),
+                defaultColor : new OV.RGBColor (200, 200, 200),
                 edgeSettings : {
                     showEdges : false,
-                    edgeColor : new OV.Color (0, 0, 0),
+                    edgeColor : new OV.RGBColor (0, 0, 0),
                     edgeThreshold : 1
                 },
                 environmentSettings : {

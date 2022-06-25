@@ -1,6 +1,6 @@
 import { IsLower } from '../geometry/geometry.js';
 import { PhongMaterial } from '../model/material.js';
-import { Color, IntegerToHexString } from '../model/color.js';
+import { RGBColor, IntegerToHexString } from '../model/color.js';
 
 export function NameFromLine (line, startIndex, commentChar)
 {
@@ -89,7 +89,7 @@ export class ColorToMaterialConverter
 		} else {
             let material = new PhongMaterial ();
             material.name = colorKey.toUpperCase ();
-            material.color = new Color (r, g, b);
+            material.color = new RGBColor (r, g, b);
             if (hasAlpha && a < 255) {
                 material.opacity = a / 255.0;
                 UpdateMaterialTransparency (material);

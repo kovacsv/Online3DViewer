@@ -1,4 +1,4 @@
-import { Color, ColorToHexString } from '../engine/model/color.js';
+import { RGBColor, RGBColorToHexString } from '../engine/model/color.js';
 import { CreateObjectUrl } from '../engine/io/bufferutils.js';
 import { AddDiv, CreateDiv, AddDomElement, GetDomElementOuterWidth, SetDomElementOuterWidth } from '../engine/viewer/domutils.js';
 import { CreateVerticalSplitter } from './splitter.js';
@@ -143,13 +143,13 @@ export function SetSvgIconImageElement (iconElement, iconName)
 
 export function CreateInlineColorCircle (color)
 {
-    let hexString = '#' + ColorToHexString (color);
-    let darkerColor = new Color (
+    let hexString = '#' + RGBColorToHexString (color);
+    let darkerColor = new RGBColor (
         Math.max (0, color.r - 50),
         Math.max (0, color.g - 50),
         Math.max (0, color.b - 50)
     );
-    let darkerColorHexString = '#' + ColorToHexString (darkerColor);
+    let darkerColorHexString = '#' + RGBColorToHexString (darkerColor);
     let circleDiv = CreateDiv ('ov_color_circle');
     circleDiv.style.background = hexString;
     circleDiv.style.border = '1px solid ' + darkerColorHexString;

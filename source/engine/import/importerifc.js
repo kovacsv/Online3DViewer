@@ -3,7 +3,7 @@ import { Direction } from '../geometry/geometry.js';
 import { Matrix } from '../geometry/matrix.js';
 import { Transformation } from '../geometry/transformation.js';
 import { LoadExternalLibrary } from '../io/externallibs.js';
-import { ColorFromFloatComponents } from '../model/color.js';
+import { RGBColorFromFloatComponents } from '../model/color.js';
 import { Mesh } from '../model/mesh.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { Triangle } from '../model/triangle.js';
@@ -207,7 +207,7 @@ export class ImporterIfc extends ImporterBase
 
     GetMaterialIndexByColor (ifcColor)
     {
-        const color = ColorFromFloatComponents (ifcColor.x, ifcColor.y, ifcColor.z);
+        const color = RGBColorFromFloatComponents (ifcColor.x, ifcColor.y, ifcColor.z);
         const alpha = parseInt (ifcColor.w * 255.0, 10);
         return this.colorToMaterial.GetMaterialIndex (color.r, color.g, color.b, alpha);
     }

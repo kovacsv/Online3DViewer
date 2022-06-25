@@ -8,7 +8,7 @@ import { Transformation } from '../geometry/transformation.js';
 import { BinaryReader } from '../io/binaryreader.js';
 import { ArrayBufferToUtf8String, Base64DataURIToArrayBuffer, GetFileExtensionFromMimeType } from '../io/bufferutils.js';
 import { LoadExternalLibrary } from '../io/externallibs.js';
-import { Color, ColorComponentFromFloat, ColorFromFloatComponents, LinearToSRGB } from '../model/color.js';
+import { RGBColor, ColorComponentFromFloat, RGBColorFromFloatComponents, LinearToSRGB } from '../model/color.js';
 import { PhongMaterial, PhysicalMaterial, TextureMap } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
 import { Node, NodeType } from '../model/node.js';
@@ -57,7 +57,7 @@ const GltfConstants =
 
 function GetGltfColor (color)
 {
-    return ColorFromFloatComponents (
+    return RGBColorFromFloatComponents (
         LinearToSRGB (color[0]),
         LinearToSRGB (color[1]),
         LinearToSRGB (color[2])
@@ -77,7 +77,7 @@ function GetGltfVertexColor (color, componentType)
         return ColorComponentFromFloat (LinearToSRGB (normalized));
     }
 
-    return new Color (
+    return new RGBColor (
         GetColorComponent (color[0], componentType),
         GetColorComponent (color[1], componentType),
         GetColorComponent (color[2], componentType)

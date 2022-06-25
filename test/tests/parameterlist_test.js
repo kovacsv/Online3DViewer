@@ -12,8 +12,8 @@ describe ('Parameter List', function () {
             new OV.Coord3D (0.0, 0.0, 0.0),
             new OV.Coord3D (0.0, 0.0, 1.0)
         );
-        let background = new OV.Color (4, 5, 6);
-        let color = new OV.Color (1, 2, 3);
+        let background = new OV.RGBColor (4, 5, 6);
+        let color = new OV.RGBColor (1, 2, 3);
         let urlParams1 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).GetParameterList ();
         let urlParams2 = OV.CreateUrlBuilder ().AddCamera (camera).GetParameterList ();
         let urlParams3 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).GetParameterList ();
@@ -21,7 +21,7 @@ describe ('Parameter List', function () {
         let urlParams5 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).AddBackgroundColor (background).AddDefaultColor (color).GetParameterList ();
         let urlParams6 = OV.CreateUrlBuilder ().AddEdgeSettings ({
             showEdges : true,
-            edgeColor : new OV.Color (1, 2, 3),
+            edgeColor : new OV.RGBColor (1, 2, 3),
             edgeThreshold : 15
         }).GetParameterList ();
         assert.strictEqual (urlParams1, 'model=a.txt,b.txt');
@@ -39,8 +39,8 @@ describe ('Parameter List', function () {
             new OV.Coord3D (0.0, 0.0, 0.0),
             new OV.Coord3D (0.0, 0.0, 1.0)
         );
-        let background = new OV.Color (4, 5, 6);
-        let color = new OV.Color (1, 2, 3);
+        let background = new OV.RGBColor (4, 5, 6);
+        let color = new OV.RGBColor (1, 2, 3);
         let urlParamsLegacy = 'a.txt,b.txt';
         let urlParams1 = 'model=a.txt,b.txt';
         let urlParams2 = 'camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000';
@@ -75,7 +75,7 @@ describe ('Parameter List', function () {
         let parser6 = OV.CreateUrlParser (urlParams6);
         assert.deepStrictEqual (parser6.GetEdgeSettings (), {
             showEdges : true,
-            edgeColor : new OV.Color (1, 2, 3),
+            edgeColor : new OV.RGBColor (1, 2, 3),
             edgeThreshold : 15
         });
     });

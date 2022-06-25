@@ -8,7 +8,7 @@ import { SidebarPanel } from './sidebarpanel.js';
 import { CreateInlineColorCircle } from './utils.js';
 import { GetFileName, IsUrl } from '../engine/io/fileutils.js';
 import { MaterialType } from '../engine/model/material.js';
-import { ColorToHexString } from '../engine/model/color.js';
+import { RGBColorToHexString } from '../engine/model/color.js';
 
 export class SidebarDetailsPanel extends SidebarPanel
 {
@@ -167,7 +167,7 @@ export class SidebarDetailsPanel extends SidebarPanel
                 valueHtml = PropertyToString (property);
             }
         } else if (property.type === PropertyType.Color) {
-            let hexString = '#' + ColorToHexString (property.value);
+            let hexString = '#' + RGBColorToHexString (property.value);
             let colorCircle = CreateInlineColorCircle (property.value);
             targetDiv.appendChild (colorCircle);
             AddDomElement (targetDiv, 'span', null, hexString);
