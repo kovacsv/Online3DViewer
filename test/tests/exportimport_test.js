@@ -121,7 +121,7 @@ function ExportImport (model, format, extension, onReady)
                 onLoadStart : function () {
 
                 },
-                onFileProgress : (current, total) => {
+                onFileListProgress : (current, total) => {
                 },
                 onFileLoadProgress : (current, total) => {
                 },

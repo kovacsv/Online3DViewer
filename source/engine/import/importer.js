@@ -119,7 +119,7 @@ export class Importer
                     });
                 });
             },
-            onFileProgress : callbacks.onFileProgress,
+            onFileListProgress : callbacks.onFileListProgress,
             onFileLoadProgress : callbacks.onFileLoadProgress
         });
     }
@@ -152,7 +152,7 @@ export class Importer
         }
         this.fileList.GetContent ({
             onReady : callbacks.onReady,
-            onFileProgress : callbacks.onFileProgress,
+            onFileListProgress : callbacks.onFileListProgress,
             onFileLoadProgress : callbacks.onFileLoadProgress
         });
     }

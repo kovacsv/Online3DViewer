@@ -87,7 +87,7 @@ export class EmbeddedViewer
                 progressDiv.innerHTML = 'Loading model...';
                 this.parentElement.appendChild (progressDiv);
             },
-            onFileProgress : (current, total) => {
+            onFileListProgress : (current, total) => {
             },
             onFileLoadProgress : (current, total) => {
             },

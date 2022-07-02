@@ -12,7 +12,7 @@ function ImportFilesWithImporter (importer, files, callbacks)
         onLoadStart : function () {
 
         },
-        onFileProgress : (current, total) => {
+        onFileListProgress : (current, total) => {
         },
         onFileLoadProgress : (current, total) => {
         },
@@ -272,7 +272,7 @@ describe ('Importer Test', function () {
             onLoadStart : function () {
 
             },
-            onFileProgress : (current, total) => {
+            onFileListProgress : (current, total) => {
             },
             onFileLoadProgress : (current, total) => {
             },

@@ -34,8 +34,8 @@ export class ThreeModelLoader
             onLoadStart : () => {
                 callbacks.onLoadStart ();
             },
-            onFileProgress : (current, total) => {
-                callbacks.onFileProgress (current, total);
+            onFileListProgress : (current, total) => {
+                callbacks.onFileListProgress (current, total);
             },
             onFileLoadProgress : (current, total) => {
                 callbacks.onFileLoadProgress (current, total);

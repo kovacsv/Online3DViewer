@@ -28,7 +28,7 @@ export class ThreeModelLoaderUI
                 progressDialog.Init ('Loading Model');
                 progressDialog.Open ();
             },
-            onFileProgress : (current, total) => {
+            onFileListProgress : (current, total) => {
                 progressDialog.SetProgress (null);
                 progressDialog.SetText ('Loading File ' + (current + 1).toString () + '/' + total.toString ());
             },
