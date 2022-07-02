@@ -1,4 +1,4 @@
-export class EventSource
+export class EventNotifier
 {
     constructor ()
     {

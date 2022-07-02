@@ -47,21 +47,21 @@ describe ('Core', function () {
         assert.deepStrictEqual (dest3, {a : null, b : null, c : 6});
     });
 
-    it ('Event Source', function () {
-        let es = new OV.EventSource ();
+    it ('Event Notifier', function () {
+        let en = new OV.EventNotifier ();
         let sumValues = 0;
-        es.AddEventListener ('first_event', (x) => {
+        en.AddEventListener ('first_event', (x) => {
             sumValues += x;
         });
-        es.AddEventListener ('first_event', (x) => {
+        en.AddEventListener ('first_event', (x) => {
             sumValues += 2 * x;
         });
-        es.AddEventListener ('second_event', (x, y) => {
+        en.AddEventListener ('second_event', (x, y) => {
             sumValues += 3 * x;
             sumValues += 3 * y;
         });
-        es.NotifyEventListeners ('first_event', 5);
-        es.NotifyEventListeners ('second_event', 10, 15);
+        en.NotifyEventListeners ('first_event', 5);
+        en.NotifyEventListeners ('second_event', 10, 15);
         assert.strictEqual (sumValues, 90);
     });
 });
