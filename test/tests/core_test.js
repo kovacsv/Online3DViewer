@@ -62,6 +62,9 @@ describe ('Core', function () {
         });
         en.NotifyEventListeners ('first_event', 5);
         en.NotifyEventListeners ('second_event', 10, 15);
+        assert.ok (en.HasEventListener ('first_event'));
+        assert.ok (en.HasEventListener ('second_event'));
+        assert.ok (!en.HasEventListener ('third_event'));
         assert.strictEqual (sumValues, 90);
     });
 });

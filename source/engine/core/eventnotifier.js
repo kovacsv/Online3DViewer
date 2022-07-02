@@ -14,6 +14,11 @@ export class EventNotifier
         listeners.push (listener);
     }
 
+    HasEventListener (name)
+    {
+        return this.eventListeners.has (name);
+    }
+
     NotifyEventListeners (name, ...args)
     {
         if (!this.eventListeners.has (name)) {
