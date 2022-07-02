@@ -5,26 +5,33 @@ export class EventNotifier
         this.eventListeners = new Map ();
     }
 
-    AddEventListener (name, listener)
+    AddEventListener (eventId, listener)
     {
-        if (!this.eventListeners.has (name)) {
-            this.eventListeners.set (name, []);
+        if (!this.eventListeners.has (eventId)) {
+            this.eventListeners.set (eventId, []);
         }
-        let listeners = this.eventListeners.get (name);
+        let listeners = this.eventListeners.get (eventId);
         listeners.push (listener);
     }
 
-    HasEventListener (name)
+    HasEventListener (eventId)
     {
-        return this.eventListeners.has (name);
+        return this.eventListeners.has (eventId);
     }
 
-    NotifyEventListeners (name, ...args)
+    GetEventNotifier (eventId)
     {
-        if (!this.eventListeners.has (name)) {
+        return () => {
+            this.NotifyEventListeners (eventId);
+        };
+    }
+
+    NotifyEventListeners (eventId, ...args)
+    {
+        if (!this.eventListeners.has (eventId)) {
             return;
         }
-        let listeners = this.eventListeners.get (name);
+        let listeners = this.eventListeners.get (eventId);
         for (let listener of listeners) {
             listener (...args);
         }
