@@ -1,5 +1,5 @@
 import { RunTasks } from '../core/taskrunner.js';
-import { FileFormat, FileSource, GetFileExtension, GetFileName, ReadFile, RequestUrl } from '../io/fileutils.js';
+import { FileSource, GetFileExtension, GetFileName, ReadFile, RequestUrl } from '../io/fileutils.js';
 
 export class InputFile
 {
@@ -80,13 +80,17 @@ export class ImporterFileList
         return this.files;
     }
 
-    GetContent (onReady)
+    GetContent (callbacks)
     {
         RunTasks (this.files.length, {
-            runTask : (index, complete) => {
-                this.GetFileContent (this.files[index], complete);
+            runTask : (index, onTaskComplete) => {
+                callbacks.onFileProgress (index, this.files.length);
+                this.GetFileContent (this.files[index], {
+                    onReady : onTaskComplete,
+                    onProgress : callbacks.onFileLoadProgress
+                });
             },
-            onReady : onReady
+            onReady : callbacks.onReady
         });
     }
 
@@ -126,26 +130,26 @@ export class ImporterFileList
         this.files.push (file);
     }
 
-    GetFileContent (file, complete)
+    GetFileContent (file, callbacks)
     {
         if (file.content !== null) {
-            complete ();
+            callbacks.onReady ();
             return;
         }
         let loaderPromise = null;
         if (file.source === FileSource.Url) {
-            loaderPromise = RequestUrl (file.data, FileFormat.Binary);
+            loaderPromise = RequestUrl (file.data, callbacks.onProgress);
         } else if (file.source === FileSource.File) {
-            loaderPromise = ReadFile (file.data, FileFormat.Binary);
+            loaderPromise = ReadFile (file.data, callbacks.onProgress);
         } else {
-            complete ();
+            callbacks.onReady ();
             return;
         }
         loaderPromise.then ((content) => {
             file.SetContent (content);
         }).catch (() => {
         }).finally (() => {
-            complete ();
+            callbacks.onReady ();
         });
     }
 }

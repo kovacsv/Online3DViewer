@@ -9,7 +9,14 @@ function ImportFilesWithImporter (importer, files, callbacks)
     let settings = new OV.ImportSettings ();
     let inputFiles = OV.InputFilesFromFileObjects (files);
     importer.ImportFiles (inputFiles, settings, {
-        onFilesLoaded : function () {
+        onLoadStart : function () {
+
+        },
+        onFileProgress : (current, total) => {
+        },
+        onFileLoadProgress : (current, total) => {
+        },
+        onImportStart : function () {
 
         },
         onImportSuccess : function (importResult) {
@@ -262,7 +269,14 @@ describe ('Importer Test', function () {
         settings.defaultColor = new OV.RGBColor (200, 0, 0);
         let inputFiles = OV.InputFilesFromFileObjects (files);
         theImporter.ImportFiles (inputFiles, settings, {
-            onFilesLoaded : function () {
+            onLoadStart : function () {
+
+            },
+            onFileProgress : (current, total) => {
+            },
+            onFileLoadProgress : (current, total) => {
+            },
+            onImportStart : function () {
 
             },
             onImportSuccess : function (importResult) {

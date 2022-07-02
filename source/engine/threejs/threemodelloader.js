@@ -29,10 +29,18 @@ export class ThreeModelLoader
         }
 
         this.inProgress = true;
-        callbacks.onLoadStart ();
         this.RevokeObjectUrls ();
         this.importer.ImportFiles (inputFiles, settings, {
-            onFilesLoaded : () => {
+            onLoadStart : () => {
+                callbacks.onLoadStart ();
+            },
+            onFileProgress : (current, total) => {
+                callbacks.onFileProgress (current, total);
+            },
+            onFileLoadProgress : (current, total) => {
+                callbacks.onFileLoadProgress (current, total);
+            },
+            onImportStart : () => {
                 callbacks.onImportStart ();
             },
             onSelectMainFile : (fileNames, selectFile) => {

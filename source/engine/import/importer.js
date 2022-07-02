@@ -109,15 +109,20 @@ export class Importer
 
     ImportFiles (inputFiles, settings, callbacks)
     {
-        this.LoadFiles (inputFiles, () => {
-            callbacks.onFilesLoaded ();
-            RunTaskAsync (() => {
-                this.ImportLoadedFiles (settings, callbacks);
-            });
+        callbacks.onLoadStart ();
+        this.LoadFiles (inputFiles, {
+            onReady : () => {
+                callbacks.onImportStart ();
+                RunTaskAsync (() => {
+                    this.ImportLoadedFiles (settings, callbacks);
+                });
+            },
+            onFileProgress : callbacks.onFileProgress,
+            onFileLoadProgress : callbacks.onFileLoadProgress
         });
     }
 
-    LoadFiles (inputFiles, onReady)
+    LoadFiles (inputFiles, callbacks)
     {
         let newFileList = new ImporterFileList ();
         newFileList.FillFromInputFiles (inputFiles);
@@ -143,10 +148,14 @@ export class Importer
         if (reset) {
             this.fileList = newFileList;
         }
-        this.fileList.GetContent (() => {
-            this.DecompressArchives (this.fileList, () => {
-                onReady ();
-            });
+        this.fileList.GetContent ({
+            onReady : () => {
+                this.DecompressArchives (this.fileList, () => {
+                    callbacks.onReady ();
+                });
+            },
+            onFileProgress : callbacks.onFileProgress,
+            onFileLoadProgress : callbacks.onFileLoadProgress
         });
     }
 

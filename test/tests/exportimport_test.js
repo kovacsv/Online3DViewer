@@ -118,7 +118,14 @@ function ExportImport (model, format, extension, onReady)
             let settings = new OV.ImportSettings ();
             let fileObjects = exportedFiles.map (file => new OV.InputFile (file.name, OV.FileSource.File, new FileObject ('', file.name, file.content)));
             importer.ImportFiles (fileObjects, settings, {
-                onFilesLoaded : function () {
+                onLoadStart : function () {
+
+                },
+                onFileProgress : (current, total) => {
+                },
+                onFileLoadProgress : (current, total) => {
+                },
+                onImportStart : function () {
 
                 },
                 onImportSuccess : function (importResult) {
