@@ -1,4 +1,5 @@
 import { IsDefined, ValueOrDefault, CopyObjectAttributes, IsObjectEmpty, EscapeHtmlChars } from './core/core.js';
+import { EventSource } from './core/eventsource.js';
 import { TaskRunner, RunTaskAsync, RunTasks, RunTasksBatch, WaitWhile } from './core/taskrunner.js';
 import { Exporter } from './export/exporter.js';
 import { Exporter3dm } from './export/exporter3dm.js';
@@ -76,6 +77,7 @@ export {
     CopyObjectAttributes,
     IsObjectEmpty,
     EscapeHtmlChars,
+    EventSource,
     TaskRunner,
     RunTaskAsync,
     RunTasks,
