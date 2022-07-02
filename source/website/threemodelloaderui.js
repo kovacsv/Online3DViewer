@@ -29,11 +29,18 @@ export class ThreeModelLoaderUI
                 progressDialog.Open ();
             },
             onFileProgress : (current, total) => {
+                progressDialog.SetProgress (null);
                 progressDialog.SetText ('Loading File ' + (current + 1).toString () + '/' + total.toString ());
             },
             onFileLoadProgress : (current, total) => {
+                if (total > 0) {
+                    progressDialog.SetProgress (current / total);
+                } else {
+                    progressDialog.SetProgress (null);
+                }
             },
             onSelectMainFile : (fileNames, selectFile) => {
+                progressDialog.SetProgress (null);
                 progressDialog.Close ();
                 this.modalDialog = this.ShowFileSelectorDialog (fileNames, (index) => {
                     progressDialog.Open ();
@@ -41,9 +48,11 @@ export class ThreeModelLoaderUI
                 });
             },
             onImportStart : () => {
+                progressDialog.SetProgress (null);
                 progressDialog.SetText ('Importing Model');
             },
             onVisualizationStart : () => {
+                progressDialog.SetProgress (null);
                 progressDialog.SetText ('Visualizing Model');
             },
             onModelFinished : (importResult, threeObject) => {

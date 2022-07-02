@@ -221,9 +221,13 @@ div.ov_progress
 	background: var(--ov_dialog_background_color);
 	text-align: center;
 	width: 400px;
-	padding: 20px;
 	box-shadow: var(--ov_shadow);
 	border-radius: 5px;
+}
+
+div.ov_progress_inner
+{
+	padding: 20px;
 }
 
 div.ov_progress div.ov_progress_img svg
@@ -249,6 +253,13 @@ div.ov_progress div.ov_progress_text
 {
 	font-size: 19px;
 	text-align: center;
+}
+
+div.ov_progress div.ov_progress_bar
+{
+	background: var(--ov_button_color);
+	width: 0px;
+	height: 3px;
 }
 
 div.ov_snapshot_dialog_left

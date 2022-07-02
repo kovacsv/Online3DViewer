@@ -135,21 +135,41 @@ export class ProgressDialog extends Dialog
         super ();
         this.SetCloseable (false);
         this.textDiv = null;
+        this.progressDiv = null;
     }
 
     Init (text)
     {
         let contentDiv = this.GetContentDiv ();
         contentDiv.classList.add ('ov_progress');
+        let innerContentDiv = AddDiv (contentDiv, 'ov_progress_inner');
 
-        AddDiv (contentDiv, 'ov_progress_img', '<svg><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>');
-        this.textDiv = AddDiv (contentDiv, 'ov_progress_text');
+        AddDiv (innerContentDiv, 'ov_progress_img', '<svg><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>');
+        this.textDiv = AddDiv (innerContentDiv, 'ov_progress_text');
         this.SetText (text);
+
+        this.progressDiv = AddDiv (contentDiv, 'ov_progress_bar');
     }
 
     SetText (text)
     {
         this.textDiv.innerHTML = text;
+    }
+
+    ResetProgress ()
+    {
+        this.progressDiv.style.width = '0px';
+    }
+
+    SetProgress (ratio)
+    {
+        let progressWidth = 0;
+        if (ratio !== null) {
+            let contentDiv = this.GetContentDiv ();
+            let fullWidth = contentDiv.offsetWidth;
+            progressWidth = ratio * fullWidth;
+        }
+        this.progressDiv.style.width = progressWidth.toString () + 'px';
     }
 }
 

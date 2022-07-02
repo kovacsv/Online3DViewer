@@ -114,7 +114,9 @@ export class Importer
             onReady : () => {
                 callbacks.onImportStart ();
                 RunTaskAsync (() => {
-                    this.ImportLoadedFiles (settings, callbacks);
+                    this.DecompressArchives (this.fileList, () => {
+                        this.ImportLoadedFiles (settings, callbacks);
+                    });
                 });
             },
             onFileProgress : callbacks.onFileProgress,
@@ -149,11 +151,7 @@ export class Importer
             this.fileList = newFileList;
         }
         this.fileList.GetContent ({
-            onReady : () => {
-                this.DecompressArchives (this.fileList, () => {
-                    callbacks.onReady ();
-                });
-            },
+            onReady : callbacks.onReady,
             onFileProgress : callbacks.onFileProgress,
             onFileLoadProgress : callbacks.onFileLoadProgress
         });

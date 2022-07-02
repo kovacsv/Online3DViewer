@@ -59,7 +59,7 @@ export function RunTaskAsync (task)
 {
     setTimeout (() => {
         task ();
-    }, 0);
+    }, 10);
 }
 
 export function RunTasks (count, callbacks)
@@ -81,7 +81,7 @@ export function WaitWhile (expression)
         if (expression ()) {
             setTimeout (() => {
                 Waiter (expression);
-            }, 1);
+            }, 10);
         }
     }
     Waiter (expression);
