@@ -31,10 +31,10 @@ import { ImporterGltf } from './import/importergltf.js';
 import { ImporterIfc } from './import/importerifc.js';
 import { ImporterO3dv } from './import/importero3dv.js';
 import { ImporterObj } from './import/importerobj.js';
+import { ImporterOcct } from './import/importerocct.js';
 import { ImporterOff } from './import/importeroff.js';
 import { ImporterPly } from './import/importerply.js';
 import { ImporterStl } from './import/importerstl.js';
-import { ImporterStp } from './import/importerstp.js';
 import { ImporterThreeSvg } from './import/importersvg.js';
 import { ImporterThreeBase, ImporterThreeFbx, ImporterThreeDae, ImporterThreeWrl, ImporterThree3mf } from './import/importerthree.js';
 import { ColorToMaterialConverter, NameFromLine, ParametersFromLine, ReadLines, IsPowerOfTwo, NextPowerOfTwo, UpdateMaterialTransparency } from './import/importerutils.js';
@@ -161,10 +161,10 @@ export {
     ImporterIfc,
     ImporterO3dv,
     ImporterObj,
+    ImporterOcct,
     ImporterOff,
     ImporterPly,
     ImporterStl,
-    ImporterStp,
     ImporterThreeSvg,
     ImporterThreeBase,
     ImporterThreeFbx,

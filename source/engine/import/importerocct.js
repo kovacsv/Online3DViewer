@@ -6,7 +6,7 @@ import { ConvertThreeGeometryToMesh } from '../threejs/threeutils.js';
 import { ImporterBase } from './importerbase.js';
 import { ColorToMaterialConverter } from './importerutils.js';
 
-export class ImporterStp extends ImporterBase
+export class ImporterOcct extends ImporterBase
 {
     constructor ()
     {
@@ -16,7 +16,7 @@ export class ImporterStp extends ImporterBase
 
     CanImportExtension (extension)
     {
-        return extension === 'stp' || extension === 'step';
+        return extension === 'stp' || extension === 'step' || extension === 'igs' || extension === 'iges';
     }
 
     GetUpDirection ()
@@ -42,7 +42,7 @@ export class ImporterStp extends ImporterBase
         }
 
         let onModelConverted = (ev) => {
-            this.ImportStepContent (ev.data, onFinish);
+            this.ImportResultJson (ev.data, onFinish);
             this.worker.removeEventListener ('message', onModelConverted);
         };
 
@@ -53,11 +53,24 @@ export class ImporterStp extends ImporterBase
             onFinish ();
         });
 
+        let format = null;
+        if (this.extension === 'stp' || this.extension === 'step') {
+            format = 'step';
+        } else if (this.extension === 'igs' || this.extension === 'iges') {
+            format = 'iges';
+        } else {
+            onFinish ();
+            return;
+        }
+
         let fileBuffer = new Uint8Array (fileContent);
-        this.worker.postMessage (fileBuffer);
+        this.worker.postMessage ({
+            format : format,
+            buffer : fileBuffer
+        });
     }
 
-	ImportStepContent (stepContent, onFinish)
+	ImportResultJson (stepContent, onFinish)
 	{
         if (!stepContent.success) {
             return;
