@@ -1,4 +1,4 @@
-import globals from './utils/globals.js';
+import { SetGlobals } from './utils/globals.js';
 import * as OV from '../source/engine/main.js';
 import * as path from 'path';
 
@@ -31,7 +31,7 @@ import property_test from './tests/property_test.js';
 import parameterlist_test from './tests/parameterlist_test.js';
 
 process.chdir (path.resolve ());
-globals ();
+SetGlobals ();
 OV.SetExternalLibLocation ('libs');
 
 core_test ();

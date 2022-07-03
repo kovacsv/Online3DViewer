@@ -1,8 +1,7 @@
 import * as path from 'path';
 import { GetArrayBufferFileContent, GetTextFileContent } from './testutils.js';
 
-
-export default function SetGlobals ()
+export function SetGlobals ()
 {
     global.atob = function (base64String) {
         return Buffer.from (base64String, 'base64').toString('binary');
