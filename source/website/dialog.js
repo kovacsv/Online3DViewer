@@ -1,4 +1,5 @@
 import { AddDiv, CreateDiv } from '../engine/viewer/domutils.js';
+import { FeatureSet } from './featureset.js';
 import { AddSvgIconElement, CreateInlineColorCircle, IsHoverEnabled } from './utils.js';
 
 let currentDialog = null;
@@ -144,7 +145,10 @@ export class ProgressDialog extends Dialog
         contentDiv.classList.add ('ov_progress');
         let innerContentDiv = AddDiv (contentDiv, 'ov_progress_inner');
 
-        AddDiv (innerContentDiv, 'ov_progress_img', '<svg><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>');
+        let imgDiv = AddDiv (innerContentDiv, 'ov_progress_img', '<svg><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>');
+        if (!FeatureSet.DownloadProgress) {
+            imgDiv.classList.add ('animated');
+        }
         this.textDiv = AddDiv (innerContentDiv, 'ov_progress_text');
         this.SetText (text);
 

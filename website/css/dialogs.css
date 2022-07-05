@@ -230,16 +230,6 @@ div.ov_progress_inner
 	padding: 20px;
 }
 
-div.ov_progress div.ov_progress_img svg
-{
-	width: 80px;
-	height: 80px;
-	margin-top: 5px;
-	margin-bottom: 15px;
-	display: inline-block;
-	animation: ov_progress_img_kf 5.0s linear infinite;
-}
-
 @keyframes ov_progress_img_kf {
 	0% {
 		transform: rotate(0deg);
@@ -247,6 +237,20 @@ div.ov_progress div.ov_progress_img svg
 	100% {
 		transform: rotate(360deg);
 	}
+}
+
+div.ov_progress div.ov_progress_img svg
+{
+	width: 80px;
+	height: 80px;
+	margin-top: 5px;
+	margin-bottom: 15px;
+	display: inline-block;
+}
+
+div.ov_progress div.ov_progress_img.animated svg
+{
+	animation: ov_progress_img_kf 5.0s linear infinite;
 }
 
 div.ov_progress div.ov_progress_text
