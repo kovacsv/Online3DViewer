@@ -1,5 +1,4 @@
 import { AddDiv, CreateDiv } from '../engine/viewer/domutils.js';
-import { FeatureSet } from './featureset.js';
 import { AddSvgIconElement, CreateInlineColorCircle, IsHoverEnabled } from './utils.js';
 
 let currentDialog = null;
@@ -136,44 +135,21 @@ export class ProgressDialog extends Dialog
         super ();
         this.SetCloseable (false);
         this.textDiv = null;
-        this.progressDiv = null;
     }
 
     Init (text)
     {
         let contentDiv = this.GetContentDiv ();
         contentDiv.classList.add ('ov_progress');
-        let innerContentDiv = AddDiv (contentDiv, 'ov_progress_inner');
 
-        let imgDiv = AddDiv (innerContentDiv, 'ov_progress_img', '<svg><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>');
-        if (!FeatureSet.DownloadProgress) {
-            imgDiv.classList.add ('animated');
-        }
-        this.textDiv = AddDiv (innerContentDiv, 'ov_progress_text');
+        AddDiv (contentDiv, 'ov_progress_img', '<svg><use href="assets/images/3dviewer_net_logo.svg#logo"></use></svg>');
+        this.textDiv = AddDiv (contentDiv, 'ov_progress_text');
         this.SetText (text);
-
-        this.progressDiv = AddDiv (contentDiv, 'ov_progress_bar');
     }
 
     SetText (text)
     {
         this.textDiv.innerHTML = text;
-    }
-
-    ResetProgress ()
-    {
-        this.progressDiv.style.width = '0px';
-    }
-
-    SetProgress (ratio)
-    {
-        let progressWidth = 0;
-        if (ratio !== null) {
-            let contentDiv = this.GetContentDiv ();
-            let fullWidth = contentDiv.offsetWidth;
-            progressWidth = ratio * fullWidth;
-        }
-        this.progressDiv.style.width = progressWidth.toString () + 'px';
     }
 }
 

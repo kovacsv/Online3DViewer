@@ -4,7 +4,6 @@ import { ShowMessageDialog } from './dialogs.js';
 import { ButtonDialog, ProgressDialog } from './dialog.js';
 import { AddSvgIconElement } from './utils.js';
 import { ImportErrorCode } from '../engine/import/importer.js';
-import { FeatureSet } from './featureset.js';
 
 export class ThreeModelLoaderUI
 {
@@ -30,24 +29,10 @@ export class ThreeModelLoaderUI
                 progressDialog.Open ();
             },
             onFileListProgress : (current, total) => {
-                progressDialog.SetProgress (null);
-                if (FeatureSet.DownloadProgress) {
-                    if (total > 1) {
-                        progressDialog.SetText ('Loading File ' + (current + 1).toString () + '/' + total.toString ());
-                    }
-                }
             },
             onFileLoadProgress : (current, total) => {
-                if (FeatureSet.DownloadProgress) {
-                    if (total > 0) {
-                        progressDialog.SetProgress (current / total);
-                    } else {
-                        progressDialog.SetProgress (null);
-                    }
-                }
             },
             onSelectMainFile : (fileNames, selectFile) => {
-                progressDialog.SetProgress (null);
                 progressDialog.Close ();
                 this.modalDialog = this.ShowFileSelectorDialog (fileNames, (index) => {
                     progressDialog.Open ();
@@ -55,11 +40,9 @@ export class ThreeModelLoaderUI
                 });
             },
             onImportStart : () => {
-                progressDialog.SetProgress (null);
                 progressDialog.SetText ('Importing Model');
             },
             onVisualizationStart : () => {
-                progressDialog.SetProgress (null);
                 progressDialog.SetText ('Visualizing Model');
             },
             onModelFinished : (importResult, threeObject) => {

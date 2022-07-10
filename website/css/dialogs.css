@@ -219,15 +219,11 @@ div.ov_progress
 {
 	color: var(--ov_dialog_foreground_color);
 	background: var(--ov_dialog_background_color);
+	padding: 20px;
 	text-align: center;
 	width: 400px;
 	box-shadow: var(--ov_shadow);
 	border-radius: 5px;
-}
-
-div.ov_progress_inner
-{
-	padding: 20px;
 }
 
 @keyframes ov_progress_img_kf {
@@ -246,10 +242,6 @@ div.ov_progress div.ov_progress_img svg
 	margin-top: 5px;
 	margin-bottom: 15px;
 	display: inline-block;
-}
-
-div.ov_progress div.ov_progress_img.animated svg
-{
 	animation: ov_progress_img_kf 5.0s linear infinite;
 }
 
@@ -257,13 +249,6 @@ div.ov_progress div.ov_progress_text
 {
 	font-size: 19px;
 	text-align: center;
-}
-
-div.ov_progress div.ov_progress_bar
-{
-	background: var(--ov_button_color);
-	width: 0px;
-	height: 3px;
 }
 
 div.ov_snapshot_dialog_left
