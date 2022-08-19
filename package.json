@@ -37,24 +37,24 @@
 		"build_website_prod": "esbuild source/website/index.js --bundle --minify --global-name=OV --outfile=build/o3dv.website.min.js"
 	},
 	"devDependencies": {
-		"clean-css-cli": "^5.5.2",
+		"clean-css-cli": "^5.6.1",
 		"docdash": "^1.2.0",
-		"esbuild": "^0.14.23",
-		"eslint": "^8.10.0",
+		"esbuild": "^0.15.5",
+		"eslint": "^8.22.0",
 		"eslint-plugin-unused-imports": "^2.0.0",
 		"fantasticon": "^1.2.2",
 		"http-server": "^14.0.0",
-		"jsdoc": "^3.6.10",
+		"jsdoc": "^3.6.11",
 		"mocha": "^10.0.0",
-		"oslllo-svg-fixer": "^2.0.1",
+		"oslllo-svg-fixer": "^2.1.2",
 		"svgo": "^2.3.1"
 	},
 	"dependencies": {
 		"@simonwep/pickr": "1.8.2",
-		"draco3d": "1.5.2",
+		"draco3d": "1.5.3",
 		"fflate": "0.7.3",
-		"rhino3dm": "7.14.0",
-		"three": "0.142.0",
+		"rhino3dm": "7.15.0",
+		"three": "0.143.0",
 		"web-ifc": "0.0.35",
 		"occt-import-js" : "0.0.10"
 	},
