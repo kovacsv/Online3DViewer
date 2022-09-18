@@ -366,6 +366,7 @@ export class Viewer
         this.cameraMode = cameraMode;
         this.cameraValidator.ForceUpdate ();
 
+        this.AdjustClippingPlanes ();
         this.Render ();
     }
 
