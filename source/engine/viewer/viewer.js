@@ -1,5 +1,5 @@
 import { Coord3D, CoordDistance3D, SubCoord3D } from '../geometry/coord3d.js';
-import { Direction } from '../geometry/geometry.js';
+import { DegRad, Direction, IsEqual } from '../geometry/geometry.js';
 import { ColorComponentToFloat } from '../model/color.js';
 import { ShadingType } from '../threejs/threeutils.js';
 import { Camera } from './camera.js';
@@ -8,6 +8,12 @@ import { Navigation } from './navigation.js';
 import { ViewerExtraGeometry, ViewerGeometry } from './viewergeometry.js';
 
 import * as THREE from 'three';
+
+export const CameraMode =
+{
+	Perspective : 1,
+	Orthographic : 2
+};
 
 export function GetDefaultCamera (direction)
 {
@@ -67,6 +73,39 @@ export function GetShadingTypeOfObject (mainObject)
         return true;
     });
     return shadingType;
+}
+
+export class CameraValidator
+{
+    constructor ()
+    {
+        this.eyeCenterDistance = 0.0;
+        this.forceUpdate = true;
+    }
+
+    ForceUpdate ()
+    {
+        this.forceUpdate = true;
+    }
+
+    ValidatePerspective ()
+    {
+        if (this.forceUpdate) {
+            this.forceUpdate = false;
+            return false;
+        }
+        return true;
+    }
+
+    ValidateOrthographic (eyeCenterDistance)
+    {
+        if (this.forceUpdate || !IsEqual (this.eyeCenterDistance, eyeCenterDistance)) {
+            this.eyeCenterDistance = eyeCenterDistance;
+            this.forceUpdate = false;
+            return false;
+        }
+        return true;
+    }
 }
 
 export class UpVector
@@ -209,6 +248,8 @@ export class Viewer
         this.geometry = null;
         this.extraGeometry = null;
         this.camera = null;
+        this.cameraMode = null;
+        this.cameraValidator = null;
         this.shading = null;
         this.navigation = null;
         this.upVector = null;
@@ -299,8 +340,27 @@ export class Viewer
     SetCamera (camera)
     {
         this.navigation.SetCamera (camera);
-        this.camera.fov = camera.fov;
-        this.camera.updateProjectionMatrix ();
+        this.cameraValidator.ForceUpdate ();
+        this.Render ();
+    }
+
+    SetCameraMode (cameraMode)
+    {
+        if (this.cameraMode === cameraMode) {
+            return;
+        }
+
+        this.scene.remove (this.camera);
+        if (cameraMode === CameraMode.Perspective) {
+            this.camera = new THREE.PerspectiveCamera (45.0, 1.0, 0.1, 1000.0);
+        } else if (cameraMode === CameraMode.Orthographic) {
+			this.camera = new THREE.OrthographicCamera (-1.0, 1.0, 1.0, -1.0, 0.1, 1000.0);
+        }
+        this.scene.add (this.camera);
+
+        this.cameraMode = cameraMode;
+        this.cameraValidator.ForceUpdate ();
+
         this.Render ();
     }
 
@@ -315,9 +375,8 @@ export class Viewer
         if (window.devicePixelRatio) {
             this.renderer.setPixelRatio (window.devicePixelRatio);
         }
-        this.camera.aspect = width / height;
-        this.camera.updateProjectionMatrix ();
         this.renderer.setSize (width, height);
+        this.cameraValidator.ForceUpdate ();
         this.Render ();
     }
 
@@ -351,7 +410,8 @@ export class Viewer
             this.camera.near = 100.0;
             this.camera.far = 1000000.0;
         }
-        this.camera.updateProjectionMatrix ();
+
+        this.cameraValidator.ForceUpdate ();
         this.Render ();
     }
 
@@ -391,9 +451,30 @@ export class Viewer
     Render ()
     {
         let navigationCamera = this.navigation.GetCamera ();
+
         this.camera.position.set (navigationCamera.eye.x, navigationCamera.eye.y, navigationCamera.eye.z);
         this.camera.up.set (navigationCamera.up.x, navigationCamera.up.y, navigationCamera.up.z);
         this.camera.lookAt (new THREE.Vector3 (navigationCamera.center.x, navigationCamera.center.y, navigationCamera.center.z));
+
+        if (this.cameraMode === CameraMode.Perspective) {
+            if (!this.cameraValidator.ValidatePerspective ()) {
+                this.camera.aspect = this.canvas.width / this.canvas.height;
+                this.camera.fov = navigationCamera.fov;
+                this.camera.updateProjectionMatrix ();
+            }
+        } else if (this.cameraMode === CameraMode.Orthographic) {
+            let eyeCenterDistance = CoordDistance3D (navigationCamera.eye, navigationCamera.center);
+            if (!this.cameraValidator.ValidateOrthographic (eyeCenterDistance)) {
+                let aspect = this.canvas.width / this.canvas.height;
+                let eyeCenterDistance = CoordDistance3D (navigationCamera.eye, navigationCamera.center);
+                let frustumHalfHeight = eyeCenterDistance * Math.tan (0.5 * navigationCamera.fov * DegRad);
+                this.camera.left = -frustumHalfHeight * aspect;
+                this.camera.right = frustumHalfHeight * aspect;
+                this.camera.top = frustumHalfHeight;
+                this.camera.bottom = -frustumHalfHeight;
+                this.camera.updateProjectionMatrix ();
+            }
+        }
 
         this.shading.UpdateByCamera (navigationCamera);
         this.renderer.render (this.scene, this.camera);
@@ -519,7 +600,9 @@ export class Viewer
     InitNavigation ()
     {
         let camera = GetDefaultCamera (Direction.Z);
-        this.camera = new THREE.PerspectiveCamera (camera.fov, this.canvas.width / this.canvas.height, 0.1, 1000.0);
+        this.camera = new THREE.PerspectiveCamera (45.0, 1.0, 0.1, 1000.0);
+        this.cameraMode = CameraMode.Perspective;
+        this.cameraValidator = new CameraValidator ();
         this.scene.add (this.camera);
 
         let canvasElem = this.renderer.domElement;
