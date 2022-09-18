@@ -85,8 +85,8 @@
 			InitRenderer ('perspective_canvas', perspectiveCamera, width, height);
 
 			let eyeCenterDistance = eye.distanceTo (center);
-			var frustumHeight = 2.0 * eyeCenterDistance * Math.tan (fieldOfView * 0.5 * (Math.PI / 180.0)) / 2.0;
-			let orthographicCamera = new THREE.OrthographicCamera (-frustumHeight * aspect, frustumHeight * aspect, frustumHeight, -frustumHeight, nearPlane, farPlane);
+			var frustumHalfHeight = eyeCenterDistance * Math.tan (0.5 * fieldOfView * (Math.PI / 180.0));
+			let orthographicCamera = new THREE.OrthographicCamera (-frustumHalfHeight * aspect, frustumHalfHeight * aspect, frustumHalfHeight, -frustumHalfHeight, nearPlane, farPlane);
 			orthographicCamera.position.set (eye.x, eye.y, eye.z);
 			orthographicCamera.up.set (up.x, up.y, up.z);
 			orthographicCamera.lookAt (center);
