@@ -558,7 +558,7 @@ export class Website
         });
         AddSeparator (this.toolbar, ['only_on_model']);
         if (FeatureSet.OrthographicView) {
-            AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Perspective camera', 'Orthographic camera'], 0, ['only_on_model'], (buttonIndex) => {
+            AddRadioButton (this.toolbar, ['camera_perspective', 'camera_orthographic'], ['Perspective camera', 'Orthographic camera'], 0, ['only_on_model'], (buttonIndex) => {
                 if (buttonIndex === 0) {
                     this.viewer.SetCameraMode (CameraMode.Perspective);
                 } else if (buttonIndex === 1) {
