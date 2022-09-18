@@ -69,19 +69,27 @@
 		{
 			let width = 600;
 			let height = 400;
+			let aspect = width / height;
+			let nearPlane = 0.1;
+			let farPlane = 100.0;
 
-			let perspectiveCamera = new THREE.PerspectiveCamera (45.0, width / height, 0.1, 1000.0);
-			perspectiveCamera.position.set (3.0, -1.5, 2.0);
-			perspectiveCamera.up.set (0.0, 0.0, 1.0);
-			perspectiveCamera.lookAt (new THREE.Vector3 (0.0, 0.0, 0.0));
+			let eye = new THREE.Vector3 (3.0, -1.5, 2.0);
+			let center = new THREE.Vector3 (0.0, 0.0, 0.0);
+			let up = new THREE.Vector3 (0.0, 0.0, 1.0);
+
+			let fieldOfView = 45.0;
+			let perspectiveCamera = new THREE.PerspectiveCamera (fieldOfView, aspect, nearPlane, farPlane);
+			perspectiveCamera.position.set (eye.x, eye.y, eye.z);
+			perspectiveCamera.up.set (up.x, up.y, up.z);
+			perspectiveCamera.lookAt (center);
 			InitRenderer ('perspective_canvas', perspectiveCamera, width, height);
 
-			let aspect = width / height;
-			let frustumSize = 2.0;
-			let orthographicCamera = new THREE.OrthographicCamera (-frustumSize * aspect, frustumSize * aspect, frustumSize, -frustumSize, 0, 10);
-			orthographicCamera.position.set (3.0, -1.5, 2.0);
-			orthographicCamera.up.set (0.0, 0.0, 1.0);
-			orthographicCamera.lookAt (new THREE.Vector3 (0.0, 0.0, 0.0));
+			let eyeCenterDistance = eye.distanceTo (center);
+			var frustumHeight = 2.0 * eyeCenterDistance * Math.tan (fieldOfView * 0.5 * (Math.PI / 180.0)) / 2.0;
+			let orthographicCamera = new THREE.OrthographicCamera (-frustumHeight * aspect, frustumHeight * aspect, frustumHeight, -frustumHeight, nearPlane, farPlane);
+			orthographicCamera.position.set (eye.x, eye.y, eye.z);
+			orthographicCamera.up.set (up.x, up.y, up.z);
+			orthographicCamera.lookAt (center);
 			InitRenderer ('ortographic_canvas', orthographicCamera, width, height);
 		}
 
