@@ -54,7 +54,7 @@
 		"draco3d": "1.5.3",
 		"fflate": "0.7.3",
 		"rhino3dm": "7.15.0",
-		"three": "0.143.0",
+		"three": "0.144.0",
 		"web-ifc": "0.0.35",
 		"occt-import-js" : "0.0.10"
 	},
