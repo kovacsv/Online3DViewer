@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+
+	<title>Online 3D Viewer</title>
+
+	<style>
+		canvas
+		{
+			border: 1px solid #cccccc;
+		}
+	</style>
+
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.144.0/build/three.min.js"></script>
+	<script type='text/javascript'>
+		function InitRenderer (canvasId, camera, width, height)
+		{
+			function CreateAxisLine (color, dir)
+			{
+				const lineMaterial = new THREE.LineBasicMaterial ({
+					color: color
+				});
+				const lineGeometry = new THREE.BufferGeometry ().setFromPoints ([
+					new THREE.Vector3 (0, 0, 0),
+					dir
+				]);
+				return new THREE.Line (lineGeometry, lineMaterial);
+			}
+
+			let canvas = document.getElementById (canvasId);
+
+			let parameters = {
+				canvas : canvas,
+				antialias : true
+			};
+
+			let renderer = new THREE.WebGLRenderer (parameters);
+			renderer.setClearColor ('#ffffff', 1);
+			renderer.setSize (width, height);
+
+			let scene = new THREE.Scene ();
+
+			let ambientLight = new THREE.AmbientLight (0x888888);
+			scene.add (ambientLight);
+
+			let light = new THREE.DirectionalLight (0x888888);
+			light.position.set (3.0, -1.5, 2.0);
+			scene.add (light);
+
+			let box = new THREE.BoxGeometry (1.0, 1.0, 1.0);
+			let material = new THREE.MeshPhongMaterial ({
+				color : 0xaaaaaa
+			});
+			let mesh = new THREE.Mesh (box, material);
+			scene.add (mesh);
+
+			scene.add (CreateAxisLine (0xff0000, new THREE.Vector3 (2.0, 0.0, 0.0)));
+			scene.add (CreateAxisLine (0x00ff00, new THREE.Vector3 (0.0, 2.0, 0.0)));
+			scene.add (CreateAxisLine (0x0000ff, new THREE.Vector3 (0.0, 0.0, 2.0)));
+
+			scene.add (camera);
+			renderer.render (scene, camera);
+		}
+
+		function Sandbox3D ()
+		{
+			let width = 600;
+			let height = 400;
+
+			let perspectiveCamera = new THREE.PerspectiveCamera (45.0, width / height, 0.1, 1000.0);
+			perspectiveCamera.position.set (3.0, -1.5, 2.0);
+			perspectiveCamera.up.set (0.0, 0.0, 1.0);
+			perspectiveCamera.lookAt (new THREE.Vector3 (0.0, 0.0, 0.0));
+			InitRenderer ('perspective_canvas', perspectiveCamera, width, height);
+
+			let aspect = width / height;
+			let frustumSize = 2.0;
+			let orthographicCamera = new THREE.OrthographicCamera (-frustumSize * aspect, frustumSize * aspect, frustumSize, -frustumSize, 0, 10);
+			orthographicCamera.position.set (3.0, -1.5, 2.0);
+			orthographicCamera.up.set (0.0, 0.0, 1.0);
+			orthographicCamera.lookAt (new THREE.Vector3 (0.0, 0.0, 0.0));
+			InitRenderer ('ortographic_canvas', orthographicCamera, width, height);
+		}
+
+		window.onload = function () {
+			Sandbox3D ();
+		};
+	</script>
+</head>
+
+<body>
+	<canvas id="perspective_canvas"></canvas>
+	<canvas id="ortographic_canvas"></canvas>
+</body>
+
+</html>
