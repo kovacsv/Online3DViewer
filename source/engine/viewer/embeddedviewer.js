@@ -27,6 +27,10 @@ export class EmbeddedViewer
         let height = this.parentElement.clientHeight;
         this.viewer.Resize (width, height);
 
+        if (this.parameters.cameraMode) {
+            this.viewer.SetCameraMode (this.parameters.cameraMode);
+        }
+
         if (this.parameters.backgroundColor) {
             this.viewer.SetBackgroundColor (this.parameters.backgroundColor);
         }
@@ -172,6 +176,12 @@ export function Init3DViewerElements (onReady)
             camera = ParameterConverter.StringToCamera (cameraParams);
         }
 
+        let cameraMode = null;
+        let cameraModeParams = element.getAttribute ('cameramode');
+        if (cameraModeParams) {
+            cameraMode = ParameterConverter.StringToCameraMode (cameraModeParams);
+        }
+
         let backgroundColor = null;
         let backgroundColorParams = element.getAttribute ('backgroundcolor');
         if (backgroundColorParams) {
@@ -215,6 +225,7 @@ export function Init3DViewerElements (onReady)
 
         return Init3DViewerElement (element, modelUrls, {
             camera : camera,
+            cameraMode : cameraMode,
             backgroundColor : backgroundColor,
             defaultColor : defaultColor,
             edgeSettings : edgeSettings,

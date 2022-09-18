@@ -337,6 +337,11 @@ export class Viewer
         return this.navigation.GetCamera ();
     }
 
+    GetCameraMode ()
+    {
+        return this.cameraMode;
+    }
+
     SetCamera (camera)
     {
         this.navigation.SetCamera (camera);
@@ -390,6 +395,14 @@ export class Viewer
 
         let newCamera = this.navigation.GetFitToSphereCamera (center, radius);
         this.navigation.MoveCamera (newCamera, animation ? this.settings.animationSteps : 0);
+    }
+
+    AdjustClippingPlanes ()
+    {
+        let boundingSphere = this.GetBoundingSphere ((meshUserData) => {
+            return true;
+        });
+        this.AdjustClippingPlanesToSphere (boundingSphere);
     }
 
     AdjustClippingPlanesToSphere (boundingSphere)

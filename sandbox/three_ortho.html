@@ -90,7 +90,7 @@
 			orthographicCamera.position.set (eye.x, eye.y, eye.z);
 			orthographicCamera.up.set (up.x, up.y, up.z);
 			orthographicCamera.lookAt (center);
-			InitRenderer ('ortographic_canvas', orthographicCamera, width, height);
+			InitRenderer ('orthographic_canvas', orthographicCamera, width, height);
 		}
 
 		window.onload = function () {
@@ -101,7 +101,7 @@
 
 <body>
 	<canvas id="perspective_canvas"></canvas>
-	<canvas id="ortographic_canvas"></canvas>
+	<canvas id="orthographic_canvas"></canvas>
 </body>
 
 </html>

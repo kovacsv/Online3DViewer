@@ -1,7 +1,7 @@
 import { GetFileExtension, TransformFileHostUrls } from '../engine/io/fileutils.js';
 import { InputFilesFromFileObjects, InputFilesFromUrls } from '../engine/import/importerfiles.js';
 import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
-import { Viewer } from '../engine/viewer/viewer.js';
+import { CameraMode, Viewer } from '../engine/viewer/viewer.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToScreen, ShowListPopup } from './dialogs.js';
 import { HandleEvent } from './eventhandler.js';
@@ -23,6 +23,7 @@ import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { ShadingType } from '../engine/threejs/threeutils.js';
 import { MeasureTool } from './measuretool.js';
 import { CloseAllDialogs } from './dialog.js';
+import { FeatureSet } from './featureset.js';
 
 import * as THREE from 'three';
 
@@ -556,14 +557,33 @@ export class Website
             this.viewer.FlipUpVector ();
         });
         AddSeparator (this.toolbar, ['only_on_model']);
-        AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, ['only_on_model'], (buttonIndex) => {
-            if (buttonIndex === 0) {
-                this.viewer.SetFixUpVector (true);
-            } else if (buttonIndex === 1) {
-                this.viewer.SetFixUpVector (false);
-            }
-        });
-        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
+        if (FeatureSet.OrthographicView) {
+            AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Perspective camera', 'Orthographic camera'], 0, ['only_on_model'], (buttonIndex) => {
+                if (buttonIndex === 0) {
+                    this.viewer.SetCameraMode (CameraMode.Perspective);
+                } else if (buttonIndex === 1) {
+                    this.viewer.SetCameraMode (CameraMode.Orthographic);
+                }
+            });
+            AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
+            AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, ['only_full_width', 'only_on_model'], (buttonIndex) => {
+                if (buttonIndex === 0) {
+                    this.viewer.SetFixUpVector (true);
+                } else if (buttonIndex === 1) {
+                    this.viewer.SetFixUpVector (false);
+                }
+            });
+            AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
+        } else {
+            AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, ['only_on_model'], (buttonIndex) => {
+                if (buttonIndex === 0) {
+                    this.viewer.SetFixUpVector (true);
+                } else if (buttonIndex === 1) {
+                    this.viewer.SetFixUpVector (false);
+                }
+            });
+            AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
+        }
         let measureToolButton = AddPushButton (this.toolbar, 'measure', 'Measure', ['only_full_width', 'only_on_model'], (isSelected) => {
             HandleEvent ('measure_tool_activated', isSelected ? 'on' : 'off');
             this.navigator.SetSelection (null);
@@ -582,7 +602,7 @@ export class Website
             });
         });
         AddButton (this.toolbar, 'share', 'Share model', ['only_full_width', 'only_on_model'], () => {
-            ShowSharingDialog (importer.GetFileList (), this.settings, this.viewer.GetCamera ());
+            ShowSharingDialog (importer.GetFileList (), this.settings, this.viewer);
         });
 
         this.parameters.fileInput.addEventListener ('change', (ev) => {

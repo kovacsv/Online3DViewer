@@ -7,7 +7,7 @@ import { ButtonDialog } from './dialog.js';
 import { CopyToClipboard } from './utils.js';
 import { HandleEvent } from './eventhandler.js';
 
-export function ShowSharingDialog (fileList, settings, camera)
+export function ShowSharingDialog (fileList, settings, viewer)
 {
     function AddCheckboxLine (parentDiv, text, id, onChange)
     {
@@ -55,14 +55,15 @@ export function ShowSharingDialog (fileList, settings, camera)
         sharingLinkInput.value = GetSharingLink (modelFiles);
     }
 
-    function AddEmbeddingCodeTab (parentDiv, modelFiles, settings, camera)
+    function AddEmbeddingCodeTab (parentDiv, modelFiles, settings, viewer)
     {
-        function GetEmbeddingCode (modelFiles, useCurrentSettings, settings, camera)
+        function GetEmbeddingCode (modelFiles, useCurrentSettings, settings, viewer)
         {
             let builder = CreateUrlBuilder ();
             builder.AddModelUrls (modelFiles);
             if (useCurrentSettings) {
-                builder.AddCamera (camera);
+                builder.AddCamera (viewer.GetCamera ());
+                builder.AddCameraMode (viewer.GetCameraMode ());
                 let environmentSettings = {
                     environmentMapName : settings.environmentMapName,
                     backgroundIsEnvMap : settings.backgroundIsEnvMap
@@ -95,14 +96,14 @@ export function ShowSharingDialog (fileList, settings, camera)
         let optionsSection = AddDiv (section, 'ov_dialog_section');
         let embeddingCodeInput = AddCopyableTextInput (section, () => {
             HandleEvent ('model_shared', 'embedding_code');
-            return GetEmbeddingCode (modelFiles, useCurrentSettings, settings, camera);
+            return GetEmbeddingCode (modelFiles, useCurrentSettings, settings, viewer);
         });
         AddCheckboxLine (optionsSection, 'Use customized settings', 'embed_current_settings', (checked) => {
             useCurrentSettings = checked;
-            embeddingCodeInput.value = GetEmbeddingCode (modelFiles, useCurrentSettings, settings, camera);
+            embeddingCodeInput.value = GetEmbeddingCode (modelFiles, useCurrentSettings, settings, viewer);
         });
 
-        embeddingCodeInput.value = GetEmbeddingCode (modelFiles, useCurrentSettings, settings, camera);
+        embeddingCodeInput.value = GetEmbeddingCode (modelFiles, useCurrentSettings, settings, viewer);
     }
 
     if (!fileList.IsOnlyUrlSource ()) {
@@ -133,7 +134,7 @@ export function ShowSharingDialog (fileList, settings, camera)
     ]);
 
     AddSharingLinkTab (contentDiv, modelFiles);
-    AddEmbeddingCodeTab (contentDiv, modelFiles, settings, camera);
+    AddEmbeddingCodeTab (contentDiv, modelFiles, settings, viewer);
 
     dialog.Open ();
     return dialog;

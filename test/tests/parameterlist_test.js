@@ -15,22 +15,42 @@ describe ('Parameter List', function () {
         );
         let background = new OV.RGBAColor (4, 5, 6, 7);
         let color = new OV.RGBColor (1, 2, 3);
-        let urlParams1 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).GetParameterList ();
-        let urlParams2 = OV.CreateUrlBuilder ().AddCamera (camera).GetParameterList ();
-        let urlParams3 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).GetParameterList ();
-        let urlParams4 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).AddDefaultColor (color).GetParameterList ();
-        let urlParams5 = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).AddBackgroundColor (background).AddDefaultColor (color).GetParameterList ();
-        let urlParams6 = OV.CreateUrlBuilder ().AddEdgeSettings ({
-            showEdges : true,
-            edgeColor : new OV.RGBColor (1, 2, 3),
-            edgeThreshold : 15
-        }).GetParameterList ();
-        assert.strictEqual (urlParams1, 'model=a.txt,b.txt');
-        assert.strictEqual (urlParams2, 'camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000');
-        assert.strictEqual (urlParams3, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000');
-        assert.strictEqual (urlParams4, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000$defaultcolor=1,2,3');
-        assert.strictEqual (urlParams5, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000$backgroundcolor=4,5,6,7$defaultcolor=1,2,3');
-        assert.strictEqual (urlParams6, 'edgesettings=on,1,2,3,15');
+        {
+            let urlParams = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).GetParameterList ();
+            assert.strictEqual (urlParams, 'model=a.txt,b.txt');
+        }
+        {
+            let urlParams = OV.CreateUrlBuilder ().AddCamera (camera).GetParameterList ();
+            assert.strictEqual (urlParams, 'camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000');
+        }
+        {
+            let urlParams = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).GetParameterList ();
+            assert.strictEqual (urlParams, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000');
+        }
+        {
+            let urlParams = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).AddDefaultColor (color).GetParameterList ();
+            assert.strictEqual (urlParams, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000$defaultcolor=1,2,3');
+        }
+        {
+            let urlParams = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).AddBackgroundColor (background).AddDefaultColor (color).GetParameterList ();
+            assert.strictEqual (urlParams, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000$backgroundcolor=4,5,6,7$defaultcolor=1,2,3');
+        }
+        {
+            let urlParams = OV.CreateUrlBuilder ().AddEdgeSettings ({
+                showEdges : true,
+                edgeColor : new OV.RGBColor (1, 2, 3),
+                edgeThreshold : 15
+            }).GetParameterList ();
+            assert.strictEqual (urlParams, 'edgesettings=on,1,2,3,15');
+        }
+        {
+            let urlParams = OV.CreateUrlBuilder ().AddCameraMode (OV.CameraMode.Perspective).GetParameterList ();
+            assert.strictEqual (urlParams, 'cameramode=perspective');
+        }
+        {
+            let urlParams = OV.CreateUrlBuilder ().AddCameraMode (OV.CameraMode.Orthographic).GetParameterList ();
+            assert.strictEqual (urlParams, 'cameramode=orthographic');
+        }
     });
 
     it ('Parameter list parser', function () {
@@ -43,48 +63,72 @@ describe ('Parameter List', function () {
         );
         let background = new OV.RGBAColor (4, 5, 6, 7);
         let color = new OV.RGBColor (1, 2, 3);
-        let urlParamsLegacy = 'a.txt,b.txt';
-        let urlParams1 = 'model=a.txt,b.txt';
-        let urlParams2 = 'camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000';
-        let urlParams2b = 'camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000,60.0000';
-        let urlParams3 = 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000';
-        let urlParams4 = 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$defaultcolor=1,2,3';
-        let urlParams5 = 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$backgroundcolor=4,5,6,7$defaultcolor=1,2,3';
-        let urlParams6 = 'edgesettings=on,1,2,3,15';
-        let parserLegacy = OV.CreateUrlParser (urlParamsLegacy);
-        assert.deepStrictEqual (parserLegacy.GetModelUrls (), modelUrls);
-        assert.deepStrictEqual (parserLegacy.GetCamera (), null);
-        let parser1 = OV.CreateUrlParser (urlParams1);
-        assert.deepStrictEqual (parser1.GetModelUrls (), modelUrls);
-        assert.deepStrictEqual (parser1.GetCamera (), null);
-        assert.deepStrictEqual (parser1.GetDefaultColor (), null);
-        let parser2 = OV.CreateUrlParser (urlParams2);
-        assert.deepStrictEqual (parser2.GetModelUrls (), null);
-        assert.deepStrictEqual (parser2.GetCamera (), camera);
-        assert.deepStrictEqual (parser2.GetDefaultColor (), null);
-        let parser2b = OV.CreateUrlParser (urlParams2b);
-        assert.deepStrictEqual (parser2b.GetModelUrls (), null);
-        assert.deepStrictEqual (parser2b.GetCamera (), new OV.Camera (new OV.Coord3D (1.0, 1.0, 1.0), new OV.Coord3D (0.0, 0.0, 0.0), new OV.Coord3D (0.0, 0.0, 1.0), 60.0));
-        assert.deepStrictEqual (parser2b.GetDefaultColor (), null);
-        let parser3 = OV.CreateUrlParser (urlParams3);
-        assert.deepStrictEqual (parser3.GetModelUrls (), modelUrls);
-        assert.deepStrictEqual (parser3.GetCamera (), camera);
-        assert.deepStrictEqual (parser3.GetDefaultColor (), null);
-        let parser4 = OV.CreateUrlParser (urlParams4);
-        assert.deepStrictEqual (parser4.GetModelUrls (), modelUrls);
-        assert.deepStrictEqual (parser4.GetCamera (), camera);
-        assert.deepStrictEqual (parser4.GetDefaultColor (), color);
-        let parser5 = OV.CreateUrlParser (urlParams5);
-        assert.deepStrictEqual (parser5.GetModelUrls (), modelUrls);
-        assert.deepStrictEqual (parser5.GetCamera (), camera);
-        assert.deepStrictEqual (parser5.GetDefaultColor (), color);
-        assert.deepStrictEqual (parser5.GetBackgroundColor (), background);
-        let parser6 = OV.CreateUrlParser (urlParams6);
-        assert.deepStrictEqual (parser6.GetEdgeSettings (), {
-            showEdges : true,
-            edgeColor : new OV.RGBColor (1, 2, 3),
-            edgeThreshold : 15
-        });
+
+        {
+            let parser = OV.CreateUrlParser ('a.txt,b.txt');
+            assert.deepStrictEqual (parser.GetModelUrls (), modelUrls);
+            assert.deepStrictEqual (parser.GetCamera (), null);
+        }
+
+        {
+            let parser = OV.CreateUrlParser ('model=a.txt,b.txt');
+            assert.deepStrictEqual (parser.GetModelUrls (), modelUrls);
+            assert.deepStrictEqual (parser.GetCamera (), null);
+            assert.deepStrictEqual (parser.GetDefaultColor (), null);
+        }
+
+        {
+            let parser = OV.CreateUrlParser ('camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000');
+            assert.deepStrictEqual (parser.GetModelUrls (), null);
+            assert.deepStrictEqual (parser.GetCamera (), camera);
+            assert.deepStrictEqual (parser.GetDefaultColor (), null);
+        }
+
+        {
+            let parser = OV.CreateUrlParser ('camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000,60.0000');
+            assert.deepStrictEqual (parser.GetModelUrls (), null);
+            assert.deepStrictEqual (parser.GetCamera (), new OV.Camera (new OV.Coord3D (1.0, 1.0, 1.0), new OV.Coord3D (0.0, 0.0, 0.0), new OV.Coord3D (0.0, 0.0, 1.0), 60.0));
+            assert.deepStrictEqual (parser.GetDefaultColor (), null);
+        }
+
+        {
+            let parser = OV.CreateUrlParser ('model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000');
+            assert.deepStrictEqual (parser.GetModelUrls (), modelUrls);
+            assert.deepStrictEqual (parser.GetCamera (), camera);
+            assert.deepStrictEqual (parser.GetDefaultColor (), null);
+        }
+
+        {
+            let parser = OV.CreateUrlParser ('model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$defaultcolor=1,2,3');
+            assert.deepStrictEqual (parser.GetModelUrls (), modelUrls);
+            assert.deepStrictEqual (parser.GetCamera (), camera);
+            assert.deepStrictEqual (parser.GetDefaultColor (), color);
+        }
+
+        {
+            let parser = OV.CreateUrlParser ('model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$backgroundcolor=4,5,6,7$defaultcolor=1,2,3');
+            assert.deepStrictEqual (parser.GetModelUrls (), modelUrls);
+            assert.deepStrictEqual (parser.GetCamera (), camera);
+            assert.deepStrictEqual (parser.GetDefaultColor (), color);
+            assert.deepStrictEqual (parser.GetBackgroundColor (), background);
+        }
+
+        {
+            let parser = OV.CreateUrlParser ('edgesettings=on,1,2,3,15');
+            assert.deepStrictEqual (parser.GetEdgeSettings (), {
+                showEdges : true,
+                edgeColor : new OV.RGBColor (1, 2, 3),
+                edgeThreshold : 15
+            });
+        }
+        {
+            let parser = OV.CreateUrlParser ('cameramode=perspective');
+            assert.deepStrictEqual (parser.GetCameraMode (), OV.CameraMode.Perspective);
+        }
+        {
+            let parser = OV.CreateUrlParser ('cameramode=orthographic');
+            assert.deepStrictEqual (parser.GetCameraMode (), OV.CameraMode.Orthographic);
+        }
     });
 });
 

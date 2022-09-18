@@ -48,6 +48,12 @@ export class HashHandler
         return parser.GetCamera ();
     }
 
+    GetCameraModeFromHash ()
+    {
+        let parser = CreateUrlParser (this.GetHash ());
+        return parser.GetCameraMode ();
+    }
+
     GetBackgroundFromHash ()
     {
         let parser = CreateUrlParser (this.GetHash ());

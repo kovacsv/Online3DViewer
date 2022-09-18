@@ -49,6 +49,10 @@ export class Embed
             ];
             this.viewer.SetEnvironmentMapSettings (envMapTextures, bgIsEnvMap);
 
+            let cameraMode = this.hashHandler.GetCameraModeFromHash ();
+            if (cameraMode !== null) {
+                this.viewer.SetCameraMode (cameraMode);
+            }
             let background = this.hashHandler.GetBackgroundFromHash ();
             if (background !== null) {
                 this.viewer.SetBackgroundColor (background);

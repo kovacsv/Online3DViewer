@@ -1,6 +1,7 @@
 import { Coord3D } from '../geometry/coord3d.js';
 import { RGBAColor, RGBColor } from '../model/color.js';
 import { Camera } from '../viewer/camera.js';
+import { CameraMode } from '../viewer/viewer.js';
 
 export let ParameterConverter =
 {
@@ -55,6 +56,16 @@ export let ParameterConverter =
         return cameraParameters;
     },
 
+    CameraModeToString : function (cameraMode)
+    {
+        if (cameraMode === CameraMode.Perspective) {
+            return 'perspective';
+        } else if (cameraMode === CameraMode.Orthographic) {
+            return 'orthographic';
+        }
+        return null;
+    },
+
     StringToCamera : function (str)
     {
         if (str === null || str.length === 0) {
@@ -77,6 +88,16 @@ export let ParameterConverter =
             fieldOfView
         );
         return camera;
+    },
+
+    StringToCameraMode : function (str)
+    {
+        if (str === 'perspective') {
+            return CameraMode.Perspective;
+        } else if (str === 'orthographic') {
+            return CameraMode.Orthographic;
+        }
+        return null;
     },
 
     RGBColorToString : function (color)
@@ -224,6 +245,12 @@ export class ParameterListBuilder
         return this;
     }
 
+    AddCameraMode (cameraMode)
+    {
+        this.AddUrlPart ('cameramode', ParameterConverter.CameraModeToString (cameraMode));
+        return this;
+    }
+
     AddEnvironmentSettings (envSettings)
     {
         this.AddUrlPart ('envsettings', ParameterConverter.EnvironmentSettingsToString (envSettings));
@@ -288,6 +315,12 @@ export class ParameterListParser
     {
         let keywordParams = this.GetKeywordParams ('camera');
         return ParameterConverter.StringToCamera (keywordParams);
+    }
+
+    GetCameraMode ()
+    {
+        let keywordParams = this.GetKeywordParams ('cameramode');
+        return ParameterConverter.StringToCameraMode (keywordParams);
     }
 
     GetEnvironmentSettings ()
