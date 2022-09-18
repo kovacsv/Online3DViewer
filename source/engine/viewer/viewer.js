@@ -299,6 +299,8 @@ export class Viewer
     SetCamera (camera)
     {
         this.navigation.SetCamera (camera);
+        this.camera.fov = camera.fov;
+        this.camera.updateProjectionMatrix ();
         this.Render ();
     }
 

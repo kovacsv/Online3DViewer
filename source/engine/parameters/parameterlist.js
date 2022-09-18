@@ -61,7 +61,7 @@ export let ParameterConverter =
             return null;
         }
         let paramParts = str.split (',');
-        if (paramParts.length < 9) {
+        if (paramParts.length !== 9 && paramParts.length !== 10) {
             return null;
         }
 
