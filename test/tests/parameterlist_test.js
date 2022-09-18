@@ -10,7 +10,8 @@ describe ('Parameter List', function () {
         let camera = new OV.Camera (
             new OV.Coord3D (1.0, 1.0, 1.0),
             new OV.Coord3D (0.0, 0.0, 0.0),
-            new OV.Coord3D (0.0, 0.0, 1.0)
+            new OV.Coord3D (0.0, 0.0, 1.0),
+            45.0
         );
         let background = new OV.RGBAColor (4, 5, 6, 7);
         let color = new OV.RGBColor (1, 2, 3);
@@ -25,10 +26,10 @@ describe ('Parameter List', function () {
             edgeThreshold : 15
         }).GetParameterList ();
         assert.strictEqual (urlParams1, 'model=a.txt,b.txt');
-        assert.strictEqual (urlParams2, 'camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000');
-        assert.strictEqual (urlParams3, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000');
-        assert.strictEqual (urlParams4, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000$defaultcolor=1,2,3');
-        assert.strictEqual (urlParams5, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000$backgroundcolor=4,5,6,7$defaultcolor=1,2,3');
+        assert.strictEqual (urlParams2, 'camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000');
+        assert.strictEqual (urlParams3, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000');
+        assert.strictEqual (urlParams4, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000$defaultcolor=1,2,3');
+        assert.strictEqual (urlParams5, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000$backgroundcolor=4,5,6,7$defaultcolor=1,2,3');
         assert.strictEqual (urlParams6, 'edgesettings=on,1,2,3,15');
     });
 
@@ -37,13 +38,15 @@ describe ('Parameter List', function () {
         let camera = new OV.Camera (
             new OV.Coord3D (1.0, 1.0, 1.0),
             new OV.Coord3D (0.0, 0.0, 0.0),
-            new OV.Coord3D (0.0, 0.0, 1.0)
+            new OV.Coord3D (0.0, 0.0, 1.0),
+            45.0
         );
         let background = new OV.RGBAColor (4, 5, 6, 7);
         let color = new OV.RGBColor (1, 2, 3);
         let urlParamsLegacy = 'a.txt,b.txt';
         let urlParams1 = 'model=a.txt,b.txt';
         let urlParams2 = 'camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000';
+        let urlParams2b = 'camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000,60.0000';
         let urlParams3 = 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000';
         let urlParams4 = 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$defaultcolor=1,2,3';
         let urlParams5 = 'model=a.txt,b.txt$camera=1.0000,1.0000,1.0000,0.0000,0.0000,0.0000,0.0000,0.0000,1.0000$backgroundcolor=4,5,6,7$defaultcolor=1,2,3';
@@ -59,6 +62,10 @@ describe ('Parameter List', function () {
         assert.deepStrictEqual (parser2.GetModelUrls (), null);
         assert.deepStrictEqual (parser2.GetCamera (), camera);
         assert.deepStrictEqual (parser2.GetDefaultColor (), null);
+        let parser2b = OV.CreateUrlParser (urlParams2b);
+        assert.deepStrictEqual (parser2b.GetModelUrls (), null);
+        assert.deepStrictEqual (parser2b.GetCamera (), new OV.Camera (new OV.Coord3D (1.0, 1.0, 1.0), new OV.Coord3D (0.0, 0.0, 0.0), new OV.Coord3D (0.0, 0.0, 1.0), 60.0));
+        assert.deepStrictEqual (parser2b.GetDefaultColor (), null);
         let parser3 = OV.CreateUrlParser (urlParams3);
         assert.deepStrictEqual (parser3.GetModelUrls (), modelUrls);
         assert.deepStrictEqual (parser3.GetCamera (), camera);

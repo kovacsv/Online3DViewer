@@ -339,7 +339,7 @@ export class Navigation
 		this.Update ();
 	}
 
-	GetFitToSphereCamera (center, radius, fov)
+	GetFitToSphereCamera (center, radius)
 	{
 		if (IsZero (radius)) {
 			return null;
@@ -352,7 +352,7 @@ export class Navigation
 		fitCamera.center = center.Clone ();
 
 		let centerEyeDirection = SubCoord3D (fitCamera.eye, fitCamera.center).Normalize ();
-		let fieldOfView = fov / 2.0;
+		let fieldOfView = this.camera.fov / 2.0;
 		if (this.canvas.width < this.canvas.height) {
 			fieldOfView = fieldOfView * this.canvas.width / this.canvas.height;
 		}

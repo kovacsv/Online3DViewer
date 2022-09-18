@@ -49,7 +49,8 @@ export let ParameterConverter =
         let cameraParameters = [
             this.NumberToString (camera.eye.x), this.NumberToString (camera.eye.y), this.NumberToString (camera.eye.z),
             this.NumberToString (camera.center.x), this.NumberToString (camera.center.y), this.NumberToString (camera.center.z),
-            this.NumberToString (camera.up.x), this.NumberToString (camera.up.y), this.NumberToString (camera.up.z)
+            this.NumberToString (camera.up.x), this.NumberToString (camera.up.y), this.NumberToString (camera.up.z),
+            this.NumberToString (camera.fov)
         ].join (',');
         return cameraParameters;
     },
@@ -60,13 +61,20 @@ export let ParameterConverter =
             return null;
         }
         let paramParts = str.split (',');
-        if (paramParts.length !== 9) {
+        if (paramParts.length < 9) {
             return null;
         }
+
+        let fieldOfView = 45.0;
+        if (paramParts.length >= 10) {
+            fieldOfView = this.StringToNumber (paramParts[9]);
+        }
+
         let camera = new Camera (
             new Coord3D (this.StringToNumber (paramParts[0]), this.StringToNumber (paramParts[1]), this.StringToNumber (paramParts[2])),
             new Coord3D (this.StringToNumber (paramParts[3]), this.StringToNumber (paramParts[4]), this.StringToNumber (paramParts[5])),
-            new Coord3D (this.StringToNumber (paramParts[6]), this.StringToNumber (paramParts[7]), this.StringToNumber (paramParts[8]))
+            new Coord3D (this.StringToNumber (paramParts[6]), this.StringToNumber (paramParts[7]), this.StringToNumber (paramParts[8])),
+            fieldOfView
         );
         return camera;
     },

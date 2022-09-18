@@ -11,23 +11,27 @@ import * as THREE from 'three';
 
 export function GetDefaultCamera (direction)
 {
+    let fieldOfView = 45.0;
     if (direction === Direction.X) {
         return new Camera (
             new Coord3D (2.0, -3.0, 1.5),
             new Coord3D (0.0, 0.0, 0.0),
-            new Coord3D (1.0, 0.0, 0.0)
+            new Coord3D (1.0, 0.0, 0.0),
+            fieldOfView
         );
     } else if (direction === Direction.Y) {
         return new Camera (
             new Coord3D (-1.5, 2.0, 3.0),
             new Coord3D (0.0, 0.0, 0.0),
-            new Coord3D (0.0, 1.0, 0.0)
+            new Coord3D (0.0, 1.0, 0.0),
+            fieldOfView
         );
     } else if (direction === Direction.Z) {
         return new Camera (
             new Coord3D (-1.5, -3.0, 2.0),
             new Coord3D (0.0, 0.0, 0.0),
-            new Coord3D (0.0, 0.0, 1.0)
+            new Coord3D (0.0, 0.0, 1.0),
+            fieldOfView
         );
     }
     return null;
@@ -322,9 +326,8 @@ export class Viewer
         }
         let center = new Coord3D (boundingSphere.center.x, boundingSphere.center.y, boundingSphere.center.z);
         let radius = boundingSphere.radius;
-        let fov = this.camera.fov;
 
-        let newCamera = this.navigation.GetFitToSphereCamera (center, radius, fov);
+        let newCamera = this.navigation.GetFitToSphereCamera (center, radius);
         this.navigation.MoveCamera (newCamera, animation ? this.settings.animationSteps : 0);
     }
 
@@ -513,12 +516,11 @@ export class Viewer
 
     InitNavigation ()
     {
-        this.camera = new THREE.PerspectiveCamera (45.0, this.canvas.width / this.canvas.height, 0.1, 1000.0);
+        let camera = GetDefaultCamera (Direction.Z);
+        this.camera = new THREE.PerspectiveCamera (camera.fov, this.canvas.width / this.canvas.height, 0.1, 1000.0);
         this.scene.add (this.camera);
 
         let canvasElem = this.renderer.domElement;
-        let camera = GetDefaultCamera (Direction.Z);
-
         this.navigation = new Navigation (canvasElem, camera, {
             onUpdate : () => {
                 this.Render ();
