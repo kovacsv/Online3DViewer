@@ -31,10 +31,11 @@ export class ExporterBim extends ExporterBase
         let bimContent = {
             schema_version : '1.0.0',
             meshes : [],
-            elements : []
+            elements : [],
+            info : {}
         };
 
-        this.ExportProperties (exporterModel.GetModel (), bimContent);
+        this.ExportProperties (exporterModel.GetModel (), bimContent.info);
 
         let meshId = 0;
         exporterModel.EnumerateTransformedMeshes ((mesh) => {
@@ -71,7 +72,8 @@ export class ExporterBim extends ExporterBase
                     qz: 0.0,
                     qw: 1.0
                 },
-                guid : GenerateGuid ()
+                guid : GenerateGuid (),
+                info : {}
             };
 
             let defaultColor = null;
@@ -105,7 +107,9 @@ export class ExporterBim extends ExporterBase
                 bimElement.face_colors = faceColors;
             }
 
-            this.ExportProperties (mesh, bimElement);
+            bimElement.info['Name'] = mesh.GetName ();
+            this.ExportProperties (mesh, bimElement.info);
+
             bimContent.meshes.push (bimMesh);
             bimContent.elements.push (bimElement);
             meshId += 1;
@@ -119,15 +123,12 @@ export class ExporterBim extends ExporterBase
 
     ExportProperties (element, targetObject)
     {
-        let info = {};
         for (let groupIndex = 0; groupIndex < element.PropertyGroupCount (); groupIndex++) {
             let group = element.GetPropertyGroup (groupIndex);
             for (let propertyIndex = 0; propertyIndex < group.PropertyCount (); propertyIndex++) {
                 let property = group.GetProperty (propertyIndex);
-                info[property.name] = PropertyToString (property);
+                targetObject[property.name] = PropertyToString (property);
             }
         }
-
-        targetObject.info = info;
     }
 }
