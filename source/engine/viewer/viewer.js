@@ -167,6 +167,7 @@ export class ShadingModel
         this.scene = scene;
 
         this.type = ShadingType.Phong;
+        this.cameraMode = CameraMode.Perspective;
         this.ambientLight = new THREE.AmbientLight (0x888888);
         this.directionalLight = new THREE.DirectionalLight (0x888888);
         this.environment = null;
@@ -176,9 +177,15 @@ export class ShadingModel
         this.scene.add (this.directionalLight);
     }
 
-    SetType (type)
+    SetShadingType (type)
     {
         this.type = type;
+        this.UpdateShading ();
+    }
+
+    SetCameraMode (cameraMode)
+    {
+        this.cameraMode = cameraMode;
         this.UpdateShading ();
     }
 
@@ -193,7 +200,7 @@ export class ShadingModel
             this.directionalLight.color.set (0x555555);
             this.scene.environment = this.environment;
         }
-        if (this.backgroundIsEnvMap) {
+        if (this.backgroundIsEnvMap && this.cameraMode === CameraMode.Perspective) {
             this.scene.background = this.environment;
         } else {
             this.scene.background = null;
@@ -250,7 +257,7 @@ export class Viewer
         this.camera = null;
         this.cameraMode = null;
         this.cameraValidator = null;
-        this.shading = null;
+        this.shadingModel = null;
         this.navigation = null;
         this.upVector = null;
         this.settings = {
@@ -302,10 +309,10 @@ export class Viewer
 
     SetEnvironmentMapSettings (textures, useAsBackground)
     {
-        this.shading.SetEnvironment (textures, useAsBackground, () => {
+        this.shadingModel.SetEnvironment (textures, useAsBackground, () => {
             this.Render ();
         });
-        this.shading.UpdateShading ();
+        this.shadingModel.UpdateShading ();
         this.Render ();
     }
 
@@ -364,6 +371,7 @@ export class Viewer
         this.scene.add (this.camera);
 
         this.cameraMode = cameraMode;
+        this.shadingModel.SetCameraMode (cameraMode);
         this.cameraValidator.ForceUpdate ();
 
         this.AdjustClippingPlanes ();
@@ -490,7 +498,7 @@ export class Viewer
             }
         }
 
-        this.shading.UpdateByCamera (navigationCamera);
+        this.shadingModel.UpdateByCamera (navigationCamera);
         this.renderer.render (this.scene, this.camera);
     }
 
@@ -498,7 +506,7 @@ export class Viewer
     {
         const shadingType = GetShadingTypeOfObject (object);
         this.geometry.SetMainObject (object);
-        this.shading.SetType (shadingType);
+        this.shadingModel.SetShadingType (shadingType);
 
         this.Render ();
     }
@@ -572,7 +580,7 @@ export class Viewer
     CreateHighlightMaterial (highlightColor)
     {
         const showEdges = this.geometry.edgeSettings.showEdges;
-        return this.shading.CreateHighlightMaterial (highlightColor, showEdges);
+        return this.shadingModel.CreateHighlightMaterial (highlightColor, showEdges);
     }
 
     GetMeshUserDataUnderMouse (mouseCoords)
@@ -631,12 +639,12 @@ export class Viewer
 
     InitShading  ()
     {
-        this.shading = new ShadingModel (this.scene);
+        this.shadingModel = new ShadingModel (this.scene);
     }
 
     GetShadingType ()
     {
-        return this.shading.type;
+        return this.shadingModel.type;
     }
 
     GetImageSize ()
