@@ -8,9 +8,9 @@
 	"module": "./source/engine/main.js",
 	"repository": "github:kovacsv/Online3DViewer",
 	"keywords": [
-		"3d", "viewer",
-		"obj", "3ds", "stl", "ply", "gltf", "glb", "off", "3dm",
-		"fbx", "dae", "wrl", "3mf", "ifc", "stp", "igs", "bim"
+		"3d", "viewer", "cad",
+		"obj", "3ds", "stl", "ply", "gltf", "glb", "off", "3dm", "fbx",
+		"dae", "wrl", "3mf", "ifc", "brep", "step", "iges", "bim"
 	],
 	"files": [
 		"build/o3dv.min.js",
@@ -56,7 +56,7 @@
 		"rhino3dm": "7.15.0",
 		"three": "0.144.0",
 		"web-ifc": "0.0.35",
-		"occt-import-js" : "0.0.10"
+		"occt-import-js" : "0.0.11"
 	},
 	"eslintConfig": {
 		"env": {

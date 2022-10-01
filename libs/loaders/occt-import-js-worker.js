@@ -8,6 +8,8 @@ onmessage = async function (ev)
 		result = occt.ReadStepFile (ev.data.buffer);
 	} else if (ev.data.format === 'iges') {
 		result = occt.ReadIgesFile (ev.data.buffer);
+	} else if (ev.data.format === 'brep') {
+		result = occt.ReadBrepFile (ev.data.buffer);
 	}
 	postMessage (result);
 };

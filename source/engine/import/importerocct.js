@@ -16,7 +16,7 @@ export class ImporterOcct extends ImporterBase
 
     CanImportExtension (extension)
     {
-        return extension === 'stp' || extension === 'step' || extension === 'igs' || extension === 'iges';
+        return extension === 'stp' || extension === 'step' || extension === 'igs' || extension === 'iges' || extension === 'brp' || extension === 'brep';
     }
 
     GetUpDirection ()
@@ -58,6 +58,8 @@ export class ImporterOcct extends ImporterBase
             format = 'step';
         } else if (this.extension === 'igs' || this.extension === 'iges') {
             format = 'iges';
+        } else if (this.extension === 'brp' || this.extension === 'brep') {
+            format = 'brep';
         } else {
             onFinish ();
             return;
