@@ -72,21 +72,22 @@ export class ImporterOcct extends ImporterBase
         });
     }
 
-	ImportResultJson (stepContent, onFinish)
+	ImportResultJson (resultContent, onFinish)
 	{
-        if (!stepContent.success) {
+        if (!resultContent.success) {
+            onFinish ();
             return;
         }
         let colorToMaterial = new ColorToMaterialConverter (this.model);
         let rootNode = this.model.GetRootNode ();
-        this.ImportNode (stepContent, stepContent.root, rootNode, colorToMaterial);
+        this.ImportNode (resultContent, resultContent.root, rootNode, colorToMaterial);
         onFinish ();
 	}
 
-    ImportNode (stepContent, occtNode, parentNode, colorToMaterial)
+    ImportNode (resultContent, occtNode, parentNode, colorToMaterial)
     {
         for (let nodeMeshIndex of occtNode.meshes) {
-            let occtMesh = stepContent.meshes[nodeMeshIndex];
+            let occtMesh = resultContent.meshes[nodeMeshIndex];
             let mesh = this.ImportMesh (occtMesh, colorToMaterial);
             let meshIndex = this.model.AddMesh (mesh);
             parentNode.AddMeshIndex (meshIndex);
@@ -95,7 +96,7 @@ export class ImporterOcct extends ImporterBase
             let childNode = new Node ();
             childNode.SetName (childOcctNode.name);
             parentNode.AddChildNode (childNode);
-            this.ImportNode (stepContent, childOcctNode, childNode, colorToMaterial);
+            this.ImportNode (resultContent, childOcctNode, childNode, colorToMaterial);
         }
     }
 
