@@ -26,29 +26,25 @@ export class ImporterOcct extends ImporterBase
 
 	ClearContent ()
 	{
-
+        if (this.worker !== null) {
+            this.worker.terminate ();
+            this.worker = null;
+        }
 	}
 
     ResetContent ()
     {
-
+        this.worker = null;
     }
 
     ImportContent (fileContent, onFinish)
     {
-        if (this.worker === null) {
-            let workerPath = GetExternalLibPath ('loaders/occt-import-js-worker.js');
-            this.worker = new Worker (workerPath);
-        }
-
-        let onModelConverted = (ev) => {
+        let workerPath = GetExternalLibPath ('loaders/occt-import-js-worker.js');
+        this.worker = new Worker (workerPath);
+        this.worker.addEventListener ('message', (ev) => {
             this.ImportResultJson (ev.data, onFinish);
-            this.worker.removeEventListener ('message', onModelConverted);
-        };
-
-        this.worker.addEventListener ('message', onModelConverted);
+        });
         this.worker.addEventListener ('error', (ev) => {
-            this.worker = null;
             this.SetError ('Failed to load occt-import-js.');
             onFinish ();
         });
