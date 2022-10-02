@@ -39,8 +39,8 @@
 	"devDependencies": {
 		"clean-css-cli": "^5.6.1",
 		"docdash": "^1.2.0",
-		"esbuild": "^0.15.5",
-		"eslint": "^8.22.0",
+		"esbuild": "^0.15.10",
+		"eslint": "^8.24.0",
 		"eslint-plugin-unused-imports": "^2.0.0",
 		"fantasticon": "^1.2.2",
 		"http-server": "^14.0.0",
@@ -52,9 +52,9 @@
 	"dependencies": {
 		"@simonwep/pickr": "1.8.2",
 		"draco3d": "1.5.3",
-		"fflate": "0.7.3",
+		"fflate": "0.7.4",
 		"rhino3dm": "7.15.0",
-		"three": "0.144.0",
+		"three": "0.145.0",
 		"web-ifc": "0.0.35",
 		"occt-import-js" : "0.0.12"
 	},
