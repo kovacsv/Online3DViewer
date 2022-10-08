@@ -75,7 +75,7 @@ export class Mesh extends ModelObject3D
         return this.normals.length - 1;
     }
 
-    SetNormal (index, normal)
+SetNormal (index, normal)
     {
         this.normals[index] = normal;
     }

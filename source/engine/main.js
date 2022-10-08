@@ -26,6 +26,7 @@ import { Importer3dm } from './import/importer3dm.js';
 import { Importer3ds } from './import/importer3ds.js';
 import { ImporterBase } from './import/importerbase.js';
 import { ImporterBim } from './import/importerbim.js';
+import { ImporterFcstd } from './import/importerfcstd.js';
 import { InputFile, ImporterFile, ImporterFileList, InputFilesFromUrls, InputFilesFromFileObjects } from './import/importerfiles.js';
 import { ImporterGltf } from './import/importergltf.js';
 import { ImporterIfc } from './import/importerifc.js';
@@ -152,6 +153,7 @@ export {
     Importer3ds,
     ImporterBase,
     ImporterBim,
+    ImporterFcstd,
     InputFile,
     ImporterFile,
     ImporterFileList,

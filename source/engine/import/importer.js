@@ -16,6 +16,7 @@ import { ImporterBim } from './importerbim.js';
 import { ImporterThree3mf, ImporterThreeDae, ImporterThreeFbx, ImporterThreeWrl } from './importerthree.js';
 
 import * as fflate from 'fflate';
+import { ImporterFcstd } from './importerfcstd.js';
 
 export class ImportSettings
 {
@@ -91,6 +92,7 @@ export class Importer
             new Importer3dm (),
             new ImporterIfc (),
             new ImporterOcct (),
+            new ImporterFcstd (),
             new ImporterThreeFbx (),
             new ImporterThreeDae (),
             new ImporterThreeWrl (),
