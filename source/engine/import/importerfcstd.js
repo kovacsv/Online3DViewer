@@ -332,6 +332,12 @@ export class ImporterFcstd extends ImporterBase
         }
 
         let objectsToConvert = this.document.GetObjectListToConvert ();
+        if (objectsToConvert.length === 0) {
+            this.SetError ('No importable object found.');
+            onFinish ();
+            return;
+        }
+
         this.ConvertObjects (objectsToConvert, onFinish);
     }
 
