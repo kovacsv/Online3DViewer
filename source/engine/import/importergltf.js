@@ -803,6 +803,19 @@ export class ImporterGltf extends ImporterBase
 
     ImportPrimitive (gltf, primitive, mesh)
     {
+        function HasAttribute (gltf, primitive, attributeName)
+        {
+            let accessorIndex = primitive.attributes[attributeName];
+            if (accessorIndex === undefined) {
+                return false;
+            }
+            let accessor = gltf.accessors[accessorIndex];
+            if (accessor === undefined || accessor.count === 0) {
+                return false;
+            }
+            return true;
+        }
+
         if (this.gltfExtensions.ProcessPrimitive (this, gltf, primitive, mesh)) {
             return;
         }
@@ -811,10 +824,10 @@ export class ImporterGltf extends ImporterBase
             return;
         }
 
-        let hasVertices = (primitive.attributes.POSITION !== undefined);
-        let hasVertexColors = (primitive.attributes.COLOR_0 !== undefined);
-        let hasNormals = (primitive.attributes.NORMAL !== undefined);
-        let hasUVs = (primitive.attributes.TEXCOORD_0 !== undefined);
+        let hasVertices = HasAttribute (gltf, primitive, 'POSITION');
+        let hasVertexColors = HasAttribute (gltf, primitive, 'COLOR_0');
+        let hasNormals = HasAttribute (gltf, primitive, 'NORMAL');
+        let hasUVs = HasAttribute (gltf, primitive, 'TEXCOORD_0');
         let hasIndices = (primitive.indices !== undefined);
 
         let mode = GltfRenderMode.TRIANGLES;
