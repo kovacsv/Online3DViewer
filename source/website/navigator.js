@@ -70,9 +70,9 @@ export class Navigator
         this.callbacks = callbacks;
 
         this.panelSet.Init ({
-            onResize : () => {
+            onResizeRequested : () => {
                 ShowDomElement (this.splitterDiv, this.panelSet.IsPanelsVisible ());
-                this.callbacks.onResize ();
+                this.callbacks.onResizeRequested ();
             },
             onShowHidePanels : (show) => {
                 this.callbacks.onShowHidePanels (show);
@@ -91,7 +91,7 @@ export class Navigator
             },
             onMeshTemporarySelected : (meshInstanceId) => {
                 this.tempSelectedMeshId = meshInstanceId;
-                this.callbacks.updateMeshesSelection ();
+                this.callbacks.onMeshSelectionChanged ();
             },
             onMeshSelected : (meshInstanceId) => {
                 this.SetSelection (new Selection (SelectionType.Mesh, meshInstanceId));
@@ -123,7 +123,7 @@ export class Navigator
         });
 
         InstallVerticalSplitter (this.splitterDiv, this.mainDiv, false, () => {
-            this.callbacks.onResize ();
+            this.callbacks.onResizeRequested ();
         });
     }
 
@@ -175,19 +175,19 @@ export class Navigator
     ShowAllMeshes (show)
     {
         this.meshesPanel.ShowAllMeshes (show);
-        this.callbacks.updateMeshesVisibility ();
+        this.callbacks.onMeshVisibilityChanged ();
     }
 
     ToggleNodeVisibility (nodeId)
     {
         this.meshesPanel.ToggleNodeVisibility (nodeId);
-        this.callbacks.updateMeshesVisibility ();
+        this.callbacks.onMeshVisibilityChanged ();
     }
 
     ToggleMeshVisibility (meshInstanceId)
     {
         this.meshesPanel.ToggleMeshVisibility (meshInstanceId);
-        this.callbacks.updateMeshesVisibility ();
+        this.callbacks.onMeshVisibilityChanged ();
     }
 
     IsMeshIsolated (meshInstanceId)
@@ -198,7 +198,7 @@ export class Navigator
     IsolateMesh (meshInstanceId)
     {
         this.meshesPanel.IsolateMesh (meshInstanceId);
-        this.callbacks.updateMeshesVisibility ();
+        this.callbacks.onMeshVisibilityChanged ();
     }
 
     GetSelectedMeshId ()
@@ -252,13 +252,13 @@ export class Navigator
             }
         }
 
-        this.callbacks.updateMeshesSelection ();
+        this.callbacks.onMeshSelectionChanged ();
     }
 
     OnSelectionChanged ()
     {
         if (this.selection === null) {
-            this.callbacks.onModelSelected ();
+            this.callbacks.onSelectionCleared ();
         } else {
             if (this.selection.type === SelectionType.Material) {
                 this.callbacks.onMaterialSelected (this.selection.materialIndex);

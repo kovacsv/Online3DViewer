@@ -20,7 +20,6 @@ import { ShowSharingDialog } from './sharingdialog.js';
 import { HasDefaultMaterial, ReplaceDefaultMaterialColor } from '../engine/model/modelutils.js';
 import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
-import { ShadingType } from '../engine/threejs/threeutils.js';
 import { MeasureTool } from './measuretool.js';
 import { CloseAllDialogs } from './dialog.js';
 
@@ -180,7 +179,7 @@ export class Website
         this.viewer.SetMainObject (threeObject);
         this.viewer.SetUpVector (Direction.Y, false);
         this.navigator.FillTree (importResult);
-        this.UpdateSidebar ();
+        this.sidebar.Update ();
         this.FitModelToWindow (true);
     }
 
@@ -329,14 +328,6 @@ export class Website
             return meshInstanceIdKeys.has (meshUserData.originalMeshId.GetKey ());
         });
         this.viewer.FitSphereToWindow (boundingSphere, true);
-    }
-
-    UpdateSidebar ()
-    {
-        let shadingType = this.viewer.GetShadingType ();
-        let isPhysicallyBased = (shadingType === ShadingType.Physical);
-        let hasDefaultMaterial = HasDefaultMaterial (this.model);
-        this.sidebar.UpdateSettings (isPhysicallyBased, hasDefaultMaterial);
     }
 
     UpdateMeshesVisibility ()
@@ -628,21 +619,27 @@ export class Website
     InitSidebar ()
     {
         this.sidebar.Init ({
-            onEnvironmentMapChange : () => {
+            getShadingType : () => {
+                return this.viewer.GetShadingType ();
+            },
+            hasDefaultMaterial : () => {
+                return HasDefaultMaterial (this.model);
+            },
+            onEnvironmentMapChanged : () => {
                 this.settings.SaveToCookies ();
                 this.UpdateEnvironmentMap ();
                 if (this.measureTool.IsActive ()) {
                     this.measureTool.UpdatePanel ();
                 }
             },
-            onBackgroundColorChange : () => {
+            onBackgroundColorChanged : () => {
                 this.settings.SaveToCookies ();
                 this.viewer.SetBackgroundColor (this.settings.backgroundColor);
                 if (this.measureTool.IsActive ()) {
                     this.measureTool.UpdatePanel ();
                 }
             },
-            onDefaultColorChange : () => {
+            onDefaultColorChanged : () => {
                 this.settings.SaveToCookies ();
                 let modelLoader = this.modelLoaderUI.GetModelLoader ();
                 if (modelLoader.GetDefaultMaterial () !== null) {
@@ -651,15 +648,15 @@ export class Website
                 }
                 this.viewer.Render ();
             },
-            onEdgeDisplayChange : () => {
+            onEdgeDisplayChanged : () => {
                 HandleEvent ('edge_display_changed', this.settings.showEdges ? 'on' : 'off');
                 this.UpdateEdgeDisplay ();
             },
-            onThemeChange : () => {
+            onThemeChanged : () => {
                 HandleEvent ('theme_changed', this.settings.themeId === Theme.Light ? 'light' : 'dark');
                 this.SwitchTheme (this.settings.themeId, true);
             },
-            onResize : () => {
+            onResizeRequested : () => {
                 this.Resize ();
             },
             onShowHidePanels : (show) => {
@@ -730,12 +727,6 @@ export class Website
             openFileBrowserDialog : () => {
                 this.OpenFileBrowserDialog ();
             },
-            updateMeshesVisibility : () => {
-                this.UpdateMeshesVisibility ();
-            },
-            updateMeshesSelection : () => {
-                this.UpdateMeshesSelection ();
-            },
             fitMeshToWindow : (meshInstanceId) => {
                 this.FitMeshToWindow (meshInstanceId);
             },
@@ -748,7 +739,13 @@ export class Website
             getMaterialsForMesh : (meshInstanceId) => {
                 return GetMaterialsForMesh (this.viewer, this.model, meshInstanceId);
             },
-            onModelSelected : () => {
+            onMeshVisibilityChanged : () => {
+                this.UpdateMeshesVisibility ();
+            },
+            onMeshSelectionChanged : () => {
+                this.UpdateMeshesSelection ();
+            },
+            onSelectionCleared : () => {
                 this.sidebar.AddObject3DProperties (this.model);
             },
             onMeshSelected : (meshInstanceId) => {
@@ -758,7 +755,7 @@ export class Website
             onMaterialSelected : (materialIndex) => {
                 this.sidebar.AddMaterialProperties (this.model.GetMaterial (materialIndex));
             },
-            onResize : () => {
+            onResizeRequested : () => {
                 this.Resize ();
             },
             onShowHidePanels : (show) => {

@@ -120,7 +120,7 @@ export class PanelSet
         }
 
         this.callbacks.onShowHidePanels (this.panelsVisible);
-        this.callbacks.onResize ();
+        this.callbacks.onResizeRequested ();
     }
 
     ShowPanel (panel)

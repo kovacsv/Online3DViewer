@@ -35,9 +35,9 @@ export class Sidebar
         this.callbacks = callbacks;
 
         this.panelSet.Init ({
-            onResize : () => {
+            onResizeRequested : () => {
                 ShowDomElement (this.splitterDiv, this.panelSet.IsPanelsVisible ());
-                this.callbacks.onResize ();
+                this.callbacks.onResizeRequested ();
             },
             onShowHidePanels : (show) => {
                 this.callbacks.onShowHidePanels (show);
@@ -45,31 +45,37 @@ export class Sidebar
         });
 
         this.settingsPanel.Init ({
-            onEnvironmentMapChange : () => {
-                this.callbacks.onEnvironmentMapChange ();
+            getShadingType : () => {
+                return this.callbacks.getShadingType ();
             },
-            onBackgroundColorChange : () => {
-                this.callbacks.onBackgroundColorChange ();
+            hasDefaultMaterial : () => {
+                return this.callbacks.hasDefaultMaterial ();
             },
-            onDefaultColorChange : () => {
-                this.callbacks.onDefaultColorChange ();
+            onEnvironmentMapChanged : () => {
+                this.callbacks.onEnvironmentMapChanged ();
             },
-            onEdgeDisplayChange : () => {
-                this.callbacks.onEdgeDisplayChange ();
+            onBackgroundColorChanged : () => {
+                this.callbacks.onBackgroundColorChanged ();
             },
-            onThemeChange : () => {
-                this.callbacks.onThemeChange ();
+            onDefaultColorChanged : () => {
+                this.callbacks.onDefaultColorChanged ();
+            },
+            onEdgeDisplayChanged : () => {
+                this.callbacks.onEdgeDisplayChanged ();
+            },
+            onThemeChanged : () => {
+                this.callbacks.onThemeChanged ();
             }
         });
 
         InstallVerticalSplitter (this.splitterDiv, this.mainDiv, true, () => {
-            this.callbacks.onResize ();
+            this.callbacks.onResizeRequested ();
         });
     }
 
-    UpdateSettings (isPhysicallyBased, hasDefaultMaterial)
+    Update ()
     {
-        this.settingsPanel.UpdateSettings (isPhysicallyBased, hasDefaultMaterial);
+        this.settingsPanel.Update ();
     }
 
     Resize (height)
