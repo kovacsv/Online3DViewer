@@ -6,6 +6,7 @@ import { PopupDialog } from './dialog.js';
 import { Settings, Theme } from './settings.js';
 import { SidebarPanel } from './sidebarpanel.js';
 import { ShadingType } from '../engine/threejs/threeutils.js';
+import { CameraMode } from '../engine/viewer/viewer.js';
 
 function AddColorPicker (parentDiv, opacity, defaultColor, predefinedColors, onChange)
 {
@@ -117,11 +118,14 @@ class EnvironmentMapPopup extends PopupDialog
                 });
             }
         } else if (shadingType === ShadingType.Physical) {
-            let checkboxDiv = AddDiv (contentDiv, 'ov_environment_map_checkbox');
-            let backgroundIsEnvMapCheckbox = AddCheckbox (checkboxDiv, 'use_as_background', 'Use as background image', settings.backgroundIsEnvMap, () => {
-                settings.backgroundIsEnvMap = backgroundIsEnvMapCheckbox.checked;
-                callbacks.onEnvironmentMapChanged ();
-            });
+            let isPerspective = (callbacks.getCameraMode () === CameraMode.Perspective);
+            if (isPerspective) {
+                let checkboxDiv = AddDiv (contentDiv, 'ov_environment_map_checkbox');
+                let backgroundIsEnvMapCheckbox = AddCheckbox (checkboxDiv, 'use_as_background', 'Use as background image', settings.backgroundIsEnvMap, () => {
+                    settings.backgroundIsEnvMap = backgroundIsEnvMapCheckbox.checked;
+                    callbacks.onEnvironmentMapChanged ();
+                });
+            }
 
             for (let envMapImage of envMapImages) {
                 envMapImage.element = AddDomElement (contentDiv, 'img', 'ov_environment_map_preview');
@@ -143,6 +147,11 @@ class EnvironmentMapPopup extends PopupDialog
         contentDiv.classList.add ('sidebar');
         this.Open ();
     }
+
+    Update ()
+    {
+
+    }
 }
 
 class SettingsSection
@@ -162,6 +171,11 @@ class SettingsSection
     }
 
     Update ()
+    {
+
+    }
+
+    UpdateVisibility ()
     {
 
     }
@@ -215,6 +229,9 @@ class SettingsModelDisplaySection extends SettingsSection
         this.environmentMapPhongInput.addEventListener ('click', () => {
             this.environmentMapPopup = new EnvironmentMapPopup ();
             this.environmentMapPopup.ShowPopup (this.environmentMapPhongInput, ShadingType.Phong, this.settings, {
+                getCameraMode : () => {
+                    return this.callbacks.getCameraMode ();
+                },
                 onEnvironmentMapChanged : () => {
                     this.UpdateEnvironmentMap ();
                     this.callbacks.onEnvironmentMapChanged ();
@@ -228,6 +245,9 @@ class SettingsModelDisplaySection extends SettingsSection
         this.environmentMapPbrInput.addEventListener ('click', () => {
             this.environmentMapPopup = new EnvironmentMapPopup ();
             this.environmentMapPopup.ShowPopup (this.environmentMapPbrInput, ShadingType.Physical, this.settings, {
+                getCameraMode : () => {
+                    return this.callbacks.getCameraMode ();
+                },
                 onEnvironmentMapChanged : () => {
                     this.UpdateEnvironmentMap ();
                     this.callbacks.onEnvironmentMapChanged ();
@@ -308,14 +328,6 @@ class SettingsModelDisplaySection extends SettingsSection
             this.UpdateEnvironmentMap ();
         }
 
-        let isPhysicallyBased = (this.callbacks.getShadingType () === ShadingType.Physical);
-        if (this.environmentMapPhongDiv !== null) {
-           ShowDomElement (this.environmentMapPhongDiv, !isPhysicallyBased);
-        }
-        if (this.environmentMapPbrDiv !== null) {
-           ShowDomElement (this.environmentMapPbrDiv, isPhysicallyBased);
-        }
-
         if (this.edgeDisplayToggle !== null) {
             this.edgeDisplayToggle.SetStatus (this.settings.showEdges);
             ShowDomElement (this.edgeSettingsDiv, this.settings.showEdges);
@@ -323,6 +335,18 @@ class SettingsModelDisplaySection extends SettingsSection
             this.edgeColorPicker.setColor ('#' + RGBColorToHexString (this.settings.edgeColor));
             this.thresholdSlider.value = this.settings.edgeThreshold;
             this.thresholdSliderValue.innerHTML = this.settings.edgeThreshold;
+        }
+    }
+
+    UpdateVisibility ()
+    {
+        let isPhysicallyBased = (this.callbacks.getShadingType () === ShadingType.Physical);
+        if (this.environmentMapPhongDiv !== null) {
+            let isPerspective = (this.callbacks.getCameraMode () === CameraMode.Perspective);
+            ShowDomElement (this.environmentMapPhongDiv, !isPhysicallyBased && isPerspective);
+        }
+        if (this.environmentMapPbrDiv !== null) {
+           ShowDomElement (this.environmentMapPbrDiv, isPhysicallyBased);
         }
     }
 
@@ -371,6 +395,10 @@ class SettingsImportParametersSection extends SettingsSection
         if (this.defaultColorPicker !== null) {
             this.defaultColorPicker.setColor ('#' + RGBColorToHexString (this.settings.defaultColor));
         }
+    }
+
+    UpdateVisibility ()
+    {
         if (this.contentDiv !== null) {
             let hasDefaultMaterial = this.callbacks.hasDefaultMaterial ();
             ShowDomElement (this.contentDiv, hasDefaultMaterial);
@@ -416,6 +444,11 @@ class SettingsAppearanceSection extends SettingsSection
             let isDarkMode = (this.settings.themeId === Theme.Dark);
             this.darkModeToggle.SetStatus (isDarkMode);
         }
+    }
+
+    UpdateVisibility ()
+    {
+
     }
 }
 
@@ -467,6 +500,9 @@ export class SidebarSettingsPanel extends SidebarPanel
             getShadingType : () => {
                 return this.callbacks.getShadingType ();
             },
+            getCameraMode : () => {
+                return this.callbacks.getCameraMode ();
+            },
             onEnvironmentMapChanged : () => {
                 this.callbacks.onEnvironmentMapChanged ();
             },
@@ -507,10 +543,10 @@ export class SidebarSettingsPanel extends SidebarPanel
         });
     }
 
-    Update ()
+    UpdateControlsVisibility ()
     {
-        this.modelDisplaySection.Update ();
-        this.importParametersSection.Update ();
+        this.modelDisplaySection.UpdateVisibility ();
+        this.importParametersSection.UpdateVisibility ();
         this.Resize ();
     }
 

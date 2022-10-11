@@ -179,7 +179,7 @@ export class Website
         this.viewer.SetMainObject (threeObject);
         this.viewer.SetUpVector (Direction.Y, false);
         this.navigator.FillTree (importResult);
-        this.sidebar.Update ();
+        this.sidebar.UpdateControlsVisibility ();
         this.FitModelToWindow (true);
     }
 
@@ -561,6 +561,7 @@ export class Website
             } else if (buttonIndex === 1) {
                 this.viewer.SetCameraMode (CameraMode.Orthographic);
             }
+            this.sidebar.UpdateControlsVisibility ();
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         let measureToolButton = AddPushButton (this.toolbar, 'measure', 'Measure', ['only_full_width', 'only_on_model'], (isSelected) => {
@@ -621,6 +622,9 @@ export class Website
         this.sidebar.Init ({
             getShadingType : () => {
                 return this.viewer.GetShadingType ();
+            },
+            getCameraMode : () => {
+                return this.viewer.GetCameraMode ();
             },
             hasDefaultMaterial : () => {
                 return HasDefaultMaterial (this.model);

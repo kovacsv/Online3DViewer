@@ -48,6 +48,9 @@ export class Sidebar
             getShadingType : () => {
                 return this.callbacks.getShadingType ();
             },
+            getCameraMode : () => {
+                return this.callbacks.getCameraMode ();
+            },
             hasDefaultMaterial : () => {
                 return this.callbacks.hasDefaultMaterial ();
             },
@@ -73,9 +76,9 @@ export class Sidebar
         });
     }
 
-    Update ()
+    UpdateControlsVisibility ()
     {
-        this.settingsPanel.Update ();
+        this.settingsPanel.UpdateControlsVisibility ();
     }
 
     Resize (height)
