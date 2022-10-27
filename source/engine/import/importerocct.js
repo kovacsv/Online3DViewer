@@ -64,7 +64,8 @@ export class ImporterOcct extends ImporterBase
         let fileBuffer = new Uint8Array (fileContent);
         this.worker.postMessage ({
             format : format,
-            buffer : fileBuffer
+            buffer : fileBuffer,
+            params : null
         });
     }
 
