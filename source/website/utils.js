@@ -171,7 +171,7 @@ export function InstallVerticalSplitter (splitterDiv, resizedDiv, flipped, onRes
         },
         onSplit : (xDiff) => {
             const minWidth = 280;
-            const maxWidth = 800;
+            const maxWidth = 450;
             let newWidth = 0;
             if (flipped) {
                 newWidth = originalWidth - xDiff;
