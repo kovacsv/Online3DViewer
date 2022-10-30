@@ -287,9 +287,9 @@ export class Navigation
 		return this.fixUpVector;
 	}
 
-	SetFixUpVector (fixUpVector)
+	SetFixUpVector (isFixUpVector)
 	{
-		this.fixUpVector = fixUpVector;
+		this.fixUpVector = isFixUpVector;
 	}
 
 	GetCamera ()

@@ -442,11 +442,11 @@ export class Viewer
         return this.navigation.IsFixUpVector ();
     }
 
-    SetFixUpVector (fixUpVector)
+    SetFixUpVector (isFixUpVector)
     {
         let oldCamera = this.navigation.GetCamera ();
-        let newCamera = this.upVector.SetFixed (fixUpVector, oldCamera);
-        this.navigation.SetFixUpVector (fixUpVector);
+        let newCamera = this.upVector.SetFixed (isFixUpVector, oldCamera);
+        this.navigation.SetFixUpVector (isFixUpVector);
         if (newCamera !== null) {
             this.navigation.MoveCamera (newCamera, this.settings.animationSteps);
         }
