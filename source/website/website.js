@@ -22,9 +22,9 @@ import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { MeasureTool } from './measuretool.js';
 import { CloseAllDialogs } from './dialog.js';
+import { EnumeratePlugins, PluginType } from './pluginregistry.js';
 
 import * as THREE from 'three';
-import { EnumeratePlugins, PluginType } from './pluginregistry.js';
 
 export const WebsiteUIState =
 {
