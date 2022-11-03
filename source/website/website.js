@@ -2,7 +2,7 @@ import { GetFileExtension, TransformFileHostUrls } from '../engine/io/fileutils.
 import { InputFilesFromFileObjects, InputFilesFromUrls } from '../engine/import/importerfiles.js';
 import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
 import { CameraMode, Viewer } from '../engine/viewer/viewer.js';
-import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
+import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToScreen, ShowListPopup } from './dialogs.js';
 import { HandleEvent } from './eventhandler.js';
 import { HashHandler } from './hashhandler.js';
@@ -14,7 +14,7 @@ import { ThreeModelLoaderUI } from './threemodelloaderui.js';
 import { Toolbar } from './toolbar.js';
 import { ShowExportDialog } from './exportdialog.js';
 import { ShowSnapshotDialog } from './snapshotdialog.js';
-import { AddSmallWidthChangeEventListener, GetFilesFromDataTransfer, IsSmallWidth } from './utils.js';
+import { AddSmallWidthChangeEventListener, AddSvgIconElement, GetFilesFromDataTransfer, InstallTooltip, IsSmallWidth } from './utils.js';
 import { ShowOpenUrlDialog } from './openurldialog.js';
 import { ShowSharingDialog } from './sharingdialog.js';
 import { HasDefaultMaterial, ReplaceDefaultMaterialColor } from '../engine/model/modelutils.js';
@@ -24,6 +24,7 @@ import { MeasureTool } from './measuretool.js';
 import { CloseAllDialogs } from './dialog.js';
 
 import * as THREE from 'three';
+import { EnumeratePlugins, PluginType } from './pluginregistry.js';
 
 export const WebsiteUIState =
 {
@@ -57,6 +58,14 @@ export class Website
         this.settings.LoadFromCookies ();
         this.SwitchTheme (this.settings.themeId, false);
         HandleEvent ('theme_on_load', this.settings.themeId === Theme.Light ? 'light' : 'dark');
+
+        EnumeratePlugins (PluginType.Header, (plugin) => {
+            plugin.registerButtons ({
+                createHeaderButton : (icon, title, link) => {
+                    this.CreateHeaderButton (icon, title, link);
+                }
+            });
+        });
 
         this.InitViewer ();
         this.InitToolbar ();
@@ -774,6 +783,18 @@ export class Website
         let showSidebar = CookieGetBoolVal ('ov_show_sidebar', true);
         this.navigator.ShowPanels (showNavigator);
         this.sidebar.ShowPanels (showSidebar);
+    }
+
+    CreateHeaderButton (icon, title, link)
+    {
+        let buttonLink = CreateDomElement ('a');
+        buttonLink.setAttribute ('href', link);
+        buttonLink.setAttribute ('target', '_blank');
+        buttonLink.setAttribute ('rel', 'noopener noreferrer');
+        InstallTooltip (buttonLink, title);
+        AddSvgIconElement (buttonLink, icon, 'header_button');
+        this.parameters.headerButtonsDiv.appendChild (buttonLink);
+        return buttonLink;
     }
 
     InitCookieConsent ()

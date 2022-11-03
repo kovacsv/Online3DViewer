@@ -1,14 +1,11 @@
 import { SetExternalLibLocation } from '../engine/io/externallibs.js';
-import { CreateDomElement } from '../engine/viewer/domutils.js';
-import { AddSvgIconElement, InstallTooltip } from './utils.js';
-import { SetEventHandler } from './eventhandler.js';
 import { Embed } from './embed.js';
 import { Website } from './website.js';
 
-export function SetWebsiteEventHandler (eventHandler)
-{
-    SetEventHandler (eventHandler);
-}
+import { SetEventHandler } from './eventhandler.js';
+export { SetEventHandler };
+import { PluginType, RegisterPlugin } from './pluginregistry.js';
+export { PluginType, RegisterPlugin };
 
 export function StartWebsite (externalLibLocation)
 {
@@ -16,6 +13,7 @@ export function StartWebsite (externalLibLocation)
     window.addEventListener ('load', () => {
         let website = new Website ({
             headerDiv : document.getElementById ('header'),
+            headerButtonsDiv : document.getElementById ('header_buttons'),
             toolbarDiv : document.getElementById ('toolbar'),
             mainDiv : document.getElementById ('main'),
             introDiv : document.getElementById ('intro'),
@@ -41,16 +39,4 @@ export function StartEmbed (externalLibLocation)
         });
         embed.Load ();
     });
-}
-
-export function CreateHeaderButton (parentElement, iconName, title, link)
-{
-    let buttonLink = CreateDomElement ('a');
-    buttonLink.setAttribute ('href', link);
-    buttonLink.setAttribute ('target', '_blank');
-    buttonLink.setAttribute ('rel', 'noopener noreferrer');
-    InstallTooltip (buttonLink, title);
-    AddSvgIconElement (buttonLink, iconName, 'header_button');
-    parentElement.appendChild (buttonLink);
-    return buttonLink;
 }

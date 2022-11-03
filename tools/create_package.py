@@ -36,6 +36,18 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 	shutil.copytree (os.path.join (rootDir, 'website', 'css', 'O3DVIcons'), os.path.join (websiteDir, 'o3dv', 'O3DVIcons'))
 	shutil.copytree (os.path.join (rootDir, 'website', 'info'), os.path.join (websiteDir, 'info'))
 
+	pluginFiles = []
+	pluginsDir = os.path.join (rootDir, 'plugins')
+	if os.path.exists (pluginsDir):
+		for pluginFile in os.listdir (pluginsDir):
+			if os.path.splitext (pluginFile)[1] != '.js':
+				continue
+			websitePluginsDir = os.path.join (websiteDir, 'plugins');
+			if not os.path.exists (websitePluginsDir):
+				os.makedirs (websitePluginsDir)
+			shutil.copy2 (os.path.join (pluginsDir, pluginFile), os.path.join (websitePluginsDir, pluginFile))
+			pluginFiles.append ('plugins/' + pluginFile)
+
 	websiteLibFiles = config['website_lib_files']
 	websiteFiles = [
 		'o3dv/o3dv.website.min.css',
@@ -54,6 +66,7 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 		replacer = Tools.TokenReplacer (htmlFilePath, False)
 		replacer.ReplaceTokenFileLinks ('<!-- website libs start -->', '<!-- website libs end -->', websiteLibFiles, version)
 		replacer.ReplaceTokenFileLinks ('<!-- website start -->', '<!-- website end -->', websiteFiles, version)
+		replacer.ReplaceTokenFileLinks ('<!-- plugins start -->', '<!-- plugins end -->', pluginFiles, version)
 		initScriptContent = ''
 		initScriptContent += '<script type="text/javascript">' + replacer.eolChar
 		initScriptContent += '     OV.StartWebsite (\'libs\');' + replacer.eolChar
@@ -64,19 +77,15 @@ def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
 		embedInitScriptContent += '</script>'
 		replacer.ReplaceTokenContent ('<!-- website init start -->', '<!-- website init end -->', initScriptContent)
 		replacer.ReplaceTokenContent ('<!-- embed init start -->', '<!-- embed init end -->', embedInitScriptContent)
-		metaFile = os.path.join (rootDir, 'tools', 'website_meta_data.txt')
+		metaFile = os.path.join (rootDir, 'plugins', 'website_meta_data.txt')
 		if os.path.exists (metaFile):
 			metaContent = Tools.GetFileContent (metaFile)
 			replacer.ReplaceTokenContent ('<!-- meta start -->', '<!-- meta end -->', metaContent)
-		analyticsFile = os.path.join (rootDir, 'tools', 'website_analytics_data.txt')
+		analyticsFile = os.path.join (rootDir, 'plugins', 'website_analytics_data.txt')
 		if os.path.exists (analyticsFile) and not testBuild:
 			analyticsContent = Tools.GetFileContent (analyticsFile)
 			replacer.ReplaceTokenContent ('<!-- analytics start -->', '<!-- analytics end -->', analyticsContent)
-		scriptFile = os.path.join (rootDir, 'tools', 'website_script_data.txt')
-		if os.path.exists (scriptFile):
-			scriptContent = Tools.GetFileContent (scriptFile)
-			replacer.ReplaceTokenContent ('<!-- script start -->', '<!-- script end -->', scriptContent)
-		introFile = os.path.join (rootDir, 'tools', 'website_intro_data.txt')
+		introFile = os.path.join (rootDir, 'plugins', 'website_intro_data.txt')
 		if os.path.exists (introFile):
 			introContent = Tools.GetFileContent (introFile)
 			replacer.ReplaceTokenContent ('<!-- intro start -->', '<!-- intro end -->', introContent)

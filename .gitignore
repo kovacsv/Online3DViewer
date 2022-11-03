@@ -1,7 +1,4 @@
 build/*
-website_meta_data.txt
-website_analytics_data.txt
-website_script_data.txt
-website_intro_data.txt
+plugins/*
 node_modules
 __pycache__

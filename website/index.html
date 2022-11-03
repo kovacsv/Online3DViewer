@@ -30,10 +30,12 @@
     <link rel="stylesheet" type="text/css" href="css/embed.css">
     <script type="text/javascript" src="../build/o3dv.website.min-dev.js"></script>
     <!-- website end -->
+    <!-- plugins start -->
+    <!-- plugins end -->
 
     <!-- analytics start -->
     <script type="text/javascript">
-        OV.SetWebsiteEventHandler ((eventName, eventLabel, eventParams) => {
+        OV.SetEventHandler ((eventName, eventLabel, eventParams) => {
             console.log ({
                 eventName : eventName,
                 eventLabel : eventLabel,
@@ -48,9 +50,6 @@
         OV.StartWebsite ('../libs');
     </script>
     <!-- website init end -->
-
-    <!-- script start -->
-    <!-- script end -->
 
 </head>
 
