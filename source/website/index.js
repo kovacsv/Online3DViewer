@@ -1,11 +1,15 @@
 import { SetExternalLibLocation } from '../engine/io/externallibs.js';
 import { Embed } from './embed.js';
 import { Website } from './website.js';
-
 import { SetEventHandler } from './eventhandler.js';
-export { SetEventHandler };
+
 import { PluginType, RegisterPlugin } from './pluginregistry.js';
 export { PluginType, RegisterPlugin };
+
+export function SetWebsiteEventHandler (eventHandler)
+{
+    SetEventHandler (eventHandler   );
+}
 
 export function StartWebsite (externalLibLocation)
 {
