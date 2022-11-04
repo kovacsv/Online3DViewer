@@ -596,8 +596,8 @@ export class Website
 
         EnumeratePlugins (PluginType.Toolbar, (plugin) => {
             plugin.registerButtons ({
-                createSeparator : (icon, title, classNames) => {
-                    AddSeparator (this.toolbar, icon, title, classNames);
+                createSeparator : (classNames) => {
+                    AddSeparator (this.toolbar, classNames);
                 },
                 createButton : (icon, title, classNames, onClick) => {
                     AddButton (this.toolbar, icon, title, classNames, onClick);
