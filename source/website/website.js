@@ -594,6 +594,20 @@ export class Website
             ShowSharingDialog (importer.GetFileList (), this.settings, this.viewer);
         });
 
+        EnumeratePlugins (PluginType.Toolbar, (plugin) => {
+            plugin.registerButtons ({
+                createSeparator : (icon, title, classNames) => {
+                    AddSeparator (this.toolbar, icon, title, classNames);
+                },
+                createButton : (icon, title, classNames, onClick) => {
+                    AddButton (this.toolbar, icon, title, classNames, onClick);
+                },
+                getModel : () => {
+                    return this.model;
+                }
+            });
+        });
+
         this.parameters.fileInput.addEventListener ('change', (ev) => {
             if (ev.target.files.length > 0) {
                 HandleEvent ('model_load_started', 'open_file');

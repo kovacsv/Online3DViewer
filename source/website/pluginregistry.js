@@ -2,7 +2,8 @@ let plugins = new Map ();
 
 export const PluginType =
 {
-    Header : 1
+    Header : 1,
+    Toolbar : 2
 };
 
 export function RegisterPlugin (type, plugin)

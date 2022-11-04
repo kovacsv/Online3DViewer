@@ -2,13 +2,29 @@ import { SetExternalLibLocation } from '../engine/io/externallibs.js';
 import { Embed } from './embed.js';
 import { Website } from './website.js';
 import { SetEventHandler } from './eventhandler.js';
-
 import { PluginType, RegisterPlugin } from './pluginregistry.js';
-export { PluginType, RegisterPlugin };
+
+import * as Engine from '../engine/main.js';
+export { Engine };
+
+import { ButtonDialog } from './dialog.js';
+export const UI = {
+    ButtonDialog
+};
 
 export function SetWebsiteEventHandler (eventHandler)
 {
     SetEventHandler (eventHandler   );
+}
+
+export function RegisterHeaderPlugin (plugin)
+{
+    RegisterPlugin (PluginType.Header, plugin);
+}
+
+export function RegisterToolbarPlugin (plugin)
+{
+    RegisterPlugin (PluginType.Toolbar, plugin);
 }
 
 export function StartWebsite (externalLibLocation)
