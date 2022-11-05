@@ -14,7 +14,7 @@ export const UI = {
 
 export function SetWebsiteEventHandler (eventHandler)
 {
-    SetEventHandler (eventHandler   );
+    SetEventHandler (eventHandler);
 }
 
 export function RegisterHeaderPlugin (plugin)
