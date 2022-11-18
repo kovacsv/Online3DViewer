@@ -1,15 +1,19 @@
 import { SetExternalLibLocation } from '../engine/io/externallibs.js';
 import { Embed } from './embed.js';
 import { Website } from './website.js';
-import { SetEventHandler } from './eventhandler.js';
+import { SetEventHandler, HandleEvent } from './eventhandler.js';
 import { PluginType, RegisterPlugin } from './pluginregistry.js';
 
 import * as Engine from '../engine/main.js';
 export { Engine };
 
-import { ButtonDialog } from './dialog.js';
+import { ButtonDialog, ProgressDialog } from './dialog.js';
+import { ShowMessageDialog } from './dialogs.js';
 export const UI = {
-    ButtonDialog
+    ButtonDialog,
+    ProgressDialog,
+    ShowMessageDialog,
+    HandleEvent
 };
 
 export function SetWebsiteEventHandler (eventHandler)
