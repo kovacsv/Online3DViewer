@@ -6,7 +6,6 @@ import { Importer3dm } from './importer3dm.js';
 import { Importer3ds } from './importer3ds.js';
 import { ImporterGltf } from './importergltf.js';
 import { ImporterIfc } from './importerifc.js';
-import { ImporterO3dv } from './importero3dv.js';
 import { ImporterObj } from './importerobj.js';
 import { ImporterOff } from './importeroff.js';
 import { ImporterPly } from './importerply.js';
@@ -87,7 +86,6 @@ export class Importer
             new ImporterPly (),
             new Importer3ds (),
             new ImporterGltf (),
-            new ImporterO3dv (),
             new ImporterBim (),
             new Importer3dm (),
             new ImporterIfc (),

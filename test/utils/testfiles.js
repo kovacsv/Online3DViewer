@@ -65,9 +65,3 @@ export function ImportGltfFile (folderName, fileName, onReady)
     var importer = new OV.ImporterGltf ();
     ImportFile (importer, 'gltf/' + folderName, fileName, onReady);
 }
-
-export function ImportO3dvFile (fileName, onReady)
-{
-    var importer = new OV.ImporterO3dv ();
-    ImportFile (importer, 'o3dv', fileName, onReady);
-}

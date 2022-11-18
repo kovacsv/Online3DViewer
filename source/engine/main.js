@@ -30,7 +30,6 @@ import { ImporterFcstd } from './import/importerfcstd.js';
 import { InputFile, ImporterFile, ImporterFileList, InputFilesFromUrls, InputFilesFromFileObjects } from './import/importerfiles.js';
 import { ImporterGltf } from './import/importergltf.js';
 import { ImporterIfc } from './import/importerifc.js';
-import { ImporterO3dv } from './import/importero3dv.js';
 import { ImporterObj } from './import/importerobj.js';
 import { ImporterOcct } from './import/importerocct.js';
 import { ImporterOff } from './import/importeroff.js';
@@ -161,7 +160,6 @@ export {
     InputFilesFromFileObjects,
     ImporterGltf,
     ImporterIfc,
-    ImporterO3dv,
     ImporterObj,
     ImporterOcct,
     ImporterOff,
