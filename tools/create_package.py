@@ -18,7 +18,7 @@ def GetVersion (rootDir):
 		packageJson = json.load (packageJsonFile)
 	return packageJson['version']
 
-def CreateDestinationDir (config, rootDir, websiteDir, version, testBuild):
+def CreateWebsite (config, rootDir, websiteDir, version, testBuild):
 	if not os.path.exists (websiteDir):
 		os.makedirs (websiteDir)
 
@@ -135,7 +135,7 @@ def Main (argv):
 
 	version = GetVersion (rootDir)
 	PrintInfo ('Create build directory')
-	CreateDestinationDir (config, rootDir, websiteDir, version, testBuild)
+	CreateWebsite (config, rootDir, websiteDir, version, testBuild)
 
 	PrintInfo ('Create package.')
 	packageResult = CreatePackage (rootDir, websiteDir, packageDir)
