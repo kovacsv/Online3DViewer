@@ -44,7 +44,7 @@
 		"esbuild": "^0.15.14",
 		"eslint": "^8.28.0",
 		"eslint-plugin-unused-imports": "^2.0.0",
-		"fantasticon": "^2.0.0",
+		"fantasticon": "^1.2.2",
 		"http-server": "^14.0.0",
 		"jsdoc": "^4.0.0",
 		"mocha": "^10.1.0",
