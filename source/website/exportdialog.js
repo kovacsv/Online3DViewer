@@ -196,3 +196,21 @@ export function ShowExportDialog (model, viewer, callbacks)
     let exportDialog = new ExportDialog (callbacks);
     exportDialog.Open (model, viewer);
 }
+
+export function DownloadModel (importer)
+{
+    let fileList = importer.GetFileList ().GetFiles ();
+    if (fileList.length === 0) {
+        return;
+    } else if (fileList.length === 1) {
+        let file = fileList[0];
+        DownloadArrayBufferAsFile (file.content, file.name);
+    } else {
+        let filesInZip = {};
+        for (let file of fileList) {
+            filesInZip[file.name] = new Uint8Array (file.content);
+    }
+        let zippedContent = fflate.zipSync (filesInZip);
+        DownloadArrayBufferAsFile (zippedContent.buffer, 'model.zip');
+    }
+}

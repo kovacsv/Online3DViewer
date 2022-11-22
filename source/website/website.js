@@ -12,7 +12,7 @@ import { Sidebar } from './sidebar.js';
 import { ThemeHandler } from './themehandler.js';
 import { ThreeModelLoaderUI } from './threemodelloaderui.js';
 import { Toolbar } from './toolbar.js';
-import { ShowExportDialog } from './exportdialog.js';
+import { DownloadModel, ShowExportDialog } from './exportdialog.js';
 import { ShowSnapshotDialog } from './snapshotdialog.js';
 import { AddSmallWidthChangeEventListener, AddSvgIconElement, GetFilesFromDataTransfer, InstallTooltip, IsSmallWidth } from './utils.js';
 import { ShowOpenUrlDialog } from './openurldialog.js';
@@ -23,6 +23,7 @@ import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { MeasureTool } from './measuretool.js';
 import { CloseAllDialogs } from './dialog.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
+import { FeatureSet } from './featureset.js';
 
 import * as THREE from 'three';
 
@@ -583,6 +584,12 @@ export class Website
         AddButton (this.toolbar, 'snapshot', 'Create snapshot', ['only_full_width', 'only_on_model'], () => {
             ShowSnapshotDialog (this.viewer);
         });
+        if (FeatureSet.DownloadModel) {
+            AddButton (this.toolbar, 'download', 'Download model', ['only_full_width', 'only_on_model'], () => {
+                let importer = this.modelLoaderUI.GetImporter ();
+                DownloadModel (importer);
+            });
+        }
         AddButton (this.toolbar, 'export', 'Export model', ['only_full_width', 'only_on_model'], () => {
             ShowExportDialog (this.model, this.viewer, {
                 isMeshVisible : (meshInstanceId) => {
