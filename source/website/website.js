@@ -586,6 +586,7 @@ export class Website
         });
         if (FeatureSet.DownloadModel) {
             AddButton (this.toolbar, 'download', 'Download model', ['only_full_width', 'only_on_model'], () => {
+                HandleEvent ('model_downloaded', '');
                 let importer = this.modelLoaderUI.GetImporter ();
                 DownloadModel (importer);
             });
