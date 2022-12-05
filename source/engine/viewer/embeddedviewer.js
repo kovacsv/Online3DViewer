@@ -84,6 +84,7 @@ export class EmbeddedViewer
         this.model = null;
         let progressDiv = null;
         let loader = new ThreeModelLoader ();
+        this.loader = loader;
         loader.LoadModel (inputFiles, settings, {
             onLoadStart : () => {
                 this.canvas.style.display = 'none';
