@@ -50,6 +50,7 @@ export class EmbeddedViewer
         }
 
         this.model = null;
+        this.modelLoader = new ThreeModelLoader ();
 
         window.addEventListener ('resize', () => {
             this.Resize ();
@@ -83,9 +84,7 @@ export class EmbeddedViewer
 
         this.model = null;
         let progressDiv = null;
-        let loader = new ThreeModelLoader ();
-        this.loader = loader;
-        loader.LoadModel (inputFiles, settings, {
+        this.modelLoader.LoadModel (inputFiles, settings, {
             onLoadStart : () => {
                 this.canvas.style.display = 'none';
                 progressDiv = document.createElement ('div');
