@@ -9,6 +9,9 @@
         "recurse": true,
         "verbose": false
     },
+    "plugins": [
+        "plugins/markdown"
+    ],
 	"docdash" : {
 		"menu": {
             "GitHub": {
