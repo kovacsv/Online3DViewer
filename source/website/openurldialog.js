@@ -6,7 +6,7 @@ export function ShowOpenUrlDialog (onOk)
 {
     let dialog = new ButtonDialog ();
     let urlsTextArea = CreateDomElement ('textarea', 'ov_dialog_textarea');
-    let contentDiv = dialog.Init ('Open Model from Url', [
+    let contentDiv = dialog.Init ('Open from url', [
         {
             name : 'Cancel',
             subClass : 'outline',

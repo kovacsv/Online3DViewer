@@ -23,7 +23,6 @@ import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { MeasureTool } from './measuretool.js';
 import { CloseAllDialogs } from './dialog.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
-import { FeatureSet } from './featureset.js';
 
 import * as THREE from 'three';
 
@@ -533,10 +532,10 @@ export class Website
 
         let importer = this.modelLoaderUI.GetImporter ();
 
-        AddButton (this.toolbar, 'open', 'Open model from your device', [], () => {
+        AddButton (this.toolbar, 'open', 'Open from your device', [], () => {
             this.OpenFileBrowserDialog ();
         });
-        AddButton (this.toolbar, 'open_url', 'Open model from a url', [], () => {
+        AddButton (this.toolbar, 'open_url', 'Open from url', [], () => {
             ShowOpenUrlDialog ((urls) => {
                 if (urls.length > 0) {
                     this.hashHandler.SetModelFilesToHash (urls);
@@ -581,25 +580,24 @@ export class Website
         });
         this.measureTool.SetButton (measureToolButton);
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddButton (this.toolbar, 'snapshot', 'Create snapshot', ['only_full_width', 'only_on_model'], () => {
-            ShowSnapshotDialog (this.viewer);
+        AddButton (this.toolbar, 'download', 'Download', ['only_full_width', 'only_on_model'], () => {
+            HandleEvent ('model_downloaded', '');
+            let importer = this.modelLoaderUI.GetImporter ();
+            DownloadModel (importer);
         });
-        if (FeatureSet.DownloadModel) {
-            AddButton (this.toolbar, 'download', 'Download model', ['only_full_width', 'only_on_model'], () => {
-                HandleEvent ('model_downloaded', '');
-                let importer = this.modelLoaderUI.GetImporter ();
-                DownloadModel (importer);
-            });
-        }
-        AddButton (this.toolbar, 'export', 'Export model', ['only_full_width', 'only_on_model'], () => {
+        AddButton (this.toolbar, 'export', 'Export', ['only_full_width', 'only_on_model'], () => {
             ShowExportDialog (this.model, this.viewer, {
                 isMeshVisible : (meshInstanceId) => {
                     return this.navigator.IsMeshVisible (meshInstanceId);
                 }
             });
         });
-        AddButton (this.toolbar, 'share', 'Share model', ['only_full_width', 'only_on_model'], () => {
+        AddButton (this.toolbar, 'share', 'Share', ['only_full_width', 'only_on_model'], () => {
             ShowSharingDialog (importer.GetFileList (), this.settings, this.viewer);
+        });
+        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
+        AddButton (this.toolbar, 'snapshot', 'Create snapshot', ['only_full_width', 'only_on_model'], () => {
+            ShowSnapshotDialog (this.viewer);
         });
 
         EnumeratePlugins (PluginType.Toolbar, (plugin) => {
