@@ -112,6 +112,12 @@ div.main_file_name
 	overflow: hidden;
 }
 
+div.main_left_container
+{
+	float: left;
+	overflow: auto;
+}
+
 div.main_navigator
 {
 	width: 280px;
@@ -133,12 +139,18 @@ div.main_viewer
 	float: left;
 }
 
+div.main_right_container
+{
+	float: left;
+	overflow: auto;
+}
+
 div.main_sidebar
 {
 	width: 280px;
 	margin: 10px 0px 10px 0px;
 	overflow: none;
-	float: right;
+	float: left;
 }
 
 div.main_viewer canvas

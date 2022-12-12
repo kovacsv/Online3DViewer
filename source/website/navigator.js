@@ -1,9 +1,8 @@
-import { ShowDomElement, SetDomElementHeight, GetDomElementOuterWidth, SetDomElementOuterHeight } from '../engine/viewer/domutils.js';
+import { GetDomElementOuterWidth, SetDomElementOuterHeight, SetDomElementOuterWidth } from '../engine/viewer/domutils.js';
 import { NavigatorFilesPanel } from './navigatorfilespanel.js';
 import { NavigatorMaterialsPanel } from './navigatormaterialspanel.js';
 import { NavigatorMeshesPanel } from './navigatormeshespanel.js';
 import { PanelSet } from './panelset.js';
-import { InstallVerticalSplitter } from './utils.js';
 
 export const SelectionType =
 {
@@ -40,10 +39,9 @@ export class Selection
 
 export class Navigator
 {
-    constructor (mainDiv, splitterDiv)
+    constructor (mainDiv)
     {
         this.mainDiv = mainDiv;
-        this.splitterDiv = splitterDiv;
 
         this.panelSet = new PanelSet (mainDiv);
         this.callbacks = null;
@@ -60,6 +58,11 @@ export class Navigator
         this.panelSet.ShowPanel (this.meshesPanel);
     }
 
+    IsPanelsVisible ()
+    {
+        return this.panelSet.IsPanelsVisible ();
+    }
+
     ShowPanels (show)
     {
         this.panelSet.ShowPanels (show);
@@ -71,12 +74,11 @@ export class Navigator
 
         this.panelSet.Init ({
             onResizeRequested : () => {
-                ShowDomElement (this.splitterDiv, this.panelSet.IsPanelsVisible ());
                 this.callbacks.onResizeRequested ();
             },
             onShowHidePanels : (show) => {
                 this.callbacks.onShowHidePanels (show);
-            },
+            }
         });
 
         this.filesPanel.Init ({
@@ -121,26 +123,21 @@ export class Navigator
                 this.SetSelection (null);
             }
         });
-
-        InstallVerticalSplitter (this.splitterDiv, this.mainDiv, false, () => {
-            this.callbacks.onResizeRequested ();
-        });
     }
 
     GetWidth ()
     {
-        let navigatorWidth = GetDomElementOuterWidth (this.mainDiv);
-        let splitterWidth = 0;
-        if (this.panelSet.IsPanelsVisible ()) {
-            splitterWidth = this.splitterDiv.offsetWidth;
-        }
-        return navigatorWidth + splitterWidth;
+        return GetDomElementOuterWidth (this.mainDiv);
+    }
+
+    SetWidth (width)
+    {
+        SetDomElementOuterWidth (this.mainDiv, width);
     }
 
     Resize (height)
     {
         SetDomElementOuterHeight (this.mainDiv, height);
-        SetDomElementHeight (this.splitterDiv, height);
         this.panelSet.Resize ();
     }
 
