@@ -2,7 +2,7 @@ import { GetFileExtension, TransformFileHostUrls } from '../engine/io/fileutils.
 import { InputFilesFromFileObjects, InputFilesFromUrls } from '../engine/import/importerfiles.js';
 import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
 import { CameraMode, Viewer } from '../engine/viewer/viewer.js';
-import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth } from '../engine/viewer/domutils.js';
+import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToScreen, ShowListPopup } from './dialogs.js';
 import { HandleEvent } from './eventhandler.js';
 import { HashHandler } from './hashhandler.js';
@@ -14,7 +14,7 @@ import { ThreeModelLoaderUI } from './threemodelloaderui.js';
 import { Toolbar } from './toolbar.js';
 import { DownloadModel, ShowExportDialog } from './exportdialog.js';
 import { ShowSnapshotDialog } from './snapshotdialog.js';
-import { AddSvgIconElement, GetFilesFromDataTransfer, InstallTooltip, IsSmallWidth } from './utils.js';
+import { AddSmallWidthChangeEventListener, AddSvgIconElement, GetFilesFromDataTransfer, InstallTooltip, IsSmallWidth } from './utils.js';
 import { ShowOpenUrlDialog } from './openurldialog.js';
 import { ShowSharingDialog } from './sharingdialog.js';
 import { HasDefaultMaterial, ReplaceDefaultMaterialColor } from '../engine/model/modelutils.js';
@@ -22,160 +22,17 @@ import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { MeasureTool } from './measuretool.js';
 import { CloseAllDialogs } from './dialog.js';
-import { CreateVerticalSplitter } from './splitter.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
 
 import * as THREE from 'three';
 
-const WebsiteUIState =
+export const WebsiteUIState =
 {
     Undefined : 0,
     Intro : 1,
     Model : 2,
     Loading : 3
 };
-
-class WebsiteLayouter
-{
-    constructor (parameters, navigator, sidebar, viewer, measureTool)
-    {
-        this.parameters = parameters;
-        this.navigator = navigator;
-        this.sidebar = sidebar;
-        this.viewer = viewer;
-        this.measureTool = measureTool;
-        this.limits = {
-            minPanelWidth : 290,
-            minCanvasWidth : 100
-        };
-    }
-
-    Init ()
-    {
-        this.InstallSplitter (this.parameters.navigatorSplitterDiv, this.parameters.navigatorDiv, (originalWidth, xDiff) => {
-            let newWidth = originalWidth + xDiff;
-            this.OnSplitterDragged (newWidth - this.navigator.GetWidth (), 0);
-        });
-
-        this.InstallSplitter (this.parameters.sidebarSplitterDiv, this.parameters.sidebarDiv, (originalWidth, xDiff) => {
-            let newWidth = originalWidth - xDiff;
-            this.OnSplitterDragged (0, newWidth - this.sidebar.GetWidth ());
-        });
-
-        this.Resize ();
-    }
-
-    InstallSplitter (splitterDiv, resizedDiv, onSplit)
-    {
-        let originalWidth = null;
-        CreateVerticalSplitter (splitterDiv, {
-            onSplitStart : () => {
-                originalWidth = GetDomElementOuterWidth (resizedDiv);
-            },
-            onSplit : (xDiff) => {
-                onSplit (originalWidth, xDiff);
-            }
-        });
-    }
-
-    OnSplitterDragged (leftDiff, rightDiff)
-    {
-        let windowWidth = window.innerWidth;
-
-        let navigatorWidth = this.navigator.GetWidth ();
-        let sidebarWidth = this.sidebar.GetWidth ();
-
-        let leftWidth = GetDomElementOuterWidth (this.parameters.leftContainerDiv);
-        let rightWidth = GetDomElementOuterWidth (this.parameters.rightContainerDiv);
-
-        let newLeftWidth = leftWidth + leftDiff;
-        let newRightWidth = rightWidth + rightDiff;
-        let contentNewWidth = windowWidth - newLeftWidth - newRightWidth;
-
-        let isNavigatorVisible = this.navigator.IsPanelsVisible ();
-        let isSidebarVisible = this.sidebar.IsPanelsVisible ();
-
-        if (isNavigatorVisible && newLeftWidth < this.limits.minPanelWidth) {
-            newLeftWidth = this.limits.minPanelWidth;
-        }
-
-        if (isSidebarVisible && newRightWidth < this.limits.minPanelWidth) {
-            newRightWidth = this.limits.minPanelWidth;
-        }
-
-        if (contentNewWidth < this.limits.minCanvasWidth) {
-            if (leftDiff > 0) {
-                newLeftWidth = windowWidth - newRightWidth - this.limits.minCanvasWidth;
-            } else if (rightDiff > 0) {
-                newRightWidth = windowWidth - newLeftWidth - this.limits.minCanvasWidth;
-            }
-        }
-
-        if (isNavigatorVisible) {
-            let newNavigatorWidth = navigatorWidth + (newLeftWidth - leftWidth);
-            this.navigator.SetWidth (newNavigatorWidth);
-        }
-        if (isSidebarVisible) {
-            let newSidebarWidth = sidebarWidth + (newRightWidth - rightWidth);
-            this.sidebar.SetWidth (newSidebarWidth);
-        }
-
-        this.Resize ();
-    }
-
-    Resize ()
-    {
-        let windowWidth = window.innerWidth;
-        let windowHeight = window.innerHeight;
-        let headerHeight = this.parameters.headerDiv.offsetHeight;
-
-        let leftWidth = 0;
-        let rightWidth = 0;
-        let safetyMargin = 0;
-        if (!IsSmallWidth ()) {
-            leftWidth = GetDomElementOuterWidth (this.parameters.leftContainerDiv);
-            rightWidth = GetDomElementOuterWidth (this.parameters.rightContainerDiv);
-            safetyMargin = 1;
-        }
-
-        let contentWidth = windowWidth - leftWidth - rightWidth;
-        let contentHeight = windowHeight - headerHeight;
-
-        if (contentWidth < this.limits.minCanvasWidth) {
-            let neededIncrease = this.limits.minCanvasWidth - contentWidth;
-
-            let isNavigatorVisible = this.navigator.IsPanelsVisible ();
-            let isSidebarVisible = this.sidebar.IsPanelsVisible ();
-
-            if (neededIncrease > 0 && isNavigatorVisible) {
-                let navigatorDecrease = Math.min (neededIncrease, leftWidth - this.limits.minPanelWidth);
-                this.navigator.SetWidth (this.navigator.GetWidth () - navigatorDecrease);
-                neededIncrease = neededIncrease - navigatorDecrease;
-            }
-
-            if (neededIncrease > 0 && isSidebarVisible) {
-                let sidebarDecrease = Math.min (neededIncrease, rightWidth - this.limits.minPanelWidth);
-                this.sidebar.SetWidth (this.sidebar.GetWidth () - sidebarDecrease);
-                neededIncrease = neededIncrease - sidebarDecrease;
-            }
-
-            leftWidth = GetDomElementOuterWidth (this.parameters.leftContainerDiv);
-            rightWidth = GetDomElementOuterWidth (this.parameters.rightContainerDiv);
-            contentWidth = windowWidth - leftWidth - rightWidth;
-        }
-
-        this.navigator.Resize (contentHeight);
-        SetDomElementOuterHeight (this.parameters.navigatorSplitterDiv, contentHeight);
-
-        this.sidebar.Resize (contentHeight);
-        SetDomElementOuterHeight (this.parameters.sidebarSplitterDiv, contentHeight);
-
-        SetDomElementOuterHeight (this.parameters.introDiv, contentHeight);
-        this.viewer.Resize (contentWidth - safetyMargin, contentHeight);
-
-        this.measureTool.Resize ();
-    }
-}
 
 export class Website
 {
@@ -187,13 +44,12 @@ export class Website
         this.measureTool = new MeasureTool (this.viewer, this.settings);
         this.hashHandler = new HashHandler ();
         this.toolbar = new Toolbar (this.parameters.toolbarDiv);
-        this.navigator = new Navigator (this.parameters.navigatorDiv);
-        this.sidebar = new Sidebar (this.parameters.sidebarDiv, this.settings);
+        this.navigator = new Navigator (this.parameters.navigatorDiv, this.parameters.navigatorSplitterDiv);
+        this.sidebar = new Sidebar (this.parameters.sidebarDiv, this.parameters.sidebarSplitterDiv, this.settings);
         this.modelLoaderUI = new ThreeModelLoaderUI ();
         this.themeHandler = new ThemeHandler ();
         this.highlightColor = new THREE.Color (0x8ec9f0);
         this.uiState = WebsiteUIState.Undefined;
-        this.layouter = new WebsiteLayouter (this.parameters, this.navigator, this.sidebar, this.viewer, this.measureTool);
         this.model = null;
     }
 
@@ -222,15 +78,56 @@ export class Website
         this.viewer.SetMouseMoveHandler (this.OnModelMouseMoved.bind (this));
         this.viewer.SetContextMenuHandler (this.OnModelContextMenu.bind (this));
 
-        this.layouter.Init ();
+        this.Resize ();
         this.SetUIState (WebsiteUIState.Intro);
 
         this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
         this.OnHashChange ();
 
+        AddSmallWidthChangeEventListener (() => {
+            this.OnSmallWidthChanged ();
+        });
+
         window.addEventListener ('resize', () => {
-			this.layouter.Resize ();
+			this.Resize ();
 		});
+    }
+
+    Resize ()
+    {
+        let windowWidth = window.innerWidth;
+        let windowHeight = window.innerHeight;
+        let headerHeight = this.parameters.headerDiv.offsetHeight;
+
+        let navigatorWidth = 0;
+        let sidebarWidth = 0;
+        let safetyMargin = 0;
+        if (!IsSmallWidth ()) {
+            navigatorWidth = this.navigator.GetWidth ();
+            sidebarWidth = this.sidebar.GetWidth ();
+            safetyMargin = 1;
+        }
+
+        const minContentWidth = 50;
+        let contentWidth = windowWidth - navigatorWidth - sidebarWidth;
+        if (contentWidth < minContentWidth) {
+            this.sidebar.DecreaseWidth (minContentWidth - contentWidth);
+            contentWidth = minContentWidth;
+        }
+        let contentHeight = windowHeight - headerHeight;
+
+        SetDomElementOuterHeight (this.parameters.introDiv, contentHeight);
+        this.navigator.Resize (contentHeight);
+        this.sidebar.Resize (contentHeight);
+        this.viewer.Resize (contentWidth - safetyMargin, contentHeight);
+        this.measureTool.Resize ();
+    }
+
+    OnSmallWidthChanged ()
+    {
+        if (this.uiState === WebsiteUIState.Model) {
+            this.UpdatePanelsVisibility ();
+        }
     }
 
     HasLoadedModel ()
@@ -266,7 +163,7 @@ export class Website
             ShowOnlyOnModelElements (false);
         }
 
-        this.layouter.Resize ();
+        this.Resize ();
     }
 
     ClearModel ()
@@ -793,10 +690,9 @@ export class Website
                 this.SwitchTheme (this.settings.themeId, true);
             },
             onResizeRequested : () => {
-                this.layouter.Resize ();
+                this.Resize ();
             },
             onShowHidePanels : (show) => {
-                ShowDomElement (this.parameters.sidebarSplitterDiv, show);
                 CookieSetBoolVal ('ov_show_sidebar', show);
             }
         });
@@ -893,10 +789,9 @@ export class Website
                 this.sidebar.AddMaterialProperties (this.model.GetMaterial (materialIndex));
             },
             onResizeRequested : () => {
-                this.layouter.Resize ();
+                this.Resize ();
             },
             onShowHidePanels : (show) => {
-                ShowDomElement (this.parameters.navigatorSplitterDiv, show);
                 CookieSetBoolVal ('ov_show_navigator', show);
             }
         });
