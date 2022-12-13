@@ -156,7 +156,6 @@ class WebsiteLayouter
             if (neededIncrease > 0 && isSidebarVisible) {
                 let sidebarDecrease = Math.min (neededIncrease, rightWidth - this.limits.minPanelWidth);
                 this.sidebar.SetWidth (this.sidebar.GetWidth () - sidebarDecrease);
-                neededIncrease = neededIncrease - sidebarDecrease;
             }
 
             leftWidth = GetDomElementOuterWidth (this.parameters.leftContainerDiv);
