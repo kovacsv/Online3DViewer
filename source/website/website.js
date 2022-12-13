@@ -81,7 +81,6 @@ class WebsiteLayouter
     OnSplitterDragged (leftDiff, rightDiff)
     {
         let windowWidth = window.innerWidth;
-        let maxPanelWidth = windowWidth - this.limits.minPanelWidth - this.limits.minCanvasWidth;
 
         let navigatorWidth = this.navigator.GetWidth ();
         let sidebarWidth = this.sidebar.GetWidth ();
@@ -93,16 +92,15 @@ class WebsiteLayouter
         let newRightWidth = rightWidth + rightDiff;
         let contentNewWidth = windowWidth - newLeftWidth - newRightWidth;
 
-        if (newLeftWidth < this.limits.minPanelWidth) {
+        let isNavigatorVisible = this.navigator.IsPanelsVisible ();
+        let isSidebarVisible = this.sidebar.IsPanelsVisible ();
+
+        if (isNavigatorVisible && newLeftWidth < this.limits.minPanelWidth) {
             newLeftWidth = this.limits.minPanelWidth;
-        } else if (newLeftWidth > maxPanelWidth) {
-            newLeftWidth = maxPanelWidth;
         }
 
-        if (newRightWidth < this.limits.minPanelWidth) {
+        if (isSidebarVisible && newRightWidth < this.limits.minPanelWidth) {
             newRightWidth = this.limits.minPanelWidth;
-        } else if (newRightWidth > maxPanelWidth) {
-            newRightWidth = maxPanelWidth;
         }
 
         if (contentNewWidth < this.limits.minCanvasWidth) {
@@ -113,12 +111,12 @@ class WebsiteLayouter
             }
         }
 
-        let newNavigatorWidth = navigatorWidth + (newLeftWidth - leftWidth);
-        let newSidebarWidth = sidebarWidth + (newRightWidth - rightWidth);
-        if (this.navigator.IsPanelsVisible ()) {
+        if (isNavigatorVisible) {
+            let newNavigatorWidth = navigatorWidth + (newLeftWidth - leftWidth);
             this.navigator.SetWidth (newNavigatorWidth);
         }
-        if (this.sidebar.IsPanelsVisible ()) {
+        if (isSidebarVisible) {
+            let newSidebarWidth = sidebarWidth + (newRightWidth - rightWidth);
             this.sidebar.SetWidth (newSidebarWidth);
         }
 
@@ -145,13 +143,22 @@ class WebsiteLayouter
 
         if (contentWidth < this.limits.minCanvasWidth) {
             let neededIncrease = this.limits.minCanvasWidth - contentWidth;
-            let navigatorPossibleDecrease = leftWidth - this.limits.minPanelWidth;
-            if (navigatorPossibleDecrease > neededIncrease) {
-                this.navigator.SetWidth (this.navigator.GetWidth () - neededIncrease);
-            } else {
-                this.navigator.SetWidth (this.navigator.GetWidth () - navigatorPossibleDecrease);
-                this.sidebar.SetWidth (this.sidebar.GetWidth () - (neededIncrease - navigatorPossibleDecrease));
+
+            let isNavigatorVisible = this.navigator.IsPanelsVisible ();
+            let isSidebarVisible = this.sidebar.IsPanelsVisible ();
+
+            if (neededIncrease > 0 && isNavigatorVisible) {
+                let navigatorDecrease = Math.min (neededIncrease, leftWidth - this.limits.minPanelWidth);
+                this.navigator.SetWidth (this.navigator.GetWidth () - navigatorDecrease);
+                neededIncrease = neededIncrease - navigatorDecrease;
             }
+
+            if (neededIncrease > 0 && isSidebarVisible) {
+                let sidebarDecrease = Math.min (neededIncrease, rightWidth - this.limits.minPanelWidth);
+                this.sidebar.SetWidth (this.sidebar.GetWidth () - sidebarDecrease);
+                neededIncrease = neededIncrease - sidebarDecrease;
+            }
+
             leftWidth = GetDomElementOuterWidth (this.parameters.leftContainerDiv);
             rightWidth = GetDomElementOuterWidth (this.parameters.rightContainerDiv);
             contentWidth = windowWidth - leftWidth - rightWidth;
