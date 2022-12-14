@@ -27,6 +27,7 @@
             // initialize the viewer with the parent element and some parameters
             let viewer = new OV.EmbeddedViewer (parentDiv);
 
+            // download the file and load it's content as an ArrayBuffer
             fetch ('../../test/testfiles/obj/hundred_cubes.obj')
             .then (response => response.arrayBuffer ())
             .then ((arrayBuffer) => {
