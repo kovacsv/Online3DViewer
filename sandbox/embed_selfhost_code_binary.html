@@ -31,7 +31,7 @@
             .then (response => response.arrayBuffer ())
             .then ((arrayBuffer) => {
                 let fileList = [
-                    new File ([arrayBuffer], "file.obj")
+                    new File ([arrayBuffer], 'file.obj')
                 ];
                 viewer.LoadModelFromFileList (fileList);
             });
