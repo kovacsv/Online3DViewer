@@ -131,7 +131,7 @@ div.main_splitter
 	width: 10px;
 	overflow: none;
 	float: left;
-	cursor: col-resize;
+	cursor: w-resize;
 }
 
 div.main_viewer
