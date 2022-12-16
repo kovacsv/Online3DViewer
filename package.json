@@ -41,13 +41,13 @@
 	"devDependencies": {
 		"clean-css-cli": "^5.6.1",
 		"docdash": "^2.0.0",
-		"esbuild": "^0.15.14",
-		"eslint": "^8.28.0",
+		"esbuild": "^0.16.7",
+		"eslint": "^8.29.0",
 		"eslint-plugin-unused-imports": "^2.0.0",
 		"fantasticon": "^1.2.2",
 		"http-server": "^14.0.0",
 		"jsdoc": "^4.0.0",
-		"mocha": "^10.1.0",
+		"mocha": "^10.2.0",
 		"oslllo-svg-fixer": "^2.2.0",
 		"svgo": "^3.0.2"
 	},
@@ -56,7 +56,7 @@
 		"draco3d": "1.5.5",
 		"fflate": "0.7.4",
 		"rhino3dm": "7.15.0",
-		"three": "0.146.0",
+		"three": "0.147.0",
 		"web-ifc": "0.0.35",
 		"occt-import-js" : "0.0.14"
 	},
