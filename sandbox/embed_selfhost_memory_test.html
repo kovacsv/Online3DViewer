@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+	<title>Online 3D Viewer</title>
+
+	<script type="text/javascript" src="../build/o3dv.min-dev.js"></script>
+
+    <style>
+        div.online_3d_viewer
+        {
+            width: 640px;
+            height: 480px;
+        }
+    </style>
+
+    <script type='text/javascript'>
+        function InitViewer ()
+        {
+            // get the parent element of the viewer
+            let parentDiv = document.createElement ('div');
+            parentDiv.classList.add ('online_3d_viewer');
+            document.body.appendChild (parentDiv);
+
+            // initialize the viewer with the parent element and some parameters
+            let viewer = new OV.EmbeddedViewer (parentDiv, {
+                camera : new OV.Camera (
+                    new OV.Coord3D (-1.5, 2.0, 3.0),
+                    new OV.Coord3D (0.0, 0.0, 0.0),
+                    new OV.Coord3D (0.0, 1.0, 0.0),
+                    45.0
+                ),
+                backgroundColor : new OV.RGBAColor (255, 255, 255, 255),
+                defaultColor : new OV.RGBColor (200, 200, 200),
+                edgeSettings : {
+                    showEdges : false,
+                    edgeColor : new OV.RGBColor (0, 0, 0),
+                    edgeThreshold : 1
+                },
+                environmentSettings : {
+                    environmentMap : [
+                        '../website/assets/envmaps/fishermans_bastion/posx.jpg',
+                        '../website/assets/envmaps/fishermans_bastion/negx.jpg',
+                        '../website/assets/envmaps/fishermans_bastion/posy.jpg',
+                        '../website/assets/envmaps/fishermans_bastion/negy.jpg',
+                        '../website/assets/envmaps/fishermans_bastion/posz.jpg',
+                        '../website/assets/envmaps/fishermans_bastion/negz.jpg'
+                    ],
+                    backgroundIsEnvMap : false
+                }
+            });
+
+            // load a model providing model urls
+            viewer.LoadModelFromUrlList ([
+                '../../test/testfiles/gltf/DamagedHelmet/glTF-Binary/DamagedHelmet.glb'
+            ]);
+
+            return {
+                parentDiv,
+                viewer
+            };
+        }
+
+        function InitViewerRecursive ()
+        {
+
+        }
+
+        window.addEventListener ('load', () => {
+            setInterval (() => {
+                let result = InitViewer ();
+                setTimeout (() => {
+                    result.viewer.Destroy ();
+                    document.body.removeChild (result.parentDiv);
+                }, 1000);
+            }, 1500);
+        });
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>

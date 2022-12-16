@@ -1,5 +1,5 @@
 import { RGBColor } from '../model/color.js';
-import { ConvertColorToThreeColor } from '../threejs/threeutils.js';
+import { ConvertColorToThreeColor, DisposeThreeObjects } from '../threejs/threeutils.js';
 
 import * as THREE from 'three';
 
@@ -143,9 +143,7 @@ export class ViewerGeometry
             return;
         }
 
-        this.EnumerateMeshes ((mesh) => {
-            mesh.geometry.dispose ();
-        });
+        DisposeThreeObjects (this.mainObject);
         this.scene.remove (this.mainObject);
         this.mainObject = null;
     }
@@ -159,9 +157,7 @@ export class ViewerGeometry
         this.EnumerateMeshes ((mesh) => {
             SetThreeMeshPolygonOffset (mesh, false);
         });
-        this.EnumerateEdges ((edge) => {
-            edge.geometry.dispose ();
-        });
+        DisposeThreeObjects (this.mainEdgeObject);
         this.scene.remove (this.mainEdgeObject);
         this.mainEdgeObject = null;
     }
@@ -236,14 +232,7 @@ export class ViewerExtraGeometry
 
     Clear ()
     {
-        if (this.mainObject === null) {
-            return;
-        }
-        this.mainObject.traverse ((obj) => {
-            if (obj.isMesh || obj.isLineSegments) {
-                obj.geometry.dispose ();
-            }
-        });
+        DisposeThreeObjects (this.mainObject);
         this.scene.remove (this.mainObject);
         this.mainObject = null;
     }

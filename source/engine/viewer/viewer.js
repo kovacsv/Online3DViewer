@@ -686,4 +686,10 @@ export class Viewer
         this.ResizeRenderer (originalSize.width, originalSize.height);
         return url;
     }
+
+    Destroy ()
+    {
+        this.Clear ();
+        this.renderer.dispose ();
+    }
 }

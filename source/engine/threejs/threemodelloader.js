@@ -108,4 +108,10 @@ export class ThreeModelLoader
         }
         this.objectUrls = null;
     }
+
+    Destroy ()
+    {
+        this.RevokeObjectUrls ();
+        this.importer = null;
+    }
 }

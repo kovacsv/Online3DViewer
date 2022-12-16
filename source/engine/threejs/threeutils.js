@@ -181,3 +181,23 @@ export function ConvertThreeGeometryToMesh (threeGeometry, materialIndex)
 
     return mesh;
 }
+
+export function DisposeThreeObjects (mainObject)
+{
+    if (mainObject === null) {
+        return;
+    }
+
+    mainObject.traverse ((obj) => {
+        if (obj.isMesh || obj.isLineSegments) {
+            obj.geometry.dispose ();
+            if (Array.isArray (obj.material)) {
+                for (let material of obj.material) {
+                    material.dispose ();
+                }
+            } else {
+                obj.material.dispose ();
+            }
+        }
+    });
+}

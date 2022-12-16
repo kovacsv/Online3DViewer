@@ -157,6 +157,13 @@ export class EmbeddedViewer
         let height = this.parentElement.clientHeight;
         this.viewer.Resize (width, height);
     }
+
+    Destroy ()
+    {
+        this.modelLoader.Destroy ();
+        this.viewer.Destroy ();
+        this.model = null;
+    }
 }
 
 export function Init3DViewerElement (parentElement, modelUrls, parameters)
