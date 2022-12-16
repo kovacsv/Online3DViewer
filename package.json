@@ -99,7 +99,7 @@
 			"comma-spacing": "error",
 			"prefer-arrow-callback": "error",
 			"quotes": [
-			"error",
+				"error",
 				"single"
 			],
 			"block-scoped-var": "error",
