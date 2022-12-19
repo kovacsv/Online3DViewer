@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+
+	<title>Online 3D Viewer</title>
+	<style>
+		canvas
+		{
+			border: 1px solid #cccccc;
+		}
+	</style>
+
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+	<script type='text/javascript'>
+		function Sandbox3D ()
+		{
+			let canvas = document.getElementById ('canvas');
+
+			let parameters = {
+				canvas : canvas,
+				antialias : true
+			};
+
+			let width = 800;
+			let height = 600;
+			let renderer = new THREE.WebGLRenderer (parameters);
+			renderer.setClearColor ('#ffffff', 1);
+			renderer.setSize (width, height);
+			renderer.localClippingEnabled = true;
+
+			let scene = new THREE.Scene ();
+
+			let ambientLight = new THREE.AmbientLight (0x888888);
+			scene.add (ambientLight);
+
+			let light = new THREE.DirectionalLight (0x888888);
+			light.position.set (3.0, -1.5, 2.0);
+			scene.add (light);
+
+			let camera = new THREE.PerspectiveCamera (45.0, width / height, 0.1, 1000.0);
+			camera.position.set (3.0, -1.5, 2.0);
+			camera.up.set (0.0, 0.0, 1.0);
+			camera.lookAt (new THREE.Vector3 (0.0, 0.0, 0.0));
+			scene.add (camera);
+
+			let box = new THREE.BoxGeometry (1.0, 1.0, 1.0);
+			let boxMaterial = new THREE.MeshPhongMaterial ({
+				color : 0xcc0000,
+				side : THREE.DoubleSide
+			});
+			let boxMesh = new THREE.Mesh (box, boxMaterial);
+			scene.add (boxMesh);
+
+			let shadowGroup = new THREE.Group ();
+			scene.add (shadowGroup);
+
+			let renderTarget = new THREE.WebGLRenderTarget (512, 512);
+			renderTarget.texture.generateMipmaps = false;
+
+			let planeWidth = 2.0;
+			let planeHeight = 2.0;
+			let plane = new THREE.PlaneGeometry (planeWidth, planeHeight).translate (0.0, 0.0, -1.0);
+			let planeMaterial = new THREE.MeshBasicMaterial ({
+				map : renderTarget.texture,
+				opacity : 1.0,
+				transparent: true,
+				depthWrite : false
+			});
+
+			let planeMesh = new THREE.Mesh (plane, planeMaterial);
+			planeMesh.renderOrder = 1;
+			planeMesh.scale.y = -1;
+			shadowGroup.add (planeMesh);
+
+			let shadowCamera = new THREE.OrthographicCamera (
+				-planeWidth / 2.0,
+				planeWidth / 2.0,
+				planeHeight / 2.0,
+				-planeHeight / 2.0,
+				0.0,
+				2.0,
+			);
+
+			shadowCamera.position.set (0.0, 0.0, -1.0);
+			shadowCamera.up.set (0.0, -1.0, 0.0);
+			shadowCamera.lookAt (new THREE.Vector3 (0.0, 0.0, 0.0));
+
+			let depthMaterial = new THREE.MeshDepthMaterial ();
+			depthMaterial.userData.darkness = { value: 1.0 };
+			depthMaterial.onBeforeCompile = function (shader) {
+				shader.uniforms.darkness = depthMaterial.userData.darkness;
+				shader.fragmentShader = /* glsl */`
+					uniform float darkness;
+					${shader.fragmentShader.replace (
+						'gl_FragColor = vec4( vec3( 1.0 - fragCoordZ ), opacity );',
+						'gl_FragColor = vec4( vec3( 0.0 ), ( 1.0 - fragCoordZ ) * darkness );'
+					)}
+				`;
+			};
+			depthMaterial.depthTest = false;
+			depthMaterial.depthWrite = false;
+
+			//scene.background = new THREE.Color (0.0, 1.0, 0.0);
+			renderer.setAnimationLoop ((time) => {
+				boxMesh.rotation.x = time / 3000;
+				boxMesh.rotation.y = time / 3000;
+				boxMesh.rotation.z = time / 3000;
+
+				scene.overrideMaterial = depthMaterial;
+				renderer.setRenderTarget (renderTarget);
+				renderer.render (scene, shadowCamera);
+				scene.overrideMaterial = null;
+
+				renderer.setRenderTarget (null);
+				renderer.render (scene, camera);
+			});
+
+		}
+
+		window.onload = function () {
+			Sandbox3D ();
+		};
+	</script>
+</head>
+
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+
+</html>
