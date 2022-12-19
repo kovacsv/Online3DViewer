@@ -14,6 +14,9 @@
 	</style>
 
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/shaders/HorizontalBlurShader.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/shaders/VerticalBlurShader.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
 	<script type='text/javascript'>
 		function Sandbox3D ()
 		{
@@ -90,6 +93,8 @@
 
 			let depthMaterial = new THREE.MeshDepthMaterial ();
 			depthMaterial.userData.darkness = { value: 1.0 };
+			depthMaterial.depthTest = false;
+			depthMaterial.depthWrite = false;
 			depthMaterial.onBeforeCompile = function (shader) {
 				shader.uniforms.darkness = depthMaterial.userData.darkness;
 				shader.fragmentShader = /* glsl */`
@@ -100,8 +105,8 @@
 					)}
 				`;
 			};
-			depthMaterial.depthTest = false;
-			depthMaterial.depthWrite = false;
+
+			new THREE.OrbitControls (camera, renderer.domElement);
 
 			//scene.background = new THREE.Color (0.0, 1.0, 0.0);
 			renderer.setAnimationLoop ((time) => {
