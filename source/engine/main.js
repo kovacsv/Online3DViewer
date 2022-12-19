@@ -69,7 +69,7 @@ import { GetIntegerFromStyle, GetDomElementExternalWidth, GetDomElementExternalH
 import { EmbeddedViewer, Init3DViewerElement, Init3DViewerElements } from './viewer/embeddedviewer.js';
 import { MouseInteraction, TouchInteraction, ClickDetector, Navigation, NavigationType } from './viewer/navigation.js';
 import { CameraValidator, UpVector, ShadingModel, Viewer, GetDefaultCamera, TraverseThreeObject, GetShadingTypeOfObject, CameraMode } from './viewer/viewer.js';
-import { ViewerGeometry, ViewerExtraGeometry, SetThreeMeshPolygonOffset } from './viewer/viewergeometry.js';
+import { ViewerModel, ViewerMainModel, SetThreeMeshPolygonOffset } from './viewer/viewermodel.js';
 
 export {
     IsDefined,
@@ -325,7 +325,7 @@ export {
     TraverseThreeObject,
     GetShadingTypeOfObject,
     CameraMode,
-    ViewerGeometry,
-    ViewerExtraGeometry,
+    ViewerModel,
+    ViewerMainModel,
     SetThreeMeshPolygonOffset
 };

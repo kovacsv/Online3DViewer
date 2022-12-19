@@ -190,7 +190,6 @@ export function DisposeThreeObjects (mainObject)
 
     mainObject.traverse ((obj) => {
         if (obj.isMesh || obj.isLineSegments) {
-            obj.geometry.dispose ();
             if (Array.isArray (obj.material)) {
                 for (let material of obj.material) {
                     material.dispose ();
@@ -198,6 +197,7 @@ export function DisposeThreeObjects (mainObject)
             } else {
                 obj.material.dispose ();
             }
+            obj.geometry.dispose ();
         }
     });
 }

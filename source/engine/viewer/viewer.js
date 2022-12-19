@@ -5,7 +5,7 @@ import { ShadingType } from '../threejs/threeutils.js';
 import { Camera } from './camera.js';
 import { GetDomElementInnerDimensions } from './domutils.js';
 import { Navigation } from './navigation.js';
-import { ViewerExtraGeometry, ViewerGeometry } from './viewergeometry.js';
+import { ViewerModel, ViewerMainModel } from './viewermodel.js';
 
 import * as THREE from 'three';
 
@@ -283,8 +283,8 @@ export class Viewer
         this.renderer.setSize (this.canvas.width, this.canvas.height);
 
         this.scene = new THREE.Scene ();
-        this.geometry = new ViewerGeometry (this.scene);
-        this.extraGeometry = new ViewerExtraGeometry (this.scene);
+        this.geometry = new ViewerMainModel (this.scene);
+        this.extraGeometry = new ViewerModel (this.scene);
 
         this.InitNavigation ();
         this.InitShading ();

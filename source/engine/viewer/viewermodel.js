@@ -20,7 +20,32 @@ export function SetThreeMeshPolygonOffset (mesh, offset)
     }
 }
 
-export class ViewerGeometry
+export class ViewerModel
+{
+    constructor (scene)
+    {
+        this.scene = scene;
+        this.mainObject = null;
+    }
+
+    AddObject (object)
+    {
+        if (this.mainObject === null) {
+            this.mainObject = new THREE.Object3D ();
+            this.scene.add (this.mainObject);
+        }
+        this.mainObject.add (object);
+    }
+
+    Clear ()
+    {
+        DisposeThreeObjects (this.mainObject);
+        this.scene.remove (this.mainObject);
+        this.mainObject = null;
+    }
+}
+
+export class ViewerMainModel
 {
     constructor (scene)
     {
@@ -210,30 +235,5 @@ export class ViewerGeometry
         }
 
         return null;
-    }
-}
-
-export class ViewerExtraGeometry
-{
-    constructor (scene)
-    {
-        this.scene = scene;
-        this.mainObject = null;
-    }
-
-    AddObject (object)
-    {
-        if (this.mainObject === null) {
-            this.mainObject = new THREE.Object3D ();
-            this.scene.add (this.mainObject);
-        }
-        this.mainObject.add (object);
-    }
-
-    Clear ()
-    {
-        DisposeThreeObjects (this.mainObject);
-        this.scene.remove (this.mainObject);
-        this.mainObject = null;
     }
 }
