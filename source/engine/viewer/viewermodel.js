@@ -25,23 +25,59 @@ export class ViewerModel
     constructor (scene)
     {
         this.scene = scene;
-        this.mainObject = null;
+        this.rootObject = null;
+    }
+
+    IsEmpty ()
+    {
+        return this.rootObject === null;
+    }
+
+    SetRootObject (rootObject)
+    {
+        if (this.rootObject !== null) {
+            this.Clear ();
+        }
+        this.rootObject = rootObject;
+        this.scene.add (this.rootObject);
+    }
+
+    GetRootObject ()
+    {
+        return this.rootObject;
     }
 
     AddObject (object)
     {
-        if (this.mainObject === null) {
-            this.mainObject = new THREE.Object3D ();
-            this.scene.add (this.mainObject);
+        if (this.rootObject === null) {
+            let newRootObject = new THREE.Object3D ();
+            this.SetRootObject (newRootObject);
         }
-        this.mainObject.add (object);
+        this.rootObject.add (object);
+    }
+
+    Traverse (enumerator)
+    {
+        if (this.rootObject === null) {
+            return;
+        }
+        this.rootObject.traverse ((obj) => {
+            enumerator (obj);
+        });
+    }
+
+    UpdateWorldMatrix ()
+    {
+        if (this.rootObject !== null) {
+            this.rootObject.updateWorldMatrix (true, true);
+        }
     }
 
     Clear ()
     {
-        DisposeThreeObjects (this.mainObject);
-        this.scene.remove (this.mainObject);
-        this.mainObject = null;
+        DisposeThreeObjects (this.rootObject);
+        this.scene.remove (this.rootObject);
+        this.rootObject = null;
     }
 }
 
@@ -51,8 +87,8 @@ export class ViewerMainModel
     {
         this.scene = scene;
 
-        this.mainObject = null;
-        this.mainEdgeObject = null;
+        this.mainModel = new ViewerModel (this.scene);
+        this.edgeModel = new ViewerModel (this.scene);
 
         this.edgeSettings = {
             showEdges : false,
@@ -63,18 +99,16 @@ export class ViewerMainModel
 
     SetMainObject (mainObject)
     {
-        this.mainObject = mainObject;
-        this.scene.add (this.mainObject);
+        this.mainModel.SetRootObject (mainObject);
         if (this.edgeSettings.showEdges) {
-            this.GenerateMainEdgeObject ();
+            this.GenerateEdgeModel ();
         }
     }
 
     UpdateWorldMatrix ()
     {
-        if (this.mainObject !== null) {
-            this.mainObject.updateWorldMatrix (true, true);
-        }
+        this.mainModel.UpdateWorldMatrix ();
+        this.edgeModel.UpdateWorldMatrix ();
     }
 
     SetEdgeSettings (show, color, threshold)
@@ -88,14 +122,14 @@ export class ViewerMainModel
         this.edgeSettings.edgeThreshold = threshold;
         this.edgeSettings.edgeColor = color;
 
-        if (this.mainObject === null) {
+        if (this.mainModel.IsEmpty ()) {
             return;
         }
 
         if (this.edgeSettings.showEdges) {
             if (needToGenerate) {
-                this.ClearMainEdgeObject ();
-                this.GenerateMainEdgeObject ();
+                this.ClearEdgeModel ();
+                this.GenerateEdgeModel ();
             } else {
 
                 let edgeColor = ConvertColorToThreeColor (this.edgeSettings.edgeColor);
@@ -104,14 +138,13 @@ export class ViewerMainModel
                 });
             }
         } else {
-            this.ClearMainEdgeObject ();
+            this.ClearEdgeModel ();
         }
     }
 
-    GenerateMainEdgeObject ()
+    GenerateEdgeModel ()
     {
         let edgeColor = ConvertColorToThreeColor (this.edgeSettings.edgeColor);
-        this.mainEdgeObject = new THREE.Object3D ();
 
         this.UpdateWorldMatrix ();
         this.EnumerateMeshes ((mesh) => {
@@ -123,9 +156,8 @@ export class ViewerMainModel
             line.applyMatrix4 (mesh.matrixWorld);
             line.userData = mesh.userData;
             line.visible = mesh.visible;
-            this.mainEdgeObject.add (line);
+            this.edgeModel.AddObject (line);
         });
-        this.scene.add (this.mainEdgeObject);
     }
 
     GetBoundingBox (needToProcess)
@@ -158,41 +190,25 @@ export class ViewerMainModel
 
     Clear ()
     {
-        this.ClearMainObject ();
-        this.ClearMainEdgeObject ();
+        this.mainModel.Clear ();
+        this.ClearEdgeModel ();
     }
 
-    ClearMainObject ()
+    ClearEdgeModel ()
     {
-        if (this.mainObject === null) {
-            return;
-        }
-
-        DisposeThreeObjects (this.mainObject);
-        this.scene.remove (this.mainObject);
-        this.mainObject = null;
-    }
-
-    ClearMainEdgeObject ()
-    {
-        if (this.mainEdgeObject === null) {
+        if (this.edgeModel.IsEmpty ()) {
             return;
         }
 
         this.EnumerateMeshes ((mesh) => {
             SetThreeMeshPolygonOffset (mesh, false);
         });
-        DisposeThreeObjects (this.mainEdgeObject);
-        this.scene.remove (this.mainEdgeObject);
-        this.mainEdgeObject = null;
+        this.edgeModel.Clear ();
     }
 
     EnumerateMeshes (enumerator)
     {
-        if (this.mainObject === null) {
-            return;
-        }
-        this.mainObject.traverse ((obj) => {
+        this.mainModel.Traverse ((obj) => {
             if (obj.isMesh) {
                 enumerator (obj);
             }
@@ -201,10 +217,7 @@ export class ViewerMainModel
 
     EnumerateEdges (enumerator)
     {
-        if (this.mainEdgeObject === null) {
-            return;
-        }
-        this.mainEdgeObject.traverse ((obj) => {
+        this.edgeModel.Traverse ((obj) => {
             if (obj.isLineSegments) {
                 enumerator (obj);
             }
@@ -213,7 +226,7 @@ export class ViewerMainModel
 
     GetMeshIntersectionUnderMouse (mouseCoords, camera, width, height)
     {
-        if (this.mainObject === null) {
+        if (this.mainModel.IsEmpty ()) {
             return null;
         }
 
@@ -226,10 +239,10 @@ export class ViewerMainModel
         mousePos.x = (mouseCoords.x / width) * 2 - 1;
         mousePos.y = -(mouseCoords.y / height) * 2 + 1;
         raycaster.setFromCamera (mousePos, camera);
-        let iSectObjects = raycaster.intersectObject (this.mainObject, true);
+        let iSectObjects = raycaster.intersectObject (this.mainModel.GetRootObject (), true);
         for (let i = 0; i < iSectObjects.length; i++) {
             let iSectObject = iSectObjects[i];
-            if (iSectObject.object.type === 'Mesh' && iSectObject.object.visible) {
+            if (iSectObject.object.isMesh && iSectObject.object.visible) {
                 return iSectObject;
             }
         }
