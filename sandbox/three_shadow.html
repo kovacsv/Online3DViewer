@@ -68,51 +68,50 @@
 
 		class ShadowPlane
 		{
-			constructor (scene)
+			constructor (scene, planeXSize, planeYSize, planeZPosition, frustumHeight, shadowColor)
 			{
 				this.scene = scene;
 
 				this.shadowGroup = new THREE.Object3D ();
 				this.scene.add (this.shadowGroup);
 
-				let sizeX = 5.0;
-				let sizeY = 5.0;
-				let planeZ = -1.0;
-
 				this.shadowRenderTarget = new THREE.WebGLRenderTarget (512, 512);
 				this.shadowRenderTarget.texture.generateMipmaps = false;
 
-				this.shadowPlaneGeometry = new THREE.PlaneGeometry (sizeX, sizeY)
+				this.shadowPlaneGeometry = new THREE.PlaneGeometry (planeXSize, planeYSize)
 				this.shadowPlaneMaterial = new THREE.MeshBasicMaterial ({
 					map : this.shadowRenderTarget.texture,
 					depthWrite : false
 				});
 
 				this.shadowPlaneMesh = new THREE.Mesh (this.shadowPlaneGeometry, this.shadowPlaneMaterial);
-				this.shadowPlaneMesh.position.z = planeZ;
+				this.shadowPlaneMesh.position.z = planeZPosition;
 				this.shadowPlaneMesh.scale.y = -1.0;
 				this.shadowGroup.add (this.shadowPlaneMesh);
 
-				this.shadowCamera = new THREE.OrthographicCamera (-sizeX / 2.0, sizeX / 2.0, sizeY / 2.0, -sizeY / 2.0, 0.0, 3.0);
+				this.shadowCamera = new THREE.OrthographicCamera (
+					-planeXSize / 2.0, planeXSize / 2.0,
+					planeYSize / 2.0, -planeYSize / 2.0,
+					0.0, frustumHeight
+				);
 				this.shadowCamera.rotation.x = Math.PI;
-				this.shadowCamera.position.z = planeZ;
+				this.shadowCamera.position.z = planeZPosition;
 				this.shadowGroup.add (this.shadowCamera);
 
 				this.shadowMaterial = new THREE.MeshBasicMaterial ({
-					color : 0x888888
+					color : shadowColor
 				});
 
-				this.blur = new BlurEffect (this.shadowGroup, this.shadowRenderTarget, sizeX, sizeY);
+				this.blur = new BlurEffect (this.shadowGroup, this.shadowRenderTarget, planeXSize, planeYSize);
 			}
 
-			Render (renderer)
+			Render (renderer, blurAmount)
 			{
 				this.scene.overrideMaterial = this.shadowMaterial;
 				renderer.setRenderTarget (this.shadowRenderTarget);
 				renderer.render (this.scene, this.shadowCamera);
 				this.scene.overrideMaterial = null;
 
-				let blurAmount = 5.0;
 				this.blur.Render (renderer, blurAmount);
 				this.blur.Render (renderer, blurAmount * 0.5);
 				this.blur.Render (renderer, blurAmount * 0.2);
@@ -167,7 +166,7 @@
 
 			new THREE.OrbitControls (camera, renderer.domElement);
 
-			let shadow = new ShadowPlane (scene);
+			let shadow = new ShadowPlane (scene, 5.0, 5.0, -1.0, 3.0, 0x888888);
 
 			scene.background = new THREE.Color (0.8, 0.8, 0.8);
 			renderer.setAnimationLoop ((time) => {
@@ -175,7 +174,7 @@
 				meshes.rotation.y = time / 3000;
 				meshes.rotation.z = time / 3000;
 
-				shadow.Render (renderer);
+				shadow.Render (renderer, 5.0);
 
 				renderer.setRenderTarget (null);
 				renderer.render (scene, camera);
