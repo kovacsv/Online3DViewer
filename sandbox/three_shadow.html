@@ -98,7 +98,7 @@
 			let shadowMaterial = new THREE.MeshDepthMaterial ();
 			shadowMaterial.depthTest = false;
 			shadowMaterial.depthWrite = false;
-			shadowMaterial.userData.darkness = { value: 1.0 };
+			shadowMaterial.userData.darkness = { value: 0.7 };
 			shadowMaterial.onBeforeCompile = (shader) => {
 				shader.uniforms.darkness = shadowMaterial.userData.darkness;
 				shader.fragmentShader = /* glsl */`
@@ -113,12 +113,24 @@
 			// let cameraHelper = new THREE.CameraHelper (shadowCamera);
 			// shadowGroup.add (cameraHelper);
 
+			let blurPlaneGeometry = new THREE.PlaneGeometry (planeSizeX, planeSizeY)
+
 			let blurRenderTarget = new THREE.WebGLRenderTarget (512, 512);
 			blurRenderTarget.texture.generateMipmaps = false;
 
-			let blurPlaneMesh = new THREE.Mesh (shadowPlaneGeometry);
+			let blurPlaneMesh = new THREE.Mesh (blurPlaneGeometry);
 			blurPlaneMesh.visible = false;
 			shadowGroup.add (blurPlaneMesh);
+
+			let blurCamera = new THREE.OrthographicCamera (
+				-planeSizeX / 2.0,
+				planeSizeX / 2.0,
+				planeSizeY / 2.0,
+				-planeSizeY / 2.0,
+				0.0,
+				1.0,
+			);
+			shadowGroup.add (blurCamera);
 
 			horizontalBlurMaterial = new THREE.ShaderMaterial (THREE.HorizontalBlurShader);
 			horizontalBlurMaterial.depthTest = false;
@@ -142,20 +154,26 @@
 				blurPlaneMesh.visible = true;
 
 				let amount = 5.0;
+				for (let i = 0; i < 2; i++) {
+					if (i == 2) {
+						amount *= 1;
+					}
 
-				blurPlaneMesh.material = horizontalBlurMaterial;
-				blurPlaneMesh.material.uniforms.tDiffuse.value = shadowRenderTarget.texture;
-				horizontalBlurMaterial.uniforms.h.value = amount * 1 / 256;
-				renderer.setRenderTarget (blurRenderTarget);
-				renderer.render (blurPlaneMesh, shadowCamera);
+					blurPlaneMesh.material = horizontalBlurMaterial;
+					blurPlaneMesh.material.uniforms.tDiffuse.value = shadowRenderTarget.texture;
+					horizontalBlurMaterial.uniforms.h.value = amount * 1 / 256;
+					renderer.setRenderTarget (blurRenderTarget);
+					renderer.render (blurPlaneMesh, blurCamera);
 
-				blurPlaneMesh.material = verticalBlurMaterial;
-				blurPlaneMesh.material.uniforms.tDiffuse.value = blurRenderTarget.texture;
-				verticalBlurMaterial.uniforms.v.value = amount * 1 / 256;
-				renderer.setRenderTarget (shadowRenderTarget);
-				renderer.render (blurPlaneMesh, shadowCamera);
+					blurPlaneMesh.material = verticalBlurMaterial;
+					blurPlaneMesh.material.uniforms.tDiffuse.value = blurRenderTarget.texture;
+					verticalBlurMaterial.uniforms.v.value = amount * 1 / 256;
+					renderer.setRenderTarget (shadowRenderTarget);
+					renderer.render (blurPlaneMesh, blurCamera);
 
+				}
 				blurPlaneMesh.visible = false;
+
 
 				renderer.setRenderTarget (null);
 				renderer.render (scene, camera);
