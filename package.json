@@ -67,7 +67,7 @@
 		"jsdoc": "^4.0.0",
 		"mocha": "^10.2.0",
 		"oslllo-svg-fixer": "^2.2.0",
-		"run-python3": "^0.0.1",
+		"run-python3": "^0.0.4",
 		"svgo": "^3.0.2"
 	},
 	"dependencies": {
