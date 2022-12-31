@@ -59,11 +59,7 @@ export class Embed
             }
             let edgeSettings = this.hashHandler.GetEdgeSettingsFromHash ();
             if (edgeSettings !== null) {
-                this.viewer.SetEdgeSettings (
-                    edgeSettings.showEdges,
-                    edgeSettings.edgeColor,
-                    edgeSettings.edgeThreshold
-                );
+                this.viewer.SetEdgeSettings (edgeSettings);
             }
             let settings = new ImportSettings ();
             let defaultColor = this.hashHandler.GetDefaultColorFromHash ();

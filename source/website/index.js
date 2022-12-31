@@ -35,7 +35,7 @@ export function StartWebsite (externalLibLocation)
 {
     SetExternalLibLocation (externalLibLocation);
     window.addEventListener ('load', () => {
-        let website = new Website ({
+    let website = new Website ({
             headerDiv : document.getElementById ('header'),
             headerButtonsDiv : document.getElementById ('header_buttons'),
             toolbarDiv : document.getElementById ('toolbar'),

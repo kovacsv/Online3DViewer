@@ -2,6 +2,7 @@ import { Coord3D } from '../geometry/coord3d.js';
 import { RGBAColor, RGBColor } from '../model/color.js';
 import { Camera } from '../viewer/camera.js';
 import { CameraMode } from '../viewer/viewer.js';
+import { EdgeSettings } from '../viewer/viewermodel.js';
 
 export let ParameterConverter =
 {
@@ -212,15 +213,15 @@ export let ParameterConverter =
         if (paramParts.length !== 5) {
             return null;
         }
-        let edgeSettings = {
-            showEdges : paramParts[0] === 'on' ? true : false,
-            edgeColor : new RGBColor (
+        let edgeSettings = new EdgeSettings (
+            paramParts[0] === 'on' ? true : false,
+            new RGBColor (
                 this.StringToInteger (paramParts[1]),
                 this.StringToInteger (paramParts[2]),
                 this.StringToInteger (paramParts[3])
             ),
-            edgeThreshold : this.StringToInteger (paramParts[4])
-        };
+            this.StringToInteger (paramParts[4])
+        );
         return edgeSettings;
     }
 };

@@ -328,9 +328,10 @@ export class Viewer
         this.Render ();
     }
 
-    SetEdgeSettings (show, color, threshold)
+    SetEdgeSettings (edgeSettings)
     {
-        this.mainModel.SetEdgeSettings (show, color, threshold);
+        let newEdgeSettings = edgeSettings.Clone ();
+        this.mainModel.SetEdgeSettings (newEdgeSettings);
         this.Render ();
     }
 

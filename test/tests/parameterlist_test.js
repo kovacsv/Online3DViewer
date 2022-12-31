@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import * as OV from '../../source/engine/main.js';
+import { EdgeSettings } from '../../source/engine/viewer/viewermodel.js';
 
 export default function suite ()
 {
@@ -36,11 +37,11 @@ describe ('Parameter List', function () {
             assert.strictEqual (urlParams, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000$backgroundcolor=4,5,6,7$defaultcolor=1,2,3');
         }
         {
-            let urlParams = OV.CreateUrlBuilder ().AddEdgeSettings ({
-                showEdges : true,
-                edgeColor : new OV.RGBColor (1, 2, 3),
-                edgeThreshold : 15
-            }).GetParameterList ();
+            let urlParams = OV.CreateUrlBuilder ().AddEdgeSettings (new EdgeSettings (
+                true,
+                new OV.RGBColor (1, 2, 3),
+                15
+            )).GetParameterList ();
             assert.strictEqual (urlParams, 'edgesettings=on,1,2,3,15');
         }
         {
@@ -115,11 +116,11 @@ describe ('Parameter List', function () {
 
         {
             let parser = OV.CreateUrlParser ('edgesettings=on,1,2,3,15');
-            assert.deepStrictEqual (parser.GetEdgeSettings (), {
-                showEdges : true,
-                edgeColor : new OV.RGBColor (1, 2, 3),
-                edgeThreshold : 15
-            });
+            assert.deepStrictEqual (parser.GetEdgeSettings (), new EdgeSettings (
+                true,
+                new OV.RGBColor (1, 2, 3),
+                15
+            ));
         }
         {
             let parser = OV.CreateUrlParser ('cameramode=perspective');

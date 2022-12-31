@@ -264,7 +264,7 @@ class SettingsModelDisplaySection extends SettingsSection
         this.edgeSettingsDiv = AddDiv (this.contentDiv, 'ov_sidebar_settings_padded');
         this.edgeDisplayToggle.OnChange (() => {
             ShowDomElement (this.edgeSettingsDiv, this.edgeDisplayToggle.GetStatus ());
-            this.settings.showEdges = this.edgeDisplayToggle.GetStatus ();
+            this.settings.edgeSettings.showEdges = this.edgeDisplayToggle.GetStatus ();
             this.callbacks.onShowEdgesChange ();
         });
 
@@ -272,9 +272,9 @@ class SettingsModelDisplaySection extends SettingsSection
         let predefinedEdgeColors = ['#ffffff', '#e3e3e3', '#c9c9c9', '#898989', '#5f5f5f', '#494949', '#383838', '#0f0f0f'];
 
         let edgeColorInput = AddDiv (edgeColorRow, 'ov_color_picker');
-        let defaultEdgeColor = '#' + RGBColorToHexString (this.settings.edgeColor);
+        let defaultEdgeColor = '#' + RGBColorToHexString (this.settings.edgeSettings.edgeColor);
         this.edgeColorPicker = AddColorPicker (edgeColorInput, false, defaultEdgeColor, predefinedEdgeColors, (r, g, b, a) => {
-            this.settings.edgeColor = new RGBColor (r, g, b);
+            this.settings.edgeSettings.edgeColor = new RGBColor (r, g, b);
             this.callbacks.onEdgeColorChange ();
         });
         AddDiv (edgeColorRow, null, 'Edge Color');
@@ -287,14 +287,14 @@ class SettingsModelDisplaySection extends SettingsSection
             this.thresholdSliderValue.innerHTML = this.thresholdSlider.value;
         });
         this. thresholdSlider.addEventListener ('change', () => {
-            this.settings.edgeThreshold = this.thresholdSlider.value;
+            this.settings.edgeSettings.edgeThreshold = this.thresholdSlider.value;
             this.callbacks.onEdgeThresholdChange ();
         });
-        this.thresholdSlider.value = this.settings.edgeThreshold;
-        this.thresholdSliderValue.innerHTML = this.settings.edgeThreshold;
+        this.thresholdSlider.value = this.settings.edgeSettings.edgeThreshold;
+        this.thresholdSliderValue.innerHTML = this.settings.edgeSettings.edgeThreshold;
 
-        this.edgeDisplayToggle.SetStatus (this.settings.showEdges);
-        ShowDomElement (this.edgeSettingsDiv, this.settings.showEdges);
+        this.edgeDisplayToggle.SetStatus (this.settings.edgeSettings.showEdges);
+        ShowDomElement (this.edgeSettingsDiv, this.settings.edgeSettings.showEdges);
     }
 
     UpdateEnvironmentMap ()
@@ -329,12 +329,12 @@ class SettingsModelDisplaySection extends SettingsSection
         }
 
         if (this.edgeDisplayToggle !== null) {
-            this.edgeDisplayToggle.SetStatus (this.settings.showEdges);
-            ShowDomElement (this.edgeSettingsDiv, this.settings.showEdges);
+            this.edgeDisplayToggle.SetStatus (this.settings.edgeSettings.showEdges);
+            ShowDomElement (this.edgeSettingsDiv, this.settings.edgeSettings.showEdges);
 
-            this.edgeColorPicker.setColor ('#' + RGBColorToHexString (this.settings.edgeColor));
-            this.thresholdSlider.value = this.settings.edgeThreshold;
-            this.thresholdSliderValue.innerHTML = this.settings.edgeThreshold;
+            this.edgeColorPicker.setColor ('#' + RGBColorToHexString (this.settings.edgeSettings.edgeColor));
+            this.thresholdSlider.value = this.settings.edgeSettings.edgeThreshold;
+            this.thresholdSliderValue.innerHTML = this.settings.edgeSettings.edgeThreshold;
         }
     }
 
@@ -558,9 +558,7 @@ export class SidebarSettingsPanel extends SidebarPanel
         this.settings.backgroundIsEnvMap = defaultSettings.backgroundIsEnvMap;
         this.settings.backgroundColor = defaultSettings.backgroundColor;
         this.settings.defaultColor = defaultSettings.defaultColor;
-        this.settings.showEdges = defaultSettings.showEdges;
-        this.settings.edgeColor = defaultSettings.edgeColor;
-        this.settings.edgeThreshold = defaultSettings.edgeThreshold;
+        this.settings.edgeSettings = defaultSettings.edgeSettings;
         this.settings.themeId = defaultSettings.themeId;
 
         this.modelDisplaySection.Update ();

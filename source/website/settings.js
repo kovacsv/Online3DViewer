@@ -1,4 +1,5 @@
 import { RGBAColor, RGBColor } from '../engine/model/color.js';
+import { EdgeSettings } from '../engine/viewer/viewermodel.js';
 import { CookieGetBoolVal, CookieGetRGBColorVal, CookieGetIntVal, CookieGetStringVal, CookieSetBoolVal, CookieSetRGBColorVal, CookieSetIntVal, CookieSetStringVal, CookieSetRGBAColorVal, CookieGetRGBAColorVal } from './cookiehandler.js';
 
 export const Theme =
@@ -15,9 +16,7 @@ export class Settings
         this.backgroundIsEnvMap = false;
         this.backgroundColor = new RGBAColor (255, 255, 255, 255);
         this.defaultColor = new RGBColor (200, 200, 200);
-        this.showEdges = false;
-        this.edgeColor = new RGBColor (0, 0, 0);
-        this.edgeThreshold = 1;
+        this.edgeSettings = new EdgeSettings (false, new RGBColor (0, 0, 0), 1);
         this.themeId = Theme.Light;
     }
 
@@ -27,9 +26,9 @@ export class Settings
         this.backgroundIsEnvMap = CookieGetBoolVal ('ov_background_is_envmap', false);
         this.backgroundColor = CookieGetRGBAColorVal ('ov_background_color', new RGBAColor (255, 255, 255, 255));
         this.defaultColor = CookieGetRGBColorVal ('ov_default_color', new RGBColor (200, 200, 200));
-        this.showEdges = CookieGetBoolVal ('ov_show_edges', false);
-        this.edgeColor = CookieGetRGBColorVal ('ov_edge_color', new RGBColor (0, 0, 0));
-        this.edgeThreshold = CookieGetIntVal ('ov_edge_threshold', 1);
+        this.edgeSettings.showEdges = CookieGetBoolVal ('ov_show_edges', false);
+        this.edgeSettings.edgeColor = CookieGetRGBColorVal ('ov_edge_color', new RGBColor (0, 0, 0));
+        this.edgeSettings.edgeThreshold = CookieGetIntVal ('ov_edge_threshold', 1);
         this.themeId = CookieGetIntVal ('ov_theme_id', Theme.Light);
     }
 
@@ -39,9 +38,9 @@ export class Settings
         CookieSetBoolVal ('ov_background_is_envmap', this.backgroundIsEnvMap);
         CookieSetRGBAColorVal ('ov_background_color', this.backgroundColor);
         CookieSetRGBColorVal ('ov_default_color', this.defaultColor);
-        CookieSetBoolVal ('ov_show_edges', this.showEdges);
-        CookieSetRGBColorVal ('ov_edge_color', this.edgeColor);
-        CookieSetIntVal ('ov_edge_threshold', this.edgeThreshold);
+        CookieSetBoolVal ('ov_show_edges', this.edgeSettings.showEdges);
+        CookieSetRGBColorVal ('ov_edge_color', this.edgeSettings.edgeColor);
+        CookieSetIntVal ('ov_edge_threshold', this.edgeSettings.edgeThreshold);
         CookieSetIntVal ('ov_theme_id', this.themeId);
     }
 }

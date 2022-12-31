@@ -36,11 +36,7 @@ export class EmbeddedViewer
         }
 
         if (this.parameters.edgeSettings) {
-            this.viewer.SetEdgeSettings (
-                this.parameters.edgeSettings.showEdges,
-                this.parameters.edgeSettings.edgeColor,
-                this.parameters.edgeSettings.edgeThreshold
-            );
+            this.viewer.SetEdgeSettings (this.parameters.edgeSettings);
         }
 
         if (this.parameters.environmentSettings) {

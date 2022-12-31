@@ -81,6 +81,21 @@ export class ViewerModel
     }
 }
 
+export class EdgeSettings
+{
+    constructor (showEdges, edgeColor, edgeThreshold)
+    {
+        this.showEdges = showEdges;
+        this.edgeColor = edgeColor;
+        this.edgeThreshold = edgeThreshold;
+    }
+
+    Clone ()
+    {
+        return new EdgeSettings (this.showEdges, this.edgeColor.Clone (), this.edgeThreshold);
+    }
+}
+
 export class ViewerMainModel
 {
     constructor (scene)
@@ -90,11 +105,7 @@ export class ViewerMainModel
         this.mainModel = new ViewerModel (this.scene);
         this.edgeModel = new ViewerModel (this.scene);
 
-        this.edgeSettings = {
-            showEdges : false,
-            edgeColor : new RGBColor (0, 0, 0),
-            edgeThreshold : 1
-        };
+        this.edgeSettings = new EdgeSettings (false, new RGBColor (0, 0, 0), 1);
     }
 
     SetMainObject (mainObject)
@@ -111,16 +122,14 @@ export class ViewerMainModel
         this.edgeModel.UpdateWorldMatrix ();
     }
 
-    SetEdgeSettings (show, color, threshold)
+    SetEdgeSettings (edgeSettings)
     {
         let needToGenerate = false;
-        if (show && (!this.edgeSettings.showEdges || this.edgeSettings.edgeThreshold !== threshold)) {
+        if (edgeSettings.showEdges && (!this.edgeSettings.showEdges || this.edgeSettings.edgeThreshold !== edgeSettings.edgeThreshold)) {
             needToGenerate = true;
         }
 
-        this.edgeSettings.showEdges = show;
-        this.edgeSettings.edgeThreshold = threshold;
-        this.edgeSettings.edgeColor = color;
+        this.edgeSettings = edgeSettings;
 
         if (this.mainModel.IsEmpty ()) {
             return;
@@ -131,7 +140,6 @@ export class ViewerMainModel
                 this.ClearEdgeModel ();
                 this.GenerateEdgeModel ();
             } else {
-
                 let edgeColor = ConvertColorToThreeColor (this.edgeSettings.edgeColor);
                 this.EnumerateEdges ((edge) => {
                     edge.material.color = edgeColor;

@@ -71,12 +71,7 @@ export function ShowSharingDialog (fileList, settings, viewer)
                 builder.AddEnvironmentSettings (environmentSettings);
                 builder.AddBackgroundColor (settings.backgroundColor);
                 builder.AddDefaultColor (settings.defaultColor);
-                let edgeSettings = {
-                    showEdges : settings.showEdges,
-                    edgeColor : settings.edgeColor,
-                    edgeThreshold : settings.edgeThreshold
-                };
-                builder.AddEdgeSettings (edgeSettings);
+                builder.AddEdgeSettings (settings.edgeSettings);
             }
             let hashParameters = builder.GetParameterList ();
 

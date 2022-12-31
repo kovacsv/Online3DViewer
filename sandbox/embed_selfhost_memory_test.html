@@ -35,11 +35,7 @@
                 ),
                 backgroundColor : new OV.RGBAColor (255, 255, 255, 255),
                 defaultColor : new OV.RGBColor (200, 200, 200),
-                edgeSettings : {
-                    showEdges : false,
-                    edgeColor : new OV.RGBColor (0, 0, 0),
-                    edgeThreshold : 1
-                },
+                edgeSettings : new OV.EdgeSettings (false, new OV.RGBColor (0, 0, 0), 1),
                 environmentSettings : {
                     environmentMap : [
                         '../website/assets/envmaps/fishermans_bastion/posx.jpg',

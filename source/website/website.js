@@ -536,7 +536,7 @@ export class Website
     UpdateEdgeDisplay ()
     {
         this.settings.SaveToCookies ();
-        this.viewer.SetEdgeSettings (this.settings.showEdges, this.settings.edgeColor, this.settings.edgeThreshold);
+        this.viewer.SetEdgeSettings (this.settings.edgeSettings);
     }
 
     UpdateEnvironmentMap ()
@@ -572,7 +572,7 @@ export class Website
     {
         let canvas = AddDomElement (this.parameters.viewerDiv, 'canvas');
         this.viewer.Init (canvas);
-        this.viewer.SetEdgeSettings (this.settings.showEdges, this.settings.edgeColor, this.settings.edgeThreshold);
+        this.viewer.SetEdgeSettings (this.settings.edgeSettings);
         this.viewer.SetBackgroundColor (this.settings.backgroundColor);
         this.UpdateEnvironmentMap ();
     }
