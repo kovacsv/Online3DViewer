@@ -1,6 +1,12 @@
 import { CoordIsEqual3D } from '../geometry/coord3d.js';
 import { IsEqual } from '../geometry/geometry.js';
 
+export const CameraMode =
+{
+	Perspective : 1,
+	Orthographic : 2
+};
+
 export class Camera
 {
     constructor (eye, center, up, fov)

@@ -64,11 +64,12 @@ import { ParameterListBuilder, ParameterListParser, CreateUrlBuilder, CreateUrlP
 import { ModelToThreeConversionParams, ModelToThreeConversionOutput, ThreeConversionStateHandler, ThreeNodeTree, ConvertModelToThreeObject } from './threejs/threeconverter.js';
 import { ThreeModelLoader } from './threejs/threemodelloader.js';
 import { HasHighpDriverIssue, GetShadingType, ConvertThreeColorToColor, ConvertColorToThreeColor, ConvertThreeGeometryToMesh, DisposeThreeObjects, ShadingType } from './threejs/threeutils.js';
-import { Camera, CameraIsEqual3D } from './viewer/camera.js';
+import { Camera, CameraIsEqual3D, CameraMode } from './viewer/camera.js';
 import { GetIntegerFromStyle, GetDomElementExternalWidth, GetDomElementExternalHeight, GetDomElementInnerDimensions, GetDomElementClientCoordinates, CreateDomElement, AddDomElement, AddDiv, ClearDomElement, InsertDomElementBefore, InsertDomElementAfter, ShowDomElement, IsDomElementVisible, SetDomElementWidth, SetDomElementHeight, GetDomElementOuterWidth, GetDomElementOuterHeight, SetDomElementOuterWidth, SetDomElementOuterHeight, CreateDiv } from './viewer/domutils.js';
 import { EmbeddedViewer, Init3DViewerElement, Init3DViewerElements } from './viewer/embeddedviewer.js';
 import { MouseInteraction, TouchInteraction, ClickDetector, Navigation, NavigationType } from './viewer/navigation.js';
-import { CameraValidator, UpVector, ShadingModel, Viewer, GetDefaultCamera, TraverseThreeObject, GetShadingTypeOfObject, CameraMode } from './viewer/viewer.js';
+import { ShadingModel } from './viewer/shadingmodel.js';
+import { CameraValidator, UpVector, Viewer, GetDefaultCamera, TraverseThreeObject, GetShadingTypeOfObject } from './viewer/viewer.js';
 import { ViewerModel, EdgeSettings, ViewerMainModel, SetThreeMeshPolygonOffset } from './viewer/viewermodel.js';
 
 export {
@@ -289,6 +290,7 @@ export {
     ShadingType,
     Camera,
     CameraIsEqual3D,
+    CameraMode,
     GetIntegerFromStyle,
     GetDomElementExternalWidth,
     GetDomElementExternalHeight,
@@ -317,14 +319,13 @@ export {
     ClickDetector,
     Navigation,
     NavigationType,
+    ShadingModel,
     CameraValidator,
     UpVector,
-    ShadingModel,
     Viewer,
     GetDefaultCamera,
     TraverseThreeObject,
     GetShadingTypeOfObject,
-    CameraMode,
     ViewerModel,
     EdgeSettings,
     ViewerMainModel,

@@ -6,7 +6,7 @@ import { PopupDialog } from './dialog.js';
 import { Settings, Theme } from './settings.js';
 import { SidebarPanel } from './sidebarpanel.js';
 import { ShadingType } from '../engine/threejs/threeutils.js';
-import { CameraMode } from '../engine/viewer/viewer.js';
+import { CameraMode } from '../engine/viewer/camera.js';
 
 function AddColorPicker (parentDiv, opacity, defaultColor, predefinedColors, onChange)
 {

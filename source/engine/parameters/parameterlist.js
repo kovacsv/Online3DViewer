@@ -1,7 +1,6 @@
 import { Coord3D } from '../geometry/coord3d.js';
 import { RGBAColor, RGBColor } from '../model/color.js';
-import { Camera } from '../viewer/camera.js';
-import { CameraMode } from '../viewer/viewer.js';
+import { Camera, CameraMode } from '../viewer/camera.js';
 import { EdgeSettings } from '../viewer/viewermodel.js';
 
 export let ParameterConverter =
