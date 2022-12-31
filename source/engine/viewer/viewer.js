@@ -252,8 +252,8 @@ export class Viewer
         this.canvas = null;
         this.renderer = null;
         this.scene = null;
-        this.geometry = null;
-        this.extraGeometry = null;
+        this.mainModel = null;
+        this.extraModel = null;
         this.camera = null;
         this.cameraMode = null;
         this.cameraValidator = null;
@@ -283,8 +283,8 @@ export class Viewer
         this.renderer.setSize (this.canvas.width, this.canvas.height);
 
         this.scene = new THREE.Scene ();
-        this.geometry = new ViewerMainModel (this.scene);
-        this.extraGeometry = new ViewerModel (this.scene);
+        this.mainModel = new ViewerMainModel (this.scene);
+        this.extraModel = new ViewerModel (this.scene);
 
         this.InitNavigation ();
         this.InitShading ();
@@ -330,7 +330,7 @@ export class Viewer
 
     SetEdgeSettings (show, color, threshold)
     {
-        this.geometry.SetEdgeSettings (show, color, threshold);
+        this.mainModel.SetEdgeSettings (show, color, threshold);
         this.Render ();
     }
 
@@ -505,7 +505,7 @@ export class Viewer
     SetMainObject (object)
     {
         const shadingType = GetShadingTypeOfObject (object);
-        this.geometry.SetMainObject (object);
+        this.mainModel.SetMainObject (object);
         this.shadingModel.SetShadingType (shadingType);
 
         this.Render ();
@@ -513,32 +513,32 @@ export class Viewer
 
     AddExtraObject (object)
     {
-        this.extraGeometry.AddObject (object);
+        this.extraModel.AddObject (object);
         this.Render ();
     }
 
     Clear ()
     {
-        this.geometry.Clear ();
-        this.extraGeometry.Clear ();
+        this.mainModel.Clear ();
+        this.extraModel.Clear ();
         this.Render ();
     }
 
     ClearExtra ()
     {
-        this.extraGeometry.Clear ();
+        this.extraModel.Clear ();
         this.Render ();
     }
 
     SetMeshesVisibility (isVisible)
     {
-        this.geometry.EnumerateMeshes ((mesh) => {
+        this.mainModel.EnumerateMeshes ((mesh) => {
             let visible = isVisible (mesh.userData);
             if (mesh.visible !== visible) {
                 mesh.visible = visible;
             }
         });
-        this.geometry.EnumerateEdges ((edge) => {
+        this.mainModel.EnumerateEdges ((edge) => {
             let visible = isVisible (edge.userData);
             if (edge.visible !== visible) {
                 edge.visible = visible;
@@ -559,7 +559,7 @@ export class Viewer
         }
 
         const highlightMaterial = this.CreateHighlightMaterial (highlightColor);
-        this.geometry.EnumerateMeshes ((mesh) => {
+        this.mainModel.EnumerateMeshes ((mesh) => {
             let highlighted = isHighlighted (mesh.userData);
             if (highlighted) {
                 if (mesh.userData.threeMaterials === null) {
@@ -579,7 +579,7 @@ export class Viewer
 
     CreateHighlightMaterial (highlightColor)
     {
-        const showEdges = this.geometry.edgeSettings.showEdges;
+        const showEdges = this.mainModel.edgeSettings.showEdges;
         return this.shadingModel.CreateHighlightMaterial (highlightColor, showEdges);
     }
 
@@ -595,7 +595,7 @@ export class Viewer
     GetMeshIntersectionUnderMouse (mouseCoords)
     {
         let canvasSize = this.GetCanvasSize ();
-        let intersection = this.geometry.GetMeshIntersectionUnderMouse (mouseCoords, this.camera, canvasSize.width, canvasSize.height);
+        let intersection = this.mainModel.GetMeshIntersectionUnderMouse (mouseCoords, this.camera, canvasSize.width, canvasSize.height);
         if (intersection === null) {
             return null;
         }
@@ -604,17 +604,17 @@ export class Viewer
 
     GetBoundingBox (needToProcess)
     {
-        return this.geometry.GetBoundingBox (needToProcess);
+        return this.mainModel.GetBoundingBox (needToProcess);
     }
 
     GetBoundingSphere (needToProcess)
     {
-        return this.geometry.GetBoundingSphere (needToProcess);
+        return this.mainModel.GetBoundingSphere (needToProcess);
     }
 
     EnumerateMeshesUserData (enumerator)
     {
-        this.geometry.EnumerateMeshes ((mesh) => {
+        this.mainModel.EnumerateMeshes ((mesh) => {
             enumerator (mesh.userData);
         });
     }
