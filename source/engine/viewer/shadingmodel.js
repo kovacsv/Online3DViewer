@@ -4,6 +4,27 @@ import { ShadingType } from '../threejs/threeutils.js';
 
 import * as THREE from 'three';
 
+export class EnvironmentSettings
+{
+    constructor (textureNames, backgroundIsEnvMap)
+    {
+        this.textureNames = textureNames;
+        this.backgroundIsEnvMap = backgroundIsEnvMap;
+    }
+
+    Clone ()
+    {
+        let textureNames = null;
+        if (this.textureNames !== null) {
+            textureNames = [];
+            for (let textureName of this.textureNames) {
+                textureNames.push (textureName);
+            }
+        }
+        return new EnvironmentSettings (textureNames, this.backgroundIsEnvMap);
+    }
+}
+
 export class ShadingModel
 {
     constructor (scene)
@@ -14,8 +35,8 @@ export class ShadingModel
         this.cameraMode = CameraMode.Perspective;
         this.ambientLight = new THREE.AmbientLight (0x888888);
         this.directionalLight = new THREE.DirectionalLight (0x888888);
+        this.environmentSettings = new EnvironmentSettings (null, false);
         this.environment = null;
-        this.backgroundIsEnvMap = false;
 
         this.scene.add (this.ambientLight);
         this.scene.add (this.directionalLight);
@@ -44,20 +65,20 @@ export class ShadingModel
             this.directionalLight.color.set (0x555555);
             this.scene.environment = this.environment;
         }
-        if (this.backgroundIsEnvMap && this.cameraMode === CameraMode.Perspective) {
+        if (this.environmentSettings.backgroundIsEnvMap && this.cameraMode === CameraMode.Perspective) {
             this.scene.background = this.environment;
         } else {
             this.scene.background = null;
         }
     }
 
-    SetEnvironment (textures, useAsBackground, onLoaded)
+    SetEnvironmentMapSettings (environmentSettings, onLoaded)
     {
         let loader = new THREE.CubeTextureLoader ();
-        this.environment = loader.load (textures, () => {
+        this.environment = loader.load (environmentSettings.textureNames, () => {
             onLoaded ();
         });
-        this.backgroundIsEnvMap = useAsBackground;
+        this.environmentSettings = environmentSettings;
     }
 
     UpdateByCamera (camera)

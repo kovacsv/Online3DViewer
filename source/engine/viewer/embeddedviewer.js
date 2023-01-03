@@ -6,6 +6,7 @@ import { TransformFileHostUrls } from '../io/fileutils.js';
 import { ParameterConverter } from '../parameters/parameterlist.js';
 import { ThreeModelLoader } from '../threejs/threemodelloader.js';
 import { Viewer } from './viewer.js';
+import { EnvironmentSettings } from './shadingmodel.js';
 
 export class EmbeddedViewer
 {
@@ -40,9 +41,7 @@ export class EmbeddedViewer
         }
 
         if (this.parameters.environmentSettings) {
-            let environmentMap = this.parameters.environmentSettings.environmentMap;
-            let backgroundIsEnvMap = this.parameters.environmentSettings.backgroundIsEnvMap;
-            this.viewer.SetEnvironmentMapSettings (environmentMap, backgroundIsEnvMap);
+            this.viewer.SetEnvironmentMapSettings (this.parameters.environmentSettings);
         }
 
         this.model = null;
@@ -213,10 +212,7 @@ export function Init3DViewerElements (onReady)
                 if (backgroundIsEnvMapParam && backgroundIsEnvMapParam === 'true') {
                     backgroundIsEnvMap = true;
                 }
-                environmentSettings = {
-                    environmentMap : environmentMapParts,
-                    backgroundIsEnvMap : backgroundIsEnvMap
-                };
+                environmentSettings = new EnvironmentSettings (environmentMapParts, backgroundIsEnvMap);
             }
         }
 

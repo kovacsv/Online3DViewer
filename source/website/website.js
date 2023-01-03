@@ -27,6 +27,7 @@ import { CreateVerticalSplitter } from './splitter.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
 
 import * as THREE from 'three';
+import { EnvironmentSettings } from '../engine/viewer/shadingmodel.js';
 
 const WebsiteUIState =
 {
@@ -551,7 +552,8 @@ export class Website
             envMapPath + 'posz.jpg',
             envMapPath + 'negz.jpg'
         ];
-        this.viewer.SetEnvironmentMapSettings (envMapTextures, this.settings.backgroundIsEnvMap);
+        let environmentSettings = new EnvironmentSettings (envMapTextures, this.settings.backgroundIsEnvMap);
+        this.viewer.SetEnvironmentMapSettings (environmentSettings);
     }
 
     SwitchTheme (newThemeId, resetColors)

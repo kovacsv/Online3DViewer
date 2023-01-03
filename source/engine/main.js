@@ -68,7 +68,7 @@ import { Camera, CameraIsEqual3D, CameraMode } from './viewer/camera.js';
 import { GetIntegerFromStyle, GetDomElementExternalWidth, GetDomElementExternalHeight, GetDomElementInnerDimensions, GetDomElementClientCoordinates, CreateDomElement, AddDomElement, AddDiv, ClearDomElement, InsertDomElementBefore, InsertDomElementAfter, ShowDomElement, IsDomElementVisible, SetDomElementWidth, SetDomElementHeight, GetDomElementOuterWidth, GetDomElementOuterHeight, SetDomElementOuterWidth, SetDomElementOuterHeight, CreateDiv } from './viewer/domutils.js';
 import { EmbeddedViewer, Init3DViewerElement, Init3DViewerElements } from './viewer/embeddedviewer.js';
 import { MouseInteraction, TouchInteraction, ClickDetector, Navigation, NavigationType } from './viewer/navigation.js';
-import { ShadingModel } from './viewer/shadingmodel.js';
+import { EnvironmentSettings, ShadingModel } from './viewer/shadingmodel.js';
 import { CameraValidator, UpVector, Viewer, GetDefaultCamera, TraverseThreeObject, GetShadingTypeOfObject } from './viewer/viewer.js';
 import { ViewerModel, EdgeSettings, ViewerMainModel, SetThreeMeshPolygonOffset } from './viewer/viewermodel.js';
 
@@ -319,6 +319,7 @@ export {
     ClickDetector,
     Navigation,
     NavigationType,
+    EnvironmentSettings,
     ShadingModel,
     CameraValidator,
     UpVector,

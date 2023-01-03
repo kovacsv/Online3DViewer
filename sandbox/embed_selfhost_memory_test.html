@@ -36,8 +36,8 @@
                 backgroundColor : new OV.RGBAColor (255, 255, 255, 255),
                 defaultColor : new OV.RGBColor (200, 200, 200),
                 edgeSettings : new OV.EdgeSettings (false, new OV.RGBColor (0, 0, 0), 1),
-                environmentSettings : {
-                    environmentMap : [
+                environmentSettings : new OV.EnvironmentSettings (
+                    [
                         '../website/assets/envmaps/fishermans_bastion/posx.jpg',
                         '../website/assets/envmaps/fishermans_bastion/negx.jpg',
                         '../website/assets/envmaps/fishermans_bastion/posy.jpg',
@@ -45,8 +45,8 @@
                         '../website/assets/envmaps/fishermans_bastion/posz.jpg',
                         '../website/assets/envmaps/fishermans_bastion/negz.jpg'
                     ],
-                    backgroundIsEnvMap : false
-                }
+                    false
+                )
             });
 
             // load a model providing model urls

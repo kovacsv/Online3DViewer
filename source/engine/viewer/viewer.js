@@ -217,9 +217,17 @@ export class Viewer
         this.navigation.SetContextMenuHandler (onContext);
     }
 
-    SetEnvironmentMapSettings (textures, useAsBackground)
+    SetEdgeSettings (edgeSettings)
     {
-        this.shadingModel.SetEnvironment (textures, useAsBackground, () => {
+        let newEdgeSettings = edgeSettings.Clone ();
+        this.mainModel.SetEdgeSettings (newEdgeSettings);
+        this.Render ();
+    }
+
+    SetEnvironmentMapSettings (environmentSettings)
+    {
+        let newEnvironmentSettings = environmentSettings.Clone ();
+        this.shadingModel.SetEnvironmentMapSettings (newEnvironmentSettings, () => {
             this.Render ();
         });
         this.shadingModel.UpdateShading ();
@@ -235,13 +243,6 @@ export class Viewer
         );
         let alpha = ColorComponentToFloat (color.a);
         this.renderer.setClearColor (bgColor, alpha);
-        this.Render ();
-    }
-
-    SetEdgeSettings (edgeSettings)
-    {
-        let newEdgeSettings = edgeSettings.Clone ();
-        this.mainModel.SetEdgeSettings (newEdgeSettings);
         this.Render ();
     }
 

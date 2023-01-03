@@ -7,6 +7,7 @@ import { HashHandler } from './hashhandler.js';
 import { ThreeModelLoaderUI } from './threemodelloaderui.js';
 import { Direction } from '../engine/geometry/geometry.js';
 import { InputFilesFromUrls } from '../engine/import/importerfiles.js';
+import { EnvironmentSettings } from '../engine/viewer/shadingmodel.js';
 
 export class Embed
 {
@@ -33,10 +34,10 @@ export class Embed
 
             let envMapName = 'fishermans_bastion';
             let bgIsEnvMap = false;
-            let environmentSettings = this.hashHandler.GetEnvironmentSettingsFromHash ();
-            if (environmentSettings !== null) {
-                envMapName = environmentSettings.environmentMapName;
-                bgIsEnvMap = environmentSettings.backgroundIsEnvMap;
+            let environmentSettingsObj = this.hashHandler.GetEnvironmentSettingsFromHash ();
+            if (environmentSettingsObj !== null) {
+                envMapName = environmentSettingsObj.environmentMapName;
+                bgIsEnvMap = environmentSettingsObj.backgroundIsEnvMap;
             }
             let envMapPath = 'assets/envmaps/' + envMapName + '/';
             let envMapTextures = [
@@ -47,7 +48,8 @@ export class Embed
                 envMapPath + 'posz.jpg',
                 envMapPath + 'negz.jpg'
             ];
-            this.viewer.SetEnvironmentMapSettings (envMapTextures, bgIsEnvMap);
+            let environmentSettings = new EnvironmentSettings (envMapTextures, bgIsEnvMap);
+            this.viewer.SetEnvironmentMapSettings (environmentSettings);
 
             let cameraMode = this.hashHandler.GetCameraModeFromHash ();
             if (cameraMode !== null) {
