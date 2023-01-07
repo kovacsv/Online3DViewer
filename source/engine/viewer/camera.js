@@ -1,14 +1,29 @@
 import { CoordIsEqual3D } from '../geometry/coord3d.js';
 import { IsEqual } from '../geometry/geometry.js';
 
+/**
+ * Camera projection mode.
+ * @enum
+ */
 export const CameraMode =
 {
+    /** Perspective projection. */
 	Perspective : 1,
+    /** Orthographic projection. */
 	Orthographic : 2
 };
 
+/**
+ * Camera object.
+ */
 export class Camera
 {
+    /**
+     * @param {Coord3D} eye Eye position.
+     * @param {Coord3D} center Center position. Sometimes it's called target or look at position.
+     * @param {Coord3D} up Up vector.
+     * @param {number} fov Field of view in degrees.
+     */
     constructor (eye, center, up, fov)
     {
         this.eye = eye;
@@ -17,6 +32,10 @@ export class Camera
         this.fov = fov;
     }
 
+    /**
+     * Creates a clone of the object.
+     * @returns {Camera}
+     */
     Clone ()
     {
         return new Camera (

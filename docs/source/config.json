@@ -1,0 +1,15 @@
+{
+    "pages" : [
+        {
+            "name" : "Home",
+            "url" : "index.html"
+        },
+        {
+            "name" : "GitHub",
+            "url" : "https://github.com/kovacsv/Online3DViewer"
+        }
+    ],
+    "external_refs" : {
+        "File" : "https://developer.mozilla.org/en-US/docs/Web/API/File"
+    }
+}

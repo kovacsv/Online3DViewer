@@ -81,8 +81,17 @@ export class ViewerModel
     }
 }
 
+/**
+ * Edge settings object.
+ */
 export class EdgeSettings
 {
+    /**
+     * @param {boolean} showEdges Show edges.
+     * @param {RGBColor} edgeColor Color of the edges.
+     * @param {number} edgeThreshold Minimum angle between faces to show edges between them in.
+     * The value must be in degrees.
+     */
     constructor (showEdges, edgeColor, edgeThreshold)
     {
         this.showEdges = showEdges;
@@ -90,6 +99,10 @@ export class EdgeSettings
         this.edgeThreshold = edgeThreshold;
     }
 
+    /**
+     * Creates a clone of the object.
+     * @returns {EdgeSettings}
+     */
     Clone ()
     {
         return new EdgeSettings (this.showEdges, this.edgeColor.Clone (), this.edgeThreshold);

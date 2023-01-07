@@ -6,12 +6,6 @@ import json
 
 from lib import tools_lib as Tools
 
-def PrintInfo (message):
-	print ('INFO: ' + message)
-
-def PrintError (message):
-	print ('ERROR: ' + message)
-
 def GetVersion (rootDir):
 	packageJson = None
 	with open (os.path.join (rootDir, 'package.json')) as packageJsonFile:
@@ -122,7 +116,7 @@ def Main (argv):
 	if len (argv) >= 2 and argv[1] == 'test':
 		testBuild = True
 		buildDir = os.path.join (rootDir, 'build', 'test')
-		PrintInfo ('Creating test build.')
+		Tools.PrintInfo ('Creating test build.')
 
 	websiteDir = os.path.join (buildDir, 'website')
 	packageDir = os.path.join (buildDir, 'package')
@@ -134,13 +128,13 @@ def Main (argv):
 		config = json.load (configJson)
 
 	version = GetVersion (rootDir)
-	PrintInfo ('Create build directory')
+	Tools.PrintInfo ('Create build directory')
 	CreateWebsite (config, rootDir, websiteDir, version, testBuild)
 
-	PrintInfo ('Create package.')
+	Tools.PrintInfo ('Create package.')
 	packageResult = CreatePackage (rootDir, websiteDir, packageDir)
 	if not packageResult:
-		PrintError ('Create package failed.')
+		Tools.PrintError ('Create package failed.')
 		return 1
 
 	return 0

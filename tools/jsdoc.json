@@ -1,28 +1,12 @@
 {
 	"source": {
-		"include": ["source"]
+		"include": ["source/engine"]
 	},
     "opts": {
-        "template": "node_modules/docdash/",
+        "template": "node_modules/docdash",
         "encoding": "utf8",
-        "destination": "build/docs/",
+        "explain": true,
         "recurse": true,
         "verbose": false
-    },
-    "plugins": [
-        "plugins/markdown"
-    ],
-	"docdash" : {
-		"menu": {
-            "GitHub": {
-                "href":"https://github.com/kovacsv/Online3DViewer",
-                "target":"_blank"
-            }
-        }
-	},
-    "templates": {
-        "default": {
-            "includeDate": false
-        }
     }
 }

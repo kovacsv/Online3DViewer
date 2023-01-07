@@ -2,6 +2,12 @@ import os
 import re
 import codecs
 
+def PrintInfo (message):
+	print ('INFO: ' + message)
+
+def PrintError (message):
+	print ('ERROR: ' + message)
+
 def GetFileContent (filePath):
 	fileObject = codecs.open (filePath, 'r', 'utf-8')
 	content = fileObject.read ()
@@ -103,6 +109,12 @@ def ReplaceInFile (filePath, begToken, endToken, newContent):
 def ReplaceStringInFile (filePath, oldString, newString):
 	content = GetFileContent (filePath)
 	content = content.replace (oldString, newString)
+	WriteContentToFile (filePath, content)
+
+def ReplaceStringsInFile (filePath, oldNewPairs):
+	content = GetFileContent (filePath)
+	for oldNewPair in oldNewPairs:
+		content = content.replace (oldNewPair[0], oldNewPair[1])
 	WriteContentToFile (filePath, content)
 
 def ReplaceRegexInFile (filePath, oldRegex, newRegex):

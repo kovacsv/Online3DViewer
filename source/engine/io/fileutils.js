@@ -1,7 +1,14 @@
+/**
+ * File source identifier for import.
+ * @enum
+ */
 export const FileSource =
 {
+	/** The file is provided by a URL. */
     Url : 1,
+	/** The file is provided by a {@link File} object. */
     File : 2,
+	/** Used internally if a file is originated by a compressed archive. */
 	Decompressed : 3
 };
 

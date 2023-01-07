@@ -4,14 +4,26 @@ import { ShadingType } from '../threejs/threeutils.js';
 
 import * as THREE from 'three';
 
+/**
+ * Environment settings object.
+ */
 export class EnvironmentSettings
 {
+    /**
+     * @param {string[]} textureNames Urls of the environment map images in this order:
+     * posx, negx, posy, negy, posz, negz.
+     * @param {boolean} backgroundIsEnvMap Use the environment map as background.
+     */
     constructor (textureNames, backgroundIsEnvMap)
     {
         this.textureNames = textureNames;
         this.backgroundIsEnvMap = backgroundIsEnvMap;
     }
 
+    /**
+     * Creates a clone of the object.
+     * @returns {EnvironmentSettings}
+     */
     Clone ()
     {
         let textureNames = null;

@@ -1,8 +1,17 @@
 import { RunTasks } from '../core/taskrunner.js';
 import { FileSource, GetFileExtension, GetFileName, ReadFile, RequestUrl } from '../io/fileutils.js';
 
+/**
+ * File representation class for importers.
+ */
 export class InputFile
 {
+    /**
+     * @param {string} name Name of the file.
+     * @param {FileSource} source Source of the file.
+     * @param {*} data If the file source is url, this must be the url string. If the file source
+     * is file, this must be a {@link File} object.
+     */
     constructor (name, source, data)
     {
         this.name = name;

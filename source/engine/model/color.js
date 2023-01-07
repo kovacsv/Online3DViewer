@@ -1,12 +1,26 @@
+/**
+ * RGB color object. Components are integers in the range of 0..255.
+ */
 export class RGBColor
 {
+    /**
+     * @param {integer} r Red component.
+     * @param {integer} g Green component.
+     * @param {integer} b Blue component.
+     */
     constructor (r, g, b)
     {
-        this.r = r; // 0 .. 255
-        this.g = g; // 0 .. 255
-        this.b = b; // 0 .. 255
+        this.r = r;
+        this.g = g;
+        this.b = b;
     }
 
+    /**
+     * Sets the value of all components.
+     * @param {integer} r Red component.
+     * @param {integer} g Green component.
+     * @param {integer} b Blue component.
+     */
     Set (r, g, b)
     {
         this.r = r;
@@ -14,22 +28,42 @@ export class RGBColor
         this.b = b;
     }
 
+    /**
+     * Creates a clone of the object.
+     * @returns {RGBColor}
+     */
     Clone ()
     {
         return new RGBColor (this.r, this.g, this.b);
     }
 }
 
+/**
+ * RGBA color object. Components are integers in the range of 0..255.
+ */
 export class RGBAColor
 {
+    /**
+     * @param {integer} r Red component.
+     * @param {integer} g Green component.
+     * @param {integer} b Blue component.
+     * @param {integer} a Alpha component.
+     */
     constructor (r, g, b, a)
     {
-        this.r = r; // 0 .. 255
-        this.g = g; // 0 .. 255
-        this.b = b; // 0 .. 255
-        this.a = a; // 0 .. 255
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
     }
 
+    /**
+     * Sets the value of all components.
+     * @param {integer} r Red component.
+     * @param {integer} g Green component.
+     * @param {integer} b Blue component.
+     * @param {integer} a Alpha component.
+     */
     Set (r, g, b, a)
     {
         this.r = r;
@@ -38,6 +72,10 @@ export class RGBAColor
         this.a = a;
     }
 
+    /**
+     * Creates a clone of the object.
+     * @returns {RGBAColor}
+     */
     Clone ()
     {
         return new RGBAColor (this.r, this.g, this.b, this.a);
