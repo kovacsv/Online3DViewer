@@ -14,10 +14,12 @@ Online 3D Viewer (https://3dviewer.net) is a free and open source web solution t
 
 ## Documentation
 
-The repository is separated into two parts. See more information in the [Developer Documentation](https://github.com/kovacsv/Online3DViewer/wiki).
+The repository is separated into two parts.
 
 * **Online 3D Viewer Website**: Source code of the web solution with all of the pages and functions.
 * **Online 3D Viewer Engine**: Source code of the library to visualize models easily.
+
+[Engine documentation is available here.](https://kovacsv.github.io/Online3DViewer)
 
 ## Supported file formats
 
