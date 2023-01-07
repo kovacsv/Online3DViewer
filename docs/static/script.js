@@ -12,8 +12,8 @@ function Resize ()
         navToggleDiv.style.display = 'block';
         navDiv.style.display = 'none';
     } else {
-        navDiv.style.width = '300px';
-        mainDiv.style.marginLeft = '300px';
+        navDiv.style.width = '250px';
+        mainDiv.style.marginLeft = '250px';
 
         navToggleDiv.style.display = 'none';
         navDiv.style.display = 'block';
@@ -24,10 +24,10 @@ function Init (menuName)
 {
     Resize ();
     let menuItem = document.getElementById ('nav-' + menuName);
-    if (menuItem === null) {
-        return;
+    if (menuItem !== null) {
+        menuItem.classList.add ('selected');
+        menuItem.scrollIntoView ({ block : 'center' });
     }
-    menuItem.scrollIntoView ({ block : 'center' });
     hljs.highlightAll ();
 }
 
@@ -38,12 +38,15 @@ window.addEventListener ('load', () => {
     })
 
     let navToggleDiv = document.getElementById ('navigation_toggle');
+    let navIconDiv = document.getElementById ('navigation_icon');
     let navDiv = document.getElementById ('navigation');
     navToggleDiv.addEventListener ('click', () => {
         if (navDiv.style.display === 'none') {
             navDiv.style.display = 'block';
+            navIconDiv.src = 'static/close.svg';
         } else {
             navDiv.style.display = 'none';
+            navIconDiv.src = 'static/menu.svg';
         }
     });
 });

@@ -8,7 +8,7 @@
 
 	<title>Online 3D Viewer - RGBColor</title>
 
-	<link rel="stylesheet" href="static/highlightjs/styles/github-dark-dimmed.min.css"/>
+	<link rel="stylesheet" href="static/highlightjs/styles/github.min.css"/>
 	<script src="static/highlightjs/highlight.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="static/style.css"/>
@@ -16,8 +16,8 @@
 </head>
 
 <body>
-<div class="navigation_toggle" id="navigation_toggle">☰</div>
-<div class="navigation thin_scrollbar" id="navigation">
+<div id="navigation_toggle" class="navigation_toggle"><img id="navigation_icon" src="static/menu.svg"/></div>
+<div id="navigation" class="navigation thin_scrollbar">
 <div class="navigation_section">
 <div class="navigation_title">Pages</div>
 <div id="nav-Home" class="navigation_item"><a href="index.html" target="_self">Home</a></div>
@@ -46,9 +46,9 @@
 </div>
 
 </div>
-<div class="main thin_scrollbar" id="main">
+<div id="main" class="main">
 <h1>RGBColor</h1>
-<div class="description">Class to store an RGB color. Components are integers in the range of 0..255.</div>
+<div class="description">RGB color object. Components are integers in the range of 0..255.</div>
 <h2>Constructor</h2>
 <div class="method_container">
 <div id="RGBColor" class="method_signature">new RGBColor (r, g, b)</div>
