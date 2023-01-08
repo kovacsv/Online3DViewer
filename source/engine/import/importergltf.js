@@ -856,6 +856,8 @@ export class ImporterGltf extends ImporterBase
             return;
         }
 
+        let vertexCount = mesh.VertexCount () - vertexOffset;
+
         if (hasVertexColors) {
             let accessor = gltf.accessors[primitive.attributes.COLOR_0];
             let reader = this.GetReaderFromAccessor (gltf, accessor);
@@ -866,6 +868,9 @@ export class ImporterGltf extends ImporterBase
                 let color = GetGltfVertexColor ([data.x, data.y, data.z], reader.componentType);
                 mesh.AddVertexColor (color);
             });
+            if (mesh.VertexColorCount () - vertexColorOffset !== vertexCount) {
+                hasVertexColors = false;
+            }
         }
 
         if (hasNormals) {
@@ -877,6 +882,9 @@ export class ImporterGltf extends ImporterBase
             reader.EnumerateData ((data) => {
                 mesh.AddNormal (data);
             });
+            if (mesh.NormalCount () - normalOffset !== vertexCount) {
+                hasNormals = false;
+            }
         }
 
         if (hasUVs) {
@@ -889,6 +897,9 @@ export class ImporterGltf extends ImporterBase
                 data.y = -data.y;
                 mesh.AddTextureUV (data);
             });
+            if (mesh.TextureUVCount () - uvOffset !== vertexCount) {
+                hasUVs = false;
+            }
         }
 
         let vertexIndices = [];
