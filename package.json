@@ -6,6 +6,7 @@
 	"type": "module",
 	"main": "./build/o3dv.min.js",
 	"module": "./source/engine/main.js",
+	"types": "./dist/main.d.ts",
 	"repository": "github:kovacsv/Online3DViewer",
 	"keywords": [
 		"3d",
@@ -54,7 +55,8 @@
 		"build_engine_dev": "npm run update_engine_exports && esbuild source/engine/main.js --bundle --minify --global-name=OV --sourcemap --outfile=build/o3dv.min-dev.js",
 		"build_engine_prod": "npm run update_engine_exports && esbuild source/engine/main.js --bundle --minify --global-name=OV --outfile=build/o3dv.min.js",
 		"build_website_dev": "esbuild source/website/index.js --bundle --minify --global-name=OV --sourcemap --outfile=build/o3dv.website.min-dev.js",
-		"build_website_prod": "esbuild source/website/index.js --bundle --minify --global-name=OV --outfile=build/o3dv.website.min.js"
+		"build_website_prod": "esbuild source/website/index.js --bundle --minify --global-name=OV --outfile=build/o3dv.website.min.js",
+		"create_ts_types": "npx tsc"
 	},
 	"devDependencies": {
 		"clean-css-cli": "^5.6.1",
@@ -67,10 +69,12 @@
 		"mocha": "^10.2.0",
 		"oslllo-svg-fixer": "^2.2.0",
 		"run-python3": "^0.0.4",
-		"svgo": "^3.0.2"
+		"svgo": "^3.0.2",
+		"typescript": "^4.9.4"
 	},
 	"dependencies": {
 		"@simonwep/pickr": "1.8.2",
+		"@types/node": "^18.11.18",
 		"draco3d": "1.5.5",
 		"fflate": "0.7.4",
 		"occt-import-js": "0.0.14",
