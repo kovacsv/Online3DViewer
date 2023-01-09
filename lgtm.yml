@@ -1,7 +1,0 @@
-path_classifiers:
-  library:
-    - libs/*.js
-    - libs/loaders/*.js
-  test:
-    - test
-    - sandbox
