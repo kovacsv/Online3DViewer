@@ -20,18 +20,21 @@ export const FileFormat =
 
 export function GetFileName (filePath)
 {
-	let firstSeparator = filePath.lastIndexOf ('/');
-	if (firstSeparator === -1) {
-		firstSeparator = filePath.lastIndexOf ('\\');
-	}
 	let fileName = filePath;
-	if (firstSeparator !== -1) {
-		fileName = filePath.substring (firstSeparator + 1);
-	}
+
 	let firstParamIndex = fileName.indexOf ('?');
 	if (firstParamIndex !== -1) {
 		fileName = fileName.substring (0, firstParamIndex);
 	}
+
+	let firstSeparator = fileName.lastIndexOf ('/');
+	if (firstSeparator === -1) {
+		firstSeparator = fileName.lastIndexOf ('\\');
+	}
+	if (firstSeparator !== -1) {
+		fileName = fileName.substring (firstSeparator + 1);
+	}
+
 	return decodeURI (fileName);
 }
 

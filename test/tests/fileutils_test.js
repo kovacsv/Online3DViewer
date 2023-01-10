@@ -30,6 +30,8 @@ describe ('File Utils', function () {
         assert.strictEqual (OV.GetFileName ('folder\\file'), 'file');
         assert.strictEqual (OV.GetFileName ('folder\\file.obj'), 'file.obj');
         assert.strictEqual (OV.GetFileName ('folder\\file.OBJ'), 'file.OBJ');
+        assert.strictEqual (OV.GetFileName ('file.obj?a=b&c=d'), 'file.obj');
+        assert.strictEqual (OV.GetFileName ('file.obj?param=a/b/c'), 'file.obj');
     });
 
     it ('Read Lines', function () {
