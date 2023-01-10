@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, user-scalable=no">
 	<link rel="icon" type="image/png" href="static/3dviewer_net_favicon.ico">
 
-	<title>Online 3D Viewer - Home</title>
+	<title>Online 3D Viewer - Installation</title>
 
 	<link rel="stylesheet" href="static/highlightjs/styles/github.min.css"/>
 	<script src="static/highlightjs/highlight.min.js"></script>
@@ -57,35 +57,31 @@
 </div>
 <div id="main" class="main">
 <div class="page">
-<h1>Online 3D Viewer</h1>
+<h1>Installation</h1>
 
-<p>Online 3D Viewer is a solution to visualize and explore 3D models in your browser. The solution builds up from two parts.</p>
+<p>The recommended way to install the engine is to get it as an NPM package. In some cases it's not possible, so a browser-ready bundle is available for download and add directly to a html file.</p>
 
-<ul>
-    <li><b>Engine:</b> A library to import, visualize and export 3D models. It can be used on any website to embed 3D models easily.</li>
-    <li><b>Website:</b> The source code of the <a href="https://3dviewer.net" target="_blank">https://3dviewer.net</a> site which uses the engine under the hood.</li>
-</ul>
+<h2>Install from NPM (recommended)</h2>
 
-<h2>Engine Usage</h2>
+<p>The engine is available as an NPM package called <a href="https://www.npmjs.com/package/online-3d-viewer" target="_blank">online-3d-viewer</a>. The package itself is an ES6 module, so it can be used with several different bundlers.</p>
 
-<p>These documents help you understanding how to use the engine in your own solution.</p>
+<p>You can install it by running the following command.</p>
 
-<ul>
-    <li><a href="Installation.html">Installation</a> - Explains ways to get the package.</li>
-    <li><a href="Usage.html">Usage</a> - Provides some usage examples.</li>
-</ul>
+<pre><code class="language-plaintext">npm install online-3d-viewer</code></pre>
 
-<h2>Contribution</h2>
+<p>After installation you can import it like any other packages.</p>
 
-<p>If you would like to contribute to the codebase, these documents help you to start.</p>
+<pre><code class="language-js">import * as OV from 'online-3d-viewer';</code></pre>
 
-<ul>
-    <li><a href="SetUpEnvironment.html">Set Up Environment</a> - Helps you understanding how the environment works.</li>
-</ul>
+<h2>Download as browser-ready bundle</h2>
+
+<p>A bundle is available for every release. You need to download the zip file attached to the <a href="https://github.com/kovacsv/Online3DViewer/releases">latest release</a>. After that, copy the content of the zip file on your server, and include the main file on your site.</p>
+
+<pre><code class="language-html">&lt;script type="text/javascript" src="o3dv.min.js"&gt;&lt;/script&gt;</code></pre>
 
 </div>
 </div>
-<script type="text/javascript">Init ('Home')</script>
+<script type="text/javascript">Init ('Installation')</script>
 </body>
 
 </html>

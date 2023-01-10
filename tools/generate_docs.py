@@ -361,39 +361,46 @@ def CreateFromTemplate (templateHtmlPath, resultHtmlPath, navigation, title, con
         ('$$$MAIN$$$', content)
     ])
 
-def BuildNavigation (pages, hierarchy):
+def BuildNavigation (pageGroups, hierarchy):
     navigation = Navigation ()
-    pagesGroup = NavigationGroup ('Pages', False)
+
+    for pageGroup in pageGroups:
+        navGroup = NavigationGroup (pageGroup['name'], False)
+        for page in pageGroup['pages']:
+            navGroup.AddLink (page['name'], page['url'])
+        navigation.AddGroup (navGroup)
+
     classesGroup = NavigationGroup ('Classes', True)
-    functionsGroup = NavigationGroup ('Functions', True)
-    enumsGroup = NavigationGroup ('Enums', True)
-    for page in pages:
-        pagesGroup.AddLink (page['name'], page['url'])
     for classDoc in hierarchy['classes']:
         navigation.AddEntityLink (classDoc.name, classDoc.name + '.html')
         classesGroup.AddLink (classDoc.name, classDoc.name + '.html')
+    navigation.AddGroup (classesGroup)
+
+    functionsGroup = NavigationGroup ('Functions', True)
     for methodDoc in hierarchy['functions']:
         navigation.AddEntityLink (methodDoc.name, methodDoc.name + '.html')
         functionsGroup.AddLink (methodDoc.name, methodDoc.name + '.html')
+    navigation.AddGroup (functionsGroup)
+
+    enumsGroup = NavigationGroup ('Enums', True)
     for enumDoc in hierarchy['enums']:
         navigation.AddEntityLink (enumDoc.name, enumDoc.name + '.html')
         enumsGroup.AddLink (enumDoc.name, enumDoc.name + '.html')
-    navigation.AddGroup (pagesGroup)
-    navigation.AddGroup (classesGroup)
-    navigation.AddGroup (functionsGroup)
     navigation.AddGroup (enumsGroup)
+
     return navigation
 
-def BuildDocumentationFiles (navigation, pages, hierarchy, sourceDir, resultDir):
+def BuildDocumentationFiles (navigation, pageGroups, hierarchy, sourceDir, resultDir):
     templateHtmlPath = os.path.join (sourceDir, 'Template.html')
 
-    for page in pages:
-        if page['url'].startswith ('http'):
-            continue
-        sourceHtmlPath = os.path.join (sourceDir, page['url'])
-        pageHtmlPath = os.path.join (resultDir, page['url'])
-        pageContent = '<div class="page">\n' + Tools.GetFileContent (sourceHtmlPath) + '\n</div>'
-        CreateFromTemplate (templateHtmlPath, pageHtmlPath, navigation, page['name'], pageContent)
+    for pageGroup in pageGroups:
+        for page in pageGroup['pages']:
+            if page['url'].startswith ('http'):
+                continue
+            sourceHtmlPath = os.path.join (sourceDir, page['url'])
+            pageHtmlPath = os.path.join (resultDir, page['url'])
+            pageContent = '<div class="page">\n' + Tools.GetFileContent (sourceHtmlPath) + '\n</div>'
+            CreateFromTemplate (templateHtmlPath, pageHtmlPath, navigation, page['name'], pageContent)
 
     for classDoc in hierarchy['classes']:
         classHtmlPath = os.path.join (resultDir, classDoc.name + '.html')
@@ -426,14 +433,14 @@ def Main (argv):
         config = json.load (configJson)
 
     doclets = GetDocumentedDoclets (resultJson)
-    pages = config['pages']
+    pageGroups = config['page_groups']
     hierarchy = BuildHierarchy (doclets)
 
-    navigation = BuildNavigation (pages, hierarchy)
+    navigation = BuildNavigation (pageGroups, hierarchy)
     for name in config['external_refs']:
         navigation.AddEntityLink (name, config['external_refs'][name])
 
-    BuildDocumentationFiles (navigation, pages, hierarchy, sourceDir, resultDir)
+    BuildDocumentationFiles (navigation, pageGroups, hierarchy, sourceDir, resultDir)
 
     return 0
 

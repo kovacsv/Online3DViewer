@@ -1,106 +1,25 @@
-<h1>Online 3D Viewer Engine</h1>
+<h1>Online 3D Viewer</h1>
 
-<p>The Online 3D Viewer Engine allows you to easily embed 3D models on your website. Although the engine is primarily designed to serve the <a href="https://3dviewer.net" target="_blank">https://3dviewer.net</a> website, it's possible to use it on any page to visualize 3D models.</p>
+<p>Online 3D Viewer is a solution to visualize and explore 3D models in your browser. The solution builds up from two parts.</p>
 
-<h2>Installation</h2>
-
-<p>The preferred way to install the engine is to get it as an NPM package. In some cases it's not possible, so a browser-ready bundle is available for download and add directly to a html file.</p>
-
-<h3>Install from NPM (preferred)</h3>
-
-<p>The engine is available as an NPM package called <a href="https://www.npmjs.com/package/online-3d-viewer" target="_blank">online-3d-viewer</a>. The package itself is an ES6 module, so it can be used with several different bundlers.</p>
-
-<p>You can install it by running the following command.</p>
-
-<pre><code>npm install online-3d-viewer</code></pre>
-
-<p>After installation you can import it like any other packages.</p>
-
-<pre><code class="language-js">import * as OV from 'online-3d-viewer';</code></pre>
-
-<h3>Download as browser-ready bundle</h3>
-
-<p>A bundle is available for every release. You need to download the zip file attached to the <a href="https://github.com/kovacsv/Online3DViewer/releases">latest release</a>. After that, copy the content of the zip file on your server, and include the main file on your site.</p>
-
-<pre><code class="language-html">&lt;script type="text/javascript" src="o3dv.min.js"&gt;&lt;/script&gt;</code></pre>
-
-<h2>Usage</h2>
-
-There are two ways to use the library:
 <ul>
-    <li>Automatic initialization: Create some div elements on your site, and call a function that automatically initalizes all the viewers. This is the easiest way to use the library, but provides less flexibility.</li>
-    <li>Initialization from code: Needs a bit more typing, but it's more flexible than the previous one.</li>
+    <li><b>Engine:</b> A library to import, visualize and export 3D models. It can be used on any website to embed 3D models easily.</li>
+    <li><b>Website:</b> The source code of the <a href="https://3dviewer.net" target="_blank">https://3dviewer.net</a> site which uses the engine under the hood.</li>
 </ul>
 
-<h3>External library handling</h3>
+<h2>Engine Usage</h2>
 
-<p>Some of the importers are implemented using external libraries. These are found in the libs folder of the package. To make these libraries available, you have to tell the engine where to find them. The location of the external libraries can be set with the <a href="SetExternalLibLocation.html">SetExternalLibLocation</a> function. Make sure to call it before any other engine calls.</p>
+<p>These documents help you understanding how to use the engine in your own solution.</p>
 
-<h3>Automatic initialization</h3>
-
-<p>Create some elements anywhere on your page with the class name <code class="inline">online-3d-viewer</code>. You can create multiple elements with different parameters.</p>
-
-<pre><code class="language-html">&lt;div class="online_3d_viewer"
-    style="width: 800px; height: 600px;"
-    model="model.obj, model.mtl"&gt;
-&lt;/div&gt;</code></pre>
-
-<p>You can specify several attributes:</p>
 <ul>
-    <li><b>model:</b> Relative path to model files separated by comma.</li>
-    <li><b>camera:</b> Camera parameters (eye, center, up). 9 comma separated number values.</li>
-    <li><b>defaultcolor:</b> Default color for surfaces with no material. 3 comma separated number values for r, g, b.</li>
-    <li><b>backgroundcolor:</b> Canvas background color. 3 comma separated number values for r, g, b or four comma separated number values for r, g, b, a.</li>
-    <li><b>edgesettings:</b> Edge display settings. 5 comma separated values for 'on'/'off', r, g, b, threshold angle.</li>
-    <li><b>environmentmap:</b> Comma separated list of six images forming a texture box.</li>
-    <li><b>environmentmapbg:</b> Boolean ("true" or "false") to set the environment map as background.</li>
+    <li><a href="Installation.html">Installation</a> - Explains ways to get the package.</li>
+    <li><a href="Usage.html">Usage</a> - Provides some usage examples.</li>
 </ul>
 
-<p>After placing the elements, call the <a href="Init3DViewerElements.html">Init3DViewerElements</a> function to initalize all the viewers. It must be called from the main JavaScript file outside of the onload event.</p>
+<h2>Contribution</h2>
 
-<pre><code class="language-js">// tell the engine where to find the libs folder
-OV.SetExternalLibLocation ('libs');
-// init all viewers on the page
-OV.Init3DViewerElements ();</code></pre>
+<p>If you would like to contribute to the codebase, these documents help you to start.</p>
 
-<h3>Initialization from code</h3>
-
-<p>You can also initalize the engine from code. In this case you can provide all the parameters as a JavaScript object. See the <a href="EmbeddedViewer.html">EmbeddedViewer</a> documentation for more details.</p>
-
-<pre><code class="language-js">window.addEventListener ('load', () => {
-    // set the location of the external libraries
-    OV.SetExternalLibLocation ('../libs');
-
-    // get the parent element of the viewer
-    let parentDiv = document.getElementById ('viewer');
-
-    // initialize the viewer with the parent element and some parameters
-    let viewer = new OV.EmbeddedViewer (parentDiv, {
-        camera : new OV.Camera (
-            new OV.Coord3D (-1.5, 2.0, 3.0),
-            new OV.Coord3D (0.0, 0.0, 0.0),
-            new OV.Coord3D (0.0, 1.0, 0.0),
-            45.0
-        ),
-        backgroundColor : new OV.RGBAColor (255, 255, 255, 255),
-        defaultColor : new OV.RGBColor (200, 200, 200),
-        edgeSettings : new OV.EdgeSettings (false, new OV.RGBColor (0, 0, 0), 1),
-        environmentSettings : new OV.EnvironmentSettings (
-            [
-                'assets/envmaps/fishermans_bastion/posx.jpg',
-                'assets/envmaps/fishermans_bastion/negx.jpg',
-                'assets/envmaps/fishermans_bastion/posy.jpg',
-                'assets/envmaps/fishermans_bastion/negy.jpg',
-                'assets/envmaps/fishermans_bastion/posz.jpg',
-                'assets/envmaps/fishermans_bastion/negz.jpg'
-            ],
-            false
-        )
-    });
-
-    // load a model providing model urls
-    viewer.LoadModelFromUrlList ([
-        'model.obj',
-        'model.mtl'
-    ]);
-});</code></pre>
+<ul>
+    <li><a href="SetUpEnvironment.html">Set Up Environment</a> - Helps you understanding how the environment works.</li>
+</ul>

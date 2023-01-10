@@ -1,0 +1,60 @@
+<h1>Set Up the Development Environment</h1>
+
+<p>This document helps you setting up the developer environment. It is useful if you would like to contribute to the codebase of the engine or the website.</p>
+
+<h2>Quick Start</h2>
+
+<p>After cloning the repository run these commands from the root directory.</p>
+
+<pre><code class="language-plaintext">npm install
+npm start</code></pre>
+
+<p>This will compile the development version of the code and start a web server. Now you can open <code class="inline">http://localhost:8080</code> to check the result.</p>
+
+<h2>Source Structure</h2>
+
+<p>The source contains the following folders.</p>
+
+<ul>
+    <li><b>assets:</b> Various assets used in the code or in any other media platforms.</li>
+    <li><b>docs:</b> Code of this documentation.</li>
+    <li><b>libs:</b> External libraries used by the solution.</li>
+    <li><b>sandbox:</b> Various examples mostly for using the engine.</li>
+    <li><b>source:</b> Source code of the engine and the website.
+        <ul>
+            <li><b>engine:</b> Source code of the engine. It doesn't contain any website specific codes.</li>
+            <li><b>website:</b> Source code of the website.</li>
+        </ul>
+    </li>
+    <li><b>test:</b> Automatic tests for the engine.</li>
+    <li><b>tools:</b> Tools for building the library.</li>
+    <li><b>website:</b> Static resources for the website.</li>
+</ul>
+
+<h2>Scripts</h2>
+
+<p>Several scripts are available for building, testing and publishing.</p>
+
+<p><b>Building</b></p>
+
+<ul>
+    <li><code class="inline">npm run build_dev</code>: Builds the development version of the engine and the website.</li>
+    <li><code class="inline">npm run build_engine_dev</code>: Builds the development version of the engine.</li>
+    <li><code class="inline">npm run build_engine_prod</code>: Builds the production version of the engine.</li>
+    <li><code class="inline">npm run build_website_dev</code>: Builds the development version of the website.</li>
+    <li><code class="inline">npm run build_website_prod</code>: Builds the production version of the website.</li>
+</ul>
+
+<p><b>Testing</b></p>
+
+<ul>
+    <li><code class="inline">npm run test</code>: Runs all unit tests.</li>
+    <li><code class="inline">npm run lint</code>: Runs eslint on the codebase.</li>
+</ul>
+
+<p><b>Packaging</b></p>
+
+<ul>
+    <li><code class="inline">npm run create_package</code>: Generates the production version of the engine and the website.</li>
+    <li><code class="inline">npm run create_dist</code>: Generates the production version of the engine and the website, and runs all the possible checks.</li>
+</ul>

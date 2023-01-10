@@ -152,7 +152,7 @@ li
 .main
 {
 	height: 100%;
-	padding: 20px 30px;
+	padding: 20px;
 	margin-left: 300px;
 	box-sizing: border-box;
 	overflow: auto;
@@ -233,7 +233,7 @@ li
 
 code.inline
 {
-	background: #fafafa;
+	background: #f0f0f0;
 	font-family: monospace;
 	padding: 2px 4px;
 	border-radius: 3px;

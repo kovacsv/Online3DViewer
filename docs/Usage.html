@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+	<link rel="icon" type="image/png" href="static/3dviewer_net_favicon.ico">
+
+	<title>Online 3D Viewer - Usage</title>
+
+	<link rel="stylesheet" href="static/highlightjs/styles/github.min.css"/>
+	<script src="static/highlightjs/highlight.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="static/style.css"/>
+	<script type="text/javascript" src="static/script.js"></script>
+</head>
+
+<body>
+<div id="navigation_toggle" class="navigation_toggle"><img id="navigation_icon" src="static/menu.svg"/></div>
+<div id="navigation" class="navigation thin_scrollbar">
+<div class="navigation_section">
+<div class="navigation_title">Pages</div>
+<div id="nav-Home" class="navigation_item"><a href="index.html" target="_self">Home</a></div>
+<div id="nav-GitHub" class="navigation_item"><a href="https://github.com/kovacsv/Online3DViewer" target="_blank">GitHub</a></div>
+</div>
+<div class="navigation_section">
+<div class="navigation_title">Engine Usage</div>
+<div id="nav-Installation" class="navigation_item"><a href="Installation.html" target="_self">Installation</a></div>
+<div id="nav-Usage" class="navigation_item"><a href="Usage.html" target="_self">Usage</a></div>
+</div>
+<div class="navigation_section">
+<div class="navigation_title">Contribution</div>
+<div id="nav-Set Up Environment" class="navigation_item"><a href="SetUpEnvironment.html" target="_self">Set Up Environment</a></div>
+</div>
+<div class="navigation_section">
+<div class="navigation_title">Classes</div>
+<div id="nav-Camera" class="navigation_item"><a href="Camera.html" target="_self">Camera</a></div>
+<div id="nav-EdgeSettings" class="navigation_item"><a href="EdgeSettings.html" target="_self">EdgeSettings</a></div>
+<div id="nav-EmbeddedViewer" class="navigation_item"><a href="EmbeddedViewer.html" target="_self">EmbeddedViewer</a></div>
+<div id="nav-EnvironmentSettings" class="navigation_item"><a href="EnvironmentSettings.html" target="_self">EnvironmentSettings</a></div>
+<div id="nav-InputFile" class="navigation_item"><a href="InputFile.html" target="_self">InputFile</a></div>
+<div id="nav-RGBAColor" class="navigation_item"><a href="RGBAColor.html" target="_self">RGBAColor</a></div>
+<div id="nav-RGBColor" class="navigation_item"><a href="RGBColor.html" target="_self">RGBColor</a></div>
+</div>
+<div class="navigation_section">
+<div class="navigation_title">Functions</div>
+<div id="nav-Init3DViewerElement" class="navigation_item"><a href="Init3DViewerElement.html" target="_self">Init3DViewerElement</a></div>
+<div id="nav-Init3DViewerElements" class="navigation_item"><a href="Init3DViewerElements.html" target="_self">Init3DViewerElements</a></div>
+<div id="nav-SetExternalLibLocation" class="navigation_item"><a href="SetExternalLibLocation.html" target="_self">SetExternalLibLocation</a></div>
+</div>
+<div class="navigation_section">
+<div class="navigation_title">Enums</div>
+<div id="nav-CameraMode" class="navigation_item"><a href="CameraMode.html" target="_self">CameraMode</a></div>
+<div id="nav-FileSource" class="navigation_item"><a href="FileSource.html" target="_self">FileSource</a></div>
+</div>
+
+</div>
+<div id="main" class="main">
+<div class="page">
+<h1>Usage</h1>
+
+There are two ways to use the library:
+<ul>
+    <li>Automatic initialization: Create some div elements on your site, and call a function that automatically initalizes all the viewers. This is the easiest way to use the library, but provides less flexibility.</li>
+    <li>Initialization from code: Needs a bit more typing, but it's more flexible than the previous one.</li>
+</ul>
+
+<h2>External library handling</h2>
+
+<p>Some of the importers are implemented using external libraries. These are found in the libs folder of the package. To make these libraries available, you have to tell the engine where to find them. The location of the external libraries can be set with the <a href="SetExternalLibLocation.html">SetExternalLibLocation</a> function. Make sure to call it before any other engine calls.</p>
+
+<h2>Automatic initialization</h2>
+
+<p>Create some elements anywhere on your page with the class name <code class="inline">online-3d-viewer</code>. You can create multiple elements with different parameters.</p>
+
+<pre><code class="language-html">&lt;div class="online_3d_viewer"
+    style="width: 800px; height: 600px;"
+    model="model.obj, model.mtl"&gt;
+&lt;/div&gt;</code></pre>
+
+<p>You can specify several attributes:</p>
+<ul>
+    <li><b>model:</b> Relative path to model files separated by comma.</li>
+    <li><b>camera:</b> Camera parameters (eye, center, up). 9 comma separated number values.</li>
+    <li><b>defaultcolor:</b> Default color for surfaces with no material. 3 comma separated number values for r, g, b.</li>
+    <li><b>backgroundcolor:</b> Canvas background color. 3 comma separated number values for r, g, b or four comma separated number values for r, g, b, a.</li>
+    <li><b>edgesettings:</b> Edge display settings. 5 comma separated values for 'on'/'off', r, g, b, threshold angle.</li>
+    <li><b>environmentmap:</b> Comma separated list of six images forming a texture box.</li>
+    <li><b>environmentmapbg:</b> Boolean ("true" or "false") to set the environment map as background.</li>
+</ul>
+
+<p>After placing the elements, call the <a href="Init3DViewerElements.html">Init3DViewerElements</a> function to initalize all the viewers. It must be called from the main JavaScript file outside of the onload event.</p>
+
+<pre><code class="language-js">// tell the engine where to find the libs folder
+OV.SetExternalLibLocation ('libs');
+// init all viewers on the page
+OV.Init3DViewerElements ();</code></pre>
+
+<h2>Initialization from code</h2>
+
+<p>You can also initalize the engine from code. In this case you can provide all the parameters as a JavaScript object. See the <a href="EmbeddedViewer.html">EmbeddedViewer</a> documentation for more details.</p>
+
+<pre><code class="language-js">window.addEventListener ('load', () => {
+    // set the location of the external libraries
+    OV.SetExternalLibLocation ('../libs');
+
+    // get the parent element of the viewer
+    let parentDiv = document.getElementById ('viewer');
+
+    // initialize the viewer with the parent element and some parameters
+    let viewer = new OV.EmbeddedViewer (parentDiv, {
+        camera : new OV.Camera (
+            new OV.Coord3D (-1.5, 2.0, 3.0),
+            new OV.Coord3D (0.0, 0.0, 0.0),
+            new OV.Coord3D (0.0, 1.0, 0.0),
+            45.0
+        ),
+        backgroundColor : new OV.RGBAColor (255, 255, 255, 255),
+        defaultColor : new OV.RGBColor (200, 200, 200),
+        edgeSettings : new OV.EdgeSettings (false, new OV.RGBColor (0, 0, 0), 1),
+        environmentSettings : new OV.EnvironmentSettings (
+            [
+                'assets/envmaps/fishermans_bastion/posx.jpg',
+                'assets/envmaps/fishermans_bastion/negx.jpg',
+                'assets/envmaps/fishermans_bastion/posy.jpg',
+                'assets/envmaps/fishermans_bastion/negy.jpg',
+                'assets/envmaps/fishermans_bastion/posz.jpg',
+                'assets/envmaps/fishermans_bastion/negz.jpg'
+            ],
+            false
+        )
+    });
+
+    // load a model providing model urls
+    viewer.LoadModelFromUrlList ([
+        'model.obj',
+        'model.mtl'
+    ]);
+});</code></pre>
+
+</div>
+</div>
+<script type="text/javascript">Init ('Usage')</script>
+</body>
+
+</html>
