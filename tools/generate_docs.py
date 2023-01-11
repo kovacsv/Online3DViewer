@@ -406,15 +406,18 @@ def BuildDocumentationFiles (navigation, pageGroups, hierarchy, sourceDir, resul
 
     for classDoc in hierarchy['classes']:
         classHtmlPath = os.path.join (resultDir, classDoc.name + '.html')
-        CreateFromTemplate (templateHtmlPath, classHtmlPath, navigation, classDoc.name, classDoc.GenerateHtml (navigation, eol), eol)
+        docContent = classDoc.GenerateHtml (navigation, eol)
+        CreateFromTemplate (templateHtmlPath, classHtmlPath, navigation, classDoc.name, docContent, eol)
 
     for methodDoc in hierarchy['functions']:
         methodHtmlPath = os.path.join (resultDir, methodDoc.name + '.html')
-        CreateFromTemplate (templateHtmlPath, methodHtmlPath, navigation, methodDoc.name, methodDoc.GenerateHtml (navigation, eol), eol)
+        docContent = methodDoc.GenerateHtml (navigation, eol)
+        CreateFromTemplate (templateHtmlPath, methodHtmlPath, navigation, methodDoc.name, docContent, eol)
 
     for enumDoc in hierarchy['enums']:
         enumHtmlPath = os.path.join (resultDir, enumDoc.name + '.html')
-        CreateFromTemplate (templateHtmlPath, enumHtmlPath, navigation, enumDoc.name, enumDoc.GenerateHtml (navigation, eol), eol)
+        docContent = enumDoc.GenerateHtml (navigation, eol)
+        CreateFromTemplate (templateHtmlPath, enumHtmlPath, navigation, enumDoc.name, docContent, eol)
 
 def Main (argv):
     toolsDir = os.path.dirname (os.path.abspath (__file__))
