@@ -268,7 +268,7 @@ def GetParametersFromDoclet (doclet):
     parameters = []
     paramNamespaceToDoc = {}
     if not 'params' in doclet:
-        return None
+        return parameters
     for param in doclet['params']:
         paramName = GetDictValue (param, 'name')
         paramIsOptional = 'optional' in param and param['optional'] == True
