@@ -1,4 +1,4 @@
-<h1>Set Up the Development Environment</h1>
+<h1>Development Environment</h1>
 
 <p>This document helps you setting up the developer environment. It is useful if you would like to contribute to the codebase of the engine or the website.</p>
 
@@ -10,6 +10,15 @@
 npm start</code></pre>
 
 <p>This will compile the development version of the code and start a web server. Now you can open <code class="inline">http://localhost:8080</code> to check the result.</p>
+
+<h2>Environments</h2>
+
+<p>The solution is implemented as ES6 modules. It means that it must be bundled together to one file to make it usable on the website. The development and production environment is separated, see the Scripts section for more details.</p>
+
+<ul>
+    <li><b>Development: </b> The development bundle will be created in the <code class="inline">build</code> folder. The code of the website references this directly during development, so you can just open the <code class="inline">website</code> folder and try it out.</li>
+    <li><b>Production: </b> The entire self-containing package will be created in the <code class="inline">build</code> folder. In this case all the required files are copied to this folder so you can just upload it to any web server to make it work.</li>
+</ul>
 
 <h2>Source Structure</h2>
 
@@ -57,4 +66,12 @@ npm start</code></pre>
 <ul>
     <li><code class="inline">npm run create_package</code>: Generates the production version of the engine and the website.</li>
     <li><code class="inline">npm run create_dist</code>: Generates the production version of the engine and the website, and runs all the possible checks.</li>
+</ul>
+
+<p><b>Tools</b></p>
+
+<ul>
+    <li><code class="inline">npm run generate_docs</code>: Generates this documentation.</li>
+    <li><code class="inline">npm run generate_icon_font</code>: Generates the icon font used on the website.</li>
+    <li><code class="inline">npm run update_libs</code>: Updates the used external libraries.</li>
 </ul>

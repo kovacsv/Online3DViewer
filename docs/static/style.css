@@ -96,7 +96,6 @@ li
 .navigation
 {
 	background: #ffffff;
-	width: 250px;
 	height: 100%;
 	padding: 20px;
 	position: absolute;
@@ -153,7 +152,6 @@ li
 {
 	height: 100%;
 	padding: 20px;
-	margin-left: 300px;
 	box-sizing: border-box;
 	overflow: auto;
 }

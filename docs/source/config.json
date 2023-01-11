@@ -30,8 +30,8 @@
             "name" : "Contribution",
             "pages" : [
                 {
-                    "name" : "Set Up Environment",
-                    "url" : "SetUpEnvironment.html"
+                    "name" : "Development Environment",
+                    "url" : "DevelopmentEnvironment.html"
                 }
             ]
         }

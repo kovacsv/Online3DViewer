@@ -12,8 +12,10 @@ function Resize ()
         navToggleDiv.style.display = 'block';
         navDiv.style.display = 'none';
     } else {
-        navDiv.style.width = '250px';
-        mainDiv.style.marginLeft = '250px';
+        let navWidth = '280px';
+
+        navDiv.style.width = navWidth;
+        mainDiv.style.marginLeft = navWidth;
 
         navToggleDiv.style.display = 'none';
         navDiv.style.display = 'block';
