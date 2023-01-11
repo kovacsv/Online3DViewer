@@ -358,7 +358,8 @@ def CreateFromTemplate (templateHtmlPath, resultHtmlPath, navigation, title, con
     Tools.ReplaceStringsInFile (resultHtmlPath, [
         ('$$$TITLE$$$', title),
         ('$$$NAVIGATION$$$', navigation.GenerateHtml ()),
-        ('$$$MAIN$$$', content)
+        ('$$$MAIN$$$', content),
+        ('\r\n', '\n')
     ])
 
 def BuildNavigation (pageGroups, hierarchy):
