@@ -11,14 +11,15 @@ import re
 from lib import tools_lib as Tools
 
 class HtmlGenerator:
-    def __init__ (self):
+    def __init__ (self, eol):
         self.html = ''
+        self.eol = eol
 
     def AddText (self, content):
         self.html += content
 
     def AddLine (self, content):
-        self.AddText (content + '\n')
+        self.AddText (content + self.eol)
 
     def AddTag (self, tagName, content):
         self.AddLine ('<{0}>{1}</{0}>'.format (tagName, content))
@@ -105,8 +106,8 @@ class Navigation:
     def AddEntityLink (self, name, url):
         self.entityLinks[name] = url
 
-    def GenerateHtml (self):
-        generator = HtmlGenerator ()
+    def GenerateHtml (self, eol):
+        generator = HtmlGenerator (eol)
         for group in self.groups:
             if len (group.links) == 0:
                 continue
@@ -135,8 +136,8 @@ class EnumDoc:
     def AddMember (self, member):
         self.members.append (member)
 
-    def GenerateHtml (self, navigation):
-        generator = HtmlGenerator ()
+    def GenerateHtml (self, navigation, eol):
+        generator = HtmlGenerator (eol)
         generator.AddTag ('h1', self.name)
         generator.AddTagWithClass ('div', 'description', FinalizeDescription (self.description, navigation.entityLinks))
         if len (self.members) > 0:
@@ -177,8 +178,8 @@ class MethodDoc:
     def AddParameter (self, parameter):
         self.parameters.append (parameter)
 
-    def GenerateHtml (self, navigation):
-        generator = HtmlGenerator ()
+    def GenerateHtml (self, navigation, eol):
+        generator = HtmlGenerator (eol)
         generator.AddTag ('h1', self.name)
         GenerateMethodHtml (self, generator, navigation, False)
         return generator.GetHtml ()
@@ -196,8 +197,8 @@ class ClassDoc:
     def AddMethod (self, method):
         self.methods.append (method)
 
-    def GenerateHtml (self, navigation):
-        generator = HtmlGenerator ()
+    def GenerateHtml (self, navigation, eol):
+        generator = HtmlGenerator (eol)
         generator.AddTag ('h1', self.name)
         generator.AddTagWithClass ('div', 'description', FinalizeDescription (self.description, navigation.entityLinks))
         if self.constructor != None:
@@ -353,13 +354,12 @@ def BuildHierarchy (doclets):
                 enumDoc.AddMember (memberDoc)
     return hierarchy
 
-def CreateFromTemplate (templateHtmlPath, resultHtmlPath, navigation, title, content):
+def CreateFromTemplate (templateHtmlPath, resultHtmlPath, navigation, title, content, eol):
     shutil.copy (templateHtmlPath, resultHtmlPath)
     Tools.ReplaceStringsInFile (resultHtmlPath, [
         ('$$$TITLE$$$', title),
-        ('$$$NAVIGATION$$$', navigation.GenerateHtml ()),
-        ('$$$MAIN$$$', content),
-        ('\r\n', '\n')
+        ('$$$NAVIGATION$$$', navigation.GenerateHtml (eol)),
+        ('$$$MAIN$$$', content)
     ])
 
 def BuildNavigation (pageGroups, hierarchy):
@@ -393,6 +393,7 @@ def BuildNavigation (pageGroups, hierarchy):
 
 def BuildDocumentationFiles (navigation, pageGroups, hierarchy, sourceDir, resultDir):
     templateHtmlPath = os.path.join (sourceDir, 'Template.html')
+    eol = Tools.GetEOLCharFromFile (templateHtmlPath)
 
     for pageGroup in pageGroups:
         for page in pageGroup['pages']:
@@ -400,20 +401,20 @@ def BuildDocumentationFiles (navigation, pageGroups, hierarchy, sourceDir, resul
                 continue
             sourceHtmlPath = os.path.join (sourceDir, page['url'])
             pageHtmlPath = os.path.join (resultDir, page['url'])
-            pageContent = '<div class="page">\n' + Tools.GetFileContent (sourceHtmlPath) + '\n</div>'
-            CreateFromTemplate (templateHtmlPath, pageHtmlPath, navigation, page['name'], pageContent)
+            pageContent = '<div class="page">' + eol + Tools.GetFileContent (sourceHtmlPath) + eol + '</div>'
+            CreateFromTemplate (templateHtmlPath, pageHtmlPath, navigation, page['name'], pageContent, eol)
 
     for classDoc in hierarchy['classes']:
         classHtmlPath = os.path.join (resultDir, classDoc.name + '.html')
-        CreateFromTemplate (templateHtmlPath, classHtmlPath, navigation, classDoc.name, classDoc.GenerateHtml (navigation))
+        CreateFromTemplate (templateHtmlPath, classHtmlPath, navigation, classDoc.name, classDoc.GenerateHtml (navigation, eol), eol)
 
     for methodDoc in hierarchy['functions']:
         methodHtmlPath = os.path.join (resultDir, methodDoc.name + '.html')
-        CreateFromTemplate (templateHtmlPath, methodHtmlPath, navigation, methodDoc.name, methodDoc.GenerateHtml (navigation))
+        CreateFromTemplate (templateHtmlPath, methodHtmlPath, navigation, methodDoc.name, methodDoc.GenerateHtml (navigation, eol), eol)
 
     for enumDoc in hierarchy['enums']:
         enumHtmlPath = os.path.join (resultDir, enumDoc.name + '.html')
-        CreateFromTemplate (templateHtmlPath, enumHtmlPath, navigation, enumDoc.name, enumDoc.GenerateHtml (navigation))
+        CreateFromTemplate (templateHtmlPath, enumHtmlPath, navigation, enumDoc.name, enumDoc.GenerateHtml (navigation, eol), eol)
 
 def Main (argv):
     toolsDir = os.path.dirname (os.path.abspath (__file__))
