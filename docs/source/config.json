@@ -18,11 +18,11 @@
             "pages" : [
                 {
                     "name" : "Installation",
-                    "url" : "Installation.html"
+                    "url" : "InstallationPage.html"
                 },
                 {
                     "name" : "Usage",
-                    "url" : "Usage.html"
+                    "url" : "UsagePage.html"
                 }
             ]
         },
@@ -30,8 +30,8 @@
             "name" : "Contribution",
             "pages" : [
                 {
-                    "name" : "Development Environment",
-                    "url" : "DevelopmentEnvironment.html"
+                    "name" : "Environment Setup",
+                    "url" : "EnvironmentSetupPage.html"
                 }
             ]
         }
