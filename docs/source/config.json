@@ -30,6 +30,10 @@
             "name" : "Contribution",
             "pages" : [
                 {
+                    "name" : "Contribution Guidelines",
+                    "url" : "ContributionGuidelinesPage.html"
+                },
+                {
                     "name" : "Environment Setup",
                     "url" : "EnvironmentSetupPage.html"
                 }
