@@ -59,9 +59,9 @@ def GenerateNavigationHtml (documentation, eol):
     generator = HtmlGenerator (eol)
     for pageGroup in documentation.pageGroups:
         AddNavigationSection (generator, pageGroup.name, pageGroup.pages)
-    AddNavigationSection (generator, 'Classes', documentation.classes)
-    AddNavigationSection (generator, 'Functions', documentation.functions)
-    AddNavigationSection (generator, 'Enums', documentation.enums)
+    AddNavigationSection (generator, 'Classes', sorted (documentation.classes, key = lambda x : x.name))
+    AddNavigationSection (generator, 'Functions', sorted (documentation.functions, key = lambda x : x.name))
+    AddNavigationSection (generator, 'Enums', sorted (documentation.enums, key = lambda x : x.name))
     return generator.GetHtml ()
 
 def GenerateDocumentation (documentation, sourceFolder, targetFolder):
