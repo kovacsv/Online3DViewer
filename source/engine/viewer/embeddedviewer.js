@@ -230,7 +230,7 @@ export function Init3DViewerElementFromUrlList (parentElement, modelUrls, parame
 /**
  * Loads the model specified by File objects.
  * @param {Element} parentElement The parent element for the viewer canvas.
- * @param {File[]} models Model files.
+ * @param {File[]} models File object list of model files.
  * @param {object} parameters See {@link EmbeddedViewer} constructor for details.
  * @returns {EmbeddedViewer}
  */
