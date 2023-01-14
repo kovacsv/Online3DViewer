@@ -4,7 +4,7 @@ import shutil
 import zipfile
 import json
 
-from lib import tools_lib as Tools
+from lib import utils as Utils
 
 def GetVersion (rootDir):
 	packageJson = None
@@ -57,7 +57,7 @@ def CreateWebsite (config, rootDir, websiteDir, version, testBuild):
 	]
 	for htmlFileName in htmlFileNames:
 		htmlFilePath = os.path.join (websiteDir, htmlFileName)
-		replacer = Tools.TokenReplacer (htmlFilePath, False)
+		replacer = Utils.TokenReplacer (htmlFilePath, False)
 		replacer.ReplaceTokenFileLinks ('<!-- website libs start -->', '<!-- website libs end -->', websiteLibFiles, version)
 		replacer.ReplaceTokenFileLinks ('<!-- website start -->', '<!-- website end -->', websiteFiles, version)
 		replacer.ReplaceTokenFileLinks ('<!-- plugins start -->', '<!-- plugins end -->', pluginFiles, version)
@@ -73,15 +73,15 @@ def CreateWebsite (config, rootDir, websiteDir, version, testBuild):
 		replacer.ReplaceTokenContent ('<!-- embed init start -->', '<!-- embed init end -->', embedInitScriptContent)
 		metaFile = os.path.join (rootDir, 'plugins', 'website_meta_data.txt')
 		if os.path.exists (metaFile):
-			metaContent = Tools.GetFileContent (metaFile)
+			metaContent = Utils.GetFileContent (metaFile)
 			replacer.ReplaceTokenContent ('<!-- meta start -->', '<!-- meta end -->', metaContent)
 		analyticsFile = os.path.join (rootDir, 'plugins', 'website_analytics_data.txt')
 		if os.path.exists (analyticsFile) and not testBuild:
-			analyticsContent = Tools.GetFileContent (analyticsFile)
+			analyticsContent = Utils.GetFileContent (analyticsFile)
 			replacer.ReplaceTokenContent ('<!-- analytics start -->', '<!-- analytics end -->', analyticsContent)
 		introFile = os.path.join (rootDir, 'plugins', 'website_intro_data.txt')
 		if os.path.exists (introFile):
-			introContent = Tools.GetFileContent (introFile)
+			introContent = Utils.GetFileContent (introFile)
 			replacer.ReplaceTokenContent ('<!-- intro start -->', '<!-- intro end -->', introContent)
 		replacer.WriteToFile (htmlFilePath)
 
@@ -116,7 +116,7 @@ def Main (argv):
 	if len (argv) >= 2 and argv[1] == 'test':
 		testBuild = True
 		buildDir = os.path.join (rootDir, 'build', 'test')
-		Tools.PrintInfo ('Creating test build.')
+		Utils.PrintInfo ('Creating test build.')
 
 	websiteDir = os.path.join (buildDir, 'website')
 	packageDir = os.path.join (buildDir, 'package')
@@ -128,13 +128,13 @@ def Main (argv):
 		config = json.load (configJson)
 
 	version = GetVersion (rootDir)
-	Tools.PrintInfo ('Create build directory')
+	Utils.PrintInfo ('Create build directory')
 	CreateWebsite (config, rootDir, websiteDir, version, testBuild)
 
-	Tools.PrintInfo ('Create package.')
+	Utils.PrintInfo ('Create package.')
 	packageResult = CreatePackage (rootDir, websiteDir, packageDir)
 	if not packageResult:
-		Tools.PrintError ('Create package failed.')
+		Utils.PrintError ('Create package failed.')
 		return 1
 
 	return 0

@@ -8,7 +8,7 @@ import platform
 import html
 import re
 
-from lib import tools_lib as Tools
+from lib import utils as Utils
 
 class HtmlGenerator:
     def __init__ (self, eol):
@@ -362,7 +362,7 @@ def BuildHierarchy (doclets):
 
 def CreateFromTemplate (templateHtmlPath, resultHtmlPath, navigation, title, content, eol):
     shutil.copy (templateHtmlPath, resultHtmlPath)
-    Tools.ReplaceStringsInFile (resultHtmlPath, [
+    Utils.ReplaceStringsInFile (resultHtmlPath, [
         ('$$$TITLE$$$', title),
         ('$$$NAVIGATION$$$', navigation.GenerateHtml (eol)),
         ('$$$MAIN$$$', content)
@@ -399,7 +399,7 @@ def BuildNavigation (pageGroups, hierarchy):
 
 def BuildDocumentationFiles (navigation, pageGroups, hierarchy, sourceDir, resultDir):
     templateHtmlPath = os.path.join (sourceDir, 'Template.html')
-    eol = Tools.GetEOLCharFromFile (templateHtmlPath)
+    eol = Utils.GetEOLCharFromFile (templateHtmlPath)
 
     for pageGroup in pageGroups:
         for page in pageGroup['pages']:
@@ -407,7 +407,7 @@ def BuildDocumentationFiles (navigation, pageGroups, hierarchy, sourceDir, resul
                 continue
             sourceHtmlPath = os.path.join (sourceDir, page['url'])
             pageHtmlPath = os.path.join (resultDir, page['url'])
-            pageContent = '<div class="page">' + eol + Tools.GetFileContent (sourceHtmlPath) + eol + '</div>'
+            pageContent = '<div class="page">' + eol + Utils.GetFileContent (sourceHtmlPath) + eol + '</div>'
             CreateFromTemplate (templateHtmlPath, pageHtmlPath, navigation, page['name'], pageContent, eol)
 
     for classDoc in hierarchy['classes']:

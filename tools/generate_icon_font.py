@@ -2,7 +2,7 @@ import os
 import sys
 import shutil
 
-from lib import tools_lib as Tools
+from lib import utils as Utils
 
 def Main (argv):
 	toolsDir = os.path.dirname (os.path.abspath (__file__))
@@ -21,12 +21,12 @@ def Main (argv):
 	if not os.path.exists (iconFontDir):
 		os.makedirs (iconFontDir)
 
-	Tools.RunCommand ('oslllo-svg-fixer', [
+	Utils.RunCommand ('oslllo-svg-fixer', [
 		'-s', iconsDir,
 		'-d', fixedIconsDir
 	])
-	Tools.RunCommand ('svgo', [fixedIconsDir])
-	Tools.RunCommand ('fantasticon', [
+	Utils.RunCommand ('svgo', [fixedIconsDir])
+	Utils.RunCommand ('fantasticon', [
 		fixedIconsDir,
 		'-o', iconFontDir,
 		'-t', 'woff',
@@ -40,7 +40,7 @@ def Main (argv):
 
 	websiteIconsCssPath = os.path.join (websiteCssDir, 'icons.css')
 	shutil.copy (os.path.join (iconFontDir, 'O3DVIcons.css'), websiteIconsCssPath)
-	Tools.ReplaceStringInFile (websiteIconsCssPath, './O3DVIcons.woff', 'O3DVIcons/O3DVIcons.woff')
+	Utils.ReplaceStringInFile (websiteIconsCssPath, './O3DVIcons.woff', 'O3DVIcons/O3DVIcons.woff')
 	shutil.copy (os.path.join (iconFontDir, 'O3DVIcons.woff'), websiteIconFontDir)
 
 	infoCssDir = os.path.join (rootDir, 'website', 'info', 'css')

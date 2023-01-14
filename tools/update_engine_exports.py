@@ -2,7 +2,7 @@ import os
 import sys
 import re
 
-from lib import tools_lib as Tools
+from lib import utils as Utils
 
 def Main (argv):
 	toolsDir = os.path.dirname (os.path.abspath (__file__))
@@ -22,13 +22,13 @@ def Main (argv):
 			})
 
 	mainFilePath = os.path.join (sourceFolder, 'main.js')
-	eolChar = Tools.GetEOLCharFromFile (mainFilePath)
+	eolChar = Utils.GetEOLCharFromFile (mainFilePath)
 
 	exportedSymbols = []
 	mainFileContent = ''
 	for engineFile in engineFiles:
 		engineFilePath = os.path.join (sourceFolder, engineFile['dirName'], engineFile['fileName'])
-		content = Tools.GetFileContent (engineFilePath)
+		content = Utils.GetFileContent (engineFilePath)
 		matches = re.findall ('export class ([a-zA-Z0-9]+)', content)
 		matches.extend (re.findall ('export function ([a-zA-Z0-9]+)', content))
 		matches.extend (re.findall ('export const ([a-zA-Z0-9]+)', content))
@@ -49,7 +49,7 @@ def Main (argv):
 		mainFileContent += eolChar
 	mainFileContent += '};' + eolChar
 
-	Tools.WriteContentToFile (mainFilePath, mainFileContent)
+	Utils.WriteContentToFile (mainFilePath, mainFileContent)
 	return 0
 
 sys.exit (Main (sys.argv))
