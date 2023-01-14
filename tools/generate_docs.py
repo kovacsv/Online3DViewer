@@ -439,6 +439,11 @@ def Main (argv):
     resultDir = os.path.join (rootDir, 'docs')
     sourceDir = os.path.join (resultDir, 'source')
 
+    for fileName in os.listdir (resultDir):
+        filePath = os.path.join (resultDir, fileName)
+        if not os.path.isdir (filePath):
+            os.remove (filePath)
+
     config = None
     with open (os.path.join (sourceDir, 'config.json')) as configJson:
         config = json.load (configJson)
