@@ -23,6 +23,10 @@
                 {
                     "name" : "Usage",
                     "url" : "Usage.html"
+                },
+                {
+                    "name" : "Migration Guide",
+                    "url" : "MigrationGuide.html"
                 }
             ]
         },

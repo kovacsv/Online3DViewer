@@ -6,7 +6,7 @@
 	<meta name="viewport" content="width=device-width, user-scalable=no">
 	<link rel="icon" type="image/png" href="static/3dviewer_net_favicon.ico">
 
-	<title>Online 3D Viewer - EnvironmentSettings</title>
+	<title>Online 3D Viewer - Migration Guide</title>
 
 	<link rel="stylesheet" href="static/highlightjs/styles/github.min.css"/>
 	<script src="static/highlightjs/highlight.min.js"></script>
@@ -59,40 +59,21 @@
 
 </div>
 <div id="main" class="main">
-<h1>EnvironmentSettings</h1>
-<div class="description">Environment settings object.</div>
-<h2>Constructor</h2>
-<div class="function_container">
-<div id="EnvironmentSettings" class="function_signature">new EnvironmentSettings (textureNames, backgroundIsEnvMap)</div>
-<div class="function_title">Parameters</div>
-<div class="parameter_header">
-<span class="parameter_name">textureNames</span>
-<span class="type parameter_type">string[]</span>
-</div>
-<div class="parameter_main">
-<div class="parameter_description">Urls of the environment map images in this order: posx, negx, posy, negy, posz, negz.</div>
-</div>
-<div class="parameter_header">
-<span class="parameter_name">backgroundIsEnvMap</span>
-<span class="type parameter_type">boolean</span>
-</div>
-<div class="parameter_main">
-<div class="parameter_description">Use the environment map as background.</div>
-</div>
-</div>
-<h2>Methods</h2>
-<div class="function_container">
-<div id="Clone" class="function_signature">Clone ()</div>
-<div class="function_title">Description</div>
-<div class="function_description">Creates a clone of the object.</div>
-<div class="function_title">Returns</div>
-<div class="function_returns">
-<span class="type parameter_type"><a href="Class_EnvironmentSettings.html" target="_self">EnvironmentSettings</a></span>
-</div>
-</div>
+<div class="page">
+<h1>Migration Guide</h1>
+
+<p>This document lists changes in the engine to help you to migrate your code base.</p>
+
+<h2>0.8.21</h2>
+
+<ul>
+    <li>Init3DViewerElement has been renamed to <a href="Function_Init3DViewerElementFromUrlList.html" target="_self">Init3DViewerElementFromUrlList</a>.</li>
+    <li><a href="Function_Init3DViewerElementFromFileList.html" target="_self">Init3DViewerElementFromFileList</a> is now available to initialize the viewer based on File objects.</li>
+</ul>
 
 </div>
-<script type="text/javascript">Init ('EnvironmentSettings')</script>
+</div>
+<script type="text/javascript">Init ('Migration Guide')</script>
 </body>
 
 </html>
