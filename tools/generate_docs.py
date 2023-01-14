@@ -8,252 +8,8 @@ import platform
 import html
 import re
 
-from lib import utils as Utils
-
-class HtmlGenerator:
-    def __init__ (self, eol):
-        self.html = ''
-        self.eol = eol
-
-    def AddText (self, content):
-        self.html += content
-
-    def AddLine (self, content):
-        self.AddText (content + self.eol)
-
-    def AddTag (self, tagName, content):
-        self.AddLine ('<{0}>{1}</{0}>'.format (tagName, content))
-
-    def AddTagWithClass (self, tagName, className, content):
-        self.AddLine ('<{0} class="{1}">{2}</{0}>'.format (tagName, className, content))
-
-    def AddTagWithAttributes (self, tagName, attributes, content):
-        line = '<{0}'.format (tagName);
-        if len (attributes) > 0:
-            attributeStrings = map (lambda x : '{0}="{1}"'.format (x[0], x[1]), attributes)
-            line += ' ' + ' '.join (attributeStrings)
-        line += '>{1}</{0}>'.format (tagName, content)
-        self.AddLine (line)
-
-    def BeginTag (self, tagName):
-        self.AddLine ('<{0}>'.format (tagName))
-
-    def BeginTagWithClass (self, tagName, className):
-        self.AddLine ('<{0} class="{1}">'.format (tagName, className))
-
-    def EndTag (self, tagName):
-        self.AddLine ('</{0}>'.format (tagName))
-
-    def GetHtml (self):
-        return self.html
-
-def CleanUpText (text):
-    if text == None:
-        return ''
-    invalidChars = ['\r', '\n', '\t']
-    for invalidChar in invalidChars:
-        text = text.replace (invalidChar, ' ')
-    text = html.escape (text)
-    return text
-
-def GenerateLink (entityName, entityLink):
-    target = '_blank' if entityLink.startswith ('http') else '_self'
-    return '<a href="{1}" target="{2}">{0}</a>'.format (entityName, entityLink, target)
-
-def FinalizeType (text, entityLinks):
-    text = CleanUpText (text)
-    arrayMatch = re.match ('Array\.&lt;(.+)&gt', text)
-    if arrayMatch != None:
-        matchedName = arrayMatch.group (1)
-        if matchedName in entityLinks:
-            return GenerateLink (matchedName, entityLinks[matchedName]) + '[]'
-        else:
-            return arrayMatch.group (1) + '[]'
-    if text in entityLinks:
-        return GenerateLink (text, entityLinks[text])
-    return text
-
-def FinalizeDescription (text, entityLinks):
-    text = CleanUpText (text)
-    links = re.findall ('{@link (.+)}', text)
-    for link in links:
-        if link in entityLinks:
-            text = text.replace ('{@link ' + link + '}', GenerateLink (link, entityLinks[link]))
-        else:
-            text = text.replace ('{@link ' + link + '}', link)
-    return text
-
-class NavigationGroup:
-    def __init__ (self, name, sort):
-        self.name = name
-        self.sort = sort
-        self.links = []
-
-    def AddLink (self, name, url):
-        self.links.append ({
-            'name' : name,
-            'url' : url
-        })
-
-class Navigation:
-    def __init__ (self):
-        self.groups = []
-        self.entityLinks = {}
-
-    def AddGroup (self, group):
-        self.groups.append (group)
-
-    def AddEntityLink (self, name, url):
-        self.entityLinks[name] = url
-
-    def GenerateHtml (self, eol):
-        generator = HtmlGenerator (eol)
-        for group in self.groups:
-            if len (group.links) == 0:
-                continue
-            generator.BeginTagWithClass ('div', 'navigation_section')
-            generator.AddTagWithClass ('div', 'navigation_title', group.name)
-            finalLinks = group.links
-            if group.sort:
-                finalLinks = sorted (group.links, key = lambda x : x['name'])
-            for link in finalLinks:
-                linkHtml = GenerateLink (link['name'], link['url'])
-                generator.AddTagWithAttributes ('div', [('id', 'nav-' + link['name']), ('class', 'navigation_item')], linkHtml)
-            generator.EndTag ('div')
-        return generator.GetHtml ()
-
-class EnumMemberDoc:
-    def __init__ (self, name, description):
-        self.name = name
-        self.description = description
-
-class EnumDoc:
-    def __init__ (self, name, description):
-        self.name = name
-        self.description = description
-        self.members = []
-
-    def AddMember (self, member):
-        self.members.append (member)
-
-    def GenerateHtml (self, navigation, eol):
-        generator = HtmlGenerator (eol)
-        generator.AddTag ('h1', self.name)
-        generator.AddTagWithClass ('div', 'description', FinalizeDescription (self.description, navigation.entityLinks))
-        if len (self.members) > 0:
-            generator.AddTag ('h2', 'Values')
-            for member in self.members:
-                generator.BeginTagWithClass ('div', 'parameter_header')
-                generator.AddTagWithClass ('span', 'parameter_name', member.name)
-                generator.EndTag ('div')
-                generator.BeginTagWithClass ('div', 'parameter_main')
-                generator.AddTagWithClass ('div', 'parameter_description', FinalizeDescription (member.description, navigation.entityLinks))
-                generator.EndTag ('div')
-
-        return generator.GetHtml ()
-
-class ParameterDoc:
-    def __init__ (self, name, types, isOptional, description):
-        self.name = name
-        self.types = types
-        self.isOptional = isOptional
-        self.description = description
-        self.subParameters = []
-
-    def AddSubParameter (self, parameter):
-        self.subParameters.append (parameter)
-
-class ReturnsDoc:
-    def __init__ (self, types, description):
-        self.types = types
-        self.description = description
-
-class MethodDoc:
-    def __init__ (self, name, description, parameters, returns):
-        self.name = name
-        self.description = description
-        self.parameters = parameters
-        self.returns = returns
-
-    def AddParameter (self, parameter):
-        self.parameters.append (parameter)
-
-    def GenerateHtml (self, navigation, eol):
-        generator = HtmlGenerator (eol)
-        generator.AddTag ('h1', self.name)
-        GenerateMethodHtml (self, generator, navigation, False)
-        return generator.GetHtml ()
-
-class ClassDoc:
-    def __init__ (self, name, description):
-        self.name = name
-        self.description = description
-        self.constructor = None
-        self.methods = []
-
-    def SetConstructor (self, constructor):
-        self.constructor = constructor
-
-    def AddMethod (self, method):
-        self.methods.append (method)
-
-    def GenerateHtml (self, navigation, eol):
-        generator = HtmlGenerator (eol)
-        generator.AddTag ('h1', self.name)
-        generator.AddTagWithClass ('div', 'description', FinalizeDescription (self.description, navigation.entityLinks))
-        if self.constructor != None:
-            generator.AddTag ('h2', 'Constructor')
-            GenerateMethodHtml (self.constructor, generator, navigation, True)
-        if len (self.methods) > 0:
-           generator.AddTag ('h2', 'Methods')
-           for method in self.methods:
-               GenerateMethodHtml (method, generator, navigation, False)
-        return generator.GetHtml ()
-
-def GenerateParameterTypesHtml (paramTypes, generator, navigation):
-    for i in range (0, len (paramTypes)):
-        paramType = paramTypes[i]
-        paramTypeHtml = FinalizeType (paramType, navigation.entityLinks)
-        generator.AddTagWithClass ('span', 'type parameter_type', paramTypeHtml)
-        if (i < len (paramTypes) - 1):
-            generator.AddTagWithClass ('span', 'parameter_type_separator', '|')
-
-def GenerateParameterListHtml (parameters, generator, navigation):
-    for param in parameters:
-        generator.BeginTagWithClass ('div', 'parameter_header')
-        generator.AddTagWithClass ('span', 'parameter_name', param.name)
-        GenerateParameterTypesHtml (param.types, generator, navigation)
-        if param.isOptional:
-            generator.AddTagWithClass ('span', 'parameter_attributes', '(optional)')
-        generator.EndTag ('div')
-        generator.BeginTagWithClass ('div', 'parameter_main')
-        generator.AddTagWithClass ('div', 'parameter_description', FinalizeDescription (param.description, navigation.entityLinks))
-        if len (param.subParameters) > 0:
-            GenerateParameterListHtml (param.subParameters, generator, navigation)
-        generator.EndTag ('div')
-
-def GenerateMethodHtml (method, generator, navigation, isConstructor):
-    paramNames = map (lambda x : x.name, method.parameters)
-    methodSignature = method.name + ' (' + ', '.join (paramNames) + ')'
-    if isConstructor:
-        methodSignature = 'new ' + methodSignature
-    generator.BeginTagWithClass ('div', 'method_container')
-    generator.AddTagWithAttributes ('div', [('id', method.name), ('class', 'method_signature')], methodSignature)
-    if method.description != None:
-        generator.AddTagWithClass ('div', 'method_title', 'Description')
-        generator.AddTagWithClass ('div', 'method_description', FinalizeDescription (method.description, navigation.entityLinks))
-    if method.parameters != None and len (method.parameters) > 0:
-        generator.AddTagWithClass ('div', 'method_title', 'Parameters')
-        GenerateParameterListHtml (method.parameters, generator, navigation)
-    if method.returns != None:
-        generator.AddTagWithClass ('div', 'method_title', 'Returns')
-        generator.BeginTagWithClass ('div', 'method_returns')
-        if method.returns.types != None:
-            GenerateParameterTypesHtml (method.returns.types, generator, navigation)
-        if method.returns.description != None:
-            generator.AddTagWithClass ('span', 'return_description', FinalizeDescription (method.returns.description, navigation.entityLinks))
-        generator.EndTag ('div')
-    generator.EndTag ('div')
+from lib.doc_entities import PageType, PageGroup, PageDoc, EnumMemberDoc, EnumDoc, ParameterDoc, ReturnsDoc, FunctionDoc, ClassDoc
+from lib.doc_generator import Documentation, GenerateDocumentation
 
 def GetDictValue (dict, key):
     if not key in dict:
@@ -317,12 +73,16 @@ def GetReturnsFromDoclet (doclet):
         GetDictValue (returns, 'description')
     )
 
-def BuildHierarchy (doclets):
-    hierarchy = {
-        'classes' : [],
-        'functions' : [],
-        'enums' : []
-    }
+def AddPageGroupsToDocumentation (documentation, pageGroups, sourcesFolder):
+    for pageGroup in pageGroups:
+        pageGroupDoc = PageGroup (pageGroup['name'])
+        for page in pageGroup['pages']:
+            pageType = PageType.External if page['url'].startswith ('http') else PageType.Internal
+            pageDoc = PageDoc (page['name'], page['url'], sourcesFolder, pageType)
+            pageGroupDoc.AddPage (pageDoc)
+        documentation.AddPageGroup (pageGroupDoc)
+
+def AddEntitiesToDocumentation (documentation, doclets):
     classNameToDoc = {}
     enumNameToDoc = {}
     for doclet in doclets:
@@ -333,24 +93,24 @@ def BuildHierarchy (doclets):
         description = GetDictValue (doclet, 'description')
         if kind == 'class':
             classDoc = ClassDoc (name, doclet['classdesc'])
-            constructorDoc = MethodDoc (name, description, parameters, returns)
+            constructorDoc = FunctionDoc (name, description, parameters, returns)
             classDoc.SetConstructor (constructorDoc)
-            hierarchy['classes'].append (classDoc)
+            documentation.AddClass (classDoc)
             classNameToDoc[name] = classDoc
         elif kind == 'function':
             if 'memberof' in doclet:
                 parentName = doclet['memberof']
                 if parentName in classNameToDoc:
                     classDoc = classNameToDoc[parentName]
-                    methodDoc = MethodDoc (name, description, parameters, returns)
-                    classDoc.AddMethod (methodDoc)
+                    functionDoc = FunctionDoc (name, description, parameters, returns)
+                    classDoc.AddFunction (functionDoc)
             else:
-                methodDoc = MethodDoc (name, description, parameters, returns)
-                hierarchy['functions'].append (methodDoc)
+                functionDoc = FunctionDoc (name, description, parameters, returns)
+                documentation.AddFunction (functionDoc)
         elif kind == 'constant':
             if 'isEnum' in doclet and doclet['isEnum'] == True:
                 enumDoc = EnumDoc (name, description)
-                hierarchy['enums'].append (enumDoc)
+                documentation.AddEnum (enumDoc)
                 enumNameToDoc[name] = enumDoc
         elif kind == 'member':
             parentName = doclet['memberof']
@@ -358,72 +118,6 @@ def BuildHierarchy (doclets):
                 enumDoc = enumNameToDoc[parentName]
                 memberDoc = EnumMemberDoc (name, description)
                 enumDoc.AddMember (memberDoc)
-    return hierarchy
-
-def CreateFromTemplate (templateHtmlPath, resultHtmlPath, navigation, title, content, eol):
-    shutil.copy (templateHtmlPath, resultHtmlPath)
-    Utils.ReplaceStringsInFile (resultHtmlPath, [
-        ('$$$TITLE$$$', title),
-        ('$$$NAVIGATION$$$', navigation.GenerateHtml (eol)),
-        ('$$$MAIN$$$', content)
-    ])
-
-def BuildNavigation (pageGroups, hierarchy):
-    navigation = Navigation ()
-
-    for pageGroup in pageGroups:
-        navGroup = NavigationGroup (pageGroup['name'], False)
-        for page in pageGroup['pages']:
-            navGroup.AddLink (page['name'], page['url'])
-        navigation.AddGroup (navGroup)
-
-    classesGroup = NavigationGroup ('Classes', True)
-    for classDoc in hierarchy['classes']:
-        navigation.AddEntityLink (classDoc.name, classDoc.name + '.html')
-        classesGroup.AddLink (classDoc.name, classDoc.name + '.html')
-    navigation.AddGroup (classesGroup)
-
-    functionsGroup = NavigationGroup ('Functions', True)
-    for methodDoc in hierarchy['functions']:
-        navigation.AddEntityLink (methodDoc.name, methodDoc.name + '.html')
-        functionsGroup.AddLink (methodDoc.name, methodDoc.name + '.html')
-    navigation.AddGroup (functionsGroup)
-
-    enumsGroup = NavigationGroup ('Enums', True)
-    for enumDoc in hierarchy['enums']:
-        navigation.AddEntityLink (enumDoc.name, enumDoc.name + '.html')
-        enumsGroup.AddLink (enumDoc.name, enumDoc.name + '.html')
-    navigation.AddGroup (enumsGroup)
-
-    return navigation
-
-def BuildDocumentationFiles (navigation, pageGroups, hierarchy, sourceDir, resultDir):
-    templateHtmlPath = os.path.join (sourceDir, 'Template.html')
-    eol = Utils.GetEOLCharFromFile (templateHtmlPath)
-
-    for pageGroup in pageGroups:
-        for page in pageGroup['pages']:
-            if page['url'].startswith ('http'):
-                continue
-            sourceHtmlPath = os.path.join (sourceDir, page['url'])
-            pageHtmlPath = os.path.join (resultDir, page['url'])
-            pageContent = '<div class="page">' + eol + Utils.GetFileContent (sourceHtmlPath) + eol + '</div>'
-            CreateFromTemplate (templateHtmlPath, pageHtmlPath, navigation, page['name'], pageContent, eol)
-
-    for classDoc in hierarchy['classes']:
-        classHtmlPath = os.path.join (resultDir, classDoc.name + '.html')
-        docContent = classDoc.GenerateHtml (navigation, eol)
-        CreateFromTemplate (templateHtmlPath, classHtmlPath, navigation, classDoc.name, docContent, eol)
-
-    for methodDoc in hierarchy['functions']:
-        methodHtmlPath = os.path.join (resultDir, methodDoc.name + '.html')
-        docContent = methodDoc.GenerateHtml (navigation, eol)
-        CreateFromTemplate (templateHtmlPath, methodHtmlPath, navigation, methodDoc.name, docContent, eol)
-
-    for enumDoc in hierarchy['enums']:
-        enumHtmlPath = os.path.join (resultDir, enumDoc.name + '.html')
-        docContent = enumDoc.GenerateHtml (navigation, eol)
-        CreateFromTemplate (templateHtmlPath, enumHtmlPath, navigation, enumDoc.name, docContent, eol)
 
 def Main (argv):
     toolsDir = os.path.dirname (os.path.abspath (__file__))
@@ -448,16 +142,17 @@ def Main (argv):
     with open (os.path.join (sourceDir, 'config.json')) as configJson:
         config = json.load (configJson)
 
-    doclets = GetDocumentedDoclets (resultJson)
+    documentation = Documentation ()
+
     pageGroups = config['page_groups']
-    hierarchy = BuildHierarchy (doclets)
+    AddPageGroupsToDocumentation (documentation, pageGroups, sourceDir)
 
-    navigation = BuildNavigation (pageGroups, hierarchy)
+    doclets = GetDocumentedDoclets (resultJson)
+    AddEntitiesToDocumentation (documentation, doclets)
     for name in config['external_refs']:
-        navigation.AddEntityLink (name, config['external_refs'][name])
+        documentation.AddEntityLink (name, config['external_refs'][name])
 
-    BuildDocumentationFiles (navigation, pageGroups, hierarchy, sourceDir, resultDir)
-
+    GenerateDocumentation (documentation, sourceDir, resultDir)
     return 0
 
 sys.exit (Main (sys.argv))
