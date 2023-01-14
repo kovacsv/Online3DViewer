@@ -100,7 +100,7 @@ li
 	background: #ffffff;
 	height: 100%;
 	padding: 20px;
-	position: absolute;
+	position: fixed;
 	top: 0px;
 	left: 0px;
 	box-sizing: border-box;
@@ -152,10 +152,7 @@ li
 
 .main
 {
-	height: 100%;
 	padding: 20px;
-	box-sizing: border-box;
-	overflow: auto;
 }
 
 .function_container
