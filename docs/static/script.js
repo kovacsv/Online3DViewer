@@ -28,7 +28,18 @@ function Init (menuName)
     let menuItem = document.getElementById ('nav-' + menuName);
     if (menuItem !== null) {
         menuItem.classList.add ('selected');
-        menuItem.scrollIntoView ({ block : 'center' });
+        let scrollSetFromStorage = false;
+        if (window.sessionStorage) {
+            let scrollPos = window.sessionStorage.getItem ('navScrollPos');
+            if (scrollPos) {
+                let navDiv = document.getElementById ('navigation');
+                navDiv.scrollTop = parseInt (scrollPos, 10);
+                scrollSetFromStorage = true;
+            }
+        }
+        if (!scrollSetFromStorage) {
+            menuItem.scrollIntoView ({ block : 'center' });
+        }
     }
     hljs.highlightAll ();
 }
@@ -51,4 +62,11 @@ window.addEventListener ('load', () => {
             navIconDiv.src = 'static/menu.svg';
         }
     });
+});
+
+window.addEventListener ('beforeunload', (ev) => {
+    if (window.sessionStorage) {
+        let navDiv = document.getElementById ('navigation');
+        window.sessionStorage.setItem ('navScrollPos', navDiv.scrollTop.toString ());
+    }
 });
