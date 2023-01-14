@@ -200,6 +200,7 @@ li
 .parameter_name
 {
 	font-family: monospace;
+	margin-right: 3px;
 }
 
 .type
@@ -210,20 +211,15 @@ li
 	border-radius: 3px;
 }
 
-.parameter_type
-{
-	margin-left: 3px;
-}
-
 .parameter_attributes
 {
 	color: #888888;
 	margin-left: 3px;
 }
 
-.return_type
+.return_description
 {
-	margin-right: 3px;
+	margin-left: 3px;
 }
 
 .parameter_description

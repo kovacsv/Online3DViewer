@@ -210,12 +210,19 @@ class ClassDoc:
                GenerateMethodHtml (method, generator, navigation, False)
         return generator.GetHtml ()
 
+def GenerateParameterTypesHtml (paramTypes, generator, navigation):
+    for i in range (0, len (paramTypes)):
+        paramType = paramTypes[i]
+        paramTypeHtml = FinalizeType (paramType, navigation.entityLinks)
+        generator.AddTagWithClass ('span', 'type parameter_type', paramTypeHtml)
+        if (i < len (paramTypes) - 1):
+            generator.AddTagWithClass ('span', 'parameter_type_separator', '|')
+
 def GenerateParameterListHtml (parameters, generator, navigation):
     for param in parameters:
         generator.BeginTagWithClass ('div', 'parameter_header')
         generator.AddTagWithClass ('span', 'parameter_name', param.name)
-        typeNames = map (lambda x : FinalizeType (x, navigation.entityLinks), param.types)
-        generator.AddTagWithClass ('span', 'type parameter_type', ', '.join (typeNames))
+        GenerateParameterTypesHtml (param.types, generator, navigation)
         if param.isOptional:
             generator.AddTagWithClass ('span', 'parameter_attributes', '(optional)')
         generator.EndTag ('div')
@@ -242,8 +249,7 @@ def GenerateMethodHtml (method, generator, navigation, isConstructor):
         generator.AddTagWithClass ('div', 'method_title', 'Returns')
         generator.BeginTagWithClass ('div', 'method_returns')
         if method.returns.types != None:
-            typeNames = map (lambda x : FinalizeType (x, navigation.entityLinks), method.returns.types)
-            generator.AddTagWithClass ('span', 'type return_type', ', '.join (typeNames))
+            GenerateParameterTypesHtml (method.returns.types, generator, navigation)
         if method.returns.description != None:
             generator.AddTagWithClass ('span', 'return_description', FinalizeDescription (method.returns.description, navigation.entityLinks))
         generator.EndTag ('div')
