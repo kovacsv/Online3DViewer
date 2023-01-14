@@ -59,12 +59,12 @@
 	},
 	"devDependencies": {
 		"clean-css-cli": "^5.6.1",
-		"esbuild": "^0.16.7",
+		"esbuild": "^0.17.0",
 		"eslint": "^8.29.0",
 		"eslint-plugin-unused-imports": "^2.0.0",
 		"fantasticon": "^1.2.2",
 		"http-server": "^14.0.0",
-		"jsdoc": "^3.6.11",
+		"jsdoc": "^4.0.0",
 		"mocha": "^10.2.0",
 		"oslllo-svg-fixer": "^2.2.0",
 		"rollup": "^3.9.1",
@@ -75,7 +75,7 @@
 		"@simonwep/pickr": "1.8.2",
 		"draco3d": "1.5.5",
 		"fflate": "0.7.4",
-		"occt-import-js": "0.0.14",
+		"occt-import-js": "0.0.15",
 		"rhino3dm": "7.15.0",
 		"three": "0.147.0",
 		"web-ifc": "0.0.35"
