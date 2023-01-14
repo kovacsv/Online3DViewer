@@ -220,10 +220,24 @@ export class EmbeddedViewer
  * @param {object} parameters See {@link EmbeddedViewer} constructor for details.
  * @returns {EmbeddedViewer}
  */
-export function Init3DViewerElement (parentElement, modelUrls, parameters)
+export function Init3DViewerElementFromUrlList (parentElement, modelUrls, parameters)
 {
     let viewer = new EmbeddedViewer (parentElement, parameters);
     viewer.LoadModelFromUrlList (modelUrls);
+    return viewer;
+}
+
+/**
+ * Loads the model specified by File objects.
+ * @param {Element} parentElement The parent element for the viewer canvas.
+ * @param {File[]} models Model files.
+ * @param {object} parameters See {@link EmbeddedViewer} constructor for details.
+ * @returns {EmbeddedViewer}
+ */
+export function Init3DViewerElementFromFileList (parentElement, models, parameters)
+{
+    let viewer = new EmbeddedViewer (parentElement, parameters);
+    viewer.LoadModelFromFileList (models);
     return viewer;
 }
 
@@ -287,7 +301,7 @@ export function Init3DViewerElements (onReady)
             modelUrls = ParameterConverter.StringToModelUrls (modelParams);
         }
 
-        return Init3DViewerElement (element, modelUrls, {
+        return Init3DViewerElementFromUrlList (element, modelUrls, {
             camera : camera,
             cameraMode : cameraMode,
             backgroundColor : backgroundColor,
