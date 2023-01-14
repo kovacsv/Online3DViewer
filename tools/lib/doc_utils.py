@@ -28,15 +28,18 @@ def FinalizeType (text, entityLinks):
         return GenerateLink (text, entityLinks[text])
     return text
 
-def FinalizeDescription (text, entityLinks):
-    text = CleanUpText (text)
-    links = re.findall ('{@link (.+)}', text)
+def ReplaceLinksInText (text, entityLinks):
+    links = re.findall ('{@link ([^{}]+)}', text)
     for link in links:
         if link in entityLinks:
             text = text.replace ('{@link ' + link + '}', GenerateLink (link, entityLinks[link]))
         else:
             text = text.replace ('{@link ' + link + '}', link)
     return text
+
+def FinalizeDescription (text, entityLinks):
+    text = CleanUpText (text)
+    return ReplaceLinksInText (text, entityLinks)
 
 def GenerateParameterTypesHtml (paramTypes, generator, entityLinks):
     for i in range (0, len (paramTypes)):

@@ -3,7 +3,7 @@ from enum import Enum
 
 from . import utils as Utils
 from .html_generator import HtmlGenerator
-from .doc_utils import FinalizeDescription, FunctionType, GenerateFunctionHtml
+from .doc_utils import ReplaceLinksInText, FinalizeDescription, FunctionType, GenerateFunctionHtml
 
 class DocEntity:
     def GetName (self):
@@ -47,7 +47,7 @@ class PageDoc (DocEntity):
     def GetHtml (self, entityLinks, eol):
         if self.type == PageType.Internal:
             pageContent = Utils.GetFileContent (os.path.join (self.folder, self.link))
-            return '<div class="page">' + eol + pageContent + eol + '</div>'
+            return '<div class="page">' + eol + ReplaceLinksInText (pageContent, entityLinks) + eol + '</div>'
         else:
             raise Exception ('GetHtml called for external link.')
 
