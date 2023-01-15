@@ -31,6 +31,9 @@ h1
 	font-size: 28px;
 	margin-top: 0px;
 	margin-bottom: 20px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 h2
@@ -143,6 +146,9 @@ li
 .navigation_item
 {
 	padding: 5px 10px;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .navigation_item.selected
