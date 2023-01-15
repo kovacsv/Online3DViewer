@@ -45,6 +45,7 @@
         }
     ],
     "external_refs" : {
+        "HTMLElement" : "https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement",
         "File" : "https://developer.mozilla.org/en-US/docs/Web/API/File"
     }
 }

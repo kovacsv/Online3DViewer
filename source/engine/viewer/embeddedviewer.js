@@ -14,7 +14,7 @@ import { EnvironmentSettings } from './shadingmodel.js';
 export class EmbeddedViewer
 {
     /**
-     * @param {Element} parentElement The parent element for the viewer canvas. It must be an
+     * @param {HTMLElement} parentElement The parent element for the viewer canvas. It must be an
      * existing DOM element and it will be the container for the canvas. The size of the viewer will
      * be automatically adjusted to the size of the parent element.
      * @param {object} parameters Parameters for embedding.
@@ -215,7 +215,7 @@ export class EmbeddedViewer
 
 /**
  * Loads the model specified by urls.
- * @param {Element} parentElement The parent element for the viewer canvas.
+ * @param {HTMLElement} parentElement The parent element for the viewer canvas.
  * @param {string[]} modelUrls Url list of model files.
  * @param {object} parameters See {@link EmbeddedViewer} constructor for details.
  * @returns {EmbeddedViewer}
@@ -229,7 +229,7 @@ export function Init3DViewerElementFromUrlList (parentElement, modelUrls, parame
 
 /**
  * Loads the model specified by File objects.
- * @param {Element} parentElement The parent element for the viewer canvas.
+ * @param {HTMLElement} parentElement The parent element for the viewer canvas.
  * @param {File[]} models File object list of model files.
  * @param {object} parameters See {@link EmbeddedViewer} constructor for details.
  * @returns {EmbeddedViewer}
