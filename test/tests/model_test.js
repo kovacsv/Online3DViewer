@@ -229,11 +229,24 @@ describe ('Color Conversion', function () {
         assert.ok (!OV.RGBColorIsEqual (new OV.RGBColor (10, 20, 30), new OV.RGBColor (10, 20, 31)));
     });
 
-    it ('Color hex string conversion', function () {
+    it ('RGB Color hex string conversion', function () {
         let color = new OV.RGBColor (10, 20, 30);
         let hexString = '0a141e';
         assert.strictEqual (OV.RGBColorToHexString (color), hexString);
         assert.deepStrictEqual (OV.HexStringToRGBColor (hexString), color);
+    });
+
+    it ('RGBA Color hex string conversion', function () {
+        let color = new OV.RGBAColor (10, 20, 30, 40);
+        let hexString = '0a141e28';
+        assert.strictEqual (OV.RGBAColorToHexString (color), hexString);
+        assert.deepStrictEqual (OV.HexStringToRGBAColor (hexString), color);
+
+        let color2 = new OV.RGBAColor (10, 20, 30, 255);
+        let hexString2 = '0a141e';
+        let hexString2a = '0a141eff';
+        assert.strictEqual (OV.RGBAColorToHexString (color2), hexString2a);
+        assert.deepStrictEqual (OV.HexStringToRGBAColor (hexString2), color2);
     });
 });
 

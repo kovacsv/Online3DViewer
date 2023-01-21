@@ -157,6 +157,22 @@ export function HexStringToRGBColor (hexString)
     return new RGBColor (r, g, b);
 }
 
+export function HexStringToRGBAColor (hexString)
+{
+    if (hexString.length !== 6 && hexString.length !== 8) {
+        return null;
+    }
+
+    let r = parseInt (hexString.substring (0, 2), 16);
+    let g = parseInt (hexString.substring (2, 4), 16);
+    let b = parseInt (hexString.substring (4, 6), 16);
+    let a = 255;
+    if (hexString.length === 8) {
+        a = parseInt (hexString.substring (6, 8), 16);
+    }
+    return new RGBAColor (r, g, b, a);
+}
+
 export function ArrayToRGBColor (arr)
 {
 	return new RGBColor (arr[0], arr[1], arr[2]);
