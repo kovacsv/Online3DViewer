@@ -150,7 +150,7 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 			opacity : material.opacity,
 			transparent : material.transparent,
 			alphaTest : material.alphaTest,
-			side : THREE.DoubleSide
+			side : material.transparent ? THREE.TwoPassDoubleSide : THREE.DoubleSide
 		};
 
 		if (params.forceMediumpForMaterials) {
