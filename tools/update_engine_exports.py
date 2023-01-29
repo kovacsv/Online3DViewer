@@ -11,11 +11,11 @@ def Main (argv):
 
 	engineFiles = []
 	sourceFolder = os.path.join (rootDir, 'source', 'engine')
-	for dirName in os.listdir (sourceFolder):
+	for dirName in sorted (os.listdir (sourceFolder)):
 		dirPath = os.path.join (sourceFolder, dirName)
 		if not os.path.isdir (dirPath):
 			continue
-		for fileName in os.listdir (dirPath):
+		for fileName in sorted (os.listdir (dirPath)):
 			engineFiles.append ({
 				'dirName': dirName,
 				'fileName': fileName
