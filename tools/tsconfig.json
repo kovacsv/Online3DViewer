@@ -1,0 +1,8 @@
+{
+    "include": ["../build/o3dv.module.js"],
+    "compilerOptions": {
+        "allowJs": true,
+        "declaration": true,
+        "emitDeclarationOnly": true
+    }
+}
