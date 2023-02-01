@@ -30,7 +30,7 @@
                 '../../test/testfiles/3ds/cube_four_instances.3ds',
                 '../../test/testfiles/3ds/texture.png'
             ];
-            OV.Init3DViewerElementFromUrlList (container, modelUrls);
+            OV.Init3DViewerFromUrlList (container, modelUrls);
         }
         {
             let container = document.createElement ('div');
@@ -41,7 +41,7 @@
                 '../../test/testfiles/obj/hundred_cubes.obj',
                 '../../test/testfiles/obj/hundred_cubes.mtl'
             ];
-            OV.Init3DViewerElementFromUrlList (container, modelUrls);
+            OV.Init3DViewerFromUrlList (container, modelUrls);
         }
         {
             let container = document.createElement ('div');
@@ -52,7 +52,7 @@
                 '../../test/testfiles/obj/hundred_cubes.obj?param1=value1&param2=value2',
                 '../../test/testfiles/obj/hundred_cubes.mtl?param1=value1&param2=value2'
             ];
-            OV.Init3DViewerElementFromUrlList (container, modelUrls);
+            OV.Init3DViewerFromUrlList (container, modelUrls);
         }
     </script>
 </body>

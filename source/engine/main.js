@@ -66,7 +66,7 @@ import { ThreeModelLoader } from './threejs/threemodelloader.js';
 import { HasHighpDriverIssue, GetShadingType, ConvertThreeColorToColor, ConvertColorToThreeColor, ConvertThreeGeometryToMesh, DisposeThreeObjects, ShadingType } from './threejs/threeutils.js';
 import { Camera, CameraIsEqual3D, CameraMode } from './viewer/camera.js';
 import { GetIntegerFromStyle, GetDomElementExternalWidth, GetDomElementExternalHeight, GetDomElementInnerDimensions, GetDomElementClientCoordinates, CreateDomElement, AddDomElement, AddDiv, ClearDomElement, InsertDomElementBefore, InsertDomElementAfter, ShowDomElement, IsDomElementVisible, SetDomElementWidth, SetDomElementHeight, GetDomElementOuterWidth, GetDomElementOuterHeight, SetDomElementOuterWidth, SetDomElementOuterHeight, CreateDiv } from './viewer/domutils.js';
-import { EmbeddedViewer, Init3DViewerElementFromUrlList, Init3DViewerElementFromFileList, Init3DViewerElements } from './viewer/embeddedviewer.js';
+import { EmbeddedViewer, Init3DViewerFromUrlList, Init3DViewerFromFileList, Init3DViewerElements } from './viewer/embeddedviewer.js';
 import { MouseInteraction, TouchInteraction, ClickDetector, Navigation, NavigationType } from './viewer/navigation.js';
 import { EnvironmentSettings, ShadingModel } from './viewer/shadingmodel.js';
 import { CameraValidator, UpVector, Viewer, GetDefaultCamera, TraverseThreeObject, GetShadingTypeOfObject } from './viewer/viewer.js';
@@ -313,8 +313,8 @@ export {
     SetDomElementOuterHeight,
     CreateDiv,
     EmbeddedViewer,
-    Init3DViewerElementFromUrlList,
-    Init3DViewerElementFromFileList,
+    Init3DViewerFromUrlList,
+    Init3DViewerFromFileList,
     Init3DViewerElements,
     MouseInteraction,
     TouchInteraction,

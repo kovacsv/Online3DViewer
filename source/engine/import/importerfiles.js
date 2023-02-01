@@ -9,7 +9,7 @@ export class InputFile
     /**
      * @param {string} name Name of the file.
      * @param {FileSource} source Source of the file.
-     * @param {*} data If the file source is url, this must be the url string. If the file source
+     * @param {string|File} data If the file source is url, this must be the url string. If the file source
      * is file, this must be a {@link File} object.
      */
     constructor (name, source, data)
