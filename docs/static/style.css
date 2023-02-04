@@ -29,6 +29,7 @@ a:hover
 h1
 {
 	font-size: 28px;
+	line-height: 32px;
 	margin-top: 0px;
 	margin-bottom: 20px;
 	white-space: nowrap;
