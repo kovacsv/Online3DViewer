@@ -68,7 +68,7 @@
 
 		class ShadowPlane
 		{
-			constructor (scene, planeXSize, planeYSize, planeZPosition, frustumHeight, shadowColor)
+			constructor (scene, planeXSize, planeYSize, planeElevation, frustumHeight, shadowColor, isYUp)
 			{
 				this.scene = scene;
 
@@ -81,11 +81,17 @@
 				this.shadowPlaneGeometry = new THREE.PlaneGeometry (planeXSize, planeYSize)
 				this.shadowPlaneMaterial = new THREE.MeshBasicMaterial ({
 					map : this.shadowRenderTarget.texture,
+					//color : '#00cc00',
 					depthWrite : false
 				});
 
 				this.shadowPlaneMesh = new THREE.Mesh (this.shadowPlaneGeometry, this.shadowPlaneMaterial);
-				this.shadowPlaneMesh.position.z = planeZPosition;
+				if (isYUp) {
+					this.shadowPlaneMesh.position.y = planeElevation;
+					this.shadowPlaneMesh.rotation.x = -Math.PI / 2.0;
+				} else {
+					this.shadowPlaneMesh.position.z = planeElevation;
+				}
 				this.shadowPlaneMesh.scale.y = -1.0;
 				this.shadowGroup.add (this.shadowPlaneMesh);
 
@@ -94,8 +100,9 @@
 					planeYSize / 2.0, -planeYSize / 2.0,
 					0.0, frustumHeight
 				);
-				this.shadowCamera.rotation.x = Math.PI;
-				this.shadowCamera.position.z = planeZPosition;
+				this.shadowCamera.position.set (this.shadowPlaneMesh.position.x, this.shadowPlaneMesh.position.y, this.shadowPlaneMesh.position.z);
+				this.shadowCamera.rotation.set (this.shadowPlaneMesh.rotation.x, this.shadowPlaneMesh.rotation.y, this.shadowPlaneMesh.rotation.z);
+				this.shadowCamera.rotation.x += Math.PI;
 				this.shadowGroup.add (this.shadowCamera);
 
 				this.shadowMaterial = new THREE.MeshBasicMaterial ({
@@ -140,12 +147,12 @@
 			scene.add (ambientLight);
 
 			let light = new THREE.DirectionalLight (0x888888);
-			light.position.set (3.0, -1.5, 2.0);
+			light.position.set (5.0, 3.0, 1.5);
 			scene.add (light);
 
 			let camera = new THREE.PerspectiveCamera (45.0, width / height, 0.1, 1000.0);
-			camera.position.set (3.0, -1.5, 2.0);
-			camera.up.set (0.0, 0.0, 1.0);
+			camera.position.set (5.0, 3.0, 1.5);
+			camera.up.set (0.0, 1.0, 0.0);
 			camera.lookAt (new THREE.Vector3 (0.0, 0.0, 0.0));
 			scene.add (camera);
 
@@ -166,7 +173,8 @@
 
 			new THREE.OrbitControls (camera, renderer.domElement);
 
-			let shadow = new ShadowPlane (scene, 5.0, 5.0, -1.0, 3.0, 0x888888);
+			let shadow1 = new ShadowPlane (scene, 4.0, 4.0, -2.0, 3.0, 0x888888, true);
+			let shadow2 = new ShadowPlane (scene, 4.0, 4.0, -2.0, 3.0, 0x888888, false);
 
 			scene.background = new THREE.Color (0.8, 0.8, 0.8);
 			renderer.setAnimationLoop ((time) => {
@@ -174,7 +182,8 @@
 				meshes.rotation.y = time / 3000;
 				meshes.rotation.z = time / 3000;
 
-				shadow.Render (renderer, 5.0);
+				shadow1.Render (renderer, 5.0);
+				shadow2.Render (renderer, 5.0);
 
 				renderer.setRenderTarget (null);
 				renderer.render (scene, camera);
