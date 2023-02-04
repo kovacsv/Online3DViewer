@@ -17,6 +17,7 @@
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/shaders/HorizontalBlurShader.js"></script>
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/shaders/VerticalBlurShader.js"></script>
 	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
 	<script type='text/javascript'>
 		class BlurEffect
 		{
@@ -68,7 +69,7 @@
 
 		class ShadowPlane
 		{
-			constructor (scene, planeXSize, planeYSize, planeElevation, frustumHeight, shadowColor, isYUp)
+			constructor (scene, planeXSize, planeYSize, planeElevation, frustumHeight, shadowColor, direction)
 			{
 				this.scene = scene;
 
@@ -86,24 +87,40 @@
 				});
 
 				this.shadowPlaneMesh = new THREE.Mesh (this.shadowPlaneGeometry, this.shadowPlaneMaterial);
-				if (isYUp) {
-					this.shadowPlaneMesh.position.y = planeElevation;
-					this.shadowPlaneMesh.rotation.x = -Math.PI / 2.0;
-				} else {
-					this.shadowPlaneMesh.position.z = planeElevation;
-				}
-				this.shadowPlaneMesh.scale.y = -1.0;
 				this.shadowGroup.add (this.shadowPlaneMesh);
 
 				this.shadowCamera = new THREE.OrthographicCamera (
-					-planeXSize / 2.0, planeXSize / 2.0,
-					planeYSize / 2.0, -planeYSize / 2.0,
+					planeXSize / 2.0, -planeXSize / 2.0,
+					-planeYSize / 2.0, planeYSize / 2.0,
 					0.0, frustumHeight
 				);
-				this.shadowCamera.position.set (this.shadowPlaneMesh.position.x, this.shadowPlaneMesh.position.y, this.shadowPlaneMesh.position.z);
-				this.shadowCamera.rotation.set (this.shadowPlaneMesh.rotation.x, this.shadowPlaneMesh.rotation.y, this.shadowPlaneMesh.rotation.z);
-				this.shadowCamera.rotation.x += Math.PI;
 				this.shadowGroup.add (this.shadowCamera);
+
+				let planePosition = null;
+				let planeLookDirection = null;
+				let planeScale = null;
+
+				if (direction === 1) { // x
+					planePosition = new THREE.Vector3 (-2.0, 0.0, 0.0);
+					planeLookDirection = new THREE.Vector3 (1.0, 0.0, 0.0);
+					planeScale = new THREE.Vector3 (1.0, 1.0, -1.0);
+				} else if (direction === 2) { // y
+					planePosition = new THREE.Vector3 (0.0, -2.0, 0.0);
+					planeLookDirection = new THREE.Vector3 (0.0, 1.0, 0.0);
+					planeScale = new THREE.Vector3 (1.0, 1.0, -1.0);
+				} else if (direction === 3) { // z
+					planePosition = new THREE.Vector3 (0.0, 0.0, -2.0);
+					planeLookDirection = new THREE.Vector3 (0.0, 0.0, 1.0);
+					planeScale = new THREE.Vector3 (1.0, -1.0, 1.0);
+				}
+
+				this.shadowPlaneGeometry.lookAt (planeLookDirection);
+				this.shadowPlaneGeometry.translate (planePosition.x, planePosition.y, planePosition.z);
+				this.shadowPlaneMesh.scale.set (planeScale.x, planeScale.y, planeScale.z);
+
+				this.shadowCamera.lookAt (planeLookDirection);
+				this.shadowCamera.rotation.z = Math.PI;
+				this.shadowCamera.position.set (planePosition.x, planePosition.y, planePosition.z);
 
 				this.shadowMaterial = new THREE.MeshBasicMaterial ({
 					color : shadowColor
@@ -173,8 +190,9 @@
 
 			new THREE.OrbitControls (camera, renderer.domElement);
 
-			let shadow1 = new ShadowPlane (scene, 4.0, 4.0, -2.0, 3.0, 0x888888, true);
-			let shadow2 = new ShadowPlane (scene, 4.0, 4.0, -2.0, 3.0, 0x888888, false);
+			let shadow1 = new ShadowPlane (scene, 4.0, 4.0, -2.0, 3.0, 0xcc0000, 1);
+			let shadow2 = new ShadowPlane (scene, 4.0, 4.0, -2.0, 3.0, 0x00cc00, 2);
+			let shadow3 = new ShadowPlane (scene, 4.0, 4.0, -2.0, 3.0, 0x0000cc, 3);
 
 			scene.background = new THREE.Color (0.8, 0.8, 0.8);
 			renderer.setAnimationLoop ((time) => {
@@ -184,6 +202,7 @@
 
 				shadow1.Render (renderer, 5.0);
 				shadow2.Render (renderer, 5.0);
+				shadow3.Render (renderer, 5.0);
 
 				renderer.setRenderTarget (null);
 				renderer.render (scene, camera);
