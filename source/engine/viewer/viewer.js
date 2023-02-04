@@ -107,7 +107,7 @@ export class UpVector
 {
     constructor ()
     {
-        this.direction = Direction.Z;
+        this.direction = Direction.Y;
         this.isFixed = true;
         this.isFlipped = false;
     }
@@ -533,7 +533,7 @@ export class Viewer
 
     InitNavigation ()
     {
-        let camera = GetDefaultCamera (Direction.Z);
+        let camera = GetDefaultCamera (Direction.Y);
         this.camera = new THREE.PerspectiveCamera (45.0, 1.0, 0.1, 1000.0);
         this.cameraMode = CameraMode.Perspective;
         this.cameraValidator = new CameraValidator ();
