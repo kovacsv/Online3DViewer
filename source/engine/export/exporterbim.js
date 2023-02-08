@@ -29,7 +29,7 @@ export class ExporterBim extends ExporterBase
     ExportContent (exporterModel, format, files, onFinish)
     {
         let bimContent = {
-            schema_version : '1.0.0',
+            schema_version : '1.1.0',
             meshes : [],
             elements : [],
             info : {}
