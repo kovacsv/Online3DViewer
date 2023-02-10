@@ -13,6 +13,7 @@ div.ov_color_circle
 div.header
 {
 	overflow: auto;
+	display: none;
 }
 
 div.title

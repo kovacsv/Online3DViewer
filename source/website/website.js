@@ -254,15 +254,18 @@ export class Website
         this.uiState = uiState;
         if (this.uiState === WebsiteUIState.Intro) {
             ShowDomElement (this.parameters.introDiv, true);
+            ShowDomElement (this.parameters.headerDiv, true);
             ShowDomElement (this.parameters.mainDiv, false);
             ShowOnlyOnModelElements (false);
         } else if (this.uiState === WebsiteUIState.Model) {
             ShowDomElement (this.parameters.introDiv, false);
+            ShowDomElement (this.parameters.headerDiv, true);
             ShowDomElement (this.parameters.mainDiv, true);
             ShowOnlyOnModelElements (true);
             this.UpdatePanelsVisibility ();
         } else if (this.uiState === WebsiteUIState.Loading) {
             ShowDomElement (this.parameters.introDiv, false);
+            ShowDomElement (this.parameters.headerDiv, true);
             ShowDomElement (this.parameters.mainDiv, false);
             ShowOnlyOnModelElements (false);
         }
