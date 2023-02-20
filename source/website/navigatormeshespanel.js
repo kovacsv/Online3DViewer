@@ -152,14 +152,11 @@ export class NavigatorMeshesPanel extends NavigatorPanel
                 break;
             }
         }
-        if (this.mode === MeshesPanelMode.Simple) {
-            if (isHierarchical) {
-                this.mode = MeshesPanelMode.FlatList;
-            }
-        } else if (this.mode === MeshesPanelMode.FlatList || this.mode === MeshesPanelMode.TreeView) {
-            if (!isHierarchical) {
-                this.mode = MeshesPanelMode.Simple;
-            }
+
+        if (this.mode === MeshesPanelMode.Simple && isHierarchical) {
+            this.mode = MeshesPanelMode.TreeView;
+        } else if (this.mode !== MeshesPanelMode.Simple && !isHierarchical) {
+            this.mode = MeshesPanelMode.Simple;
         }
 
         this.FillButtons (importResult);
