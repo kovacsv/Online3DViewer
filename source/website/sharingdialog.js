@@ -43,7 +43,7 @@ export function ShowSharingDialog (fileList, settings, viewer)
             let builder = CreateUrlBuilder ();
             builder.AddModelUrls (modelFiles);
             let hashParameters = builder.GetParameterList ();
-            return 'https://3dviewer.net#' + hashParameters;
+            return 'https://3dviewer.net/#' + hashParameters;
         }
 
         let section = AddDiv (parentDiv, 'ov_dialog_section');
