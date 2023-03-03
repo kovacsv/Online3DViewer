@@ -656,6 +656,33 @@ describe ('Gltf Importer', function () {
             });
         }
     });
+
+    it ('Properties', function (done) {
+        let testFileList = [
+            ['Properties', 'properties.gltf'],
+            ['Properties', 'properties.glb']
+        ];
+        let processed = 0;
+        for (let i = 0; i < testFileList.length; i++) {
+            let testFile = testFileList[i];
+            ImportGltfFile (testFile[0], testFile[1], function (model) {
+                assert.ok (OV.CheckModel (model));
+                assert.equal (model.PropertyGroupCount (), 2);
+                assert.equal (model.GetPropertyGroup (0).PropertyCount (), 2);
+                assert.equal (model.GetPropertyGroup (1).PropertyCount (), 3);
+
+                let firstMesh = model.GetMesh (0);
+                assert.equal (firstMesh.PropertyGroupCount (), 2);
+                assert.equal (firstMesh.GetPropertyGroup (0).PropertyCount (), 2);
+                assert.equal (firstMesh.GetPropertyGroup (1).PropertyCount (), 2);
+
+                processed += 1;
+                if (processed == testFileList.length) {
+                    done ();
+                }
+            });
+        }
+    });
 });
 
 }
