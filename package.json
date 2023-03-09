@@ -76,11 +76,11 @@
 	"dependencies": {
 		"@simonwep/pickr": "1.8.2",
 		"@types/node": "^18.11.18",
-		"draco3d": "1.5.5",
+		"draco3d": "1.5.6",
 		"fflate": "0.7.4",
 		"occt-import-js": "0.0.15",
 		"rhino3dm": "7.15.0",
-		"three": "0.149.0",
+		"three": "0.150.1",
 		"web-ifc": "0.0.35"
 	},
 	"eslintConfig": {
