@@ -1,0 +1,15 @@
+newmtl No Parameters
+Kd 1.000000 1.000000 1.000000
+map_Kd texture.png
+
+newmtl Offset
+Kd 1.000000 1.000000 1.000000
+map_Kd -o 0.1 0.2 0.0 texture.png
+
+newmtl Scale
+Kd 1.000000 1.000000 1.000000
+map_Kd -s 2.0 3.0 0.0 texture.png
+
+newmtl Offset and scale
+Kd 1.000000 1.000000 1.000000
+map_Kd -o 0.1 0.2 0.0 -s 2.0 3.0 0.0 texture.png

@@ -1,0 +1,50 @@
+# Texture parameters
+
+mtllib texture_parameters.mtl
+
+vn 0.0 0.0 1.0
+
+vt 0.0 0.0
+vt 1.0 0.0
+vt 1.0 1.0
+vt 0.0 1.0
+
+g No parameters
+usemtl No Parameters
+
+v 0.0 0.0 0.0
+v 1.0 0.0 0.0
+v 1.0 1.0 0.0
+v 0.0 1.0 0.0
+
+f -4/1/1 -3/2/1 -2/3/1 -1/4/1
+
+g Offset
+usemtl Offset
+
+v 1.0 0.0 0.0
+v 2.0 0.0 0.0
+v 2.0 1.0 0.0
+v 1.0 1.0 0.0
+
+f -4/1/1 -3/2/1 -2/3/1 -1/4/1
+
+g Scale
+usemtl Scale
+
+v 2.0 0.0 0.0
+v 3.0 0.0 0.0
+v 3.0 1.0 0.0
+v 2.0 1.0 0.0
+
+f -4/1/1 -3/2/1 -2/3/1 -1/4/1
+
+g Offset and scale
+usemtl Offset and scale
+
+v 3.0 0.0 0.0
+v 4.0 0.0 0.0
+v 4.0 1.0 0.0
+v 3.0 1.0 0.0
+
+f -4/1/1 -3/2/1 -2/3/1 -1/4/1
