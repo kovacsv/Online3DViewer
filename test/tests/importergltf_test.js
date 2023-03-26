@@ -688,6 +688,8 @@ describe ('Gltf Importer', function () {
         let testFile = ['CubeHierarchy', 'CubeHierarchy.gltf']
         ImportGltfFile (testFile[0], testFile[1], function (model) {
             assert.ok (OV.CheckModel (model));
+            assert.strictEqual (model.MeshCount (), 3);
+            assert.strictEqual (model.MeshInstanceCount (), 4);
             assert.deepStrictEqual (ModelNodesToTree (model), {
                 name : '<Root>',
                 childNodes : [
