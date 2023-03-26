@@ -683,6 +683,65 @@ describe ('Gltf Importer', function () {
             });
         }
     });
+
+    it ('CubeHierarchy', function (done) {
+        let testFile = ['CubeHierarchy', 'CubeHierarchy.gltf']
+        ImportGltfFile (testFile[0], testFile[1], function (model) {
+            assert.ok (OV.CheckModel (model));
+            assert.deepStrictEqual (ModelNodesToTree (model), {
+                name : '<Root>',
+                childNodes : [
+                    {
+                        name : 'Parent node 1',
+                        childNodes : [
+                            {
+                                name : 'Child node 1',
+                                childNodes : [
+                                    {
+                                        name : '',
+                                        childNodes : [],
+                                        meshNames : ['Green cube']
+                                    }
+                                ],
+                                meshNames : []
+                            },
+                            {
+                                name : 'Child node 2',
+                                childNodes : [
+                                    {
+                                        name : '',
+                                        childNodes : [],
+                                        meshNames : ['Blue cube']
+                                    }
+                                ],
+                                meshNames : []
+                            },
+                            {
+                                name : '',
+                                childNodes : [],
+                                meshNames : ['Red cube']
+                            }
+                        ],
+                        meshNames : []
+                    },
+                    {
+                        name : 'Parent node 2',
+                        childNodes : [
+                            {
+                                name : '',
+                                childNodes : [],
+                                meshNames : ['Red cube']
+                            }
+                        ],
+                        meshNames : []
+                    }
+                ],
+                meshNames : []
+            });
+
+            done ();
+        });
+    });
 });
 
 }
