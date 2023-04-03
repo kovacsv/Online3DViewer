@@ -5,6 +5,13 @@
 <h2>0.8.21</h2>
 
 <ul>
+    <li>{@link Init3DViewerElements} must be called when the document is loaded and returns an array of the created {@link EmbeddedViewer} objects. Earlier it registered a load event handler inside, now it's the responsibility of the caller.</li>
+</ul>
+
+
+<h2>0.8.21</h2>
+
+<ul>
     <li>{@link Init3DViewerElement} has been renamed to {@link Init3DViewerFromUrlList}.</li>
     <li>{@link Init3DViewerFromFileList} is now available to initialize the viewer based on File objects.</li>
 </ul>

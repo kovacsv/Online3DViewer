@@ -243,9 +243,9 @@ export function Init3DViewerFromFileList (parentElement, models, parameters)
 
 /**
  * Loads all the models on the page. This function looks for all the elements with online_3d_viewer
- * class name, and loads the model according to the tag's parameters.
- * @param {function} onReady Callback that called when all models are loaded. It has one parameter
- * that is an array of the created {@link EmbeddedViewer} objects.
+ * class name, and loads the model according to the tag's parameters. It must be called after the
+ * document is loaded.
+ * @returns {EmbeddedViewer[]} Array of the created {@link EmbeddedViewer} objects.
  */
 export function Init3DViewerElements (onReady)
 {
@@ -312,15 +312,11 @@ export function Init3DViewerElements (onReady)
     }
 
     let viewerElements = [];
-    window.addEventListener ('load', () => {
-        let elements = document.getElementsByClassName ('online_3d_viewer');
-        for (let i = 0; i < elements.length; i++) {
-            let element = elements[i];
-            let viewerElement = LoadElement (element);
-            viewerElements.push (viewerElement);
-        }
-        if (onReady !== undefined && onReady !== null) {
-            onReady (viewerElements);
-        }
-    });
+    let elements = document.getElementsByClassName ('online_3d_viewer');
+    for (let i = 0; i < elements.length; i++) {
+        let element = elements[i];
+        let viewerElement = LoadElement (element);
+        viewerElements.push (viewerElement);
+    }
+    return viewerElements;
 }

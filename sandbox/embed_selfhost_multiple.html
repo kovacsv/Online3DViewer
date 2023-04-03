@@ -10,10 +10,11 @@
 	<script type="text/javascript" src="../build/o3dv.min-dev.js"></script>
 
     <script type='text/javascript'>
-        OV.Init3DViewerElements (function (viewers) {
+        window.addEventListener ('load', () => {
+            let viewers = OV.Init3DViewerElements ();
 			let firstViewer = viewers[0].viewer;
 			firstViewer.SetBackgroundColor (new OV.RGBAColor (34, 34, 34, 255));
-		});
+        });
     </script>
 
     <style>

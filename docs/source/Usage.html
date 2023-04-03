@@ -30,12 +30,14 @@ There are two ways to use the library:
     <li><b>environmentmapbg:</b> Boolean ("true" or "false") to set the environment map as background.</li>
 </ul>
 
-<p>After placing the elements, call the {@link Init3DViewerElements} function to initalize all the viewers. It must be called from the main JavaScript file outside of the onload event.</p>
+<p>After placing the elements, call the {@link Init3DViewerElements} function to initalize all the viewers. It must be called after the document is loaded.</p>
 
-<pre><code class="language-js">// tell the engine where to find the libs folder
-OV.SetExternalLibLocation ('libs');
-// init all viewers on the page
-OV.Init3DViewerElements ();</code></pre>
+<pre><code class="language-js">window.addEventListener ('load', () => {
+    // tell the engine where to find the libs folder
+    OV.SetExternalLibLocation ('libs');
+    // init all viewers on the page
+    OV.Init3DViewerElements ();
+});</code></pre>
 
 <h2>Initialization from code</h2>
 

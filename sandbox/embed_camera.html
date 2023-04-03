@@ -10,7 +10,10 @@
 	<script type="text/javascript" src="../build/o3dv.min-dev.js"></script>
 
     <script type='text/javascript'>
-        OV.Init3DViewerElements ();
+        window.addEventListener ('load', () => {
+            OV.Init3DViewerElements ();
+        });
+
     </script>
 
     <style>
