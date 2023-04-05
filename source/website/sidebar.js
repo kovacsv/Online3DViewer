@@ -18,11 +18,6 @@ export class Sidebar
         this.panelSet.ShowPanel (this.detailsPanel);
     }
 
-    IsPanelsle ()
-    {
-        return this.panelSet.IsPanelsVisible ();
-    }
-
     IsPanelsVisible ()
     {
         return this.panelSet.IsPanelsVisible ();
