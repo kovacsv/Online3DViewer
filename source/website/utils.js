@@ -15,8 +15,9 @@ export function GetNodeName (originalName)
     return GetNameOrDefault (originalName, 'No Name');
 }
 
-export function GetMeshName (originalName)
+export function GetMeshName (originalNodeName, originalMeshName)
 {
+    let originalName = (originalMeshName.length > 0 ? originalMeshName : originalNodeName);
     return GetNameOrDefault (originalName, 'No Name');
 }
 

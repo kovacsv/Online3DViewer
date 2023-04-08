@@ -314,7 +314,7 @@ export class Website
         if (meshUserData === null) {
             this.navigator.SetSelection (null);
         } else {
-            this.navigator.SetSelection (new Selection (SelectionType.Mesh, meshUserData.originalMeshId));
+            this.navigator.SetSelection (new Selection (SelectionType.Mesh, meshUserData.originalMeshInstance.id));
         }
     }
 
@@ -351,18 +351,18 @@ export class Website
                 name : 'Hide mesh',
                 icon : 'hidden',
                 onClick : () => {
-                    this.navigator.ToggleMeshVisibility (meshUserData.originalMeshId);
+                    this.navigator.ToggleMeshVisibility (meshUserData.originalMeshInstance.id);
                 }
             });
             items.push ({
                 name : 'Fit mesh to window',
                 icon : 'fit',
                 onClick : () => {
-                    this.navigator.FitMeshToWindow (meshUserData.originalMeshId);
+                    this.navigator.FitMeshToWindow (meshUserData.originalMeshInstance.id);
                 }
             });
             if (this.navigator.MeshItemCount () > 1) {
-                let isMeshIsolated = this.navigator.IsMeshIsolated (meshUserData.originalMeshId);
+                let isMeshIsolated = this.navigator.IsMeshIsolated (meshUserData.originalMeshInstance.id);
                 items.push ({
                     name : isMeshIsolated ? 'Remove isolation' : 'Isolate mesh',
                     icon : isMeshIsolated ? 'deisolate' : 'isolate',
@@ -370,7 +370,7 @@ export class Website
                         if (isMeshIsolated) {
                             this.navigator.ShowAllMeshes (true);
                         } else {
-                            this.navigator.IsolateMesh (meshUserData.originalMeshId);
+                            this.navigator.IsolateMesh (meshUserData.originalMeshInstance.id);
                         }
                     }
                 });
@@ -418,7 +418,7 @@ export class Website
     {
         let animation = !onLoad;
         let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
-            return this.navigator.IsMeshVisible (meshUserData.originalMeshId);
+            return this.navigator.IsMeshVisible (meshUserData.originalMeshInstance.id);
         });
         if (onLoad) {
             this.viewer.AdjustClippingPlanesToSphere (boundingSphere);
@@ -429,7 +429,7 @@ export class Website
     FitMeshToWindow (meshInstanceId)
     {
         let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
-            return meshUserData.originalMeshId.IsEqual (meshInstanceId);
+            return meshUserData.originalMeshInstance.id.IsEqual (meshInstanceId);
         });
         this.viewer.FitSphereToWindow (boundingSphere, true);
     }
@@ -441,7 +441,7 @@ export class Website
             meshInstanceIdKeys.add (meshInstanceId.GetKey ());
         }
         let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
-            return meshInstanceIdKeys.has (meshUserData.originalMeshId.GetKey ());
+            return meshInstanceIdKeys.has (meshUserData.originalMeshInstance.id.GetKey ());
         });
         this.viewer.FitSphereToWindow (boundingSphere, true);
     }
@@ -449,7 +449,7 @@ export class Website
     UpdateMeshesVisibility ()
     {
         this.viewer.SetMeshesVisibility ((meshUserData) => {
-            return this.navigator.IsMeshVisible (meshUserData.originalMeshId);
+            return this.navigator.IsMeshVisible (meshUserData.originalMeshInstance.id);
         });
     }
 
@@ -457,7 +457,7 @@ export class Website
     {
         let selectedMeshId = this.navigator.GetSelectedMeshId ();
         this.viewer.SetMeshesHighlight (this.highlightColor, (meshUserData) => {
-            if (selectedMeshId !== null && meshUserData.originalMeshId.IsEqual (selectedMeshId)) {
+            if (selectedMeshId !== null && meshUserData.originalMeshInstance.id.IsEqual (selectedMeshId)) {
                 return true;
             }
             return false;
@@ -813,23 +813,19 @@ export class Website
         {
             let userData = null;
             viewer.EnumerateMeshesUserData ((meshUserData) => {
-                if (meshUserData.originalMeshId.IsEqual (meshInstanceId)) {
+                if (meshUserData.originalMeshInstance.id.IsEqual (meshInstanceId)) {
                     userData = meshUserData;
                 }
             });
             return userData;
         }
 
-        function GetMeshesForMaterial (viewer, model, materialIndex)
+        function GetMeshesForMaterial (viewer, materialIndex)
         {
             let usedByMeshes = [];
             viewer.EnumerateMeshesUserData ((meshUserData) => {
                 if (materialIndex === null || meshUserData.originalMaterials.indexOf (materialIndex) !== -1) {
-                    const mesh = model.GetMesh (meshUserData.originalMeshId.meshIndex);
-                    usedByMeshes.push ({
-                        meshId : meshUserData.originalMeshId,
-                        name : mesh.GetName ()
-                    });
+                    usedByMeshes.push (meshUserData.originalMeshInstance);
                 }
             });
             return usedByMeshes;
@@ -876,7 +872,7 @@ export class Website
                 this.FitMeshesToWindow (meshInstanceIdSet);
             },
             getMeshesForMaterial : (materialIndex) => {
-                return GetMeshesForMaterial (this.viewer, this.model, materialIndex);
+                return GetMeshesForMaterial (this.viewer, materialIndex);
             },
             getMaterialsForMesh : (meshInstanceId) => {
                 return GetMaterialsForMesh (this.viewer, this.model, meshInstanceId);

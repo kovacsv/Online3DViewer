@@ -2,7 +2,7 @@ import { RunTasksBatch } from '../core/taskrunner.js';
 import { IsEqual } from '../geometry/geometry.js';
 import { CreateObjectUrl, CreateObjectUrlWithMimeType } from '../io/bufferutils.js';
 import { MaterialType } from '../model/material.js';
-import { MeshInstanceId } from '../model/meshinstance.js';
+import { MeshInstance, MeshInstanceId } from '../model/meshinstance.js';
 import { GetMeshType, MeshType } from '../model/meshutils.js';
 import { ConvertColorToThreeColor, GetShadingType, ShadingType } from './threeutils.js';
 
@@ -63,10 +63,11 @@ export class ThreeConversionStateHandler
 
 export class ThreeNodeTree
 {
-	constructor (rootNode, threeRootNode)
+	constructor (model, threeRootNode)
 	{
-		this.meshInstances = [];
-		this.AddNode (rootNode, threeRootNode);
+		this.model = model;
+		this.threeNodeItems = [];
+		this.AddNode (model.GetRootNode (), threeRootNode);
 	}
 
 	AddNode (node, threeNode)
@@ -81,17 +82,18 @@ export class ThreeNodeTree
 			this.AddNode (childNode, threeChildNode);
 		}
 		for (let meshIndex of node.GetMeshIndices ()) {
-			this.meshInstances.push ({
-				node : node,
-				threeNode : threeNode,
-				meshIndex : meshIndex
+			let id = new MeshInstanceId (node.GetId (), meshIndex);
+			let mesh = this.model.GetMesh (meshIndex);
+			this.threeNodeItems.push ({
+				meshInstance : new MeshInstance (id, node, mesh),
+				threeNode : threeNode
 			});
 		}
 	}
 
-	GetMeshInstances ()
+	GetNodeItems ()
 	{
-		return this.meshInstances;
+		return this.threeNodeItems;
 	}
 }
 
@@ -211,9 +213,9 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 		return threeMaterial;
 	}
 
-	function CreateThreeMesh (model, meshInstanceId, modelThreeMaterials)
+	function CreateThreeMesh (meshInstance, modelThreeMaterials)
 	{
-		let mesh = model.GetMesh (meshInstanceId.meshIndex);
+		let mesh = meshInstance.mesh;
 		let triangleCount = mesh.TriangleCount ();
 
 		let triangleIndices = [];
@@ -317,7 +319,7 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 		let threeMesh = new THREE.Mesh (threeGeometry, meshThreeMaterials);
 		threeMesh.name = mesh.GetName ();
 		threeMesh.userData = {
-			originalMeshId : meshInstanceId,
+			originalMeshInstance : meshInstance,
 			originalMaterials : meshOriginalMaterials,
 			threeMaterials : null
 		};
@@ -325,30 +327,25 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 		return threeMesh;
 	}
 
-	function ConvertMesh (threeObject, model, meshInstanceId, modelThreeMaterials)
+	function ConvertMesh (threeObject, meshInstance, modelThreeMaterials)
 	{
-		let mesh = model.GetMesh (meshInstanceId.meshIndex);
-		let type = GetMeshType (mesh);
+		let type = GetMeshType (meshInstance.mesh);
 		if (type === MeshType.TriangleMesh) {
-			let threeMesh = CreateThreeMesh (model, meshInstanceId, modelThreeMaterials);
+			let threeMesh = CreateThreeMesh (meshInstance, modelThreeMaterials);
 			threeObject.add (threeMesh);
 		}
 	}
 
 	function ConvertNodeHierarchy (threeRootNode, model, modelThreeMaterials, stateHandler)
 	{
-		let rootNode = model.GetRootNode ();
-		let nodeTree = new ThreeNodeTree (rootNode, threeRootNode);
-		let meshInstances = nodeTree.GetMeshInstances ();
+		let nodeTree = new ThreeNodeTree (model, threeRootNode);
+		let threeNodeItems = nodeTree.GetNodeItems ();
 
-		RunTasksBatch (meshInstances.length, 100, {
+		RunTasksBatch (threeNodeItems.length, 100, {
 			runTask : (firstMeshInstanceIndex, lastMeshInstanceIndex, onReady) => {
 				for (let meshInstanceIndex = firstMeshInstanceIndex; meshInstanceIndex <= lastMeshInstanceIndex; meshInstanceIndex++) {
-					let meshInstance = meshInstances[meshInstanceIndex];
-					let node = meshInstance.node;
-					let threeNode = meshInstance.threeNode;
-					let meshInstanceId = new MeshInstanceId (node.GetId (), meshInstance.meshIndex);
-					ConvertMesh (threeNode, model, meshInstanceId, modelThreeMaterials);
+					let nodeItem = threeNodeItems[meshInstanceIndex];
+					ConvertMesh (nodeItem.threeNode, nodeItem.meshInstance, modelThreeMaterials);
 				}
 				onReady ();
 			},
