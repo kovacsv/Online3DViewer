@@ -320,9 +320,8 @@ export class NavigatorMeshesPanel extends NavigatorPanel
 
     FillMeshTree (model)
     {
-        function AddMeshToNodeTree (panel, model, node, meshIndex, parentItem, mode)
+        function AddMeshToNodeTree (panel, node, mesh, meshIndex, parentItem, mode)
         {
-            let mesh = model.GetMesh (meshIndex);
             let meshName = GetMeshName (node.GetName (), mesh.GetName ());
             let meshInstanceId = new MeshInstanceId (node.GetId (), meshIndex);
             let meshItemIcon = (mode === MeshesPanelMode.TreeView ? 'tree_mesh' : null);
@@ -396,7 +395,8 @@ export class NavigatorMeshesPanel extends NavigatorPanel
                 AddModelNodeToTree (panel, model, meshNode, parentItem, mode);
             }
             for (let meshIndex of node.GetMeshIndices ()) {
-                AddMeshToNodeTree (panel, model, node, meshIndex, parentItem, mode);
+                let mesh = model.GetMesh (meshIndex);
+                AddMeshToNodeTree (panel, node, mesh, meshIndex, parentItem, mode);
             }
         }
 
