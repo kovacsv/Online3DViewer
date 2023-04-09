@@ -197,6 +197,7 @@ export function DisposeThreeObjects (mainObject)
             } else {
                 obj.material.dispose ();
             }
+            obj.userData = null;
             obj.geometry.dispose ();
         }
     });
