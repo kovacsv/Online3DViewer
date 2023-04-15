@@ -403,7 +403,7 @@ export class ImporterFcstd extends ImporterBase
                     object.color.a
                 );
             }
-            let mesh = ConvertThreeGeometryToMesh (resultMesh, materialIndex);
+            let mesh = ConvertThreeGeometryToMesh (resultMesh, materialIndex, null);
             if (object.shapeName !== null) {
                 let indexString = objectMeshIndex.toString ().padStart (3, '0');
                 mesh.SetName (object.shapeName + ' ' + indexString);

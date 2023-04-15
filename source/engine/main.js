@@ -63,7 +63,7 @@ import { Triangle } from './model/triangle.js';
 import { ParameterListBuilder, ParameterListParser, CreateUrlBuilder, CreateUrlParser, CreateModelUrlParameters, ParameterConverter } from './parameters/parameterlist.js';
 import { ModelToThreeConversionParams, ModelToThreeConversionOutput, ThreeConversionStateHandler, ThreeNodeTree, ConvertModelToThreeObject } from './threejs/threeconverter.js';
 import { ThreeModelLoader } from './threejs/threemodelloader.js';
-import { HasHighpDriverIssue, GetShadingType, ConvertThreeColorToColor, ConvertColorToThreeColor, ConvertThreeGeometryToMesh, DisposeThreeObjects, ShadingType } from './threejs/threeutils.js';
+import { ThreeColorConverter, ThreeLinearToSRGBColorConverter, HasHighpDriverIssue, GetShadingType, ConvertThreeColorToColor, ConvertColorToThreeColor, ConvertThreeGeometryToMesh, DisposeThreeObjects, ShadingType } from './threejs/threeutils.js';
 import { Camera, CameraIsEqual3D, CameraMode } from './viewer/camera.js';
 import { GetIntegerFromStyle, GetDomElementExternalWidth, GetDomElementExternalHeight, GetDomElementInnerDimensions, GetDomElementClientCoordinates, CreateDomElement, AddDomElement, AddDiv, ClearDomElement, InsertDomElementBefore, InsertDomElementAfter, ShowDomElement, IsDomElementVisible, SetDomElementWidth, SetDomElementHeight, GetDomElementOuterWidth, GetDomElementOuterHeight, SetDomElementOuterWidth, SetDomElementOuterHeight, CreateDiv } from './viewer/domutils.js';
 import { EmbeddedViewer, Init3DViewerFromUrlList, Init3DViewerFromFileList, Init3DViewerElements } from './viewer/embeddedviewer.js';
@@ -282,6 +282,8 @@ export {
     ThreeNodeTree,
     ConvertModelToThreeObject,
     ThreeModelLoader,
+    ThreeColorConverter,
+    ThreeLinearToSRGBColorConverter,
     HasHighpDriverIssue,
     GetShadingType,
     ConvertThreeColorToColor,

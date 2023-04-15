@@ -89,6 +89,22 @@ export function GetShadingType (model)
     }
 }
 
+export class ThreeColorConverter
+{
+    Convert (color)
+    {
+        return null;
+    }
+}
+
+export class ThreeLinearToSRGBColorConverter extends ThreeColorConverter
+{
+    Convert (color)
+    {
+        return new THREE.Color ().copyLinearToSRGB (color);
+    }
+}
+
 export function ConvertThreeColorToColor (threeColor)
 {
     return RGBColorFromFloatComponents (threeColor.r, threeColor.g, threeColor.b);
@@ -103,7 +119,7 @@ export function ConvertColorToThreeColor (color)
     );
 }
 
-export function ConvertThreeGeometryToMesh (threeGeometry, materialIndex)
+export function ConvertThreeGeometryToMesh (threeGeometry, materialIndex, colorConverter)
 {
     let mesh = new Mesh ();
 
@@ -122,6 +138,9 @@ export function ConvertThreeGeometryToMesh (threeGeometry, materialIndex)
         let colorItemSize = threeGeometry.attributes.color.itemSize || 3;
         for (let i = 0; i < colors.length; i += colorItemSize) {
             let threeColor = new THREE.Color (colors[i], colors[i + 1], colors[i + 2]);
+            if (colorConverter !== null) {
+                threeColor = colorConverter.Convert (threeColor);
+            }
             mesh.AddVertexColor (ConvertThreeColorToColor (threeColor));
         }
     }

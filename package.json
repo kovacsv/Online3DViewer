@@ -80,7 +80,7 @@
 		"fflate": "0.7.4",
 		"occt-import-js": "0.0.18",
 		"rhino3dm": "8.0.0",
-		"three": "0.150.1",
+		"three": "0.151.3",
 		"web-ifc": "0.0.35"
 	},
 	"eslintConfig": {

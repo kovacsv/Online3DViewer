@@ -189,7 +189,7 @@ export class Importer3dm extends ImporterBase
 
         let materialIndex = this.GetMaterialIndex (rhinoDoc, rhinoObject, rhinoInstanceReferences);
         let threeJson = rhinoMesh.toThreejsJSON ();
-        let mesh = ConvertThreeGeometryToMesh (threeJson.data, materialIndex);
+        let mesh = ConvertThreeGeometryToMesh (threeJson.data, materialIndex, null);
         mesh.SetName (rhinoAttributes.name);
 
         let userStrings = rhinoAttributes.getUserStrings ();

@@ -104,7 +104,7 @@ export class ImporterOcct extends ImporterBase
             let color = RGBColorFromFloatComponents (occtMesh.color[0], occtMesh.color[1], occtMesh.color[2]);
             materialIndex = colorToMaterial.GetMaterialIndex (color.r, color.g, color.b, null);
         }
-        let mesh = ConvertThreeGeometryToMesh (occtMesh, materialIndex);
+        let mesh = ConvertThreeGeometryToMesh (occtMesh, materialIndex, null);
         if (occtMesh.name) {
             mesh.SetName (occtMesh.name);
         }
