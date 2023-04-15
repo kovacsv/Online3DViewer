@@ -78,7 +78,7 @@
 		"@types/node": "^18.11.18",
 		"draco3d": "1.5.6",
 		"fflate": "0.7.4",
-		"occt-import-js": "0.0.17",
+		"occt-import-js": "0.0.18",
 		"rhino3dm": "8.0.0",
 		"three": "0.150.1",
 		"web-ifc": "0.0.35"

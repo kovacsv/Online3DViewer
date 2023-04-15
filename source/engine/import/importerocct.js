@@ -108,16 +108,18 @@ export class ImporterOcct extends ImporterBase
         if (occtMesh.name) {
             mesh.SetName (occtMesh.name);
         }
-        if (occtMesh.face_colors) {
-            for (let faceColorGroup of occtMesh.face_colors) {
-                let faceColor = RGBColorFromFloatComponents (faceColorGroup.color[0], faceColorGroup.color[1], faceColorGroup.color[2]);
-                let faceMaterialIndex = colorToMaterial.GetMaterialIndex (faceColor.r, faceColor.g, faceColor.b, null);
-                for (let i = faceColorGroup.first; i <= faceColorGroup.last; i++) {
-                    let triangle = mesh.GetTriangle (i);
-                    triangle.SetMaterial (faceMaterialIndex);
-                }
+        for (let brepFace of occtMesh.brep_faces) {
+            if (brepFace.color === null) {
+                continue;
+            }
+            let faceColor = RGBColorFromFloatComponents (brepFace.color[0], brepFace.color[1], brepFace.color[2]);
+            let faceMaterialIndex = colorToMaterial.GetMaterialIndex (faceColor.r, faceColor.g, faceColor.b, null);
+            for (let i = brepFace.first; i <= brepFace.last; i++) {
+                let triangle = mesh.GetTriangle (i);
+                triangle.SetMaterial (faceMaterialIndex);
             }
         }
+
         return mesh;
     }
 }
