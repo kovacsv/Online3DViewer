@@ -119,7 +119,6 @@ export class ImporterOcct extends ImporterBase
                 triangle.SetMaterial (faceMaterialIndex);
             }
         }
-
         return mesh;
     }
 }
