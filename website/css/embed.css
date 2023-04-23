@@ -3,7 +3,7 @@ div.embed_viewer
     overflow: auto;
 }
 
-div.embed_viewer svg.embed_logo
+div.embed_viewer img.embed_logo
 {
 	width: 40px;
 	height: 40px;
