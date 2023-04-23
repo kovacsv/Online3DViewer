@@ -23,9 +23,15 @@
         function OnModelLoaded (model)
         {
             let calculationDiv = document.getElementById ('calculation_result');
+            let boundingBox = OV.GetBoundingBox (model);
             calculationDiv.innerHTML =
                 'Surface area: ' + OV.CalculateSurfaceArea (model).toFixed (2) + '<br>' +
-                'Volume: ' + OV.CalculateVolume (model).toFixed (2) + '<br>';
+                'Volume: ' + OV.CalculateVolume (model).toFixed (2) + '<br>' +
+                'Size: (' +
+                    (boundingBox.max.x - boundingBox.min.x) + ', ' +
+                    (boundingBox.max.y - boundingBox.min.y) + ', ' +
+                    (boundingBox.max.z - boundingBox.min.z) +
+                ')<br>';
         }
 
         window.addEventListener ('load', () => {
