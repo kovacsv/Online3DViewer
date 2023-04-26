@@ -1,0 +1,7 @@
+- name: Simple-Javascript
+  # You may pin to the exact commit or the version.
+  # uses: Nagasree2000/Simple-Javascript@a770e7fcd2eea168f24f6f4f3f6c966225684c9d
+  uses: Nagasree2000/Simple-Javascript@v1.0.2
+  with:
+    # who to greet
+    who-to-greet: # default is Nagasree2000
