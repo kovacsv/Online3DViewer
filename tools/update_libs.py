@@ -5,6 +5,7 @@ import shutil
 pickrFileMap = [
     [os.path.join ('@simonwep', 'pickr', 'LICENSE'), os.path.join ('pickr.license.md')],
     [os.path.join ('@simonwep', 'pickr', 'dist', 'pickr.es5.min.js'), os.path.join ('pickr.es5.min.js')],
+    [os.path.join ('@simonwep', 'pickr', 'dist', 'pickr.es5.min.js.map'), os.path.join ('pickr.es5.min.js.map')],
     [os.path.join ('@simonwep', 'pickr', 'dist', 'themes', 'monolith.min.css'), os.path.join ('pickr.monolith.min.css')]
 ]
 
