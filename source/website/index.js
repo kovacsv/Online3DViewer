@@ -3,12 +3,24 @@ import { Embed } from './embed.js';
 import { Website } from './website.js';
 import { SetEventHandler, HandleEvent } from './eventhandler.js';
 import { PluginType, RegisterPlugin } from './pluginregistry.js';
+import { ButtonDialog, ProgressDialog } from './dialog.js';
+import { ShowMessageDialog } from './dialogs.js';
 
 import * as Engine from '../engine/main.js';
 export { Engine };
 
-import { ButtonDialog, ProgressDialog } from './dialog.js';
-import { ShowMessageDialog } from './dialogs.js';
+import './css/icons.css';
+import './css/themes.css';
+import './css/core.css';
+import './css/controls.css';
+import './css/dialogs.css';
+import './css/treeview.css';
+import './css/panelset.css';
+import './css/navigator.css';
+import './css/sidebar.css';
+import './css/website.css';
+import './css/embed.css';
+
 export const UI = {
     ButtonDialog,
     ProgressDialog,

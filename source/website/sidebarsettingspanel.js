@@ -8,6 +8,9 @@ import { SidebarPanel } from './sidebarpanel.js';
 import { ShadingType } from '../engine/threejs/threeutils.js';
 import { CameraMode } from '../engine/viewer/camera.js';
 
+import * as Pickr from '@simonwep/pickr';
+import '@simonwep/pickr/dist/themes/monolith.min.css';
+
 function AddColorPicker (parentDiv, opacity, defaultColor, predefinedColors, onChange)
 {
     let pickr = Pickr.create ({

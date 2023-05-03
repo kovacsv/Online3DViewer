@@ -2,7 +2,7 @@ export default [
     {
         input: 'source/engine/main.js',
         output: {
-            file: 'build/o3dv.module.js',
+            file: 'build/engine/o3dv.module.js',
             format: 'es'
         },
         external: [

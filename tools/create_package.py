@@ -12,22 +12,16 @@ def GetVersion (rootDir):
 		packageJson = json.load (packageJsonFile)
 	return packageJson['version']
 
-def CreateWebsite (config, rootDir, websiteDir, version, testBuild):
+def CreateWebsite (rootDir, websiteDir, version, testBuild):
 	if not os.path.exists (websiteDir):
 		os.makedirs (websiteDir)
-
-	if not os.path.exists (os.path.join (websiteDir, 'o3dv')):
-		os.makedirs (os.path.join (websiteDir, 'o3dv'))
 
 	shutil.copy2 (os.path.join (rootDir, 'website', 'index.html'), websiteDir)
 	shutil.copy2 (os.path.join (rootDir, 'website', 'embed.html'), websiteDir)
 	shutil.copy2 (os.path.join (rootDir, 'website', 'robots.txt'), websiteDir)
-	shutil.copy2 (os.path.join (rootDir, 'build', 'o3dv.website.min.js'), os.path.join (websiteDir, 'o3dv'))
-	shutil.copy2 (os.path.join (rootDir, 'build', 'o3dv.website.min.css'), os.path.join (websiteDir, 'o3dv'))
 	shutil.copytree (os.path.join (rootDir, 'libs'), os.path.join (websiteDir, 'libs'))
+	shutil.copytree (os.path.join (rootDir, 'build', 'website'), os.path.join (websiteDir, 'o3dv'))
 	shutil.copytree (os.path.join (rootDir, 'website', 'assets'), os.path.join (websiteDir, 'assets'))
-	shutil.copytree (os.path.join (rootDir, 'website', 'css', 'Quicksand'), os.path.join (websiteDir, 'o3dv', 'Quicksand'))
-	shutil.copytree (os.path.join (rootDir, 'website', 'css', 'O3DVIcons'), os.path.join (websiteDir, 'o3dv', 'O3DVIcons'))
 	shutil.copytree (os.path.join (rootDir, 'website', 'info'), os.path.join (websiteDir, 'info'))
 
 	pluginFiles = []
@@ -42,7 +36,6 @@ def CreateWebsite (config, rootDir, websiteDir, version, testBuild):
 			shutil.copy2 (os.path.join (pluginsDir, pluginFile), os.path.join (websitePluginsDir, pluginFile))
 			pluginFiles.append ('plugins/' + pluginFile)
 
-	websiteLibFiles = config['website_lib_files']
 	websiteFiles = [
 		'o3dv/o3dv.website.min.css',
 		'o3dv/o3dv.website.min.js'
@@ -58,7 +51,6 @@ def CreateWebsite (config, rootDir, websiteDir, version, testBuild):
 	for htmlFileName in htmlFileNames:
 		htmlFilePath = os.path.join (websiteDir, htmlFileName)
 		replacer = Utils.TokenReplacer (htmlFilePath, False)
-		replacer.ReplaceTokenFileLinks ('<!-- website libs start -->', '<!-- website libs end -->', websiteLibFiles, version)
 		replacer.ReplaceTokenFileLinks ('<!-- website start -->', '<!-- website end -->', websiteFiles, version)
 		replacer.ReplaceTokenFileLinks ('<!-- plugins start -->', '<!-- plugins end -->', pluginFiles, version)
 		initScriptContent = ''
@@ -85,11 +77,11 @@ def CreateWebsite (config, rootDir, websiteDir, version, testBuild):
 			replacer.ReplaceTokenContent ('<!-- intro start -->', '<!-- intro end -->', introContent)
 		replacer.WriteToFile (htmlFilePath)
 
-def CreatePackage (rootDir, websiteDir, packageDir):
-	if not os.path.exists (packageDir):
-		os.makedirs (packageDir)
+def CreateEnginePackage (rootDir, engineDir, websiteDir):
+	if not os.path.exists (engineDir):
+		os.makedirs (engineDir)
 
-	zipPath = os.path.join (packageDir, 'o3dv.zip')
+	zipPath = os.path.join (engineDir, 'o3dv.zip')
 	zip = zipfile.ZipFile (zipPath, mode = 'w', compression = zipfile.ZIP_DEFLATED)
 	for file in os.listdir (os.path.join (websiteDir, 'libs', 'loaders')):
 		zip.write (os.path.join (websiteDir, 'libs', 'loaders', file), 'libs/loaders/' + file)
@@ -100,7 +92,7 @@ def CreatePackage (rootDir, websiteDir, packageDir):
 				zip.write (os.path.join (filePath, fileInDir), 'envmaps/' + file + '/' + fileInDir)
 		else:
 			zip.write (filePath, 'envmaps/' + file)
-	zip.write (os.path.join (rootDir, 'build', 'o3dv.min.js'), 'o3dv.min.js')
+	zip.write (os.path.join (rootDir, 'build', 'engine', 'o3dv.min.js'), 'o3dv.min.js')
 	zip.write (os.path.join (rootDir, 'LICENSE.md'), 'o3dv.license.md')
 	zip.close ()
 	return True
@@ -112,27 +104,23 @@ def Main (argv):
 
 	testBuild = False
 
-	buildDir = os.path.join (rootDir, 'build', 'final')
+	buildDir = os.path.join (rootDir, 'build', 'package')
 	if len (argv) >= 2 and argv[1] == 'test':
 		testBuild = True
-		buildDir = os.path.join (rootDir, 'build', 'test')
+		buildDir = os.path.join (rootDir, 'build', 'package_test')
 		Utils.PrintInfo ('Creating test build.')
 
 	websiteDir = os.path.join (buildDir, 'website')
-	packageDir = os.path.join (buildDir, 'package')
+	engineDir = os.path.join (buildDir, 'engine')
 	if os.path.exists (buildDir):
 		shutil.rmtree (buildDir)
 
-	config = None
-	with open (os.path.join (toolsDir, 'config.json')) as configJson:
-		config = json.load (configJson)
-
 	version = GetVersion (rootDir)
 	Utils.PrintInfo ('Create build directory')
-	CreateWebsite (config, rootDir, websiteDir, version, testBuild)
+	CreateWebsite (rootDir, websiteDir, version, testBuild)
 
 	Utils.PrintInfo ('Create package.')
-	packageResult = CreatePackage (rootDir, websiteDir, packageDir)
+	packageResult = CreateEnginePackage (rootDir, engineDir, websiteDir)
 	if not packageResult:
 		Utils.PrintError ('Create package failed.')
 		return 1

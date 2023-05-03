@@ -1,6 +1,0 @@
-{
-	"website_lib_files" : [
-		"libs/pickr.monolith.min.css",
-		"libs/pickr.es5.min.js"
-	]
-}
