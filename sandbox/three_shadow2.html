@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+
+	<title>Online 3D Viewer</title>
+	<style>
+		canvas
+		{
+			border: 1px solid #cccccc;
+		}
+	</style>
+
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/helpers/CameraHelper.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/shaders/HorizontalBlurShader.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/shaders/VerticalBlurShader.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+	<script type='text/javascript'>
+		class ShadowPlane
+		{
+			constructor (parentGroup, size, position, up)
+			{
+				this.parentGroup = parentGroup;
+
+				let upVector = up.clone ().normalize ();
+				let downVector = up.clone ().normalize ().multiplyScalar (-1.0);
+
+				this.renderTarget = new THREE.WebGLRenderTarget (1024, 1024);
+				this.renderTarget.texture.generateMipmaps = false;
+
+				this.planeMaterial = new THREE.MeshBasicMaterial ({
+					map : this.renderTarget.texture,
+					depthWrite : false
+				});
+				this.planeGeometry = new THREE.PlaneGeometry (size.x, size.y)
+				this.planeGeometry.lookAt (upVector);
+				let planePosition = upVector.clone ().add (position);
+				this.planeGeometry.translate (planePosition.x, planePosition.y, planePosition.z);
+				this.planeMesh = new THREE.Mesh (this.planeGeometry, this.planeMaterial);
+				this.parentGroup.add (this.planeMesh);
+
+				this.camera = new THREE.OrthographicCamera (-size.x / 2.0, size.x / 2.0, size.y / 2.0, -size.y / 2.0, 0.0, size.z);
+				this.camera.lookAt (downVector);
+				let cameraPosition = upVector.clone ().multiplyScalar (size.z).add (position);
+				this.camera.position.set (cameraPosition.x, cameraPosition.y, cameraPosition.z);
+				this.parentGroup.add (this.camera);
+
+				let helper = new THREE.CameraHelper( this.camera );
+				this.parentGroup.add (helper);
+			}
+
+			Render (renderer, scene)
+			{
+				this.planeMesh.visible = false;
+				renderer.setRenderTarget (this.renderTarget);
+				renderer.render (scene, this.camera);
+				this.planeMesh.visible = true;
+			}
+		}
+
+		class ContactShadow
+		{
+			constructor (renderer, scene, size, position, up)
+			{
+				this.renderer = renderer;
+				this.scene = scene;
+
+				this.shadowGroup = new THREE.Object3D ();
+				this.scene.add (this.shadowGroup);
+
+				this.shadowPlane = new ShadowPlane (this.shadowGroup, size, position, up);
+				this.shadowMaterial = new THREE.MeshBasicMaterial ({
+					color : '#00cc00'
+				});
+			}
+
+			Render ()
+			{
+				this.scene.overrideMaterial = this.shadowMaterial;
+				this.shadowPlane.Render (this.renderer, this.scene);
+				this.scene.overrideMaterial = null;
+				this.renderer.setRenderTarget (null);
+			}
+		}
+
+		function Sandbox3D ()
+		{
+			let canvas = document.getElementById ('canvas');
+
+			let parameters = {
+				canvas : canvas,
+				antialias : true
+			};
+
+			let width = 800;
+			let height = 600;
+			let renderer = new THREE.WebGLRenderer (parameters);
+			renderer.setClearColor ('#ffffff', 1);
+			renderer.setSize (width, height);
+
+			let scene = new THREE.Scene ();
+
+			let ambientLight = new THREE.AmbientLight (0x888888);
+			scene.add (ambientLight);
+
+			let light = new THREE.DirectionalLight (0x888888);
+			light.position.set (50.0, 15.0, 30.0);
+			scene.add (light);
+
+			let camera = new THREE.PerspectiveCamera (45.0, width / height, 0.1, 1000.0);
+			camera.position.set (50.0, 15.0, 30.0);
+			camera.up.set (0.0, 0.0, 1.0);
+			camera.lookAt (new THREE.Vector3 (0.0, 0.0, 0.0));
+			scene.add (camera);
+
+			let meshes = new THREE.Object3D ();
+			let torusKnotGeometry = new THREE.TorusKnotGeometry (10.0, 3.0, 100, 16);
+			let torusKnotMaterial = new THREE.MeshPhongMaterial ({
+				color : 0xcc0000,
+				side : THREE.DoubleSide
+			});
+			let torusKnotMesh = new THREE.Mesh (torusKnotGeometry, torusKnotMaterial);
+			meshes.add (torusKnotMesh);
+			scene.add (meshes);
+
+			new THREE.OrbitControls (camera, renderer.domElement);
+
+			let size = new THREE.Vector3 (100.0, 100.0, 100.0);
+			let position = new THREE.Vector3 (0.0, 0.0, -20.0);
+			let upVector = new THREE.Vector3 (0.0, 0.0, 1.0);
+			let shadow = new ContactShadow (renderer, scene, size, position, upVector);
+
+			scene.background = new THREE.Color (0.8, 0.8, 0.8);
+			renderer.setAnimationLoop ((time) => {
+				meshes.rotation.x = time / 3000;
+				meshes.rotation.y = time / 3000;
+				meshes.rotation.z = time / 3000;
+
+				shadow.Render ();
+				renderer.render (scene, camera);
+			});
+		}
+
+		window.onload = function () {
+			Sandbox3D ();
+		};
+	</script>
+</head>
+
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+
+</html>
