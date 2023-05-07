@@ -159,6 +159,8 @@ export class Viewer
 {
     constructor ()
     {
+        THREE.ColorManagement.enabled = false;
+
         this.canvas = null;
         this.renderer = null;
         this.scene = null;
@@ -186,6 +188,8 @@ export class Viewer
         };
 
         this.renderer = new THREE.WebGLRenderer (parameters);
+        this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+
         if (window.devicePixelRatio) {
             this.renderer.setPixelRatio (window.devicePixelRatio);
         }

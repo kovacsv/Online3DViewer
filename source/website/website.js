@@ -2,6 +2,7 @@ import { GetFileExtension, TransformFileHostUrls } from '../engine/io/fileutils.
 import { InputFilesFromFileObjects, InputFilesFromUrls } from '../engine/import/importerfiles.js';
 import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
 import { CameraMode } from '../engine/viewer/camera.js';
+import { RGBColor } from '../engine/model/color.js';
 import { Viewer } from '../engine/viewer/viewer.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToScreen, ShowListPopup } from './dialogs.js';
@@ -25,8 +26,6 @@ import { MeasureTool } from './measuretool.js';
 import { CloseAllDialogs } from './dialog.js';
 import { CreateVerticalSplitter } from './splitter.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
-
-import * as THREE from 'three';
 import { EnvironmentSettings } from '../engine/viewer/shadingmodel.js';
 
 const WebsiteUIState =
@@ -192,7 +191,7 @@ export class Website
         this.sidebar = new Sidebar (this.parameters.sidebarDiv, this.settings);
         this.modelLoaderUI = new ThreeModelLoaderUI ();
         this.themeHandler = new ThemeHandler ();
-        this.highlightColor = new THREE.Color (0x8ec9f0);
+        this.highlightColor = new RGBColor (142, 201, 240);
         this.uiState = WebsiteUIState.Undefined;
         this.layouter = new WebsiteLayouter (this.parameters, this.navigator, this.sidebar, this.viewer, this.measureTool);
         this.model = null;

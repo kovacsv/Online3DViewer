@@ -6,7 +6,7 @@ import { Base64DataURIToArrayBuffer, CreateObjectUrl, GetFileExtensionFromMimeTy
 import { GetFileExtension, GetFileName } from '../io/fileutils.js';
 import { PhongMaterial, TextureMap } from '../model/material.js';
 import { Node, NodeType } from '../model/node.js';
-import { ConvertThreeColorToColor, ConvertThreeGeometryToMesh, ThreeLinearToSRGBColorConverter } from '../threejs/threeutils.js';
+import { ConvertThreeColorToColor, ConvertThreeGeometryToMesh, ThreeLinearToSRGBColorConverter, ThreeSRGBToLinearColorConverter } from '../threejs/threeutils.js';
 import { ImporterBase } from './importerbase.js';
 
 import * as THREE from 'three';
@@ -386,6 +386,7 @@ export class ImporterThree3mf extends ImporterThreeBase
     constructor ()
     {
         super ();
+        this.colorConverter = new ThreeSRGBToLinearColorConverter ();
     }
 
     CanImportExtension (extension)

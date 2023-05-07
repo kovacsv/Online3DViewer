@@ -21,6 +21,7 @@ export function HasHighpDriverIssue ()
     };
 
     let renderer = new THREE.WebGLRenderer (parameters);
+    renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     renderer.setClearColor ('#ffffff', 1);
     renderer.setSize (10, 10);
 
@@ -102,6 +103,14 @@ export class ThreeLinearToSRGBColorConverter extends ThreeColorConverter
     Convert (color)
     {
         return new THREE.Color ().copyLinearToSRGB (color);
+    }
+}
+
+export class ThreeSRGBToLinearColorConverter extends ThreeColorConverter
+{
+    Convert (color)
+    {
+        return new THREE.Color ().copySRGBToLinear (color);
     }
 }
 

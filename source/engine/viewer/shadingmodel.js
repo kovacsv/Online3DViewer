@@ -1,6 +1,6 @@
 import { SubCoord3D } from '../geometry/coord3d.js';
 import { CameraMode } from '../viewer/camera.js';
-import { ShadingType } from '../threejs/threeutils.js';
+import { ConvertColorToThreeColor, ShadingType } from '../threejs/threeutils.js';
 
 import * as THREE from 'three';
 
@@ -104,12 +104,12 @@ export class ShadingModel
         let material = null;
         if (this.type === ShadingType.Phong) {
             material = new THREE.MeshPhongMaterial ({
-                color : highlightColor,
+                color : ConvertColorToThreeColor (highlightColor),
                 side : THREE.DoubleSide
             });
         } else if (this.type === ShadingType.Physical) {
             material = new THREE.MeshStandardMaterial ({
-                color : highlightColor,
+                color : ConvertColorToThreeColor (highlightColor),
                 side : THREE.DoubleSide
             });
         }
