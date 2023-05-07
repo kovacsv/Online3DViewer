@@ -38,7 +38,7 @@ export class ExporterBim extends ExporterBase
         this.ExportProperties (exporterModel.GetModel (), bimContent.info);
 
         let meshId = 0;
-        exporterModel.EnumerateTransformedMeshes ((mesh) => {
+        exporterModel.EnumerateTransformedMeshInstances ((mesh) => {
             let bimMesh = {
                 mesh_id : meshId,
                 coordinates : [],

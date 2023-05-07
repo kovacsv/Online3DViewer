@@ -164,7 +164,7 @@ export class Model extends ModelObject3D
         });
     }
 
-    EnumerateTransformedMeshes (onMesh)
+    EnumerateTransformedMeshInstances (onMesh)
     {
         this.EnumerateMeshInstances ((meshInstance) => {
             const transformed = meshInstance.GetTransformedMesh ();

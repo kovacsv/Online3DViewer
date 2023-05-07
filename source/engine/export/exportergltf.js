@@ -184,7 +184,7 @@ export class ExporterGltf extends ExporterBase
     {
         let meshDataArr = [];
 
-        exporterModel.EnumerateTransformedMeshes ((mesh) => {
+        exporterModel.EnumerateTransformedMeshInstances ((mesh) => {
             let buffer = ConvertMeshToMeshBuffer (mesh);
             meshDataArr.push ({
                 name : mesh.GetName (),

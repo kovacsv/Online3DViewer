@@ -68,7 +68,7 @@ export class ExporterObj extends ExporterBase
         let normalOffset = 0;
         let uvOffset = 0;
         let usedMaterialName = null;
-        exporterModel.EnumerateTransformedMeshes ((mesh) => {
+        exporterModel.EnumerateTransformedMeshInstances ((mesh) => {
             objWriter.WriteArrayLine (['g', this.GetExportedMeshName (mesh.GetName ())]);
             for (let vertexIndex = 0; vertexIndex < mesh.VertexCount (); vertexIndex++) {
                 let vertex = mesh.GetVertex (vertexIndex);

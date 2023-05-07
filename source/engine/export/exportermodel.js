@@ -21,6 +21,8 @@ export class ExporterModel
     {
         this.model = model;
         this.settings = settings || new ExporterSettings ();
+        this.visibleMeshes = null;
+        this.meshToVisibleMeshIndex = null;
     }
 
     GetModel ()
@@ -56,6 +58,32 @@ export class ExporterModel
         return triangleCount;
     }
 
+    MeshCount ()
+    {
+        let meshCount = 0;
+        this.EnumerateMeshes ((mesh) => {
+            meshCount += 1;
+        });
+        return meshCount;
+    }
+
+    EnumerateMeshes (onMesh)
+    {
+        this.FillVisibleMeshCache ();
+        for (let meshIndex = 0; meshIndex < this.model.MeshCount (); meshIndex++) {
+            if (this.visibleMeshes.has (meshIndex)) {
+                let mesh = this.model.GetMesh (meshIndex);
+                onMesh (mesh);
+            }
+        }
+    }
+
+    MapMeshIndex (meshIndex)
+    {
+        this.FillVisibleMeshCache ();
+        return this.meshToVisibleMeshIndex.get (meshIndex);
+    }
+
     MeshInstanceCount ()
     {
         let meshInstanceCount = 0;
@@ -74,7 +102,7 @@ export class ExporterModel
         });
     }
 
-    EnumerateTransformedMeshes (onMesh)
+    EnumerateTransformedMeshInstances (onMesh)
     {
         this.EnumerateMeshInstances ((meshInstance) => {
             let transformation = meshInstance.GetTransformation ();
@@ -95,7 +123,7 @@ export class ExporterModel
     EnumerateVerticesAndTriangles (callbacks)
     {
         let transformedMeshes = [];
-        this.EnumerateTransformedMeshes ((mesh) => {
+        this.EnumerateTransformedMeshInstances ((mesh) => {
             transformedMeshes.push (mesh);
         });
 
@@ -116,11 +144,35 @@ export class ExporterModel
 
     EnumerateTrianglesWithNormals (onTriangle)
     {
-        this.EnumerateTransformedMeshes ((mesh) => {
+        this.EnumerateTransformedMeshInstances ((mesh) => {
             mesh.EnumerateTriangleVertices ((v0, v1, v2) => {
                 let normal = CalculateTriangleNormal (v0, v1, v2);
                 onTriangle (v0, v1, v2, normal);
             });
         });
+    }
+
+    FillVisibleMeshCache ()
+    {
+        if (this.visibleMeshes !== null && this.meshToVisibleMeshIndex !== null) {
+            return;
+        }
+
+        this.visibleMeshes = new Set ();
+        this.model.EnumerateMeshInstances ((meshInstance) => {
+            let meshInstanceId = meshInstance.GetId ();
+            if (this.settings.isMeshVisible (meshInstanceId)) {
+                this.visibleMeshes.add (meshInstanceId.meshIndex);
+            }
+        });
+
+        this.meshToVisibleMeshIndex = new Map ();
+        let visibleMeshIndex = 0;
+        for (let meshIndex = 0; meshIndex < this.model.MeshCount (); meshIndex++) {
+            if (this.visibleMeshes.has (meshIndex)) {
+                this.meshToVisibleMeshIndex.set (meshIndex, visibleMeshIndex);
+                visibleMeshIndex += 1;
+            }
+        }
     }
 }

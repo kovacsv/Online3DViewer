@@ -138,7 +138,7 @@ export function ModelToObjectSimple (model)
         });
     }
 
-    model.EnumerateTransformedMeshes ((mesh) => {
+    model.EnumerateTransformedMeshInstances ((mesh) => {
         let boundingBox = OV.GetBoundingBox (mesh);
         let meshObj = {
             name : mesh.GetName (),
@@ -374,6 +374,101 @@ export function GetTranslatedRotatedCubesModel ()
     root.AddChildNode (translatedNode);
     root.AddChildNode (rotatedNode);
     rotatedNode.AddChildNode (translatedRotatedNode);
+
+    OV.FinalizeModel (model);
+    return model;
+}
+
+export function CreateTestModelForExport ()
+{
+    let model = new OV.Model ();
+
+    for (let i = 0; i < 3; i++) {
+        let material = new OV.PhongMaterial ();
+        material.name = 'Material ' + i.toString ();
+        model.AddMaterial (material);
+    }
+
+    let root = model.GetRootNode ();
+    for (let i = 0; i < 3; i++) {
+        let genParams = new OV.GeneratorParams ().SetMaterial (i);
+        let cube = OV.GenerateCuboid (genParams, 1.0, 1.0, 1.0);
+        let meshIndex = model.AddMesh (cube);
+        let node = new OV.Node ();
+        node.AddMeshIndex (meshIndex);
+        node.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateTranslation (i, 0.0, 0.0)));
+        root.AddChildNode (node);
+    }
+
+    OV.FinalizeModel (model);
+    return model;
+}
+
+export function CreateHierarchicalTestModelForExport ()
+{
+    // Node 1 (0)
+    // - Node 1.1 (1) -> Mesh 1 (0)
+    // - Node 1.2 (2) -> Mesh 2 (1)
+    // - Node 1.3 (3) -> Mesh 2 (1)
+    // - Node 1.4 (4) -> Mesh 3 (2)
+
+    let model = new OV.Model ();
+
+    let material1 = new OV.PhongMaterial ();
+    material1.name = 'Material 1';
+    material1.color = new OV.RGBColor (255, 0, 0);
+    model.AddMaterial (material1);
+
+    let material2 = new OV.PhongMaterial ();
+    material2.name = 'Material 2';
+    material1.color = new OV.RGBColor (0, 255, 0);
+    model.AddMaterial (material2);
+
+    let material3 = new OV.PhongMaterial ();
+    material3.name = 'Material 3';
+    material3.color = new OV.RGBColor (0, 0, 255);
+    model.AddMaterial (material3);
+
+    let cubeParams1 = new OV.GeneratorParams ().SetMaterial (0);
+    let cube1 = OV.GenerateCuboid (cubeParams1, 1.0, 1.0, 1.0);
+    let cube1Mesh = model.AddMesh (cube1);
+
+    let cubeParams2 = new OV.GeneratorParams ().SetMaterial (1);
+    let cube2 = OV.GenerateCuboid (cubeParams2, 1.0, 1.0, 1.0);
+    let cube2Mesh = model.AddMesh (cube2);
+
+    let cubeParams3 = new OV.GeneratorParams ().SetMaterial (2);
+    let cube3 = OV.GenerateCuboid (cubeParams3, 1.0, 1.0, 1.0);
+    let cube3Mesh = model.AddMesh (cube3);
+
+    let root = model.GetRootNode ();
+    let node1 = new OV.Node ();
+    node1.SetName ('Node 1');
+
+    let node11 = new OV.Node ();
+    node11.SetName ('Node 1.1');
+    node11.AddMeshIndex (cube1Mesh);
+    node1.AddChildNode (node11);
+
+    let node12 = new OV.Node ();
+    node12.SetName ('Node 1.2');
+    node12.AddMeshIndex (cube2Mesh);
+    node12.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateTranslation (2.0, 0.0, 0.0)));
+    node1.AddChildNode (node12);
+
+    let node13 = new OV.Node ();
+    node13.SetName ('Node 1.3');
+    node13.AddMeshIndex (cube2Mesh);
+    node13.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateTranslation (4.0, 0.0, 0.0)));
+    node1.AddChildNode (node13);
+
+    let node14 = new OV.Node ();
+    node14.SetName ('Node 1.4');
+    node14.AddMeshIndex (cube3Mesh);
+    node14.SetTransformation (new OV.Transformation (new OV.Matrix ().CreateTranslation (6.0, 0.0, 0.0)));
+    node1.AddChildNode (node14);
+
+    root.AddChildNode (node1);
 
     OV.FinalizeModel (model);
     return model;

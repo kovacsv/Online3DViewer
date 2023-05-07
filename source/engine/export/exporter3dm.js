@@ -49,7 +49,7 @@ export class Exporter3dm extends ExporterBase
 		files.push (rhinoFile);
 
         let rhinoDoc = new this.rhino.File3dm ();
-        exporterModel.EnumerateTransformedMeshes ((mesh) => {
+        exporterModel.EnumerateTransformedMeshInstances ((mesh) => {
             let meshBuffer = ConvertMeshToMeshBuffer (mesh);
             for (let primitiveIndex = 0; primitiveIndex < meshBuffer.PrimitiveCount (); primitiveIndex++) {
                 let primitive = meshBuffer.GetPrimitive (primitiveIndex);

@@ -390,7 +390,7 @@ describe ('Node Hierarchy', function () {
         });
 
         let meshes = [];
-        model.EnumerateTransformedMeshes ((mesh) => {
+        model.EnumerateTransformedMeshInstances ((mesh) => {
             meshes.push (mesh);
         });
 
