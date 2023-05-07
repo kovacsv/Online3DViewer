@@ -1,6 +1,8 @@
 import { BinaryWriter } from '../io/binarywriter.js';
 import { Utf8StringToArrayBuffer } from '../io/bufferutils.js';
 import { FileFormat, GetFileExtension, GetFileName } from '../io/fileutils.js';
+import { MeshInstanceId } from '../model/meshinstance.js';
+import { NodeType } from '../model/node.js';
 import { RGBColor, SRGBToLinear } from '../model/color.js';
 import { MaterialType } from '../model/material.js';
 import { ConvertMeshToMeshBuffer } from '../model/meshbuffer.js';
@@ -47,7 +49,7 @@ export class ExporterGltf extends ExporterBase
 
         let meshDataArr = this.GetMeshData (exporterModel);
         let mainBuffer = this.GetMainBuffer (meshDataArr);
-        let mainJson = this.GetMainJson (meshDataArr);
+        let mainJson = this.GetMainJson (exporterModel, meshDataArr);
         mainJson.buffers.push ({
             uri : binFile.GetName (),
             byteLength : mainBuffer.byteLength
@@ -105,7 +107,7 @@ export class ExporterGltf extends ExporterBase
 
         let meshDataArr = this.GetMeshData (exporterModel);
         let mainBuffer = this.GetMainBuffer (meshDataArr);
-        let mainJson = this.GetMainJson (meshDataArr);
+        let mainJson = this.GetMainJson (exporterModel, meshDataArr);
 
         let textureBuffers = [];
         let textureOffset = mainBuffer.byteLength;
@@ -184,7 +186,7 @@ export class ExporterGltf extends ExporterBase
     {
         let meshDataArr = [];
 
-        exporterModel.EnumerateTransformedMeshInstances ((mesh) => {
+        exporterModel.EnumerateMeshes ((mesh) => {
             let buffer = ConvertMeshToMeshBuffer (mesh);
             meshDataArr.push ({
                 name : mesh.GetName (),
@@ -200,14 +202,12 @@ export class ExporterGltf extends ExporterBase
     GetMainBuffer (meshDataArr)
     {
         let mainBufferSize = 0;
-        for (let meshIndex = 0; meshIndex < meshDataArr.length; meshIndex++) {
-            let meshData = meshDataArr[meshIndex];
+        for (let meshData of meshDataArr) {
             mainBufferSize += meshData.buffer.GetByteLength (this.components.index.size, this.components.number.size);
         }
 
         let writer = new BinaryWriter (mainBufferSize, true);
-        for (let meshIndex = 0; meshIndex < meshDataArr.length; meshIndex++) {
-            let meshData = meshDataArr[meshIndex];
+        for (let meshData of meshDataArr) {
             for (let primitiveIndex = 0; primitiveIndex < meshData.buffer.PrimitiveCount (); primitiveIndex++) {
                 let primitive = meshData.buffer.GetPrimitive (primitiveIndex);
                 let offset = writer.GetPosition ();
@@ -238,7 +238,7 @@ export class ExporterGltf extends ExporterBase
         return writer.GetBuffer ();
     }
 
-    GetMainJson (meshDataArr)
+    GetMainJson (exporterModel, meshDataArr)
     {
         class BufferViewCreator
         {
@@ -257,6 +257,73 @@ export class ExporterGltf extends ExporterBase
                 });
                 this.byteOffset += byteLength;
                 return this.mainJson.bufferViews.length - 1;
+            }
+        }
+
+        function CreateNodeJson (node, withTransformation)
+        {
+            let nodeJson = {};
+
+            let nodeName = node.GetName ();
+            if (nodeName.length > 0) {
+                nodeJson.name = node.GetName ();
+            }
+
+            if (withTransformation) {
+                let transformation = node.GetTransformation ();
+                if (!transformation.IsIdentity ()) {
+                    nodeJson.matrix = node.GetTransformation ().GetMatrix ().Get ();
+                }
+            }
+
+            return nodeJson;
+        }
+
+        function AddNode (model, jsonParent, jsonNodes, node)
+        {
+            let nodeType = node.GetType ();
+            if (nodeType === NodeType.GroupNode) {
+                let nodeJson = {};
+                let nodeName = node.GetName ();
+                if (nodeName.length > 0) {
+                    nodeJson.name = node.GetName ();
+                }
+                let transformation = node.GetTransformation ();
+                if (!transformation.IsIdentity ()) {
+                    nodeJson.matrix = node.GetTransformation ().GetMatrix ().Get ();
+                }
+
+                nodeJson.children = [];
+                jsonNodes.push (nodeJson);
+                jsonParent.push (jsonNodes.length - 1);
+                AddChildNodes (model, nodeJson.children, jsonNodes, node);
+            } else if (nodeType === NodeType.MeshNode) {
+                for (let meshIndex of node.GetMeshIndices ()) {
+                    AddMeshNode (model, jsonParent, jsonNodes, node, meshIndex);
+                }
+            }
+        }
+
+        function AddMeshNode (model, jsonParent, jsonNodes, node, meshIndex)
+        {
+            let meshInstanceId = new MeshInstanceId (node.GetId (), meshIndex);
+            if (!model.IsMeshInstanceVisible (meshInstanceId)) {
+                return;
+            }
+            let nodeJson = {
+                mesh : model.MapMeshIndex (meshIndex)
+            };
+            jsonNodes.push (nodeJson);
+            jsonParent.push (jsonNodes.length - 1);
+        }
+
+        function AddChildNodes (model, jsonParent, jsonNodes, node)
+        {
+            for (let childNode of node.GetChildNodes ()) {
+                AddNode (model, jsonParent, jsonNodes, childNode);
+            }
+            for (let meshIndex of node.GetMeshIndices ()) {
+                AddMeshNode (model, jsonParent, jsonNodes, node, meshIndex);
             }
         }
 
@@ -279,12 +346,10 @@ export class ExporterGltf extends ExporterBase
             accessors : []
         };
 
-        for (let meshIndex = 0; meshIndex < meshDataArr.length; meshIndex++) {
-            let meshData = meshDataArr[meshIndex];
-            mainJson.scenes[0].nodes.push (meshIndex);
-            mainJson.nodes.push ({
-                mesh : meshIndex
-            });
+        let rootNode = exporterModel.GetModel ().GetRootNode ();
+        AddChildNodes (exporterModel, mainJson.scenes[0].nodes, mainJson.nodes, rootNode);
+
+        for (let meshData of meshDataArr) {
             let jsonMesh = {
                 name : this.GetExportedMeshName (meshData.name),
                 primitives : []
@@ -368,6 +433,7 @@ export class ExporterGltf extends ExporterBase
 
                 jsonMesh.primitives.push (jsonPrimitive);
             }
+
             mainJson.meshes.push (jsonMesh);
         }
 

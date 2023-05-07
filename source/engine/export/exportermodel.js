@@ -84,6 +84,11 @@ export class ExporterModel
         return this.meshToVisibleMeshIndex.get (meshIndex);
     }
 
+    IsMeshInstanceVisible (meshInstanceId)
+    {
+        return this.settings.isMeshVisible (meshInstanceId);
+    }
+
     MeshInstanceCount ()
     {
         let meshInstanceCount = 0;
