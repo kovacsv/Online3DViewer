@@ -8,6 +8,18 @@ import { MaterialType } from '../model/material.js';
 import { ConvertMeshToMeshBuffer } from '../model/meshbuffer.js';
 import { ExportedFile, ExporterBase } from './exporterbase.js';
 
+const GltfComponentType =
+{
+    UNSIGNED_INT : 5125,
+    FLOAT : 5126
+};
+
+const GltfBufferType =
+{
+    ARRAY_BUFFER : 34962,
+    ELEMENT_ARRAY_BUFFER : 34963
+};
+
 export class ExporterGltf extends ExporterBase
 {
 	constructor ()
@@ -15,11 +27,11 @@ export class ExporterGltf extends ExporterBase
 		super ();
         this.components = {
             index : {
-                type : 5125, // unsigned int 32
+                type : GltfComponentType.UNSIGNED_INT,
                 size : 4
             },
             number : {
-                type : 5126, // float 32
+                type : GltfComponentType.FLOAT,
                 size : 4
             }
         };
@@ -248,13 +260,15 @@ export class ExporterGltf extends ExporterBase
                 this.byteOffset = byteOffset;
             }
 
-            AddBufferView (byteLength)
+            AddBufferView (byteLength, target)
             {
-                this.mainJson.bufferViews.push ({
+                let bufferView = {
                     buffer : 0,
                     byteOffset : this.byteOffset,
                     byteLength : byteLength,
-                });
+                    target : target
+                };
+                this.mainJson.bufferViews.push (bufferView);
                 this.byteOffset += byteLength;
                 return this.mainJson.bufferViews.length - 1;
             }
@@ -343,16 +357,16 @@ export class ExporterGltf extends ExporterBase
                 let primitive = primitives[primitiveIndex];
 
                 let bufferViewCreator = new BufferViewCreator (mainJson, meshData.offsets[primitiveIndex]);
-                let indicesBufferView = bufferViewCreator.AddBufferView (primitive.indices.length * this.components.index.size);
-                let verticesBufferView = bufferViewCreator.AddBufferView (primitive.vertices.length * this.components.number.size);
+                let indicesBufferView = bufferViewCreator.AddBufferView (primitive.indices.length * this.components.index.size, GltfBufferType.ELEMENT_ARRAY_BUFFER);
+                let verticesBufferView = bufferViewCreator.AddBufferView (primitive.vertices.length * this.components.number.size, GltfBufferType.ARRAY_BUFFER);
                 let colorsBufferView = null;
                 if (primitive.colors.length > 0) {
-                    colorsBufferView = bufferViewCreator.AddBufferView (primitive.colors.length * this.components.number.size);
+                    colorsBufferView = bufferViewCreator.AddBufferView (primitive.colors.length * this.components.number.size, GltfBufferType.ARRAY_BUFFER);
                 }
-                let normalsBufferView = bufferViewCreator.AddBufferView (primitive.normals.length * this.components.number.size);
+                let normalsBufferView = bufferViewCreator.AddBufferView (primitive.normals.length * this.components.number.size, GltfBufferType.ARRAY_BUFFER);
                 let uvsBufferView = null;
                 if (primitive.uvs.length > 0) {
-                    uvsBufferView = bufferViewCreator.AddBufferView (primitive.uvs.length * this.components.number.size);
+                    uvsBufferView = bufferViewCreator.AddBufferView (primitive.uvs.length * this.components.number.size, GltfBufferType.ARRAY_BUFFER);
                 }
 
                 let jsonPrimitive = {
