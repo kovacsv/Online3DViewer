@@ -2,7 +2,6 @@ import { BinaryWriter } from '../io/binarywriter.js';
 import { Utf8StringToArrayBuffer } from '../io/bufferutils.js';
 import { FileFormat, GetFileExtension, GetFileName } from '../io/fileutils.js';
 import { MeshInstanceId } from '../model/meshinstance.js';
-import { NodeType } from '../model/node.js';
 import { RGBColor, SRGBToLinear } from '../model/color.js';
 import { MaterialType } from '../model/material.js';
 import { ConvertMeshToMeshBuffer } from '../model/meshbuffer.js';
@@ -276,27 +275,22 @@ export class ExporterGltf extends ExporterBase
 
         function AddNode (model, jsonParent, jsonNodes, node)
         {
-            let nodeType = node.GetType ();
-            if (nodeType === NodeType.GroupNode) {
-                let nodeJson = {};
-                let nodeName = node.GetName ();
-                if (nodeName.length > 0) {
-                    nodeJson.name = node.GetName ();
-                }
-                let transformation = node.GetTransformation ();
-                if (!transformation.IsIdentity ()) {
-                    nodeJson.matrix = node.GetTransformation ().GetMatrix ().Get ();
-                }
+            let nodeJson = {};
+            let nodeName = node.GetName ();
+            if (nodeName.length > 0) {
+                nodeJson.name = node.GetName ();
+            }
+            let transformation = node.GetTransformation ();
+            if (!transformation.IsIdentity ()) {
+                nodeJson.matrix = node.GetTransformation ().GetMatrix ().Get ();
+            }
 
+            if (node.ChildNodeCount () > 0 || node.MeshIndexCount () > 0) {
                 nodeJson.children = [];
                 AddChildNodes (model, nodeJson.children, jsonNodes, node);
                 if (nodeJson.children.length > 0) {
                     jsonNodes.push (nodeJson);
                     jsonParent.push (jsonNodes.length - 1);
-                }
-            } else if (nodeType === NodeType.MeshNode) {
-                for (let meshIndex of node.GetMeshIndices ()) {
-                    AddMeshNode (model, jsonParent, jsonNodes, node, meshIndex);
                 }
             }
         }
