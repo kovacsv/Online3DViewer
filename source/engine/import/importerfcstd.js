@@ -4,7 +4,7 @@ import { GetFileExtension } from '../io/fileutils.js';
 import { GetExternalLibPath } from '../io/externallibs.js';
 import { ConvertThreeGeometryToMesh } from '../threejs/threeutils.js';
 import { ArrayBufferToUtf8String } from '../io/bufferutils.js';
-import { Node, NodeType } from '../model/node.js';
+import { Node } from '../model/node.js';
 import { ColorToMaterialConverter } from './importerutils.js';
 import { RGBAColor } from '../model/color.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
@@ -387,7 +387,6 @@ export class ImporterFcstd extends ImporterBase
         }
 
         let objectNode = new Node ();
-        objectNode.SetType (NodeType.GroupNode);
         if (object.shapeName !== null) {
             objectNode.SetName (object.shapeName);
         }

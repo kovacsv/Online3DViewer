@@ -9,7 +9,7 @@ import { RGBColor, ColorComponentFromFloat } from '../model/color.js';
 import { PhongMaterial, TextureMap } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
 import { FlipMeshTrianglesOrientation, TransformMesh } from '../model/meshutils.js';
-import { Node, NodeType } from '../model/node.js';
+import { Node } from '../model/node.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
 import { UpdateMaterialTransparency } from './importerutils.js';
@@ -550,7 +550,6 @@ export class Importer3ds extends ImporterBase
                 let isMeshNode = this.meshNameToIndex.has (node3ds.name);
                 node.SetTransformation (GetNodeTransformation (node3ds, isMeshNode));
                 if (isMeshNode) {
-                    node.SetType (NodeType.MeshNode);
                     node.AddMeshIndex (this.meshNameToIndex.get (node3ds.name));
                 }
             }

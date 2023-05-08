@@ -2,7 +2,7 @@ import { IsObjectEmpty } from '../core/core.js';
 import { Coord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
 import { ArrayBufferToUtf8String } from '../io/bufferutils.js';
-import { Node, NodeType } from '../model/node.js';
+import { Node } from '../model/node.js';
 import { Mesh } from '../model/mesh.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
@@ -95,7 +95,6 @@ export class ImporterBim extends ImporterBase
         let meshIndex = this.model.AddMesh (mesh);
 
         let elementNode = new Node ();
-        elementNode.SetType (NodeType.MeshNode);
         elementNode.AddMeshIndex (meshIndex);
 
         let translation = new Coord3D (0.0, 0.0, 0.0);

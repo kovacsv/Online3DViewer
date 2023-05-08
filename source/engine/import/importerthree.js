@@ -5,7 +5,7 @@ import { Transformation } from '../geometry/transformation.js';
 import { Base64DataURIToArrayBuffer, CreateObjectUrl, GetFileExtensionFromMimeType } from '../io/bufferutils.js';
 import { GetFileExtension, GetFileName } from '../io/fileutils.js';
 import { PhongMaterial, TextureMap } from '../model/material.js';
-import { Node, NodeType } from '../model/node.js';
+import { Node } from '../model/node.js';
 import { ConvertThreeColorToColor, ConvertThreeGeometryToMesh, ThreeLinearToSRGBColorConverter, ThreeSRGBToLinearColorConverter } from '../threejs/threeutils.js';
 import { ImporterBase } from './importerbase.js';
 
@@ -134,9 +134,6 @@ export class ImporterThreeBase extends ImporterBase
                 AddObject (importer, model, childObject, node);
             }
             if (threeObject.isMesh && importer.IsMeshVisible (threeObject)) {
-                if (threeObject.children.length === 0) {
-                    node.SetType (NodeType.MeshNode);
-                }
                 let mesh = importer.ConvertThreeMesh (threeObject);
                 let meshIndex = model.AddMesh (mesh);
                 node.AddMeshIndex (meshIndex);

@@ -15,17 +15,10 @@ class NodeIdGenerator
     }
 }
 
-export const NodeType =
-{
-    GroupNode : 0,
-    MeshNode : 1
-};
-
 export class Node
 {
     constructor ()
     {
-        this.type = NodeType.GroupNode;
         this.name = '';
         this.parent = null;
         this.transformation = new Transformation ();
@@ -42,14 +35,9 @@ export class Node
         return this.childNodes.length === 0 && this.meshIndices.length === 0;
     }
 
-    GetType ()
+    IsMeshNode ()
     {
-        return this.type;
-    }
-
-    SetType (type)
-    {
-        this.type = type;
+        return this.childNodes.length === 0 && this.meshIndices.length === 1;
     }
 
     GetId ()

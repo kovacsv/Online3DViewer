@@ -1,4 +1,3 @@
-import { NodeType } from '../engine/model/node.js';
 import { MeshInstanceId } from '../engine/model/meshinstance.js';
 import { AddDiv, CreateDiv, ShowDomElement, ClearDomElement, InsertDomElementBefore, SetDomElementHeight, GetDomElementOuterHeight, IsDomElementVisible } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToElementBottomRight, ShowListPopup } from './dialogs.js';
@@ -147,7 +146,7 @@ export class NavigatorMeshesPanel extends NavigatorPanel
         const rootNode = importResult.model.GetRootNode ();
         let isHierarchical = false;
         for (let childNode of rootNode.GetChildNodes ()) {
-            if (childNode.GetType () === NodeType.GroupNode) {
+            if (childNode.ChildNodeCount () > 0) {
                 isHierarchical = true;
                 break;
             }
@@ -380,12 +379,12 @@ export class NavigatorMeshesPanel extends NavigatorPanel
             let meshNodes = [];
             for (let childNode of node.GetChildNodes ()) {
                 if (mode === MeshesPanelMode.TreeView) {
-                    if (childNode.GetType () === NodeType.GroupNode) {
+                    if (childNode.IsMeshNode ()) {
+                        meshNodes.push (childNode);
+                    } else {
                         let nodeItem = CreateNodeItem (panel, childNode);
                         parentItem.AddChild (nodeItem);
                         AddModelNodeToTree (panel, model, childNode, nodeItem, mode);
-                    } else if (childNode.GetType () === NodeType.MeshNode) {
-                        meshNodes.push (childNode);
                     }
                 } else {
                     AddModelNodeToTree (panel, model, childNode, parentItem, mode);

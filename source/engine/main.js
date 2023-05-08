@@ -54,7 +54,7 @@ import { GetMeshType, CalculateTriangleNormal, TransformMesh, FlipMeshTrianglesO
 import { Model } from './model/model.js';
 import { FinalizeModel, CheckModel } from './model/modelfinalization.js';
 import { IsModelEmpty, GetBoundingBox, GetTopology, IsTwoManifold, HasDefaultMaterial, ReplaceDefaultMaterialColor } from './model/modelutils.js';
-import { Node, NodeType } from './model/node.js';
+import { Node } from './model/node.js';
 import { Object3D, ModelObject3D } from './model/object.js';
 import { Property, PropertyGroup, PropertyToString, PropertyType } from './model/property.js';
 import { GetTriangleArea, GetTetrahedronSignedVolume, CalculateVolume, CalculateSurfaceArea } from './model/quantities.js';
@@ -253,7 +253,6 @@ export {
     HasDefaultMaterial,
     ReplaceDefaultMaterialColor,
     Node,
-    NodeType,
     Object3D,
     ModelObject3D,
     Property,

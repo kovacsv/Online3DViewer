@@ -11,7 +11,7 @@ import { LoadExternalLibrary } from '../io/externallibs.js';
 import { RGBColor, ColorComponentFromFloat, RGBColorFromFloatComponents, LinearToSRGB } from '../model/color.js';
 import { PhongMaterial, PhysicalMaterial, TextureMap } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
-import { Node, NodeType } from '../model/node.js';
+import { Node } from '../model/node.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
@@ -1057,9 +1057,6 @@ export class ImporterGltf extends ImporterBase
         }
 
         if (gltfNode.mesh !== undefined) {
-            if (gltfNode.children === undefined || gltfNode.children.length === 0) {
-                node.SetType (NodeType.MeshNode);
-            }
             let mesh = this.model.GetMesh (gltfNode.mesh);
             this.ImportProperties (mesh, gltfNode.extras, 'Node properties');
             node.AddMeshIndex (gltfNode.mesh);
