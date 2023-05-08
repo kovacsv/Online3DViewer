@@ -275,35 +275,49 @@ export class ExporterGltf extends ExporterBase
 
         function AddNode (model, jsonParent, jsonNodes, node)
         {
-            let nodeJson = {};
-            let nodeName = node.GetName ();
-            if (nodeName.length > 0) {
-                nodeJson.name = node.GetName ();
-            }
-            let transformation = node.GetTransformation ();
-            if (!transformation.IsIdentity ()) {
-                nodeJson.matrix = node.GetTransformation ().GetMatrix ().Get ();
-            }
+            if (node.IsMeshNode ()) {
+                for (let meshIndex of node.GetMeshIndices ()) {
+                    AddMeshNode (model, jsonParent, jsonNodes, node, meshIndex, true);
+                }
+            } else {
+                let nodeJson = {};
+                let nodeName = node.GetName ();
+                if (nodeName.length > 0) {
+                    nodeJson.name = node.GetName ();
+                }
+                let transformation = node.GetTransformation ();
+                if (!transformation.IsIdentity ()) {
+                    nodeJson.matrix = node.GetTransformation ().GetMatrix ().Get ();
+                }
 
-            if (node.ChildNodeCount () > 0 || node.MeshIndexCount () > 0) {
-                nodeJson.children = [];
-                AddChildNodes (model, nodeJson.children, jsonNodes, node);
-                if (nodeJson.children.length > 0) {
-                    jsonNodes.push (nodeJson);
-                    jsonParent.push (jsonNodes.length - 1);
+                if (node.ChildNodeCount () > 0 || node.MeshIndexCount () > 0) {
+                    nodeJson.children = [];
+                    AddChildNodes (model, nodeJson.children, jsonNodes, node);
+                    if (nodeJson.children.length > 0) {
+                        jsonNodes.push (nodeJson);
+                        jsonParent.push (jsonNodes.length - 1);
+                    }
                 }
             }
         }
 
-        function AddMeshNode (model, jsonParent, jsonNodes, node, meshIndex)
+        function AddMeshNode (model, jsonParent, jsonNodes, node, meshIndex, isStandaloneNode)
         {
             let meshInstanceId = new MeshInstanceId (node.GetId (), meshIndex);
             if (!model.IsMeshInstanceVisible (meshInstanceId)) {
                 return;
             }
+
             let nodeJson = {
                 mesh : model.MapMeshIndex (meshIndex)
             };
+            if (isStandaloneNode) {
+                let transformation = node.GetTransformation ();
+                if (!transformation.IsIdentity ()) {
+                    nodeJson.matrix = node.GetTransformation ().GetMatrix ().Get ();
+                }
+            }
+
             jsonNodes.push (nodeJson);
             jsonParent.push (jsonNodes.length - 1);
         }
@@ -314,7 +328,7 @@ export class ExporterGltf extends ExporterBase
                 AddNode (model, jsonParent, jsonNodes, childNode);
             }
             for (let meshIndex of node.GetMeshIndices ()) {
-                AddMeshNode (model, jsonParent, jsonNodes, node, meshIndex);
+                AddMeshNode (model, jsonParent, jsonNodes, node, meshIndex, false);
             }
         }
 
