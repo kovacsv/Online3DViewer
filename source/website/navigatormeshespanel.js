@@ -146,7 +146,7 @@ export class NavigatorMeshesPanel extends NavigatorPanel
         const rootNode = importResult.model.GetRootNode ();
         let isHierarchical = false;
         for (let childNode of rootNode.GetChildNodes ()) {
-            if (childNode.ChildNodeCount () > 0) {
+            if (childNode.ChildNodeCount () > 0 || childNode.MeshIndexCount () > 1) {
                 isHierarchical = true;
                 break;
             }
