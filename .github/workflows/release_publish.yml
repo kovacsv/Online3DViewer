@@ -21,7 +21,7 @@ jobs:
       - run: npm run create_dist
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/final/package/*"
+          artifacts: "build/package/engine/*"
           bodyFile: ".github/workflows/release_template.md"
           draft: true
           token: ${{ secrets.GITHUB_TOKEN }}
