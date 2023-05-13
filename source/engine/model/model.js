@@ -17,6 +17,15 @@ export class Model extends ModelObject3D
         return this.root;
     }
 
+    NodeCount ()
+    {
+        let count = 0;
+        this.root.Enumerate ((node) => {
+            count += 1;
+        });
+        return count - 1;
+    }
+
     MaterialCount ()
     {
         return this.materials.length;

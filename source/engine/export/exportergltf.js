@@ -273,31 +273,46 @@ export class ExporterGltf extends ExporterBase
             }
         }
 
+        function NodeHasVisibleChildren (model, node)
+        {
+            for (let meshIndex of node.GetMeshIndices ()) {
+                let meshInstanceId = new MeshInstanceId (node.GetId (), meshIndex);
+                if (model.IsMeshInstanceVisible (meshInstanceId)) {
+                    return true;
+                }
+            }
+            for (let childNode of node.GetChildNodes ()) {
+                if (NodeHasVisibleChildren (model, childNode)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         function AddNode (model, jsonParent, jsonNodes, node)
         {
             if (node.IsMeshNode ()) {
                 for (let meshIndex of node.GetMeshIndices ()) {
                     AddMeshNode (model, jsonParent, jsonNodes, node, meshIndex, true);
                 }
-            } else {
+            } else if (NodeHasVisibleChildren (model, node)) {
                 let nodeJson = {};
+
                 let nodeName = node.GetName ();
                 if (nodeName.length > 0) {
-                    nodeJson.name = node.GetName ();
+                    nodeJson.name = nodeName;
                 }
+
                 let transformation = node.GetTransformation ();
                 if (!transformation.IsIdentity ()) {
                     nodeJson.matrix = node.GetTransformation ().GetMatrix ().Get ();
                 }
 
-                if (node.ChildNodeCount () > 0 || node.MeshIndexCount () > 0) {
-                    nodeJson.children = [];
-                    AddChildNodes (model, nodeJson.children, jsonNodes, node);
-                    if (nodeJson.children.length > 0) {
-                        jsonNodes.push (nodeJson);
-                        jsonParent.push (jsonNodes.length - 1);
-                    }
-                }
+                jsonNodes.push (nodeJson);
+                jsonParent.push (jsonNodes.length - 1);
+
+                nodeJson.children = [];
+                AddChildNodes (model, nodeJson.children, jsonNodes, node);
             }
         }
 

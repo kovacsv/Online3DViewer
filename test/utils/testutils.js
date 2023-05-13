@@ -421,7 +421,7 @@ export function CreateHierarchicalTestModelForExport ()
 
     let material2 = new OV.PhongMaterial ();
     material2.name = 'Material 2';
-    material1.color = new OV.RGBColor (0, 255, 0);
+    material2.color = new OV.RGBColor (0, 255, 0);
     model.AddMaterial (material2);
 
     let material3 = new OV.PhongMaterial ();
