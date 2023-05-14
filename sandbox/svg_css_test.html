@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+	<title>SVG CSS Styling Test</title>
+
+    <style>
+        :root
+        {
+            --circle_color: green;
+        }
+
+        svg
+        {
+            width: 95px;
+            height: 50px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <svg><use href="svg_css_test.svg#test"></use></svg>
+    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    <svg
+       width="95"
+       height="50"
+       viewBox="0 0 25 13"
+       version="1.1"
+       id="test"
+       xmlns="http://www.w3.org/2000/svg"
+       xmlns:svg="http://www.w3.org/2000/svg">
+      <g
+         id="layer1">
+        <circle
+           style="fill:#0000ff;stroke:none;"
+           id="path238"
+           cx="6.614583"
+           cy="6.6145835"
+           r="5.2916665" />
+        <circle
+           style="fill:var(--circle_color);stroke:none;"
+           id="path238-7"
+           cx="18.520834"
+           cy="6.6145835"
+           r="5.2916665" />
+      </g>
+    </svg>
+</body>
+
+</html>
