@@ -36,7 +36,7 @@ import { ImporterOff } from './import/importeroff.js';
 import { ImporterPly } from './import/importerply.js';
 import { ImporterStl } from './import/importerstl.js';
 import { ImporterThreeSvg } from './import/importersvg.js';
-import { ImporterThreeBase, ImporterThreeFbx, ImporterThreeDae, ImporterThreeWrl, ImporterThree3mf } from './import/importerthree.js';
+import { ImporterThreeBase, ImporterThreeFbx, ImporterThreeDae, ImporterThreeWrl, ImporterThree3mf, ImporterThreeAmf } from './import/importerthree.js';
 import { ColorToMaterialConverter, NameFromLine, ParametersFromLine, ReadLines, IsPowerOfTwo, NextPowerOfTwo, UpdateMaterialTransparency } from './import/importerutils.js';
 import { BinaryReader } from './io/binaryreader.js';
 import { BinaryWriter } from './io/binarywriter.js';
@@ -172,6 +172,7 @@ export {
     ImporterThreeDae,
     ImporterThreeWrl,
     ImporterThree3mf,
+    ImporterThreeAmf,
     ColorToMaterialConverter,
     NameFromLine,
     ParametersFromLine,

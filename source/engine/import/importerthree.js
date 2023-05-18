@@ -15,6 +15,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader.js';
 import { VRMLLoader } from 'three/examples/jsm/loaders/VRMLLoader.js';
 import { ThreeMFLoader } from 'three/examples/jsm/loaders/3MFLoader.js';
+import { AMFLoader } from 'three/examples/jsm/loaders/AMFLoader.js';
 
 export class ImporterThreeBase extends ImporterBase
 {
@@ -399,6 +400,34 @@ export class ImporterThree3mf extends ImporterThreeBase
     CreateLoader (manager)
     {
         return new ThreeMFLoader (manager);
+    }
+
+    GetMainObject (loadedObject)
+    {
+        return loadedObject;
+    }
+}
+
+export class ImporterThreeAmf extends ImporterThreeBase
+{
+    constructor ()
+    {
+        super ();
+    }
+
+    CanImportExtension (extension)
+    {
+        return extension === 'amf';
+    }
+
+    GetUpDirection ()
+    {
+        return Direction.Z;
+    }
+
+    CreateLoader (manager)
+    {
+        return new AMFLoader (manager);
     }
 
     GetMainObject (loadedObject)

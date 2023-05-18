@@ -23,7 +23,7 @@ The repository is separated into two parts.
 
 ## Supported file formats
 
-* **Import**: obj, 3ds, stl, ply, gltf, glb, off, 3dm, fbx, dae, wrl, 3mf, ifc, brep, step, iges, fcstd, bim.
+* **Import**: obj, 3ds, stl, ply, gltf, glb, off, 3dm, fbx, dae, wrl, 3mf, amf, ifc, brep, step, iges, fcstd, bim.
 * **Export**: obj, stl, ply, gltf, glb, off, 3dm, bim.
 
 ## Features
