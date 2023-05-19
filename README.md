@@ -4,7 +4,9 @@
 [![npm version](https://badge.fury.io/js/online-3d-viewer.svg)](https://badge.fury.io/js/online-3d-viewer)
 [![DeepScan grade](https://deepscan.io/api/teams/16586/projects/19893/branches/524595/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=16586&pid=19893&bid=524595)
 
-Online 3D Viewer (https://3dviewer.net) is a free and open source web solution to visualize and explore 3D models right in your browser. This repository contains the source code of the website and the library behind it.
+Online 3D Viewer (https://3dviewer.net) is a free and open source web solution to visualize and explore 3D models in your browser. This repository contains the source code of the website and the library behind it.
+
+[Live website](https://3dviewer.net) &nbsp;&#128900;&nbsp; [Website documentation](https://3dviewer.net/info) &nbsp;&#128900;&nbsp; [Developer documentation](https://kovacsv.github.io/Online3DViewer)
 
 ## Example
 
@@ -12,40 +14,10 @@ Online 3D Viewer (https://3dviewer.net) is a free and open source web solution t
 
 [Check the live version!](https://3dviewer.net/#model=https://raw.githubusercontent.com/kovacsv/Online3DViewer/dev/test/testfiles/gltf/DamagedHelmet/glTF-Binary/DamagedHelmet.glb)
 
-## Documentation
-
-The repository is separated into two parts.
-
-* **Online 3D Viewer Website**: Source code of the web solution with all of the pages and functions.
-* **Online 3D Viewer Engine**: Source code of the library to visualize models easily.
-
-[Engine documentation is available here.](https://kovacsv.github.io/Online3DViewer)
-
 ## Supported file formats
 
 * **Import**: obj, 3ds, stl, ply, gltf, glb, off, 3dm, fbx, dae, wrl, 3mf, amf, ifc, brep, step, iges, fcstd, bim.
 * **Export**: obj, stl, ply, gltf, glb, off, 3dm, bim.
-
-## Features
-
-- Import model:
-  - Select files from a file browser dialog.
-  - Drag and drop files from your computer.
-  - Specify files by web url.
-  - Specify files by web url in hash parameters.
-- Explore model:
-  - Orbit, pan, zoom.
-  - Set up direction.
-  - Fit to window.
-- Investigate model:
-  - List used and missing files.
-  - List all materials and meshes.
-  - Show/hide and zoom to a specific mesh.
-  - List materials used by a specific mesh.
-  - Show model information (model size, vertex and polygon count).
-  - Show custom properties stored in the model.
-- Export model to various format.
-- Embed viewer in your website.
 
 ## External Libraries
 
