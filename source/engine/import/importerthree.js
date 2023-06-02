@@ -340,6 +340,7 @@ export class ImporterThreeWrl extends ImporterThreeBase
     constructor ()
     {
         super ();
+        this.colorConverter = new ThreeLinearToSRGBColorConverter ();
     }
 
     CanImportExtension (extension)

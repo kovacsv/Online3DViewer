@@ -87,7 +87,8 @@ export class ShadingModel
     SetEnvironmentMapSettings (environmentSettings, onLoaded)
     {
         let loader = new THREE.CubeTextureLoader ();
-        this.environment = loader.load (environmentSettings.textureNames, () => {
+        this.environment = loader.load (environmentSettings.textureNames, (texture) => {
+            texture.colorSpace = THREE.LinearSRGBColorSpace;
             onLoaded ();
         });
         this.environmentSettings = environmentSettings;
