@@ -67,20 +67,10 @@ a:hover
 
 }
 
-@media only screen and (max-width: 800px)
+@media (max-width: 800px)
 {
 
 .only_full_width
-{
-	display: none;
-}
-
-}
-
-@media only screen and (max-height: 800px)
-{
-
-.only_full_height
 {
 	display: none;
 }

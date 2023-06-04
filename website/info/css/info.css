@@ -182,7 +182,7 @@ div.main
 	overflow: auto;
 }
 
-@media only screen and (max-width: 500px)
+@media (max-width: 500px)
 {
 
 div.logo img.logo_with_text
@@ -197,7 +197,7 @@ div.logo img.logo_without_text
 
 }
 
-@media only screen and (max-width: 1000px)
+@media (max-width: 1000px)
 {
 
 div.frame

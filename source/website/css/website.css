@@ -27,12 +27,6 @@ div.title div.title_left
 	float: left;
 }
 
-div.title img.logo_image
-{
-	height: 40px;
-	float: left;
-}
-
 div.title svg.logo_image
 {
 	width: 190px;
@@ -78,24 +72,65 @@ div.intro
 	display: none;
 }
 
+div.intro_content
+{
+	width: 500px;
+	max-width: 90%;
+	margin: 50px auto;
+}
+
+div.intro div.intro_logo
+{
+	border-bottom: 1px solid var(--ov_border_color);
+	padding-bottom: 30px;
+}
+
 div.intro svg.intro_logo
 {
-	display: inline;
-	width: 140px;
-	height: 140px;
-	max-width: 80%;
+	width: 381px;
+	height: 80px;
+	max-width: 90%;
+	margin-bottom: 20px;
 }
 
-div.intro div.intro_section
+div.intro div.intro_formats
 {
-	font-size: 21px;
-	margin: 50px 0px;
+	margin-top: 30px;
 }
 
-div.intro div.intro_big_text
+div.intro div.intro_dragdrop_text
 {
 	font-size: 30px;
-	line-height: 50px;
+}
+
+div.intro div.intro_formats_title
+{
+	font-size: 25px;
+	margin-bottom: 15px;
+}
+
+div.intro div.intro_file_formats
+{
+	margin: 0px auto;
+}
+
+div.intro div.intro_file_formats a
+{
+	color: var(--ov_outline_button_text_color);
+	text-decoration: none;
+	font-size: 17px;
+	width: 50px;
+	border-radius: 5px;
+	padding: 4px 8px;
+	margin: 6px 4px;
+	border: 1px solid var(--ov_outline_button_color);
+	display: inline-block;
+	cursor: pointer;
+}
+
+div.intro div.intro_file_formats a:hover
+{
+	background: var(--ov_outline_button_hover_color);
 }
 
 div.main
@@ -320,19 +355,27 @@ div.ov_toolbar div.ov_toolbar_button:hover
 
 }
 
-@media only screen and (max-width: 800px)
+@media (max-width: 350px), (max-height: 700px)
 {
 
-div.intro div.intro_section
+div.intro_content
 {
-	font-size: 18px;
-	line-height: 20px;
+	margin: 0px auto;
 }
 
-div.intro div.intro_big_text
+div.intro div.intro_logo
 {
-	font-size: 23px;
-	line-height: 30px;
+	display: none;
+}
+
+}
+
+@media (max-width: 800px)
+{
+
+div.intro_content
+{
+	width: auto;
 }
 
 div.main_viewer canvas
@@ -354,16 +397,6 @@ div.ov_progress
 div.ov_bottom_floating_panel
 {
 	padding: 10px;
-}
-
-}
-
-@media only screen and (max-height: 700px)
-{
-
-div.intro div.intro_section
-{
-	margin: 18px 0px;
 }
 
 }

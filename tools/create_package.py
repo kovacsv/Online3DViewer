@@ -71,10 +71,6 @@ def CreateWebsite (rootDir, websiteDir, version, testBuild):
 		if os.path.exists (analyticsFile) and not testBuild:
 			analyticsContent = Utils.GetFileContent (analyticsFile)
 			replacer.ReplaceTokenContent ('<!-- analytics start -->', '<!-- analytics end -->', analyticsContent)
-		introFile = os.path.join (rootDir, 'plugins', 'website_intro_data.txt')
-		if os.path.exists (introFile):
-			introContent = Utils.GetFileContent (introFile)
-			replacer.ReplaceTokenContent ('<!-- intro start -->', '<!-- intro end -->', introContent)
 		replacer.WriteToFile (htmlFilePath)
 
 def CreateEnginePackage (rootDir, engineDir, websiteDir):
