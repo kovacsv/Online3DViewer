@@ -76,13 +76,15 @@ div.intro_content
 {
 	width: 500px;
 	max-width: 90%;
-	margin: 50px auto;
+	margin: 0px auto;
+	position: relative;
 }
 
 div.intro div.intro_logo
 {
 	border-bottom: 1px solid var(--ov_border_color);
 	padding-bottom: 30px;
+	margin-bottom: 30px;
 }
 
 div.intro svg.intro_logo
@@ -91,11 +93,6 @@ div.intro svg.intro_logo
 	height: 80px;
 	max-width: 90%;
 	margin-bottom: 20px;
-}
-
-div.intro div.intro_formats
-{
-	margin-top: 30px;
 }
 
 div.intro div.intro_dragdrop_text

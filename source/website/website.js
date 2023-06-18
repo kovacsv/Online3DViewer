@@ -4,7 +4,7 @@ import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
 import { CameraMode } from '../engine/viewer/camera.js';
 import { RGBColor } from '../engine/model/color.js';
 import { Viewer } from '../engine/viewer/viewer.js';
-import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth } from '../engine/viewer/domutils.js';
+import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth, GetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToScreen, ShowListPopup } from './dialogs.js';
 import { HandleEvent } from './eventhandler.js';
 import { HashHandler } from './hashhandler.js';
@@ -172,6 +172,10 @@ class WebsiteLayouter
 
         SetDomElementOuterHeight (this.parameters.introDiv, contentHeight);
         this.viewer.Resize (contentWidth - safetyMargin, contentHeight);
+
+        let introContentHeight = GetDomElementOuterHeight (this.parameters.introContentDiv);
+        let introContentTop = (contentHeight - introContentHeight) / 3.0;
+        this.parameters.introContentDiv.style.top = introContentTop.toString () + 'px';
 
         this.measureTool.Resize ();
     }
