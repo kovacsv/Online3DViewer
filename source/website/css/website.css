@@ -207,6 +207,11 @@ div.ov_toolbar div.ov_toolbar_button
 	padding: 10px;
 }
 
+div.ov_toolbar div.ov_toolbar_button.align_right
+{
+	float: right;
+}
+
 div.ov_toolbar div.ov_toolbar_button.selected
 {
 	background: var(--ov_toolbar_selected_color);

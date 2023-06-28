@@ -3,7 +3,7 @@ import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight } from 
 import { AddRangeSlider, AddToggle, AddCheckbox } from '../website/utils.js';
 import { CalculatePopupPositionToElementTopLeft } from './dialogs.js';
 import { PopupDialog } from './dialog.js';
-import { Settings, Theme } from './settings.js';
+import { Settings } from './settings.js';
 import { SidebarPanel } from './sidebarpanel.js';
 import { ShadingType } from '../engine/threejs/threeutils.js';
 import { CameraMode } from '../engine/viewer/camera.js';
@@ -416,45 +416,6 @@ class SettingsImportParametersSection extends SettingsSection
     }
 }
 
-class SettingsAppearanceSection extends SettingsSection
-{
-    constructor (parentDiv, settings)
-    {
-        super (parentDiv, 'Appearance', settings);
-        this.darkModeToggle = null;
-    }
-
-    Init (callbacks)
-    {
-        super.Init (callbacks);
-
-        let darkModeParameterDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
-
-        this.darkModeToggle = AddToggle (darkModeParameterDiv, 'ov_sidebar_parameter_toggle');
-        this.darkModeToggle.OnChange (() => {
-            this.settings.themeId = (this.darkModeToggle.GetStatus () ? Theme.Dark : Theme.Light);
-            this.callbacks.onThemeChanged ();
-        });
-        AddDiv (darkModeParameterDiv, null, 'Dark Mode');
-
-        let isDarkMode = (this.settings.themeId === Theme.Dark);
-        this.darkModeToggle.SetStatus (isDarkMode);
-    }
-
-    Update ()
-    {
-        if (this.darkModeToggle !== null) {
-            let isDarkMode = (this.settings.themeId === Theme.Dark);
-            this.darkModeToggle.SetStatus (isDarkMode);
-        }
-    }
-
-    UpdateVisibility ()
-    {
-
-    }
-}
-
 export class SidebarSettingsPanel extends SidebarPanel
 {
     constructor (parentDiv, settings)
@@ -465,7 +426,6 @@ export class SidebarSettingsPanel extends SidebarPanel
         this.sectionsDiv = AddDiv (this.contentDiv, 'ov_sidebar_settings_sections ov_thin_scrollbar');
         this.modelDisplaySection = new SettingsModelDisplaySection (this.sectionsDiv, this.settings);
         this.importParametersSection = new SettingsImportParametersSection (this.sectionsDiv, this.settings);
-        this.appearanceSection = new SettingsAppearanceSection (this.sectionsDiv, this.settings);
 
         this.resetToDefaultsButton = AddDiv (this.contentDiv, 'ov_button ov_panel_button outline', 'Reset to Default');
         this.resetToDefaultsButton.addEventListener ('click', () => {
@@ -492,7 +452,6 @@ export class SidebarSettingsPanel extends SidebarPanel
     {
         this.modelDisplaySection.Clear ();
         this.importParametersSection.Clear ();
-        this.appearanceSection.Clear ();
     }
 
     Init (callbacks)
@@ -530,20 +489,12 @@ export class SidebarSettingsPanel extends SidebarPanel
                 this.callbacks.onDefaultColorChanged ();
             }
         });
-        this.appearanceSection.Init ({
-            onThemeChanged : () => {
-                if (this.settings.themeId === Theme.Light) {
-                    this.settings.backgroundColor = new RGBAColor (255, 255, 255, 255);
-                    this.settings.defaultColor = new RGBColor (200, 200, 200);
-                } else if (this.settings.themeId === Theme.Dark) {
-                    this.settings.backgroundColor = new RGBAColor (42, 43, 46, 255);
-                    this.settings.defaultColor = new RGBColor (200, 200, 200);
-                }
-                this.modelDisplaySection.Update ();
-                this.importParametersSection.Update ();
-                callbacks.onThemeChanged ();
-            }
-        });
+    }
+
+    UpdateControlsStatus ()
+    {
+        this.modelDisplaySection.Update ();
+        this.importParametersSection.Update ();
     }
 
     UpdateControlsVisibility ()
@@ -555,7 +506,8 @@ export class SidebarSettingsPanel extends SidebarPanel
 
     ResetToDefaults ()
     {
-        let defaultSettings = new Settings ();
+        console.log (this.settings.themeId);
+        let defaultSettings = new Settings (this.settings.themeId);
 
         this.settings.environmentMapName = defaultSettings.environmentMapName;
         this.settings.backgroundIsEnvMap = defaultSettings.backgroundIsEnvMap;
@@ -563,13 +515,9 @@ export class SidebarSettingsPanel extends SidebarPanel
         this.settings.defaultColor = defaultSettings.defaultColor;
         this.settings.edgeSettings = defaultSettings.edgeSettings;
         this.settings.themeId = defaultSettings.themeId;
-
-        this.modelDisplaySection.Update ();
-        this.importParametersSection.Update ();
-        this.appearanceSection.Update ();
-
+        console.log (this.settings.themeId);
+        this.UpdateControlsStatus ();
         this.callbacks.onEnvironmentMapChanged ();
-        this.callbacks.onThemeChanged ();
     }
 
     Resize ()

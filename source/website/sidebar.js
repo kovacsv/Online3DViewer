@@ -62,11 +62,13 @@ export class Sidebar
             },
             onEdgeDisplayChanged : () => {
                 this.callbacks.onEdgeDisplayChanged ();
-            },
-            onThemeChanged : () => {
-                this.callbacks.onThemeChanged ();
             }
         });
+    }
+
+    UpdateControlsStatus ()
+    {
+        this.settingsPanel.UpdateControlsStatus ();
     }
 
     UpdateControlsVisibility ()

@@ -186,7 +186,7 @@ export class Website
     constructor (parameters)
     {
         this.parameters = parameters;
-        this.settings = new Settings ();
+        this.settings = new Settings (Theme.Light);
         this.viewer = new Viewer ();
         this.measureTool = new MeasureTool (this.viewer, this.settings);
         this.hashHandler = new HashHandler ();
@@ -566,8 +566,12 @@ export class Website
     {
         this.settings.themeId = newThemeId;
         this.themeHandler.SwitchTheme (this.settings.themeId);
-        this.settings.SaveToCookies ();
         if (resetColors) {
+            let defaultSettings = new Settings (this.settings.themeId);
+            this.settings.backgroundColor = defaultSettings.backgroundColor;
+            this.settings.defaultColor = defaultSettings.defaultColor;
+            this.sidebar.UpdateControlsStatus ();
+
             this.viewer.SetBackgroundColor (this.settings.backgroundColor);
             let modelLoader = this.modelLoaderUI.GetModelLoader ();
             if (modelLoader.GetDefaultMaterial () !== null) {
@@ -575,6 +579,8 @@ export class Website
                 modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
             }
         }
+
+        this.settings.SaveToCookies ();
     }
 
     InitViewer ()
@@ -666,7 +672,7 @@ export class Website
         AddButton (this.toolbar, 'flip', 'Flip up vector', ['only_on_model'], () => {
             this.viewer.FlipUpVector ();
         });
-        AddSeparator (this.toolbar, ['only_on_model']);
+        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, ['only_full_width', 'only_on_model'], (buttonIndex) => {
             if (buttonIndex === 0) {
                 this.viewer.SetFixUpVector (true);
@@ -675,7 +681,7 @@ export class Website
             }
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddRadioButton (this.toolbar, ['camera_perspective', 'camera_orthographic'], ['Perspective camera', 'Orthographic camera'], 0, ['only_on_model'], (buttonIndex) => {
+        AddRadioButton (this.toolbar, ['camera_perspective', 'camera_orthographic'], ['Perspective camera', 'Orthographic camera'], 0, ['only_full_width', 'only_on_model'], (buttonIndex) => {
             if (buttonIndex === 0) {
                 this.viewer.SetCameraMode (CameraMode.Perspective);
             } else if (buttonIndex === 1) {
@@ -723,6 +729,17 @@ export class Website
                     return this.model;
                 }
             });
+        });
+
+        let selectedTheme = (this.settings.themeId === Theme.Light ? 1 : 0);
+        AddRadioButton (this.toolbar, ['dark_mode', 'light_mode'], ['Dark mode', 'Light mode'], selectedTheme, ['align_right'], (buttonIndex) => {
+            if (buttonIndex === 0) {
+                this.settings.themeId = Theme.Dark;
+            } else if (buttonIndex === 1) {
+                this.settings.themeId = Theme.Light;
+            }
+            HandleEvent ('theme_changed', this.settings.themeId === Theme.Light ? 'light' : 'dark');
+            this.SwitchTheme (this.settings.themeId, true);
         });
 
         this.parameters.fileInput.addEventListener ('change', (ev) => {
@@ -795,10 +812,6 @@ export class Website
             onEdgeDisplayChanged : () => {
                 HandleEvent ('edge_display_changed', this.settings.showEdges ? 'on' : 'off');
                 this.UpdateEdgeDisplay ();
-            },
-            onThemeChanged : () => {
-                HandleEvent ('theme_changed', this.settings.themeId === Theme.Light ? 'light' : 'dark');
-                this.SwitchTheme (this.settings.themeId, true);
             },
             onResizeRequested : () => {
                 this.layouter.Resize ();
