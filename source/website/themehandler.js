@@ -27,6 +27,7 @@ export class ThemeHandler
             '--ov_treeview_selected_color': {},
             '--ov_dialog_foreground_color': {},
             '--ov_dialog_background_color': {},
+            '--ov_dialog_control_border_color': {},
             '--ov_border_color': {},
             '--ov_shadow': {}
         };

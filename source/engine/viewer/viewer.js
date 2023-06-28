@@ -587,7 +587,7 @@ export class Viewer
         };
     }
 
-    GetImageAsDataUrl (width, height)
+    GetImageAsDataUrl (width, height, isTransparent)
     {
         let originalSize = this.GetImageSize ();
         let renderWidth = width;
@@ -596,10 +596,15 @@ export class Viewer
             renderWidth /= window.devicePixelRatio;
             renderHeight /= window.devicePixelRatio;
         }
+        let clearAlpha = this.renderer.getClearAlpha ();
+        if (isTransparent) {
+            this.renderer.setClearAlpha (0.0);
+        }
         this.ResizeRenderer (renderWidth, renderHeight);
         this.Render ();
         let url = this.renderer.domElement.toDataURL ();
         this.ResizeRenderer (originalSize.width, originalSize.height);
+        this.renderer.setClearAlpha (clearAlpha);
         return url;
     }
 

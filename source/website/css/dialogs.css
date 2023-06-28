@@ -79,7 +79,7 @@ div.ov_dialog div.ov_dialog_submessage
 div.ov_dialog input.ov_dialog_text
 {
 	padding: 5px;
-	border: 1px solid var(--ov_border_color);
+	border: 1px solid var(--ov_dialog_control_border_color);
 	border-radius: 5px;
 	overflow: auto;
 }
@@ -89,7 +89,7 @@ div.ov_dialog textarea.ov_dialog_textarea
 	margin: 10px 0px;
 	width: 100%;
 	height: 120px;
-	border: 1px solid var(--ov_border_color);
+	border: 1px solid var(--ov_dialog_control_border_color);
 	box-sizing: border-box;
 }
 
@@ -130,7 +130,7 @@ div.ov_dialog div.ov_dialog_file_link div.ov_dialog_file_link_text
 div.ov_dialog div.ov_dialog_copyable_input
 {
 	padding: 3px;
-	border: 1px solid var(--ov_border_color);
+	border: 1px solid var(--ov_dialog_control_border_color);
 	border-radius: 5px;
 	overflow: auto;
 }
@@ -176,6 +176,7 @@ div.ov_dialog div.ov_dialog_row_value
 div.ov_dialog select.ov_select
 {
 	width: 100%;
+	border: 1px solid var(--ov_dialog_control_border_color);
 	box-sizing: border-box;
 }
 
@@ -251,20 +252,27 @@ div.ov_progress div.ov_progress_text
 	text-align: center;
 }
 
-div.ov_snapshot_dialog_left
+div.ov_snapshot_dialog
 {
-	width: 190px;
-	float: left;
+	width: 480px;
+	float: right;
+}
+
+div.ov_snapshot_dialog_options
+{
+	width: 230px;
+	float: right;
 }
 
 img.ov_snapshot_dialog_preview
 {
 	background: var(--ov_border_color);
-	border: 1px solid var(--ov_border_color);
-	width: 183px;
-	height: 183px;
+	border: 1px solid var(--ov_dialog_control_border_color);
+	width: 230px;
+	height: 230px;
 	object-fit: contain;
-	float: right;
+	float: left;
+	border-radius: 5px;
 }
 
 div.ov_snapshot_dialog_param_name
@@ -280,6 +288,12 @@ input.ov_snapshot_dialog_param_value
 	width: 80px;
 	text-align: right;
 	float: left;
+}
+
+div.ov_snapshot_dialog_separator
+{
+	margin: 10px 0px;
+	border-bottom: 1px solid var(--ov_border_color);
 }
 
 @media (hover)

@@ -22,7 +22,7 @@
             for (let embeddedViewer of embeddedViewers) {
                 let viewer = embeddedViewer.GetViewer ();
                 let img = document.createElement ('img');
-                img.src = viewer.GetImageAsDataUrl (400, 300);
+                img.src = viewer.GetImageAsDataUrl (400, 300, false);
                 document.body.appendChild (img);
             }
         }

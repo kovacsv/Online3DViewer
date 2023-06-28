@@ -1,8 +1,8 @@
-import { AddDiv, CreateDomElement } from '../engine/viewer/domutils.js';
-import { AddNumberInput, AddRadioButton } from '../website/utils.js';
+import { AddDiv, AddDomElement, CreateDomElement } from '../engine/viewer/domutils.js';
+import { AddCheckbox, AddNumberInput, AddRadioButton } from '../website/utils.js';
 import { ButtonDialog } from './dialog.js';
 import { DownloadUrlAsFile } from './utils.js';
-import { CookieGetIntVal, CookieGetStringVal, CookieSetIntVal, CookieSetStringVal } from './cookiehandler.js';
+import { CookieGetBoolVal, CookieGetIntVal, CookieGetStringVal, CookieSetBoolVal, CookieSetIntVal, CookieSetStringVal } from './cookiehandler.js';
 import { HandleEvent } from './eventhandler.js';
 
 export function ShowSnapshotDialog (viewer)
@@ -13,19 +13,19 @@ export function ShowSnapshotDialog (viewer)
         AddRadioButton (line, id, 'snapshot_size', text, isSelected, onChange);
     }
 
-    function GetImageUrl (viewer, size)
+    function GetImageUrl (viewer, size, isTransparent)
     {
         let width = parseInt (size[0], 10);
         let height = parseInt (size[1], 10);
         if (width < 1 || height < 1) {
             return null;
         }
-        return viewer.GetImageAsDataUrl (size[0], size[1]);
+        return viewer.GetImageAsDataUrl (size[0], size[1], isTransparent);
     }
 
-    function UpdatePreview (viewer, previewImage, size)
+    function UpdatePreview (viewer, previewImage, size, isTransparent)
     {
-        let url = GetImageUrl (viewer, size);
+        let url = GetImageUrl (viewer, size, isTransparent);
         previewImage.src = url;
     }
 
@@ -62,6 +62,7 @@ export function ShowSnapshotDialog (viewer)
     }
 
     let selectedIndex = 0;
+    let isTransparent = CookieGetBoolVal ('ov_last_snapshot_transparent', false);
     let customIndex = 3;
     let sizes = [
         {
@@ -98,7 +99,7 @@ export function ShowSnapshotDialog (viewer)
             onClick () {
                 dialog.Close ();
                 HandleEvent ('snapshot_created', sizes[selectedIndex].name);
-                let url = GetImageUrl (viewer, GetSize (sizes, selectedIndex));
+                let url = GetImageUrl (viewer, GetSize (sizes, selectedIndex), isTransparent);
                 if (url !== null) {
                     DownloadUrlAsFile (url, 'model.png');
                 }
@@ -106,8 +107,13 @@ export function ShowSnapshotDialog (viewer)
         }
     ]);
 
-    let optionsDiv = AddDiv (contentDiv, 'ov_snapshot_dialog_left');
+    let dialogDiv = dialog.GetContentDiv ();
+    dialogDiv.classList.add ('ov_snapshot_dialog');
+
     let previewImage = CreateDomElement ('img', 'ov_snapshot_dialog_preview');
+    contentDiv.appendChild (previewImage);
+
+    let optionsDiv = AddDiv (contentDiv, 'ov_snapshot_dialog_options');
 
     let lastSnapshotSizeName = CookieGetStringVal ('ov_last_snapshot_size', sizes[1].name);
     for (let i = 0; i < sizes.length; i++) {
@@ -124,25 +130,32 @@ export function ShowSnapshotDialog (viewer)
         AddSizeRadioButton (optionsDiv, 'snapshot_' + i.toString (), size.name, selected, () => {
             selectedIndex = i;
             CookieSetStringVal ('ov_last_snapshot_size', size.name);
-            UpdatePreview (viewer, previewImage, GetSize (sizes, i));
+            UpdatePreview (viewer, previewImage, GetSize (sizes, i), isTransparent);
             UpdateCustomStatus (sizes, customIndex, selectedIndex);
         });
     }
 
     customSize.widthInput = AddWidthHeightNumberInput (optionsDiv, 'Width', (val) => {
-        UpdatePreview (viewer, previewImage, GetSize (sizes, selectedIndex));
+        UpdatePreview (viewer, previewImage, GetSize (sizes, selectedIndex), isTransparent);
         CookieSetIntVal ('ov_snapshot_custom_width', val);
     });
     customSize.heightInput = AddWidthHeightNumberInput (optionsDiv, 'Height', (val) => {
-        UpdatePreview (viewer, previewImage, GetSize (sizes, selectedIndex));
+        UpdatePreview (viewer, previewImage, GetSize (sizes, selectedIndex), isTransparent);
         CookieSetIntVal ('ov_snapshot_custom_height', val);
     });
     customSize.widthInput.value = CookieGetIntVal ('ov_snapshot_custom_width', 1000);
     customSize.heightInput.value = CookieGetIntVal ('ov_snapshot_custom_height', 1000);
     UpdateCustomStatus (sizes, customIndex, selectedIndex);
 
-    contentDiv.appendChild (previewImage);
-    UpdatePreview (viewer, previewImage, GetSize (sizes, selectedIndex));
+    AddDomElement (optionsDiv, 'div', 'ov_snapshot_dialog_separator', null);
+
+    let transparentCheckbox = AddCheckbox (optionsDiv, 'snapshot_transparent_background', 'Transparent background', isTransparent, () => {
+        isTransparent = transparentCheckbox.checked;
+        UpdatePreview (viewer, previewImage, GetSize (sizes, selectedIndex), isTransparent);
+        CookieSetBoolVal ('ov_last_snapshot_transparent', isTransparent);
+    });
+
+    UpdatePreview (viewer, previewImage, GetSize (sizes, selectedIndex), isTransparent);
 
     dialog.Open ();
     return dialog;
