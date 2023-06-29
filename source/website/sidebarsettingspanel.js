@@ -506,7 +506,6 @@ export class SidebarSettingsPanel extends SidebarPanel
 
     ResetToDefaults ()
     {
-        console.log (this.settings.themeId);
         let defaultSettings = new Settings (this.settings.themeId);
 
         this.settings.environmentMapName = defaultSettings.environmentMapName;
@@ -515,7 +514,6 @@ export class SidebarSettingsPanel extends SidebarPanel
         this.settings.defaultColor = defaultSettings.defaultColor;
         this.settings.edgeSettings = defaultSettings.edgeSettings;
         this.settings.themeId = defaultSettings.themeId;
-        console.log (this.settings.themeId);
         this.UpdateControlsStatus ();
         this.callbacks.onEnvironmentMapChanged ();
     }
