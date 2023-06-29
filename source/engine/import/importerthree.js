@@ -193,7 +193,10 @@ export class ImporterThreeBase extends ImporterBase
             return this.materialIdToIndex.get (threeMaterial.id);
         }
         let material = this.ConvertThreeMaterial (threeMaterial);
-        let materialIndex = this.model.AddMaterial (material);
+        let materialIndex = null;
+        if (material !== null) {
+            materialIndex = this.model.AddMaterial (material);
+        }
         this.materialIdToIndex.set (threeMaterial.id, materialIndex);
         return materialIndex;
     }
@@ -248,6 +251,10 @@ export class ImporterThreeBase extends ImporterBase
             } catch (err) {
                 return null;
             }
+        }
+
+        if (threeMaterial.name === THREE.Loader.DEFAULT_MATERIAL_NAME) {
+            return null;
         }
 
         let material = new PhongMaterial ();
