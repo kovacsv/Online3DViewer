@@ -66,11 +66,17 @@ export class ImporterOcct extends ImporterBase
             this.model.SetUnit (Unit.Millimeter);
         }
 
+        let params = {
+            linearUnit: 'millimeter',
+            linearDeflectionType: 'bounding_box_ratio',
+            linearDeflection: 0.001,
+            angularDeflection: 0.5
+        };
         let fileBuffer = new Uint8Array (fileContent);
         this.worker.postMessage ({
             format : format,
             buffer : fileBuffer,
-            params : null
+            params : params
         });
     }
 
