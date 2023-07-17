@@ -62,7 +62,7 @@
 		"@types/node": "^20.1.0",
 		"esbuild": "^0.18.0",
 		"eslint": "^8.29.0",
-		"eslint-plugin-unused-imports": "^2.0.0",
+		"eslint-plugin-unused-imports": "^3.0.0",
 		"fantasticon": "^1.2.2",
 		"http-server": "^14.0.0",
 		"jsdoc": "^4.0.0",
@@ -77,7 +77,7 @@
 		"@simonwep/pickr": "1.8.2",
 		"draco3d": "1.5.6",
 		"fflate": "0.8.0",
-		"occt-import-js": "0.0.19",
+		"occt-import-js": "0.0.21",
 		"rhino3dm": "7.15.0",
 		"three": "0.154.0",
 		"web-ifc": "0.0.39"
