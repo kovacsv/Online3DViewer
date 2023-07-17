@@ -1,15 +1,27 @@
 import { MeshInstance, MeshInstanceId } from './meshinstance.js';
 import { Node } from './node.js';
 import { ModelObject3D } from './object.js';
+import { Unit } from './unit.js';
 
 export class Model extends ModelObject3D
 {
     constructor ()
     {
         super ();
+        this.unit = Unit.Unknown;
         this.root = new Node ();
         this.materials = [];
         this.meshes = [];
+    }
+
+    GetUnit ()
+    {
+        return this.unit;
+    }
+
+    SetUnit (unit)
+    {
+        this.unit = unit;
     }
 
     GetRootNode ()

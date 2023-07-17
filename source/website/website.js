@@ -900,11 +900,11 @@ export class Website
                 this.UpdateMeshesSelection ();
             },
             onSelectionCleared : () => {
-                this.sidebar.AddObject3DProperties (this.model);
+                this.sidebar.AddObject3DProperties (this.model, this.model);
             },
             onMeshSelected : (meshInstanceId) => {
                 let meshInstance = this.model.GetMeshInstance (meshInstanceId);
-                this.sidebar.AddObject3DProperties (meshInstance);
+                this.sidebar.AddObject3DProperties (this.model, meshInstance);
             },
             onMaterialSelected : (materialIndex) => {
                 this.sidebar.AddMaterialProperties (this.model.GetMaterial (materialIndex));

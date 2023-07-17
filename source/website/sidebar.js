@@ -97,9 +97,9 @@ export class Sidebar
         this.panelSet.Clear ();
     }
 
-    AddObject3DProperties (object3D)
+    AddObject3DProperties (model, object3D)
     {
-        this.detailsPanel.AddObject3DProperties (object3D);
+        this.detailsPanel.AddObject3DProperties (model, object3D);
     }
 
     AddMaterialProperties (material)

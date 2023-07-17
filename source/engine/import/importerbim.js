@@ -11,6 +11,7 @@ import { Matrix } from '../geometry/matrix.js';
 import { Transformation } from '../geometry/transformation.js';
 import { ColorToMaterialConverter } from './importerutils.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
+import { Unit } from '../model/unit.js';
 
 export class ImporterBim extends ImporterBase
 {
@@ -43,6 +44,8 @@ export class ImporterBim extends ImporterBase
 
     ImportContent (fileContent, onFinish)
     {
+        this.model.SetUnit (Unit.Meter);
+
         let textContent = ArrayBufferToUtf8String (fileContent);
         let bimJson = null;
         try {

@@ -5,6 +5,7 @@ import { RGBColorFromFloatComponents } from '../model/color.js';
 import { ConvertThreeGeometryToMesh } from '../threejs/threeutils.js';
 import { ImporterBase } from './importerbase.js';
 import { ColorToMaterialConverter } from './importerutils.js';
+import { Unit } from '../model/unit.js';
 
 export class ImporterOcct extends ImporterBase
 {
@@ -59,6 +60,10 @@ export class ImporterOcct extends ImporterBase
         } else {
             onFinish ();
             return;
+        }
+
+        if (format === 'step' || format === 'iges') {
+            this.model.SetUnit (Unit.Millimeter);
         }
 
         let fileBuffer = new Uint8Array (fileContent);
