@@ -103,20 +103,12 @@ export function TransformFileHostUrls (urls)
 {
     for (let i = 0; i < urls.length; i++) {
         let url = urls[i];
-        if (url.search (/www\.dropbox\.com/u) !== -1) {
+        if (url.indexOf ('www.dropbox.com') !== -1) {
             url = url.replace ('www.dropbox.com', 'dl.dropbox.com');
-            let separatorPos = url.indexOf ('?');
-            if (separatorPos !== -1) {
-                url = url.substring (0, separatorPos);
-            }
             urls[i] = url;
-        } else if (url.search (/github\.com/u) !== -1) {
+        } else if (url.indexOf ('github.com') !== -1) {
             url = url.replace ('github.com', 'raw.githubusercontent.com');
             url = url.replace ('/blob', '');
-            let separatorPos = url.indexOf ('?');
-            if (separatorPos !== -1) {
-                url = url.substring (0, separatorPos);
-            }
             urls[i] = url;
         }
     }
