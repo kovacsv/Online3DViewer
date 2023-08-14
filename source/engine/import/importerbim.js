@@ -72,12 +72,16 @@ export class ImporterBim extends ImporterBase
 
     ImportElement (bimElement)
     {
-        let defaultMaterialIndex = this.colorToMaterial.GetMaterialIndex (
-            bimElement.color.r,
-            bimElement.color.g,
-            bimElement.color.b,
-            bimElement.color.a
-        );
+        let defaultMaterialIndex = null;
+        if (bimElement.color)
+        {
+            defaultMaterialIndex = this.colorToMaterial.GetMaterialIndex (
+                bimElement.color.r,
+                bimElement.color.g,
+                bimElement.color.b,
+                bimElement.color.a
+            );
+        }
 
         let rootNode = this.model.GetRootNode ();
 
