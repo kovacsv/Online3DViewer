@@ -72,7 +72,7 @@ export class ImporterBim extends ImporterBase
 
     ImportElement (bimElement)
     {
-        let defaultMaterialIndex = this.colorToMaterial.GetMaterialIndex (200, 200, 200, 255);
+        let defaultMaterialIndex = null;
         if (bimElement.color)
         {
             defaultMaterialIndex = this.colorToMaterial.GetMaterialIndex (
