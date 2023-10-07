@@ -45,8 +45,8 @@ export class ShadingModel
 
         this.type = ShadingType.Phong;
         this.cameraMode = CameraMode.Perspective;
-        this.ambientLight = new THREE.AmbientLight (0x888888);
-        this.directionalLight = new THREE.DirectionalLight (0x888888);
+        this.ambientLight = new THREE.AmbientLight (0x888888, 1.0 * Math.PI);
+        this.directionalLight = new THREE.DirectionalLight (0x888888, 1.0 * Math.PI);
         this.environmentSettings = new EnvironmentSettings (null, false);
         this.environment = null;
 
