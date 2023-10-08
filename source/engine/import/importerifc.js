@@ -188,7 +188,7 @@ export class ImporterIfc extends ImporterBase
                         case 'IfcAreaMeasure':
                         case 'IfcVolumeMeasure':
                         case 'IfcRatioMeasure':
-                        case 'IfcPositiveRATIOMeasure':
+                        case 'IfcPositiveRatioMeasure':
                         case 'IfcMassMeasure':
                         case 'IfcMassPerLengthMeasure':
                         case 'IfcPlaneAngleMeasure':

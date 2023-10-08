@@ -43,7 +43,7 @@
 		"test": "mocha test",
 		"lint": "eslint source",
 		"lint_fix": "eslint source --fix",
-		"update_libs": "npm install && run-python3 tools/update_libs.py",
+		"update_libs": "npm update && run-python3 tools/update_libs.py",
 		"generate_icon_font": "run-python3 tools/generate_icon_font.py",
 		"create_dist": "npm run create_package && npm run lint && npm run test",
 		"create_dist_test": "npm run create_package_test && npm run lint && npm run test",
@@ -80,7 +80,7 @@
 		"occt-import-js": "0.0.21",
 		"rhino3dm": "7.15.0",
 		"three": "0.157.0",
-		"web-ifc": "0.0.39"
+		"web-ifc": "0.0.44"
 	},
 	"eslintConfig": {
 		"env": {
