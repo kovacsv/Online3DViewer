@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
+	<title>Online 3D Viewer</title>
+
+	<script type="text/javascript" src="../build/engine_dev/o3dv.min.js"></script>
+
+    <style>
+        div.online_3d_viewer
+        {
+            float: left;
+            border: 1px solid #eeeeee;
+            width: 640px;
+            height: 480px;
+        }
+    </style>
+
+    <script type='text/javascript'>
+        window.addEventListener ('load', async () => {
+            // get the parent element of the viewer
+            let parentDiv = document.getElementById ('viewer');
+
+            // initialize the viewer with the parent element and some parameters
+            let viewer = new OV.EmbeddedViewer (parentDiv, {});
+
+            // fetch the content of the files
+            let objContent = await fetch ('../../test/testfiles/obj/hundred_cubes_noext_obj').then (res => res.blob ());
+            let mtlContent = await fetch ('../../test/testfiles/obj/hundred_cubes_noext_mtl').then (res => res.blob ());
+
+            // load a model providing model urls
+            let inputFiles = [
+                new File ([objContent], 'hundred_cubes.obj'),
+                new File ([mtlContent], 'hundred_cubes.mtl'),
+            ];
+            viewer.LoadModelFromFileList (inputFiles);
+        });
+    </script>
+</head>
+
+<body>
+    <div class="online_3d_viewer" id="viewer"></div>
+</body>
+
+</html>
