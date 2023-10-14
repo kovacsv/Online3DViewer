@@ -1,6 +1,6 @@
 import { Coord3D } from '../geometry/coord3d.js';
 import { RGBAColor, RGBColor } from '../model/color.js';
-import { Camera, CameraMode } from '../viewer/camera.js';
+import { Camera, ProjectionMode } from '../viewer/camera.js';
 import { EdgeSettings } from '../viewer/viewermodel.js';
 
 export let ParameterConverter =
@@ -56,11 +56,11 @@ export let ParameterConverter =
         return cameraParameters;
     },
 
-    CameraModeToString : function (cameraMode)
+    CameraModeToString : function (projectionMode)
     {
-        if (cameraMode === CameraMode.Perspective) {
+        if (projectionMode === ProjectionMode.Perspective) {
             return 'perspective';
-        } else if (cameraMode === CameraMode.Orthographic) {
+        } else if (projectionMode === ProjectionMode.Orthographic) {
             return 'orthographic';
         }
         return null;
@@ -93,9 +93,9 @@ export let ParameterConverter =
     StringToCameraMode : function (str)
     {
         if (str === 'perspective') {
-            return CameraMode.Perspective;
+            return ProjectionMode.Perspective;
         } else if (str === 'orthographic') {
-            return CameraMode.Orthographic;
+            return ProjectionMode.Orthographic;
         }
         return null;
     },
@@ -245,9 +245,9 @@ export class ParameterListBuilder
         return this;
     }
 
-    AddCameraMode (cameraMode)
+    AddCameraMode (projectionMode)
     {
-        this.AddUrlPart ('cameramode', ParameterConverter.CameraModeToString (cameraMode));
+        this.AddUrlPart ('projectionmode', ParameterConverter.CameraModeToString (projectionMode));
         return this;
     }
 
@@ -319,7 +319,10 @@ export class ParameterListParser
 
     GetCameraMode ()
     {
-        let keywordParams = this.GetKeywordParams ('cameramode');
+        let keywordParams = this.GetKeywordParams ('cameramode'); // for compatibility
+        if (keywordParams === null) {
+            keywordParams = this.GetKeywordParams ('projectionmode');
+        }
         return ParameterConverter.StringToCameraMode (keywordParams);
     }
 

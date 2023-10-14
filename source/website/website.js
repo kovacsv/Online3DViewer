@@ -1,7 +1,7 @@
 import { GetFileExtension, TransformFileHostUrls } from '../engine/io/fileutils.js';
 import { InputFilesFromFileObjects, InputFilesFromUrls } from '../engine/import/importerfiles.js';
 import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
-import { CameraMode } from '../engine/viewer/camera.js';
+import { ProjectionMode } from '../engine/viewer/camera.js';
 import { RGBColor } from '../engine/model/color.js';
 import { Viewer } from '../engine/viewer/viewer.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth, GetDomElementOuterHeight } from '../engine/viewer/domutils.js';
@@ -683,9 +683,9 @@ export class Website
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         AddRadioButton (this.toolbar, ['camera_perspective', 'camera_orthographic'], ['Perspective camera', 'Orthographic camera'], 0, ['only_full_width', 'only_on_model'], (buttonIndex) => {
             if (buttonIndex === 0) {
-                this.viewer.SetCameraMode (CameraMode.Perspective);
+                this.viewer.SetCameraMode (ProjectionMode.Perspective);
             } else if (buttonIndex === 1) {
-                this.viewer.SetCameraMode (CameraMode.Orthographic);
+                this.viewer.SetCameraMode (ProjectionMode.Orthographic);
             }
             this.sidebar.UpdateControlsVisibility ();
         });

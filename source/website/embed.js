@@ -51,9 +51,9 @@ export class Embed
             let environmentSettings = new EnvironmentSettings (envMapTextures, bgIsEnvMap);
             this.viewer.SetEnvironmentMapSettings (environmentSettings);
 
-            let cameraMode = this.hashHandler.GetCameraModeFromHash ();
-            if (cameraMode !== null) {
-                this.viewer.SetCameraMode (cameraMode);
+            let projectionMode = this.hashHandler.GetCameraModeFromHash ();
+            if (projectionMode !== null) {
+                this.viewer.SetCameraMode (projectionMode);
             }
             let background = this.hashHandler.GetBackgroundFromHash ();
             if (background !== null) {

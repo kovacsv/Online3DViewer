@@ -53,8 +53,8 @@
 </div>
 <div class="navigation_section">
 <div class="navigation_title">Enums</div>
-<div id="nav-CameraMode" class="navigation_item"><a href="Enum_CameraMode.html" target="_self">CameraMode</a></div>
 <div id="nav-FileSource" class="navigation_item"><a href="Enum_FileSource.html" target="_self">FileSource</a></div>
+<div id="nav-ProjectionMode" class="navigation_item"><a href="Enum_ProjectionMode.html" target="_self">ProjectionMode</a></div>
 </div>
 
 </div>
@@ -64,14 +64,19 @@
 
 <p>This document lists changes in the engine to help you to migrate your code base.</p>
 
+<h2>0.11.0</h2>
+
+<ul>
+    <li>CameraMode is renamed to <a href="Enum_ProjectionMode.html" target="_self">ProjectionMode</a>. The corresponding parameter also changed in <a href="Class_EmbeddedViewer.html" target="_self">EmbeddedViewer</a> from <code class="inline">cameraMode</code> to <code class="inline">projectionMode</code>.</li>
+</ul>
+
 <h2>0.8.21</h2>
 
 <ul>
     <li><a href="Function_Init3DViewerElements.html" target="_self">Init3DViewerElements</a> must be called when the document is loaded and returns an array of the created <a href="Class_EmbeddedViewer.html" target="_self">EmbeddedViewer</a> objects. Earlier it registered a load event handler inside, now it's the responsibility of the caller.</li>
 </ul>
 
-
-<h2>0.8.21</h2>
+<h2>0.8.20</h2>
 
 <ul>
     <li>Init3DViewerElement has been renamed to <a href="Function_Init3DViewerFromUrlList.html" target="_self">Init3DViewerFromUrlList</a>.</li>

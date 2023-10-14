@@ -6,7 +6,7 @@ import { PopupDialog } from './dialog.js';
 import { Settings } from './settings.js';
 import { SidebarPanel } from './sidebarpanel.js';
 import { ShadingType } from '../engine/threejs/threeutils.js';
-import { CameraMode } from '../engine/viewer/camera.js';
+import { ProjectionMode } from '../engine/viewer/camera.js';
 
 import * as Pickr from '@simonwep/pickr';
 import '@simonwep/pickr/dist/themes/monolith.min.css';
@@ -121,7 +121,7 @@ class EnvironmentMapPopup extends PopupDialog
                 });
             }
         } else if (shadingType === ShadingType.Physical) {
-            let isPerspective = (callbacks.getCameraMode () === CameraMode.Perspective);
+            let isPerspective = (callbacks.getCameraMode () === ProjectionMode.Perspective);
             if (isPerspective) {
                 let checkboxDiv = AddDiv (contentDiv, 'ov_environment_map_checkbox');
                 let backgroundIsEnvMapCheckbox = AddCheckbox (checkboxDiv, 'use_as_background', 'Use as background image', settings.backgroundIsEnvMap, () => {
@@ -345,7 +345,7 @@ class SettingsModelDisplaySection extends SettingsSection
     {
         let isPhysicallyBased = (this.callbacks.getShadingType () === ShadingType.Physical);
         if (this.environmentMapPhongDiv !== null) {
-            let isPerspective = (this.callbacks.getCameraMode () === CameraMode.Perspective);
+            let isPerspective = (this.callbacks.getCameraMode () === ProjectionMode.Perspective);
             ShowDomElement (this.environmentMapPhongDiv, !isPhysicallyBased && isPerspective);
         }
         if (this.environmentMapPbrDiv !== null) {

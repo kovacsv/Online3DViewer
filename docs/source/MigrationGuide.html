@@ -2,14 +2,19 @@
 
 <p>This document lists changes in the engine to help you to migrate your code base.</p>
 
+<h2>0.11.0</h2>
+
+<ul>
+    <li>{@link CameraMode} is renamed to {@link ProjectionMode}. The corresponding parameter also changed in {@link EmbeddedViewer} from <code class="inline">cameraMode</code> to <code class="inline">projectionMode</code>.</li>
+</ul>
+
 <h2>0.8.21</h2>
 
 <ul>
     <li>{@link Init3DViewerElements} must be called when the document is loaded and returns an array of the created {@link EmbeddedViewer} objects. Earlier it registered a load event handler inside, now it's the responsibility of the caller.</li>
 </ul>
 
-
-<h2>0.8.21</h2>
+<h2>0.8.20</h2>
 
 <ul>
     <li>{@link Init3DViewerElement} has been renamed to {@link Init3DViewerFromUrlList}.</li>

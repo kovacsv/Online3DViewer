@@ -2,7 +2,7 @@ import { Coord3D, CoordDistance3D, SubCoord3D } from '../geometry/coord3d.js';
 import { DegRad, Direction, IsEqual } from '../geometry/geometry.js';
 import { ColorComponentToFloat } from '../model/color.js';
 import { ShadingType } from '../threejs/threeutils.js';
-import { Camera, CameraMode } from './camera.js';
+import { Camera, ProjectionMode } from './camera.js';
 import { GetDomElementInnerDimensions } from './domutils.js';
 import { Navigation } from './navigation.js';
 import { ShadingModel } from './shadingmodel.js';
@@ -167,7 +167,7 @@ export class Viewer
         this.mainModel = null;
         this.extraModel = null;
         this.camera = null;
-        this.cameraMode = null;
+        this.projectionMode = null;
         this.cameraValidator = null;
         this.shadingModel = null;
         this.navigation = null;
@@ -262,7 +262,7 @@ export class Viewer
 
     GetCameraMode ()
     {
-        return this.cameraMode;
+        return this.projectionMode;
     }
 
     SetCamera (camera)
@@ -272,22 +272,22 @@ export class Viewer
         this.Render ();
     }
 
-    SetCameraMode (cameraMode)
+    SetCameraMode (projectionMode)
     {
-        if (this.cameraMode === cameraMode) {
+        if (this.projectionMode === projectionMode) {
             return;
         }
 
         this.scene.remove (this.camera);
-        if (cameraMode === CameraMode.Perspective) {
+        if (projectionMode === ProjectionMode.Perspective) {
             this.camera = new THREE.PerspectiveCamera (45.0, 1.0, 0.1, 1000.0);
-        } else if (cameraMode === CameraMode.Orthographic) {
+        } else if (projectionMode === ProjectionMode.Orthographic) {
 			this.camera = new THREE.OrthographicCamera (-1.0, 1.0, 1.0, -1.0, 0.1, 1000.0);
         }
         this.scene.add (this.camera);
 
-        this.cameraMode = cameraMode;
-        this.shadingModel.SetCameraMode (cameraMode);
+        this.projectionMode = projectionMode;
+        this.shadingModel.SetCameraMode (projectionMode);
         this.cameraValidator.ForceUpdate ();
 
         this.AdjustClippingPlanes ();
@@ -394,13 +394,13 @@ export class Viewer
         this.camera.up.set (navigationCamera.up.x, navigationCamera.up.y, navigationCamera.up.z);
         this.camera.lookAt (new THREE.Vector3 (navigationCamera.center.x, navigationCamera.center.y, navigationCamera.center.z));
 
-        if (this.cameraMode === CameraMode.Perspective) {
+        if (this.projectionMode === ProjectionMode.Perspective) {
             if (!this.cameraValidator.ValidatePerspective ()) {
                 this.camera.aspect = this.canvas.width / this.canvas.height;
                 this.camera.fov = navigationCamera.fov;
                 this.camera.updateProjectionMatrix ();
             }
-        } else if (this.cameraMode === CameraMode.Orthographic) {
+        } else if (this.projectionMode === ProjectionMode.Orthographic) {
             let eyeCenterDistance = CoordDistance3D (navigationCamera.eye, navigationCamera.center);
             if (!this.cameraValidator.ValidateOrthographic (eyeCenterDistance)) {
                 let aspect = this.canvas.width / this.canvas.height;
@@ -539,7 +539,7 @@ export class Viewer
     {
         let camera = GetDefaultCamera (Direction.Y);
         this.camera = new THREE.PerspectiveCamera (45.0, 1.0, 0.1, 1000.0);
-        this.cameraMode = CameraMode.Perspective;
+        this.projectionMode = ProjectionMode.Perspective;
         this.cameraValidator = new CameraValidator ();
         this.scene.add (this.camera);
 

@@ -1,5 +1,5 @@
 import { SubCoord3D } from '../geometry/coord3d.js';
-import { CameraMode } from '../viewer/camera.js';
+import { ProjectionMode } from '../viewer/camera.js';
 import { ConvertColorToThreeColor, ShadingType } from '../threejs/threeutils.js';
 
 import * as THREE from 'three';
@@ -44,7 +44,7 @@ export class ShadingModel
         this.scene = scene;
 
         this.type = ShadingType.Phong;
-        this.cameraMode = CameraMode.Perspective;
+        this.projectionMode = ProjectionMode.Perspective;
         this.ambientLight = new THREE.AmbientLight (0x888888, 1.0 * Math.PI);
         this.directionalLight = new THREE.DirectionalLight (0x888888, 1.0 * Math.PI);
         this.environmentSettings = new EnvironmentSettings (null, false);
@@ -60,9 +60,9 @@ export class ShadingModel
         this.UpdateShading ();
     }
 
-    SetCameraMode (cameraMode)
+    SetCameraMode (projectionMode)
     {
-        this.cameraMode = cameraMode;
+        this.projectionMode = projectionMode;
         this.UpdateShading ();
     }
 
@@ -77,7 +77,7 @@ export class ShadingModel
             this.directionalLight.color.set (0x555555);
             this.scene.environment = this.environment;
         }
-        if (this.environmentSettings.backgroundIsEnvMap && this.cameraMode === CameraMode.Perspective) {
+        if (this.environmentSettings.backgroundIsEnvMap && this.projectionMode === ProjectionMode.Perspective) {
             this.scene.background = this.environment;
         } else {
             this.scene.background = null;

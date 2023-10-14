@@ -20,7 +20,7 @@ export class EmbeddedViewer
      * @param {object} parameters Parameters for embedding.
      * @param {Camera} [parameters.camera] Camera to use. If not specified, the default camera will
      * be used and the model will be fitted to the window.
-     * @param {CameraMode} [parameters.cameraMode] Camera projection mode.
+     * @param {ProjectionMode} [parameters.projectionMode] Camera projection mode.
      * @param {RGBAColor} [parameters.backgroundColor] Background color of the canvas.
      * @param {RGBColor} [parameters.defaultColor] Default color of the model. It has effect only
      * if the imported model doesn't specify any color.
@@ -47,8 +47,8 @@ export class EmbeddedViewer
         let height = this.parentElement.clientHeight;
         this.viewer.Resize (width, height);
 
-        if (this.parameters.cameraMode) {
-            this.viewer.SetCameraMode (this.parameters.cameraMode);
+        if (this.parameters.projectionMode) {
+            this.viewer.SetCameraMode (this.parameters.projectionMode);
         }
 
         if (this.parameters.backgroundColor) {
@@ -257,10 +257,10 @@ export function Init3DViewerElements (onReady)
             camera = ParameterConverter.StringToCamera (cameraParams);
         }
 
-        let cameraMode = null;
-        let cameraModeParams = element.getAttribute ('cameramode');
+        let projectionMode = null;
+        let cameraModeParams = element.getAttribute ('projectionmode');
         if (cameraModeParams) {
-            cameraMode = ParameterConverter.StringToCameraMode (cameraModeParams);
+            projectionMode = ParameterConverter.StringToCameraMode (cameraModeParams);
         }
 
         let backgroundColor = null;
@@ -303,7 +303,7 @@ export function Init3DViewerElements (onReady)
 
         return Init3DViewerFromUrlList (element, modelUrls, {
             camera : camera,
-            cameraMode : cameraMode,
+            projectionMode : projectionMode,
             backgroundColor : backgroundColor,
             defaultColor : defaultColor,
             edgeSettings : edgeSettings,

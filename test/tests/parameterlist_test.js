@@ -45,12 +45,12 @@ describe ('Parameter List', function () {
             assert.strictEqual (urlParams, 'edgesettings=on,1,2,3,15');
         }
         {
-            let urlParams = OV.CreateUrlBuilder ().AddCameraMode (OV.CameraMode.Perspective).GetParameterList ();
-            assert.strictEqual (urlParams, 'cameramode=perspective');
+            let urlParams = OV.CreateUrlBuilder ().AddCameraMode (OV.ProjectionMode.Perspective).GetParameterList ();
+            assert.strictEqual (urlParams, 'projectionmode=perspective');
         }
         {
-            let urlParams = OV.CreateUrlBuilder ().AddCameraMode (OV.CameraMode.Orthographic).GetParameterList ();
-            assert.strictEqual (urlParams, 'cameramode=orthographic');
+            let urlParams = OV.CreateUrlBuilder ().AddCameraMode (OV.ProjectionMode.Orthographic).GetParameterList ();
+            assert.strictEqual (urlParams, 'projectionmode=orthographic');
         }
     });
 
@@ -123,12 +123,12 @@ describe ('Parameter List', function () {
             ));
         }
         {
-            let parser = OV.CreateUrlParser ('cameramode=perspective');
-            assert.deepStrictEqual (parser.GetCameraMode (), OV.CameraMode.Perspective);
+            let parser = OV.CreateUrlParser ('projectionmode=perspective');
+            assert.deepStrictEqual (parser.GetCameraMode (), OV.ProjectionMode.Perspective);
         }
         {
-            let parser = OV.CreateUrlParser ('cameramode=orthographic');
-            assert.deepStrictEqual (parser.GetCameraMode (), OV.CameraMode.Orthographic);
+            let parser = OV.CreateUrlParser ('projectionmode=orthographic');
+            assert.deepStrictEqual (parser.GetCameraMode (), OV.ProjectionMode.Orthographic);
         }
     });
 });

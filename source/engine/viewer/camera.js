@@ -5,7 +5,7 @@ import { IsEqual } from '../geometry/geometry.js';
  * Camera projection mode.
  * @enum
  */
-export const CameraMode =
+export const ProjectionMode =
 {
     /** Perspective projection. */
 	Perspective : 1,
