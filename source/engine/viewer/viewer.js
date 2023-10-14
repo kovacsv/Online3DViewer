@@ -260,7 +260,7 @@ export class Viewer
         return this.navigation.GetCamera ();
     }
 
-    GetCameraMode ()
+    GetProjectionMode ()
     {
         return this.projectionMode;
     }
@@ -272,7 +272,7 @@ export class Viewer
         this.Render ();
     }
 
-    SetCameraMode (projectionMode)
+    SetProjectionMode (projectionMode)
     {
         if (this.projectionMode === projectionMode) {
             return;
@@ -287,7 +287,7 @@ export class Viewer
         this.scene.add (this.camera);
 
         this.projectionMode = projectionMode;
-        this.shadingModel.SetCameraMode (projectionMode);
+        this.shadingModel.SetProjectionMode (projectionMode);
         this.cameraValidator.ForceUpdate ();
 
         this.AdjustClippingPlanes ();

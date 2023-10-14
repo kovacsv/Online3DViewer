@@ -9,7 +9,7 @@ import { CalculatePopupPositionToScreen, ShowListPopup } from './dialogs.js';
 import { HandleEvent } from './eventhandler.js';
 import { HashHandler } from './hashhandler.js';
 import { Navigator, Selection, SelectionType } from './navigator.js';
-import { Settings, Theme } from './settings.js';
+import { CameraSettings, Settings, Theme } from './settings.js';
 import { Sidebar } from './sidebar.js';
 import { ThemeHandler } from './themehandler.js';
 import { ThreeModelLoaderUI } from './threemodelloaderui.js';
@@ -187,6 +187,7 @@ export class Website
     {
         this.parameters = parameters;
         this.settings = new Settings (Theme.Light);
+        this.cameraSettings = new CameraSettings ();
         this.viewer = new Viewer ();
         this.measureTool = new MeasureTool (this.viewer, this.settings);
         this.hashHandler = new HashHandler ();
@@ -204,6 +205,8 @@ export class Website
     Load ()
     {
         this.settings.LoadFromCookies ();
+        this.cameraSettings.LoadFromCookies ();
+
         this.SwitchTheme (this.settings.themeId, false);
         HandleEvent ('theme_on_load', this.settings.themeId === Theme.Light ? 'light' : 'dark');
 
@@ -675,18 +678,22 @@ export class Website
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, ['only_full_width', 'only_on_model'], (buttonIndex) => {
             if (buttonIndex === 0) {
-                this.viewer.SetNavigationMode (NavigationMode.FixedUpVector);
+                this.cameraSettings.navigationMode = NavigationMode.FixedUpVector;
             } else if (buttonIndex === 1) {
-                this.viewer.SetNavigationMode (NavigationMode.FreeOrbit);
+                this.cameraSettings.navigationMode = NavigationMode.FreeOrbit;
             }
+            this.cameraSettings.SaveToCookies ();
+            this.viewer.SetNavigationMode (this.cameraSettings.navigationMode);
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         AddRadioButton (this.toolbar, ['camera_perspective', 'camera_orthographic'], ['Perspective camera', 'Orthographic camera'], 0, ['only_full_width', 'only_on_model'], (buttonIndex) => {
             if (buttonIndex === 0) {
-                this.viewer.SetCameraMode (ProjectionMode.Perspective);
+                this.cameraSettings.projectionMode = ProjectionMode.Perspective;
             } else if (buttonIndex === 1) {
-                this.viewer.SetCameraMode (ProjectionMode.Orthographic);
+                this.cameraSettings.projectionMode = ProjectionMode.Orthographic;
             }
+            this.cameraSettings.SaveToCookies ();
+            this.viewer.SetProjectionMode (this.cameraSettings.projectionMode);
             this.sidebar.UpdateControlsVisibility ();
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
@@ -780,8 +787,8 @@ export class Website
             getShadingType : () => {
                 return this.viewer.GetShadingType ();
             },
-            getCameraMode : () => {
-                return this.viewer.GetCameraMode ();
+            getProjectionMode : () => {
+                return this.viewer.GetProjectionMode ();
             },
             hasDefaultMaterial : () => {
                 return HasDefaultMaterial (this.model);

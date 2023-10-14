@@ -45,8 +45,8 @@ export class Sidebar
             getShadingType : () => {
                 return this.callbacks.getShadingType ();
             },
-            getCameraMode : () => {
-                return this.callbacks.getCameraMode ();
+            getProjectionMode : () => {
+                return this.callbacks.getProjectionMode ();
             },
             hasDefaultMaterial : () => {
                 return this.callbacks.hasDefaultMaterial ();

@@ -121,7 +121,7 @@ class EnvironmentMapPopup extends PopupDialog
                 });
             }
         } else if (shadingType === ShadingType.Physical) {
-            let isPerspective = (callbacks.getCameraMode () === ProjectionMode.Perspective);
+            let isPerspective = (callbacks.getProjectionMode () === ProjectionMode.Perspective);
             if (isPerspective) {
                 let checkboxDiv = AddDiv (contentDiv, 'ov_environment_map_checkbox');
                 let backgroundIsEnvMapCheckbox = AddCheckbox (checkboxDiv, 'use_as_background', 'Use as background image', settings.backgroundIsEnvMap, () => {
@@ -232,8 +232,8 @@ class SettingsModelDisplaySection extends SettingsSection
         this.environmentMapPhongInput.addEventListener ('click', () => {
             this.environmentMapPopup = new EnvironmentMapPopup ();
             this.environmentMapPopup.ShowPopup (this.environmentMapPhongInput, ShadingType.Phong, this.settings, {
-                getCameraMode : () => {
-                    return this.callbacks.getCameraMode ();
+                getProjectionMode : () => {
+                    return this.callbacks.getProjectionMode ();
                 },
                 onEnvironmentMapChanged : () => {
                     this.UpdateEnvironmentMap ();
@@ -248,8 +248,8 @@ class SettingsModelDisplaySection extends SettingsSection
         this.environmentMapPbrInput.addEventListener ('click', () => {
             this.environmentMapPopup = new EnvironmentMapPopup ();
             this.environmentMapPopup.ShowPopup (this.environmentMapPbrInput, ShadingType.Physical, this.settings, {
-                getCameraMode : () => {
-                    return this.callbacks.getCameraMode ();
+                getProjectionMode : () => {
+                    return this.callbacks.getProjectionMode ();
                 },
                 onEnvironmentMapChanged : () => {
                     this.UpdateEnvironmentMap ();
@@ -345,7 +345,7 @@ class SettingsModelDisplaySection extends SettingsSection
     {
         let isPhysicallyBased = (this.callbacks.getShadingType () === ShadingType.Physical);
         if (this.environmentMapPhongDiv !== null) {
-            let isPerspective = (this.callbacks.getCameraMode () === ProjectionMode.Perspective);
+            let isPerspective = (this.callbacks.getProjectionMode () === ProjectionMode.Perspective);
             ShowDomElement (this.environmentMapPhongDiv, !isPhysicallyBased && isPerspective);
         }
         if (this.environmentMapPbrDiv !== null) {
@@ -462,8 +462,8 @@ export class SidebarSettingsPanel extends SidebarPanel
             getShadingType : () => {
                 return this.callbacks.getShadingType ();
             },
-            getCameraMode : () => {
-                return this.callbacks.getCameraMode ();
+            getProjectionMode : () => {
+                return this.callbacks.getProjectionMode ();
             },
             onEnvironmentMapChanged : () => {
                 this.callbacks.onEnvironmentMapChanged ();

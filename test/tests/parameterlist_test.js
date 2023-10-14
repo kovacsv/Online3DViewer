@@ -45,11 +45,11 @@ describe ('Parameter List', function () {
             assert.strictEqual (urlParams, 'edgesettings=on,1,2,3,15');
         }
         {
-            let urlParams = OV.CreateUrlBuilder ().AddCameraMode (OV.ProjectionMode.Perspective).GetParameterList ();
+            let urlParams = OV.CreateUrlBuilder ().AddProjectionMode (OV.ProjectionMode.Perspective).GetParameterList ();
             assert.strictEqual (urlParams, 'projectionmode=perspective');
         }
         {
-            let urlParams = OV.CreateUrlBuilder ().AddCameraMode (OV.ProjectionMode.Orthographic).GetParameterList ();
+            let urlParams = OV.CreateUrlBuilder ().AddProjectionMode (OV.ProjectionMode.Orthographic).GetParameterList ();
             assert.strictEqual (urlParams, 'projectionmode=orthographic');
         }
     });
@@ -124,11 +124,11 @@ describe ('Parameter List', function () {
         }
         {
             let parser = OV.CreateUrlParser ('projectionmode=perspective');
-            assert.deepStrictEqual (parser.GetCameraMode (), OV.ProjectionMode.Perspective);
+            assert.deepStrictEqual (parser.GetProjectionMode (), OV.ProjectionMode.Perspective);
         }
         {
             let parser = OV.CreateUrlParser ('projectionmode=orthographic');
-            assert.deepStrictEqual (parser.GetCameraMode (), OV.ProjectionMode.Orthographic);
+            assert.deepStrictEqual (parser.GetProjectionMode (), OV.ProjectionMode.Orthographic);
         }
     });
 });

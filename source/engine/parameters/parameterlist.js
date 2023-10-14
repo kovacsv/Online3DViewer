@@ -56,7 +56,7 @@ export let ParameterConverter =
         return cameraParameters;
     },
 
-    CameraModeToString : function (projectionMode)
+    ProjectionModeToString : function (projectionMode)
     {
         if (projectionMode === ProjectionMode.Perspective) {
             return 'perspective';
@@ -90,7 +90,7 @@ export let ParameterConverter =
         return camera;
     },
 
-    StringToCameraMode : function (str)
+    StringToProjectionMode : function (str)
     {
         if (str === 'perspective') {
             return ProjectionMode.Perspective;
@@ -245,9 +245,9 @@ export class ParameterListBuilder
         return this;
     }
 
-    AddCameraMode (projectionMode)
+    AddProjectionMode (projectionMode)
     {
-        this.AddUrlPart ('projectionmode', ParameterConverter.CameraModeToString (projectionMode));
+        this.AddUrlPart ('projectionmode', ParameterConverter.ProjectionModeToString (projectionMode));
         return this;
     }
 
@@ -317,13 +317,13 @@ export class ParameterListParser
         return ParameterConverter.StringToCamera (keywordParams);
     }
 
-    GetCameraMode ()
+    GetProjectionMode ()
     {
         let keywordParams = this.GetKeywordParams ('cameramode'); // for compatibility
         if (keywordParams === null) {
             keywordParams = this.GetKeywordParams ('projectionmode');
         }
-        return ParameterConverter.StringToCameraMode (keywordParams);
+        return ParameterConverter.StringToProjectionMode (keywordParams);
     }
 
     GetEnvironmentSettings ()

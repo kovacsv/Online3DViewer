@@ -1,3 +1,4 @@
+import { NavigationMode, ProjectionMode } from '../engine/viewer/camera.js';
 import { RGBAColor, RGBColor } from '../engine/model/color.js';
 import { EdgeSettings } from '../engine/viewer/viewermodel.js';
 import { CookieGetBoolVal, CookieGetRGBColorVal, CookieGetIntVal, CookieGetStringVal, CookieSetBoolVal, CookieSetRGBColorVal, CookieSetIntVal, CookieSetStringVal, CookieSetRGBAColorVal, CookieGetRGBAColorVal } from './cookiehandler.js';
@@ -47,5 +48,26 @@ export class Settings
         CookieSetBoolVal ('ov_show_edges', this.edgeSettings.showEdges);
         CookieSetRGBColorVal ('ov_edge_color', this.edgeSettings.edgeColor);
         CookieSetIntVal ('ov_edge_threshold', this.edgeSettings.edgeThreshold);
+    }
+}
+
+export class CameraSettings
+{
+    constructor ()
+    {
+        this.navigationMode = NavigationMode.FixedUpVector;
+        this.projectionMode = ProjectionMode.Perspective;
+    }
+
+    LoadFromCookies ()
+    {
+        this.navigationMode = CookieGetIntVal ('ov_navigation_mode', NavigationMode.FixedUpVector);
+        this.projectionMode = CookieGetIntVal ('ov_projection_mode', ProjectionMode.Perspective);
+    }
+
+    SaveToCookies ()
+    {
+        CookieSetIntVal ('ov_navigation_mode', this.navigationMode);
+        CookieSetIntVal ('ov_projection_mode', this.projectionMode);
     }
 }

@@ -63,7 +63,7 @@ export function ShowSharingDialog (fileList, settings, viewer)
             builder.AddModelUrls (modelFiles);
             if (useCurrentSettings) {
                 builder.AddCamera (viewer.GetCamera ());
-                builder.AddCameraMode (viewer.GetCameraMode ());
+                builder.AddProjectionMode (viewer.GetProjectionMode ());
                 let environmentSettings = {
                     environmentMapName : settings.environmentMapName,
                     backgroundIsEnvMap : settings.backgroundIsEnvMap

@@ -48,7 +48,7 @@ export class EmbeddedViewer
         this.viewer.Resize (width, height);
 
         if (this.parameters.projectionMode) {
-            this.viewer.SetCameraMode (this.parameters.projectionMode);
+            this.viewer.SetProjectionMode (this.parameters.projectionMode);
         }
 
         if (this.parameters.backgroundColor) {
@@ -260,7 +260,7 @@ export function Init3DViewerElements (onReady)
         let projectionMode = null;
         let cameraModeParams = element.getAttribute ('projectionmode');
         if (cameraModeParams) {
-            projectionMode = ParameterConverter.StringToCameraMode (cameraModeParams);
+            projectionMode = ParameterConverter.StringToProjectionMode (cameraModeParams);
         }
 
         let backgroundColor = null;

@@ -60,7 +60,7 @@ export class ShadingModel
         this.UpdateShading ();
     }
 
-    SetCameraMode (projectionMode)
+    SetProjectionMode (projectionMode)
     {
         this.projectionMode = projectionMode;
         this.UpdateShading ();
