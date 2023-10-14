@@ -592,6 +592,8 @@ export class Website
         this.viewer.Init (canvas);
         this.viewer.SetEdgeSettings (this.settings.edgeSettings);
         this.viewer.SetBackgroundColor (this.settings.backgroundColor);
+        this.viewer.SetNavigationMode (this.cameraSettings.navigationMode);
+        this.viewer.SetProjectionMode (this.cameraSettings.projectionMode);
         this.UpdateEnvironmentMap ();
     }
 
@@ -651,6 +653,8 @@ export class Website
         }
 
         let importer = this.modelLoaderUI.GetImporter ();
+        let navigationModeIndex = (this.cameraSettings.navigationMode === NavigationMode.FixedUpVector ? 0 : 1);
+        let projectionModeIndex = (this.cameraSettings.projectionMode === ProjectionMode.Perspective ? 0 : 1);
 
         AddButton (this.toolbar, 'open', 'Open from your device', [], () => {
             this.OpenFileBrowserDialog ();
@@ -676,7 +680,7 @@ export class Website
             this.viewer.FlipUpVector ();
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, ['only_full_width', 'only_on_model'], (buttonIndex) => {
+        AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], navigationModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
             if (buttonIndex === 0) {
                 this.cameraSettings.navigationMode = NavigationMode.FixedUpVector;
             } else if (buttonIndex === 1) {
@@ -686,7 +690,7 @@ export class Website
             this.viewer.SetNavigationMode (this.cameraSettings.navigationMode);
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddRadioButton (this.toolbar, ['camera_perspective', 'camera_orthographic'], ['Perspective camera', 'Orthographic camera'], 0, ['only_full_width', 'only_on_model'], (buttonIndex) => {
+        AddRadioButton (this.toolbar, ['camera_perspective', 'camera_orthographic'], ['Perspective camera', 'Orthographic camera'], projectionModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
             if (buttonIndex === 0) {
                 this.cameraSettings.projectionMode = ProjectionMode.Perspective;
             } else if (buttonIndex === 1) {
