@@ -1,7 +1,7 @@
 import { GetFileExtension, TransformFileHostUrls } from '../engine/io/fileutils.js';
 import { InputFilesFromFileObjects, InputFilesFromUrls } from '../engine/import/importerfiles.js';
 import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
-import { ProjectionMode } from '../engine/viewer/camera.js';
+import { NavigationMode, ProjectionMode } from '../engine/viewer/camera.js';
 import { RGBColor } from '../engine/model/color.js';
 import { Viewer } from '../engine/viewer/viewer.js';
 import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth, GetDomElementOuterHeight } from '../engine/viewer/domutils.js';
@@ -675,9 +675,9 @@ export class Website
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], 0, ['only_full_width', 'only_on_model'], (buttonIndex) => {
             if (buttonIndex === 0) {
-                this.viewer.SetFixUpVector (true);
+                this.viewer.SetNavigationMode (NavigationMode.FixedUpVector);
             } else if (buttonIndex === 1) {
-                this.viewer.SetFixUpVector (false);
+                this.viewer.SetNavigationMode (NavigationMode.FreeOrbit);
             }
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);

@@ -2,7 +2,7 @@ import { Coord3D, CoordDistance3D, SubCoord3D } from '../geometry/coord3d.js';
 import { DegRad, Direction, IsEqual } from '../geometry/geometry.js';
 import { ColorComponentToFloat } from '../model/color.js';
 import { ShadingType } from '../threejs/threeutils.js';
-import { Camera, ProjectionMode } from './camera.js';
+import { Camera, NavigationMode, ProjectionMode } from './camera.js';
 import { GetDomElementInnerDimensions } from './domutils.js';
 import { Navigation } from './navigation.js';
 import { ShadingModel } from './shadingmodel.js';
@@ -353,16 +353,16 @@ export class Viewer
         this.Render ();
     }
 
-    IsFixUpVector ()
+    GetNavigationMode ()
     {
-        return this.navigation.IsFixUpVector ();
+        return this.navigation.GetNavigationMode ();
     }
 
-    SetFixUpVector (isFixUpVector)
+    SetNavigationMode (navigationMode)
     {
         let oldCamera = this.navigation.GetCamera ();
-        let newCamera = this.upVector.SetFixed (isFixUpVector, oldCamera);
-        this.navigation.SetFixUpVector (isFixUpVector);
+        let newCamera = this.upVector.SetFixed (navigationMode === NavigationMode.FixedUpVector, oldCamera);
+        this.navigation.SetNavigationMode (navigationMode);
         if (newCamera !== null) {
             this.navigation.MoveCamera (newCamera, this.settings.animationSteps);
         }

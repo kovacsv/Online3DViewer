@@ -2,6 +2,18 @@ import { CoordIsEqual3D } from '../geometry/coord3d.js';
 import { IsEqual } from '../geometry/geometry.js';
 
 /**
+ * Camera navigation mode.
+ * @enum
+ */
+export const NavigationMode =
+{
+    /** Fixed up vector. */
+	FixedUpVector : 1,
+    /** Free orbit. */
+	FreeOrbit : 2
+};
+
+/**
  * Camera projection mode.
  * @enum
  */
