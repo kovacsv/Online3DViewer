@@ -1,6 +1,6 @@
 import { BoundingBoxCalculator3D } from '../geometry/box3d.js';
 import { Octree } from '../geometry/octree.js';
-import { GetMeshType, MeshType } from './meshutils.js';
+import { IsEmptyMesh } from './meshutils.js';
 import { Model } from './model.js';
 import { Topology } from './topology.js';
 
@@ -8,7 +8,7 @@ export function IsModelEmpty (model)
 {
     let isEmpty = true;
     model.EnumerateMeshInstances ((meshInstance) => {
-        if (GetMeshType (meshInstance) !== MeshType.Empty) {
+        if (!IsEmptyMesh (meshInstance)) {
             isEmpty = false;
         }
     });

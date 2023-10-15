@@ -46,11 +46,12 @@ import { GetFileName, GetFileExtension, RequestUrl, ReadFile, TransformFileHostU
 import { TextWriter } from './io/textwriter.js';
 import { RGBColor, RGBAColor, ColorComponentFromFloat, ColorComponentToFloat, RGBColorFromFloatComponents, SRGBToLinear, LinearToSRGB, IntegerToHexString, RGBColorToHexString, RGBAColorToHexString, HexStringToRGBColor, HexStringToRGBAColor, ArrayToRGBColor, RGBColorIsEqual } from './model/color.js';
 import { GeneratorParams, Generator, GeneratorHelper, GenerateCuboid, GenerateCone, GenerateCylinder, GenerateSphere, GeneratePlatonicSolid } from './model/generator.js';
-import { TextureMap, MaterialBase, FaceMaterial, PhongMaterial, PhysicalMaterial, TextureMapIsEqual, TextureIsEqual, MaterialType } from './model/material.js';
+import { Line } from './model/line.js';
+import { TextureMap, MaterialBase, LineMaterial, FaceMaterial, PhongMaterial, PhysicalMaterial, TextureMapIsEqual, TextureIsEqual, MaterialType } from './model/material.js';
 import { Mesh } from './model/mesh.js';
 import { MeshPrimitiveBuffer, MeshBuffer, ConvertMeshToMeshBuffer } from './model/meshbuffer.js';
 import { MeshInstanceId, MeshInstance } from './model/meshinstance.js';
-import { GetMeshType, CalculateTriangleNormal, TransformMesh, FlipMeshTrianglesOrientation, MeshType } from './model/meshutils.js';
+import { IsEmptyMesh, CalculateTriangleNormal, TransformMesh, FlipMeshTrianglesOrientation } from './model/meshutils.js';
 import { Model } from './model/model.js';
 import { FinalizeModel, CheckModel } from './model/modelfinalization.js';
 import { IsModelEmpty, GetBoundingBox, GetTopology, IsTwoManifold, HasDefaultMaterial, ReplaceDefaultMaterialColor } from './model/modelutils.js';
@@ -226,8 +227,10 @@ export {
     GenerateCylinder,
     GenerateSphere,
     GeneratePlatonicSolid,
+    Line,
     TextureMap,
     MaterialBase,
+    LineMaterial,
     FaceMaterial,
     PhongMaterial,
     PhysicalMaterial,
@@ -240,11 +243,10 @@ export {
     ConvertMeshToMeshBuffer,
     MeshInstanceId,
     MeshInstance,
-    GetMeshType,
+    IsEmptyMesh,
     CalculateTriangleNormal,
     TransformMesh,
     FlipMeshTrianglesOrientation,
-    MeshType,
     Model,
     FinalizeModel,
     CheckModel,

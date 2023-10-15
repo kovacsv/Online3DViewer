@@ -93,6 +93,15 @@ export class Model extends ModelObject3D
         return count;
     }
 
+    LineCount ()
+    {
+        let count = 0;
+        this.EnumerateMeshInstances ((meshInstance) => {
+            count += meshInstance.LineCount ();
+        });
+        return count;
+    }
+
     TriangleCount ()
     {
         let count = 0;

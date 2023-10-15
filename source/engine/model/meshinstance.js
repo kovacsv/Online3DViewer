@@ -65,6 +65,11 @@ export class MeshInstance extends ModelObject3D
         return this.mesh.TextureUVCount ();
     }
 
+    LineCount ()
+    {
+        return this.mesh.LineCount ();
+    }
+
     TriangleCount ()
     {
         return this.mesh.TriangleCount ();

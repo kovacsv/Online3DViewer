@@ -1,18 +1,9 @@
 import { CrossVector3D, SubCoord3D } from '../geometry/coord3d.js';
 import { Transformation } from '../geometry/transformation.js';
 
-export const MeshType =
+export function IsEmptyMesh (mesh)
 {
-    Empty : 0,
-    TriangleMesh : 1
-};
-
-export function GetMeshType (mesh)
-{
-    if (mesh.TriangleCount () > 0) {
-        return MeshType.TriangleMesh;
-    }
-    return MeshType.Empty;
+    return mesh.LineCount () === 0 && mesh.TriangleCount () === 0;
 }
 
 export function CalculateTriangleNormal (v0, v1, v2)

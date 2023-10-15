@@ -3,7 +3,7 @@ import { IsEqual } from '../geometry/geometry.js';
 import { CreateObjectUrl, CreateObjectUrlWithMimeType } from '../io/bufferutils.js';
 import { MaterialType } from '../model/material.js';
 import { MeshInstance, MeshInstanceId } from '../model/meshinstance.js';
-import { GetMeshType, MeshType } from '../model/meshutils.js';
+import { IsEmptyMesh } from '../model/meshutils.js';
 import { ConvertColorToThreeColor, GetShadingType, ShadingType } from './threeutils.js';
 
 import * as THREE from 'three';
@@ -329,8 +329,7 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 
 	function ConvertMesh (threeObject, meshInstance, modelThreeMaterials)
 	{
-		let type = GetMeshType (meshInstance.mesh);
-		if (type === MeshType.TriangleMesh) {
+		if (!IsEmptyMesh (meshInstance.mesh)) {
 			let threeMesh = CreateThreeMesh (meshInstance, modelThreeMaterials);
 			threeObject.add (threeMesh);
 		}
