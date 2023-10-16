@@ -9,12 +9,8 @@ class ModelFinalizer
     constructor (params)
     {
         this.params = {
-            getDefaultLineMaterialColor : () => {
-                return new RGBColor (0, 0, 0);
-            },
-            getDefaultMaterialColor : () => {
-                return new RGBColor (0, 0, 0);
-            }
+            defaultLineMaterialColor : new RGBColor (0, 0, 0),
+            defaultMaterialColor : new RGBColor (0, 0, 0)
         };
         CopyObjectAttributes (params, this.params);
         this.defaultLineMaterialIndex = null;
@@ -209,9 +205,8 @@ class ModelFinalizer
     GetDefaultLineMaterialIndex (model)
     {
         if (this.defaultLineMaterialIndex === null) {
-            let defaultLineMaterialColor = this.params.getDefaultLineMaterialColor ();
             let defaultMaterial = new LineMaterial ();
-            defaultMaterial.color = defaultLineMaterialColor;
+            defaultMaterial.color = this.params.defaultLineMaterialColor;
             defaultMaterial.isDefault = true;
             this.defaultLineMaterialIndex = model.AddMaterial (defaultMaterial);
         }
@@ -221,9 +216,8 @@ class ModelFinalizer
     GetDefaultMaterialIndex (model)
     {
         if (this.defaultMaterialIndex === null) {
-            let defaultMaterialColor = this.params.getDefaultMaterialColor ();
             let defaultMaterial = new PhongMaterial ();
-            defaultMaterial.color = defaultMaterialColor;
+            defaultMaterial.color = this.params.defaultMaterialColor;
             defaultMaterial.isDefault = true;
             this.defaultMaterialIndex = model.AddMaterial (defaultMaterial);
         }
