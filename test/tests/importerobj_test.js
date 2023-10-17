@@ -680,6 +680,45 @@ describe ('Obj Importer', function () {
         });
     });
 
+    it ('lines_in_meshes.obj', function (done) {
+        ImportObjFile ('lines_in_meshes.obj', function (model) {
+            assert.ok (OV.CheckModel (model));
+            assert.deepStrictEqual (ModelToObject (model), {
+                name : '',
+                materials : [
+                    { name : '' }
+                ],
+                meshes : [
+                    {
+                        name : 'Mesh01',
+                        lines : [
+                            {
+                                vertices : [0, 0, 0, 1, 0, 0],
+                                mat : 0
+                            },
+                            {
+                                vertices : [1, 1, 0, 0, 1, 0],
+                                mat : 0
+                            }
+                        ],
+                        triangles : []
+                    },
+                    {
+                        name : 'Mesh02',
+                        lines : [
+                            {
+                                vertices : [0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1],
+                                mat : 0
+                            }
+                        ],
+                        triangles : []
+                    }
+                ]
+            });
+            done ();
+        });
+    });
+
     it ('lines_colors.obj', function (done) {
         ImportObjFile ('lines_colors.obj', function (model) {
             assert.ok (OV.CheckModel (model));
