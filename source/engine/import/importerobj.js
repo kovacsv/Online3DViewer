@@ -22,28 +22,28 @@ class ObjMeshConverter
 
     AddVertex (globalIndex, globalVertices)
     {
-        return this.GetLocalIndex (globalIndex, globalVertices, this.globalToMeshVertices, (val) => {
+        return this.GetMeshIndex (globalIndex, globalVertices, this.globalToMeshVertices, (val) => {
             return this.mesh.AddVertex (new Coord3D (val.x, val.y, val.z));
         });
     }
 
     AddVertexColor (globalIndex, globalVertexColors)
     {
-        return this.GetLocalIndex (globalIndex, globalVertexColors, this.globalToMeshVertexColors, (val) => {
+        return this.GetMeshIndex (globalIndex, globalVertexColors, this.globalToMeshVertexColors, (val) => {
             return this.mesh.AddVertexColor (new RGBColor (val.r, val.g, val.b));
         });
     }
 
     AddNormal (globalIndex, globalNormals)
     {
-        return this.GetLocalIndex (globalIndex, globalNormals, this.globalToMeshNormals, (val) => {
+        return this.GetMeshIndex (globalIndex, globalNormals, this.globalToMeshNormals, (val) => {
             return this.mesh.AddNormal (new Coord3D (val.x, val.y, val.z));
         });
     }
 
     AddUV (globalIndex, globalUvs)
     {
-        return this.GetLocalIndex (globalIndex, globalUvs, this.globalToMeshUvs, (val) => {
+        return this.GetMeshIndex (globalIndex, globalUvs, this.globalToMeshUvs, (val) => {
             return this.mesh.AddTextureUV (new Coord2D (val.x, val.y));
         });
     }
@@ -53,7 +53,7 @@ class ObjMeshConverter
         this.mesh.AddTriangle (triangle);
     }
 
-    GetLocalIndex (globalIndex, globalValueArray, globalToMeshIndices, valueAdderFunc)
+    GetMeshIndex (globalIndex, globalValueArray, globalToMeshIndices, valueAdderFunc)
     {
         if (isNaN (globalIndex) || globalIndex < 0 || globalIndex >= globalValueArray.length) {
             return null;
@@ -62,9 +62,9 @@ class ObjMeshConverter
             return globalToMeshIndices.get (globalIndex);
         } else {
             let globalValue = globalValueArray[globalIndex];
-            let localIndex = valueAdderFunc (globalValue);
-            globalToMeshIndices.set (globalIndex, localIndex);
-            return localIndex;
+            let meshIndex = valueAdderFunc (globalValue);
+            globalToMeshIndices.set (globalIndex, meshIndex);
+            return meshIndex;
         }
     }
 }
