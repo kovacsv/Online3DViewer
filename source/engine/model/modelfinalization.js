@@ -223,7 +223,7 @@ class ModelFinalizer
         }
 
         if (source === MaterialSource.Line) {
-            this.defaultLineMaterialIndex = GetIndex (model, this.defaultLineMaterialIndex, this.params.defaultLineMaterialColor)
+            this.defaultLineMaterialIndex = GetIndex (model, this.defaultLineMaterialIndex, this.params.defaultLineMaterialColor);
             return this.defaultLineMaterialIndex;
         } else if (source === MaterialSource.Face) {
             this.defaultMaterialIndex = GetIndex (model, this.defaultMaterialIndex, this.params.defaultMaterialColor);
