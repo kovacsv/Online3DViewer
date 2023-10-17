@@ -54,12 +54,12 @@ describe ('Mesh', function() {
 
     it ('Add Line', function () {
         var mesh = new OV.Mesh ();
-        var index = mesh.AddLine (new OV.Line (0, 1));
+        var index = mesh.AddLine (new OV.Line ([0, 1]));
         assert.strictEqual (index, 0);
         assert.strictEqual (mesh.LineCount (), 1);
         var line = mesh.GetLine (index);
-        assert.strictEqual (line.v0, 0);
-        assert.strictEqual (line.v1, 1);
+        assert.strictEqual (line.vertices[0], 0);
+        assert.strictEqual (line.vertices[1], 1);
     });
 
     it ('Add Triangle', function () {

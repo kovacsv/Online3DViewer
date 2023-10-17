@@ -47,7 +47,7 @@ import { TextWriter } from './io/textwriter.js';
 import { RGBColor, RGBAColor, ColorComponentFromFloat, ColorComponentToFloat, RGBColorFromFloatComponents, SRGBToLinear, LinearToSRGB, IntegerToHexString, RGBColorToHexString, RGBAColorToHexString, HexStringToRGBColor, HexStringToRGBAColor, ArrayToRGBColor, RGBColorIsEqual } from './model/color.js';
 import { GeneratorParams, Generator, GeneratorHelper, GenerateCuboid, GenerateCone, GenerateCylinder, GenerateSphere, GeneratePlatonicSolid } from './model/generator.js';
 import { Line } from './model/line.js';
-import { TextureMap, MaterialBase, LineMaterial, FaceMaterial, PhongMaterial, PhysicalMaterial, TextureMapIsEqual, TextureIsEqual, MaterialType } from './model/material.js';
+import { TextureMap, MaterialBase, FaceMaterial, PhongMaterial, PhysicalMaterial, TextureMapIsEqual, TextureIsEqual, MaterialType } from './model/material.js';
 import { Mesh } from './model/mesh.js';
 import { MeshPrimitiveBuffer, MeshBuffer, ConvertMeshToMeshBuffer } from './model/meshbuffer.js';
 import { MeshInstanceId, MeshInstance } from './model/meshinstance.js';
@@ -230,7 +230,6 @@ export {
     Line,
     TextureMap,
     MaterialBase,
-    LineMaterial,
     FaceMaterial,
     PhongMaterial,
     PhysicalMaterial,

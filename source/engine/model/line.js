@@ -1,16 +1,14 @@
 export class Line
 {
-    constructor (v0, v1)
+    constructor (vertices)
     {
-        this.v0 = v0;
-        this.v1 = v1;
-
+        this.vertices = vertices;
         this.mat = null;
     }
 
     HasVertices ()
     {
-        return this.v0 !== null && this.v1 !== null;
+        return this.vertices !== null && this.vertices.length >= 2;
     }
 
     SetMaterial (mat)
@@ -21,7 +19,7 @@ export class Line
 
     Clone ()
     {
-        let cloned = new Line (this.v0, this.v1);
+        let cloned = new Line ([...this.vertices]);
         cloned.SetMaterial (this.mat);
         return cloned;
     }

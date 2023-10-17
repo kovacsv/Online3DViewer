@@ -66,9 +66,8 @@ export function TextureMapIsEqual (aTex, bTex)
 
 export const MaterialType =
 {
-    Line : 1,
-    Phong : 2,
-    Physical : 3
+    Phong : 1,
+    Physical : 2
 };
 
 export class MaterialBase
@@ -102,14 +101,6 @@ export class MaterialBase
             return false;
         }
         return true;
-    }
-}
-
-export class LineMaterial extends MaterialBase
-{
-    constructor (type)
-    {
-        super (MaterialType.Line);
     }
 }
 
