@@ -18,6 +18,7 @@ describe ('Ply Importer', function() {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -44,6 +45,7 @@ describe ('Ply Importer', function() {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -76,6 +78,7 @@ describe ('Ply Importer', function() {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -108,6 +111,7 @@ describe ('Ply Importer', function() {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],

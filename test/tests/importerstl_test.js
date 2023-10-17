@@ -18,6 +18,7 @@ describe ('Stl Importer', function() {
                 meshes : [
                     {
                         name : 'MeshName',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -44,6 +45,7 @@ describe ('Stl Importer', function() {
                 meshes : [
                     {
                         name : 'MeshName',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -70,6 +72,7 @@ describe ('Stl Importer', function() {
                 meshes : [
                     {
                         name : 'MeshName',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -96,6 +99,7 @@ describe ('Stl Importer', function() {
                 meshes : [
                     {
                         name : 'MeshName',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],

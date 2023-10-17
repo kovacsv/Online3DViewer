@@ -2,6 +2,7 @@ import { Coord2D } from '../geometry/coord2d.js';
 import { Coord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
 import { ArrayBufferToUtf8String } from '../io/bufferutils.js';
+import { Line } from '../model/line.js';
 import { RGBColor, RGBColorFromFloatComponents } from '../model/color.js';
 import { PhongMaterial, TextureMap } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
@@ -46,6 +47,11 @@ class ObjMeshConverter
         return this.GetMeshIndex (globalIndex, globalUvs, this.globalToMeshUvs, (val) => {
             return this.mesh.AddTextureUV (new Coord2D (val.x, val.y));
         });
+    }
+
+    AddLine (line)
+    {
+        this.mesh.AddLine (line);
     }
 
     AddTriangle (triangle)
@@ -213,11 +219,16 @@ export class ImporterObj extends ImporterBase
                 parseFloat (parameters[1])
             ));
             return true;
+        } else if (keyword === 'l') {
+            if (parameters.length < 2 || parameters.length % 2 !== 0) {
+                return true;
+            }
+            this.ProcessLineCommand (parameters);
         } else if (keyword === 'f') {
             if (parameters.length < 3) {
                 return true;
             }
-            this.ProcessFace (parameters);
+            this.ProcessFaceCommand (parameters);
             return true;
         }
 
@@ -375,38 +386,54 @@ export class ImporterObj extends ImporterBase
         return false;
     }
 
-    ProcessFace (parameters)
+    ProcessLineCommand (parameters)
     {
-        function GetRelativeIndex (index, count)
-        {
-            if (index > 0) {
-                return index - 1;
-            } else {
-                return count + index;
-            }
+        if (this.currentMeshConverter === null) {
+            this.AddNewMesh ('');
         }
 
+        let vertices = [];
+        for (let i = 0; i < parameters.length; i++) {
+            let vertexIndex = this.GetRelativeIndex (parseInt (parameters[i], 10), this.globalVertices.length);
+            let meshVertexIndex = this.currentMeshConverter.AddVertex (vertexIndex, this.globalVertices);
+            if (meshVertexIndex === null) {
+                this.SetError ('Invalid vertex index.');
+                break;
+            }
+            vertices.push (meshVertexIndex);
+        }
+
+        let line = new Line (vertices);
+        if (this.currentMaterialIndex !== null) {
+            line.mat = this.currentMaterialIndex;
+        }
+
+        this.currentMeshConverter.AddLine (line);
+    }
+
+    ProcessFaceCommand (parameters)
+    {
         let vertices = [];
         let colors = [];
         let normals = [];
         let uvs = [];
 
-        for (let i = 0; i < parameters.length; i++) {
-            let vertexParams = parameters[i].split ('/');
-            vertices.push (GetRelativeIndex (parseInt (vertexParams[0], 10), this.globalVertices.length));
-            if (this.globalVertices.length === this.globalVertexColors.length) {
-                colors.push (GetRelativeIndex (parseInt (vertexParams[0], 10), this.globalVertices.length));
-            }
-            if (vertexParams.length > 1 && vertexParams[1].length > 0) {
-                uvs.push (GetRelativeIndex (parseInt (vertexParams[1], 10), this.globalUvs.length));
-            }
-            if (vertexParams.length > 2 && vertexParams[2].length > 0) {
-                normals.push (GetRelativeIndex (parseInt (vertexParams[2], 10), this.globalNormals.length));
-            }
-        }
-
         if (this.currentMeshConverter === null) {
             this.AddNewMesh ('');
+        }
+
+        for (let i = 0; i < parameters.length; i++) {
+            let vertexParams = parameters[i].split ('/');
+            vertices.push (this.GetRelativeIndex (parseInt (vertexParams[0], 10), this.globalVertices.length));
+            if (this.globalVertices.length === this.globalVertexColors.length) {
+                colors.push (this.GetRelativeIndex (parseInt (vertexParams[0], 10), this.globalVertices.length));
+            }
+            if (vertexParams.length > 1 && vertexParams[1].length > 0) {
+                uvs.push (this.GetRelativeIndex (parseInt (vertexParams[1], 10), this.globalUvs.length));
+            }
+            if (vertexParams.length > 2 && vertexParams[2].length > 0) {
+                normals.push (this.GetRelativeIndex (parseInt (vertexParams[2], 10), this.globalNormals.length));
+            }
         }
 
         for (let i = 0; i < vertices.length - 2; i++) {
@@ -458,6 +485,15 @@ export class ImporterObj extends ImporterBase
             }
 
             this.currentMeshConverter.AddTriangle (triangle);
+        }
+    }
+
+    GetRelativeIndex (index, count)
+    {
+        if (index > 0) {
+            return index - 1;
+        } else {
+            return count + index;
         }
     }
 }
