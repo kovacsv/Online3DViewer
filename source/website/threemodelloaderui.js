@@ -4,144 +4,137 @@ import { ShowMessageDialog } from './dialogs.js';
 import { ButtonDialog, ProgressDialog } from './dialog.js';
 import { AddSvgIconElement } from './utils.js';
 import { ImportErrorCode } from '../engine/import/importer.js';
+import { findName } from './language.js';
+export class ThreeModelLoaderUI {
+  constructor() {
+    this.modelLoader = new ThreeModelLoader();
+    this.modalDialog = null;
+  }
 
-export class ThreeModelLoaderUI
-{
-    constructor ()
-    {
-        this.modelLoader = new ThreeModelLoader ();
-        this.modalDialog = null;
+  LoadModel(inputFiles, settings, callbacks) {
+    if (this.modelLoader.InProgress()) {
+      return;
     }
 
-    LoadModel (inputFiles, settings, callbacks)
-    {
-        if (this.modelLoader.InProgress ()) {
-            return;
-        }
-
-        let progressDialog = null;
-        this.modelLoader.LoadModel (inputFiles, settings, {
-            onLoadStart : () => {
-                this.CloseDialogIfOpen ();
-                callbacks.onStart ();
-                progressDialog = new ProgressDialog ();
-                progressDialog.Init ('Loading Model');
-                progressDialog.Open ();
-            },
-            onFileListProgress : (current, total) => {
-            },
-            onFileLoadProgress : (current, total) => {
-            },
-            onSelectMainFile : (fileNames, selectFile) => {
-                progressDialog.Close ();
-                this.modalDialog = this.ShowFileSelectorDialog (fileNames, (index) => {
-                    progressDialog.Open ();
-                    selectFile (index);
-                });
-            },
-            onImportStart : () => {
-                progressDialog.SetText ('Importing Model');
-            },
-            onVisualizationStart : () => {
-                progressDialog.SetText ('Visualizing Model');
-            },
-            onModelFinished : (importResult, threeObject) => {
-                progressDialog.Close ();
-                callbacks.onFinish (importResult, threeObject);
-            },
-            onTextureLoaded : () => {
-                callbacks.onRender ();
-            },
-            onLoadError : (importError) => {
-                progressDialog.Close ();
-                callbacks.onError (importError);
-                this.modalDialog = this.ShowErrorDialog (importError);
-            },
+    let progressDialog = null;
+    this.modelLoader.LoadModel(inputFiles, settings, {
+      onLoadStart: () => {
+        this.CloseDialogIfOpen();
+        callbacks.onStart();
+        progressDialog = new ProgressDialog();
+        progressDialog.Init(findName('LoadingModel'));
+        progressDialog.Open();
+      },
+      onFileListProgress: (current, total) => {},
+      onFileLoadProgress: (current, total) => {},
+      onSelectMainFile: (fileNames, selectFile) => {
+        progressDialog.Close();
+        this.modalDialog = this.ShowFileSelectorDialog(fileNames, (index) => {
+          progressDialog.Open();
+          selectFile(index);
         });
+      },
+      onImportStart: () => {
+        progressDialog.SetText(findName('ImportingModel'));
+      },
+      onVisualizationStart: () => {
+        progressDialog.SetText(findName('VisualizingModel'));
+      },
+      onModelFinished: (importResult, threeObject) => {
+        progressDialog.Close();
+        callbacks.onFinish(importResult, threeObject);
+      },
+      onTextureLoaded: () => {
+        callbacks.onRender();
+      },
+      onLoadError: (importError) => {
+        progressDialog.Close();
+        callbacks.onError(importError);
+        this.modalDialog = this.ShowErrorDialog(importError);
+      },
+    });
+  }
+
+  GetModelLoader() {
+    return this.modelLoader;
+  }
+
+  GetImporter() {
+    return this.modelLoader.GetImporter();
+  }
+
+  ShowErrorDialog(importError) {
+    if (importError.code === ImportErrorCode.NoImportableFile) {
+      return ShowMessageDialog(
+        findName('SomethingWentWrong'),
+        findName('NoImportableFileFound'),
+        null
+      );
+    } else if (importError.code === ImportErrorCode.FailedToLoadFile) {
+      return ShowMessageDialog(
+        findName('SomethingWentWrong'),
+        findName('FailedToLoadFileForImport'),
+        findName('textFailLoadImport')
+      );
+    } else if (importError.code === ImportErrorCode.ImportFailed) {
+      return ShowMessageDialog(
+        findName('SomethingWentWrong'),
+        findName('FailedToImportModel'),
+        importError.message
+      );
+    } else {
+      return ShowMessageDialog(
+        FindName('SomethingWentWrong'),
+        findName('UnknownError'),
+        null
+      );
+    }
+  }
+
+  ShowFileSelectorDialog(fileNames, onSelect) {
+    let dialog = new ButtonDialog();
+    let contentDiv = dialog.Init(findName('SelectModel'), [
+      {
+        name: findName('Cancel'),
+        subClass: 'outline',
+        onClick() {
+          dialog.Close();
+        },
+      },
+    ]);
+    dialog.SetCloseHandler(() => {
+      onSelect(null);
+    });
+
+    let text = findName('textMultipleFilesFound');
+    AddDiv(contentDiv, 'ov_dialog_message', text);
+
+    let fileListSection = AddDiv(contentDiv, 'ov_dialog_section');
+    let fileList = AddDiv(
+      fileListSection,
+      'ov_dialog_import_file_list ov_thin_scrollbar'
+    );
+
+    for (let i = 0; i < fileNames.length; i++) {
+      let fileName = fileNames[i];
+      let fileLink = AddDiv(fileList, 'ov_dialog_file_link');
+      AddSvgIconElement(fileLink, 'meshes', 'ov_file_link_img');
+      AddDiv(fileLink, 'ov_dialog_file_link_text', fileName);
+      fileLink.addEventListener('click', () => {
+        dialog.SetCloseHandler(null);
+        dialog.Close();
+        onSelect(i);
+      });
     }
 
-    GetModelLoader ()
-    {
-        return this.modelLoader;
+    dialog.Open();
+    return dialog;
+  }
+
+  CloseDialogIfOpen() {
+    if (this.modalDialog !== null) {
+      this.modalDialog.Close();
+      this.modalDialog = null;
     }
-
-    GetImporter ()
-    {
-        return this.modelLoader.GetImporter ();
-    }
-
-    ShowErrorDialog (importError)
-    {
-        if (importError.code === ImportErrorCode.NoImportableFile) {
-            return ShowMessageDialog (
-                'Something went wrong',
-                'No importable file found.',
-                null
-            );
-        } else if (importError.code === ImportErrorCode.FailedToLoadFile) {
-            return ShowMessageDialog (
-                'Something went wrong',
-                'Failed to load file for import.',
-                'The remote server refused to fulfill the request. Check if the url is correct, and make sure that CORS requests are allowed on the remote server.'
-            );
-        } else if (importError.code === ImportErrorCode.ImportFailed) {
-            return ShowMessageDialog (
-                'Something went wrong',
-                'Failed to import model.',
-                importError.message
-            );
-        } else {
-            return ShowMessageDialog (
-                'Something went wrong',
-                'Unknown error.',
-                null
-            );
-        }
-    }
-
-    ShowFileSelectorDialog (fileNames, onSelect)
-    {
-        let dialog = new ButtonDialog ();
-        let contentDiv = dialog.Init ('Select Model', [
-            {
-                name : 'Cancel',
-                subClass : 'outline',
-                onClick () {
-                    dialog.Close ();
-                }
-            }
-        ]);
-        dialog.SetCloseHandler (() => {
-            onSelect (null);
-        });
-
-        let text = 'Multiple importable models found. Select the model you would like to import from the list below.';
-        AddDiv (contentDiv, 'ov_dialog_message', text);
-
-        let fileListSection = AddDiv (contentDiv, 'ov_dialog_section');
-        let fileList = AddDiv (fileListSection, 'ov_dialog_import_file_list ov_thin_scrollbar');
-
-        for (let i = 0; i < fileNames.length; i++) {
-            let fileName = fileNames[i];
-            let fileLink = AddDiv (fileList, 'ov_dialog_file_link');
-            AddSvgIconElement (fileLink, 'meshes', 'ov_file_link_img');
-            AddDiv (fileLink, 'ov_dialog_file_link_text', fileName);
-            fileLink.addEventListener ('click', () => {
-                dialog.SetCloseHandler (null);
-                dialog.Close ();
-                onSelect (i);
-            });
-        }
-
-        dialog.Open ();
-        return dialog;
-    }
-
-    CloseDialogIfOpen ()
-    {
-        if (this.modalDialog !== null) {
-            this.modalDialog.Close ();
-            this.modalDialog = null;
-        }
-    }
+  }
 }
