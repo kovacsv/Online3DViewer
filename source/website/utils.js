@@ -2,6 +2,7 @@ import { RGBColor, RGBColorToHexString } from '../engine/model/color.js';
 import { CreateObjectUrl } from '../engine/io/bufferutils.js';
 import { AddDiv, CreateDiv, AddDomElement } from '../engine/viewer/domutils.js';
 import { findName } from './language.js';
+
 export function GetNameOrDefault(originalName, defaultName) {
   if (originalName.length > 0) {
     return originalName;

@@ -43,7 +43,7 @@ class NavigatorMaterialsPopupButton extends NavigatorPopupButton {
     }
 
     let materialsText =
-      findName('Materials') + '(' + this.materialInfoArray.length + ')';
+      findName('Materials') + ' (' + this.materialInfoArray.length + ')';
     this.buttonText.innerHTML = materialsText;
   }
 

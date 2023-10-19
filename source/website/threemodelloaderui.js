@@ -5,6 +5,7 @@ import { ButtonDialog, ProgressDialog } from './dialog.js';
 import { AddSvgIconElement } from './utils.js';
 import { ImportErrorCode } from '../engine/import/importer.js';
 import { findName } from './language.js';
+
 export class ThreeModelLoaderUI {
   constructor() {
     this.modelLoader = new ThreeModelLoader();
@@ -84,7 +85,7 @@ export class ThreeModelLoaderUI {
       );
     } else {
       return ShowMessageDialog(
-        FindName('SomethingWentWrong'),
+        findName('SomethingWentWrong'),
         findName('UnknownError'),
         null
       );

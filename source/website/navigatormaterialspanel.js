@@ -24,7 +24,8 @@ class NavigatorMeshesPopupButton extends NavigatorPopupButton {
       return;
     }
 
-    let meshesText = 'Meshes (' + this.meshInstanceArray.length + ')';
+    let meshesText =
+      findName('Meshes') + ' (' + this.meshInstanceArray.length + ')';
     this.buttonText.innerHTML = meshesText;
   }
 
