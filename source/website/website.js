@@ -877,9 +877,14 @@ export class Website
                 }
             } else {
                 let userDataArr = GetMeshUserDataArray (viewer, meshInstanceId);
+                let addedMaterialIndices = new Set ();
                 for (let userData of userDataArr) {
                     for (let materialIndex of userData.originalMaterials) {
+                        if (addedMaterialIndices.has (materialIndex)) {
+                            continue;
+                        }
                         usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
+                        addedMaterialIndices.add (materialIndex);
                     }
                 }
             }
