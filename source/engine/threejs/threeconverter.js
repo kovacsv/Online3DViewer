@@ -213,10 +213,13 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 		return threeMaterial;
 	}
 
-	function CreateThreeMesh (meshInstance, modelThreeMaterials)
+	function CreateThreeTriangleMesh (meshInstance, modelThreeMaterials)
 	{
 		let mesh = meshInstance.mesh;
 		let triangleCount = mesh.TriangleCount ();
+		if (triangleCount === 0) {
+			return null;
+		}
 
 		let triangleIndices = [];
 		for (let i = 0; i < triangleCount; i++) {
@@ -246,8 +249,7 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 
 		let meshHasVertexColors = (mesh.VertexColorCount () > 0);
 		let meshHasUVs = (mesh.TextureUVCount () > 0);
-		for (let i = 0; i < triangleIndices.length; i++) {
-			let triangleIndex = triangleIndices[i];
+		for (let triangleIndex of triangleIndices) {
 			let triangle = mesh.GetTriangle (triangleIndex);
 
 			let v0 = mesh.GetVertex (triangle.v0);
@@ -327,11 +329,172 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 		return threeMesh;
 	}
 
+	function CreateThreeLineMesh (meshInstance, modelThreeMaterials)
+	{
+		let mesh = meshInstance.mesh;
+		let lineCount = mesh.LineCount ();
+		if (lineCount === 0) {
+			return null;
+		}
+
+		let lineIndices = [];
+		for (let i = 0; i < lineCount; i++) {
+			lineIndices.push (i);
+		}
+		lineIndices.sort ((a, b) => {
+			let aLine = mesh.GetLine (a);
+			let bLine = mesh.GetLine (b);
+			return aLine.mat - bLine.mat;
+		});
+
+		let vertices = [];
+		for (let lineIndex of lineIndices) {
+			let line = mesh.GetLine (lineIndex);
+			for (let vertexIndex of line.GetVertices ()) {
+				let vertex = mesh.GetVertex (vertexIndex);
+				vertices.push (vertex.x, vertex.y, vertex.z);
+			}
+		}
+
+		let threeGeometry = new THREE.BufferGeometry ();
+		threeGeometry.setAttribute ('position', new THREE.Float32BufferAttribute (vertices, 3));
+
+		const material = new THREE.LineBasicMaterial({
+			color: 0x0000ff
+		});
+
+		let lineOriginalMaterials = [material];
+
+		let threeLine = new THREE.LineSegments (threeGeometry, material);
+		threeLine.userData = {
+			originalMeshInstance : meshInstance,
+			originalMaterials : lineOriginalMaterials,
+			threeMaterials : null
+		};
+		return threeLine;
+		// let triangleIndices = [];
+		// for (let i = 0; i < triangleCount; i++) {
+		// 	triangleIndices.push (i);
+		// }
+		// triangleIndices.sort ((a, b) => {
+		// 	let aTriangle = mesh.GetTriangle (a);
+		// 	let bTriangle = mesh.GetTriangle (b);
+		// 	return aTriangle.mat - bTriangle.mat;
+		// });
+
+		// let threeGeometry = new THREE.BufferGeometry ();
+		// let meshThreeMaterials = [];
+		// let meshOriginalMaterials = [];
+		// let modelToThreeMaterials = new Map ();
+
+		// let vertices = [];
+		// let vertexColors = [];
+		// let normals = [];
+		// let uvs = [];
+
+		// let groups = [];
+		// groups.push ({
+		// 	start : 0,
+		// 	end : -1
+		// });
+
+		// let meshHasVertexColors = (mesh.VertexColorCount () > 0);
+		// let meshHasUVs = (mesh.TextureUVCount () > 0);
+		// for (let i = 0; i < triangleIndices.length; i++) {
+		// 	let triangleIndex = triangleIndices[i];
+		// 	let triangle = mesh.GetTriangle (triangleIndex);
+
+		// 	let v0 = mesh.GetVertex (triangle.v0);
+		// 	let v1 = mesh.GetVertex (triangle.v1);
+		// 	let v2 = mesh.GetVertex (triangle.v2);
+		// 	vertices.push (v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z);
+
+		// 	if (triangle.HasVertexColors ()) {
+		// 		let vc0 = ConvertColorToThreeColor (mesh.GetVertexColor (triangle.c0));
+		// 		let vc1 = ConvertColorToThreeColor (mesh.GetVertexColor (triangle.c1));
+		// 		let vc2 = ConvertColorToThreeColor (mesh.GetVertexColor (triangle.c2));
+		// 		vertexColors.push (
+		// 			vc0.r, vc0.g, vc0.b,
+		// 			vc1.r, vc1.g, vc1.b,
+		// 			vc2.r, vc2.g, vc2.b
+		// 		);
+		// 	} else if (meshHasVertexColors) {
+		// 		vertexColors.push (
+		// 			0.0, 0.0, 0.0,
+		// 			0.0, 0.0, 0.0,
+		// 			0.0, 0.0, 0.0
+		// 		);
+		// 	}
+
+		// 	let n0 = mesh.GetNormal (triangle.n0);
+		// 	let n1 = mesh.GetNormal (triangle.n1);
+		// 	let n2 = mesh.GetNormal (triangle.n2);
+		// 	normals.push (n0.x, n0.y, n0.z, n1.x, n1.y, n1.z, n2.x, n2.y, n2.z);
+
+		// 	if (triangle.HasTextureUVs ()) {
+		// 		let u0 = mesh.GetTextureUV (triangle.u0);
+		// 		let u1 = mesh.GetTextureUV (triangle.u1);
+		// 		let u2 = mesh.GetTextureUV (triangle.u2);
+		// 		uvs.push (u0.x, u0.y, u1.x, u1.y, u2.x, u2.y);
+		// 	} else if (meshHasUVs) {
+		// 		uvs.push (0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+		// 	}
+
+		// 	let modelMaterialIndex = triangle.mat;
+		// 	if (!modelToThreeMaterials.has (modelMaterialIndex)) {
+		// 		modelToThreeMaterials.set (modelMaterialIndex, meshThreeMaterials.length);
+		// 		meshThreeMaterials.push (modelThreeMaterials[modelMaterialIndex]);
+		// 		meshOriginalMaterials.push (modelMaterialIndex);
+		// 		if (i > 0) {
+		// 			groups[groups.length - 1].end = i - 1;
+		// 			groups.push ({
+		// 				start : groups[groups.length - 1].end + 1,
+		// 				end : -1
+		// 			});
+		// 		}
+		// 	}
+		// }
+
+		// groups[groups.length - 1].end = triangleCount - 1;
+
+		// threeGeometry.setAttribute ('position', new THREE.Float32BufferAttribute (vertices, 3));
+		// if (vertexColors.length !== 0) {
+		// 	threeGeometry.setAttribute ('color', new THREE.Float32BufferAttribute (vertexColors, 3));
+		// }
+		// threeGeometry.setAttribute ('normal', new THREE.Float32BufferAttribute (normals, 3));
+		// if (uvs.length !== 0) {
+		// 	threeGeometry.setAttribute ('uv', new THREE.Float32BufferAttribute (uvs, 2));
+		// }
+		// for (let i = 0; i < groups.length; i++) {
+		// 	let group = groups[i];
+		// 	threeGeometry.addGroup (group.start * 3, (group.end - group.start + 1) * 3, i);
+		// }
+
+		// let threeMesh = new THREE.Mesh (threeGeometry, meshThreeMaterials);
+		// threeMesh.name = mesh.GetName ();
+		// threeMesh.userData = {
+		// 	originalMeshInstance : meshInstance,
+		// 	originalMaterials : meshOriginalMaterials,
+		// 	threeMaterials : null
+		// };
+
+		// return threeMesh;
+	}
+
 	function ConvertMesh (threeObject, meshInstance, modelThreeMaterials)
 	{
-		if (!IsEmptyMesh (meshInstance.mesh)) {
-			let threeMesh = CreateThreeMesh (meshInstance, modelThreeMaterials);
-			threeObject.add (threeMesh);
+		if (IsEmptyMesh (meshInstance.mesh)) {
+			return;
+		}
+
+		let triangleMesh = CreateThreeTriangleMesh (meshInstance, modelThreeMaterials);
+		if (triangleMesh !== null) {
+			threeObject.add (triangleMesh);
+		}
+
+		let lineMesh = CreateThreeLineMesh (meshInstance, modelThreeMaterials);
+		if (lineMesh !== null) {
+			threeObject.add (lineMesh);
 		}
 	}
 

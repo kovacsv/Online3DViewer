@@ -836,15 +836,15 @@ export class Website
 
     InitNavigator ()
     {
-        function GetMeshUserData (viewer, meshInstanceId)
+        function GetMeshUserDataArray (viewer, meshInstanceId)
         {
-            let userData = null;
+            let userDataArr = [];
             viewer.EnumerateMeshesUserData ((meshUserData) => {
                 if (meshUserData.originalMeshInstance.id.IsEqual (meshInstanceId)) {
-                    userData = meshUserData;
+                    userDataArr.push (meshUserData);
                 }
             });
-            return userData;
+            return userDataArr;
         }
 
         function GetMeshesForMaterial (viewer, materialIndex)
@@ -876,10 +876,11 @@ export class Website
                     usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
                 }
             } else {
-                let userData = GetMeshUserData (viewer, meshInstanceId);
-                for (let i = 0; i < userData.originalMaterials.length; i++) {
-                    const materialIndex = userData.originalMaterials[i];
-                    usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
+                let userDataArr = GetMeshUserDataArray (viewer, meshInstanceId);
+                for (let userData of userDataArr) {
+                    for (let materialIndex of userData.originalMaterials) {
+                        usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
+                    }
                 }
             }
             usedMaterials.sort ((a, b) => {

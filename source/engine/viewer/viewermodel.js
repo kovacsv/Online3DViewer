@@ -232,6 +232,8 @@ export class ViewerMainModel
         this.mainModel.Traverse ((obj) => {
             if (obj.isMesh) {
                 enumerator (obj);
+            } else if (obj.type === 'LineSegments') {
+                enumerator (obj);
             }
         });
     }

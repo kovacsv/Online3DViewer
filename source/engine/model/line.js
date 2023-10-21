@@ -11,6 +11,11 @@ export class Line
         return this.vertices !== null && this.vertices.length >= 2;
     }
 
+    GetVertices ()
+    {
+        return this.vertices;
+    }
+
     SetMaterial (mat)
     {
         this.mat = mat;
