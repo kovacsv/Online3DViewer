@@ -271,7 +271,7 @@ export class ThreeMeshMaterialHandler
 		this.groups[this.groups.length - 1].end = triangleCount - 1;
 	}
 
-	AddToGeometry (threeGeometry)
+	AddGroups (threeGeometry)
 	{
 		for (let materialIndex = 0; materialIndex < this.groups.length; materialIndex++) {
 			let group = this.groups[materialIndex];
@@ -300,7 +300,6 @@ export function ConvertModelToThreeObject (model, conversionParams, conversionOu
 			return aTriangle.mat - bTriangle.mat;
 		});
 
-		let threeGeometry = new THREE.BufferGeometry ();
 		let meshMaterialHandler = new ThreeMeshMaterialHandler (materialHandler);
 
 		let vertices = [];
@@ -352,10 +351,9 @@ export function ConvertModelToThreeObject (model, conversionParams, conversionOu
 
 			meshMaterialHandler.ProcessItem (i, triangle.mat);
 		}
-
 		meshMaterialHandler.Finalize (triangleCount);
-		meshMaterialHandler.AddToGeometry (threeGeometry);
 
+		let threeGeometry = new THREE.BufferGeometry ();
 		threeGeometry.setAttribute ('position', new THREE.Float32BufferAttribute (vertices, 3));
 		if (vertexColors.length !== 0) {
 			threeGeometry.setAttribute ('color', new THREE.Float32BufferAttribute (vertexColors, 3));
@@ -364,6 +362,7 @@ export function ConvertModelToThreeObject (model, conversionParams, conversionOu
 		if (uvs.length !== 0) {
 			threeGeometry.setAttribute ('uv', new THREE.Float32BufferAttribute (uvs, 2));
 		}
+		meshMaterialHandler.AddGroups (threeGeometry);
 
 		let threeMesh = new THREE.Mesh (threeGeometry, meshMaterialHandler.meshThreeMaterials);
 		threeMesh.name = mesh.GetName ();
@@ -406,7 +405,7 @@ export function ConvertModelToThreeObject (model, conversionParams, conversionOu
 		let threeGeometry = new THREE.BufferGeometry ();
 		threeGeometry.setAttribute ('position', new THREE.Float32BufferAttribute (vertices, 3));
 
-		const material = new THREE.LineBasicMaterial({
+		const material = new THREE.LineBasicMaterial ({
 			color: 0x0000ff
 		});
 
