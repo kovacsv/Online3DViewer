@@ -376,7 +376,7 @@ export function ConvertModelToThreeObject (model, conversionParams, conversionOu
 		return threeMesh;
 	}
 
-	function CreateThreeLineMesh (meshInstance, modelThreeMaterials)
+	function CreateThreeLineMesh (meshInstance, materialHandler)
 	{
 		let mesh = meshInstance.mesh;
 		let lineCount = mesh.LineCount ();
@@ -421,18 +421,18 @@ export function ConvertModelToThreeObject (model, conversionParams, conversionOu
 		return threeLine;
 	}
 
-	function ConvertMesh (threeObject, meshInstance, modelThreeMaterials)
+	function ConvertMesh (threeObject, meshInstance, materialHandler)
 	{
 		if (IsEmptyMesh (meshInstance.mesh)) {
 			return;
 		}
 
-		let triangleMesh = CreateThreeTriangleMesh (meshInstance, modelThreeMaterials);
+		let triangleMesh = CreateThreeTriangleMesh (meshInstance, materialHandler);
 		if (triangleMesh !== null) {
 			threeObject.add (triangleMesh);
 		}
 
-		let lineMesh = CreateThreeLineMesh (meshInstance, modelThreeMaterials);
+		let lineMesh = CreateThreeLineMesh (meshInstance, materialHandler);
 		if (lineMesh !== null) {
 			threeObject.add (lineMesh);
 		}
