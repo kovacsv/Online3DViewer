@@ -119,14 +119,12 @@ function ExportImport (model, format, extension, onReady)
             let fileObjects = exportedFiles.map (file => new OV.InputFile (file.name, OV.FileSource.File, new FileObject ('', file.name, file.content)));
             importer.ImportFiles (fileObjects, settings, {
                 onLoadStart : function () {
-
                 },
                 onFileListProgress : (current, total) => {
                 },
                 onFileLoadProgress : (current, total) => {
                 },
                 onImportStart : function () {
-
                 },
                 onImportSuccess : function (importResult) {
                     onReady (importResult.model)
@@ -152,6 +150,7 @@ function CheckSingleMeshModel (model, model2)
     assert.strictEqual (model2.MaterialCount (), 1);
     assert.strictEqual (model2.MeshInstanceCount (), 1);
     assert.strictEqual (model.TriangleCount (), model2.TriangleCount ());
+    assert.strictEqual (model.LineSegmentCount (), model2.LineSegmentCount ());
     CheckModelBounds (model, model2);
 }
 
@@ -160,6 +159,7 @@ function CheckModel (model, model2)
     assert.strictEqual (model.MaterialCount (), model2.MaterialCount ());
     assert.strictEqual (model.MeshInstanceCount (), model2.MeshInstanceCount ());
     assert.strictEqual (model.TriangleCount (), model2.TriangleCount ());
+    assert.strictEqual (model.LineSegmentCount (), model2.LineSegmentCount ());
     CheckModelBounds (model, model2);
 }
 
