@@ -53,7 +53,14 @@ export class SidebarDetailsPanel extends SidebarPanel
         let size = SubCoord3D (boundingBox.max, boundingBox.min);
         let unit = model.GetUnit ();
         this.AddProperty (table, new Property (PropertyType.Integer, 'Vertices', object3D.VertexCount ()));
-        this.AddProperty (table, new Property (PropertyType.Integer, 'Triangles', object3D.TriangleCount ()));
+        let lineSegmentCount = object3D.LineSegmentCount ();
+        if (lineSegmentCount > 0) {
+            this.AddProperty (table, new Property (PropertyType.Integer, 'Lines', lineSegmentCount));
+        }
+        let triangleCount = object3D.TriangleCount ();
+        if (triangleCount > 0) {
+            this.AddProperty (table, new Property (PropertyType.Integer, 'Triangles', triangleCount));
+        }
         if (unit !== Unit.Unknown) {
             this.AddProperty (table, new Property (PropertyType.Text, 'Unit', UnitToString (unit)));
         }

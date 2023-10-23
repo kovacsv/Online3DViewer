@@ -38,6 +38,15 @@ export class Mesh extends ModelObject3D
         return this.lines.length;
     }
 
+    LineSegmentCount ()
+    {
+        let lineSegmentCount = 0;
+        for (let line of this.lines) {
+            lineSegmentCount += line.SegmentCount ();
+        }
+        return lineSegmentCount;
+    }
+
     TriangleCount ()
     {
         return this.triangles.length;

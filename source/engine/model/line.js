@@ -22,6 +22,14 @@ export class Line
         return this;
     }
 
+    SegmentCount ()
+    {
+        if (this.vertices === null) {
+            return 0;
+        }
+        return parseInt (this.vertices.length / 2, 10);
+    }
+
     Clone ()
     {
         let cloned = new Line ([...this.vertices]);
