@@ -1,14 +1,8 @@
 import { CopyObjectAttributes } from '../core/core.js';
 import { AddCoord3D, Coord3D, CoordIsEqual3D } from '../geometry/coord3d.js';
 import { RGBColor } from './color.js';
-import { PhongMaterial } from './material.js';
+import { MaterialSource, PhongMaterial } from './material.js';
 import { CalculateTriangleNormal, IsEmptyMesh } from './meshutils.js';
-
-const MaterialSource =
-{
-    Line : 1,
-    Face : 2
-};
 
 class ModelFinalizer
 {
@@ -148,7 +142,7 @@ class ModelFinalizer
         for (let i = 0; i < mesh.LineCount (); i++) {
             let line = mesh.GetLine (i);
             if (line.mat === null) {
-                line.mat = this.GetDefaultMaterialIndex (model, MaterialSource.Line);
+                line.mat = this.GetDefaultMaterialIndex (model, MaterialSource.DefaultLine);
             }
         }
 
@@ -156,7 +150,7 @@ class ModelFinalizer
             let triangle = mesh.GetTriangle (i);
             this.FinalizeTriangle (mesh, triangle, meshStatus);
             if (triangle.mat === null) {
-                triangle.mat = this.GetDefaultMaterialIndex (model, MaterialSource.Face);
+                triangle.mat = this.GetDefaultMaterialIndex (model, MaterialSource.DefaultFace);
             }
         }
 
@@ -211,22 +205,22 @@ class ModelFinalizer
 
     GetDefaultMaterialIndex (model, source)
     {
-        function GetIndex (model, index, color)
+        function GetIndex (model, index, source, color)
         {
             if (index !== null) {
                 return index;
             }
             let defaultMaterial = new PhongMaterial ();
             defaultMaterial.color = color;
-            defaultMaterial.isDefault = true;
+            defaultMaterial.source = source;
             return model.AddMaterial (defaultMaterial);
         }
 
-        if (source === MaterialSource.Line) {
-            this.defaultLineMaterialIndex = GetIndex (model, this.defaultLineMaterialIndex, this.params.defaultLineMaterialColor);
+        if (source === MaterialSource.DefaultLine) {
+            this.defaultLineMaterialIndex = GetIndex (model, this.defaultLineMaterialIndex, MaterialSource.DefaultLine, this.params.defaultLineMaterialColor);
             return this.defaultLineMaterialIndex;
-        } else if (source === MaterialSource.Face) {
-            this.defaultMaterialIndex = GetIndex (model, this.defaultMaterialIndex, this.params.defaultMaterialColor);
+        } else if (source === MaterialSource.DefaultFace) {
+            this.defaultMaterialIndex = GetIndex (model, this.defaultMaterialIndex, MaterialSource.DefaultFace, this.params.defaultMaterialColor);
             return this.defaultMaterialIndex;
         } else {
             return null;

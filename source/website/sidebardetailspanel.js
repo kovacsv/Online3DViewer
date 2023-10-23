@@ -7,7 +7,7 @@ import { AddDiv, AddDomElement, ClearDomElement } from '../engine/viewer/domutil
 import { SidebarPanel } from './sidebarpanel.js';
 import { CreateInlineColorCircle } from './utils.js';
 import { GetFileName, IsUrl } from '../engine/io/fileutils.js';
-import { MaterialType } from '../engine/model/material.js';
+import { MaterialSource, MaterialType } from '../engine/model/material.js';
 import { RGBColorToHexString } from '../engine/model/color.js';
 import { Unit } from '../engine/model/unit.js';
 
@@ -104,7 +104,8 @@ export class SidebarDetailsPanel extends SidebarPanel
         } else if (material.type === MaterialType.Physical) {
             typeString = 'Physical';
         }
-        this.AddProperty (table, new Property (PropertyType.Text, 'Source', material.isDefault ? 'Default' : 'Model'));
+        let materialSource = (material.source !== MaterialSource.Model) ? 'Default' : 'Model';
+        this.AddProperty (table, new Property (PropertyType.Text, 'Source', materialSource));
         this.AddProperty (table, new Property (PropertyType.Text, 'Type', typeString));
         if (material.vertexColors) {
             this.AddProperty (table, new Property (PropertyType.Text, 'Color', 'Vertex colors'));

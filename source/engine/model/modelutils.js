@@ -1,5 +1,6 @@
 import { BoundingBoxCalculator3D } from '../geometry/box3d.js';
 import { Octree } from '../geometry/octree.js';
+import { MaterialSource } from './material.js';
 import { IsEmptyMesh } from './meshutils.js';
 import { Model } from './model.js';
 import { Topology } from './topology.js';
@@ -99,7 +100,7 @@ export function HasDefaultMaterial (model)
 {
     for (let i = 0; i < model.MaterialCount (); i++) {
         let material = model.GetMaterial (i);
-        if (material.isDefault && !material.vertexColors) {
+        if (material.source !== MaterialSource.Model && !material.vertexColors) {
             return true;
         }
     }
@@ -110,7 +111,7 @@ export function ReplaceDefaultMaterialsColor (model, color)
 {
     for (let i = 0; i < model.MaterialCount (); i++) {
         let material = model.GetMaterial (i);
-        if (material.isDefault) {
+        if (material.source === MaterialSource.DefaultFace) {
             material.color = color;
         }
     }

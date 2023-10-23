@@ -1,7 +1,7 @@
 import { RunTasksBatch } from '../core/taskrunner.js';
 import { IsEqual } from '../geometry/geometry.js';
 import { CreateObjectUrl, CreateObjectUrlWithMimeType } from '../io/bufferutils.js';
-import { MaterialType } from '../model/material.js';
+import { MaterialSource, MaterialType } from '../model/material.js';
 import { MeshInstance, MeshInstanceId } from '../model/meshinstance.js';
 import { IsEmptyMesh } from '../model/meshutils.js';
 import { ConvertColorToThreeColor, GetShadingType, ShadingType } from './threeutils.js';
@@ -204,7 +204,8 @@ export class ThreeMaterialHandler
 			threeMaterial.emissiveMap = threeTexture;
 		});
 
-		if (material.isDefault) {
+		if (material.source !== MaterialSource.Model) {
+			threeMaterial.userData.source = material.source;
 			this.conversionOutput.defaultMaterials.push (threeMaterial);
 		}
 
@@ -225,7 +226,8 @@ export class ThreeMaterialHandler
 		}
 
 		let threeMaterial = new THREE.LineBasicMaterial (materialParams);
-		if (material.isDefault) {
+		if (material.source !== MaterialSource.Model) {
+			threeMaterial.userData.source = material.source;
 			this.conversionOutput.defaultMaterials.push (threeMaterial);
 		}
 
