@@ -106,7 +106,7 @@ export function HasDefaultMaterial (model)
     return false;
 }
 
-export function ReplaceDefaultMaterialColor (model, color)
+export function ReplaceDefaultMaterialsColor (model, color)
 {
     for (let i = 0; i < model.MaterialCount (); i++) {
         let material = model.GetMaterial (i);

@@ -8,6 +8,12 @@ import { ConvertColorToThreeColor, GetShadingType, ShadingType } from './threeut
 
 import * as THREE from 'three';
 
+export const MaterialGeometryType =
+{
+	Line : 1,
+	Face : 2
+};
+
 export class ModelToThreeConversionParams
 {
 	constructor ()
@@ -20,7 +26,7 @@ export class ModelToThreeConversionOutput
 {
 	constructor ()
 	{
-		this.defaultMaterial = null;
+		this.defaultMaterials = [];
 		this.objectUrls = [];
 	}
 }
@@ -96,12 +102,6 @@ export class ThreeNodeTree
 		return this.threeNodeItems;
 	}
 }
-
-export const MaterialGeometryType =
-{
-	Line : 1,
-	Face : 2
-};
 
 export class ThreeMaterialHandler
 {
@@ -205,7 +205,7 @@ export class ThreeMaterialHandler
 		});
 
 		if (material.isDefault) {
-			this.conversionOutput.defaultMaterial = threeMaterial;
+			this.conversionOutput.defaultMaterials.push (threeMaterial);
 		}
 
 		return threeMaterial;
@@ -226,7 +226,7 @@ export class ThreeMaterialHandler
 
 		let threeMaterial = new THREE.LineBasicMaterial (materialParams);
 		if (material.isDefault) {
-			this.conversionOutput.defaultMaterial = threeMaterial;
+			this.conversionOutput.defaultMaterials.push (threeMaterial);
 		}
 
 		return threeMaterial;

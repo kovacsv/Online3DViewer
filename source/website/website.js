@@ -19,7 +19,7 @@ import { ShowSnapshotDialog } from './snapshotdialog.js';
 import { AddSvgIconElement, GetFilesFromDataTransfer, InstallTooltip, IsSmallWidth } from './utils.js';
 import { ShowOpenUrlDialog } from './openurldialog.js';
 import { ShowSharingDialog } from './sharingdialog.js';
-import { HasDefaultMaterial, ReplaceDefaultMaterialColor } from '../engine/model/modelutils.js';
+import { HasDefaultMaterial, ReplaceDefaultMaterialsColor } from '../engine/model/modelutils.js';
 import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { MeasureTool } from './measuretool.js';
@@ -577,9 +577,9 @@ export class Website
 
             this.viewer.SetBackgroundColor (this.settings.backgroundColor);
             let modelLoader = this.modelLoaderUI.GetModelLoader ();
-            if (modelLoader.GetDefaultMaterial () !== null) {
-                ReplaceDefaultMaterialColor (this.model, this.settings.defaultColor);
-                modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
+            if (modelLoader.GetDefaultMaterials () !== null) {
+                ReplaceDefaultMaterialsColor (this.model, this.settings.defaultColor);
+                modelLoader.ReplaceDefaultMaterialsColor (this.settings.defaultColor);
             }
         }
 
@@ -814,9 +814,9 @@ export class Website
             onDefaultColorChanged : () => {
                 this.settings.SaveToCookies ();
                 let modelLoader = this.modelLoaderUI.GetModelLoader ();
-                if (modelLoader.GetDefaultMaterial () !== null) {
-                    ReplaceDefaultMaterialColor (this.model, this.settings.defaultColor);
-                    modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
+                if (modelLoader.GetDefaultMaterials () !== null) {
+                    ReplaceDefaultMaterialsColor (this.model, this.settings.defaultColor);
+                    modelLoader.ReplaceDefaultMaterialsColor (this.settings.defaultColor);
                 }
                 this.viewer.Render ();
             },
@@ -839,7 +839,7 @@ export class Website
         function GetMeshUserDataArray (viewer, meshInstanceId)
         {
             let userDataArr = [];
-            viewer.EnumerateMeshesUserData ((meshUserData) => {
+            viewer.EnumerateMeshesAndLinesUserData ((meshUserData) => {
                 if (meshUserData.originalMeshInstance.id.IsEqual (meshInstanceId)) {
                     userDataArr.push (meshUserData);
                 }
@@ -850,7 +850,7 @@ export class Website
         function GetMeshesForMaterial (viewer, materialIndex)
         {
             let usedByMeshes = [];
-            viewer.EnumerateMeshesUserData ((meshUserData) => {
+            viewer.EnumerateMeshesAndLinesUserData ((meshUserData) => {
                 if (materialIndex === null || meshUserData.originalMaterials.indexOf (materialIndex) !== -1) {
                     usedByMeshes.push (meshUserData.originalMeshInstance);
                 }

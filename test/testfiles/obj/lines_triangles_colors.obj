@@ -2,23 +2,49 @@ mtllib lines_triangles_colors.mtl
 
 v 0.0 0.0 0.0
 v 1.0 0.0 0.0
-v 1.0 1.0 0.0
-v 0.0 1.0 0.0
-v 0.0 0.0 1.0
 v 1.0 0.0 1.0
-v 1.0 1.0 1.0
-v 0.0 1.0 1.0
-v 0.0 0.0 2.0
-v 1.0 0.0 2.0
-v 1.0 1.0 2.0
-v 0.0 1.0 2.0
+v 0.0 0.0 1.0
+v 0.5 1.0 0.5
+
+g Mesh01
 usemtl Red
-l 1 2
-l 3 4
-f 9 10 11
-usemtl Green
-l 5 6 6 7 7 8 8 5
-f 9 11 12
-usemtl Blue
+f 1 2 3
 l 1 5
-f 9 5 8 12
+usemtl Green
+f 1 3 4
+l 3 5
+
+v 2.0 0.0 0.0
+v 3.0 0.0 0.0
+v 3.0 0.0 1.0
+v 2.0 0.0 1.0
+v 2.5 1.0 0.5
+
+g Mesh02
+usemtl Red
+f 6 7 8
+l 6 10
+usemtl Green
+f 6 8 9
+l 8 10
+
+v 4.0 0.0 0.0
+v 5.0 0.0 0.0
+v 5.0 0.0 1.0
+v 4.0 0.0 1.0
+
+g Mesh03
+usemtl Red
+f 11 12 13
+usemtl Green
+f 11 13 14
+
+v 6.0 0.0 0.0
+v 7.0 0.0 1.0
+v 6.5 1.0 0.5
+
+g Mesh04
+usemtl Red
+l 15 17
+usemtl Green
+l 16 17

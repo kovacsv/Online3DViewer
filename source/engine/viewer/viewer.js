@@ -1,7 +1,7 @@
 import { Coord3D, CoordDistance3D, SubCoord3D } from '../geometry/coord3d.js';
 import { DegRad, Direction, IsEqual } from '../geometry/geometry.js';
 import { ColorComponentToFloat } from '../model/color.js';
-import { ShadingType } from '../threejs/threeutils.js';
+import { CreateHighlightMaterials, ShadingType } from '../threejs/threeutils.js';
 import { Camera, NavigationMode, ProjectionMode } from './camera.js';
 import { GetDomElementInnerDimensions } from './domutils.js';
 import { Navigation } from './navigation.js';
@@ -448,7 +448,7 @@ export class Viewer
 
     SetMeshesVisibility (isVisible)
     {
-        this.mainModel.EnumerateMeshes ((mesh) => {
+        this.mainModel.EnumerateMeshesAndLines ((mesh) => {
             let visible = isVisible (mesh.userData);
             if (mesh.visible !== visible) {
                 mesh.visible = visible;
@@ -465,22 +465,13 @@ export class Viewer
 
     SetMeshesHighlight (highlightColor, isHighlighted)
     {
-        function CreateHighlightMaterials (originalMaterials, highlightMaterial)
-        {
-            let highlightMaterials = [];
-            for (let i = 0; i < originalMaterials.length; i++) {
-                highlightMaterials.push (highlightMaterial);
-            }
-            return highlightMaterials;
-        }
-
-        const highlightMaterial = this.CreateHighlightMaterial (highlightColor);
-        this.mainModel.EnumerateMeshes ((mesh) => {
+        let withPolygonOffset = this.mainModel.HasLinesOrEdges ();
+        this.mainModel.EnumerateMeshesAndLines ((mesh) => {
             let highlighted = isHighlighted (mesh.userData);
             if (highlighted) {
                 if (mesh.userData.threeMaterials === null) {
                     mesh.userData.threeMaterials = mesh.material;
-                    mesh.material = CreateHighlightMaterials (mesh.material, highlightMaterial);
+                    mesh.material = CreateHighlightMaterials (mesh.userData.threeMaterials, highlightColor, withPolygonOffset);
                 }
             } else {
                 if (mesh.userData.threeMaterials !== null) {
@@ -491,12 +482,6 @@ export class Viewer
         });
 
         this.Render ();
-    }
-
-    CreateHighlightMaterial (highlightColor)
-    {
-        const showEdges = this.mainModel.edgeSettings.showEdges;
-        return this.shadingModel.CreateHighlightMaterial (highlightColor, showEdges);
     }
 
     GetMeshUserDataUnderMouse (mouseCoords)
@@ -528,9 +513,9 @@ export class Viewer
         return this.mainModel.GetBoundingSphere (needToProcess);
     }
 
-    EnumerateMeshesUserData (enumerator)
+    EnumerateMeshesAndLinesUserData (enumerator)
     {
-        this.mainModel.EnumerateMeshes ((mesh) => {
+        this.mainModel.EnumerateMeshesAndLines ((mesh) => {
             enumerator (mesh.userData);
         });
     }
