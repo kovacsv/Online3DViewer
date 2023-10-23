@@ -162,6 +162,7 @@ export function ModelToObjectSimple (model)
             vertexColorCount : mesh.VertexColorCount (),
             normalCount : mesh.NormalCount (),
             uvCount : mesh.TextureUVCount (),
+            lineCount : mesh.LineSegmentCount (),
             triangleCount : mesh.TriangleCount (),
             boundingBox : {
                 min : [boundingBox.min.x, boundingBox.min.y, boundingBox.min.z],

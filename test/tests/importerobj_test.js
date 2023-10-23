@@ -507,6 +507,7 @@ describe ('Obj Importer', function () {
                         vertexColorCount : 0,
                         normalCount : 6,
                         uvCount : 4,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -537,6 +538,7 @@ describe ('Obj Importer', function () {
                         vertexColorCount : 0,
                         normalCount : 6,
                         uvCount : 4,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -568,6 +570,7 @@ describe ('Obj Importer', function () {
                         vertexColorCount : 0,
                         normalCount : 6,
                         uvCount : 4,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -599,6 +602,7 @@ describe ('Obj Importer', function () {
                         vertexColorCount : 0,
                         normalCount : 6,
                         uvCount : 4,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -626,6 +630,7 @@ describe ('Obj Importer', function () {
                         vertexColorCount : 0,
                         normalCount : 20,
                         uvCount : 0,
+                        lineCount : 0,
                         triangleCount : 20,
                         boundingBox : {
                             min : [-0.85065080835204, -0.85065080835204, -0.85065080835204],

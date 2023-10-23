@@ -142,6 +142,7 @@ describe ('Ply Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 0,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -169,6 +170,7 @@ describe ('Ply Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 0,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -196,6 +198,7 @@ describe ('Ply Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 0,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -226,6 +229,7 @@ describe ('Ply Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 0,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
