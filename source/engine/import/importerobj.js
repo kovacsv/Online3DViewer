@@ -220,7 +220,7 @@ export class ImporterObj extends ImporterBase
             ));
             return true;
         } else if (keyword === 'l') {
-            if (parameters.length < 2 || parameters.length % 2 !== 0) {
+            if (parameters.length < 2) {
                 return true;
             }
             this.ProcessLineCommand (parameters);

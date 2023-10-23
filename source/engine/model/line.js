@@ -27,7 +27,7 @@ export class Line
         if (this.vertices === null) {
             return 0;
         }
-        return parseInt (this.vertices.length / 2, 10);
+        return this.vertices.length - 1;
     }
 
     Clone ()

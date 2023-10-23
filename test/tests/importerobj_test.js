@@ -668,7 +668,7 @@ describe ('Obj Importer', function () {
                                 mat : 0
                             },
                             {
-                                vertices : [0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1],
+                                vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1],
                                 mat : 0
                             }
                         ],
@@ -707,7 +707,7 @@ describe ('Obj Importer', function () {
                         name : 'Mesh02',
                         lines : [
                             {
-                                vertices : [0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1],
+                                vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1],
                                 mat : 0
                             }
                         ],
@@ -746,7 +746,7 @@ describe ('Obj Importer', function () {
                         name : 'Mesh02',
                         lines : [
                             {
-                                vertices : [0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1],
+                                vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1],
                                 mat : 0
                             }
                         ],
@@ -781,7 +781,7 @@ describe ('Obj Importer', function () {
                                 mat : 0
                             },
                             {
-                                vertices : [0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1],
+                                vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1],
                                 mat : 1
                             },
                             {

@@ -445,12 +445,16 @@ export function ConvertModelToThreeObject (model, conversionParams, conversionOu
 		for (let i = 0; i < lineIndices.length; i++) {
 			let line = mesh.GetLine (lineIndices[i]);
 			let lineVertices = line.GetVertices ();
-			for (let vertexIndex of lineVertices) {
+			for (let i = 0; i < lineVertices.length; i++) {
+				let vertexIndex = lineVertices[i];
 				let vertex = mesh.GetVertex (vertexIndex);
 				vertices.push (vertex.x, vertex.y, vertex.z);
+				if (i > 0 && i < lineVertices.length - 1) {
+					vertices.push (vertex.x, vertex.y, vertex.z);
+				}
 			}
 			meshMaterialHandler.ProcessItem (segmentCount, line.mat);
-			segmentCount += lineVertices.length / 2;
+			segmentCount += line.SegmentCount ();
 		}
 		meshMaterialHandler.Finalize (segmentCount);
 
