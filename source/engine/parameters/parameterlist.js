@@ -269,6 +269,12 @@ export class ParameterListBuilder
         return this;
     }
 
+    AddDefaultLineColor (color)
+    {
+        this.AddUrlPart ('defaultlinecolor', ParameterConverter.RGBColorToString (color));
+        return this;
+    }
+
     AddEdgeSettings (edgeSettings)
     {
         this.AddUrlPart ('edgesettings', ParameterConverter.EdgeSettingsToString (edgeSettings));
@@ -341,6 +347,12 @@ export class ParameterListParser
     GetDefaultColor ()
     {
         let colorParams = this.GetKeywordParams ('defaultcolor');
+        return ParameterConverter.StringToRGBColor (colorParams);
+    }
+
+    GetDefaultLineColor ()
+    {
+        let colorParams = this.GetKeywordParams ('defaultlinecolor');
         return ParameterConverter.StringToRGBColor (colorParams);
     }
 

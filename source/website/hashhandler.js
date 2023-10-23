@@ -72,6 +72,12 @@ export class HashHandler
         return parser.GetDefaultColor ();
     }
 
+    GetDefaultLineColorFromHash ()
+    {
+        let parser = CreateUrlParser (this.GetHash ());
+        return parser.GetDefaultLineColor ();
+    }
+
     GetEdgeSettingsFromHash ()
     {
         let parser = CreateUrlParser (this.GetHash ());

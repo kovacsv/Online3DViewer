@@ -16,6 +16,7 @@ describe ('Parameter List', function () {
         );
         let background = new OV.RGBAColor (4, 5, 6, 7);
         let color = new OV.RGBColor (1, 2, 3);
+        let color2 = new OV.RGBColor (4, 5, 6);
         {
             let urlParams = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).GetParameterList ();
             assert.strictEqual (urlParams, 'model=a.txt,b.txt');
@@ -35,6 +36,10 @@ describe ('Parameter List', function () {
         {
             let urlParams = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).AddBackgroundColor (background).AddDefaultColor (color).GetParameterList ();
             assert.strictEqual (urlParams, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000$backgroundcolor=4,5,6,7$defaultcolor=1,2,3');
+        }
+        {
+            let urlParams = OV.CreateUrlBuilder ().AddModelUrls (modelUrls).AddCamera (camera).AddBackgroundColor (background).AddDefaultColor (color).AddDefaultLineColor (color2).GetParameterList ();
+            assert.strictEqual (urlParams, 'model=a.txt,b.txt$camera=1.00000,1.00000,1.00000,0.00000,0.00000,0.00000,0.00000,0.00000,1.00000,45.00000$backgroundcolor=4,5,6,7$defaultcolor=1,2,3$defaultlinecolor=4,5,6');
         }
         {
             let urlParams = OV.CreateUrlBuilder ().AddEdgeSettings (new EdgeSettings (

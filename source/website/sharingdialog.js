@@ -71,6 +71,7 @@ export function ShowSharingDialog (fileList, settings, viewer)
                 builder.AddEnvironmentSettings (environmentSettings);
                 builder.AddBackgroundColor (settings.backgroundColor);
                 builder.AddDefaultColor (settings.defaultColor);
+                builder.AddDefaultLineColor (settings.defaultLineColor);
                 builder.AddEdgeSettings (settings.edgeSettings);
             }
             let hashParameters = builder.GetParameterList ();
