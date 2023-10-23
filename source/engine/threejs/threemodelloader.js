@@ -92,12 +92,16 @@ export class ThreeModelLoader
         return this.defaultMaterials;
     }
 
-    ReplaceDefaultMaterialsColor (defaultColor)
+    ReplaceDefaultMaterialsColor (defaultColor, defaultLineColor)
     {
         if (this.defaultMaterials !== null) {
             for (let defaultMaterial of this.defaultMaterials) {
-                if (!defaultMaterial.vertexColors && defaultMaterial.userData.source === MaterialSource.DefaultFace) {
-                    defaultMaterial.color = ConvertColorToThreeColor (defaultColor);
+                if (!defaultMaterial.vertexColors) {
+                    if (defaultMaterial.userData.source === MaterialSource.DefaultFace) {
+                        defaultMaterial.color = ConvertColorToThreeColor (defaultColor);
+                    } else if (defaultMaterial.userData.source === MaterialSource.DefaultLine) {
+                        defaultMaterial.color = ConvertColorToThreeColor (defaultLineColor);
+                    }
                 }
             }
         }

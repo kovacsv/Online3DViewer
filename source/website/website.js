@@ -19,7 +19,7 @@ import { ShowSnapshotDialog } from './snapshotdialog.js';
 import { AddSvgIconElement, GetFilesFromDataTransfer, InstallTooltip, IsSmallWidth } from './utils.js';
 import { ShowOpenUrlDialog } from './openurldialog.js';
 import { ShowSharingDialog } from './sharingdialog.js';
-import { HasDefaultMaterial, ReplaceDefaultMaterialsColor } from '../engine/model/modelutils.js';
+import { GetDefaultMaterials, ReplaceDefaultMaterialsColor } from '../engine/model/modelutils.js';
 import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { MeasureTool } from './measuretool.js';
@@ -402,6 +402,7 @@ export class Website
             }
             TransformFileHostUrls (urls);
             let importSettings = new ImportSettings ();
+            importSettings.defaultLineColor = this.settings.defaultLineColor;
             importSettings.defaultColor = this.settings.defaultColor;
             let defaultColor = this.hashHandler.GetDefaultColorFromHash ();
             if (defaultColor !== null) {
@@ -480,6 +481,7 @@ export class Website
     LoadModelFromFileList (files)
     {
         let importSettings = new ImportSettings ();
+        importSettings.defaultLineColor = this.settings.defaultLineColor;
         importSettings.defaultColor = this.settings.defaultColor;
         let inputFiles = InputFilesFromFileObjects (files);
         this.LoadModelFromInputFiles (inputFiles, importSettings);
@@ -572,14 +574,15 @@ export class Website
         if (resetColors) {
             let defaultSettings = new Settings (this.settings.themeId);
             this.settings.backgroundColor = defaultSettings.backgroundColor;
+            this.settings.defaultLineColor = defaultSettings.defaultLineColor;
             this.settings.defaultColor = defaultSettings.defaultColor;
             this.sidebar.UpdateControlsStatus ();
 
             this.viewer.SetBackgroundColor (this.settings.backgroundColor);
             let modelLoader = this.modelLoaderUI.GetModelLoader ();
             if (modelLoader.GetDefaultMaterials () !== null) {
-                ReplaceDefaultMaterialsColor (this.model, this.settings.defaultColor);
-                modelLoader.ReplaceDefaultMaterialsColor (this.settings.defaultColor);
+                ReplaceDefaultMaterialsColor (this.model, this.settings.defaultColor, this.settings.defaultLineColor);
+                modelLoader.ReplaceDefaultMaterialsColor (this.settings.defaultColor, this.settings.defaultLineColor);
             }
         }
 
@@ -794,8 +797,8 @@ export class Website
             getProjectionMode : () => {
                 return this.viewer.GetProjectionMode ();
             },
-            hasDefaultMaterial : () => {
-                return HasDefaultMaterial (this.model);
+            getDefaultMaterials : () => {
+                return GetDefaultMaterials (this.model);
             },
             onEnvironmentMapChanged : () => {
                 this.settings.SaveToCookies ();
@@ -815,8 +818,8 @@ export class Website
                 this.settings.SaveToCookies ();
                 let modelLoader = this.modelLoaderUI.GetModelLoader ();
                 if (modelLoader.GetDefaultMaterials () !== null) {
-                    ReplaceDefaultMaterialsColor (this.model, this.settings.defaultColor);
-                    modelLoader.ReplaceDefaultMaterialsColor (this.settings.defaultColor);
+                    ReplaceDefaultMaterialsColor (this.model, this.settings.defaultColor, this.settings.defaultLineColor);
+                    modelLoader.ReplaceDefaultMaterialsColor (this.settings.defaultColor, this.settings.defaultLineColor);
                 }
                 this.viewer.Render ();
             },

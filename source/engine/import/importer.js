@@ -21,6 +21,7 @@ export class ImportSettings
 {
     constructor ()
     {
+        this.defaultLineColor = new RGBColor (100, 100, 100);
         this.defaultColor = new RGBColor (200, 200, 200);
     }
 }
@@ -215,6 +216,9 @@ export class Importer
         });
 
         importer.Import (mainFile.file.name, mainFile.file.extension, mainFile.file.content, {
+            getDefaultLineMaterialColor : () => {
+                return settings.defaultLineColor;
+            },
             getDefaultMaterialColor : () => {
                 return settings.defaultColor;
             },

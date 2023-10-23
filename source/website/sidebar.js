@@ -48,8 +48,8 @@ export class Sidebar
             getProjectionMode : () => {
                 return this.callbacks.getProjectionMode ();
             },
-            hasDefaultMaterial : () => {
-                return this.callbacks.hasDefaultMaterial ();
+            getDefaultMaterials : () => {
+                return this.callbacks.getDefaultMaterials ();
             },
             onEnvironmentMapChanged : () => {
                 this.callbacks.onEnvironmentMapChanged ();

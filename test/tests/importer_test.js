@@ -277,7 +277,6 @@ describe ('Importer Test', function () {
             onFileLoadProgress : (current, total) => {
             },
             onImportStart : function () {
-
             },
             onImportSuccess : function (importResult) {
                 assert.ok (!OV.IsModelEmpty (importResult.model));

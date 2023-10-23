@@ -219,6 +219,9 @@ describe ('Exporter', function () {
             let contentBuffer = stlFile.GetBufferContent ();
             let importer = new OV.ImporterStl ();
             importer.Import (stlFile.GetName (), 'stl', contentBuffer, {
+                getDefaultLineMaterialColor () {
+                    return new OV.RGBColor (0, 0, 0);
+                },
                 getDefaultMaterialColor () {
                     return new OV.RGBColor (0, 0, 0);
                 },
@@ -316,6 +319,9 @@ describe ('Exporter', function () {
             let contentBuffer = plyFile.GetBufferContent ();
             let importer = new OV.ImporterPly ();
             importer.Import (plyFile.GetName (), 'ply', contentBuffer, {
+                getDefaultLineMaterialColor () {
+                    return new OV.RGBColor (0, 0, 0);
+                },
                 getDefaultMaterialColor () {
                     return new OV.RGBColor (0, 0, 0);
                 },
@@ -347,6 +353,9 @@ describe ('Exporter', function () {
             let contentBuffer = gltfFile.GetBufferContent ();
             let importer = new OV.ImporterGltf ();
             importer.Import (gltfFile.GetName (), 'gltf', contentBuffer, {
+                getDefaultLineMaterialColor () {
+                    return new OV.RGBColor (0, 0, 0);
+                },
                 getDefaultMaterialColor () {
                     return new OV.RGBColor (0, 0, 0);
                 },
@@ -383,6 +392,9 @@ describe ('Exporter', function () {
             let contentBuffer = glbFile.GetBufferContent ();
             let importer = new OV.ImporterGltf ();
             importer.Import (glbFile.GetName (), 'glb', contentBuffer, {
+                getDefaultLineMaterialColor () {
+                    return new OV.RGBColor (0, 0, 0);
+                },
                 getDefaultMaterialColor () {
                     return new OV.RGBColor (0, 0, 0);
                 },
@@ -416,6 +428,9 @@ describe ('Exporter', function () {
             let contentBuffer = glbFile.GetBufferContent ();
             let importer = new OV.ImporterGltf ();
             importer.Import (glbFile.GetName (), 'glb', contentBuffer, {
+                getDefaultLineMaterialColor () {
+                    return new OV.RGBColor (0, 0, 0);
+                },
                 getDefaultMaterialColor () {
                     return new OV.RGBColor (0, 0, 0);
                 },
@@ -451,6 +466,9 @@ describe ('Exporter', function () {
             let contentBuffer = glbFile.GetBufferContent ();
             let importer = new OV.ImporterGltf ();
             importer.Import (glbFile.GetName (), 'glb', contentBuffer, {
+                getDefaultLineMaterialColor () {
+                    return new OV.RGBColor (0, 0, 0);
+                },
                 getDefaultMaterialColor () {
                     return new OV.RGBColor (0, 0, 0);
                 },
@@ -486,6 +504,9 @@ describe ('Exporter', function () {
             let contentBuffer = glbFile.GetBufferContent ();
             let importer = new OV.ImporterGltf ();
             importer.Import (glbFile.GetName (), 'glb', contentBuffer, {
+                getDefaultLineMaterialColor () {
+                    return new OV.RGBColor (0, 0, 0);
+                },
                 getDefaultMaterialColor () {
                     return new OV.RGBColor (0, 0, 0);
                 },
@@ -521,6 +542,9 @@ describe ('Exporter', function () {
             let contentBuffer = glbFile.GetBufferContent ();
             let importer = new OV.ImporterGltf ();
             importer.Import (glbFile.GetName (), 'glb', contentBuffer, {
+                getDefaultLineMaterialColor () {
+                    return new OV.RGBColor (0, 0, 0);
+                },
                 getDefaultMaterialColor () {
                     return new OV.RGBColor (0, 0, 0);
                 },

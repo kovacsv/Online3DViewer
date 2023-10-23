@@ -47,14 +47,14 @@ import { TextWriter } from './io/textwriter.js';
 import { RGBColor, RGBAColor, ColorComponentFromFloat, ColorComponentToFloat, RGBColorFromFloatComponents, SRGBToLinear, LinearToSRGB, IntegerToHexString, RGBColorToHexString, RGBAColorToHexString, HexStringToRGBColor, HexStringToRGBAColor, ArrayToRGBColor, RGBColorIsEqual } from './model/color.js';
 import { GeneratorParams, Generator, GeneratorHelper, GenerateCuboid, GenerateCone, GenerateCylinder, GenerateSphere, GeneratePlatonicSolid } from './model/generator.js';
 import { Line } from './model/line.js';
-import { TextureMap, MaterialBase, FaceMaterial, PhongMaterial, PhysicalMaterial, TextureMapIsEqual, TextureIsEqual, MaterialType } from './model/material.js';
+import { TextureMap, MaterialBase, FaceMaterial, PhongMaterial, PhysicalMaterial, TextureMapIsEqual, TextureIsEqual, MaterialType, MaterialSource } from './model/material.js';
 import { Mesh } from './model/mesh.js';
 import { MeshPrimitiveBuffer, MeshBuffer, ConvertMeshToMeshBuffer } from './model/meshbuffer.js';
 import { MeshInstanceId, MeshInstance } from './model/meshinstance.js';
 import { IsEmptyMesh, CalculateTriangleNormal, TransformMesh, FlipMeshTrianglesOrientation } from './model/meshutils.js';
 import { Model } from './model/model.js';
 import { FinalizeModel, CheckModel } from './model/modelfinalization.js';
-import { IsModelEmpty, GetBoundingBox, GetTopology, IsTwoManifold, HasDefaultMaterial, ReplaceDefaultMaterialsColor } from './model/modelutils.js';
+import { IsModelEmpty, GetBoundingBox, GetTopology, IsTwoManifold, GetDefaultMaterials, ReplaceDefaultMaterialsColor } from './model/modelutils.js';
 import { Node } from './model/node.js';
 import { Object3D, ModelObject3D } from './model/object.js';
 import { Property, PropertyGroup, PropertyToString, PropertyType } from './model/property.js';
@@ -236,6 +236,7 @@ export {
     TextureMapIsEqual,
     TextureIsEqual,
     MaterialType,
+    MaterialSource,
     Mesh,
     MeshPrimitiveBuffer,
     MeshBuffer,
@@ -253,7 +254,7 @@ export {
     GetBoundingBox,
     GetTopology,
     IsTwoManifold,
-    HasDefaultMaterial,
+    GetDefaultMaterials,
     ReplaceDefaultMaterialsColor,
     Node,
     Object3D,

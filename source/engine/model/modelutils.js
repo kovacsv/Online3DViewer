@@ -96,23 +96,26 @@ export function IsTwoManifold (object3D)
     }
 }
 
-export function HasDefaultMaterial (model)
+export function GetDefaultMaterials (model)
 {
+    let defaultMaterials = [];
     for (let i = 0; i < model.MaterialCount (); i++) {
         let material = model.GetMaterial (i);
         if (material.source !== MaterialSource.Model && !material.vertexColors) {
-            return true;
+            defaultMaterials.push (material);
         }
     }
-    return false;
+    return defaultMaterials;
 }
 
-export function ReplaceDefaultMaterialsColor (model, color)
+export function ReplaceDefaultMaterialsColor (model, color, lineColor)
 {
     for (let i = 0; i < model.MaterialCount (); i++) {
         let material = model.GetMaterial (i);
         if (material.source === MaterialSource.DefaultFace) {
             material.color = color;
+        } else if (material.source === MaterialSource.DefaultLine) {
+            material.color = lineColor;
         }
     }
 }

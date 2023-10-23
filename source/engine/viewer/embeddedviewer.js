@@ -109,6 +109,7 @@ export class EmbeddedViewer
 
         this.viewer.Clear ();
         let settings = new ImportSettings ();
+        console.log (this.parameters);
         if (this.parameters.defaultColor) {
             settings.defaultColor = this.parameters.defaultColor;
         }
