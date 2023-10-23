@@ -136,7 +136,7 @@ export class MeasureTool
     Click (mouseCoordinates)
     {
         let intersection = this.viewer.GetMeshIntersectionUnderMouse (mouseCoordinates);
-        if (intersection === null) {
+        if (intersection === null || !intersection.object.isMesh) {
             this.ClearMarkers ();
             this.UpdatePanel ();
             return;
@@ -153,7 +153,7 @@ export class MeasureTool
     MouseMove (mouseCoordinates)
     {
         let intersection = this.viewer.GetMeshIntersectionUnderMouse (mouseCoordinates);
-        if (intersection === null) {
+        if (intersection === null || !intersection.object.isMesh) {
             if (this.tempMarker !== null) {
                 this.tempMarker.Show (false);
                 this.viewer.Render ();
