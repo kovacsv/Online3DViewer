@@ -63,7 +63,7 @@ import { TopologyVertex, TopologyEdge, TopologyTriangleEdge, TopologyTriangle, T
 import { Triangle } from './model/triangle.js';
 import { Unit } from './model/unit.js';
 import { ParameterListBuilder, ParameterListParser, CreateUrlBuilder, CreateUrlParser, CreateModelUrlParameters, ParameterConverter } from './parameters/parameterlist.js';
-import { ModelToThreeConversionParams, ModelToThreeConversionOutput, ThreeConversionStateHandler, ThreeNodeTree, ConvertModelToThreeObject } from './threejs/threeconverter.js';
+import { ModelToThreeConversionParams, ModelToThreeConversionOutput, ThreeConversionStateHandler, ThreeNodeTree, ThreeMaterialHandler, ThreeMeshMaterialHandler, ConvertModelToThreeObject } from './threejs/threeconverter.js';
 import { ThreeModelLoader } from './threejs/threemodelloader.js';
 import { ThreeColorConverter, ThreeLinearToSRGBColorConverter, ThreeSRGBToLinearColorConverter, HasHighpDriverIssue, GetShadingType, ConvertThreeColorToColor, ConvertColorToThreeColor, ConvertThreeGeometryToMesh, DisposeThreeObjects, ShadingType } from './threejs/threeutils.js';
 import { Camera, CameraIsEqual3D, NavigationMode, ProjectionMode } from './viewer/camera.js';
@@ -283,6 +283,8 @@ export {
     ModelToThreeConversionOutput,
     ThreeConversionStateHandler,
     ThreeNodeTree,
+    ThreeMaterialHandler,
+    ThreeMeshMaterialHandler,
     ConvertModelToThreeObject,
     ThreeModelLoader,
     ThreeColorConverter,
