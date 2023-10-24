@@ -394,7 +394,8 @@ export class ImporterObj extends ImporterBase
 
         let vertices = [];
         for (let i = 0; i < parameters.length; i++) {
-            let vertexIndex = this.GetRelativeIndex (parseInt (parameters[i], 10), this.globalVertices.length);
+            let vertexParams = parameters[i].split ('/');
+            let vertexIndex = this.GetRelativeIndex (parseInt (vertexParams[0], 10), this.globalVertices.length);
             let meshVertexIndex = this.currentMeshConverter.AddVertex (vertexIndex, this.globalVertices);
             if (meshVertexIndex === null) {
                 this.SetError ('Invalid vertex index.');
