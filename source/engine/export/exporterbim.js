@@ -83,9 +83,9 @@ export class ExporterBim extends ExporterBase
                 let triangle = mesh.GetTriangle (i);
                 let material = exporterModel.GetMaterial (triangle.mat);
                 let faceColor = {
-                    r : material.color.r,
-                    g : material.color.g,
-                    b : material.color.b,
+                    r : Math.round (material.color.r),
+                    g : Math.round (material.color.g),
+                    b : Math.round (material.color.b),
                     a : ColorComponentFromFloat (material.opacity),
                 };
                 faceColors.push (faceColor.r, faceColor.g, faceColor.b, faceColor.a);
