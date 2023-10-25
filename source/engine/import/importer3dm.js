@@ -11,6 +11,9 @@ import { ConvertThreeGeometryToMesh } from '../threejs/threeutils.js';
 import { ImporterBase } from './importerbase.js';
 import { UpdateMaterialTransparency } from './importerutils.js';
 import { TextureMap } from '../model/material.js';
+import { Mesh } from '../model/mesh.js';
+import { Line } from '../model/line.js';
+import { ArrayToCoord3D } from '../geometry/coord3d.js';
 
 export class Importer3dm extends ImporterBase
 {
@@ -130,17 +133,16 @@ export class Importer3dm extends ImporterBase
             return;
         }
 
-        let rhinoMesh = null;
-        let deleteMesh = false;
-
         if (objectType === this.rhino.ObjectType.Mesh) {
-            rhinoMesh = rhinoGeometry;
-            deleteMesh = false;
+            this.ImportRhinoGeometryAsMesh (rhinoDoc, rhinoGeometry, rhinoObject, rhinoInstanceReferences);
         } else if (objectType === this.rhino.ObjectType.Extrusion) {
-            rhinoMesh = rhinoGeometry.getMesh (this.rhino.MeshType.Any);
-            deleteMesh = true;
+            let rhinoMesh = rhinoGeometry.getMesh (this.rhino.MeshType.Any);
+            if (rhinoMesh !== null) {
+                this.ImportRhinoGeometryAsMesh (rhinoDoc, rhinoMesh, rhinoObject, rhinoInstanceReferences);
+                rhinoMesh.delete ();
+            }
         } else if (objectType === this.rhino.ObjectType.Brep) {
-            rhinoMesh = new this.rhino.Mesh ();
+            let rhinoMesh = new this.rhino.Mesh ();
             let faces = rhinoGeometry.faces ();
             for (let i = 0; i < faces.count; i++) {
                 let face = faces.get (i);
@@ -153,11 +155,17 @@ export class Importer3dm extends ImporterBase
             }
             faces.delete ();
             rhinoMesh.compact ();
-            deleteMesh = true;
+            this.ImportRhinoGeometryAsMesh (rhinoDoc, rhinoMesh, rhinoObject, rhinoInstanceReferences);
+            rhinoMesh.delete ();
         } else if (objectType === this.rhino.ObjectType.SubD) {
             rhinoGeometry.subdivide (3);
-            rhinoMesh = this.rhino.Mesh.createFromSubDControlNet (rhinoGeometry);
-            deleteMesh = true;
+            let rhinoMesh = this.rhino.Mesh.createFromSubDControlNet (rhinoGeometry);
+            if (rhinoMesh !== null) {
+                this.ImportRhinoGeometryAsMesh (rhinoDoc, rhinoMesh, rhinoObject, rhinoInstanceReferences);
+                rhinoMesh.delete ();
+            }
+        } else if (objectType === this.rhino.ObjectType.Curve) {
+            this.ImportRhinoGeometryAsMesh (rhinoDoc, rhinoGeometry, rhinoObject, rhinoInstanceReferences);
         } else if (objectType === this.rhino.ObjectType.InstanceReference) {
             let parentDefinitionId = rhinoGeometry.parentIdefId;
             if (this.instanceIdToDefinition.has (parentDefinitionId)) {
@@ -174,22 +182,58 @@ export class Importer3dm extends ImporterBase
                 }
             }
         }
-
-        if (rhinoMesh !== null) {
-            this.ImportRhinoMesh (rhinoDoc, rhinoMesh, rhinoObject, rhinoInstanceReferences);
-            if (deleteMesh) {
-                rhinoMesh.delete ();
-            }
-        }
     }
 
-    ImportRhinoMesh (rhinoDoc, rhinoMesh, rhinoObject, rhinoInstanceReferences)
+    ImportRhinoGeometryAsMesh (rhinoDoc, rhinoGeometry, rhinoObject, rhinoInstanceReferences)
     {
-        let rhinoAttributes = rhinoObject.attributes ();
+        function GetSegmentedCurveLine (curveGeometry)
+        {
+            let domainLength = curveGeometry.domain[1] - curveGeometry.domain[0];
+            let segmentCount = Math.max (parseInt (domainLength / 0.2, 10), 1);
+            let segmentLength = domainLength / segmentCount;
+            let vertices = [];
+            for (let i = 0; i <= segmentCount; i++) {
+                if (i === segmentCount && curveGeometry.isClosed) {
+                    vertices.push (vertices[0]);
+                } else {
+                    let position = rhinoGeometry.pointAt (curveGeometry.domain[0] + i * segmentLength);
+                    vertices.push (mesh.AddVertex (ArrayToCoord3D (position)));
+                }
+            }
+            return new Line (vertices);
+        }
 
         let materialIndex = this.GetMaterialIndex (rhinoDoc, rhinoObject, rhinoInstanceReferences);
-        let threeJson = rhinoMesh.toThreejsJSON ();
-        let mesh = ConvertThreeGeometryToMesh (threeJson.data, materialIndex, null);
+        let mesh = null;
+        if (rhinoGeometry.objectType === this.rhino.ObjectType.Mesh) {
+            let threeJson = rhinoGeometry.toThreejsJSON ();
+            mesh = ConvertThreeGeometryToMesh (threeJson.data, materialIndex, null);
+        } else if (rhinoGeometry.objectType === this.rhino.ObjectType.Curve) {
+            mesh = new Mesh ();
+            if (rhinoGeometry instanceof this.rhino.LineCurve) {
+                let fromVertex = mesh.AddVertex (ArrayToCoord3D (rhinoGeometry.line.from));
+                let toVertex = mesh.AddVertex (ArrayToCoord3D (rhinoGeometry.line.to));
+                let line = new Line ([fromVertex, toVertex]);
+                line.SetMaterial (materialIndex);
+                mesh.AddLine (line);
+            } else if (rhinoGeometry instanceof this.rhino.NurbsCurve) {
+                let line = GetSegmentedCurveLine (rhinoGeometry);
+                line.SetMaterial (materialIndex);
+                mesh.AddLine (line);
+            } else if (rhinoGeometry instanceof this.rhino.ArcCurve) {
+                let line = GetSegmentedCurveLine (rhinoGeometry);
+                line.SetMaterial (materialIndex);
+                mesh.AddLine (line);
+            }
+        }
+
+        // TODO: BezierCurve, PolyCurve
+
+        if (mesh === null) {
+            return null;
+        }
+
+        let rhinoAttributes = rhinoObject.attributes ();
         mesh.SetName (rhinoAttributes.name);
 
         let userStrings = rhinoAttributes.getUserStrings ();
@@ -234,6 +278,15 @@ export class Importer3dm extends ImporterBase
                     let layerMaterialIndex = layer.renderMaterialIndex;
                     if (layerMaterialIndex > -1) {
                         return rhinoDoc.materials ().get (layerMaterialIndex);
+                    } else {
+                        // use layer color only in case of curves
+                        let rhinoGeometry = rhinoObject.geometry ();
+                        if (rhinoGeometry.objectType === rhino.ObjectType.Curve) {
+                            let material = new rhino.Material ();
+                            material.name = layer.name;
+                            material.diffuseColor = layer.color;
+                            return material;
+                        }
                     }
                 }
             } else if (rhinoAttributes.materialSource === rhino.ObjectMaterialSource.MaterialFromParent) {
