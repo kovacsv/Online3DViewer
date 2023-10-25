@@ -301,7 +301,12 @@ export class ViewerMainModel
         }
 
         let raycaster = new THREE.Raycaster ();
-        raycaster.params.Line.threshold = 0.1;
+        if (this.hasLines) {
+            let boundingSphere = this.GetBoundingSphere (() => {
+                return true;
+            });
+            raycaster.params.Line.threshold = boundingSphere.radius / 100.0;
+        }
 
         let mousePos = new THREE.Vector2 ();
         mousePos.x = (mouseCoords.x / width) * 2 - 1;
