@@ -1,6 +1,7 @@
 import { BoundingBoxCalculator3D } from '../geometry/box3d.js';
 import { Octree } from '../geometry/octree.js';
-import { GetMeshType, MeshType } from './meshutils.js';
+import { MaterialSource } from './material.js';
+import { IsEmptyMesh } from './meshutils.js';
 import { Model } from './model.js';
 import { Topology } from './topology.js';
 
@@ -8,7 +9,7 @@ export function IsModelEmpty (model)
 {
     let isEmpty = true;
     model.EnumerateMeshInstances ((meshInstance) => {
-        if (GetMeshType (meshInstance) !== MeshType.Empty) {
+        if (!IsEmptyMesh (meshInstance)) {
             isEmpty = false;
         }
     });
@@ -95,23 +96,26 @@ export function IsTwoManifold (object3D)
     }
 }
 
-export function HasDefaultMaterial (model)
+export function GetDefaultMaterials (model)
 {
+    let defaultMaterials = [];
     for (let i = 0; i < model.MaterialCount (); i++) {
         let material = model.GetMaterial (i);
-        if (material.isDefault && !material.vertexColors) {
-            return true;
+        if (material.source !== MaterialSource.Model && !material.vertexColors) {
+            defaultMaterials.push (material);
         }
     }
-    return false;
+    return defaultMaterials;
 }
 
-export function ReplaceDefaultMaterialColor (model, color)
+export function ReplaceDefaultMaterialsColor (model, color, lineColor)
 {
     for (let i = 0; i < model.MaterialCount (); i++) {
         let material = model.GetMaterial (i);
-        if (material.isDefault) {
+        if (material.source === MaterialSource.DefaultFace) {
             material.color = color;
+        } else if (material.source === MaterialSource.DefaultLine) {
+            material.color = lineColor;
         }
     }
 }

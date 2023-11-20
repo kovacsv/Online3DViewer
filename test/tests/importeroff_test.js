@@ -18,6 +18,7 @@ describe ('Off Importer', function () {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -44,6 +45,7 @@ describe ('Off Importer', function () {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -76,6 +78,7 @@ describe ('Off Importer', function () {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -108,6 +111,7 @@ describe ('Off Importer', function () {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -138,6 +142,7 @@ describe ('Off Importer', function () {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 0,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -162,6 +167,7 @@ describe ('Off Importer', function () {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -195,6 +201,7 @@ describe ('Off Importer', function () {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -229,6 +236,7 @@ describe ('Off Importer', function () {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -263,6 +271,7 @@ describe ('Off Importer', function () {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],

@@ -26,6 +26,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -57,6 +58,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -88,6 +90,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -100,6 +103,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [2, 0, 0],
@@ -131,6 +135,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -143,6 +148,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [2, 0, 0],
@@ -155,6 +161,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [2, 2, 0],
@@ -167,6 +174,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 8,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 2, 0],
@@ -192,6 +200,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
+                        lineCount : 0,
                         triangleCount: 12,
                         boundingBox: { min: [ -1, -1, -1 ], max: [ 1, 1, 1 ] }
                     },
@@ -201,6 +210,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
+                        lineCount : 0,
                         triangleCount: 12,
                         boundingBox: { min: [ 2, -1, -1 ], max: [ 4, 1, 1 ] }
                     },
@@ -210,6 +220,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
+                        lineCount : 0,
                         triangleCount: 12,
                         boundingBox: { min: [ 2, 2, -1 ], max: [ 4, 4, 1 ] }
                     },
@@ -219,6 +230,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
+                        lineCount : 0,
                         triangleCount: 12,
                         boundingBox: { min: [ -1, 2, -1 ], max: [ 1, 4, 1 ] }
                     },
@@ -228,6 +240,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
+                        lineCount : 0,
                         triangleCount: 12,
                         boundingBox: { min: [ -1, -1, 2 ], max: [ 1, 1, 4 ] }
                     },
@@ -237,6 +250,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
+                        lineCount : 0,
                         triangleCount: 12,
                         boundingBox: { min: [ 2, -1, 2 ], max: [ 4, 1, 4 ] }
                     },
@@ -246,6 +260,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
+                        lineCount : 0,
                         triangleCount: 12,
                         boundingBox: { min: [ 2, 2, 2 ], max: [ 4, 4, 4 ] }
                     },
@@ -255,6 +270,7 @@ describe ('3ds Importer', function() {
                         vertexColorCount: 0,
                         normalCount: 12,
                         uvCount: 8,
+                        lineCount : 0,
                         triangleCount: 12,
                         boundingBox: { min: [ -1, 2, 2 ], max: [ 1, 4, 4 ] }
                     }

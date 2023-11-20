@@ -9,6 +9,7 @@ export class Mesh extends ModelObject3D
         this.vertexColors = [];
         this.normals = [];
         this.uvs = [];
+        this.lines = [];
         this.triangles = [];
     }
 
@@ -30,6 +31,20 @@ export class Mesh extends ModelObject3D
     TextureUVCount ()
     {
         return this.uvs.length;
+    }
+
+    LineCount ()
+    {
+        return this.lines.length;
+    }
+
+    LineSegmentCount ()
+    {
+        let lineSegmentCount = 0;
+        for (let line of this.lines) {
+            lineSegmentCount += line.SegmentCount ();
+        }
+        return lineSegmentCount;
     }
 
     TriangleCount ()
@@ -101,6 +116,17 @@ SetNormal (index, normal)
         return this.uvs[index];
     }
 
+    AddLine (line)
+    {
+        this.lines.push (line);
+        return this.lines.length - 1;
+    }
+
+    GetLine (index)
+    {
+        return this.lines[index];
+    }
+
     AddTriangle (triangle)
     {
         this.triangles.push (triangle);
@@ -161,6 +187,11 @@ SetNormal (index, normal)
         for (let i = 0; i < this.TextureUVCount (); i++) {
             let uv = this.GetTextureUV (i);
             cloned.AddTextureUV (uv.Clone ());
+        }
+
+        for (let i = 0; i < this.LineCount (); i++) {
+            let line = this.GetLine (i);
+            cloned.AddLine (line.Clone ());
         }
 
         for (let i = 0; i < this.TriangleCount (); i++) {

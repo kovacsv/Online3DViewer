@@ -119,14 +119,26 @@ export class ViewerMainModel
         this.edgeModel = new ViewerModel (this.scene);
 
         this.edgeSettings = new EdgeSettings (false, new RGBColor (0, 0, 0), 1);
+        this.hasLines = false;
+        this.hasPolygonOffset = false;
+        this.fullBoundingBox = null;
     }
 
     SetMainObject (mainObject)
     {
         this.mainModel.SetRootObject (mainObject);
+        this.hasLines = false;
+        this.hasPolygonOffset = false;
+        this.fullBoundingBox = null;
+
+        this.EnumerateLines ((line) => {
+            this.hasLines = true;
+        });
+
         if (this.edgeSettings.showEdges) {
             this.GenerateEdgeModel ();
         }
+        this.UpdatePolygonOffset ();
     }
 
     UpdateWorldMatrix ()
@@ -169,7 +181,6 @@ export class ViewerMainModel
 
         this.UpdateWorldMatrix ();
         this.EnumerateMeshes ((mesh) => {
-            SetThreeMeshPolygonOffset (mesh, true);
             let edges = new THREE.EdgesGeometry (mesh.geometry, this.edgeSettings.edgeThreshold);
             let line = new THREE.LineSegments (edges, new THREE.LineBasicMaterial ({
                 color: edgeColor
@@ -179,13 +190,26 @@ export class ViewerMainModel
             line.visible = mesh.visible;
             this.edgeModel.AddObject (line);
         });
+
+        this.UpdatePolygonOffset ();
+    }
+
+    GetFullBoundingBox ()
+    {
+        if (this.fullBoundingBox !== null) {
+            return this.fullBoundingBox;
+        }
+        this.fullBoundingBox = this.GetBoundingBox (() => {
+            return true;
+        });
+        return this.fullBoundingBox;
     }
 
     GetBoundingBox (needToProcess)
     {
         let hasMesh = false;
         let boundingBox = new THREE.Box3 ();
-        this.EnumerateMeshes ((mesh) => {
+        this.EnumerateMeshesAndLines ((mesh) => {
             if (needToProcess (mesh.userData)) {
                 boundingBox.union (new THREE.Box3 ().setFromObject (mesh));
                 hasMesh = true;
@@ -221,9 +245,7 @@ export class ViewerMainModel
             return;
         }
 
-        this.EnumerateMeshes ((mesh) => {
-            SetThreeMeshPolygonOffset (mesh, false);
-        });
+        this.UpdatePolygonOffset ();
         this.edgeModel.Clear ();
     }
 
@@ -231,6 +253,26 @@ export class ViewerMainModel
     {
         this.mainModel.Traverse ((obj) => {
             if (obj.isMesh) {
+                enumerator (obj);
+            }
+        });
+    }
+
+    EnumerateLines (enumerator)
+    {
+        this.mainModel.Traverse ((obj) => {
+            if (obj.isLineSegments) {
+                enumerator (obj);
+            }
+        });
+    }
+
+    EnumerateMeshesAndLines (enumerator)
+    {
+        this.mainModel.Traverse ((obj) => {
+            if (obj.isMesh) {
+                enumerator (obj);
+            } else if (obj.isLineSegments) {
                 enumerator (obj);
             }
         });
@@ -245,8 +287,36 @@ export class ViewerMainModel
         });
     }
 
+    HasLinesOrEdges ()
+    {
+        return this.hasLines || this.edgeSettings.showEdges;
+    }
+
+    UpdatePolygonOffset ()
+    {
+        let needPolygonOffset = this.HasLinesOrEdges ();
+        if (needPolygonOffset !== this.hasPolygonOffset) {
+            this.EnumerateMeshes ((mesh) => {
+                SetThreeMeshPolygonOffset (mesh, needPolygonOffset);
+            });
+            this.hasPolygonOffset = needPolygonOffset;
+        }
+    }
+
     GetMeshIntersectionUnderMouse (mouseCoords, camera, width, height)
     {
+        function CalculateLineThreshold (mousePos, camera, boundingBoxCenter)
+        {
+            let thresholdInScreenCoordinates = 15.0;
+            let frustumRange = camera.far - camera.near;
+            let cameraDistanceFromCenter = boundingBoxCenter.distanceTo (camera.position);
+            let distanceInFrustumRatio = cameraDistanceFromCenter / frustumRange;
+            let zValue = -1.0 + 2.0 * distanceInFrustumRatio;
+            let referencePoint1 = new THREE.Vector3 (mousePos.x, mousePos.y, zValue).unproject (camera);
+            let referencePoint2 = new THREE.Vector3 (mousePos.x + thresholdInScreenCoordinates, mousePos.y, zValue).unproject (camera);
+            return referencePoint1.distanceTo (referencePoint2);
+        }
+
         if (this.mainModel.IsEmpty ()) {
             return null;
         }
@@ -255,15 +325,25 @@ export class ViewerMainModel
             return null;
         }
 
-        let raycaster = new THREE.Raycaster ();
         let mousePos = new THREE.Vector2 ();
         mousePos.x = (mouseCoords.x / width) * 2 - 1;
         mousePos.y = -(mouseCoords.y / height) * 2 + 1;
+
+        let raycaster = new THREE.Raycaster ();
+        if (this.hasLines) {
+            let boundingBox = this.GetFullBoundingBox ();
+            if (boundingBox !== null) {
+                let boundingBoxCenter = new THREE.Vector3 (0.0, 0.0, 0.0);
+                boundingBox.getCenter (boundingBoxCenter);
+                raycaster.params.Line.threshold = CalculateLineThreshold (mousePos, camera, boundingBoxCenter);
+            }
+        }
+
         raycaster.setFromCamera (mousePos, camera);
         let iSectObjects = raycaster.intersectObject (this.mainModel.GetRootObject (), true);
         for (let i = 0; i < iSectObjects.length; i++) {
             let iSectObject = iSectObjects[i];
-            if (iSectObject.object.isMesh && iSectObject.object.visible) {
+            if ((iSectObject.object.isMesh || iSectObject.object.isLineSegments) && iSectObject.object.visible) {
                 return iSectObject;
             }
         }

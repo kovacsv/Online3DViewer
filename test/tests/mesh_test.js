@@ -52,6 +52,16 @@ describe ('Mesh', function() {
         assert.strictEqual (uv.y, 2.0);
     });
 
+    it ('Add Line', function () {
+        var mesh = new OV.Mesh ();
+        var index = mesh.AddLine (new OV.Line ([0, 1]));
+        assert.strictEqual (index, 0);
+        assert.strictEqual (mesh.LineCount (), 1);
+        var line = mesh.GetLine (index);
+        assert.strictEqual (line.vertices[0], 0);
+        assert.strictEqual (line.vertices[1], 1);
+    });
+
     it ('Add Triangle', function () {
         var mesh = new OV.Mesh ();
         var triangle = new OV.Triangle (1, 2, 3);

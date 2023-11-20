@@ -1,19 +1,20 @@
 import { CopyObjectAttributes } from '../core/core.js';
 import { AddCoord3D, Coord3D, CoordIsEqual3D } from '../geometry/coord3d.js';
 import { RGBColor } from './color.js';
-import { PhongMaterial } from './material.js';
-import { CalculateTriangleNormal, GetMeshType, MeshType } from './meshutils.js';
+import { MaterialSource, PhongMaterial } from './material.js';
+import { CalculateTriangleNormal, IsEmptyMesh } from './meshutils.js';
 
 class ModelFinalizer
 {
     constructor (params)
     {
         this.params = {
-            getDefaultMaterialColor : () => {
-                return new RGBColor (0, 0, 0);
-            }
+            defaultLineMaterialColor : new RGBColor (0, 0, 0),
+            defaultMaterialColor : new RGBColor (0, 0, 0)
         };
         CopyObjectAttributes (params, this.params);
+
+        this.defaultLineMaterialIndex = null;
         this.defaultMaterialIndex = null;
     }
 
@@ -56,8 +57,7 @@ class ModelFinalizer
     {
         for (let meshIndex = 0; meshIndex < model.MeshCount (); meshIndex++) {
             let mesh = model.GetMesh (meshIndex);
-            let type = GetMeshType (mesh);
-            if (type === MeshType.Empty) {
+            if (IsEmptyMesh (mesh)) {
                 model.RemoveMesh (meshIndex);
                 meshIndex = meshIndex - 1;
                 continue;
@@ -139,12 +139,18 @@ class ModelFinalizer
             calculateCurveNormals : false
         };
 
+        for (let i = 0; i < mesh.LineCount (); i++) {
+            let line = mesh.GetLine (i);
+            if (line.mat === null) {
+                line.mat = this.GetDefaultMaterialIndex (model, MaterialSource.DefaultLine);
+            }
+        }
+
         for (let i = 0; i < mesh.TriangleCount (); i++) {
             let triangle = mesh.GetTriangle (i);
             this.FinalizeTriangle (mesh, triangle, meshStatus);
-
             if (triangle.mat === null) {
-                triangle.mat = this.GetDefaultMaterialIndex (model);
+                triangle.mat = this.GetDefaultMaterialIndex (model, MaterialSource.DefaultFace);
             }
         }
 
@@ -197,20 +203,33 @@ class ModelFinalizer
         }
     }
 
-    GetDefaultMaterialIndex (model)
+    GetDefaultMaterialIndex (model, source)
     {
-        if (this.defaultMaterialIndex === null) {
-            let defaultMaterialColor = this.params.getDefaultMaterialColor ();
+        function GetIndex (model, index, source, color)
+        {
+            if (index !== null) {
+                return index;
+            }
             let defaultMaterial = new PhongMaterial ();
-            defaultMaterial.color = defaultMaterialColor;
-            defaultMaterial.isDefault = true;
-            this.defaultMaterialIndex = model.AddMaterial (defaultMaterial);
+            defaultMaterial.color = color;
+            defaultMaterial.source = source;
+            return model.AddMaterial (defaultMaterial);
         }
-        return this.defaultMaterialIndex;
+
+        if (source === MaterialSource.DefaultLine) {
+            this.defaultLineMaterialIndex = GetIndex (model, this.defaultLineMaterialIndex, MaterialSource.DefaultLine, this.params.defaultLineMaterialColor);
+            return this.defaultLineMaterialIndex;
+        } else if (source === MaterialSource.DefaultFace) {
+            this.defaultMaterialIndex = GetIndex (model, this.defaultMaterialIndex, MaterialSource.DefaultFace, this.params.defaultMaterialColor);
+            return this.defaultMaterialIndex;
+        } else {
+            return null;
+        }
     }
 
     Reset ()
     {
+        this.defaultLineMaterialIndex = null;
         this.defaultMaterialIndex = null;
     }
 }

@@ -1,6 +1,6 @@
 import { SubCoord3D } from '../geometry/coord3d.js';
 import { ProjectionMode } from '../viewer/camera.js';
-import { ConvertColorToThreeColor, ShadingType } from '../threejs/threeutils.js';
+import { ShadingType } from '../threejs/threeutils.js';
 
 import * as THREE from 'three';
 
@@ -98,27 +98,5 @@ export class ShadingModel
     {
         const lightDir = SubCoord3D (camera.eye, camera.center);
         this.directionalLight.position.set (lightDir.x, lightDir.y, lightDir.z);
-    }
-
-    CreateHighlightMaterial (highlightColor, withOffset)
-    {
-        let material = null;
-        if (this.type === ShadingType.Phong) {
-            material = new THREE.MeshPhongMaterial ({
-                color : ConvertColorToThreeColor (highlightColor),
-                side : THREE.DoubleSide
-            });
-        } else if (this.type === ShadingType.Physical) {
-            material = new THREE.MeshStandardMaterial ({
-                color : ConvertColorToThreeColor (highlightColor),
-                side : THREE.DoubleSide
-            });
-        }
-        if (material !== null && withOffset) {
-            material.polygonOffset = true;
-            material.polygonOffsetUnit = 1;
-            material.polygonOffsetFactor = 1;
-        }
-        return material;
     }
 }

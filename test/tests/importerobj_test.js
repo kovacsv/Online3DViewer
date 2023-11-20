@@ -18,6 +18,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -44,6 +45,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -76,6 +78,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -108,6 +111,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : 'MyMeshName',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -134,6 +138,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -160,6 +165,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : '',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -186,6 +192,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : 'MeshName',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -212,6 +219,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : 'MeshName1',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -223,6 +231,7 @@ describe ('Obj Importer', function () {
                     },
                     {
                         name : 'MeshName2',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1],
@@ -249,6 +258,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : 'MeshName1',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -260,6 +270,7 @@ describe ('Obj Importer', function () {
                     },
                     {
                         name : 'MeshName2',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1],
@@ -287,6 +298,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : 'MeshName',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -314,6 +326,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : 'MeshName',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -346,6 +359,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : 'MeshName1',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -357,6 +371,7 @@ describe ('Obj Importer', function () {
                     },
                     {
                         name : 'MeshName2',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 0, 0, 1],
@@ -383,6 +398,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : 'MeshName',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -415,6 +431,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : 'Mesh',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -449,6 +466,7 @@ describe ('Obj Importer', function () {
                 meshes : [
                     {
                         name : 'Mesh',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -489,6 +507,7 @@ describe ('Obj Importer', function () {
                         vertexColorCount : 0,
                         normalCount : 6,
                         uvCount : 4,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -519,6 +538,7 @@ describe ('Obj Importer', function () {
                         vertexColorCount : 0,
                         normalCount : 6,
                         uvCount : 4,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -550,6 +570,7 @@ describe ('Obj Importer', function () {
                         vertexColorCount : 0,
                         normalCount : 6,
                         uvCount : 4,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -581,6 +602,7 @@ describe ('Obj Importer', function () {
                         vertexColorCount : 0,
                         normalCount : 6,
                         uvCount : 4,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -608,6 +630,7 @@ describe ('Obj Importer', function () {
                         vertexColorCount : 0,
                         normalCount : 20,
                         uvCount : 0,
+                        lineCount : 0,
                         triangleCount : 20,
                         boundingBox : {
                             min : [-0.85065080835204, -0.85065080835204, -0.85065080835204],
@@ -625,6 +648,189 @@ describe ('Obj Importer', function () {
             assert.ok (OV.CheckModel (model));
             assert.strictEqual (model.MaterialCount (), 3);
             assert.strictEqual (model.MeshCount (), 100);
+            done ();
+        });
+    });
+
+    it ('lines.obj', function (done) {
+        ImportObjFile ('lines.obj', function (model) {
+            assert.ok (OV.CheckModel (model));
+            assert.deepStrictEqual (ModelToObject (model), {
+                name : '',
+                materials : [
+                    { name : '' }
+                ],
+                meshes : [
+                    {
+                        name : '',
+                        lines : [
+                            {
+                                vertices : [0, 0, 0, 1, 0, 0],
+                                mat : 0
+                            },
+                            {
+                                vertices : [1, 1, 0, 0, 1, 0],
+                                mat : 0
+                            },
+                            {
+                                vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1],
+                                mat : 0
+                            }
+                        ],
+                        triangles : []
+                    }
+                ]
+            });
+            done ();
+        });
+    });
+
+    it ('lines_with_vt.obj', function (done) {
+        ImportObjFile ('lines_with_vt.obj', function (model) {
+            assert.ok (OV.CheckModel (model));
+            assert.deepStrictEqual (ModelToObject (model), {
+                name : '',
+                materials : [
+                    { name : '' }
+                ],
+                meshes : [
+                    {
+                        name : '',
+                        lines : [
+                            {
+                                vertices : [0, 0, 0, 1, 0, 0],
+                                mat : 0
+                            },
+                            {
+                                vertices : [1, 1, 0, 0, 1, 0],
+                                mat : 0
+                            },
+                            {
+                                vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1],
+                                mat : 0
+                            }
+                        ],
+                        triangles : []
+                    }
+                ]
+            });
+            done ();
+        });
+    });
+
+    it ('lines_in_meshes.obj', function (done) {
+        ImportObjFile ('lines_in_meshes.obj', function (model) {
+            assert.ok (OV.CheckModel (model));
+            assert.deepStrictEqual (ModelToObject (model), {
+                name : '',
+                materials : [
+                    { name : '' }
+                ],
+                meshes : [
+                    {
+                        name : 'Mesh01',
+                        lines : [
+                            {
+                                vertices : [0, 0, 0, 1, 0, 0],
+                                mat : 0
+                            },
+                            {
+                                vertices : [1, 1, 0, 0, 1, 0],
+                                mat : 0
+                            }
+                        ],
+                        triangles : []
+                    },
+                    {
+                        name : 'Mesh02',
+                        lines : [
+                            {
+                                vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1],
+                                mat : 0
+                            }
+                        ],
+                        triangles : []
+                    }
+                ]
+            });
+            done ();
+        });
+    });
+
+    it ('lines_in_meshes_2.obj', function (done) {
+        ImportObjFile ('lines_in_meshes_2.obj', function (model) {
+            assert.ok (OV.CheckModel (model));
+            assert.deepStrictEqual (ModelToObject (model), {
+                name : '',
+                materials : [
+                    { name : '' }
+                ],
+                meshes : [
+                    {
+                        name : 'Mesh01',
+                        lines : [
+                            {
+                                vertices : [0, 0, 0, 1, 0, 0],
+                                mat : 0
+                            },
+                            {
+                                vertices : [1, 1, 0, 0, 1, 0],
+                                mat : 0
+                            }
+                        ],
+                        triangles : []
+                    },
+                    {
+                        name : 'Mesh02',
+                        lines : [
+                            {
+                                vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1],
+                                mat : 0
+                            }
+                        ],
+                        triangles : []
+                    }
+                ]
+            });
+            done ();
+        });
+    });
+
+    it ('lines_colors.obj', function (done) {
+        ImportObjFile ('lines_colors.obj', function (model) {
+            assert.ok (OV.CheckModel (model));
+            assert.deepStrictEqual (ModelToObject (model), {
+                name : '',
+                materials : [
+                    { name : 'Red' },
+                    { name : 'Green' },
+                    { name : 'Blue' }
+                ],
+                meshes : [
+                    {
+                        name : '',
+                        lines : [
+                            {
+                                vertices : [0, 0, 0, 1, 0, 0],
+                                mat : 0
+                            },
+                            {
+                                vertices : [1, 1, 0, 0, 1, 0],
+                                mat : 0
+                            },
+                            {
+                                vertices : [0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 0, 0, 1],
+                                mat : 1
+                            },
+                            {
+                                vertices : [0, 0, 0, 0, 0, 1],
+                                mat : 2
+                            }
+                        ],
+                        triangles : []
+                    }
+                ]
+            });
             done ();
         });
     });

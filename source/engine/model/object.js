@@ -25,6 +25,16 @@ export class Object3D
         return 0;
     }
 
+    LineCount ()
+    {
+        return 0;
+    }
+
+    LineSegmentCount ()
+    {
+        return 0;
+    }
+
     TriangleCount ()
     {
         return 0;

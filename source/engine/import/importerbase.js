@@ -58,7 +58,8 @@ export class ImporterBase
         }
 
         FinalizeModel (this.model, {
-            getDefaultMaterialColor : this.callbacks.getDefaultMaterialColor
+            defaultLineMaterialColor : this.callbacks.getDefaultLineMaterialColor (),
+            defaultMaterialColor : this.callbacks.getDefaultMaterialColor ()
         });
 
         callbacks.onSuccess ();

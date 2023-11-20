@@ -18,6 +18,7 @@ describe ('Stl Importer', function() {
                 meshes : [
                     {
                         name : 'MeshName',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -44,6 +45,7 @@ describe ('Stl Importer', function() {
                 meshes : [
                     {
                         name : 'MeshName',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -70,6 +72,7 @@ describe ('Stl Importer', function() {
                 meshes : [
                     {
                         name : 'MeshName',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -96,6 +99,7 @@ describe ('Stl Importer', function() {
                 meshes : [
                     {
                         name : 'MeshName',
+                        lines : [],
                         triangles : [
                             {
                                 vertices : [0, 0, 0, 1, 0, 0, 1, 1, 0],
@@ -132,6 +136,7 @@ describe ('Stl Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 572,
                         uvCount : 0,
+                        lineCount : 0,
                         triangleCount : 572,
                         boundingBox : {
                             min : [0, -1.10792799192095, 0],
@@ -159,6 +164,7 @@ describe ('Stl Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 728,
                         uvCount : 0,
+                        lineCount : 0,
                         triangleCount : 728,
                         boundingBox : {
                             min : [0, -1.1079280376434326, 0],
@@ -187,6 +193,7 @@ describe ('Stl Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 0,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],
@@ -214,6 +221,7 @@ describe ('Stl Importer', function() {
                         vertexColorCount : 0,
                         normalCount : 12,
                         uvCount : 0,
+                        lineCount : 0,
                         triangleCount : 12,
                         boundingBox : {
                             min : [0, 0, 0],

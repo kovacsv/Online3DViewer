@@ -11,6 +11,9 @@ export function ImportFile (importer, folder, fileName, onReady)
         return fileContent;
     });
     importer.Import (fileName, extension, content, {
+        getDefaultLineMaterialColor () {
+            return new OV.RGBColor (0, 0, 0);
+        },
         getDefaultMaterialColor () {
             return new OV.RGBColor (0, 0, 0);
         },

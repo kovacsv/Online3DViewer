@@ -24,6 +24,8 @@ export class EmbeddedViewer
      * @param {RGBAColor} [parameters.backgroundColor] Background color of the canvas.
      * @param {RGBColor} [parameters.defaultColor] Default color of the model. It has effect only
      * if the imported model doesn't specify any color.
+     * @param {RGBColor} [parameters.defaultLineColor] Default line color of the model. It has effect only
+     * if the imported model doesn't specify any color.
      * @param {EdgeSettings} [parameters.edgeSettings] Edge settings.
      * @param {EnvironmentSettings} [parameters.environmentSettings] Environment settings.
      * @param {function} [parameters.onModelLoaded] Callback that is called when the model with all
@@ -111,6 +113,9 @@ export class EmbeddedViewer
         let settings = new ImportSettings ();
         if (this.parameters.defaultColor) {
             settings.defaultColor = this.parameters.defaultColor;
+        }
+        if (this.parameters.defaultLineColor) {
+            settings.defaultLineColor = this.parameters.defaultLineColor;
         }
 
         this.model = null;
@@ -275,6 +280,12 @@ export function Init3DViewerElements (onReady)
             defaultColor = ParameterConverter.StringToRGBColor (defaultColorParams);
         }
 
+        let defaultLineColor = null;
+        let defaultLineColorParams = element.getAttribute ('defaultlinecolor');
+        if (defaultLineColorParams) {
+            defaultLineColor = ParameterConverter.StringToRGBColor (defaultLineColorParams);
+        }
+
         let edgeSettings = null;
         let edgeSettingsParams = element.getAttribute ('edgesettings');
         if (edgeSettingsParams) {
@@ -305,6 +316,7 @@ export function Init3DViewerElements (onReady)
             camera : camera,
             projectionMode : projectionMode,
             backgroundColor : backgroundColor,
+            defaultLineColor : defaultLineColor,
             defaultColor : defaultColor,
             edgeSettings : edgeSettings,
             environmentSettings : environmentSettings

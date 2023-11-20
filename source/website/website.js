@@ -19,7 +19,7 @@ import { ShowSnapshotDialog } from './snapshotdialog.js';
 import { AddSvgIconElement, GetFilesFromDataTransfer, InstallTooltip, IsSmallWidth } from './utils.js';
 import { ShowOpenUrlDialog } from './openurldialog.js';
 import { ShowSharingDialog } from './sharingdialog.js';
-import { HasDefaultMaterial, ReplaceDefaultMaterialColor } from '../engine/model/modelutils.js';
+import { GetDefaultMaterials, ReplaceDefaultMaterialsColor } from '../engine/model/modelutils.js';
 import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { MeasureTool } from './measuretool.js';
@@ -402,6 +402,7 @@ export class Website
             }
             TransformFileHostUrls (urls);
             let importSettings = new ImportSettings ();
+            importSettings.defaultLineColor = this.settings.defaultLineColor;
             importSettings.defaultColor = this.settings.defaultColor;
             let defaultColor = this.hashHandler.GetDefaultColorFromHash ();
             if (defaultColor !== null) {
@@ -480,6 +481,7 @@ export class Website
     LoadModelFromFileList (files)
     {
         let importSettings = new ImportSettings ();
+        importSettings.defaultLineColor = this.settings.defaultLineColor;
         importSettings.defaultColor = this.settings.defaultColor;
         let inputFiles = InputFilesFromFileObjects (files);
         this.LoadModelFromInputFiles (inputFiles, importSettings);
@@ -572,14 +574,15 @@ export class Website
         if (resetColors) {
             let defaultSettings = new Settings (this.settings.themeId);
             this.settings.backgroundColor = defaultSettings.backgroundColor;
+            this.settings.defaultLineColor = defaultSettings.defaultLineColor;
             this.settings.defaultColor = defaultSettings.defaultColor;
             this.sidebar.UpdateControlsStatus ();
 
             this.viewer.SetBackgroundColor (this.settings.backgroundColor);
             let modelLoader = this.modelLoaderUI.GetModelLoader ();
-            if (modelLoader.GetDefaultMaterial () !== null) {
-                ReplaceDefaultMaterialColor (this.model, this.settings.defaultColor);
-                modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
+            if (modelLoader.GetDefaultMaterials () !== null) {
+                ReplaceDefaultMaterialsColor (this.model, this.settings.defaultColor, this.settings.defaultLineColor);
+                modelLoader.ReplaceDefaultMaterialsColor (this.settings.defaultColor, this.settings.defaultLineColor);
             }
         }
 
@@ -794,8 +797,8 @@ export class Website
             getProjectionMode : () => {
                 return this.viewer.GetProjectionMode ();
             },
-            hasDefaultMaterial : () => {
-                return HasDefaultMaterial (this.model);
+            getDefaultMaterials : () => {
+                return GetDefaultMaterials (this.model);
             },
             onEnvironmentMapChanged : () => {
                 this.settings.SaveToCookies ();
@@ -814,9 +817,9 @@ export class Website
             onDefaultColorChanged : () => {
                 this.settings.SaveToCookies ();
                 let modelLoader = this.modelLoaderUI.GetModelLoader ();
-                if (modelLoader.GetDefaultMaterial () !== null) {
-                    ReplaceDefaultMaterialColor (this.model, this.settings.defaultColor);
-                    modelLoader.ReplaceDefaultMaterialColor (this.settings.defaultColor);
+                if (modelLoader.GetDefaultMaterials () !== null) {
+                    ReplaceDefaultMaterialsColor (this.model, this.settings.defaultColor, this.settings.defaultLineColor);
+                    modelLoader.ReplaceDefaultMaterialsColor (this.settings.defaultColor, this.settings.defaultLineColor);
                 }
                 this.viewer.Render ();
             },
@@ -836,21 +839,21 @@ export class Website
 
     InitNavigator ()
     {
-        function GetMeshUserData (viewer, meshInstanceId)
+        function GetMeshUserDataArray (viewer, meshInstanceId)
         {
-            let userData = null;
-            viewer.EnumerateMeshesUserData ((meshUserData) => {
+            let userDataArr = [];
+            viewer.EnumerateMeshesAndLinesUserData ((meshUserData) => {
                 if (meshUserData.originalMeshInstance.id.IsEqual (meshInstanceId)) {
-                    userData = meshUserData;
+                    userDataArr.push (meshUserData);
                 }
             });
-            return userData;
+            return userDataArr;
         }
 
         function GetMeshesForMaterial (viewer, materialIndex)
         {
             let usedByMeshes = [];
-            viewer.EnumerateMeshesUserData ((meshUserData) => {
+            viewer.EnumerateMeshesAndLinesUserData ((meshUserData) => {
                 if (materialIndex === null || meshUserData.originalMaterials.indexOf (materialIndex) !== -1) {
                     usedByMeshes.push (meshUserData.originalMeshInstance);
                 }
@@ -876,10 +879,16 @@ export class Website
                     usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
                 }
             } else {
-                let userData = GetMeshUserData (viewer, meshInstanceId);
-                for (let i = 0; i < userData.originalMaterials.length; i++) {
-                    const materialIndex = userData.originalMaterials[i];
-                    usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
+                let userDataArr = GetMeshUserDataArray (viewer, meshInstanceId);
+                let addedMaterialIndices = new Set ();
+                for (let userData of userDataArr) {
+                    for (let materialIndex of userData.originalMaterials) {
+                        if (addedMaterialIndices.has (materialIndex)) {
+                            continue;
+                        }
+                        usedMaterials.push (GetMaterialReferenceInfo (model, materialIndex));
+                        addedMaterialIndices.add (materialIndex);
+                    }
                 }
             }
             usedMaterials.sort ((a, b) => {

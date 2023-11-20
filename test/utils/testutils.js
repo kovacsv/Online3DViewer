@@ -55,7 +55,7 @@ export function ModelToObject (model)
         meshes : []
     };
 
-    var i, j;
+    var i, j, k;
 
     var material;
     for (i = 0; i < model.MaterialCount (); i++) {
@@ -65,13 +65,29 @@ export function ModelToObject (model)
         });
     }
 
-    var mesh, triangle, meshObj, triangleObj;
+    var mesh, line, triangle, meshObj, lineObj, triangleObj;
     for (i = 0; i < model.MeshCount (); i++) {
         mesh = model.GetMesh (i);
         meshObj = {
             name : mesh.GetName (),
+            lines : [],
             triangles : []
         };
+        for (j = 0; j < mesh.LineCount (); j++) {
+            line = mesh.GetLine (j);
+            lineObj = {
+                mat : line.mat,
+                vertices : []
+            };
+            for (k = 0; k < line.vertices.length; k++) {
+                lineObj.vertices.push (
+                    mesh.GetVertex (line.vertices[k]).x,
+                    mesh.GetVertex (line.vertices[k]).y,
+                    mesh.GetVertex (line.vertices[k]).z
+                );
+            }
+            meshObj.lines.push (lineObj);
+        }
         for (j = 0; j < mesh.TriangleCount (); j++) {
             triangle = mesh.GetTriangle (j);
             triangleObj = {
@@ -146,6 +162,7 @@ export function ModelToObjectSimple (model)
             vertexColorCount : mesh.VertexColorCount (),
             normalCount : mesh.NormalCount (),
             uvCount : mesh.TextureUVCount (),
+            lineCount : mesh.LineSegmentCount (),
             triangleCount : mesh.TriangleCount (),
             boundingBox : {
                 min : [boundingBox.min.x, boundingBox.min.y, boundingBox.min.z],

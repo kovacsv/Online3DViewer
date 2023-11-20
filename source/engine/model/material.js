@@ -70,12 +70,19 @@ export const MaterialType =
     Physical : 2
 };
 
+export const MaterialSource =
+{
+    Model : 1,
+    DefaultFace : 2,
+    DefaultLine : 3
+};
+
 export class MaterialBase
 {
     constructor (type)
     {
         this.type = type;
-        this.isDefault = false;
+        this.source = MaterialSource.Model;
 
         this.name = '';
         this.color = new RGBColor (0, 0, 0);
@@ -88,7 +95,7 @@ export class MaterialBase
         if (this.type !== rhs.type) {
             return false;
         }
-        if (this.isDefault !== rhs.isDefault) {
+        if (this.source !== rhs.source) {
             return false;
         }
         if (this.name !== rhs.name) {

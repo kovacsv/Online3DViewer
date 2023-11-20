@@ -7,7 +7,7 @@ import { AddDiv, AddDomElement, ClearDomElement } from '../engine/viewer/domutil
 import { SidebarPanel } from './sidebarpanel.js';
 import { CreateInlineColorCircle } from './utils.js';
 import { GetFileName, IsUrl } from '../engine/io/fileutils.js';
-import { MaterialType } from '../engine/model/material.js';
+import { MaterialSource, MaterialType } from '../engine/model/material.js';
 import { RGBColorToHexString } from '../engine/model/color.js';
 import { Unit } from '../engine/model/unit.js';
 
@@ -53,7 +53,14 @@ export class SidebarDetailsPanel extends SidebarPanel
         let size = SubCoord3D (boundingBox.max, boundingBox.min);
         let unit = model.GetUnit ();
         this.AddProperty (table, new Property (PropertyType.Integer, 'Vertices', object3D.VertexCount ()));
-        this.AddProperty (table, new Property (PropertyType.Integer, 'Triangles', object3D.TriangleCount ()));
+        let lineSegmentCount = object3D.LineSegmentCount ();
+        if (lineSegmentCount > 0) {
+            this.AddProperty (table, new Property (PropertyType.Integer, 'Lines', lineSegmentCount));
+        }
+        let triangleCount = object3D.TriangleCount ();
+        if (triangleCount > 0) {
+            this.AddProperty (table, new Property (PropertyType.Integer, 'Triangles', triangleCount));
+        }
         if (unit !== Unit.Unknown) {
             this.AddProperty (table, new Property (PropertyType.Text, 'Unit', UnitToString (unit)));
         }
@@ -104,7 +111,8 @@ export class SidebarDetailsPanel extends SidebarPanel
         } else if (material.type === MaterialType.Physical) {
             typeString = 'Physical';
         }
-        this.AddProperty (table, new Property (PropertyType.Text, 'Source', material.isDefault ? 'Default' : 'Model'));
+        let materialSource = (material.source !== MaterialSource.Model) ? 'Default' : 'Model';
+        this.AddProperty (table, new Property (PropertyType.Text, 'Source', materialSource));
         this.AddProperty (table, new Property (PropertyType.Text, 'Type', typeString));
         if (material.vertexColors) {
             this.AddProperty (table, new Property (PropertyType.Text, 'Color', 'Vertex colors'));

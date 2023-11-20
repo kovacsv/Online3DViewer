@@ -41,6 +41,9 @@ describe ('Model', function () {
         mesh.AddNormal (new OV.Coord3D (0.0, 0.0, 0.0));
         mesh.AddNormal (new OV.Coord3D (0.0, 0.0, 0.0));
         mesh.AddTextureUV (new OV.Coord2D (0.0, 0.0));
+        mesh.AddLine (new OV.Line ([0, 1]));
+        mesh.AddLine (new OV.Line ([1, 2]));
+        mesh.AddLine (new OV.Line ([2, 0]));
         mesh.AddTriangle (new OV.Triangle (0, 1, 2));
         mesh.AddTriangle (new OV.Triangle (0, 1, 2));
         mesh.AddTriangle (new OV.Triangle (0, 1, 2));
@@ -49,6 +52,7 @@ describe ('Model', function () {
         assert.strictEqual (model.VertexCount (), 3);
         assert.strictEqual (model.NormalCount (), 2);
         assert.strictEqual (model.TextureUVCount (), 1);
+        assert.strictEqual (model.LineCount (), 3);
         assert.strictEqual (model.TriangleCount (), 4);
     });
 
@@ -86,6 +90,27 @@ describe ('Model', function () {
 });
 
 describe ('Model Finalization', function () {
+    it ('Create Default Material', function () {
+        var mesh = new OV.Mesh ();
+        var v0 = mesh.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
+        var v1 = mesh.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
+        var v2 = mesh.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
+        var v3 = mesh.AddVertex (new OV.Coord3D (1.0, 1.0, 0.0));
+        mesh.AddLine (new OV.Line ([v0, v1]));
+        mesh.AddLine (new OV.Line ([v1, v2]));
+        mesh.AddTriangle (new OV.Triangle (v0, v1, v2));
+        mesh.AddTriangle (new OV.Triangle (v0, v2, v3));
+        var model = new OV.Model ();
+        model.AddMesh (mesh);
+        OV.FinalizeModel (model, {
+            defaultLineMaterialColor : new OV.RGBColor (1, 2, 3),
+            defaultMaterialColor : new OV.RGBColor (4, 5, 6)
+        });
+        assert.strictEqual (model.MaterialCount (), 2);
+        assert.deepStrictEqual (model.GetMaterial (0).color, new OV.RGBColor (1, 2, 3));
+        assert.deepStrictEqual (model.GetMaterial (1).color, new OV.RGBColor (4, 5, 6));
+    });
+
     it ('Calculate Normal', function () {
         var mesh = new OV.Mesh ();
         var v0 = mesh.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));

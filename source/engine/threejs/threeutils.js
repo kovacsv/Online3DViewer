@@ -210,6 +210,48 @@ export function ConvertThreeGeometryToMesh (threeGeometry, materialIndex, colorC
     return mesh;
 }
 
+export function CreateHighlightMaterial (originalMaterial, highlightColor, withPolygonOffset)
+{
+    let material = null;
+    if (originalMaterial.type === 'MeshPhongMaterial') {
+        material = new THREE.MeshPhongMaterial ({
+            color : ConvertColorToThreeColor (highlightColor),
+            side : THREE.DoubleSide
+        });
+    } else if (originalMaterial.type === 'MeshStandardMaterial') {
+        material = new THREE.MeshStandardMaterial ({
+            color : ConvertColorToThreeColor (highlightColor),
+            side : THREE.DoubleSide
+        });
+    } else if (originalMaterial.type === 'LineBasicMaterial') {
+        material = new THREE.LineBasicMaterial ({
+            color : ConvertColorToThreeColor (highlightColor)
+        });
+    }
+    if (material !== null && withPolygonOffset) {
+        material.polygonOffset = true;
+        material.polygonOffsetUnit = 1;
+        material.polygonOffsetFactor = 1;
+    }
+    return material;
+}
+
+export function CreateHighlightMaterials (originalMaterials, highlightColor, withPolygonOffset)
+{
+    let typeToHighlightMaterial = new Map ();
+    let highlightMaterials = [];
+    for (let originalMaterial of originalMaterials) {
+        if (typeToHighlightMaterial.has (originalMaterial.type)) {
+            highlightMaterials.push (typeToHighlightMaterial.get (originalMaterial.type));
+            continue;
+        }
+        let highlightMaterial = CreateHighlightMaterial (originalMaterial, highlightColor, withPolygonOffset);
+        typeToHighlightMaterial.set (originalMaterial.type, highlightMaterial);
+        highlightMaterials.push (highlightMaterial);
+    }
+    return highlightMaterials;
+}
+
 export function DisposeThreeObjects (mainObject)
 {
     if (mainObject === null) {

@@ -68,6 +68,10 @@ export class Embed
             if (defaultColor !== null) {
                 settings.defaultColor = defaultColor;
             }
+            let defaultLineColor = this.hashHandler.GetDefaultLineColorFromHash ();
+            if (defaultLineColor !== null) {
+                settings.defaultLineColor = defaultLineColor;
+            }
             let inputFiles = InputFilesFromUrls (urls);
             this.modelLoaderUI.LoadModel (inputFiles, settings, {
                 onStart : () =>

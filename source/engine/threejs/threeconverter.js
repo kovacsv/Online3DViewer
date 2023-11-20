@@ -1,12 +1,18 @@
 import { RunTasksBatch } from '../core/taskrunner.js';
 import { IsEqual } from '../geometry/geometry.js';
 import { CreateObjectUrl, CreateObjectUrlWithMimeType } from '../io/bufferutils.js';
-import { MaterialType } from '../model/material.js';
+import { MaterialSource, MaterialType } from '../model/material.js';
 import { MeshInstance, MeshInstanceId } from '../model/meshinstance.js';
-import { GetMeshType, MeshType } from '../model/meshutils.js';
+import { IsEmptyMesh } from '../model/meshutils.js';
 import { ConvertColorToThreeColor, GetShadingType, ShadingType } from './threeutils.js';
 
 import * as THREE from 'three';
+
+export const MaterialGeometryType =
+{
+	Line : 1,
+	Face : 2
+};
 
 export class ModelToThreeConversionParams
 {
@@ -20,7 +26,7 @@ export class ModelToThreeConversionOutput
 {
 	constructor ()
 	{
-		this.defaultMaterial = null;
+		this.defaultMaterials = [];
 		this.objectUrls = [];
 	}
 }
@@ -97,50 +103,42 @@ export class ThreeNodeTree
 	}
 }
 
-export function ConvertModelToThreeObject (model, params, output, callbacks)
+export class ThreeMaterialHandler
 {
-	function CreateThreeMaterial (stateHandler, model, materialIndex, shadingType, params, output)
+	constructor (model, stateHandler, conversionParams, conversionOutput)
 	{
-		function SetTextureParameters (texture, threeTexture)
-		{
-			threeTexture.wrapS = THREE.RepeatWrapping;
-			threeTexture.wrapT = THREE.RepeatWrapping;
-			threeTexture.rotation = texture.rotation;
-			threeTexture.offset.x = texture.offset.x;
-			threeTexture.offset.y = texture.offset.y;
-			threeTexture.repeat.x = texture.scale.x;
-			threeTexture.repeat.y = texture.scale.y;
-		}
+		this.model = model;
+		this.stateHandler = stateHandler;
+		this.conversionParams = conversionParams;
+		this.conversionOutput = conversionOutput;
 
-		function LoadTexture (stateHandler, threeMaterial, texture, output, onTextureLoaded)
-		{
-			if (texture === null || !texture.IsValid ()) {
-				return;
-			}
-			let loader = new THREE.TextureLoader ();
-			stateHandler.OnTextureNeeded ();
-			let textureObjectUrl = null;
-			if (texture.mimeType !== null) {
-				textureObjectUrl = CreateObjectUrlWithMimeType (texture.buffer, texture.mimeType);
-			} else {
-				textureObjectUrl = CreateObjectUrl (texture.buffer);
-			}
-			output.objectUrls.push (textureObjectUrl);
-			loader.load (textureObjectUrl,
-				(threeTexture) => {
-					SetTextureParameters (texture, threeTexture);
-					threeMaterial.needsUpdate = true;
-					onTextureLoaded (threeTexture);
-					stateHandler.OnTextureLoaded ();
-				},
-				null,
-				(err) => {
-					stateHandler.OnTextureLoaded ();
-				}
-			);
-		}
+		this.shadingType = GetShadingType (model);
+		this.modelToThreeLineMaterial = new Map ();
+		this.modelToThreeMaterial = new Map ();
+	}
 
-		let material = model.GetMaterial (materialIndex);
+	GetThreeMaterial (modelMaterialIndex, geometryType)
+	{
+		if (geometryType === MaterialGeometryType.Face) {
+			if (!this.modelToThreeMaterial.has (modelMaterialIndex)) {
+				let threeMaterial = this.CreateThreeFaceMaterial (modelMaterialIndex);
+				this.modelToThreeMaterial.set (modelMaterialIndex, threeMaterial);
+			}
+			return this.modelToThreeMaterial.get (modelMaterialIndex);
+		} else if (geometryType === MaterialGeometryType.Line) {
+			if (!this.modelToThreeLineMaterial.has (modelMaterialIndex)) {
+				let threeMaterial = this.CreateThreeLineMaterial (modelMaterialIndex);
+				this.modelToThreeLineMaterial.set (modelMaterialIndex, threeMaterial);
+			}
+			return this.modelToThreeLineMaterial.get (modelMaterialIndex);
+		} else {
+			return null;
+		}
+	}
+
+	CreateThreeFaceMaterial (materialIndex)
+	{
+		let material = this.model.GetMaterial (materialIndex);
 		let baseColor = ConvertColorToThreeColor (material.color);
 		if (material.vertexColors) {
 			baseColor.setRGB (1.0, 1.0, 1.0);
@@ -155,12 +153,12 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 			side : THREE.DoubleSide
 		};
 
-		if (params.forceMediumpForMaterials) {
+		if (this.conversionParams.forceMediumpForMaterials) {
 			materialParams.precision = 'mediump';
 		}
 
 		let threeMaterial = null;
-		if (shadingType === ShadingType.Phong) {
+		if (this.shadingType === ShadingType.Phong) {
 			threeMaterial = new THREE.MeshPhongMaterial (materialParams);
 			if (material.type === MaterialType.Phong) {
 				let specularColor = ConvertColorToThreeColor (material.specular);
@@ -169,16 +167,16 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 				}
 				threeMaterial.specular = specularColor;
 				threeMaterial.shininess = material.shininess * 100.0;
-				LoadTexture (stateHandler, threeMaterial, material.specularMap, output, (threeTexture) => {
+				this.LoadFaceTexture (threeMaterial, material.specularMap, (threeTexture) => {
 					threeMaterial.specularMap = threeTexture;
 				});
 			}
-		} else if (shadingType === ShadingType.Physical) {
+		} else if (this.shadingType === ShadingType.Physical) {
 			threeMaterial = new THREE.MeshStandardMaterial (materialParams);
 			if (material.type === MaterialType.Physical) {
 				threeMaterial.metalness = material.metalness;
 				threeMaterial.roughness = material.roughness;
-				LoadTexture (stateHandler, threeMaterial, material.metalnessMap, output, (threeTexture) => {
+				this.LoadFaceTexture (threeMaterial, material.metalnessMap, (threeTexture) => {
 					threeMaterial.metalness = 1.0;
 					threeMaterial.roughness = 1.0;
 					threeMaterial.metalnessMap = threeTexture;
@@ -190,33 +188,151 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 		let emissiveColor = ConvertColorToThreeColor (material.emissive);
 		threeMaterial.emissive = emissiveColor;
 
-		LoadTexture (stateHandler, threeMaterial, material.diffuseMap, output, (threeTexture) => {
+		this.LoadFaceTexture (threeMaterial, material.diffuseMap, (threeTexture) => {
 			if (!material.multiplyDiffuseMap) {
 				threeMaterial.color.setRGB (1.0, 1.0, 1.0);
 			}
 			threeMaterial.map = threeTexture;
 		});
-		LoadTexture (stateHandler, threeMaterial, material.bumpMap, output, (threeTexture) => {
+		this.LoadFaceTexture (threeMaterial, material.bumpMap, (threeTexture) => {
 			threeMaterial.bumpMap = threeTexture;
 		});
-		LoadTexture (stateHandler, threeMaterial, material.normalMap, output, (threeTexture) => {
+		this.LoadFaceTexture (threeMaterial, material.normalMap, (threeTexture) => {
 			threeMaterial.normalMap = threeTexture;
 		});
-		LoadTexture (stateHandler, threeMaterial, material.emissiveMap, output, (threeTexture) => {
+		this.LoadFaceTexture (threeMaterial, material.emissiveMap, (threeTexture) => {
 			threeMaterial.emissiveMap = threeTexture;
 		});
 
-		if (material.isDefault) {
-			output.defaultMaterial = threeMaterial;
+		if (material.source !== MaterialSource.Model) {
+			threeMaterial.userData.source = material.source;
+			this.conversionOutput.defaultMaterials.push (threeMaterial);
 		}
 
 		return threeMaterial;
 	}
 
-	function CreateThreeMesh (meshInstance, modelThreeMaterials)
+	CreateThreeLineMaterial (materialIndex)
+	{
+		let material = this.model.GetMaterial (materialIndex);
+		let baseColor = ConvertColorToThreeColor (material.color);
+		let materialParams = {
+			color : baseColor,
+			opacity : material.opacity
+		};
+
+		if (this.conversionParams.forceMediumpForMaterials) {
+			materialParams.precision = 'mediump';
+		}
+
+		let threeMaterial = new THREE.LineBasicMaterial (materialParams);
+		if (material.source !== MaterialSource.Model) {
+			threeMaterial.userData.source = material.source;
+			this.conversionOutput.defaultMaterials.push (threeMaterial);
+		}
+
+		return threeMaterial;
+	}
+
+	LoadFaceTexture (threeMaterial, texture, onTextureLoaded)
+	{
+		function SetTextureParameters (texture, threeTexture)
+		{
+			threeTexture.wrapS = THREE.RepeatWrapping;
+			threeTexture.wrapT = THREE.RepeatWrapping;
+			threeTexture.rotation = texture.rotation;
+			threeTexture.offset.x = texture.offset.x;
+			threeTexture.offset.y = texture.offset.y;
+			threeTexture.repeat.x = texture.scale.x;
+			threeTexture.repeat.y = texture.scale.y;
+		}
+
+		if (texture === null || !texture.IsValid ()) {
+			return;
+		}
+		let loader = new THREE.TextureLoader ();
+		this.stateHandler.OnTextureNeeded ();
+		let textureObjectUrl = null;
+		if (texture.mimeType !== null) {
+			textureObjectUrl = CreateObjectUrlWithMimeType (texture.buffer, texture.mimeType);
+		} else {
+			textureObjectUrl = CreateObjectUrl (texture.buffer);
+		}
+		this.conversionOutput.objectUrls.push (textureObjectUrl);
+		loader.load (textureObjectUrl,
+			(threeTexture) => {
+				SetTextureParameters (texture, threeTexture);
+				threeMaterial.needsUpdate = true;
+				onTextureLoaded (threeTexture);
+				this.stateHandler.OnTextureLoaded ();
+			},
+			null,
+			(err) => {
+				this.stateHandler.OnTextureLoaded ();
+			}
+		);
+	}
+}
+
+export class ThreeMeshMaterialHandler
+{
+	constructor (threeGeometry, geometryType, materialHandler)
+	{
+		this.threeGeometry = threeGeometry;
+		this.geometryType = geometryType;
+		this.materialHandler = materialHandler;
+
+		this.itemVertexCount = null;
+		if (geometryType === MaterialGeometryType.Face) {
+			this.itemVertexCount = 3;
+		} else if (geometryType === MaterialGeometryType.Line) {
+			this.itemVertexCount = 2;
+		}
+
+		this.meshThreeMaterials = [];
+		this.meshOriginalMaterials = [];
+
+		this.groupStart = null;
+		this.previousMaterialIndex = null;
+	}
+
+	ProcessItem (itemIndex, materialIndex)
+	{
+		if (this.previousMaterialIndex !== materialIndex) {
+			if (this.groupStart !== null) {
+				this.AddGroup (this.groupStart, itemIndex - 1);
+			}
+			this.groupStart = itemIndex;
+
+			let threeMaterial = this.materialHandler.GetThreeMaterial (materialIndex, this.geometryType);
+			this.meshThreeMaterials.push (threeMaterial);
+			this.meshOriginalMaterials.push (materialIndex);
+
+			this.previousMaterialIndex = materialIndex;
+		}
+	}
+
+	Finalize (itemCount)
+	{
+		this.AddGroup (this.groupStart, itemCount - 1);
+	}
+
+	AddGroup (start, end)
+	{
+		let materialIndex = this.meshThreeMaterials.length - 1;
+		this.threeGeometry.addGroup (start * this.itemVertexCount, (end - start + 1) * this.itemVertexCount, materialIndex);
+	}
+}
+
+export function ConvertModelToThreeObject (model, conversionParams, conversionOutput, callbacks)
+{
+	function CreateThreeTriangleMesh (meshInstance, materialHandler)
 	{
 		let mesh = meshInstance.mesh;
 		let triangleCount = mesh.TriangleCount ();
+		if (triangleCount === 0) {
+			return null;
+		}
 
 		let triangleIndices = [];
 		for (let i = 0; i < triangleCount; i++) {
@@ -229,25 +345,17 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 		});
 
 		let threeGeometry = new THREE.BufferGeometry ();
-		let meshThreeMaterials = [];
-		let meshOriginalMaterials = [];
-		let modelToThreeMaterials = new Map ();
+		let meshMaterialHandler = new ThreeMeshMaterialHandler (threeGeometry, MaterialGeometryType.Face, materialHandler);
 
 		let vertices = [];
 		let vertexColors = [];
 		let normals = [];
 		let uvs = [];
 
-		let groups = [];
-		groups.push ({
-			start : 0,
-			end : -1
-		});
-
 		let meshHasVertexColors = (mesh.VertexColorCount () > 0);
 		let meshHasUVs = (mesh.TextureUVCount () > 0);
-		for (let i = 0; i < triangleIndices.length; i++) {
-			let triangleIndex = triangleIndices[i];
+		let processedTriangleCount = 0;
+		for (let triangleIndex of triangleIndices) {
 			let triangle = mesh.GetTriangle (triangleIndex);
 
 			let v0 = mesh.GetVertex (triangle.v0);
@@ -286,22 +394,10 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 				uvs.push (0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 			}
 
-			let modelMaterialIndex = triangle.mat;
-			if (!modelToThreeMaterials.has (modelMaterialIndex)) {
-				modelToThreeMaterials.set (modelMaterialIndex, meshThreeMaterials.length);
-				meshThreeMaterials.push (modelThreeMaterials[modelMaterialIndex]);
-				meshOriginalMaterials.push (modelMaterialIndex);
-				if (i > 0) {
-					groups[groups.length - 1].end = i - 1;
-					groups.push ({
-						start : groups[groups.length - 1].end + 1,
-						end : -1
-					});
-				}
-			}
+			meshMaterialHandler.ProcessItem (processedTriangleCount, triangle.mat);
+			processedTriangleCount += 1;
 		}
-
-		groups[groups.length - 1].end = triangleCount - 1;
+		meshMaterialHandler.Finalize (processedTriangleCount);
 
 		threeGeometry.setAttribute ('position', new THREE.Float32BufferAttribute (vertices, 3));
 		if (vertexColors.length !== 0) {
@@ -311,32 +407,86 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 		if (uvs.length !== 0) {
 			threeGeometry.setAttribute ('uv', new THREE.Float32BufferAttribute (uvs, 2));
 		}
-		for (let i = 0; i < groups.length; i++) {
-			let group = groups[i];
-			threeGeometry.addGroup (group.start * 3, (group.end - group.start + 1) * 3, i);
-		}
 
-		let threeMesh = new THREE.Mesh (threeGeometry, meshThreeMaterials);
+		let threeMesh = new THREE.Mesh (threeGeometry, meshMaterialHandler.meshThreeMaterials);
 		threeMesh.name = mesh.GetName ();
 		threeMesh.userData = {
 			originalMeshInstance : meshInstance,
-			originalMaterials : meshOriginalMaterials,
+			originalMaterials : meshMaterialHandler.meshOriginalMaterials,
 			threeMaterials : null
 		};
 
 		return threeMesh;
 	}
 
-	function ConvertMesh (threeObject, meshInstance, modelThreeMaterials)
+	function CreateThreeLineMesh (meshInstance, materialHandler)
 	{
-		let type = GetMeshType (meshInstance.mesh);
-		if (type === MeshType.TriangleMesh) {
-			let threeMesh = CreateThreeMesh (meshInstance, modelThreeMaterials);
-			threeObject.add (threeMesh);
+		let mesh = meshInstance.mesh;
+		let lineCount = mesh.LineCount ();
+		if (lineCount === 0) {
+			return null;
+		}
+
+		let lineIndices = [];
+		for (let i = 0; i < lineCount; i++) {
+			lineIndices.push (i);
+		}
+		lineIndices.sort ((a, b) => {
+			let aLine = mesh.GetLine (a);
+			let bLine = mesh.GetLine (b);
+			return aLine.mat - bLine.mat;
+		});
+
+		let threeGeometry = new THREE.BufferGeometry ();
+		let meshMaterialHandler = new ThreeMeshMaterialHandler (threeGeometry, MaterialGeometryType.Line, materialHandler);
+
+		let vertices = [];
+		let segmentCount = 0;
+		for (let i = 0; i < lineIndices.length; i++) {
+			let line = mesh.GetLine (lineIndices[i]);
+			let lineVertices = line.GetVertices ();
+			for (let i = 0; i < lineVertices.length; i++) {
+				let vertexIndex = lineVertices[i];
+				let vertex = mesh.GetVertex (vertexIndex);
+				vertices.push (vertex.x, vertex.y, vertex.z);
+				if (i > 0 && i < lineVertices.length - 1) {
+					vertices.push (vertex.x, vertex.y, vertex.z);
+				}
+			}
+			meshMaterialHandler.ProcessItem (segmentCount, line.mat);
+			segmentCount += line.SegmentCount ();
+		}
+		meshMaterialHandler.Finalize (segmentCount);
+
+		threeGeometry.setAttribute ('position', new THREE.Float32BufferAttribute (vertices, 3));
+
+		let threeLine = new THREE.LineSegments (threeGeometry, meshMaterialHandler.meshThreeMaterials);
+		threeLine.userData = {
+			originalMeshInstance : meshInstance,
+			originalMaterials : meshMaterialHandler.meshOriginalMaterials,
+			threeMaterials : null
+		};
+		return threeLine;
+	}
+
+	function ConvertMesh (threeObject, meshInstance, materialHandler)
+	{
+		if (IsEmptyMesh (meshInstance.mesh)) {
+			return;
+		}
+
+		let triangleMesh = CreateThreeTriangleMesh (meshInstance, materialHandler);
+		if (triangleMesh !== null) {
+			threeObject.add (triangleMesh);
+		}
+
+		let lineMesh = CreateThreeLineMesh (meshInstance, materialHandler);
+		if (lineMesh !== null) {
+			threeObject.add (lineMesh);
 		}
 	}
 
-	function ConvertNodeHierarchy (threeRootNode, model, modelThreeMaterials, stateHandler)
+	function ConvertNodeHierarchy (threeRootNode, model, materialHandler, stateHandler)
 	{
 		let nodeTree = new ThreeNodeTree (model, threeRootNode);
 		let threeNodeItems = nodeTree.GetNodeItems ();
@@ -345,7 +495,7 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 			runTask : (firstMeshInstanceIndex, lastMeshInstanceIndex, onReady) => {
 				for (let meshInstanceIndex = firstMeshInstanceIndex; meshInstanceIndex <= lastMeshInstanceIndex; meshInstanceIndex++) {
 					let nodeItem = threeNodeItems[meshInstanceIndex];
-					ConvertMesh (nodeItem.threeNode, nodeItem.meshInstance, modelThreeMaterials);
+					ConvertMesh (nodeItem.threeNode, nodeItem.meshInstance, materialHandler);
 				}
 				onReady ();
 			},
@@ -356,14 +506,7 @@ export function ConvertModelToThreeObject (model, params, output, callbacks)
 	}
 
 	let stateHandler = new ThreeConversionStateHandler (callbacks);
-	let shadingType = GetShadingType (model);
-
-	let modelThreeMaterials = [];
-	for (let materialIndex = 0; materialIndex < model.MaterialCount (); materialIndex++) {
-		let threeMaterial = CreateThreeMaterial (stateHandler, model, materialIndex, shadingType, params, output);
-		modelThreeMaterials.push (threeMaterial);
-	}
-
+	let materialHandler = new ThreeMaterialHandler (model, stateHandler, conversionParams, conversionOutput);
 	let threeObject = new THREE.Object3D ();
-	ConvertNodeHierarchy (threeObject, model, modelThreeMaterials, stateHandler);
+	ConvertNodeHierarchy (threeObject, model, materialHandler, stateHandler);
 }

@@ -1,6 +1,7 @@
 import { Direction } from '../geometry/geometry.js';
 import { Importer } from '../import/importer.js';
 import { RevokeObjectUrl } from '../io/bufferutils.js';
+import { MaterialSource } from '../model/material.js';
 import { ConvertModelToThreeObject, ModelToThreeConversionOutput, ModelToThreeConversionParams } from './threeconverter.js';
 import { ConvertColorToThreeColor, HasHighpDriverIssue } from './threeutils.js';
 
@@ -12,7 +13,7 @@ export class ThreeModelLoader
     {
         this.importer = new Importer ();
         this.inProgress = false;
-        this.defaultMaterial = null;
+        this.defaultMaterials = null;
         this.objectUrls = null;
         this.hasHighpDriverIssue = HasHighpDriverIssue ();
     }
@@ -60,7 +61,7 @@ export class ThreeModelLoader
                         callbacks.onTextureLoaded ();
                     },
                     onModelLoaded : (threeObject) => {
-                        this.defaultMaterial = output.defaultMaterial;
+                        this.defaultMaterials = output.defaultMaterials;
                         this.objectUrls = output.objectUrls;
                         if (importResult.upVector === Direction.X) {
                             let rotation = new THREE.Quaternion ().setFromAxisAngle (new THREE.Vector3 (0.0, 0.0, 1.0), Math.PI / 2.0);
@@ -86,15 +87,23 @@ export class ThreeModelLoader
         return this.importer;
     }
 
-    GetDefaultMaterial ()
+    GetDefaultMaterials ()
     {
-        return this.defaultMaterial;
+        return this.defaultMaterials;
     }
 
-    ReplaceDefaultMaterialColor (defaultColor)
+    ReplaceDefaultMaterialsColor (defaultColor, defaultLineColor)
     {
-        if (this.defaultMaterial !== null && !this.defaultMaterial.vertexColors) {
-            this.defaultMaterial.color = ConvertColorToThreeColor (defaultColor);
+        if (this.defaultMaterials !== null) {
+            for (let defaultMaterial of this.defaultMaterials) {
+                if (!defaultMaterial.vertexColors) {
+                    if (defaultMaterial.userData.source === MaterialSource.DefaultFace) {
+                        defaultMaterial.color = ConvertColorToThreeColor (defaultColor);
+                    } else if (defaultMaterial.userData.source === MaterialSource.DefaultLine) {
+                        defaultMaterial.color = ConvertColorToThreeColor (defaultLineColor);
+                    }
+                }
+            }
         }
     }
 

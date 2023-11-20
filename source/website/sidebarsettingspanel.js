@@ -10,6 +10,7 @@ import { ProjectionMode } from '../engine/viewer/camera.js';
 
 import * as Pickr from '@simonwep/pickr';
 import '@simonwep/pickr/dist/themes/monolith.min.css';
+import { MaterialSource } from '../engine/main.js';
 
 function AddColorPicker (parentDiv, opacity, defaultColor, predefinedColors, onChange)
 {
@@ -375,20 +376,33 @@ class SettingsImportParametersSection extends SettingsSection
     constructor (parentDiv, settings)
     {
         super (parentDiv, 'Import Settings', settings);
+        this.defaultColorPickerDiv = null;
+        this.defaultLineColorPickerDiv = null;
         this.defaultColorPicker = null;
+        this.defaultLineColorPicker = null;
     }
 
     Init (callbacks)
     {
-        super.Init (callbacks);
+        function AddDefaultColorPicker (contentDiv, name, defaultColor, onChange)
+        {
+            let colorDiv = AddDiv (contentDiv, 'ov_sidebar_parameter');
+            let colorInput = AddDiv (colorDiv, 'ov_color_picker');
+            AddDiv (colorDiv, null, name);
+            let predefinedDefaultColors = ['#ffffff', '#e3e3e3', '#cc3333', '#fac832', '#4caf50', '#3393bd', '#9b27b0', '#fda4b8'];
+            let defaultColorStr = '#' + RGBColorToHexString (defaultColor);
+            return AddColorPicker (colorInput, false, defaultColorStr, predefinedDefaultColors, onChange);
+        }
 
-        let defaultColorDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
-        let defaultColorInput = AddDiv (defaultColorDiv, 'ov_color_picker');
-        AddDiv (defaultColorDiv, null, 'Default Color');
-        let predefinedDefaultColors = ['#ffffff', '#e3e3e3', '#cc3333', '#fac832', '#4caf50', '#3393bd', '#9b27b0', '#fda4b8'];
-        let defaultColor = '#' + RGBColorToHexString (this.settings.defaultColor);
-        this.defaultColorPicker = AddColorPicker (defaultColorInput, false, defaultColor, predefinedDefaultColors, (r, g, b, a) => {
+        super.Init (callbacks);
+        this.defaultColorPickerDiv = AddDiv (this.contentDiv);
+        this.defaultColorPicker = AddDefaultColorPicker (this.defaultColorPickerDiv, 'Default Color', this.settings.defaultColor, (r, g, b, a) => {
             this.settings.defaultColor = new RGBColor (r, g, b);
+            this.callbacks.onDefaultColorChanged ();
+        });
+        this.defaultLineColorPickerDiv = AddDiv (this.contentDiv);
+        this.defaultLineColorPicker = AddDefaultColorPicker (this.defaultLineColorPickerDiv, 'Default Line Color', this.settings.defaultLineColor, (r, g, b, a) => {
+            this.settings.defaultLineColor = new RGBColor (r, g, b);
             this.callbacks.onDefaultColorChanged ();
         });
     }
@@ -398,13 +412,26 @@ class SettingsImportParametersSection extends SettingsSection
         if (this.defaultColorPicker !== null) {
             this.defaultColorPicker.setColor ('#' + RGBColorToHexString (this.settings.defaultColor));
         }
+        if (this.defaultLineColorPicker !== null) {
+            this.defaultLineColorPicker.setColor ('#' + RGBColorToHexString (this.settings.defaultLineColor));
+        }
     }
 
     UpdateVisibility ()
     {
         if (this.contentDiv !== null) {
-            let hasDefaultMaterial = this.callbacks.hasDefaultMaterial ();
-            ShowDomElement (this.contentDiv, hasDefaultMaterial);
+            let defaultMaterials = this.callbacks.getDefaultMaterials ();
+            if (defaultMaterials.length === 0) {
+                ShowDomElement (this.contentDiv, false);
+            } else {
+                let sources = new Set ();
+                for (let material of defaultMaterials) {
+                    sources.add (material.source);
+                }
+                ShowDomElement (this.contentDiv, true);
+                ShowDomElement (this.defaultColorPickerDiv, sources.has (MaterialSource.DefaultFace));
+                ShowDomElement (this.defaultLineColorPickerDiv, sources.has (MaterialSource.DefaultLine));
+            }
         }
     }
 
@@ -412,6 +439,9 @@ class SettingsImportParametersSection extends SettingsSection
     {
         if (this.defaultColorPicker !== null) {
             this.defaultColorPicker.hide ();
+        }
+        if (this.defaultLineColorPicker !== null) {
+            this.defaultLineColorPicker.hide ();
         }
     }
 }
@@ -482,8 +512,8 @@ export class SidebarSettingsPanel extends SidebarPanel
             }
         });
         this.importParametersSection.Init ({
-            hasDefaultMaterial : () => {
-                return this.callbacks.hasDefaultMaterial ();
+            getDefaultMaterials : () => {
+                return this.callbacks.getDefaultMaterials ();
             },
             onDefaultColorChanged : () => {
                 this.callbacks.onDefaultColorChanged ();
@@ -511,6 +541,7 @@ export class SidebarSettingsPanel extends SidebarPanel
         this.settings.environmentMapName = defaultSettings.environmentMapName;
         this.settings.backgroundIsEnvMap = defaultSettings.backgroundIsEnvMap;
         this.settings.backgroundColor = defaultSettings.backgroundColor;
+        this.settings.defaultLineColor = defaultSettings.defaultLineColor;
         this.settings.defaultColor = defaultSettings.defaultColor;
         this.settings.edgeSettings = defaultSettings.edgeSettings;
         this.settings.themeId = defaultSettings.themeId;

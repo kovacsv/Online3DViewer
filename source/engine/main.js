@@ -46,14 +46,15 @@ import { GetFileName, GetFileExtension, RequestUrl, ReadFile, TransformFileHostU
 import { TextWriter } from './io/textwriter.js';
 import { RGBColor, RGBAColor, ColorComponentFromFloat, ColorComponentToFloat, RGBColorFromFloatComponents, SRGBToLinear, LinearToSRGB, IntegerToHexString, RGBColorToHexString, RGBAColorToHexString, HexStringToRGBColor, HexStringToRGBAColor, ArrayToRGBColor, RGBColorIsEqual } from './model/color.js';
 import { GeneratorParams, Generator, GeneratorHelper, GenerateCuboid, GenerateCone, GenerateCylinder, GenerateSphere, GeneratePlatonicSolid } from './model/generator.js';
-import { TextureMap, MaterialBase, FaceMaterial, PhongMaterial, PhysicalMaterial, TextureMapIsEqual, TextureIsEqual, MaterialType } from './model/material.js';
+import { Line } from './model/line.js';
+import { TextureMap, MaterialBase, FaceMaterial, PhongMaterial, PhysicalMaterial, TextureMapIsEqual, TextureIsEqual, MaterialType, MaterialSource } from './model/material.js';
 import { Mesh } from './model/mesh.js';
 import { MeshPrimitiveBuffer, MeshBuffer, ConvertMeshToMeshBuffer } from './model/meshbuffer.js';
 import { MeshInstanceId, MeshInstance } from './model/meshinstance.js';
-import { GetMeshType, CalculateTriangleNormal, TransformMesh, FlipMeshTrianglesOrientation, MeshType } from './model/meshutils.js';
+import { IsEmptyMesh, CalculateTriangleNormal, TransformMesh, FlipMeshTrianglesOrientation } from './model/meshutils.js';
 import { Model } from './model/model.js';
 import { FinalizeModel, CheckModel } from './model/modelfinalization.js';
-import { IsModelEmpty, GetBoundingBox, GetTopology, IsTwoManifold, HasDefaultMaterial, ReplaceDefaultMaterialColor } from './model/modelutils.js';
+import { IsModelEmpty, GetBoundingBox, GetTopology, IsTwoManifold, GetDefaultMaterials, ReplaceDefaultMaterialsColor } from './model/modelutils.js';
 import { Node } from './model/node.js';
 import { Object3D, ModelObject3D } from './model/object.js';
 import { Property, PropertyGroup, PropertyToString, PropertyType } from './model/property.js';
@@ -62,9 +63,9 @@ import { TopologyVertex, TopologyEdge, TopologyTriangleEdge, TopologyTriangle, T
 import { Triangle } from './model/triangle.js';
 import { Unit } from './model/unit.js';
 import { ParameterListBuilder, ParameterListParser, CreateUrlBuilder, CreateUrlParser, CreateModelUrlParameters, ParameterConverter } from './parameters/parameterlist.js';
-import { ModelToThreeConversionParams, ModelToThreeConversionOutput, ThreeConversionStateHandler, ThreeNodeTree, ConvertModelToThreeObject } from './threejs/threeconverter.js';
+import { ModelToThreeConversionParams, ModelToThreeConversionOutput, ThreeConversionStateHandler, ThreeNodeTree, ThreeMaterialHandler, ThreeMeshMaterialHandler, ConvertModelToThreeObject, MaterialGeometryType } from './threejs/threeconverter.js';
 import { ThreeModelLoader } from './threejs/threemodelloader.js';
-import { ThreeColorConverter, ThreeLinearToSRGBColorConverter, ThreeSRGBToLinearColorConverter, HasHighpDriverIssue, GetShadingType, ConvertThreeColorToColor, ConvertColorToThreeColor, ConvertThreeGeometryToMesh, DisposeThreeObjects, ShadingType } from './threejs/threeutils.js';
+import { ThreeColorConverter, ThreeLinearToSRGBColorConverter, ThreeSRGBToLinearColorConverter, HasHighpDriverIssue, GetShadingType, ConvertThreeColorToColor, ConvertColorToThreeColor, ConvertThreeGeometryToMesh, CreateHighlightMaterial, CreateHighlightMaterials, DisposeThreeObjects, ShadingType } from './threejs/threeutils.js';
 import { Camera, CameraIsEqual3D, NavigationMode, ProjectionMode } from './viewer/camera.js';
 import { GetIntegerFromStyle, GetDomElementExternalWidth, GetDomElementExternalHeight, GetDomElementInnerDimensions, GetDomElementClientCoordinates, CreateDomElement, AddDomElement, AddDiv, ClearDomElement, InsertDomElementBefore, InsertDomElementAfter, ShowDomElement, IsDomElementVisible, SetDomElementWidth, SetDomElementHeight, GetDomElementOuterWidth, GetDomElementOuterHeight, SetDomElementOuterWidth, SetDomElementOuterHeight, CreateDiv } from './viewer/domutils.js';
 import { EmbeddedViewer, Init3DViewerFromUrlList, Init3DViewerFromFileList, Init3DViewerElements } from './viewer/embeddedviewer.js';
@@ -226,6 +227,7 @@ export {
     GenerateCylinder,
     GenerateSphere,
     GeneratePlatonicSolid,
+    Line,
     TextureMap,
     MaterialBase,
     FaceMaterial,
@@ -234,17 +236,17 @@ export {
     TextureMapIsEqual,
     TextureIsEqual,
     MaterialType,
+    MaterialSource,
     Mesh,
     MeshPrimitiveBuffer,
     MeshBuffer,
     ConvertMeshToMeshBuffer,
     MeshInstanceId,
     MeshInstance,
-    GetMeshType,
+    IsEmptyMesh,
     CalculateTriangleNormal,
     TransformMesh,
     FlipMeshTrianglesOrientation,
-    MeshType,
     Model,
     FinalizeModel,
     CheckModel,
@@ -252,8 +254,8 @@ export {
     GetBoundingBox,
     GetTopology,
     IsTwoManifold,
-    HasDefaultMaterial,
-    ReplaceDefaultMaterialColor,
+    GetDefaultMaterials,
+    ReplaceDefaultMaterialsColor,
     Node,
     Object3D,
     ModelObject3D,
@@ -282,7 +284,10 @@ export {
     ModelToThreeConversionOutput,
     ThreeConversionStateHandler,
     ThreeNodeTree,
+    ThreeMaterialHandler,
+    ThreeMeshMaterialHandler,
     ConvertModelToThreeObject,
+    MaterialGeometryType,
     ThreeModelLoader,
     ThreeColorConverter,
     ThreeLinearToSRGBColorConverter,
@@ -292,6 +297,8 @@ export {
     ConvertThreeColorToColor,
     ConvertColorToThreeColor,
     ConvertThreeGeometryToMesh,
+    CreateHighlightMaterial,
+    CreateHighlightMaterials,
     DisposeThreeObjects,
     ShadingType,
     Camera,
