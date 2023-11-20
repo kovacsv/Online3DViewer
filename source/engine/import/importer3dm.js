@@ -95,7 +95,7 @@ export class Importer3dm extends ImporterBase
             }
         }
         let rhinoInstanceDefinitions = rhinoDoc.instanceDefinitions ();
-        for (let i = 0; i < rhinoInstanceDefinitions.count (); i++) {
+        for (let i = 0; i < rhinoInstanceDefinitions.count; i++) {
             let rhinoInstanceDefinition = rhinoInstanceDefinitions.get (i);
             this.instanceIdToDefinition.set (rhinoInstanceDefinition.id, rhinoInstanceDefinition);
         }
@@ -104,9 +104,9 @@ export class Importer3dm extends ImporterBase
     ImportRhinoUserStrings (rhinoDoc)
     {
         let docStrings = rhinoDoc.strings ();
-        if (docStrings.count () > 0) {
+        if (docStrings.count > 0) {
             let propertyGroup = new PropertyGroup ('Document user texts');
-            for (let i = 0; i < docStrings.count (); i++) {
+            for (let i = 0; i < docStrings.count; i++) {
                 let docString = docStrings.get (i);
                 propertyGroup.AddProperty (new Property (PropertyType.Text, docString[0], docString[1]));
             }
