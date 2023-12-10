@@ -30,7 +30,7 @@
 		<p>
 			This is the user manual of <a href="https://3dviewer.net">3dviewer.net</a>.
 			The website can open several 3D file formats and visualize them in your browser.
-			It supports obj, 3ds, stl, ply, gltf, glb, off, 3dm, fbx, and much more.
+			It supports the following file formats: 3dm, 3ds, 3mf, amf, bim, brep, dae, fbx, fcstd, gltf, ifc, iges, step, stl, obj, off, ply, wrl.
 		</p>
 		<h1 id="supported_formats">Supported formats</h2>
 		<p>
@@ -48,12 +48,12 @@
 					<th>Source</th>
 				</tr>
 				<tr>
-					<td>Wavefront</td>
-					<td>obj</td>
-					<td>text</td>
+					<td>Rhinoceros 3D</td>
+					<td>3dm</td>
+					<td>binary</td>
 					<td class="center green">&#x2713</td>
 					<td class="center green">&#x2713</td>
-					<td>Native</td>
+					<td><a href="https://github.com/mcneel/rhino3dm">rhino3dm</a></td>
 				</tr>
 				<tr>
 					<td>3D Studio</td>
@@ -62,6 +62,110 @@
 					<td class="center green">&#x2713</td>
 					<td class="center red">&#x2717</td>
 					<td>Native</td>
+				</tr>
+				<tr>
+					<td>3D Manufacturing Format</td>
+					<td>3mf</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
+				</tr>
+				<tr>
+					<td>Additive Manufacturing Format</td>
+					<td>amf</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
+				</tr>
+				<tr>
+					<td>Dotbim</td>
+					<td>bim</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
+					<td class="center green">&#x2713</td>
+					<td>Native</td>
+				</tr>
+				<tr>
+					<td>BREP</td>
+					<td>brep</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td><a href="https://github.com/kovacsv/occt-import-js">occt-import-js</a></td>
+				</tr>
+				<tr>
+					<td>Collada</td>
+					<td>dae</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
+				</tr>
+				<tr>
+					<td rowspan="2">Filmbox</td>
+					<td rowspan="2">fbx</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
+				</tr>
+				<tr>
+					<td class="hidden"></td>
+					<td class="hidden"></td>
+					<td>binary</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
+				</tr>
+				<tr>
+					<td>FreeCAD Standard file format</td>
+					<td>FCStd</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td><a href="https://github.com/kovacsv/occt-import-js">occt-import-js</a></td>
+				</tr>
+				<tr>
+					<td rowspan="2">glTF</td>
+					<td>gltf</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
+					<td class="center green">&#x2713</td>
+					<td>Native</td>
+				</tr>
+				<tr>
+					<td class="hidden"></td>
+					<td>glb</td>
+					<td>binary</td>
+					<td class="center green">&#x2713</td>
+					<td class="center green">&#x2713</td>
+					<td>Native</td>
+				</tr>
+				<tr>
+					<td>Industry Foundation Classes</td>
+					<td>ifc</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td><a href="https://github.com/tomvandig/web-ifc">web-ifc</a></td>
+				</tr>
+				<tr>
+					<td>IGES</td>
+					<td>iges</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td><a href="https://github.com/kovacsv/occt-import-js">occt-import-js</a></td>
+				</tr>
+				<tr>
+					<td>STEP</td>
+					<td>step</td>
+					<td>text</td>
+					<td class="center green">&#x2713</td>
+					<td class="center red">&#x2717</td>
+					<td><a href="https://github.com/kovacsv/occt-import-js">occt-import-js</a></td>
 				</tr>
 				<tr>
 					<td rowspan="2">Stereolithography</td>
@@ -80,33 +184,9 @@
 					<td>Native</td>
 				</tr>
 				<tr>
-					<td rowspan="2">Polygon File Format</td>
-					<td rowspan="2">ply</td>
+					<td>Wavefront</td>
+					<td>obj</td>
 					<td>text</td>
-					<td class="center green">&#x2713</td>
-					<td class="center green">&#x2713</td>
-					<td>Native</td>
-				</tr>
-				<tr>
-					<td class="hidden"></td>
-					<td class="hidden"></td>
-					<td>binary</td>
-					<td class="center green">&#x2713</td>
-					<td class="center green">&#x2713</td>
-					<td>Native</td>
-				</tr>
-				<tr>
-					<td rowspan="2">glTF</td>
-					<td>gltf</td>
-					<td>text</td>
-					<td class="center green">&#x2713</td>
-					<td class="center green">&#x2713</td>
-					<td>Native</td>
-				</tr>
-				<tr>
-					<td class="hidden"></td>
-					<td>glb</td>
-					<td>binary</td>
 					<td class="center green">&#x2713</td>
 					<td class="center green">&#x2713</td>
 					<td>Native</td>
@@ -128,44 +208,20 @@
 					<td>Native</td>
 				</tr>
 				<tr>
-					<td>Dotbim</td>
-					<td>bim</td>
+					<td rowspan="2">Polygon File Format</td>
+					<td rowspan="2">ply</td>
 					<td>text</td>
 					<td class="center green">&#x2713</td>
 					<td class="center green">&#x2713</td>
 					<td>Native</td>
 				</tr>
 				<tr>
-					<td>Rhinoceros 3D</td>
-					<td>3dm</td>
-					<td>binary</td>
-					<td class="center green">&#x2713</td>
-					<td class="center green">&#x2713</td>
-					<td><a href="https://github.com/mcneel/rhino3dm">rhino3dm</a></td>
-				</tr>
-				<tr>
-					<td rowspan="2">Filmbox</td>
-					<td rowspan="2">fbx</td>
-					<td>text</td>
-					<td class="center green">&#x2713</td>
-					<td class="center red">&#x2717</td>
-					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
-				</tr>
-				<tr>
 					<td class="hidden"></td>
 					<td class="hidden"></td>
 					<td>binary</td>
 					<td class="center green">&#x2713</td>
-					<td class="center red">&#x2717</td>
-					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
-				</tr>
-				<tr>
-					<td>Collada</td>
-					<td>dae</td>
-					<td>text</td>
 					<td class="center green">&#x2713</td>
-					<td class="center red">&#x2717</td>
-					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
+					<td>Native</td>
 				</tr>
 				<tr>
 					<td>Virtual Reality Modeling Language</td>
@@ -174,62 +230,6 @@
 					<td class="center green">&#x2713</td>
 					<td class="center red">&#x2717</td>
 					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
-				</tr>
-				<tr>
-					<td>3D Manufacturing Format</td>
-					<td>3mf</td>
-					<td>text</td>
-					<td class="center green">&#x2713</td>
-					<td class="center red">&#x2717</td>
-					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
-				</tr>
-				<tr>
-					<td>Additive Manufacturing Format</td>
-					<td>amf</td>
-					<td>text</td>
-					<td class="center green">&#x2713</td>
-					<td class="center red">&#x2717</td>
-					<td><a href="https://github.com/mrdoob/three.js">three.js</a></td>
-				</tr>
-				<tr>
-					<td>BREP</td>
-					<td>brep</td>
-					<td>text</td>
-					<td class="center green">&#x2713</td>
-					<td class="center red">&#x2717</td>
-					<td><a href="https://github.com/kovacsv/occt-import-js">occt-import-js</a></td>
-				</tr>
-				<tr>
-					<td>STEP</td>
-					<td>step</td>
-					<td>text</td>
-					<td class="center green">&#x2713</td>
-					<td class="center red">&#x2717</td>
-					<td><a href="https://github.com/kovacsv/occt-import-js">occt-import-js</a></td>
-				</tr>
-				<tr>
-					<td>IGES</td>
-					<td>iges</td>
-					<td>text</td>
-					<td class="center green">&#x2713</td>
-					<td class="center red">&#x2717</td>
-					<td><a href="https://github.com/kovacsv/occt-import-js">occt-import-js</a></td>
-				</tr>
-				<tr>
-					<td>FreeCAD Standard file format</td>
-					<td>FCStd</td>
-					<td>text</td>
-					<td class="center green">&#x2713</td>
-					<td class="center red">&#x2717</td>
-					<td><a href="https://github.com/kovacsv/occt-import-js">occt-import-js</a></td>
-				</tr>
-				<tr>
-					<td>Industry Foundation Classes</td>
-					<td>ifc</td>
-					<td>text</td>
-					<td class="center green">&#x2713</td>
-					<td class="center red">&#x2717</td>
-					<td><a href="https://github.com/tomvandig/web-ifc">web-ifc</a></td>
 				</tr>
 			</table>
 		</p>

@@ -16,8 +16,8 @@ Online 3D Viewer (https://3dviewer.net) is a free and open source web solution t
 
 ## Supported file formats
 
-* **Import**: obj, 3ds, stl, ply, gltf, glb, off, 3dm, fbx, dae, wrl, 3mf, amf, ifc, brep, step, iges, fcstd, bim.
-* **Export**: obj, stl, ply, gltf, glb, off, 3dm, bim.
+* **Import**: 3dm, 3ds, 3mf, amf, bim, brep, dae, fbx, fcstd, gltf, ifc, iges, step, stl, obj, off, ply, wrl.
+* **Export**: 3dm, bim, gltf, obj, off, stl, ply.
 
 ## External Libraries
 
