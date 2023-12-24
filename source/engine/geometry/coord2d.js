@@ -33,3 +33,8 @@ export function CoordDistance2D (a, b)
 {
 	return Math.sqrt ((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 }
+
+export function DotVector2D (a, b)
+{
+	return a.x * b.x + a.y * b.y;
+}

@@ -12,10 +12,11 @@ import { ExporterOff } from './export/exporteroff.js';
 import { ExporterPly } from './export/exporterply.js';
 import { ExporterStl } from './export/exporterstl.js';
 import { Box3D, BoundingBoxCalculator3D } from './geometry/box3d.js';
-import { Coord2D, CoordIsEqual2D, AddCoord2D, SubCoord2D, CoordDistance2D } from './geometry/coord2d.js';
+import { Coord2D, CoordIsEqual2D, AddCoord2D, SubCoord2D, CoordDistance2D, DotVector2D } from './geometry/coord2d.js';
 import { Coord3D, CoordIsEqual3D, AddCoord3D, SubCoord3D, CoordDistance3D, DotVector3D, VectorAngle3D, CrossVector3D, VectorLength3D, ArrayToCoord3D } from './geometry/coord3d.js';
 import { Coord4D } from './geometry/coord4d.js';
 import { IsZero, IsLower, IsGreater, IsLowerOrEqual, IsGreaterOrEqual, IsEqual, IsEqualEps, IsPositive, IsNegative, Eps, BigEps, RadDeg, DegRad, Direction } from './geometry/geometry.js';
+import { Segment2D, ProjectPointToSegment2D, SegmentPointDistance2D } from './geometry/line2d.js';
 import { Matrix, MatrixIsEqual } from './geometry/matrix.js';
 import { OctreeNode, Octree } from './geometry/octree.js';
 import { Quaternion, QuaternionIsEqual, ArrayToQuaternion, QuaternionFromAxisAngle, QuaternionFromXYZ } from './geometry/quaternion.js';
@@ -105,6 +106,7 @@ export {
     AddCoord2D,
     SubCoord2D,
     CoordDistance2D,
+    DotVector2D,
     Coord3D,
     CoordIsEqual3D,
     AddCoord3D,
@@ -130,6 +132,9 @@ export {
     RadDeg,
     DegRad,
     Direction,
+    Segment2D,
+    ProjectPointToSegment2D,
+    SegmentPointDistance2D,
     Matrix,
     MatrixIsEqual,
     OctreeNode,

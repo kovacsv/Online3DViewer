@@ -63,6 +63,62 @@ describe ('Coord', function () {
     });
 });
 
+describe ('Segment', function () {
+    it ('Projected point', function () {
+        let segment = new OV.Segment2D (new OV.Coord2D (0.0, 0.0), new OV.Coord2D (10.0, 0.0));
+
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (-2.0, 0.0)), new OV.Coord2D (0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (0.0, 0.0)), new OV.Coord2D (0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (2.0, 0.0)), new OV.Coord2D (2.0, 0.0)));
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (8.0, 0.0)), new OV.Coord2D (8.0, 0.0)));
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (10.0, 0.0)), new OV.Coord2D (10.0, 0.0)));
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (12.0, 0.0)), new OV.Coord2D (10.0, 0.0)));
+
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (-2.0, 10.0)), new OV.Coord2D (0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (0.0, 10.0)), new OV.Coord2D (0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (2.0, 10.0)), new OV.Coord2D (2.0, 0.0)));
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (8.0, 10.0)), new OV.Coord2D (8.0, 0.0)));
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (10.0, 10.0)), new OV.Coord2D (10.0, 0.0)));
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (12.0, 10.0)), new OV.Coord2D (10.0, 0.0)));
+    });
+
+    it ('Projected point on invalid segment', function () {
+        let segment = new OV.Segment2D (new OV.Coord2D (0.0, 0.0), new OV.Coord2D (0.0, 0.0));
+
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (0.0, 0.0)), new OV.Coord2D (0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (10.0, 0.0)), new OV.Coord2D (0.0, 0.0)));
+        assert.ok (OV.CoordIsEqual2D (OV.ProjectPointToSegment2D (segment, new OV.Coord2D (0.0, 10.0)), new OV.Coord2D (0.0, 0.0)));
+    });
+
+    it ('Segment and point distance', function () {
+        let segment = new OV.Segment2D (new OV.Coord2D (0.0, 0.0), new OV.Coord2D (0.0, 10.0));
+
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (0.0, 0.0)), 0.0));
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (0.0, 2.0)), 0.0));
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (0.0, 8.0)), 0.0));
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (0.0, 10.0)), 0.0));
+
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (-2.0, 0.0)), 2.0));
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (-4.0, 2.0)), 4.0));
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (6.0, 8.0)), 6.0));
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (8.0, 10.0)), 8.0));
+
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (0.0, -2.0)), 2.0));
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (0.0, 12.0)), 2.0));
+    });
+
+    it ('Segment and point distance 2', function () {
+        let segment = new OV.Segment2D (new OV.Coord2D (2.0, 2.0), new OV.Coord2D (4.0, 4.0));
+
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (2.0, 2.0)), 0.0));
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (3.0, 3.0)), 0.0));
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (4.0, 4.0)), 0.0));
+
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (4.0, 5.0)), 1.0));
+        assert.ok (OV.IsEqual (OV.SegmentPointDistance2D (segment, new OV.Coord2D (0.0, 2.0)), 2.0));
+    });
+});
+
 describe ('Quaternion', function () {
     it ('Create Quaternion', function () {
         let q1 = OV.QuaternionFromAxisAngle (new OV.Coord3D (1.0, 0.0, 0.0), Math.PI / 2.0);
