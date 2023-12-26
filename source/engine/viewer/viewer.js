@@ -484,19 +484,19 @@ export class Viewer
         this.Render ();
     }
 
-    GetMeshUserDataUnderMouse (mouseCoords)
+    GetMeshUserDataUnderMouse (intersectionMode, mouseCoords)
     {
-        let intersection = this.GetMeshIntersectionUnderMouse (mouseCoords);
+        let intersection = this.GetMeshIntersectionUnderMouse (intersectionMode, mouseCoords);
         if (intersection === null) {
             return null;
         }
         return intersection.object.userData;
     }
 
-    GetMeshIntersectionUnderMouse (mouseCoords)
+    GetMeshIntersectionUnderMouse (intersectionMode, mouseCoords)
     {
         let canvasSize = this.GetCanvasSize ();
-        let intersection = this.mainModel.GetMeshIntersectionUnderMouse (mouseCoords, this.camera, canvasSize.width, canvasSize.height);
+        let intersection = this.mainModel.GetMeshIntersectionUnderMouse (intersectionMode, mouseCoords, this.camera, canvasSize.width, canvasSize.height);
         if (intersection === null) {
             return null;
         }

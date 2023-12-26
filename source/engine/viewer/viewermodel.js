@@ -3,6 +3,12 @@ import { ConvertColorToThreeColor, DisposeThreeObjects } from '../threejs/threeu
 
 import * as THREE from 'three';
 
+export const IntersectionMode =
+{
+	MeshOnly : 1,
+    MeshAndLine : 2
+};
+
 export function SetThreeMeshPolygonOffset (mesh, offset)
 {
     function SetMaterialsPolygonOffset (materials, offset)
@@ -303,7 +309,7 @@ export class ViewerMainModel
         }
     }
 
-    GetMeshIntersectionUnderMouse (mouseCoords, camera, width, height)
+    GetMeshIntersectionUnderMouse (intersectionMode, mouseCoords, camera, width, height)
     {
         function CalculateLineThreshold (mousePos, camera, boundingBoxCenter)
         {
@@ -343,7 +349,13 @@ export class ViewerMainModel
         let iSectObjects = raycaster.intersectObject (this.mainModel.GetRootObject (), true);
         for (let i = 0; i < iSectObjects.length; i++) {
             let iSectObject = iSectObjects[i];
-            if ((iSectObject.object.isMesh || iSectObject.object.isLineSegments) && iSectObject.object.visible) {
+            if (!iSectObject.object.visible) {
+                continue;
+            }
+            if (intersectionMode === IntersectionMode.MeshOnly && iSectObject.object.isLineSegments) {
+                continue;
+            }
+            if (iSectObject.object.isMesh || iSectObject.object.isLineSegments) {
                 return iSectObject;
             }
         }

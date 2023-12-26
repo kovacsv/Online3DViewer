@@ -27,6 +27,7 @@ import { CloseAllDialogs } from './dialog.js';
 import { CreateVerticalSplitter } from './splitter.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
 import { EnvironmentSettings } from '../engine/viewer/shadingmodel.js';
+import { IntersectionMode } from '../engine/viewer/viewermodel.js';
 
 const WebsiteUIState =
 {
@@ -316,7 +317,7 @@ export class Website
             return;
         }
 
-        let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
+        let meshUserData = this.viewer.GetMeshUserDataUnderMouse (IntersectionMode.MeshAndLine, mouseCoordinates);
         if (meshUserData === null) {
             this.navigator.SetSelection (null);
         } else {
@@ -333,7 +334,7 @@ export class Website
 
     OnModelContextMenu (globalMouseCoordinates, mouseCoordinates)
     {
-        let meshUserData = this.viewer.GetMeshUserDataUnderMouse (mouseCoordinates);
+        let meshUserData = this.viewer.GetMeshUserDataUnderMouse (IntersectionMode.MeshAndLine, mouseCoordinates);
         let items = [];
         if (meshUserData === null) {
             items.push ({

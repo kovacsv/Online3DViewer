@@ -73,7 +73,7 @@ import { EmbeddedViewer, Init3DViewerFromUrlList, Init3DViewerFromFileList, Init
 import { MouseInteraction, TouchInteraction, ClickDetector, Navigation, NavigationType } from './viewer/navigation.js';
 import { EnvironmentSettings, ShadingModel } from './viewer/shadingmodel.js';
 import { CameraValidator, UpVector, Viewer, GetDefaultCamera, TraverseThreeObject, GetShadingTypeOfObject } from './viewer/viewer.js';
-import { ViewerModel, EdgeSettings, ViewerMainModel, SetThreeMeshPolygonOffset } from './viewer/viewermodel.js';
+import { ViewerModel, EdgeSettings, ViewerMainModel, SetThreeMeshPolygonOffset, IntersectionMode } from './viewer/viewermodel.js';
 
 export {
     IsDefined,
@@ -350,5 +350,6 @@ export {
     ViewerModel,
     EdgeSettings,
     ViewerMainModel,
-    SetThreeMeshPolygonOffset
+    SetThreeMeshPolygonOffset,
+    IntersectionMode
 };
