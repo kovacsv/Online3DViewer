@@ -322,12 +322,12 @@ export class ViewerMainModel
             if (!iSectObject.object.visible) {
                 continue;
             }
-            if (intersectionMode === IntersectionMode.MeshOnly && iSectObject.object.isLineSegments) {
-                continue;
-            }
             if (iSectObject.object.isMesh) {
                 return iSectObject;
             } else if (iSectObject.object.isLineSegments) {
+                if (intersectionMode === IntersectionMode.MeshOnly) {
+                    continue;
+                }
                 let distance = GetLineSegmentsProjectedDistance (camera, width, height, iSectObject.object, mouseCoords);
                 if (distance > LineThresholdInPixels) {
                     continue;
