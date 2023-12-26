@@ -1,5 +1,6 @@
 import { Coord2D } from '../geometry/coord2d.js';
 import { Coord3D } from '../geometry/coord3d.js';
+import { Segment2D, SegmentPointDistance2D } from '../geometry/line2d.js';
 import { RGBColorFromFloatComponents } from '../model/color.js';
 import { MaterialType } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
@@ -271,4 +272,34 @@ export function DisposeThreeObjects (mainObject)
             obj.geometry.dispose ();
         }
     });
+}
+
+export function GetLineSegmentsProjectedDistance (camera, canvasWidth, canvasHeight, lineSegments, screenPoint)
+{
+    function GetProjectedVertex (camera, canvasWidth, canvasHeight, lineSegments, vertices, index)
+    {
+        let vertex = new THREE.Vector3 (
+            vertices[3 * index],
+            vertices[3 * index + 1],
+            vertices[3 * index + 2]
+        );
+        vertex.applyMatrix4 (lineSegments.matrixWorld);
+        let projected = vertex.project (camera);
+        return new Coord2D (
+            (projected.x + 1.0) * canvasWidth / 2.0,
+            -(projected.y - 1.0) * canvasHeight / 2.0
+        );
+    }
+
+    let vertices = lineSegments.geometry.attributes.position.array;
+    let segmentCount = vertices.length / 6;
+    let distance = Infinity;
+    for (let segmentIndex = 0; segmentIndex < segmentCount; segmentIndex++) {
+        let segment = new Segment2D (
+            GetProjectedVertex (camera, canvasWidth, canvasHeight, lineSegments, vertices, 2 * segmentIndex),
+            GetProjectedVertex (camera, canvasWidth, canvasHeight, lineSegments, vertices, 2 * segmentIndex + 1)
+        );
+        distance = Math.min (distance, SegmentPointDistance2D (segment, screenPoint));
+    }
+    return distance;
 }

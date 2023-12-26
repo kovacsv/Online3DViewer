@@ -1,7 +1,9 @@
 import { RGBColor } from '../model/color.js';
-import { ConvertColorToThreeColor, DisposeThreeObjects } from '../threejs/threeutils.js';
+import { ConvertColorToThreeColor, DisposeThreeObjects, GetLineSegmentsProjectedDistance } from '../threejs/threeutils.js';
 
 import * as THREE from 'three';
+
+const LineThresholdInPixels = 10.0;
 
 export const IntersectionMode =
 {
@@ -127,7 +129,6 @@ export class ViewerMainModel
         this.edgeSettings = new EdgeSettings (false, new RGBColor (0, 0, 0), 1);
         this.hasLines = false;
         this.hasPolygonOffset = false;
-        this.fullBoundingBox = null;
     }
 
     SetMainObject (mainObject)
@@ -135,7 +136,6 @@ export class ViewerMainModel
         this.mainModel.SetRootObject (mainObject);
         this.hasLines = false;
         this.hasPolygonOffset = false;
-        this.fullBoundingBox = null;
 
         this.EnumerateLines ((line) => {
             this.hasLines = true;
@@ -198,17 +198,6 @@ export class ViewerMainModel
         });
 
         this.UpdatePolygonOffset ();
-    }
-
-    GetFullBoundingBox ()
-    {
-        if (this.fullBoundingBox !== null) {
-            return this.fullBoundingBox;
-        }
-        this.fullBoundingBox = this.GetBoundingBox (() => {
-            return true;
-        });
-        return this.fullBoundingBox;
     }
 
     GetBoundingBox (needToProcess)
@@ -311,18 +300,6 @@ export class ViewerMainModel
 
     GetMeshIntersectionUnderMouse (intersectionMode, mouseCoords, camera, width, height)
     {
-        function CalculateLineThreshold (mousePos, camera, boundingBoxCenter)
-        {
-            let thresholdInScreenCoordinates = 15.0;
-            let frustumRange = camera.far - camera.near;
-            let cameraDistanceFromCenter = boundingBoxCenter.distanceTo (camera.position);
-            let distanceInFrustumRatio = cameraDistanceFromCenter / frustumRange;
-            let zValue = -1.0 + 2.0 * distanceInFrustumRatio;
-            let referencePoint1 = new THREE.Vector3 (mousePos.x, mousePos.y, zValue).unproject (camera);
-            let referencePoint2 = new THREE.Vector3 (mousePos.x + thresholdInScreenCoordinates, mousePos.y, zValue).unproject (camera);
-            return referencePoint1.distanceTo (referencePoint2);
-        }
-
         if (this.mainModel.IsEmpty ()) {
             return null;
         }
@@ -336,16 +313,9 @@ export class ViewerMainModel
         mousePos.y = -(mouseCoords.y / height) * 2 + 1;
 
         let raycaster = new THREE.Raycaster ();
-        if (this.hasLines) {
-            let boundingBox = this.GetFullBoundingBox ();
-            if (boundingBox !== null) {
-                let boundingBoxCenter = new THREE.Vector3 (0.0, 0.0, 0.0);
-                boundingBox.getCenter (boundingBoxCenter);
-                raycaster.params.Line.threshold = CalculateLineThreshold (mousePos, camera, boundingBoxCenter);
-            }
-        }
-
         raycaster.setFromCamera (mousePos, camera);
+        raycaster.params.Line.threshold = 10.0;
+
         let iSectObjects = raycaster.intersectObject (this.mainModel.GetRootObject (), true);
         for (let i = 0; i < iSectObjects.length; i++) {
             let iSectObject = iSectObjects[i];
@@ -355,7 +325,13 @@ export class ViewerMainModel
             if (intersectionMode === IntersectionMode.MeshOnly && iSectObject.object.isLineSegments) {
                 continue;
             }
-            if (iSectObject.object.isMesh || iSectObject.object.isLineSegments) {
+            if (iSectObject.object.isMesh) {
+                return iSectObject;
+            } else if (iSectObject.object.isLineSegments) {
+                let distance = GetLineSegmentsProjectedDistance (camera, width, height, iSectObject.object, mouseCoords);
+                if (distance > LineThresholdInPixels) {
+                    continue;
+                }
                 return iSectObject;
             }
         }

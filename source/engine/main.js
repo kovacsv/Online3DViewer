@@ -66,7 +66,7 @@ import { Unit } from './model/unit.js';
 import { ParameterListBuilder, ParameterListParser, CreateUrlBuilder, CreateUrlParser, CreateModelUrlParameters, ParameterConverter } from './parameters/parameterlist.js';
 import { ModelToThreeConversionParams, ModelToThreeConversionOutput, ThreeConversionStateHandler, ThreeNodeTree, ThreeMaterialHandler, ThreeMeshMaterialHandler, ConvertModelToThreeObject, MaterialGeometryType } from './threejs/threeconverter.js';
 import { ThreeModelLoader } from './threejs/threemodelloader.js';
-import { ThreeColorConverter, ThreeLinearToSRGBColorConverter, ThreeSRGBToLinearColorConverter, HasHighpDriverIssue, GetShadingType, ConvertThreeColorToColor, ConvertColorToThreeColor, ConvertThreeGeometryToMesh, CreateHighlightMaterial, CreateHighlightMaterials, DisposeThreeObjects, ShadingType } from './threejs/threeutils.js';
+import { ThreeColorConverter, ThreeLinearToSRGBColorConverter, ThreeSRGBToLinearColorConverter, HasHighpDriverIssue, GetShadingType, ConvertThreeColorToColor, ConvertColorToThreeColor, ConvertThreeGeometryToMesh, CreateHighlightMaterial, CreateHighlightMaterials, DisposeThreeObjects, GetLineSegmentsProjectedDistance, ShadingType } from './threejs/threeutils.js';
 import { Camera, CameraIsEqual3D, NavigationMode, ProjectionMode } from './viewer/camera.js';
 import { GetIntegerFromStyle, GetDomElementExternalWidth, GetDomElementExternalHeight, GetDomElementInnerDimensions, GetDomElementClientCoordinates, CreateDomElement, AddDomElement, AddDiv, ClearDomElement, InsertDomElementBefore, InsertDomElementAfter, ShowDomElement, IsDomElementVisible, SetDomElementWidth, SetDomElementHeight, GetDomElementOuterWidth, GetDomElementOuterHeight, SetDomElementOuterWidth, SetDomElementOuterHeight, CreateDiv } from './viewer/domutils.js';
 import { EmbeddedViewer, Init3DViewerFromUrlList, Init3DViewerFromFileList, Init3DViewerElements } from './viewer/embeddedviewer.js';
@@ -305,6 +305,7 @@ export {
     CreateHighlightMaterial,
     CreateHighlightMaterials,
     DisposeThreeObjects,
+    GetLineSegmentsProjectedDistance,
     ShadingType,
     Camera,
     CameraIsEqual3D,
