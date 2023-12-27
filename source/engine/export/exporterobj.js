@@ -90,14 +90,6 @@ export class ExporterObj extends ExporterBase
                 let n0 = triangle.n0 + normalOffset + 1;
                 let n1 = triangle.n1 + normalOffset + 1;
                 let n2 = triangle.n2 + normalOffset + 1;
-                if (triangle.mat !== null) {
-                    let material = exporterModel.GetMaterial (triangle.mat);
-                    let materialName = this.GetExportedMaterialName (material.name);
-                    if (materialName !== usedMaterialName) {
-                        objWriter.WriteArrayLine (['usemtl', materialName]);
-                        usedMaterialName = materialName;
-                    }
-                }
                 let u0 = '';
                 let u1 = '';
                 let u2 = '';
@@ -106,7 +98,31 @@ export class ExporterObj extends ExporterBase
                     u1 = triangle.u1 + uvOffset + 1;
                     u2 = triangle.u2 + uvOffset + 1;
                 }
+                if (triangle.mat !== null) {
+                    let material = exporterModel.GetMaterial (triangle.mat);
+                    let materialName = this.GetExportedMaterialName (material.name);
+                    if (materialName !== usedMaterialName) {
+                        objWriter.WriteArrayLine (['usemtl', materialName]);
+                        usedMaterialName = materialName;
+                    }
+                }
                 objWriter.WriteArrayLine (['f', [v0, u0, n0].join ('/'), [v1, u1, n1].join ('/'), [v2, u2, n2].join ('/')]);
+            }
+            for (let lineIndex = 0; lineIndex < mesh.LineCount (); lineIndex++) {
+                let line = mesh.GetLine (lineIndex);
+                let vertexIndices = [];
+                for (let vertexIndex = 0; vertexIndex < line.vertices.length; vertexIndex++) {
+                    vertexIndices.push (line.vertices[vertexIndex] + vertexOffset + 1);
+                }
+                if (line.mat !== null) {
+                    let material = exporterModel.GetMaterial (line.mat);
+                    let materialName = this.GetExportedMaterialName (material.name);
+                    if (materialName !== usedMaterialName) {
+                        objWriter.WriteArrayLine (['usemtl', materialName]);
+                        usedMaterialName = materialName;
+                    }
+                }
+                objWriter.WriteArrayLine (['l', vertexIndices.join (' ')]);
             }
             vertexOffset += mesh.VertexCount ();
             normalOffset += mesh.NormalCount ();

@@ -18,6 +18,7 @@ function CreateTestModel ()
 
     let phongMaterial = new OV.PhongMaterial ();
     phongMaterial.name = 'Phong Material';
+    phongMaterial.color = new OV.RGBColor (0, 0, 0);
     phongMaterial.emissive = new OV.RGBColor (1, 1, 1);
     phongMaterial.opacity = 0.1;
     phongMaterial.transparent = true;
@@ -30,6 +31,7 @@ function CreateTestModel ()
 
     let phongMaterialTexture = new OV.PhongMaterial ();
     phongMaterialTexture.name = 'Phong Material With Texture';
+    phongMaterialTexture.color = new OV.RGBColor (0, 0, 0);
     phongMaterialTexture.emissive = new OV.RGBColor (1, 1, 1);
     phongMaterialTexture.opacity = 0.1;
     phongMaterialTexture.transparent = true;
@@ -47,6 +49,7 @@ function CreateTestModel ()
 
     let physicalMaterialTexture = new OV.PhysicalMaterial ();
     physicalMaterialTexture.name = 'Phong Material With Texture';
+    physicalMaterialTexture.color = new OV.RGBColor (0, 0, 0);
     physicalMaterialTexture.emissive = new OV.RGBColor (1, 1, 1);
     physicalMaterialTexture.opacity = 0.1;
     physicalMaterialTexture.transparent = true;
@@ -103,6 +106,39 @@ function CreateTestModel ()
     meshWithPhysicalMaterial.AddVertex (new OV.Coord3D (0.0, 1.0, 0.0));
     meshWithPhysicalMaterial.AddTriangle (new OV.Triangle (0, 1, 2).SetMaterial (2));
     node3.AddMeshIndex (model.AddMesh (meshWithPhysicalMaterial));
+
+    OV.FinalizeModel (model);
+    return model;
+}
+
+function CreateTestModelWithLines ()
+{
+    let model = new OV.Model ();
+
+    let phongMaterial = new OV.PhongMaterial ();
+    phongMaterial.name = 'Material';
+    phongMaterial.color = new OV.RGBColor (0, 0, 0);
+    model.AddMaterial (phongMaterial);
+
+    let meshOnly = new OV.Mesh ();
+    meshOnly.SetName ('Mesh Only');
+    meshOnly.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
+    meshOnly.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
+    meshOnly.AddVertex (new OV.Coord3D (0.0, 1.0, 0.0));
+    meshOnly.AddTriangle (new OV.Triangle (0, 1, 2).SetMaterial (0));
+    model.AddMeshToRootNode (meshOnly);
+
+    let meshAndLines = new OV.Mesh ();
+    meshAndLines.SetName ('Meshes and Lines');
+    meshAndLines.AddVertex (new OV.Coord3D (0.0, 0.0, 0.0));
+    meshAndLines.AddVertex (new OV.Coord3D (1.0, 0.0, 0.0));
+    meshAndLines.AddVertex (new OV.Coord3D (0.0, 1.0, 0.0));
+    meshAndLines.AddTriangle (new OV.Triangle (0, 1, 2).SetMaterial (0));
+    meshAndLines.AddVertex (new OV.Coord3D (0.0, 0.0, 1.0));
+    meshAndLines.AddVertex (new OV.Coord3D (1.0, 0.0, 1.0));
+    meshAndLines.AddVertex (new OV.Coord3D (0.0, 1.0, 1.0));
+    meshAndLines.AddLine (new OV.Line ([3, 4, 5]).SetMaterial (0));
+    model.AddMeshToRootNode (meshAndLines);
 
     OV.FinalizeModel (model);
     return model;
@@ -166,6 +202,14 @@ function CheckModel (model, model2)
 describe ('Export-Import Test', function () {
     it ('Export-Import Obj', function (done) {
         let model = CreateTestModel ();
+        ExportImport (model, OV.FileFormat.Text, 'obj', (model2) => {
+            CheckModel (model, model2);
+            done ();
+        });
+    });
+
+    it ('Export-Import Obj with Lines', function (done) {
+        let model = CreateTestModelWithLines ();
         ExportImport (model, OV.FileFormat.Text, 'obj', (model2) => {
             CheckModel (model, model2);
             done ();
