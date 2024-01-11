@@ -95,12 +95,14 @@
 				this.camera.position.set (cameraPosition.x, cameraPosition.y, cameraPosition.z);
 				this.parentGroup.add (this.camera);
 
-				let helper = new THREE.CameraHelper( this.camera );
-				this.parentGroup.add (helper);
+				// let helper = new THREE.CameraHelper( this.camera );
+				// this.parentGroup.add (helper);
 
 				this.shadowMaterial = new THREE.MeshBasicMaterial ({
-					color : '#00cc00'
+					color : '#aaaaaa'
 				});
+
+				this.blur = new ThreeBlurEffect (this.parentGroup, this.renderTarget, size.x, size.y);
 			}
 
 			Render (renderer, scene)
@@ -110,10 +112,11 @@
 				renderer.setRenderTarget (this.renderTarget);
 
 				renderer.render (scene, this.camera);
-
-				renderer.setRenderTarget (null);
 				scene.overrideMaterial = null;
 				this.planeMesh.visible = true;
+
+				this.blur.Render (renderer, 1.0);
+				renderer.setRenderTarget (null);
 			}
 		}
 
