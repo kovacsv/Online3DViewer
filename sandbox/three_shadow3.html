@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+
+	<title>Online 3D Viewer</title>
+	<style>
+		canvas
+		{
+			border: 1px solid #cccccc;
+		}
+	</style>
+
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/shaders/HorizontalBlurShader.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/shaders/VerticalBlurShader.js"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+	<script type='text/javascript'>
+        class ThreeShadowPlane
+        {
+            constructor (shadowGroup)
+            {
+                let size = new THREE.Vector2 (10.0, 5.0);
+
+				this.shadowCamera = new THREE.OrthographicCamera (-size.x / 2.0, size.x / 2.0, size.y / 2.0, -size.y / 2.0, 0.0, 10.0);
+                this.shadowCamera.position.z = -5;
+                this.shadowCamera.scale.z *= -1;
+                shadowGroup.add (this.shadowCamera);
+
+				this.shadowRenderTarget = new THREE.WebGLRenderTarget (1024, 1024);
+				this.shadowRenderTarget.texture.generateMipmaps = false;
+
+				let planeGeometry = new THREE.PlaneGeometry (size.x, size.y);
+				let planeMaterial = new THREE.MeshBasicMaterial ({
+					map : this.shadowRenderTarget.texture,
+                    transparent: true,
+					depthWrite : false
+                });
+
+				let helper = new THREE.CameraHelper (this.shadowCamera);
+				shadowGroup.add (helper);
+
+                this.shadowOverrideMaterial = new THREE.MeshDepthMaterial ();
+				this.shadowOverrideMaterial.userData.darkness = { value: 1 };
+				this.shadowOverrideMaterial.onBeforeCompile = (shader) => {
+                    shader.uniforms.darkness = this.shadowOverrideMaterial.userData.darkness;
+                    shader.fragmentShader = /* glsl */`
+                        uniform float darkness;
+                        ${shader.fragmentShader.replace (
+                            'gl_FragColor = vec4( vec3( 1.0 - fragCoordZ ), opacity );',
+                            'gl_FragColor = vec4( vec3( 0.0 ), ( 1.0 - fragCoordZ ) * darkness );'
+                        )}
+                    `;
+                };
+
+				this.shadowPlaneMesh = new THREE.Mesh (planeGeometry, planeMaterial);
+                shadowGroup.add (this.shadowPlaneMesh);
+            }
+
+            Render (renderer, scene)
+            {
+                this.shadowPlaneMesh.visible = false;
+				scene.overrideMaterial = this.shadowOverrideMaterial;
+				renderer.setRenderTarget (this.shadowRenderTarget);
+
+				renderer.render (scene, this.shadowCamera);
+				scene.overrideMaterial = null;
+				this.shadowPlaneMesh.visible = true;
+
+				renderer.setRenderTarget (null);
+            }
+        }
+
+        class ThreeContactShadow
+        {
+            constructor (renderer, scene)
+            {
+                this.renderer = renderer;
+                this.scene = scene;
+
+				this.shadowGroup = new THREE.Object3D ();
+				this.scene.add (this.shadowGroup);
+
+                this.shadowPlane = new ThreeShadowPlane (this.shadowGroup);
+            }
+
+            Render ()
+            {
+				this.shadowPlane.Render (this.renderer, this.scene);
+            }
+        }
+
+		function Sandbox3D ()
+		{
+			let canvas = document.getElementById ('canvas');
+
+			let parameters = {
+				canvas : canvas,
+				antialias : true
+			};
+
+			let width = 800;
+			let height = 600;
+			let renderer = new THREE.WebGLRenderer (parameters);
+			renderer.setClearColor ('#ffffff', 1);
+			renderer.setSize (width, height);
+			renderer.localClippingEnabled = true;
+
+			let scene = new THREE.Scene ();
+
+			let ambientLight = new THREE.AmbientLight (0x888888);
+			scene.add (ambientLight);
+
+			let light = new THREE.DirectionalLight (0x888888);
+			light.position.set (5, 10, 3);
+			scene.add (light);
+
+			let camera = new THREE.PerspectiveCamera (45.0, width / height, 0.1, 1000.0);
+			camera.position.set (5, 10, 3);
+			camera.up.set (0.0, 0.0, 1.0);
+			camera.lookAt (new THREE.Vector3 (0.0, 0.0, 0.0));
+			scene.add (camera);
+
+			let meshes = new THREE.Object3D ();
+			let box1 = new THREE.BoxGeometry (4.0, 2.0, 1.0);
+            let box2 = new THREE.BoxGeometry (2.0, 2.0, 1.0);
+			let boxMaterial = new THREE.MeshPhongMaterial ({
+				color : 0xcc0000,
+				side : THREE.DoubleSide
+			});
+			let boxMesh1 = new THREE.Mesh (box1, boxMaterial);
+			let boxMesh2 = new THREE.Mesh (box2, boxMaterial);
+            boxMesh1.position.z = 4;
+            boxMesh2.position.x = 1;
+            boxMesh2.position.y = 1;
+            boxMesh2.position.z = 2;
+
+            boxMesh1.updateMatrixWorld (true);
+            boxMesh2.updateMatrixWorld (true);
+
+            //boxMesh1.rotation.y = Math.PI / 2.0;
+
+			meshes.add (boxMesh1);
+            meshes.add (boxMesh2);
+			scene.add (meshes);
+
+			new THREE.OrbitControls (camera, renderer.domElement);
+
+			let size = new THREE.Vector3 (100.0, 100.0, 100.0);
+			let position = new THREE.Vector3 (0.0, 0.0, -20.0);
+			let upVector = new THREE.Vector3 (0.0, 0.0, 1.0);
+
+            let axesHelper = new THREE.AxesHelper (5.0);
+            scene.add (axesHelper);
+
+			scene.background = new THREE.Color (0.8, 0.8, 0.8);
+
+            let shadow = new ThreeContactShadow (renderer, scene);
+			renderer.setAnimationLoop ((time) => {
+				// boxMesh1.rotation.x = time / 3000;
+				// boxMesh1.rotation.y = time / 3000;
+				// boxMesh1.rotation.z = time / 3000;
+                // boxMesh1.updateMatrixWorld (true);
+                // boxMesh2.updateMatrixWorld (true);
+                shadow.Render ();
+				renderer.render (scene, camera);
+			});
+		}
+
+		window.onload = function () {
+			Sandbox3D ();
+		};
+	</script>
+</head>
+
+<body>
+	<canvas id="canvas"></canvas>
+</body>
+
+</html>
