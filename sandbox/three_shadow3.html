@@ -24,9 +24,11 @@
             {
                 let size = new THREE.Vector2 (10.0, 5.0);
 
-				this.shadowCamera = new THREE.OrthographicCamera (-size.x / 2.0, size.x / 2.0, size.y / 2.0, -size.y / 2.0, 0.0, 10.0);
-                this.shadowCamera.position.z = -5;
-                this.shadowCamera.scale.z *= -1;
+				this.shadowCamera = new THREE.OrthographicCamera (-size.x / 2.0, size.x / 2.0, size.y / 2.0, -size.y / 2.0, 0.0, 8.0);
+                //this.shadowCamera.scale.z *= -1;
+				//this.shadowCamera.position.z = 6;
+				this.shadowCamera.rotation.y = Math.PI;
+				//this.shadowCamera.rotation.z = Math.PI;
                 shadowGroup.add (this.shadowCamera);
 
 				this.shadowRenderTarget = new THREE.WebGLRenderTarget (1024, 1024);
@@ -56,6 +58,7 @@
                 };
 
 				this.shadowPlaneMesh = new THREE.Mesh (planeGeometry, planeMaterial);
+				this.shadowPlaneMesh.scale.x *= -1.0;
                 shadowGroup.add (this.shadowPlaneMesh);
             }
 
@@ -132,10 +135,12 @@
 			});
 			let boxMesh1 = new THREE.Mesh (box1, boxMaterial);
 			let boxMesh2 = new THREE.Mesh (box2, boxMaterial);
-            boxMesh1.position.z = 4;
+
+			boxMesh1.position.z = 3;
+
             boxMesh2.position.x = 1;
             boxMesh2.position.y = 1;
-            boxMesh2.position.z = 2;
+            boxMesh2.position.z = 1;
 
             boxMesh1.updateMatrixWorld (true);
             boxMesh2.updateMatrixWorld (true);
