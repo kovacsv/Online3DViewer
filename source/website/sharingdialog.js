@@ -95,7 +95,7 @@ export function ShowSharingDialog (fileList, settings, viewer)
             HandleEvent ('model_shared', 'embedding_code');
             return GetEmbeddingCode (modelFiles, useCurrentSettings, settings, viewer);
         });
-        AddCheckboxLine (optionsSection, Loc ('Use customized settings', 'embed_current_settings'), (checked) => {
+        AddCheckboxLine (optionsSection, Loc ('Use customized settings'), 'embed_current_settings', (checked) => {
             useCurrentSettings = checked;
             embeddingCodeInput.value = GetEmbeddingCode (modelFiles, useCurrentSettings, settings, viewer);
         });
