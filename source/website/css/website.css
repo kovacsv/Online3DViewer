@@ -130,6 +130,18 @@ div.intro div.intro_file_formats a:hover
 	background: var(--ov_outline_button_hover_color);
 }
 
+div.noembed
+{
+	text-align: center;
+	padding: 10px;
+}
+
+div.noembed a
+{
+	padding: 10px 0px;
+	display: block;
+}
+
 div.main
 {
 	overflow: hidden;
