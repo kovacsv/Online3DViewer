@@ -1,4 +1,5 @@
 import { ArrayBufferToUtf8String, Utf8StringToArrayBuffer } from '../io/bufferutils.js';
+import { Loc } from '../core/localization.js';
 
 export class ExportedFile
 {
@@ -68,12 +69,12 @@ export class ExporterBase
 
 	GetExportedMaterialName (originalName)
 	{
-		return this.GetExportedName (originalName, 'Material');
+		return this.GetExportedName (originalName, Loc ('Material'));
 	}
 
 	GetExportedMeshName (originalName)
 	{
-		return this.GetExportedName (originalName, 'Mesh');
+		return this.GetExportedName (originalName, Loc ('Mesh'));
 	}
 
 	GetExportedName (originalName, defaultName)

@@ -7,6 +7,7 @@ import { ParameterConverter } from '../parameters/parameterlist.js';
 import { ThreeModelLoader } from '../threejs/threemodelloader.js';
 import { Viewer } from './viewer.js';
 import { EnvironmentSettings } from './shadingmodel.js';
+import { Loc } from '../core/localization.js';
 
 /**
  * This is the main object for embedding the viewer on a website.
@@ -124,7 +125,7 @@ export class EmbeddedViewer
             onLoadStart : () => {
                 this.canvas.style.display = 'none';
                 progressDiv = document.createElement ('div');
-                progressDiv.innerHTML = 'Loading model...';
+                progressDiv.innerHTML = Loc ('Loading model...');
                 this.parentElement.appendChild (progressDiv);
             },
             onFileListProgress : (current, total) => {
@@ -132,10 +133,10 @@ export class EmbeddedViewer
             onFileLoadProgress : (current, total) => {
             },
             onImportStart : () => {
-                progressDiv.innerHTML = 'Importing model...';
+                progressDiv.innerHTML = Loc ('Importing model...');
             },
             onVisualizationStart : () => {
-                progressDiv.innerHTML = 'Visualizing model...';
+                progressDiv.innerHTML = Loc ('Visualizing model...');
             },
             onModelFinished : (importResult, threeObject) => {
                 this.parentElement.removeChild (progressDiv);
@@ -161,13 +162,13 @@ export class EmbeddedViewer
                 this.viewer.Render ();
             },
             onLoadError : (importError) => {
-                let message = 'Unknown error.';
+                let message = Loc ('Unknown error.');
                 if (importError.code === ImportErrorCode.NoImportableFile) {
-                    message = 'No importable file found.';
+                    message = Loc ('No importable file found.');
                 } else if (importError.code === ImportErrorCode.FailedToLoadFile) {
-                    message = 'Failed to load file for import.';
+                    message = Loc ('Failed to load file for import.');
                 } else if (importError.code === ImportErrorCode.ImportFailed) {
-                    message = 'Failed to import model.';
+                    message = Loc ('Failed to import model.');
                 }
                 if (importError.message !== null) {
                     message += ' (' + importError.message + ')';

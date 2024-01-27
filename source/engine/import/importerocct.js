@@ -6,6 +6,7 @@ import { ConvertThreeGeometryToMesh } from '../threejs/threeutils.js';
 import { ImporterBase } from './importerbase.js';
 import { ColorToMaterialConverter } from './importerutils.js';
 import { Unit } from '../model/unit.js';
+import { Loc } from '../core/localization.js';
 
 export class ImporterOcct extends ImporterBase
 {
@@ -46,7 +47,7 @@ export class ImporterOcct extends ImporterBase
             this.ImportResultJson (ev.data, onFinish);
         });
         this.worker.addEventListener ('error', (ev) => {
-            this.SetError ('Failed to load occt-import-js.');
+            this.SetError (Loc ('Failed to load occt-import-js.'));
             onFinish ();
         });
 

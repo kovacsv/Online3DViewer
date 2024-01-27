@@ -1,5 +1,6 @@
 import { EscapeHtmlChars } from '../core/core.js';
 import { RGBColorToHexString } from './color.js';
+import { Loc } from '../core/localization.js';
 
 export const PropertyType =
 {
@@ -76,7 +77,7 @@ export function PropertyToString (property)
             maximumFractionDigits: 2
         });
     } else if (property.type === PropertyType.Boolean) {
-        return property.value ? 'True' : 'False';
+        return property.value ? Loc ('True') : Loc ('False');
     } else if (property.type === PropertyType.Percent) {
         return parseInt (property.value * 100, 10).toString () + '%';
     } else if (property.type === PropertyType.Color) {

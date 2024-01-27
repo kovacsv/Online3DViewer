@@ -8,6 +8,7 @@ import { Mesh } from '../model/mesh.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
 import { ParametersFromLine, ReadLines, UpdateMaterialTransparency } from './importerutils.js';
+import { Loc, FLoc } from '../core/localization.js';
 
 const PlyHeaderCheckResult =
 {
@@ -113,11 +114,12 @@ class PlyMaterialHandler
 
     GetMaterialIndexByColor (color)
     {
-        let materialName = 'Color ' +
-            IntegerToHexString (color[0]) +
-            IntegerToHexString (color[1]) +
-            IntegerToHexString (color[2]) +
-            IntegerToHexString (color[3]);
+        let materialName = FLoc ('Color {0}{1}{2}{3}',
+            IntegerToHexString (color[0]),
+            IntegerToHexString (color[1]),
+            IntegerToHexString (color[2]),
+            IntegerToHexString (color[3])
+        );
 
         if (this.colorToMaterial.has (materialName)) {
             return this.colorToMaterial.get (materialName);
@@ -177,11 +179,11 @@ export class ImporterPly extends ImporterBase
             }
         } else {
             if (checkResult === PlyHeaderCheckResult.NoVertices) {
-                this.SetError ('The model contains no vertices.');
+                this.SetError (Loc ('The model contains no vertices.'));
             } else if (checkResult === PlyHeaderCheckResult.NoFaces) {
-                this.SetError ('The model contains no faces.');
+                this.SetError (Loc ('The model contains no faces.'));
             } else {
-                this.SetError ('Invalid header information.');
+                this.SetError (Loc ('Invalid header information.'));
             }
         }
         onFinish ();

@@ -8,6 +8,7 @@ import { Node } from '../model/node.js';
 import { ColorToMaterialConverter } from './importerutils.js';
 import { RGBAColor } from '../model/color.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
+import { Loc } from '../core/localization.js';
 
 import * as fflate from 'fflate';
 
@@ -105,7 +106,7 @@ class FreeCadDocument
             return false;
         }
 
-        this.properties = new PropertyGroup ('Properties');
+        this.properties = new PropertyGroup (Loc ('Properties'));
         let documentElements = documentXml.getElementsByTagName ('Document');
         for (let documentElement of documentElements) {
             for (let childNode of documentElement.childNodes) {
@@ -140,7 +141,7 @@ class FreeCadDocument
                 }
 
                 let object = this.objectData.get (name);
-                object.properties = new PropertyGroup ('Properties');
+                object.properties = new PropertyGroup (Loc ('Properties'));
                 for (let childNode of objectElement.childNodes) {
                     if (childNode.tagName === 'Properties') {
                         this.GetPropertiesFromElement (childNode, object.properties);
@@ -322,7 +323,7 @@ export class ImporterFcstd extends ImporterBase
     {
         let result = this.document.Init (fileContent);
         if (result === DocumentInitResult.NoDocumentXml) {
-            this.SetError ('No Document.xml found.');
+            this.SetError (Loc ('No Document.xml found.'));
             onFinish ();
             return;
         }
@@ -333,7 +334,7 @@ export class ImporterFcstd extends ImporterBase
 
         let objectsToConvert = this.document.GetObjectListToConvert ();
         if (objectsToConvert.length === 0) {
-            this.SetError ('No importable object found.');
+            this.SetError (Loc ('No importable object found.'));
             onFinish ();
             return;
         }

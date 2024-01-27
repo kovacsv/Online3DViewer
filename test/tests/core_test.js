@@ -67,6 +67,36 @@ describe ('Core', function () {
         assert.ok (!en.HasEventListener ('third_event'));
         assert.strictEqual (sumValues, 90);
     });
+
+    it ('Localization', function () {
+        assert.strictEqual (OV.Loc ('Test'), 'Test');
+        assert.strictEqual (OV.FLoc ('Test {0}', '1'), 'Test 1');
+        OV.SetLocalizedStrings ({
+            'Test' : {
+                'hu': 'Teszt'
+            },
+            'Test {0}' :  {
+                'hu': 'Teszt {0}'
+            },
+            'Test {0} {0}' :  {
+                'hu': 'Teszt {0} {0}'
+            },
+            'Test {0} {0} {1}' :  {
+                'hu': 'Teszt {0} {0} {1}'
+            }
+        });
+        OV.SetLanguageCode ('not_existing');
+        assert.strictEqual (OV.Loc ('Test'), 'Test');
+
+        OV.SetLanguageCode ('hu');
+        assert.strictEqual (OV.Loc ('Test'), 'Teszt');
+        assert.strictEqual (OV.FLoc ('Test {0}', 'a'), 'Teszt a');
+        assert.strictEqual (OV.FLoc ('Test {0} {0}', 'a'), 'Teszt a a');
+        assert.strictEqual (OV.FLoc ('Test {0} {0} {1}', 'a', 'b'), 'Teszt a a b');
+
+        OV.SetLocalizedStrings (null);
+        OV.SetLanguageCode (null);
+    });
 });
 
 }

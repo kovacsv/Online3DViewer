@@ -1,5 +1,6 @@
-import { IsDefined, ValueOrDefault, CopyObjectAttributes, IsObjectEmpty, EscapeHtmlChars } from './core/core.js';
+import { IsDefined, ValueOrDefault, CopyObjectAttributes, IsObjectEmpty, FormatString, EscapeHtmlChars } from './core/core.js';
 import { EventNotifier } from './core/eventnotifier.js';
+import { SetLocalizedStrings, SetLanguageCode, Loc, FLoc } from './core/localization.js';
 import { TaskRunner, RunTaskAsync, RunTasks, RunTasksBatch, WaitWhile } from './core/taskrunner.js';
 import { Exporter } from './export/exporter.js';
 import { Exporter3dm } from './export/exporter3dm.js';
@@ -80,8 +81,13 @@ export {
     ValueOrDefault,
     CopyObjectAttributes,
     IsObjectEmpty,
+    FormatString,
     EscapeHtmlChars,
     EventNotifier,
+    SetLocalizedStrings,
+    SetLanguageCode,
+    Loc,
+    FLoc,
     TaskRunner,
     RunTaskAsync,
     RunTasks,

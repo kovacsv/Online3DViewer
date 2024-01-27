@@ -12,6 +12,7 @@ import { Transformation } from '../geometry/transformation.js';
 import { ColorToMaterialConverter } from './importerutils.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { Unit } from '../model/unit.js';
+import { Loc } from '../core/localization.js';
 
 export class ImporterBim extends ImporterBase
 {
@@ -51,7 +52,7 @@ export class ImporterBim extends ImporterBase
         try {
             bimJson = JSON.parse (textContent);
         } catch (err) {
-            this.SetError ('Failed to parse bim file.');
+            this.SetError (Loc ('Failed to parse bim file.'));
             onFinish ();
             return;
         }
@@ -170,9 +171,9 @@ export class ImporterBim extends ImporterBase
         }
 
         let info = source.info;
-        let propertyGroup = new PropertyGroup ('Info');
-        AddProperty (propertyGroup, 'Guid', source.guid);
-        AddProperty (propertyGroup, 'Type', source.type);
+        let propertyGroup = new PropertyGroup (Loc ('Info'));
+        AddProperty (propertyGroup, Loc ('Guid'), source.guid);
+        AddProperty (propertyGroup, Loc ('Type'), source.type);
         for (let propertyName in info) {
             if (Object.prototype.hasOwnProperty.call (info, propertyName)) {
                 if (typeof info[propertyName] === 'string') {
