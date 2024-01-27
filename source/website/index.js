@@ -5,6 +5,7 @@ import { SetEventHandler, HandleEvent } from './eventhandler.js';
 import { PluginType, RegisterPlugin } from './pluginregistry.js';
 import { ButtonDialog, ProgressDialog } from './dialog.js';
 import { ShowMessageDialog } from './dialogs.js';
+import { Loc } from '../engine/core/localization.js';
 
 import * as Engine from '../engine/main.js';
 export { Engine };
@@ -25,7 +26,8 @@ export const UI = {
     ButtonDialog,
     ProgressDialog,
     ShowMessageDialog,
-    HandleEvent
+    HandleEvent,
+    Loc
 };
 
 export function SetWebsiteEventHandler (eventHandler)
@@ -46,8 +48,12 @@ export function RegisterToolbarPlugin (plugin)
 export function StartWebsite (externalLibLocation)
 {
     SetExternalLibLocation (externalLibLocation);
+
     window.addEventListener ('load', () => {
-    let website = new Website ({
+        document.getElementById ('intro_dragdrop_text').innerHTML = Loc ('Drag and drop 3D models here.');
+        document.getElementById ('intro_formats_title').innerHTML = Loc ('Check an example file:');
+
+        let website = new Website ({
             headerDiv : document.getElementById ('header'),
             headerButtonsDiv : document.getElementById ('header_buttons'),
             toolbarDiv : document.getElementById ('toolbar'),
