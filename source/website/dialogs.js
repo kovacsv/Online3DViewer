@@ -1,12 +1,13 @@
 import { AddDiv } from '../engine/viewer/domutils.js';
 import { ButtonDialog, ListPopup } from './dialog.js';
+import { Loc } from '../engine/core/localization.js';
 
 export function ShowMessageDialog (title, message, subMessage)
 {
     let dialog = new ButtonDialog ();
     let contentDiv = dialog.Init (title, [
         {
-            name : 'OK',
+            name : Loc ('OK'),
             onClick () {
                 dialog.Close ();
             }

@@ -1,6 +1,7 @@
 import { BigEps, IsEqualEps, RadDeg } from '../engine/geometry/geometry.js';
 import { AddDiv, ClearDomElement } from '../engine/viewer/domutils.js';
 import { AddSvgIconElement, IsDarkTextNeededForColor } from './utils.js';
+import { Loc } from '../engine/core/localization.js';
 
 import * as THREE from 'three';
 import { ColorComponentToFloat, RGBColor } from '../engine/model/color.js';
@@ -231,9 +232,9 @@ export class MeasureTool
             this.panel.style.backgroundColor = 'transparent';
         }
         if (this.markers.length === 0) {
-            this.panel.innerHTML = 'Select a point.';
+            this.panel.innerHTML = Loc ('Select a point.');
         } else if (this.markers.length === 1) {
-            this.panel.innerHTML = 'Select another point.';
+            this.panel.innerHTML = Loc ('Select another point.');
         } else {
             let calcResult = CalculateMarkerValues (this.markers[0], this.markers[1]);
 

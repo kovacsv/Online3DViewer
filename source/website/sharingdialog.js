@@ -6,6 +6,7 @@ import { ShowMessageDialog } from './dialogs.js';
 import { ButtonDialog } from './dialog.js';
 import { CopyToClipboard } from './utils.js';
 import { HandleEvent } from './eventhandler.js';
+import { Loc } from '../engine/core/localization.js';
 
 export function ShowSharingDialog (fileList, settings, viewer)
 {
@@ -19,8 +20,8 @@ export function ShowSharingDialog (fileList, settings, viewer)
 
     function AddCopyableTextInput (parentDiv, getText)
     {
-        let copyText = 'Copy';
-        let copiedText = 'Copied';
+        let copyText = Loc ('Copy');
+        let copiedText = Loc ('Copied');
         let container = AddDiv (parentDiv, 'ov_dialog_copyable_input');
         let input = AddDomElement (container, 'input', null);
         input.setAttribute ('type', 'text');
@@ -47,7 +48,7 @@ export function ShowSharingDialog (fileList, settings, viewer)
         }
 
         let section = AddDiv (parentDiv, 'ov_dialog_section');
-        AddDiv (section, 'ov_dialog_inner_title', 'Sharing Link');
+        AddDiv (section, 'ov_dialog_inner_title', Loc ('Sharing Link'));
         let sharingLinkInput = AddCopyableTextInput (section, () => {
             HandleEvent ('model_shared', 'sharing_link');
             return GetSharingLink (modelFiles);
@@ -88,13 +89,13 @@ export function ShowSharingDialog (fileList, settings, viewer)
         let useCurrentSettings = true;
         let section = AddDiv (parentDiv, 'ov_dialog_section');
         section.style.marginTop = '20px';
-        AddDiv (section, 'ov_dialog_inner_title', 'Embedding Code');
+        AddDiv (section, 'ov_dialog_inner_title', Loc ('Embedding Code'));
         let optionsSection = AddDiv (section, 'ov_dialog_section');
         let embeddingCodeInput = AddCopyableTextInput (section, () => {
             HandleEvent ('model_shared', 'embedding_code');
             return GetEmbeddingCode (modelFiles, useCurrentSettings, settings, viewer);
         });
-        AddCheckboxLine (optionsSection, 'Use customized settings', 'embed_current_settings', (checked) => {
+        AddCheckboxLine (optionsSection, Loc ('Use customized settings', 'embed_current_settings'), (checked) => {
             useCurrentSettings = checked;
             embeddingCodeInput.value = GetEmbeddingCode (modelFiles, useCurrentSettings, settings, viewer);
         });
@@ -104,8 +105,8 @@ export function ShowSharingDialog (fileList, settings, viewer)
 
     if (!fileList.IsOnlyUrlSource ()) {
         return ShowMessageDialog (
-            'Sharing Failed',
-            'Sharing works only if you load files by url. Please upload your model files to a web server, open them by url, and try embedding again.',
+            Loc ('Sharing Failed'),
+            Loc ('Sharing works only if you load files by url. Please upload your model files to a web server, open them by url, and try embedding again.'),
             null
         );
     }
@@ -120,9 +121,9 @@ export function ShowSharingDialog (fileList, settings, viewer)
     }
 
     let dialog = new ButtonDialog ();
-    let contentDiv = dialog.Init ('Share', [
+    let contentDiv = dialog.Init (Loc ('Share'), [
         {
-            name : 'Close',
+            name : Loc ('Close'),
             onClick () {
                 dialog.Close ();
             }

@@ -11,6 +11,7 @@ import { ShowMessageDialog } from './dialogs.js';
 import { DownloadArrayBufferAsFile } from './utils.js';
 import { CookieGetStringVal, CookieSetStringVal } from './cookiehandler.js';
 import { HandleEvent } from './eventhandler.js';
+import { Loc } from '../engine/core/localization.js';
 
 import * as fflate from 'fflate';
 
@@ -53,8 +54,8 @@ class ModelExporterUI
             return AddSelectWithCookieSave (parameterValueDiv, cookieKey, values, defaultIndex);
         }
 
-        this.visibleOnlySelect = AddSelectItem (parametersDiv, 'Scope', 'ov_last_scope', ['Entire Model', 'Visible Only'], 1);
-        this.rotationSelect = AddSelectItem (parametersDiv, 'Rotation', 'ov_last_rotation', ['No Rotation', '-90 Degrees', '90 Degrees'], 0);
+        this.visibleOnlySelect = AddSelectItem (parametersDiv, Loc ('Scope'), 'ov_last_scope', [Loc ('Entire Model'), Loc ('Visible Only')], 1);
+        this.rotationSelect = AddSelectItem (parametersDiv, Loc ('Rotation'), 'ov_last_rotation', [Loc ('No Rotation'), Loc ('-90 Degrees'), Loc ('90 Degrees')], 0);
     }
 
     ExportModel (model, callbacks)
@@ -77,15 +78,15 @@ class ModelExporterUI
         let exporterModel = new ExporterModel (model, settings);
         if (exporterModel.MeshInstanceCount () === 0) {
             ShowMessageDialog (
-                'Export Failed',
-                'The model doesn\'t contain any meshes.',
+                Loc ('Export Failed'),
+                Loc ('The model doesn\'t contain any meshes.'),
                 null
             );
             return;
         }
 
         let progressDialog = new ProgressDialog ();
-        progressDialog.Init ('Exporting Model');
+        progressDialog.Init (Loc ('Exporting Model'));
         progressDialog.Open ();
 
         RunTaskAsync (() => {
@@ -142,16 +143,16 @@ class ExportDialog
     Open (model, viewer)
     {
         let mainDialog = new ButtonDialog ();
-        let contentDiv = mainDialog.Init ('Export', [
+        let contentDiv = mainDialog.Init (Loc ('Export'), [
             {
-                name : 'Close',
+                name : Loc ('Close'),
                 subClass : 'outline',
                 onClick () {
                     mainDialog.Close ();
                 }
             },
             {
-                name : 'Export',
+                name : Loc ('Export'),
                 onClick : () => {
                     mainDialog.Close ();
                     this.ExportFormat (model, viewer);
@@ -159,7 +160,7 @@ class ExportDialog
             }
         ]);
 
-        let text = 'Select the format from the list below, and adjust the settings of the selected format.';
+        let text = Loc ('Select the format from the list below, and adjust the settings of the selected format.');
         AddDiv (contentDiv, 'ov_dialog_section', text);
 
         let formatRow = AddDiv (contentDiv, 'ov_dialog_row');

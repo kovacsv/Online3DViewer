@@ -4,6 +4,7 @@ import { CalculatePopupPositionToElementBottomRight, ShowListPopup } from './dia
 import { MeshItem, NavigatorItemRecurse, NodeItem } from './navigatoritems.js';
 import { NavigatorPanel, NavigatorPopupButton } from './navigatorpanel.js';
 import { AddSvgIconElement, GetMaterialName, GetMeshName, GetNodeName, SetSvgIconImageElement } from './utils.js';
+import { Loc, FLoc } from '../engine/core/localization.js';
 
 const MeshesPanelMode =
 {
@@ -27,7 +28,7 @@ class NavigatorMaterialsPopupButton extends NavigatorPopupButton
             return;
         }
 
-        let materialsText = 'Materials (' + this.materialInfoArray.length + ')';
+        let materialsText = FLoc ('Materials ({0})', this.materialInfoArray.length);
         this.buttonText.innerHTML = materialsText;
     }
 
@@ -86,7 +87,7 @@ export class NavigatorMeshesPanel extends NavigatorPanel
 
     GetName ()
     {
-        return 'Meshes';
+        return Loc ('Meshes');
     }
 
     GetIcon ()
@@ -228,38 +229,38 @@ export class NavigatorMeshesPanel extends NavigatorPanel
 
         this.buttons = {
             flatList : {
-                name : 'Flat list',
+                name : Loc ('Flat list'),
                 icon : 'flat_list',
                 div : null,
                 iconDiv : null
             },
             treeView : {
-                name : 'Tree view',
+                name : Loc ('Tree view'),
                 icon : 'tree_view',
                 div : null,
                 iconDiv : null
             },
             separator : null,
             expandAll : {
-                name : 'Expand all',
+                name : Loc ('Expand all'),
                 icon : 'expand',
                 div : null,
                 iconDiv : null
             },
             collapseAll : {
-                name : 'Collapse all',
+                name : Loc ('Collapse all'),
                 icon : 'collapse',
                 div : null,
                 iconDiv : null
             },
             showHideMeshes : {
-                name : 'Show/hide meshes',
+                name : Loc ('Show/hide meshes'),
                 icon : 'visible',
                 div : null,
                 iconDiv : null
             },
             fitToWindow : {
-                name : 'Fit meshes to window',
+                name : Loc ('Fit meshes to window'),
                 icon : 'fit',
                 div : null,
                 iconDiv : null

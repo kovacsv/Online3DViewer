@@ -3,6 +3,7 @@ import { CalculatePopupPositionToElementBottomRight, ShowListPopup } from './dia
 import { MaterialItem } from './navigatoritems.js';
 import { NavigatorPanel, NavigatorPopupButton } from './navigatorpanel.js';
 import { GetMaterialName, GetMeshName } from './utils.js';
+import { Loc, FLoc } from '../engine/core/localization.js';
 
 class NavigatorMeshesPopupButton extends NavigatorPopupButton
 {
@@ -19,7 +20,7 @@ class NavigatorMeshesPopupButton extends NavigatorPopupButton
             return;
         }
 
-        let meshesText = 'Meshes (' + this.meshInstanceArray.length + ')';
+        let meshesText = FLoc ('Meshes ({0})', this.meshInstanceArray.length);
         this.buttonText.innerHTML = meshesText;
     }
 
@@ -74,7 +75,7 @@ export class NavigatorMaterialsPanel extends NavigatorPanel
 
     GetName ()
     {
-        return 'Materials';
+        return Loc ('Materials');
     }
 
     GetIcon ()

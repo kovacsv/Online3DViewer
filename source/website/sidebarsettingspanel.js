@@ -7,6 +7,7 @@ import { Settings } from './settings.js';
 import { SidebarPanel } from './sidebarpanel.js';
 import { ShadingType } from '../engine/threejs/threeutils.js';
 import { ProjectionMode } from '../engine/viewer/camera.js';
+import { Loc } from '../engine/core/localization.js';
 
 import * as Pickr from '@simonwep/pickr';
 import '@simonwep/pickr/dist/themes/monolith.min.css';
@@ -194,7 +195,7 @@ class SettingsModelDisplaySection extends SettingsSection
 {
     constructor (parentDiv, settings)
     {
-        super (parentDiv, 'Model Display', settings);
+        super (parentDiv, Loc ('Model Display'), settings);
 
         this.backgroundColorPicker = null;
 
@@ -219,7 +220,7 @@ class SettingsModelDisplaySection extends SettingsSection
 
         let backgroundColorDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
         let backgroundColorInput = AddDiv (backgroundColorDiv, 'ov_color_picker');
-        AddDiv (backgroundColorDiv, null, 'Background Color');
+        AddDiv (backgroundColorDiv, null, Loc ('Background Color'));
         let predefinedBackgroundColors = ['#ffffffff', '#e3e3e3ff', '#c9c9c9ff', '#898989ff', '#5f5f5fff', '#494949ff', '#383838ff', '#0f0f0fff'];
         let defaultBackgroundColor = '#' + RGBAColorToHexString (this.settings.backgroundColor);
         this.backgroundColorPicker = AddColorPicker (backgroundColorInput, true, defaultBackgroundColor, predefinedBackgroundColors, (r, g, b, a) => {
@@ -229,7 +230,7 @@ class SettingsModelDisplaySection extends SettingsSection
 
         this.environmentMapPhongDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
         this.environmentMapPhongInput = AddDiv (this.environmentMapPhongDiv, 'ov_sidebar_image_picker');
-        AddDiv (this.environmentMapPhongDiv, null, 'Background Image');
+        AddDiv (this.environmentMapPhongDiv, null, Loc ('Background Image'));
         this.environmentMapPhongInput.addEventListener ('click', () => {
             this.environmentMapPopup = new EnvironmentMapPopup ();
             this.environmentMapPopup.ShowPopup (this.environmentMapPhongInput, ShadingType.Phong, this.settings, {
@@ -245,7 +246,7 @@ class SettingsModelDisplaySection extends SettingsSection
 
         this.environmentMapPbrDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
         this.environmentMapPbrInput = AddDiv (this.environmentMapPbrDiv, 'ov_sidebar_image_picker');
-        AddDiv (this.environmentMapPbrDiv, null, 'Environment');
+        AddDiv (this.environmentMapPbrDiv, null, Loc ('Environment'));
         this.environmentMapPbrInput.addEventListener ('click', () => {
             this.environmentMapPopup = new EnvironmentMapPopup ();
             this.environmentMapPopup.ShowPopup (this.environmentMapPbrInput, ShadingType.Physical, this.settings, {
@@ -263,7 +264,7 @@ class SettingsModelDisplaySection extends SettingsSection
 
         let edgeParameterDiv = AddDiv (this.contentDiv, 'ov_sidebar_parameter');
         this.edgeDisplayToggle = AddToggle (edgeParameterDiv, 'ov_sidebar_parameter_toggle');
-        AddDiv (edgeParameterDiv, 'ov_sidebar_parameter_text', 'Show Edges');
+        AddDiv (edgeParameterDiv, 'ov_sidebar_parameter_text', Loc ('Show Edges'));
 
         this.edgeSettingsDiv = AddDiv (this.contentDiv, 'ov_sidebar_settings_padded');
         this.edgeDisplayToggle.OnChange (() => {
@@ -281,11 +282,11 @@ class SettingsModelDisplaySection extends SettingsSection
             this.settings.edgeSettings.edgeColor = new RGBColor (r, g, b);
             this.callbacks.onEdgeColorChange ();
         });
-        AddDiv (edgeColorRow, null, 'Edge Color');
+        AddDiv (edgeColorRow, null, Loc ('Edge Color'));
 
         let thresholdRow = AddDiv (this.edgeSettingsDiv, 'ov_sidebar_settings_row large');
         this.thresholdSlider = AddRangeSlider (thresholdRow, 0, 90);
-        this.thresholdSlider.setAttribute ('title', 'Edge Angle Threshold');
+        this.thresholdSlider.setAttribute ('title', Loc ('Edge Angle Threshold'));
         this.thresholdSliderValue = AddDomElement (thresholdRow, 'span', 'ov_slider_label');
         this.thresholdSlider.addEventListener ('input', () => {
             this.thresholdSliderValue.innerHTML = this.thresholdSlider.value;
@@ -375,7 +376,7 @@ class SettingsImportParametersSection extends SettingsSection
 {
     constructor (parentDiv, settings)
     {
-        super (parentDiv, 'Import Settings', settings);
+        super (parentDiv, Loc ('Import Settings'), settings);
         this.defaultColorPickerDiv = null;
         this.defaultLineColorPickerDiv = null;
         this.defaultColorPicker = null;
@@ -396,12 +397,12 @@ class SettingsImportParametersSection extends SettingsSection
 
         super.Init (callbacks);
         this.defaultColorPickerDiv = AddDiv (this.contentDiv);
-        this.defaultColorPicker = AddDefaultColorPicker (this.defaultColorPickerDiv, 'Default Color', this.settings.defaultColor, (r, g, b, a) => {
+        this.defaultColorPicker = AddDefaultColorPicker (this.defaultColorPickerDiv, Loc ('Default Color'), this.settings.defaultColor, (r, g, b, a) => {
             this.settings.defaultColor = new RGBColor (r, g, b);
             this.callbacks.onDefaultColorChanged ();
         });
         this.defaultLineColorPickerDiv = AddDiv (this.contentDiv);
-        this.defaultLineColorPicker = AddDefaultColorPicker (this.defaultLineColorPickerDiv, 'Default Line Color', this.settings.defaultLineColor, (r, g, b, a) => {
+        this.defaultLineColorPicker = AddDefaultColorPicker (this.defaultLineColorPickerDiv, Loc ('Default Line Color'), this.settings.defaultLineColor, (r, g, b, a) => {
             this.settings.defaultLineColor = new RGBColor (r, g, b);
             this.callbacks.onDefaultColorChanged ();
         });
@@ -465,7 +466,7 @@ export class SidebarSettingsPanel extends SidebarPanel
 
     GetName ()
     {
-        return 'Settings';
+        return Loc ('Settings');
     }
 
     HasTitle ()
