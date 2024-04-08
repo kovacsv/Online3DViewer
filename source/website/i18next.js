@@ -1,11 +1,14 @@
 import i18next from 'i18next';
 import { CookieGetStringVal } from './cookiehandler.js';
-
+import { HashHandler } from './hashhandler.js';
 import zhCN from './locale/zh-CN.json' assert { type: 'json' };
+
+const hashHandler = new HashHandler();
 
 const defaultLang =
   typeof navigator !== 'undefined'
-    ? CookieGetStringVal('ov_language', navigator.language)
+    ? hashHandler.GetLocaleFromHash() ||
+      CookieGetStringVal('ov_language', navigator.language)
     : '';
 
 i18next.init({

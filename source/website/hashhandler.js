@@ -84,6 +84,12 @@ export class HashHandler
         return parser.GetEdgeSettings ();
     }
 
+    GetLocaleFromHash ()
+    {
+        let parser = CreateUrlParser (this.GetHash ());
+        return parser.GetLocale ();
+    }
+
     GetHash ()
     {
         return window.location.hash.substring (1);
