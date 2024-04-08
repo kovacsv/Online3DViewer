@@ -58,6 +58,7 @@
 		"update_engine_exports": "run-python3 tools/update_engine_exports.py"
 	},
 	"devDependencies": {
+		"@rollup/plugin-json": "6.1.0",
 		"@types/node": "^20.1.0",
 		"esbuild": "^0.19.0",
 		"eslint": "^8.29.0",
