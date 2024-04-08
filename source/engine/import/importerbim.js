@@ -13,6 +13,8 @@ import { ColorToMaterialConverter } from './importerutils.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { Unit } from '../model/unit.js';
 
+import { t } from '../../website/i18next.js';
+
 export class ImporterBim extends ImporterBase
 {
     constructor ()
@@ -170,7 +172,7 @@ export class ImporterBim extends ImporterBase
         }
 
         let info = source.info;
-        let propertyGroup = new PropertyGroup ('Info');
+        let propertyGroup = new PropertyGroup (t('Info'));
         AddProperty (propertyGroup, 'Guid', source.guid);
         AddProperty (propertyGroup, 'Type', source.type);
         for (let propertyName in info) {

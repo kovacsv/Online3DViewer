@@ -28,6 +28,7 @@ import { CreateVerticalSplitter } from './splitter.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
 import { EnvironmentSettings } from '../engine/viewer/shadingmodel.js';
 import { IntersectionMode } from '../engine/viewer/viewermodel.js';
+import { t } from './i18next.js';
 
 const WebsiteUIState =
 {
@@ -338,7 +339,7 @@ export class Website
         let items = [];
         if (meshUserData === null) {
             items.push ({
-                name : 'Fit model to window',
+                name : t('Fit model to window'),
                 icon : 'fit',
                 onClick : () => {
                     this.FitModelToWindow (false);
@@ -346,7 +347,7 @@ export class Website
             });
             if (this.navigator.HasHiddenMesh ()) {
                 items.push ({
-                    name : 'Show all meshes',
+                    name : t('Show all meshes'),
                     icon : 'visible',
                     onClick : () => {
                         this.navigator.ShowAllMeshes (true);
@@ -355,14 +356,14 @@ export class Website
             }
         } else {
             items.push ({
-                name : 'Hide mesh',
+                name : t('Hide mesh'),
                 icon : 'hidden',
                 onClick : () => {
                     this.navigator.ToggleMeshVisibility (meshUserData.originalMeshInstance.id);
                 }
             });
             items.push ({
-                name : 'Fit mesh to window',
+                name : t('Fit mesh to window'),
                 icon : 'fit',
                 onClick : () => {
                     this.navigator.FitMeshToWindow (meshUserData.originalMeshInstance.id);
@@ -371,7 +372,7 @@ export class Website
             if (this.navigator.MeshItemCount () > 1) {
                 let isMeshIsolated = this.navigator.IsMeshIsolated (meshUserData.originalMeshInstance.id);
                 items.push ({
-                    name : isMeshIsolated ? 'Remove isolation' : 'Isolate mesh',
+                    name : t(isMeshIsolated ? 'Remove isolation' : 'Isolate mesh'),
                     icon : isMeshIsolated ? 'deisolate' : 'isolate',
                     onClick : () => {
                         if (isMeshIsolated) {
@@ -660,10 +661,10 @@ export class Website
         let navigationModeIndex = (this.cameraSettings.navigationMode === NavigationMode.FixedUpVector ? 0 : 1);
         let projectionModeIndex = (this.cameraSettings.projectionMode === ProjectionMode.Perspective ? 0 : 1);
 
-        AddButton (this.toolbar, 'open', 'Open from your device', [], () => {
+        AddButton (this.toolbar, 'open', t('Open from your device'), [], () => {
             this.OpenFileBrowserDialog ();
         });
-        AddButton (this.toolbar, 'open_url', 'Open from url', [], () => {
+        AddButton (this.toolbar, 'open_url', t('Open from url'), [], () => {
             ShowOpenUrlDialog ((urls) => {
                 if (urls.length > 0) {
                     this.hashHandler.SetModelFilesToHash (urls);
@@ -671,20 +672,20 @@ export class Website
             });
         });
         AddSeparator (this.toolbar, ['only_on_model']);
-        AddButton (this.toolbar, 'fit', 'Fit model to window', ['only_on_model'], () => {
+        AddButton (this.toolbar, 'fit', t('Fit model to window'), ['only_on_model'], () => {
             this.FitModelToWindow (false);
         });
-        AddButton (this.toolbar, 'up_y', 'Set Y axis as up vector', ['only_on_model'], () => {
+        AddButton (this.toolbar, 'up_y', t('Set Y axis as up vector'), ['only_on_model'], () => {
             this.viewer.SetUpVector (Direction.Y, true);
         });
-        AddButton (this.toolbar, 'up_z', 'Set Z axis as up vector', ['only_on_model'], () => {
+        AddButton (this.toolbar, 'up_z', t('Set Z axis as up vector'), ['only_on_model'], () => {
             this.viewer.SetUpVector (Direction.Z, true);
         });
-        AddButton (this.toolbar, 'flip', 'Flip up vector', ['only_on_model'], () => {
+        AddButton (this.toolbar, 'flip', t('Flip up vector'), ['only_on_model'], () => {
             this.viewer.FlipUpVector ();
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], ['Fixed up vector', 'Free orbit'], navigationModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
+        AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], [t('Fixed up vector'), t('Free orbit')], navigationModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
             if (buttonIndex === 0) {
                 this.cameraSettings.navigationMode = NavigationMode.FixedUpVector;
             } else if (buttonIndex === 1) {
@@ -694,7 +695,7 @@ export class Website
             this.viewer.SetNavigationMode (this.cameraSettings.navigationMode);
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddRadioButton (this.toolbar, ['camera_perspective', 'camera_orthographic'], ['Perspective camera', 'Orthographic camera'], projectionModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
+        AddRadioButton (this.toolbar, ['camera_perspective', 'camera_orthographic'], [t('Perspective camera'), t('Orthographic camera')], projectionModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
             if (buttonIndex === 0) {
                 this.cameraSettings.projectionMode = ProjectionMode.Perspective;
             } else if (buttonIndex === 1) {
@@ -705,30 +706,30 @@ export class Website
             this.sidebar.UpdateControlsVisibility ();
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        let measureToolButton = AddPushButton (this.toolbar, 'measure', 'Measure', ['only_full_width', 'only_on_model'], (isSelected) => {
-            HandleEvent ('measure_tool_activated', isSelected ? 'on' : 'off');
+        let measureToolButton = AddPushButton (this.toolbar, 'measure', t('Measure'), ['only_full_width', 'only_on_model'], (isSelected) => {
+            HandleEvent ('measure_tool_activated', isSelected ? t('on') : t('off'));
             this.navigator.SetSelection (null);
             this.measureTool.SetActive (isSelected);
         });
         this.measureTool.SetButton (measureToolButton);
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddButton (this.toolbar, 'download', 'Download', ['only_full_width', 'only_on_model'], () => {
+        AddButton (this.toolbar, 'download', t('Download'), ['only_full_width', 'only_on_model'], () => {
             HandleEvent ('model_downloaded', '');
             let importer = this.modelLoaderUI.GetImporter ();
             DownloadModel (importer);
         });
-        AddButton (this.toolbar, 'export', 'Export', ['only_full_width', 'only_on_model'], () => {
+        AddButton (this.toolbar, 'export', t('Export'), ['only_full_width', 'only_on_model'], () => {
             ShowExportDialog (this.model, this.viewer, {
                 isMeshVisible : (meshInstanceId) => {
                     return this.navigator.IsMeshVisible (meshInstanceId);
                 }
             });
         });
-        AddButton (this.toolbar, 'share', 'Share', ['only_full_width', 'only_on_model'], () => {
+        AddButton (this.toolbar, 'share', t('Share'), ['only_full_width', 'only_on_model'], () => {
             ShowSharingDialog (importer.GetFileList (), this.settings, this.viewer);
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddButton (this.toolbar, 'snapshot', 'Create snapshot', ['only_full_width', 'only_on_model'], () => {
+        AddButton (this.toolbar, 'snapshot', t('Create snapshot'), ['only_full_width', 'only_on_model'], () => {
             ShowSnapshotDialog (this.viewer);
         });
 
@@ -747,7 +748,7 @@ export class Website
         });
 
         let selectedTheme = (this.settings.themeId === Theme.Light ? 1 : 0);
-        AddRadioButton (this.toolbar, ['dark_mode', 'light_mode'], ['Dark mode', 'Light mode'], selectedTheme, ['align_right'], (buttonIndex) => {
+        AddRadioButton (this.toolbar, ['dark_mode', 'light_mode'], [t('Dark mode'), t('Light mode')], selectedTheme, ['align_right'], (buttonIndex) => {
             if (buttonIndex === 0) {
                 this.settings.themeId = Theme.Dark;
             } else if (buttonIndex === 1) {
@@ -967,10 +968,11 @@ export class Website
             return;
         }
 
-        let text = 'This website uses cookies to offer you better user experience. See the details at the <a target="_blank" href="info/cookies.html">Cookies Policy</a> page.';
+        let link = t('<a target="_blank" href="info/cookies.html">{{text}}</a>', { text: t('Cookies Policy') });
+        let text = t('This website uses cookies to offer you better user experience. See the details at the {{- link }} page.', { link: link} );
         let popupDiv = AddDiv (document.body, 'ov_bottom_floating_panel');
         AddDiv (popupDiv, 'ov_floating_panel_text', text);
-        let acceptButton = AddDiv (popupDiv, 'ov_button ov_floating_panel_button', 'Accept');
+        let acceptButton = AddDiv (popupDiv, 'ov_button ov_floating_panel_button', t('Accept'));
         acceptButton.addEventListener ('click', () => {
             CookieSetBoolVal ('ov_cookie_consent', true);
             popupDiv.remove ();

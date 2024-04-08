@@ -5,6 +5,8 @@ import { MeshItem, NavigatorItemRecurse, NodeItem } from './navigatoritems.js';
 import { NavigatorPanel, NavigatorPopupButton } from './navigatorpanel.js';
 import { AddSvgIconElement, GetMaterialName, GetMeshName, GetNodeName, SetSvgIconImageElement } from './utils.js';
 
+import { t } from './i18next.js';
+
 const MeshesPanelMode =
 {
     Simple : 0,
@@ -86,7 +88,7 @@ export class NavigatorMeshesPanel extends NavigatorPanel
 
     GetName ()
     {
-        return 'Meshes';
+        return t('Meshes');
     }
 
     GetIcon ()
@@ -228,38 +230,38 @@ export class NavigatorMeshesPanel extends NavigatorPanel
 
         this.buttons = {
             flatList : {
-                name : 'Flat list',
+                name : t('Flat list'),
                 icon : 'flat_list',
                 div : null,
                 iconDiv : null
             },
             treeView : {
-                name : 'Tree view',
+                name : t('Tree view'),
                 icon : 'tree_view',
                 div : null,
                 iconDiv : null
             },
             separator : null,
             expandAll : {
-                name : 'Expand all',
+                name : t('Expand all'),
                 icon : 'expand',
                 div : null,
                 iconDiv : null
             },
             collapseAll : {
-                name : 'Collapse all',
+                name : t('Collapse all'),
                 icon : 'collapse',
                 div : null,
                 iconDiv : null
             },
             showHideMeshes : {
-                name : 'Show/hide meshes',
+                name : t('Show/hide meshes'),
                 icon : 'visible',
                 div : null,
                 iconDiv : null
             },
             fitToWindow : {
-                name : 'Fit meshes to window',
+                name : t('Fit meshes to window'),
                 icon : 'fit',
                 div : null,
                 iconDiv : null

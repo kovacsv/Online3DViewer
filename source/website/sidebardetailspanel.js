@@ -11,21 +11,23 @@ import { MaterialSource, MaterialType } from '../engine/model/material.js';
 import { RGBColorToHexString } from '../engine/model/color.js';
 import { Unit } from '../engine/model/unit.js';
 
+import { t } from './i18next.js';
+
 function UnitToString (unit)
 {
     switch (unit) {
         case Unit.Millimeter:
-            return 'Millimeter';
+            return t('Millimeter');
         case Unit.Centimeter:
-            return 'Centimeter';
+            return t('Centimeter');
         case Unit.Meter:
-            return 'Meter';
+            return t('Meter');
         case Unit.Inch:
-            return 'Inch';
+            return t('Inch');
         case Unit.Foot:
-            return 'Foot';
+            return t('Foot');
     }
-    return 'Unknown';
+    return t('Unknown');
 }
 
 export class SidebarDetailsPanel extends SidebarPanel
@@ -37,7 +39,7 @@ export class SidebarDetailsPanel extends SidebarPanel
 
     GetName ()
     {
-        return 'Details';
+        return t('Details');
     }
 
     GetIcon ()
@@ -52,29 +54,29 @@ export class SidebarDetailsPanel extends SidebarPanel
         let boundingBox = GetBoundingBox (object3D);
         let size = SubCoord3D (boundingBox.max, boundingBox.min);
         let unit = model.GetUnit ();
-        this.AddProperty (table, new Property (PropertyType.Integer, 'Vertices', object3D.VertexCount ()));
+        this.AddProperty (table, new Property (PropertyType.Integer, t('Vertices'), object3D.VertexCount ()));
         let lineSegmentCount = object3D.LineSegmentCount ();
         if (lineSegmentCount > 0) {
-            this.AddProperty (table, new Property (PropertyType.Integer, 'Lines', lineSegmentCount));
+            this.AddProperty (table, new Property (PropertyType.Integer, t('Lines'), lineSegmentCount));
         }
         let triangleCount = object3D.TriangleCount ();
         if (triangleCount > 0) {
-            this.AddProperty (table, new Property (PropertyType.Integer, 'Triangles', triangleCount));
+            this.AddProperty (table, new Property (PropertyType.Integer, t('Triangles'), triangleCount));
         }
         if (unit !== Unit.Unknown) {
-            this.AddProperty (table, new Property (PropertyType.Text, 'Unit', UnitToString (unit)));
+            this.AddProperty (table, new Property (PropertyType.Text, t('Unit'), UnitToString (unit)));
         }
-        this.AddProperty (table, new Property (PropertyType.Number, 'Size X', size.x));
-        this.AddProperty (table, new Property (PropertyType.Number, 'Size Y', size.y));
-        this.AddProperty (table, new Property (PropertyType.Number, 'Size Z', size.z));
-        this.AddCalculatedProperty (table, 'Volume', () => {
+        this.AddProperty (table, new Property (PropertyType.Number, t('Size X'), size.x));
+        this.AddProperty (table, new Property (PropertyType.Number, t('Size Y'), size.y));
+        this.AddProperty (table, new Property (PropertyType.Number, t('Size Z'), size.z));
+        this.AddCalculatedProperty (table, t('Volume'), () => {
             if (!IsTwoManifold (object3D)) {
                 return null;
             }
             const volume = CalculateVolume (object3D);
             return new Property (PropertyType.Number, null, volume);
         });
-        this.AddCalculatedProperty (table, 'Surface', () => {
+        this.AddCalculatedProperty (table, t('Surface'), () => {
             const surfaceArea = CalculateSurfaceArea (object3D);
             return new Property (PropertyType.Number, null, surfaceArea);
         });
@@ -111,31 +113,31 @@ export class SidebarDetailsPanel extends SidebarPanel
         } else if (material.type === MaterialType.Physical) {
             typeString = 'Physical';
         }
-        let materialSource = (material.source !== MaterialSource.Model) ? 'Default' : 'Model';
-        this.AddProperty (table, new Property (PropertyType.Text, 'Source', materialSource));
-        this.AddProperty (table, new Property (PropertyType.Text, 'Type', typeString));
+        let materialSource = (material.source !== MaterialSource.Model) ? t('Default') : t('Model');
+        this.AddProperty (table, new Property (PropertyType.Text, t('Source'), materialSource));
+        this.AddProperty (table, new Property (PropertyType.Text, t('Type'), typeString));
         if (material.vertexColors) {
-            this.AddProperty (table, new Property (PropertyType.Text, 'Color', 'Vertex colors'));
+            this.AddProperty (table, new Property (PropertyType.Text, t('Color'), 'Vertex colors'));
         } else {
-            this.AddProperty (table, new Property (PropertyType.Color, 'Color', material.color));
+            this.AddProperty (table, new Property (PropertyType.Color, t('Color'), material.color));
             if (material.type === MaterialType.Phong) {
-                this.AddProperty (table, new Property (PropertyType.Color, 'Ambient', material.ambient));
-                this.AddProperty (table, new Property (PropertyType.Color, 'Specular', material.specular));
+                this.AddProperty (table, new Property (PropertyType.Color, t('Ambient'), material.ambient));
+                this.AddProperty (table, new Property (PropertyType.Color, t('Specular'), material.specular));
             }
         }
         if (material.type === MaterialType.Physical) {
-            this.AddProperty (table, new Property (PropertyType.Percent, 'Metalness', material.metalness));
-            this.AddProperty (table, new Property (PropertyType.Percent, 'Roughness', material.roughness));
+            this.AddProperty (table, new Property (PropertyType.Percent, t('Metalness'), material.metalness));
+            this.AddProperty (table, new Property (PropertyType.Percent, t('Roughness'), material.roughness));
         }
-        this.AddProperty (table, new Property (PropertyType.Percent, 'Opacity', material.opacity));
-        AddTextureMap (this, table, 'Diffuse Map', material.diffuseMap);
-        AddTextureMap (this, table, 'Bump Map', material.bumpMap);
-        AddTextureMap (this, table, 'Normal Map', material.normalMap);
-        AddTextureMap (this, table, 'Emissive Map', material.emissiveMap);
+        this.AddProperty (table, new Property (PropertyType.Percent, t('Opacity'), material.opacity));
+        AddTextureMap (this, table, t('Diffuse Map'), material.diffuseMap);
+        AddTextureMap (this, table, t('Bump Map'), material.bumpMap);
+        AddTextureMap (this, table, t('Normal Map'), material.normalMap);
+        AddTextureMap (this, table, t('Emissive Map'), material.emissiveMap);
         if (material.type === MaterialType.Phong) {
-            AddTextureMap (this, table, 'Specular Map', material.specularMap);
+            AddTextureMap (this, table, t('Specular Map'), material.specularMap);
         } else if (material.type === MaterialType.Physical) {
-            AddTextureMap (this, table, 'Metallic Map', material.metalnessMap);
+            AddTextureMap (this, table, t('Metallic Map'), material.metalnessMap);
         }
         this.Resize ();
     }
@@ -169,10 +171,10 @@ export class SidebarDetailsPanel extends SidebarPanel
         let valueColumn = AddDiv (row, 'ov_property_table_cell ov_property_table_value');
         nameColumn.setAttribute ('title', name);
 
-        let calculateButton = AddDiv (valueColumn, 'ov_property_table_button', 'Calculate...');
+        let calculateButton = AddDiv (valueColumn, 'ov_property_table_button', t('Calculate') + '...');
         calculateButton.addEventListener ('click', () => {
             ClearDomElement (valueColumn);
-            valueColumn.innerHTML = 'Please wait...';
+            valueColumn.innerHTML = t('Please wait...');
             RunTaskAsync (() => {
                 let propertyValue = calculateValue ();
                 if (propertyValue === null) {

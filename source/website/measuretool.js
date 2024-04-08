@@ -6,6 +6,8 @@ import * as THREE from 'three';
 import { ColorComponentToFloat, RGBColor } from '../engine/model/color.js';
 import { IntersectionMode } from '../engine/viewer/viewermodel.js';
 
+import { t } from './i18next.js';
+
 function GetFaceWorldNormal (intersection)
 {
     let normalMatrix = new THREE.Matrix4 ();
@@ -231,21 +233,21 @@ export class MeasureTool
             this.panel.style.backgroundColor = 'transparent';
         }
         if (this.markers.length === 0) {
-            this.panel.innerHTML = 'Select a point.';
+            this.panel.innerHTML = t('Select a point.');
         } else if (this.markers.length === 1) {
-            this.panel.innerHTML = 'Select another point.';
+            this.panel.innerHTML = t('Select another point.');
         } else {
             let calcResult = CalculateMarkerValues (this.markers[0], this.markers[1]);
 
             if (calcResult.pointsDistance !== null) {
-                AddValue (this.panel, 'measure_distance', 'Distance of points', calcResult.pointsDistance.toFixed (3));
+                AddValue (this.panel, 'measure_distance', t('Distance of points'), calcResult.pointsDistance.toFixed (3));
             }
             if (calcResult.parallelFacesDistance !== null) {
-                AddValue (this.panel, 'measure_distance_parallel', 'Distance of parallel faces', calcResult.parallelFacesDistance.toFixed (3));
+                AddValue (this.panel, 'measure_distance_parallel', t('Distance of parallel faces'), calcResult.parallelFacesDistance.toFixed (3));
             }
             if (calcResult.facesAngle !== null) {
                 let degreeValue = calcResult.facesAngle * RadDeg;
-                AddValue (this.panel, 'measure_angle', 'Angle of faces', degreeValue.toFixed (1) + '\xB0');
+                AddValue (this.panel, 'measure_angle', t('Angle of faces'), degreeValue.toFixed (1) + '\xB0');
             }
         }
         this.Resize ();

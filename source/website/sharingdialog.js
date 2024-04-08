@@ -7,6 +7,8 @@ import { ButtonDialog } from './dialog.js';
 import { CopyToClipboard } from './utils.js';
 import { HandleEvent } from './eventhandler.js';
 
+import { t } from './i18next.js';
+
 export function ShowSharingDialog (fileList, settings, viewer)
 {
     function AddCheckboxLine (parentDiv, text, id, onChange)
@@ -19,8 +21,8 @@ export function ShowSharingDialog (fileList, settings, viewer)
 
     function AddCopyableTextInput (parentDiv, getText)
     {
-        let copyText = 'Copy';
-        let copiedText = 'Copied';
+        let copyText = t('Copy');
+        let copiedText = t('Copied');
         let container = AddDiv (parentDiv, 'ov_dialog_copyable_input');
         let input = AddDomElement (container, 'input', null);
         input.setAttribute ('type', 'text');
@@ -47,7 +49,7 @@ export function ShowSharingDialog (fileList, settings, viewer)
         }
 
         let section = AddDiv (parentDiv, 'ov_dialog_section');
-        AddDiv (section, 'ov_dialog_inner_title', 'Sharing Link');
+        AddDiv (section, 'ov_dialog_inner_title', t('Sharing Link'));
         let sharingLinkInput = AddCopyableTextInput (section, () => {
             HandleEvent ('model_shared', 'sharing_link');
             return GetSharingLink (modelFiles);
@@ -88,13 +90,13 @@ export function ShowSharingDialog (fileList, settings, viewer)
         let useCurrentSettings = true;
         let section = AddDiv (parentDiv, 'ov_dialog_section');
         section.style.marginTop = '20px';
-        AddDiv (section, 'ov_dialog_inner_title', 'Embedding Code');
+        AddDiv (section, 'ov_dialog_inner_title', t('Embedding Code'));
         let optionsSection = AddDiv (section, 'ov_dialog_section');
         let embeddingCodeInput = AddCopyableTextInput (section, () => {
             HandleEvent ('model_shared', 'embedding_code');
             return GetEmbeddingCode (modelFiles, useCurrentSettings, settings, viewer);
         });
-        AddCheckboxLine (optionsSection, 'Use customized settings', 'embed_current_settings', (checked) => {
+        AddCheckboxLine (optionsSection, t('Use customized settings'), 'embed_current_settings', (checked) => {
             useCurrentSettings = checked;
             embeddingCodeInput.value = GetEmbeddingCode (modelFiles, useCurrentSettings, settings, viewer);
         });
@@ -120,9 +122,9 @@ export function ShowSharingDialog (fileList, settings, viewer)
     }
 
     let dialog = new ButtonDialog ();
-    let contentDiv = dialog.Init ('Share', [
+    let contentDiv = dialog.Init (t('Share'), [
         {
-            name : 'Close',
+            name : t('Close'),
             onClick () {
                 dialog.Close ();
             }

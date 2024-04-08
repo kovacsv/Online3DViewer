@@ -16,6 +16,8 @@ import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
 
+import { t } from '../../website/i18next.js';
+
 const GltfComponentType =
 {
     BYTE : 5120,
@@ -641,7 +643,7 @@ export class ImporterGltf extends ImporterBase
             }
         }
 
-        this.ImportProperties (this.model, gltf.asset, 'Asset properties');
+        this.ImportProperties (this.model, gltf.asset, t('Asset properties'));
         this.ImportScene (gltf);
     }
 
@@ -809,7 +811,7 @@ export class ImporterGltf extends ImporterBase
             this.ImportPrimitive (gltf, primitive, mesh);
         }
 
-        this.ImportProperties (mesh, gltfMesh.extras, 'Mesh properties');
+        this.ImportProperties (mesh, gltfMesh.extras, t('Mesh properties'));
     }
 
     ImportPrimitive (gltf, primitive, mesh)
@@ -1006,7 +1008,7 @@ export class ImporterGltf extends ImporterBase
             this.ImportNode (gltf, gltfNode, rootNode);
         }
 
-        this.ImportProperties (this.model, scene.extras, 'Scene properties');
+        this.ImportProperties (this.model, scene.extras, t('Scene properties'));
     }
 
     ImportNode (gltf, gltfNode, parentNode)
@@ -1058,7 +1060,7 @@ export class ImporterGltf extends ImporterBase
 
         if (gltfNode.mesh !== undefined) {
             let mesh = this.model.GetMesh (gltfNode.mesh);
-            this.ImportProperties (mesh, gltfNode.extras, 'Node properties');
+            this.ImportProperties (mesh, gltfNode.extras, t('Node properties'));
             node.AddMeshIndex (gltfNode.mesh);
         }
     }
