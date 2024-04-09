@@ -1,12 +1,14 @@
 import { AddDiv } from '../engine/viewer/domutils.js';
 import { ButtonDialog, ListPopup } from './dialog.js';
 
+import { t } from './i18next.js';
+
 export function ShowMessageDialog (title, message, subMessage)
 {
     let dialog = new ButtonDialog ();
     let contentDiv = dialog.Init (title, [
         {
-            name : 'OK',
+            name : t('OK'),
             onClick () {
                 dialog.Close ();
             }

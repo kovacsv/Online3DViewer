@@ -58,6 +58,9 @@
 		"update_engine_exports": "run-python3 tools/update_engine_exports.py"
 	},
 	"devDependencies": {
+		"@babel/eslint-parser": "7.24.1",
+		"@babel/plugin-syntax-import-assertions": "7.24.1",
+		"@rollup/plugin-json": "6.1.0",
 		"@types/node": "^20.1.0",
 		"esbuild": "^0.19.0",
 		"eslint": "^8.29.0",
@@ -70,12 +73,13 @@
 		"rollup": "^4.0.2",
 		"run-python3": "^0.0.5",
 		"svgo": "^3.0.2",
-		"typescript": "^5.0.4"
+		"typescript": "5.4.4"
 	},
 	"dependencies": {
 		"@simonwep/pickr": "1.9.0",
 		"draco3d": "1.5.6",
 		"fflate": "0.8.1",
+		"i18next": "23.10.1",
 		"occt-import-js": "0.0.21",
 		"rhino3dm": "8.0.1",
 		"three": "0.158.0",
@@ -98,9 +102,16 @@
 			"WebIFC": "readonly",
 			"occtimportjs": "readonly"
 		},
+		"parser": "@babel/eslint-parser",
 		"parserOptions": {
 			"ecmaVersion": 12,
-			"sourceType": "module"
+			"sourceType": "module",
+			"requireConfigFile": false,
+			"babelOptions": {
+				"plugins": [
+					"@babel/plugin-syntax-import-assertions"
+				]
+			}
 		},
 		"plugins": [
 			"unused-imports"

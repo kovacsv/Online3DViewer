@@ -4,6 +4,8 @@ import { MaterialItem } from './navigatoritems.js';
 import { NavigatorPanel, NavigatorPopupButton } from './navigatorpanel.js';
 import { GetMaterialName, GetMeshName } from './utils.js';
 
+import {t} from './i18next.js';
+
 class NavigatorMeshesPopupButton extends NavigatorPopupButton
 {
     constructor (parentDiv)
@@ -19,7 +21,7 @@ class NavigatorMeshesPopupButton extends NavigatorPopupButton
             return;
         }
 
-        let meshesText = 'Meshes (' + this.meshInstanceArray.length + ')';
+        let meshesText = t('Meshes') +  ' (' + this.meshInstanceArray.length + ')';
         this.buttonText.innerHTML = meshesText;
     }
 
@@ -74,7 +76,7 @@ export class NavigatorMaterialsPanel extends NavigatorPanel
 
     GetName ()
     {
-        return 'Materials';
+        return t('Materials');
     }
 
     GetIcon ()

@@ -5,6 +5,8 @@ import { DownloadUrlAsFile } from './utils.js';
 import { CookieGetBoolVal, CookieGetIntVal, CookieGetStringVal, CookieSetBoolVal, CookieSetIntVal, CookieSetStringVal } from './cookiehandler.js';
 import { HandleEvent } from './eventhandler.js';
 
+import { t } from './i18next.js';
+
 export function ShowSnapshotDialog (viewer)
 {
     function AddSizeRadioButton (parentDiv, id, text, isSelected, onChange)
@@ -66,19 +68,19 @@ export function ShowSnapshotDialog (viewer)
     let customIndex = 3;
     let sizes = [
         {
-            name : 'Small (1280x720)',
+            name : t('Small') + ' (1280x720)',
             size : [1280, 720]
         },
         {
-            name : 'Medium (1920x1080)',
+            name : t('Medium') + ' (1920x1080)',
             size : [1920, 1080]
         },
         {
-            name : 'Large (2560x1440)',
+            name : t('Large') + ' (2560x1440)',
             size : [2560, 1440]
         },
         {
-            name : 'Custom',
+            name : t('Custom'),
             size : null,
             widthInput : null,
             heightInput : null
@@ -86,16 +88,16 @@ export function ShowSnapshotDialog (viewer)
     ];
 
     let dialog = new ButtonDialog ();
-    let contentDiv = dialog.Init ('Create Snapshot', [
+    let contentDiv = dialog.Init (t('Create Snapshot'), [
         {
-            name : 'Cancel',
+            name : t('Cancel'),
             subClass : 'outline',
             onClick () {
                 dialog.Close ();
             }
         },
         {
-            name : 'Create',
+            name : t('Create'),
             onClick () {
                 dialog.Close ();
                 HandleEvent ('snapshot_created', sizes[selectedIndex].name);
@@ -135,11 +137,11 @@ export function ShowSnapshotDialog (viewer)
         });
     }
 
-    customSize.widthInput = AddWidthHeightNumberInput (optionsDiv, 'Width', (val) => {
+    customSize.widthInput = AddWidthHeightNumberInput (optionsDiv, t('Width'), (val) => {
         UpdatePreview (viewer, previewImage, GetSize (sizes, selectedIndex), isTransparent);
         CookieSetIntVal ('ov_snapshot_custom_width', val);
     });
-    customSize.heightInput = AddWidthHeightNumberInput (optionsDiv, 'Height', (val) => {
+    customSize.heightInput = AddWidthHeightNumberInput (optionsDiv, t('Height'), (val) => {
         UpdatePreview (viewer, previewImage, GetSize (sizes, selectedIndex), isTransparent);
         CookieSetIntVal ('ov_snapshot_custom_height', val);
     });
@@ -149,7 +151,7 @@ export function ShowSnapshotDialog (viewer)
 
     AddDomElement (optionsDiv, 'div', 'ov_snapshot_dialog_separator', null);
 
-    let transparentCheckbox = AddCheckbox (optionsDiv, 'snapshot_transparent_background', 'Transparent background', isTransparent, () => {
+    let transparentCheckbox = AddCheckbox (optionsDiv, 'snapshot_transparent_background', t('Transparent background'), isTransparent, () => {
         isTransparent = transparentCheckbox.checked;
         UpdatePreview (viewer, previewImage, GetSize (sizes, selectedIndex), isTransparent);
         CookieSetBoolVal ('ov_last_snapshot_transparent', isTransparent);

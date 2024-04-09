@@ -362,6 +362,12 @@ export class ParameterListParser
         return ParameterConverter.StringToEdgeSettings (edgeSettingsParams);
     }
 
+    GetLocale ()
+    {
+        let localeParams = this.GetKeywordParams ('locale');
+        return localeParams;
+    }
+
     GetKeywordParams (keyword)
     {
         if (this.paramList === null || this.paramList.length === 0) {

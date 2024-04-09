@@ -1,3 +1,5 @@
+import json from '@rollup/plugin-json';
+
 export default [
     {
         input: 'source/engine/main.js',
@@ -15,6 +17,7 @@ export default [
             'three/examples/jsm/loaders/VRMLLoader.js',
             'three/examples/jsm/loaders/3MFLoader.js',
             'three/examples/jsm/loaders/AMFLoader.js'
-        ]
+        ],
+        plugins: [json()]
     }
 ];

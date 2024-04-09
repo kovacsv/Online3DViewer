@@ -5,6 +5,8 @@ import { ButtonDialog, ProgressDialog } from './dialog.js';
 import { AddSvgIconElement } from './utils.js';
 import { ImportErrorCode } from '../engine/import/importer.js';
 
+import { t } from './i18next.js';
+
 export class ThreeModelLoaderUI
 {
     constructor ()
@@ -40,10 +42,10 @@ export class ThreeModelLoaderUI
                 });
             },
             onImportStart : () => {
-                progressDialog.SetText ('Importing Model');
+                progressDialog.SetText (t('Importing Model'));
             },
             onVisualizationStart : () => {
-                progressDialog.SetText ('Visualizing Model');
+                progressDialog.SetText (t('Visualizing Model'));
             },
             onModelFinished : (importResult, threeObject) => {
                 progressDialog.Close ();
@@ -74,26 +76,26 @@ export class ThreeModelLoaderUI
     {
         if (importError.code === ImportErrorCode.NoImportableFile) {
             return ShowMessageDialog (
-                'Something went wrong',
-                'No importable file found.',
+                t('Something went wrong'),
+                t('No importable file found.'),
                 null
             );
         } else if (importError.code === ImportErrorCode.FailedToLoadFile) {
             return ShowMessageDialog (
-                'Something went wrong',
-                'Failed to load file for import.',
-                'The remote server refused to fulfill the request. Check if the url is correct, and make sure that CORS requests are allowed on the remote server.'
+                t('Something went wrong'),
+                t('Failed to load file for import.'),
+                t('The remote server refused to fulfill the request. Check if the url is correct, and make sure that CORS requests are allowed on the remote server.')
             );
         } else if (importError.code === ImportErrorCode.ImportFailed) {
             return ShowMessageDialog (
-                'Something went wrong',
-                'Failed to import model.',
+                t('Something went wrong'),
+                t( 'Failed to import model.'),
                 importError.message
             );
         } else {
             return ShowMessageDialog (
-                'Something went wrong',
-                'Unknown error.',
+                t('Something went wrong'),
+                t('Unknown error.'),
                 null
             );
         }
