@@ -80,7 +80,7 @@ class ModelExporterUI
         if (exporterModel.MeshInstanceCount () === 0) {
             ShowMessageDialog (
                 t('Export Failed'),
-                t('The model doesn\'t contain any meshes.'),
+                'The model doesn\'t contain any meshes.',
                 null
             );
             return;
