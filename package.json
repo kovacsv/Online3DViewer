@@ -59,7 +59,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "^20.1.0",
-		"esbuild": "^0.19.0",
+		"esbuild": "^0.20.0",
 		"eslint": "^8.29.0",
 		"eslint-plugin-unused-imports": "^3.0.0",
 		"fantasticon": "^1.2.2",
@@ -74,11 +74,11 @@
 	},
 	"dependencies": {
 		"@simonwep/pickr": "1.9.0",
-		"draco3d": "1.5.6",
-		"fflate": "0.8.1",
+		"draco3d": "1.5.7",
+		"fflate": "0.8.2",
 		"occt-import-js": "0.0.21",
 		"rhino3dm": "8.0.1",
-		"three": "0.158.0",
+		"three": "0.163.0",
 		"web-ifc": "0.0.44"
 	},
 	"eslintConfig": {
