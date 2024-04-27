@@ -5,19 +5,13 @@ import shutil
 webIfcConverter = 'esbuild {0} --bundle --format=iife --global-name=WebIFC --external:os --external:path --external:fs --external:perf_hooks --outfile={1}'
 
 fileMap = [
-    [os.path.join ('draco3d', 'draco_decoder_nodejs.js'), os.path.join ('loaders', 'draco_decoder.js'), None],
-    [os.path.join ('draco3d', 'draco_decoder.wasm'), os.path.join ('loaders', 'draco_decoder.wasm'), None],
+    [os.path.join ('web-ifc', 'web-ifc-api.js'), os.path.join ('web-ifc-api-browser.js'), webIfcConverter],
+    [os.path.join ('web-ifc', 'web-ifc.wasm'), os.path.join ('web-ifc.wasm'), None],
 
-    [os.path.join ('rhino3dm', 'rhino3dm.min.js'), os.path.join ('loaders', 'rhino3dm.min.js'), None],
-    [os.path.join ('rhino3dm', 'rhino3dm.wasm'), os.path.join ('loaders', 'rhino3dm.wasm'), None],
-
-    [os.path.join ('web-ifc', 'web-ifc-api.js'), os.path.join ('loaders', 'web-ifc-api-browser.js'), webIfcConverter],
-    [os.path.join ('web-ifc', 'web-ifc.wasm'), os.path.join ('loaders', 'web-ifc.wasm'), None],
-
-    [os.path.join ('occt-import-js', 'dist', 'occt-import-js.js'), os.path.join ('loaders', 'occt-import-js.js'), None],
-    [os.path.join ('occt-import-js', 'dist', 'occt-import-js-worker.js'), os.path.join ('loaders', 'occt-import-js-worker.js'), None],
-    [os.path.join ('occt-import-js', 'dist', 'occt-import-js.wasm'), os.path.join ('loaders', 'occt-import-js.wasm'), None],
-    [os.path.join ('occt-import-js', 'LICENSE.md'), os.path.join ('loaders', 'occt-import-js.license.md'), None]
+    [os.path.join ('occt-import-js', 'dist', 'occt-import-js.js'), os.path.join ('occt-import-js.js'), None],
+    [os.path.join ('occt-import-js', 'dist', 'occt-import-js-worker.js'), os.path.join ('occt-import-js-worker.js'), None],
+    [os.path.join ('occt-import-js', 'dist', 'occt-import-js.wasm'), os.path.join ('occt-import-js.wasm'), None],
+    [os.path.join ('occt-import-js', 'LICENSE.md'), os.path.join ('occt-import-js.license.md'), None]
 ]
 
 def PrintInfo (message):

@@ -13,9 +13,9 @@ import { ImporterOcct } from './importerocct.js';
 import { ImporterStl } from './importerstl.js';
 import { ImporterBim } from './importerbim.js';
 import { ImporterThreeAmf, ImporterThree3mf, ImporterThreeDae, ImporterThreeFbx, ImporterThreeWrl } from './importerthree.js';
+import { ImporterFcstd } from './importerfcstd.js';
 
 import * as fflate from 'fflate';
-import { ImporterFcstd } from './importerfcstd.js';
 
 export class ImportSettings
 {

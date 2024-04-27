@@ -41,7 +41,7 @@ export class ImporterOcct extends ImporterBase
 
     ImportContent (fileContent, onFinish)
     {
-        let workerPath = GetExternalLibPath ('loaders/occt-import-js-worker.js');
+        let workerPath = GetExternalLibPath ('occt-import-js-worker.js');
         this.worker = new Worker (workerPath);
         this.worker.addEventListener ('message', (ev) => {
             this.ImportResultJson (ev.data, onFinish);

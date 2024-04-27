@@ -1,7 +1,7 @@
 import { Direction } from '../geometry/geometry.js';
 import { Matrix } from '../geometry/matrix.js';
 import { Transformation } from '../geometry/transformation.js';
-import { LoadExternalLibrary } from '../io/externallibs.js';
+import { LoadExternalLibraryFromUrl } from '../io/externallibs.js';
 import { GetFileName } from '../io/fileutils.js';
 import { PhongMaterial, PhysicalMaterial } from '../model/material.js';
 import { TransformMesh } from '../model/meshutils.js';
@@ -49,7 +49,7 @@ export class Importer3dm extends ImporterBase
     ImportContent (fileContent, onFinish)
     {
         if (this.rhino === null) {
-            LoadExternalLibrary ('loaders/rhino3dm.min.js').then (() => {
+            LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/rhino3dm@8.4.0/rhino3dm.min.js').then (() => {
                 rhino3dm ().then ((rhino) => {
                     this.rhino = rhino;
                     this.ImportRhinoContent (fileContent);

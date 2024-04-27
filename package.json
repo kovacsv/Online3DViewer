@@ -34,7 +34,7 @@
 		"build/engine/o3dv.module.js",
 		"build/engine/o3dv.module.d.ts",
 		"source/engine/*",
-		"libs/loaders/*",
+		"libs/*",
 		"website/assets/envmaps/*"
 	],
 	"scripts": {
@@ -74,10 +74,8 @@
 	},
 	"dependencies": {
 		"@simonwep/pickr": "1.9.0",
-		"draco3d": "1.5.7",
 		"fflate": "0.8.2",
 		"occt-import-js": "0.0.21",
-		"rhino3dm": "8.4.0",
 		"three": "0.163.0",
 		"web-ifc": "0.0.44"
 	},

@@ -344,7 +344,7 @@ export class ImporterFcstd extends ImporterBase
 
     ConvertObjects (objects, onFinish)
     {
-        let workerPath = GetExternalLibPath ('loaders/occt-import-js-worker.js');
+        let workerPath = GetExternalLibPath ('occt-import-js-worker.js');
         this.worker = new Worker (workerPath);
 
         let convertedObjectCount = 0;

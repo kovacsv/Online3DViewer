@@ -79,8 +79,8 @@ def CreateEnginePackage (rootDir, engineDir, websiteDir):
 
 	zipPath = os.path.join (engineDir, 'o3dv.zip')
 	zip = zipfile.ZipFile (zipPath, mode = 'w', compression = zipfile.ZIP_DEFLATED)
-	for file in os.listdir (os.path.join (websiteDir, 'libs', 'loaders')):
-		zip.write (os.path.join (websiteDir, 'libs', 'loaders', file), 'libs/loaders/' + file)
+	for file in os.listdir (os.path.join (websiteDir, 'libs')):
+		zip.write (os.path.join (websiteDir, 'libs', file), 'libs/' + file)
 	for file in os.listdir (os.path.join (websiteDir, 'assets', 'envmaps')):
 		filePath = os.path.join (websiteDir, 'assets', 'envmaps', file)
 		if os.path.isdir (filePath):
