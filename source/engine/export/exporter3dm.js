@@ -84,7 +84,7 @@ export class Exporter3dm extends ExporterBase
                 rhinoMaterial.diffuseColor = ColorToRhinoColor (material.color);
                 rhinoMaterial.transparency = 1.0 - material.opacity;
 
-                let rhinoMaterialIndex = rhinoDoc.materials ().count ();
+                let rhinoMaterialIndex = rhinoDoc.materials ().count;
                 rhinoDoc.materials ().add (rhinoMaterial);
 
                 let rhinoMesh = new this.rhino.Mesh.createFromThreejsJSON (threeJson);
@@ -96,10 +96,7 @@ export class Exporter3dm extends ExporterBase
             }
         });
 
-        let writeOptions = new this.rhino.File3dmWriteOptions ();
-        writeOptions.version = 6;
-        let rhinoDocBuffer = rhinoDoc.toByteArray (writeOptions);
-
+        let rhinoDocBuffer = rhinoDoc.toByteArray ();
         rhinoFile.SetBufferContent (rhinoDocBuffer);
 		onFinish ();
     }
