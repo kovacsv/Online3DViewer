@@ -96,7 +96,9 @@ export class Exporter3dm extends ExporterBase
             }
         });
 
-        let rhinoDocBuffer = rhinoDoc.toByteArray ();
+        let writeOptions = new this.rhino.File3dmWriteOptions ();
+        writeOptions.version = 6;
+        let rhinoDocBuffer = rhinoDoc.toByteArrayOptions (writeOptions);
         rhinoFile.SetBufferContent (rhinoDocBuffer);
 		onFinish ();
     }
