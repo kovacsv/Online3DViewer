@@ -1,7 +1,6 @@
 import { Direction } from '../geometry/geometry.js';
 import { Matrix } from '../geometry/matrix.js';
 import { Transformation } from '../geometry/transformation.js';
-import { LoadExternalLibraryFromUrl } from '../io/externallibs.js';
 import { GetFileName } from '../io/fileutils.js';
 import { PhongMaterial, PhysicalMaterial } from '../model/material.js';
 import { TransformMesh } from '../model/meshutils.js';

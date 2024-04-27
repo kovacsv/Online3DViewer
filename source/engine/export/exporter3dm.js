@@ -1,5 +1,4 @@
 import { LoadRhinoLibrary } from '../import/importerutils.js';
-import { LoadExternalLibraryFromUrl } from '../io/externallibs.js';
 import { FileFormat } from '../io/fileutils.js';
 import { MaterialType } from '../model/material.js';
 import { ConvertMeshToMeshBuffer } from '../model/meshbuffer.js';
