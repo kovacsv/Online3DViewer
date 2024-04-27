@@ -160,7 +160,7 @@ export class Importer3dm extends ImporterBase
             rhinoMesh.delete ();
         } else if (objectType === this.rhino.ObjectType.SubD) {
             rhinoGeometry.subdivide (3);
-            let rhinoMesh = this.rhino.Mesh.createFromSubDControlNet (rhinoGeometry);
+            let rhinoMesh = this.rhino.Mesh.createFromSubDControlNet (rhinoGeometry, true);
             if (rhinoMesh !== null) {
                 this.ImportRhinoGeometryAsMesh (rhinoDoc, rhinoMesh, rhinoObject, rhinoInstanceReferences);
                 rhinoMesh.delete ();

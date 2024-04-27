@@ -8,7 +8,7 @@ fileMap = [
     [os.path.join ('draco3d', 'draco_decoder_nodejs.js'), os.path.join ('loaders', 'draco_decoder.js'), None],
     [os.path.join ('draco3d', 'draco_decoder.wasm'), os.path.join ('loaders', 'draco_decoder.wasm'), None],
 
-    [os.path.join ('rhino3dm', 'rhino3dm.js'), os.path.join ('loaders', 'rhino3dm.min.js'), None],
+    [os.path.join ('rhino3dm', 'rhino3dm.min.js'), os.path.join ('loaders', 'rhino3dm.min.js'), None],
     [os.path.join ('rhino3dm', 'rhino3dm.wasm'), os.path.join ('loaders', 'rhino3dm.wasm'), None],
 
     [os.path.join ('web-ifc', 'web-ifc-api.js'), os.path.join ('loaders', 'web-ifc-api-browser.js'), webIfcConverter],
