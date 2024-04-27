@@ -1,10 +1,9 @@
 import { Direction } from '../geometry/geometry.js';
-import { GetExternalLibPath } from '../io/externallibs.js';
 import { Node } from '../model/node.js';
 import { RGBColorFromFloatComponents } from '../model/color.js';
 import { ConvertThreeGeometryToMesh } from '../threejs/threeutils.js';
 import { ImporterBase } from './importerbase.js';
-import { ColorToMaterialConverter } from './importerutils.js';
+import { ColorToMaterialConverter, CreateOcctWorker } from './importerutils.js';
 import { Unit } from '../model/unit.js';
 import { Loc } from '../core/localization.js';
 
@@ -41,43 +40,47 @@ export class ImporterOcct extends ImporterBase
 
     ImportContent (fileContent, onFinish)
     {
-        let workerPath = GetExternalLibPath ('occt-import-js-worker.js');
-        this.worker = new Worker (workerPath);
-        this.worker.addEventListener ('message', (ev) => {
-            this.ImportResultJson (ev.data, onFinish);
-        });
-        this.worker.addEventListener ('error', (ev) => {
+        CreateOcctWorker ().then ((worker) => {
+            this.worker = worker;
+            this.worker.addEventListener ('message', (ev) => {
+                this.ImportResultJson (ev.data, onFinish);
+            });
+            this.worker.addEventListener ('error', (ev) => {
+                this.SetError (Loc ('Failed to load occt-import-js.'));
+                onFinish ();
+            });
+
+            let format = null;
+            if (this.extension === 'stp' || this.extension === 'step') {
+                format = 'step';
+            } else if (this.extension === 'igs' || this.extension === 'iges') {
+                format = 'iges';
+            } else if (this.extension === 'brp' || this.extension === 'brep') {
+                format = 'brep';
+            } else {
+                onFinish ();
+                return;
+            }
+
+            if (format === 'step' || format === 'iges') {
+                this.model.SetUnit (Unit.Millimeter);
+            }
+
+            let params = {
+                linearUnit: 'millimeter',
+                linearDeflectionType: 'bounding_box_ratio',
+                linearDeflection: 0.001,
+                angularDeflection: 0.5
+            };
+            let fileBuffer = new Uint8Array (fileContent);
+            this.worker.postMessage ({
+                format : format,
+                buffer : fileBuffer,
+                params : params
+            });
+        }).catch (() => {
             this.SetError (Loc ('Failed to load occt-import-js.'));
             onFinish ();
-        });
-
-        let format = null;
-        if (this.extension === 'stp' || this.extension === 'step') {
-            format = 'step';
-        } else if (this.extension === 'igs' || this.extension === 'iges') {
-            format = 'iges';
-        } else if (this.extension === 'brp' || this.extension === 'brep') {
-            format = 'brep';
-        } else {
-            onFinish ();
-            return;
-        }
-
-        if (format === 'step' || format === 'iges') {
-            this.model.SetUnit (Unit.Millimeter);
-        }
-
-        let params = {
-            linearUnit: 'millimeter',
-            linearDeflectionType: 'bounding_box_ratio',
-            linearDeflection: 0.001,
-            angularDeflection: 0.5
-        };
-        let fileBuffer = new Uint8Array (fileContent);
-        this.worker.postMessage ({
-            format : format,
-            buffer : fileBuffer,
-            params : params
         });
     }
 

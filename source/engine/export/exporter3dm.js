@@ -1,3 +1,4 @@
+import { LoadRhinoLibrary } from '../import/importerutils.js';
 import { LoadExternalLibraryFromUrl } from '../io/externallibs.js';
 import { FileFormat } from '../io/fileutils.js';
 import { MaterialType } from '../model/material.js';
@@ -20,7 +21,7 @@ export class Exporter3dm extends ExporterBase
 	ExportContent (exporterModel, format, files, onFinish)
 	{
 		if (this.rhino === null) {
-			LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/rhino3dm@8.4.0/rhino3dm.min.js').then (() => {
+			LoadRhinoLibrary ().then (() => {
                 rhino3dm ().then ((rhino) => {
                     this.rhino = rhino;
                     this.ExportRhinoContent (exporterModel, files, onFinish);

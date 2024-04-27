@@ -1,11 +1,10 @@
 import { Direction } from '../geometry/geometry.js';
 import { ImporterBase } from './importerbase.js';
 import { GetFileExtension } from '../io/fileutils.js';
-import { GetExternalLibPath } from '../io/externallibs.js';
 import { ConvertThreeGeometryToMesh } from '../threejs/threeutils.js';
 import { ArrayBufferToUtf8String } from '../io/bufferutils.js';
 import { Node } from '../model/node.js';
-import { ColorToMaterialConverter } from './importerutils.js';
+import { ColorToMaterialConverter, CreateOcctWorker } from './importerutils.js';
 import { RGBAColor } from '../model/color.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { Loc } from '../core/localization.js';
@@ -344,40 +343,43 @@ export class ImporterFcstd extends ImporterBase
 
     ConvertObjects (objects, onFinish)
     {
-        let workerPath = GetExternalLibPath ('occt-import-js-worker.js');
-        this.worker = new Worker (workerPath);
+        CreateOcctWorker ().then ((worker) => {
+            this.worker = worker;
+            this.worker.addEventListener ('message', (ev) => {
+                onFileConverted (ev.data);
+            });
 
-        let convertedObjectCount = 0;
-        let colorToMaterial = new ColorToMaterialConverter (this.model);
-        let onFileConverted = (resultContent) => {
-            if (resultContent !== null) {
-                let currentObject = objects[convertedObjectCount];
-                this.OnFileConverted (currentObject, resultContent, colorToMaterial);
-            }
-            convertedObjectCount += 1;
-            if (convertedObjectCount === objects.length) {
-                onFinish ();
-            } else {
-                let currentObject = objects[convertedObjectCount];
-                this.worker.postMessage ({
-                    format : 'brep',
-                    buffer : currentObject.fileContent
-                });
-            }
-        };
+            this.worker.addEventListener ('error', (ev) => {
+                onFileConverted (null);
+            });
 
-        this.worker.addEventListener ('message', (ev) => {
-            onFileConverted (ev.data);
-        });
+            let convertedObjectCount = 0;
+            let colorToMaterial = new ColorToMaterialConverter (this.model);
+            let onFileConverted = (resultContent) => {
+                if (resultContent !== null) {
+                    let currentObject = objects[convertedObjectCount];
+                    this.OnFileConverted (currentObject, resultContent, colorToMaterial);
+                }
+                convertedObjectCount += 1;
+                if (convertedObjectCount === objects.length) {
+                    onFinish ();
+                } else {
+                    let currentObject = objects[convertedObjectCount];
+                    this.worker.postMessage ({
+                        format : 'brep',
+                        buffer : currentObject.fileContent
+                    });
+                }
+            };
 
-        this.worker.addEventListener ('error', (ev) => {
-            onFileConverted (null);
-        });
-
-        let currentObject = objects[convertedObjectCount];
-        this.worker.postMessage ({
-            format : 'brep',
-            buffer : currentObject.fileContent
+            let currentObject = objects[convertedObjectCount];
+            this.worker.postMessage ({
+                format : 'brep',
+                buffer : currentObject.fileContent
+            });
+        }).catch (() => {
+            this.SetError (Loc ('Failed to load occt-import-js.'));
+            onFinish ();
         });
     }
 

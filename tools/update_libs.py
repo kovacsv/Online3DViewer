@@ -7,11 +7,6 @@ webIfcConverter = 'esbuild {0} --bundle --format=iife --global-name=WebIFC --ext
 fileMap = [
     [os.path.join ('web-ifc', 'web-ifc-api.js'), os.path.join ('web-ifc-api-browser.js'), webIfcConverter],
     [os.path.join ('web-ifc', 'web-ifc.wasm'), os.path.join ('web-ifc.wasm'), None],
-
-    [os.path.join ('occt-import-js', 'dist', 'occt-import-js.js'), os.path.join ('occt-import-js.js'), None],
-    [os.path.join ('occt-import-js', 'dist', 'occt-import-js-worker.js'), os.path.join ('occt-import-js-worker.js'), None],
-    [os.path.join ('occt-import-js', 'dist', 'occt-import-js.wasm'), os.path.join ('occt-import-js.wasm'), None],
-    [os.path.join ('occt-import-js', 'LICENSE.md'), os.path.join ('occt-import-js.license.md'), None]
 ]
 
 def PrintInfo (message):

@@ -70,14 +70,13 @@
 		"rollup": "^4.0.2",
 		"run-python3": "^0.0.5",
 		"svgo": "^3.0.2",
-		"typescript": "^5.0.4"
+		"typescript": "^5.0.4",
+		"web-ifc": "0.0.44"
 	},
 	"dependencies": {
 		"@simonwep/pickr": "1.9.0",
 		"fflate": "0.8.2",
-		"occt-import-js": "0.0.21",
-		"three": "0.163.0",
-		"web-ifc": "0.0.44"
+		"three": "0.163.0"
 	},
 	"eslintConfig": {
 		"env": {
