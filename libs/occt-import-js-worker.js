@@ -1,4 +1,4 @@
-importScripts ('https://cdn.jsdelivr.net/npm/occt-import-js@0.0.21/dist/occt-import-js.min.js');
+importScripts ('occt-import-js.js');
 
 onmessage = async function (ev)
 {
