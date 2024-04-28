@@ -8,7 +8,7 @@ import { IsModelEmpty } from '../model/modelutils.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { ConvertThreeGeometryToMesh } from '../threejs/threeutils.js';
 import { ImporterBase } from './importerbase.js';
-import { LoadRhinoLibrary, UpdateMaterialTransparency } from './importerutils.js';
+import { LoadExternalLibrary, UpdateMaterialTransparency } from './importerutils.js';
 import { TextureMap } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
 import { Line } from '../model/line.js';
@@ -48,7 +48,7 @@ export class Importer3dm extends ImporterBase
     ImportContent (fileContent, onFinish)
     {
         if (this.rhino === null) {
-            LoadRhinoLibrary ().then (() => {
+            LoadExternalLibrary ('rhino3dm').then (() => {
                 rhino3dm ().then ((rhino) => {
                     this.rhino = rhino;
                     this.ImportRhinoContent (fileContent);

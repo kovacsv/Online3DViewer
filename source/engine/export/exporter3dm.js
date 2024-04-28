@@ -1,4 +1,4 @@
-import { LoadRhinoLibrary } from '../import/importerutils.js';
+import { LoadExternalLibrary } from '../import/importerutils.js';
 import { FileFormat } from '../io/fileutils.js';
 import { MaterialType } from '../model/material.js';
 import { ConvertMeshToMeshBuffer } from '../model/meshbuffer.js';
@@ -20,7 +20,7 @@ export class Exporter3dm extends ExporterBase
 	ExportContent (exporterModel, format, files, onFinish)
 	{
 		if (this.rhino === null) {
-			LoadRhinoLibrary ().then (() => {
+			LoadExternalLibrary ('rhino3dm').then (() => {
                 rhino3dm ().then ((rhino) => {
                     this.rhino = rhino;
                     this.ExportRhinoContent (exporterModel, files, onFinish);

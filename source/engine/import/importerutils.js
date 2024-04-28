@@ -131,7 +131,13 @@ export function CreateOcctWorker (worker)
 	});
 }
 
-export function LoadRhinoLibrary ()
+export function LoadExternalLibrary (libraryName)
 {
-	return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/rhino3dm@8.4.0/rhino3dm.min.js');
+	if (libraryName === 'rhino3dm') {
+		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/rhino3dm@8.4.0/rhino3dm.min.js');
+	} else if (libraryName === 'draco3d') {
+		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/draco3d@1.5.7/draco_decoder_nodejs.min.js');
+	} else {
+		return null;
+	}
 }

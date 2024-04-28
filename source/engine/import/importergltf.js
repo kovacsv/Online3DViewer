@@ -7,7 +7,6 @@ import { ArrayToQuaternion } from '../geometry/quaternion.js';
 import { Transformation } from '../geometry/transformation.js';
 import { BinaryReader } from '../io/binaryreader.js';
 import { ArrayBufferToUtf8String, Base64DataURIToArrayBuffer, GetFileExtensionFromMimeType } from '../io/bufferutils.js';
-import { LoadExternalLibraryFromUrl } from '../io/externallibs.js';
 import { RGBColor, ColorComponentFromFloat, RGBColorFromFloatComponents, LinearToSRGB } from '../model/color.js';
 import { PhongMaterial, PhysicalMaterial, TextureMap } from '../model/material.js';
 import { Mesh } from '../model/mesh.js';
@@ -16,6 +15,7 @@ import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
 import { Loc, FLoc } from '../core/localization.js';
+import { LoadExternalLibrary } from './importerutils.js';
 
 const GltfComponentType =
 {
@@ -282,7 +282,7 @@ class GltfExtensions
             return;
         }
         if (this.draco === null && extensionsRequired.indexOf ('KHR_draco_mesh_compression') !== -1) {
-			LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/draco3d@1.5.7/draco_decoder_nodejs.min.js').then (() => {
+			LoadExternalLibrary ('draco3d').then (() => {
                 DracoDecoderModule ().then ((draco) => {
                     this.draco = draco;
                     callbacks.onSuccess ();

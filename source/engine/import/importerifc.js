@@ -2,7 +2,7 @@ import { Coord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
 import { Matrix } from '../geometry/matrix.js';
 import { Transformation } from '../geometry/transformation.js';
-import { LoadExternalLibrary } from '../io/externallibs.js';
+import { LoadExternalLibraryFromLibs } from '../io/externallibs.js';
 import { RGBColorFromFloatComponents } from '../model/color.js';
 import { Mesh } from '../model/mesh.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
@@ -44,7 +44,7 @@ export class ImporterIfc extends ImporterBase
     ImportContent (fileContent, onFinish)
     {
         if (this.ifc === null) {
-            LoadExternalLibrary ('web-ifc-api-browser.js').then (() => {
+            LoadExternalLibraryFromLibs ('web-ifc-api-browser.js').then (() => {
                 this.ifc = new WebIFC.IfcAPI ();
                 this.ifc.Init ().then (() => {
                     this.ImportIfcContent (fileContent);

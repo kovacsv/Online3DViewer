@@ -20,7 +20,7 @@ export function GetExternalLibPath (libName)
     return externalLibLocation + '/' + libName;
 }
 
-export function LoadExternalLibrary (libName)
+export function LoadExternalLibraryFromLibs (libName)
 {
     return new Promise ((resolve, reject) => {
         if (externalLibLocation === null) {
