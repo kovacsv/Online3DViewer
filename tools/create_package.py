@@ -67,10 +67,14 @@ def CreateWebsite (rootDir, websiteDir, version, testBuild):
 		if os.path.exists (metaFile):
 			metaContent = Utils.GetFileContent (metaFile)
 			replacer.ReplaceTokenContent ('<!-- meta start -->', '<!-- meta end -->', metaContent)
-		analyticsFile = os.path.join (rootDir, 'plugins', 'website_analytics_data.txt')
-		if os.path.exists (analyticsFile) and not testBuild:
-			analyticsContent = Utils.GetFileContent (analyticsFile)
-			replacer.ReplaceTokenContent ('<!-- analytics start -->', '<!-- analytics end -->', analyticsContent)
+		websiteAnalyticsFile = os.path.join (rootDir, 'plugins', 'website_analytics_data.txt')
+		if os.path.exists (websiteAnalyticsFile) and not testBuild:
+			websiteAnalyticsContent = Utils.GetFileContent (websiteAnalyticsFile)
+			replacer.ReplaceTokenContent ('<!-- website analytics start -->', '<!-- website analytics end -->', websiteAnalyticsContent)
+		embedAnalyticsFile = os.path.join (rootDir, 'plugins', 'embed_analytics_data.txt')
+		if os.path.exists (websiteAnalyticsFile) and not testBuild:
+			embedAnalyticsContent = Utils.GetFileContent (embedAnalyticsFile)
+			replacer.ReplaceTokenContent ('<!-- embed analytics start -->', '<!-- embed analytics end -->', embedAnalyticsContent)
 		replacer.WriteToFile (htmlFilePath)
 
 def CreateEnginePackage (rootDir, engineDir, websiteDir):
