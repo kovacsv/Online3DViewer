@@ -30,7 +30,8 @@ export class Settings
 
     LoadFromCookies ()
     {
-        this.themeId = CookieGetIntVal ('ov_theme_id', Theme.Light);
+        const preferredColorScheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? Theme.Dark : Theme.Light;
+        this.themeId = CookieGetIntVal ('ov_theme_id', preferredColorScheme);
         this.environmentMapName = CookieGetStringVal ('ov_environment_map', 'fishermans_bastion');
         this.backgroundIsEnvMap = CookieGetBoolVal ('ov_background_is_envmap', false);
         this.backgroundColor = CookieGetRGBAColorVal ('ov_background_color', new RGBAColor (255, 255, 255, 255));
