@@ -2,6 +2,7 @@ import { RGBColor, RGBColorToHexString } from '../engine/model/color.js';
 import { CreateObjectUrl } from '../engine/io/bufferutils.js';
 import { AddDiv, CreateDiv, AddDomElement } from '../engine/viewer/domutils.js';
 import { Loc } from '../engine/core/localization.js';
+import { Theme } from './settings.js';
 
 export function GetNameOrDefault (originalName, defaultName)
 {
@@ -25,6 +26,11 @@ export function GetMeshName (originalNodeName, originalMeshName)
 export function GetMaterialName (originalName)
 {
     return GetNameOrDefault (originalName, Loc ('No Name'));
+}
+
+export function GetPreferredColorScheme ()
+{
+    return window.matchMedia ('(prefers-color-scheme: dark)').matches ? Theme.Dark : Theme.Light;
 }
 
 export function IsHoverEnabled ()
