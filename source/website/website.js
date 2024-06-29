@@ -23,6 +23,7 @@ import { GetDefaultMaterials, ReplaceDefaultMaterialsColor } from '../engine/mod
 import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { MeasureTool } from './measuretool.js';
+import { HighlightTool } from './highlighttool.js';
 import { CloseAllDialogs } from './dialog.js';
 import { CreateVerticalSplitter } from './splitter.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
@@ -40,13 +41,14 @@ const WebsiteUIState =
 
 class WebsiteLayouter
 {
-    constructor (parameters, navigator, sidebar, viewer, measureTool)
+    constructor (parameters, navigator, sidebar, viewer, measureTool, highlightTool)
     {
         this.parameters = parameters;
         this.navigator = navigator;
         this.sidebar = sidebar;
         this.viewer = viewer;
         this.measureTool = measureTool;
+        this.highlightTool = highlightTool;
         this.limits = {
             minPanelWidth : 290,
             minCanvasWidth : 100
@@ -180,6 +182,7 @@ class WebsiteLayouter
         this.parameters.introContentDiv.style.top = introContentTop.toString () + 'px';
 
         this.measureTool.Resize ();
+        this.highlightTool.Resize();
     }
 }
 
@@ -192,6 +195,7 @@ export class Website
         this.cameraSettings = new CameraSettings ();
         this.viewer = new Viewer ();
         this.measureTool = new MeasureTool (this.viewer, this.settings);
+        this.highlightTool = new HighlightTool(this.viewer, this.settings);
         this.hashHandler = new HashHandler ();
         this.toolbar = new Toolbar (this.parameters.toolbarDiv);
         this.navigator = new Navigator (this.parameters.navigatorDiv);
@@ -200,7 +204,7 @@ export class Website
         this.themeHandler = new ThemeHandler ();
         this.highlightColor = new RGBColor (142, 201, 240);
         this.uiState = WebsiteUIState.Undefined;
-        this.layouter = new WebsiteLayouter (this.parameters, this.navigator, this.sidebar, this.viewer, this.measureTool);
+        this.layouter = new WebsiteLayouter (this.parameters, this.navigator, this.sidebar, this.viewer, this.measureTool, this.highlightTool);
         this.model = null;
     }
 
@@ -294,6 +298,7 @@ export class Website
         this.sidebar.Clear ();
 
         this.measureTool.SetActive (false);
+        this.highlightTool.SetActive(false);
     }
 
     OnModelLoaded (importResult, threeObject)
@@ -309,12 +314,17 @@ export class Website
 
     OnModelClicked (button, mouseCoordinates)
     {
-        if (button !== 1) {
+        if (button !== 1 && button !== 2) {
             return;
         }
 
         if (this.measureTool.IsActive ()) {
             this.measureTool.Click (mouseCoordinates);
+            return;
+        }
+
+        if (this.highlightTool.IsActive()) {
+            this.highlightTool.Click(mouseCoordinates);
             return;
         }
 
@@ -331,10 +341,19 @@ export class Website
         if (this.measureTool.IsActive ()) {
             this.measureTool.MouseMove (mouseCoordinates);
         }
+
+        if (this.highlightTool.IsActive()) {
+            this.highlightTool.MouseMove(mouseCoordinates);
+        }
     }
 
     OnModelContextMenu (globalMouseCoordinates, mouseCoordinates)
     {
+        if (this.highlightTool.IsActive()) {
+            this.highlightTool.Click(mouseCoordinates, 2); // Handle right-click for removing highlight
+            return;
+        }
+
         let meshUserData = this.viewer.GetMeshUserDataUnderMouse (IntersectionMode.MeshAndLine, mouseCoordinates);
         let items = [];
         if (meshUserData === null) {
@@ -712,6 +731,14 @@ export class Website
             this.measureTool.SetActive (isSelected);
         });
         this.measureTool.SetButton (measureToolButton);
+
+        let highlightToolButton = AddPushButton(this.toolbar, 'highlight', Loc('Highlight'), ['only_full_width', 'only_on_model'], (isSelected) => {
+            HandleEvent('highlight_tool_activated', isSelected ? 'on' : 'off');
+            this.navigator.SetSelection(null);
+            this.highlightTool.SetActive(isSelected);
+        });
+        this.highlightTool.SetButton(highlightToolButton);
+
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         AddButton (this.toolbar, 'download', Loc ('Download'), ['only_full_width', 'only_on_model'], () => {
             HandleEvent ('model_downloaded', '');
@@ -808,12 +835,20 @@ export class Website
                 if (this.measureTool.IsActive ()) {
                     this.measureTool.UpdatePanel ();
                 }
+
+                if (this.highlightTool.IsActive()) {
+                    this.highlightTool.UpdatePanel();
+                }
             },
             onBackgroundColorChanged : () => {
                 this.settings.SaveToCookies ();
                 this.viewer.SetBackgroundColor (this.settings.backgroundColor);
                 if (this.measureTool.IsActive ()) {
                     this.measureTool.UpdatePanel ();
+                }
+
+                if (this.highlightTool.IsActive()) {
+                    this.highlightTool.UpdatePanel();
                 }
             },
             onDefaultColorChanged : () => {

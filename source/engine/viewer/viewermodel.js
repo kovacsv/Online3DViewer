@@ -64,6 +64,22 @@ export class ViewerModel
         this.rootObject.add (object);
     }
 
+    RemoveObject(object) {
+        if (this.rootObject) {
+            this.rootObject.remove(object);
+        }
+    }
+    
+    GetObjects() {
+        let objects = [];
+        this.rootObject.traverse((obj) => {
+            if (obj !== this.rootObject) {
+                objects.push(obj);
+            }
+        });
+        return objects;
+    }
+
     Traverse (enumerator)
     {
         if (this.rootObject === null) {
@@ -81,10 +97,9 @@ export class ViewerModel
         }
     }
 
-    Clear ()
-    {
-        DisposeThreeObjects (this.rootObject);
-        this.scene.remove (this.rootObject);
+    Clear() {
+        DisposeThreeObjects(this.rootObject);
+        this.scene.remove(this.rootObject);
         this.rootObject = null;
     }
 }
@@ -125,6 +140,7 @@ export class ViewerMainModel
 
         this.mainModel = new ViewerModel (this.scene);
         this.edgeModel = new ViewerModel (this.scene);
+        this.highlightModel = new ViewerModel (this.scene);
 
         this.edgeSettings = new EdgeSettings (false, new RGBColor (0, 0, 0), 1);
         this.hasLines = false;

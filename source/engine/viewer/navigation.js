@@ -242,6 +242,7 @@ export class Navigation
 		this.camera = camera;
 		this.callbacks = callbacks;
 		this.navigationMode = NavigationMode.FixedUpVector;
+		this.enableCameraMovement = true;
 
 		this.mouse = new MouseInteraction ();
 		this.touch = new TouchInteraction ();
@@ -281,6 +282,10 @@ export class Navigation
 	{
 		this.onContext = onContext;
 	}
+
+	EnableCameraMovement(enable) {
+        this.enableCameraMovement = enable;
+    }
 
 	GetNavigationMode ()
 	{
@@ -369,6 +374,10 @@ export class Navigation
 
 		this.mouse.Down (this.canvas, ev);
 		this.clickDetector.Start (this.mouse.GetPosition ());
+
+		if (!this.enableCameraMovement) {
+            this.isMouseDown = true;
+        }
 	}
 
 	OnMouseMove (ev)
@@ -384,9 +393,12 @@ export class Navigation
 			return;
 		}
 
+		if (!this.enableCameraMovement) {
+            return;
+        }
+
 		let moveDiff = this.mouse.GetMoveDiff ();
 		let mouseButton = this.mouse.GetButton ();
-
 		let navigationType = NavigationType.None;
 		if (mouseButton === 1) {
 			if (ev.ctrlKey) {
@@ -424,6 +436,10 @@ export class Navigation
 			let mouseCoords = this.mouse.GetPosition ();
 			this.Click (ev.which, mouseCoords);
 		}
+
+		if (!this.enableCameraMovement) {
+            this.isMouseDown = false;
+        }
 	}
 
 	OnMouseLeave (ev)
