@@ -283,7 +283,7 @@ export class Navigation
 		this.onContext = onContext;
 	}
 
-	EnableCameraMovement(enable) {
+	EnableCameraMovement (enable) {
         this.enableCameraMovement = enable;
     }
 
@@ -376,6 +376,7 @@ export class Navigation
 		this.clickDetector.Start (this.mouse.GetPosition ());
 
 		if (!this.enableCameraMovement) {
+			console.log('im here heehee OnMouseDowns')
             this.isMouseDown = true;
         }
 	}
@@ -464,8 +465,11 @@ export class Navigation
 		this.clickDetector.Move (this.touch.GetPosition ());
 		if (!this.touch.IsFingerDown ()) {
 			return;
+		} 
+		else if (!this.enableCameraMovement) {
+			return;
 		}
-
+		
 		let moveDiff = this.touch.GetMoveDiff ();
 		let distanceDiff = this.touch.GetDistanceDiff ();
 		let fingerCount = this.touch.GetFingerCount ();

@@ -15,21 +15,54 @@ export class HighlightTool {
         this.panel = null;
         this.button = null;
 
-        this.InitEvents();
     }
 
     InitEvents() {
-        window.addEventListener('mousedown', (event) => {
+
+        const canvas = this.viewer.GetCanvas();
+        canvas.addEventListener('mousedown', (event) => {
             if (this.isActive) {
                 this.isMouseDown = true;
                 this.mouseButton = event.button;
             }
         });
 
-        window.addEventListener('mouseup', (event) => {
+        canvas.addEventListener('mouseup', (event) => {
             if (this.isActive) {
                 this.isMouseDown = false;
                 this.mouseButton = null;
+            }
+        });
+
+        this.addTouchListeners (canvas)
+
+    }
+
+    addTouchListeners (canvas) {
+        canvas.addEventListener('touchstart', (event) => {
+            if (this.isActive) {
+                this.TouchStart(event);
+            }
+            // });
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', (event) => {
+            if (this.isActive) {
+                this.TouchMove(event);
+            }
+            // });
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', (event) => {
+            if (this.isActive) {
+                this.TouchEnd(event);
+            }
+            // });
+        }, { passive: false });
+
+        canvas.addEventListener('touchcancel', (event) => {
+            if (this.isActive) {
+                this.TouchEnd(event);
             }
         });
     }
@@ -48,9 +81,11 @@ export class HighlightTool {
         }
         this.isActive = isActive;
         this.button.SetSelected(isActive);
-
         this.viewer.navigation.EnableCameraMovement(!isActive);
 
+        // Touch & Mouse event bindings
+        this.InitEvents();
+        
         if (this.isActive) {
             this.panel = AddDiv(document.body, 'ov_highlight_panel');
             this.UpdatePanel();
@@ -60,17 +95,17 @@ export class HighlightTool {
         }
     }
 
-    Click(mouseCoordinates, button) {
+
+    // Mouse Events
+    Click (mouseCoordinates, button) {
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
         if (intersection === null) {
             return;
         }
 
         if (button === 0) {
-            console.log('Left click');
             this.ApplyHighlight(intersection);
         } else if (button === 2) {
-            console.log('Right click');
             this.RemoveHighlight(intersection);
         }
 
@@ -88,15 +123,51 @@ export class HighlightTool {
         }
 
         if (this.mouseButton === 0) {
-            console.log('Mouse move highlighting');
             this.ApplyHighlight(intersection);
         } else if (this.mouseButton === 2) {
-            console.log('Mouse move unhighlighting');
             this.RemoveHighlight(intersection);
         }
 
         this.viewer.Render();
     }
+
+    // Touch Events
+    TouchStart(event) {
+        event.preventDefault();
+        this.isTouching = true;
+
+        let mouseCoordinates = this.viewer.navigation.touch.GetPosition();
+        let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
+
+        if (intersection !== null) {
+            this.ApplyHighlight(intersection);
+            this.viewer.Render();
+        }
+    }
+    
+    TouchMove(event) {
+        event.preventDefault();
+        if (!this.isTouching) {
+            return;
+        }
+    
+        let mouseCoordinates = this.viewer.navigation.touch.GetPosition();
+        let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
+    
+        if (intersection === null) {
+            console.log('Intersection is null');
+            return;
+        }
+    
+        this.ApplyHighlight(intersection);
+        this.viewer.Render();
+    }
+    
+    TouchEnd(event) {
+        event.preventDefault();
+        this.isTouching = false;
+    }
+    
 
     ApplyHighlight(intersection) {
         let highlightMesh = this.GenerateHighlightMesh(intersection);
