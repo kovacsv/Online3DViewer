@@ -14,6 +14,8 @@ export class HighlightTool {
         this.highlightMeshes = [];
         this.panel = null;
         this.button = null;
+        this.eventsInitialized = null;
+        this.activeTouches = 0;
 
     }
 
@@ -43,21 +45,18 @@ export class HighlightTool {
             if (this.isActive) {
                 this.TouchStart(event);
             }
-            // });
         }, { passive: false });
 
         canvas.addEventListener('touchmove', (event) => {
             if (this.isActive) {
                 this.TouchMove(event);
             }
-            // });
         }, { passive: false });
 
         canvas.addEventListener('touchend', (event) => {
             if (this.isActive) {
                 this.TouchEnd(event);
             }
-            // });
         }, { passive: false });
 
         canvas.addEventListener('touchcancel', (event) => {
@@ -67,11 +66,13 @@ export class HighlightTool {
         });
     }
 
-    SetButton(button) {
+    remove
+
+    SetButton (button) {
         this.button = button;
     }
 
-    IsActive() {
+    IsActive () {
         return this.isActive;
     }
 
@@ -79,19 +80,25 @@ export class HighlightTool {
         if (this.isActive === isActive) {
             return;
         }
+    
         this.isActive = isActive;
         this.button.SetSelected(isActive);
         this.viewer.navigation.EnableCameraMovement(!isActive);
-
-        // Touch & Mouse event bindings
-        this.InitEvents();
-        
+    
+        if (!this.eventsInitialized) {
+            this.InitEvents();
+            this.eventsInitialized = true; // Track if events are already initialized
+        }
+    
         if (this.isActive) {
             this.panel = AddDiv(document.body, 'ov_highlight_panel');
             this.UpdatePanel();
             this.Resize();
         } else {
-            this.panel.remove();
+            if (this.panel) {
+                this.panel.remove();
+                this.panel = null;
+            }
         }
     }
 
@@ -103,9 +110,9 @@ export class HighlightTool {
             return;
         }
 
-        if (button === 0) {
+        if (this.mouseButton === 0) {
             this.ApplyHighlight(intersection);
-        } else if (button === 2) {
+        } else if (this.mouseButton === 2) {
             this.RemoveHighlight(intersection);
         }
 
@@ -134,13 +141,18 @@ export class HighlightTool {
     // Touch Events
     TouchStart(event) {
         event.preventDefault();
+        this.activeTouches = event.touches.length;
         this.isTouching = true;
 
         let mouseCoordinates = this.viewer.navigation.touch.GetPosition();
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
 
         if (intersection !== null) {
-            this.ApplyHighlight(intersection);
+            if (this.activeTouches === 1) {
+                this.ApplyHighlight(intersection);
+            } else if (this.activeTouches === 2) {
+                this.RemoveHighlight(intersection);
+            }
             this.viewer.Render();
         }
     }
@@ -150,7 +162,8 @@ export class HighlightTool {
         if (!this.isTouching) {
             return;
         }
-    
+
+        this.activeTouches = event.touches.length;
         let mouseCoordinates = this.viewer.navigation.touch.GetPosition();
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
     
@@ -159,13 +172,20 @@ export class HighlightTool {
             return;
         }
     
-        this.ApplyHighlight(intersection);
+        if (this.activeTouches === 1) {
+            this.ApplyHighlight(intersection);
+        } else if (this.activeTouches === 2) {
+            this.RemoveHighlight(intersection);
+        }
         this.viewer.Render();
     }
     
     TouchEnd(event) {
         event.preventDefault();
-        this.isTouching = false;
+        this.activeTouches = event.touches.length;
+        if (this.activeTouches === 0) {
+            this.isTouching = false;
+        }
     }
     
 
@@ -176,14 +196,17 @@ export class HighlightTool {
     }
 
     RemoveHighlight(intersection) {
-        let meshToRemove = this.highlightMeshes.find((mesh) => {
+        let meshesToRemove = this.highlightMeshes.filter((mesh) => {
             return this.IsIntersectionWithinBoundingBox(intersection, mesh);
         });
-
-        if (meshToRemove) {
-            this.viewer.RemoveExtraObject(meshToRemove);
-            this.highlightMeshes = this.highlightMeshes.filter((mesh) => mesh !== meshToRemove);
-            this.DisposeHighlightMesh(meshToRemove); // Properly dispose of the mesh
+    
+        meshesToRemove.forEach((mesh) => {
+            this.viewer.RemoveExtraObject(mesh);
+            this.highlightMeshes = this.highlightMeshes.filter((m) => m !== mesh);
+            this.DisposeHighlightMesh(mesh);
+        });
+    
+        if (meshesToRemove.length > 0) {
             this.viewer.Render();
         }
     }
