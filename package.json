@@ -34,7 +34,6 @@
 		"build/engine/o3dv.module.js",
 		"build/engine/o3dv.module.d.ts",
 		"source/engine/*",
-		"libs/*",
 		"website/assets/envmaps/*"
 	],
 	"scripts": {
@@ -42,7 +41,6 @@
 		"test": "mocha test",
 		"lint": "eslint source",
 		"lint_fix": "eslint source --fix",
-		"update_libs": "npm update && run-python3 tools/update_libs.py",
 		"generate_icon_font": "run-python3 tools/generate_icon_font.py",
 		"create_dist": "npm run create_package && npm run lint && npm run test",
 		"create_dist_test": "npm run create_package_test && npm run lint && npm run test",
