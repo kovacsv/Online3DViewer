@@ -29,8 +29,10 @@ export function ShowSharingDialog(settings, viewer) {
 
     function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel) {
         const camera = viewer.navigation.GetCamera();
-        const originalEyePosition = { ...camera.eye };
-        const originalCenterPosition = { ...camera.center };
+        
+        // Store original positions directly
+        const originalEyePosition = { x: camera.eye.x, y: camera.eye.y, z: camera.eye.z };
+        const originalCenterPosition = { x: camera.center.x, y: camera.center.y, z: camera.center.z };
 
         // Calculate the direction vector from center to eye
         const direction = {
@@ -53,15 +55,22 @@ export function ShowSharingDialog(settings, viewer) {
         // Capture the image as a Data URL
         const imageDataUrl = viewer.GetImageAsDataUrl(width, height, isTransparent);
 
-        // Restore the original camera position
-        camera.eye = originalEyePosition;
-        camera.center = originalCenterPosition;
+        // Restore the original camera position directly
+        camera.eye.x = originalEyePosition.x;
+        camera.eye.y = originalEyePosition.y;
+        camera.eye.z = originalEyePosition.z;
+        camera.center.x = originalCenterPosition.x;
+        camera.center.y = originalCenterPosition.y;
+        camera.center.z = originalCenterPosition.z;
         viewer.navigation.MoveCamera(camera, 0);
 
         return imageDataUrl;
     }
 
+    
+
     function UpdatePreview(viewer, previewImage, width, height, isTransparent, zoomLevel) {
+        console.log('Updating preview');
         let imageUrl = CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel);
         previewImage.src = imageUrl;
     }
