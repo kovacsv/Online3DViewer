@@ -9,6 +9,16 @@ export function ShowSharingDialog(settings, viewer) {
     const snapshotWidth = 1920;
     const snapshotHeight = 1080;
     const initialZoomLevel = settings.snapshotZoomLevel || 1.5; // Default zoom level
+    let isPanning = false;
+    let isOrbiting = false;
+    let startMousePosition = { x: 0, y: 0 };
+    let previewImage;
+
+    // Log the camera object before opening the dialog
+    const camera = viewer.navigation.GetCamera();
+    const originalRotate = camera.eye.Rotate;
+    console.log('Camera before opening dialog:', camera);
+    console.log('Rotate method before opening dialog:', camera.eye.Rotate);
 
     function AddCheckboxLine(parentDiv, text, id, onChange) {
         let line = AddDiv(parentDiv, 'ov_dialog_row');
@@ -56,6 +66,44 @@ export function ShowSharingDialog(settings, viewer) {
         previewImage.src = imageUrl;
     }
 
+    function HandleMouseDown(event) {
+        startMousePosition = { x: event.clientX, y: event.clientY };
+        if (event.button === 0) { // Left button
+            isOrbiting = true;
+        } else if (event.button === 1) { // Middle button
+            isPanning = true;
+        }
+        window.addEventListener('mousemove', HandleMouseMove);
+        window.addEventListener('mouseup', HandleMouseUp);
+    }
+
+    function HandleMouseMove(event) {
+        if (!isPanning && !isOrbiting) return;
+
+        const currentMousePosition = { x: event.clientX, y: event.clientY };
+        const deltaX = currentMousePosition.x - startMousePosition.x;
+        const deltaY = currentMousePosition.y - startMousePosition.y;
+
+        if (isOrbiting) {
+            const orbitRatio = 0.5;
+            viewer.navigation.Orbit(deltaX * orbitRatio, deltaY * orbitRatio);
+        } else if (isPanning) {
+            const panRatio = 0.001;
+            viewer.navigation.Pan(deltaX * panRatio, deltaY * panRatio);
+        }
+
+        UpdatePreview(viewer, previewImage, snapshotWidth, snapshotHeight, false, initialZoomLevel);
+
+        startMousePosition = currentMousePosition;
+    }
+
+    function HandleMouseUp(event) {
+        isPanning = false;
+        isOrbiting = false;
+        window.removeEventListener('mousemove', HandleMouseMove);
+        window.removeEventListener('mouseup', HandleMouseUp);
+    }
+
     function AddPainSnapshotSharingTab(parentDiv) {
         function SendEmail(recipients, subject, body) {
             console.log('Sending email to:', recipients);
@@ -89,7 +137,7 @@ export function ShowSharingDialog(settings, viewer) {
 
             // Add snapshot preview
             let snapshotPreviewContainer = AddDiv(step1, 'ov_snapshot_preview_container');
-            let previewImage = CreateDomElement('img', 'ov_snapshot_preview_image');
+            previewImage = CreateDomElement('img', 'ov_snapshot_preview_image');
             snapshotPreviewContainer.appendChild(previewImage);
 
             // Add zoom slider
@@ -106,6 +154,9 @@ export function ShowSharingDialog(settings, viewer) {
 
             // Set initial preview
             UpdatePreview(viewer, previewImage, snapshotWidth, snapshotHeight, false, initialZoomLevel);
+
+            // Add mouse event listeners for panning and orbiting
+            previewImage.addEventListener('mousedown', HandleMouseDown);
 
             let nextButton = AddDiv(step1, 'ov_button', Loc('Next'));
             nextButton.addEventListener('click', () => {
@@ -176,6 +227,23 @@ export function ShowSharingDialog(settings, viewer) {
 
     AddPainSnapshotSharingTab(contentDiv);
 
+    const originalClose = dialog.Close.bind(dialog);
+    dialog.Close = function() {
+        previewImage.removeEventListener('mousedown', HandleMouseDown);
+        window.removeEventListener('mousemove', HandleMouseMove);
+        window.removeEventListener('mouseup', HandleMouseUp);
+    
+        // Reassign the original Rotate method after closing the dialog
+        camera.eye.Rotate = originalRotate;
+    
+        originalClose();
+    
+        // Log the camera object after closing the dialog
+        console.log('Camera after closing dialog:', viewer.navigation.GetCamera());
+        console.log('Rotate method after closing dialog:', camera.eye.Rotate);
+    };
+
     dialog.Open();
+
     return dialog;
 }
