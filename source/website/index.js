@@ -23,6 +23,7 @@ import './css/navigator.css';
 import './css/sidebar.css';
 import './css/website.css';
 import './css/embed.css';
+import './css/sharingdialog.css';
 
 export const UI = {
     ButtonDialog,
