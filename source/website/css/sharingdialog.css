@@ -63,3 +63,13 @@
 .ov_button:hover {
     background-color: #0056b3;
 }
+
+.ov_dialog_form_container {
+    max-height: 80vh; /* Ensure the form doesn't extend beyond 80% of the viewport height */
+    overflow-y: auto; /* Enable scrolling if content overflows */
+}
+
+.ov_dialog_step {
+    position: relative; /* Ensure steps are correctly positioned */
+    overflow: hidden; /* Prevent unintended scrolling */
+}

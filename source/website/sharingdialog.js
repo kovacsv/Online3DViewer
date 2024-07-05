@@ -15,17 +15,14 @@ export function ShowSharingDialog(settings, viewer) {
     let previewImage;
     let panOffset = { x: 0, y: 0 };
     let orbitOffset = { x: 0, y: 0 };
-    let zoomSlider;
+    let currentZoomLevel = initialZoomLevel;
     
-    // Log the camera object before opening the dialog
     const camera = viewer.navigation.GetCamera();
     const originalRotate = camera.eye.Rotate;
-    console.log('Camera before opening dialog:', camera);
-    console.log('Rotate method before opening dialog:', camera.eye.Rotate);
 
     function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOffset, orbitOffset) {
         const camera = viewer.navigation.GetCamera();
-        
+    
         // Store original camera state
         const originalCamera = {
             eye: { x: camera.eye.x, y: camera.eye.y, z: camera.eye.z },
@@ -39,11 +36,11 @@ export function ShowSharingDialog(settings, viewer) {
             y: camera.eye.y - camera.center.y,
             z: camera.eye.z - camera.center.z
         };
-
+    
         const distance = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
         const zoomedDistance = distance * zoomLevel;
         const zoomFactor = zoomedDistance / distance;
-
+    
         const zoomedEye = {
             x: camera.center.x + direction.x * zoomFactor,
             y: camera.center.y + direction.y * zoomFactor,
@@ -51,16 +48,28 @@ export function ShowSharingDialog(settings, viewer) {
         };
     
         // Apply pan
-        const panScale = distance * 0.001; // Adjust this value as needed
+        const panScale = distance * 0.005; // Adjust this value as needed
+        const right = {
+            x: direction.y * camera.up.z - direction.z * camera.up.y,
+            y: direction.z * camera.up.x - direction.x * camera.up.z,
+            z: direction.x * camera.up.y - direction.y * camera.up.x
+        };
+        const rightLength = Math.sqrt(right.x * right.x + right.y * right.y + right.z * right.z);
+        const normalizedRight = {
+            x: right.x / rightLength,
+            y: right.y / rightLength,
+            z: right.z / rightLength
+        };
+    
         const pannedCenter = {
-            x: camera.center.x + camera.up.x * panOffset.y * panScale,
-            y: camera.center.y + camera.up.y * panOffset.y * panScale,
-            z: camera.center.z + camera.up.z * panOffset.y * panScale
+            x: camera.center.x + normalizedRight.x * panOffset.x * panScale + camera.up.x * panOffset.y * panScale,
+            y: camera.center.y + normalizedRight.y * panOffset.x * panScale + camera.up.y * panOffset.y * panScale,
+            z: camera.center.z + normalizedRight.z * panOffset.x * panScale + camera.up.z * panOffset.y * panScale
         };
         const pannedEye = {
-            x: zoomedEye.x + camera.up.x * panOffset.y * panScale,
-            y: zoomedEye.y + camera.up.y * panOffset.y * panScale,
-            z: zoomedEye.z + camera.up.z * panOffset.y * panScale
+            x: zoomedEye.x + normalizedRight.x * panOffset.x * panScale + camera.up.x * panOffset.y * panScale,
+            y: zoomedEye.y + normalizedRight.y * panOffset.x * panScale + camera.up.y * panOffset.y * panScale,
+            z: zoomedEye.z + normalizedRight.z * panOffset.x * panScale + camera.up.z * panOffset.y * panScale
         };
     
         // Set temporary camera for snapshot
@@ -71,13 +80,13 @@ export function ShowSharingDialog(settings, viewer) {
         camera.center.y = pannedCenter.y;
         camera.center.z = pannedCenter.z;
         viewer.navigation.MoveCamera(camera, 0);
-
+    
         // Apply orbit
         viewer.navigation.Orbit(orbitOffset.x, orbitOffset.y);
-
+    
         // Capture the image
         const imageDataUrl = viewer.GetImageAsDataUrl(width, height, isTransparent);
-
+    
         // Restore original camera state
         camera.eye.x = originalCamera.eye.x;
         camera.eye.y = originalCamera.eye.y;
@@ -92,9 +101,9 @@ export function ShowSharingDialog(settings, viewer) {
     
         return imageDataUrl;
     }
+    
 
     function UpdatePreview(viewer, previewImage, width, height, isTransparent, zoomLevel, panOffset, orbitOffset) {
-        console.log('Updating preview');
         let imageUrl = CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOffset, orbitOffset);
         previewImage.src = imageUrl;
     }
@@ -111,18 +120,18 @@ export function ShowSharingDialog(settings, viewer) {
             orbitOffset.x += deltaX * orbitRatio;
             orbitOffset.y += deltaY * orbitRatio;
         } else if (isPanning) {
-            const panRatio = 0.1; // Adjust this value as needed
-            panOffset.y -= deltaY * panRatio; // Only vertical panning for now
+            const panRatio = 0.075; // Adjust this value as needed
+            panOffset.x -= deltaX * panRatio; // Horizontal panning
+            panOffset.y -= deltaY * panRatio; // Vertical panning
         }
     
-        UpdatePreview(viewer, previewImage, snapshotWidth, snapshotHeight, false, zoomSlider.value, panOffset, orbitOffset);
+        UpdatePreview(viewer, previewImage, snapshotWidth, snapshotHeight, false, currentZoomLevel, panOffset, orbitOffset);
     
         startMousePosition = currentMousePosition;
         event.preventDefault();
     }
 
     function HandlePreviewMouseUp(event) {
-        console.log('HandlePreviewMouseUp');
         isPanning = false;
         isOrbiting = false;
         document.removeEventListener('mousemove', HandlePreviewMouseMove, true);
@@ -142,17 +151,21 @@ export function ShowSharingDialog(settings, viewer) {
         event.preventDefault();
     }
 
+    function HandleMouseWheel(event) {
+        const zoomSpeed = 0.001;
+        currentZoomLevel += event.deltaY * zoomSpeed;
+        currentZoomLevel = Math.min(Math.max(currentZoomLevel, 0.1), 3);
+        UpdatePreview(viewer, previewImage, snapshotWidth, snapshotHeight, false, currentZoomLevel, panOffset, orbitOffset);
+        event.preventDefault();
+    }
+
     function AddPainSnapshotSharingTab(parentDiv) {
         function SendEmail(recipients, subject, body) {
             console.log('Sending email to:', recipients);
-            // Implement email sending functionality
-            // This might involve integrating with an email service provider API
         }
 
         function DownloadSnapshotAndInfo(snapshot, info) {
             console.log('Downloading snapshot and info');
-            // Implement download functionality
-            // This can involve creating a Blob from the snapshot and info, and triggering a download
         }
 
         function CreateMultiStepForm(parentDiv) {
@@ -163,7 +176,6 @@ export function ShowSharingDialog(settings, viewer) {
 
             let description = AddDiv(step1, 'ov_dialog_description', Loc('Quickly share a snapshot and details of your pain location with family, friends, or therapists.'));
 
-            // Create email fields
             let emailFields = [];
             for (let i = 0; i < 3; i++) {
                 let emailLabel = AddDiv(step1, 'ov_dialog_label', Loc(`Email ${i + 1}`));
@@ -174,29 +186,16 @@ export function ShowSharingDialog(settings, viewer) {
                 emailFields.push(emailInput);
             }
 
-            // Add snapshot preview
             let snapshotPreviewContainer = AddDiv(step1, 'ov_snapshot_preview_container');
             previewImage = CreateDomElement('img', 'ov_snapshot_preview_image');
             snapshotPreviewContainer.appendChild(previewImage);
 
-            // Add zoom slider
-            let zoomSliderLabel = AddDiv(step1, 'ov_dialog_label', Loc('Zoom Level'));
-            zoomSlider = AddDomElement(step1, 'input', 'zoomSlider');
-            zoomSlider.setAttribute('type', 'range');
-            zoomSlider.setAttribute('min', '0.1');
-            zoomSlider.setAttribute('max', '3');
-            zoomSlider.setAttribute('step', '0.1');
-            zoomSlider.setAttribute('value', initialZoomLevel);
-            zoomSlider.addEventListener('input', () => {
-                UpdatePreview(viewer, previewImage, snapshotWidth, snapshotHeight, false, zoomSlider.value, panOffset, orbitOffset);
-            });
+            // Remove zoom slider and add mouse wheel event listener for zoom
+            previewImage.addEventListener('wheel', HandleMouseWheel, true);
 
-            // Add mouse event listeners for panning and orbiting
             previewImage.addEventListener('mousedown', HandlePreviewMouseDown, true);
 
-            // Set initial preview
-            console.log('Initial preview');
-            UpdatePreview(viewer, previewImage, snapshotWidth, snapshotHeight, false, zoomSlider.value, panOffset, orbitOffset);
+            UpdatePreview(viewer, previewImage, snapshotWidth, snapshotHeight, false, currentZoomLevel, panOffset, orbitOffset);
 
             let nextButton = AddDiv(step1, 'ov_button', Loc('Next'));
             nextButton.addEventListener('click', () => {
@@ -232,7 +231,7 @@ export function ShowSharingDialog(settings, viewer) {
 
             let submitButton = AddDiv(step2, 'ov_button', Loc('Submit'));
             submitButton.addEventListener('click', () => {
-                let snapshot = previewImage.src; // Use the preview image as the snapshot
+                let snapshot = previewImage.src;
                 let info = {
                     intensity: intensityInput.value,
                     duration: durationInput.value,
@@ -240,7 +239,7 @@ export function ShowSharingDialog(settings, viewer) {
 
                 let emails = emailFields.map(input => input.value.trim()).filter(email => email.length > 0);
                 if (sendToSelfCheckbox.checked) {
-                    emails.push('self@example.com'); // Replace with actual user's email
+                    emails.push('self@example.com');
                 }
 
                 SendEmail(emails, 'Pain Snapshot', `Snapshot: ${snapshot}\nInfo: ${JSON.stringify(info)}`);
@@ -272,14 +271,10 @@ export function ShowSharingDialog(settings, viewer) {
         previewImage.removeEventListener('mousedown', HandlePreviewMouseDown, true);
         document.removeEventListener('mousemove', HandlePreviewMouseMove, true);
         document.removeEventListener('mouseup', HandlePreviewMouseUp, true);
-        // Reassign the original Rotate method after closing the dialog
+        previewImage.removeEventListener('wheel', HandleMouseWheel, true);
         camera.eye.Rotate = originalRotate;
     
         originalClose();
-    
-        // Log the camera object after closing the dialog
-        console.log('Camera after closing dialog:', viewer.navigation.GetCamera());
-        console.log('Rotate method after closing dialog:', camera.eye.Rotate);
     };
 
     dialog.Open();
