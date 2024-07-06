@@ -11,108 +11,257 @@ export function ShowSharingDialog(settings, viewer) {
     DialogManager.showDialog();
 }
 
-function createSnapshotManager(viewer, settings) {
-    const snapshotWidth = 1920;
-    const snapshotHeight = 1080;
-    const initialZoomLevel = settings.snapshotZoomLevel || 1.5;
+function createSnapshotManager(viewer, settings, snapshotWidth1 = 2000, snapshotHeight1 = 1080, snapshotWidth2 = 1080, snapshotHeight2 = 540) {
+    const initialZoomLevel = settings.snapshotZoomLevel || 0.5;
 
-    let isPanning = false;
-    let isOrbiting = false;
-    let startMousePosition = { x: 0, y: 0 };
-    let previewImage;
-    let panOffset = { x: 0, y: 0 };
-    let orbitOffset = { x: 0, y: 0 };
-    let currentZoomLevel = initialZoomLevel;
-    
-    const camera = viewer.navigation.GetCamera();
-    const originalRotate = camera.eye.Rotate;
+    let isPanning1 = false, isPanning2 = false, isPanning3 = false;
+    let isOrbiting1 = false, isOrbiting2 = false, isOrbiting3 = false;
+    let startMousePosition1 = { x: 0, y: 0 }, startMousePosition2 = { x: 0, y: 0 }, startMousePosition3 = { x: 0, y: 0 };
+    let previewImage1, previewImage2, previewImage3;
+    let panOffset1 = { x: 0, y: 0 }, panOffset2 = { x: 0, y: 0 }, panOffset3 = { x: 0, y: 0 };
+    let orbitOffset1 = { x: 0, y: 0 }, orbitOffset2 = { x: 0, y: 0 }, orbitOffset3 = { x: 0, y: 0 };
+    let currentZoomLevel1 = initialZoomLevel, currentZoomLevel2 = initialZoomLevel, currentZoomLevel3 = initialZoomLevel;
 
-    function captureSnapshot(isTransparent) {
-        return CaptureSnapshot(viewer, snapshotWidth, snapshotHeight, isTransparent, currentZoomLevel, panOffset, orbitOffset);
+    const camera1 = viewer.navigation.GetCamera();
+    const camera2 = Object.assign({}, camera1);  // Clone the initial camera for the second preview
+    const camera3 = Object.assign({}, camera1);  // Clone the initial camera for the third preview
+
+    const originalRotate1 = camera1.eye.Rotate;
+    const originalRotate2 = camera2.eye.Rotate;
+    const originalRotate3 = camera3.eye.Rotate;
+
+    function captureSnapshot(isTransparent, camera, zoomLevel, panOffset, orbitOffset, width, height) {
+        // Adjust camera for better framing
+        camera.zoom = zoomLevel;
+        camera.panOffset = panOffset;
+        camera.orbitOffset = orbitOffset;
+
+        // Set the aspect ratio
+        camera.aspectRatio = width / height;
+
+        return CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOffset, orbitOffset, camera);
     }
 
-    function updatePreview() {
-        let imageUrl = captureSnapshot(false);
-        previewImage.src = imageUrl;
+    function updatePreview1() {
+        let imageUrl = captureSnapshot(false, camera1, currentZoomLevel1, panOffset1, orbitOffset1, snapshotWidth1, snapshotHeight1); // Default size for preview 1
+        previewImage1.src = imageUrl;
     }
 
-    function handlePreviewMouseMove(event) {
-        if (!isPanning && !isOrbiting) return;
-    
+    function updatePreview2() {
+        let imageUrl = captureSnapshot(false, camera2, currentZoomLevel2, panOffset2, orbitOffset2, snapshotWidth2, snapshotHeight2); // Half size for preview 2
+        previewImage2.src = imageUrl;
+    }
+
+    function updatePreview3() {
+        let imageUrl = captureSnapshot(false, camera3, currentZoomLevel3, panOffset3, orbitOffset3, snapshotWidth2, snapshotHeight2); // Half size for preview 3
+        previewImage3.src = imageUrl;
+    }
+
+    function handlePreviewMouseMove1(event) {
+        if (!isPanning1 && !isOrbiting1) return;
+
         const currentMousePosition = { x: event.clientX, y: event.clientY };
-        const deltaX = currentMousePosition.x - startMousePosition.x;
-        const deltaY = currentMousePosition.y - startMousePosition.y;
-    
-        if (isOrbiting) {
+        const deltaX = currentMousePosition.x - startMousePosition1.x;
+        const deltaY = currentMousePosition.y - startMousePosition1.y;
+
+        if (isOrbiting1) {
             const orbitRatio = 0.1;
-            orbitOffset.x += deltaX * orbitRatio;
-            orbitOffset.y += deltaY * orbitRatio;
-        } else if (isPanning) {
+            orbitOffset1.x += deltaX * orbitRatio;
+            orbitOffset1.y += deltaY * orbitRatio;
+        } else if (isPanning1) {
             const panRatio = 0.075;
-            panOffset.x -= deltaX * panRatio;
-            panOffset.y -= deltaY * panRatio;
+            panOffset1.x -= deltaX * panRatio;
+            panOffset1.y -= deltaY * panRatio;
         }
-    
-        updatePreview();
-    
-        startMousePosition = currentMousePosition;
+
+        updatePreview1();
+
+        startMousePosition1 = currentMousePosition;
         event.preventDefault();
     }
 
-    function handlePreviewMouseUp(event) {
-        isPanning = false;
-        isOrbiting = false;
-        document.removeEventListener('mousemove', handlePreviewMouseMove, true);
-        document.removeEventListener('mouseup', handlePreviewMouseUp, true);
+    function handlePreviewMouseMove2(event) {
+        if (!isPanning2 && !isOrbiting2) return;
+
+        const currentMousePosition = { x: event.clientX, y: event.clientY };
+        const deltaX = currentMousePosition.x - startMousePosition2.x;
+        const deltaY = currentMousePosition.y - startMousePosition2.y;
+
+        if (isOrbiting2) {
+            const orbitRatio = 0.1;
+            orbitOffset2.x += deltaX * orbitRatio;
+            orbitOffset2.y += deltaY * orbitRatio;
+        } else if (isPanning2) {
+            const panRatio = 0.075;
+            panOffset2.x -= deltaX * panRatio;
+            panOffset2.y -= deltaY * panRatio;
+        }
+
+        updatePreview2();
+
+        startMousePosition2 = currentMousePosition;
         event.preventDefault();
     }
 
-    function handlePreviewMouseDown(event) {
-        startMousePosition = { x: event.clientX, y: event.clientY };
+    function handlePreviewMouseMove3(event) {
+        if (!isPanning3 && !isOrbiting3) return;
+
+        const currentMousePosition = { x: event.clientX, y: event.clientY };
+        const deltaX = currentMousePosition.x - startMousePosition3.x;
+        const deltaY = currentMousePosition.y - startMousePosition3.y;
+
+        if (isOrbiting3) {
+            const orbitRatio = 0.1;
+            orbitOffset3.x += deltaX * orbitRatio;
+            orbitOffset3.y += deltaY * orbitRatio;
+        } else if (isPanning3) {
+            const panRatio = 0.075;
+            panOffset3.x -= deltaX * panRatio;
+            panOffset3.y -= deltaY * panRatio;
+        }
+
+        updatePreview3();
+
+        startMousePosition3 = currentMousePosition;
+        event.preventDefault();
+    }
+
+    function handlePreviewMouseUp1(event) {
+        isPanning1 = false;
+        isOrbiting1 = false;
+        document.removeEventListener('mousemove', handlePreviewMouseMove1, true);
+        document.removeEventListener('mouseup', handlePreviewMouseUp1, true);
+        event.preventDefault();
+    }
+
+    function handlePreviewMouseUp2(event) {
+        isPanning2 = false;
+        isOrbiting2 = false;
+        document.removeEventListener('mousemove', handlePreviewMouseMove2, true);
+        document.removeEventListener('mouseup', handlePreviewMouseUp2, true);
+        event.preventDefault();
+    }
+
+    function handlePreviewMouseUp3(event) {
+        isPanning3 = false;
+        isOrbiting3 = false;
+        document.removeEventListener('mousemove', handlePreviewMouseMove3, true);
+        document.removeEventListener('mouseup', handlePreviewMouseUp3, true);
+        event.preventDefault();
+    }
+
+    function handlePreviewMouseDown1(event) {
+        startMousePosition1 = { x: event.clientX, y: event.clientY };
         if (event.button === 0) {
-            isOrbiting = true;
+            isOrbiting1 = true;
         } else if (event.button === 1 || event.button === 2) {
-            isPanning = true;
+            isPanning1 = true;
         }
-        document.addEventListener('mousemove', handlePreviewMouseMove, true);
-        document.addEventListener('mouseup', handlePreviewMouseUp, true);
+        document.addEventListener('mousemove', handlePreviewMouseMove1, true);
+        document.addEventListener('mouseup', handlePreviewMouseUp1, true);
         event.preventDefault();
     }
 
-    function handleMouseWheel(event) {
+    function handlePreviewMouseDown2(event) {
+        startMousePosition2 = { x: event.clientX, y: event.clientY };
+        if (event.button === 0) {
+            isOrbiting2 = true;
+        } else if (event.button === 1 || event.button === 2) {
+            isPanning2 = true;
+        }
+        document.addEventListener('mousemove', handlePreviewMouseMove2, true);
+        document.addEventListener('mouseup', handlePreviewMouseUp2, true);
+        event.preventDefault();
+    }
+
+    function handlePreviewMouseDown3(event) {
+        startMousePosition3 = { x: event.clientX, y: event.clientY };
+        if (event.button === 0) {
+            isOrbiting3 = true;
+        } else if (event.button === 1 || event.button === 2) {
+            isPanning3 = true;
+        }
+        document.addEventListener('mousemove', handlePreviewMouseMove3, true);
+        document.addEventListener('mouseup', handlePreviewMouseUp3, true);
+        event.preventDefault();
+    }
+
+    function handleMouseWheel1(event) {
         const zoomSpeed = 0.001;
-        currentZoomLevel += event.deltaY * zoomSpeed;
-        currentZoomLevel = Math.min(Math.max(currentZoomLevel, 0.1), 3);
-        updatePreview();
+        currentZoomLevel1 += event.deltaY * zoomSpeed;
+        currentZoomLevel1 = Math.min(Math.max(currentZoomLevel1, 0.1), 3);
+        updatePreview1();
         event.preventDefault();
     }
 
-    function initializePreviewImage(container) {
-        previewImage = CreateDomElement('img', 'ov_snapshot_preview_image');
-        container.appendChild(previewImage);
-        previewImage.addEventListener('wheel', handleMouseWheel, true);
-        previewImage.addEventListener('mousedown', handlePreviewMouseDown, true);
-        updatePreview();
+    function handleMouseWheel2(event) {
+        const zoomSpeed = 0.001;
+        currentZoomLevel2 += event.deltaY * zoomSpeed;
+        currentZoomLevel2 = Math.min(Math.max(currentZoomLevel2, 0.1), 3);
+        updatePreview2();
+        event.preventDefault();
+    }
+
+    function handleMouseWheel3(event) {
+        const zoomSpeed = 0.001;
+        currentZoomLevel3 += event.deltaY * zoomSpeed;
+        currentZoomLevel3 = Math.min(Math.max(currentZoomLevel3, 0.1), 3);
+        updatePreview3();
+        event.preventDefault();
+    }
+
+    function initializePreviewImages(preview1Container, preview2Container, preview3Container) {
+        previewImage1 = CreateDomElement('img', 'ov_snapshot_preview_image');
+        previewImage2 = CreateDomElement('img', 'ov_snapshot_preview_image');
+        previewImage3 = CreateDomElement('img', 'ov_snapshot_preview_image');
+    
+        preview1Container.appendChild(previewImage1);
+        preview2Container.appendChild(previewImage2);
+        preview3Container.appendChild(previewImage3);
+    
+        previewImage1.addEventListener('wheel', handleMouseWheel1, true);
+        previewImage1.addEventListener('mousedown', handlePreviewMouseDown1, true);
+    
+        previewImage2.addEventListener('wheel', handleMouseWheel2, true);
+        previewImage2.addEventListener('mousedown', handlePreviewMouseDown2, true);
+    
+        previewImage3.addEventListener('wheel', handleMouseWheel3, true);
+        previewImage3.addEventListener('mousedown', handlePreviewMouseDown3, true);
+    
+        updatePreview1();
+        updatePreview2();
+        updatePreview3();
     }
 
     function cleanup() {
-        previewImage.removeEventListener('mousedown', handlePreviewMouseDown, true);
-        document.removeEventListener('mousemove', handlePreviewMouseMove, true);
-        document.removeEventListener('mouseup', handlePreviewMouseUp, true);
-        previewImage.removeEventListener('wheel', handleMouseWheel, true);
-        camera.eye.Rotate = originalRotate;
+        previewImage1.removeEventListener('mousedown', handlePreviewMouseDown1, true);
+        document.removeEventListener('mousemove', handlePreviewMouseMove1, true);
+        document.removeEventListener('mouseup', handlePreviewMouseUp1, true);
+        previewImage1.removeEventListener('wheel', handleMouseWheel1, true);
+
+        previewImage2.removeEventListener('mousedown', handlePreviewMouseDown2, true);
+        document.removeEventListener('mousemove', handlePreviewMouseMove2, true);
+        document.removeEventListener('mouseup', handlePreviewMouseUp2, true);
+        previewImage2.removeEventListener('wheel', handleMouseWheel2, true);
+
+        previewImage3.removeEventListener('mousedown', handlePreviewMouseDown3, true);
+        document.removeEventListener('mousemove', handlePreviewMouseMove3, true);
+        document.removeEventListener('mouseup', handlePreviewMouseUp3, true);
+        previewImage3.removeEventListener('wheel', handleMouseWheel3, true);
+
+        camera1.eye.Rotate = originalRotate1;
+        camera2.eye.Rotate = originalRotate2;
+        camera3.eye.Rotate = originalRotate3;
     }
 
     return {
-        initializePreviewImage,
+        initializePreviewImages,
         cleanup,
         captureSnapshot
     };
 }
 
-function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOffset, orbitOffset) {
-    const camera = viewer.navigation.GetCamera();
-
+function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOffset, orbitOffset, camera) {
     // Store original camera state
     const originalCamera = {
         eye: { x: camera.eye.x, y: camera.eye.y, z: camera.eye.z },
@@ -154,12 +303,12 @@ function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOff
     const pannedCenter = {
         x: camera.center.x + normalizedRight.x * panOffset.x * panScale + camera.up.x * panOffset.y * panScale,
         y: camera.center.y + normalizedRight.y * panOffset.x * panScale + camera.up.y * panOffset.y * panScale,
-        z: camera.center.z + normalizedRight.z * panOffset.x * panScale + camera.up.z * panOffset.y * panScale
+        z: camera.center.z + normalizedRight.z * panOffset.x * panScale + camera.up.z * panScale
     };
     const pannedEye = {
         x: zoomedEye.x + normalizedRight.x * panOffset.x * panScale + camera.up.x * panOffset.y * panScale,
-        y: zoomedEye.y + normalizedRight.y * panOffset.x * panScale + camera.up.y * panOffset.y * panScale,
-        z: zoomedEye.z + normalizedRight.z * panOffset.x * panScale + camera.up.z * panOffset.y * panScale
+        y: zoomedEye.y + normalizedRight.y * panOffset.x * panScale + camera.up.y * panScale,
+        z: zoomedEye.z + normalizedRight.z * panOffset.x * panScale + camera.up.z * panScale
     };
 
     // Set temporary camera for snapshot
@@ -173,6 +322,11 @@ function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOff
 
     // Apply orbit
     viewer.navigation.Orbit(orbitOffset.x, orbitOffset.y);
+
+    // Set aspect ratio and resize renderer
+    viewer.renderer.setSize(width, height);
+    viewer.camera.aspect = width / height;
+    viewer.camera.updateProjectionMatrix();
 
     // Capture the image
     const imageDataUrl = viewer.GetImageAsDataUrl(width, height, isTransparent);
@@ -202,41 +356,43 @@ function createDialogManager(SnapshotManager) {
     }
 
     function createStep1(container) {
-        let step1 = AddDiv(container, 'ov_dialog_step');
-
-        AddDiv(step1, 'ov_dialog_title', Loc('Share Snapshot'));
-        AddDiv(step1, 'ov_dialog_description', Loc('Quickly share a snapshot and details of your pain location with family, friends, or therapists.'));
-
-        let emailFields = [];
+        let step1 = AddDiv(container, 'ov_dialog_step ov_step1');
+        
+        let leftContainer = AddDiv(step1, 'ov_left_container');
+        AddDiv(leftContainer, 'ov_dialog_title', Loc('Share Snapshot'));
+        AddDiv(leftContainer, 'ov_dialog_description', Loc('Quickly share a snapshot and details of your pain location with family, friends, or therapists.'));
+        
+        let emailFieldsContainer = AddDiv(leftContainer, 'ov_email_fields_container');
         for (let i = 0; i < 3; i++) {
-            AddDiv(step1, 'ov_dialog_label', Loc(`Email ${i + 1}`));
-            let emailInput = AddDomElement(step1, 'input', `email${i}`);
+            let emailLabel = AddDiv(emailFieldsContainer, 'ov_dialog_label', Loc(`Email ${i + 1}`));
+            let emailInput = AddDomElement(emailFieldsContainer, 'input', `email${i}`);
             emailInput.setAttribute('type', 'email');
             emailInput.setAttribute('class', 'ov_dialog_input');
             emailInput.setAttribute('placeholder', Loc('Enter email address'));
-            emailFields.push(emailInput);
         }
-
-        let snapshotPreviewContainer = AddDiv(step1, 'ov_snapshot_preview_container');
-        SnapshotManager.initializePreviewImage(snapshotPreviewContainer);
-
-        let nextButton = AddDiv(step1, 'ov_button', Loc('Next'));
+        
+        let rightContainer = AddDiv(step1, 'ov_right_container');
+        let previewContainer = AddDiv(rightContainer, 'ov_preview_container');
+        let preview1Container = AddDiv(previewContainer, 'ov_preview1_container');
+        let previewRow = AddDiv(previewContainer, 'ov_preview_row'); // New row container for side-by-side previews
+        let preview2Container = AddDiv(previewRow, 'ov_preview2_container');
+        let preview3Container = AddDiv(previewRow, 'ov_preview3_container');
+        
+        SnapshotManager.initializePreviewImages(preview1Container, preview2Container, preview3Container);
+        
+        let nextButton = AddDiv(leftContainer, 'ov_button ov_next_button', Loc('Next'));
         nextButton.addEventListener('click', () => {
-            let emails = emailFields.map(input => input.value.trim()).filter(email => email.length > 0);
-            if (emails.length > 3) {
-                ShowMessageDialog(Loc('Error'), Loc('You can only send to up to 3 recipients.'));
-            } else {
-                step1.style.display = 'none';
-                step2.style.display = 'block';
-            }
+            step1.style.display = 'none';
+            step2.style.display = 'block';
         });
-
+        
         return step1;
     }
 
     function createStep2(container) {
-        let step2 = AddDiv(container, 'ov_dialog_step');
+        let step2 = AddDiv(container, 'ov_dialog_step ov_step2');
         step2.style.display = 'none';
+
         AddDiv(step2, 'ov_dialog_title', Loc('Additional Options'));
 
         let sendToSelfCheckbox = AddCheckbox(step2, 'send_to_self', Loc('Send to myself'), false, () => {});
@@ -256,17 +412,22 @@ function createDialogManager(SnapshotManager) {
         durationInput.setAttribute('class', 'ov_dialog_input');
         durationInput.setAttribute('placeholder', Loc('Enter pain duration (e.g., 2 hours, 3 days)'));
 
-        let submitButton = AddDiv(step2, 'ov_button', Loc('Submit'));
+        let submitButton = AddDiv(step2, 'ov_button ov_submit_button', Loc('Submit'));
         submitButton.addEventListener('click', () => {
-            let snapshot = SnapshotManager.captureSnapshot(false);
+            let snapshot1 = SnapshotManager.captureSnapshot(false, camera1, currentZoomLevel1, panOffset1, orbitOffset1);
+            let snapshot2 = SnapshotManager.captureSnapshot(false, camera2, currentZoomLevel2, panOffset2, orbitOffset2);
+            let snapshot3 = SnapshotManager.captureSnapshot(false, camera3, currentZoomLevel3, panOffset3, orbitOffset3);
+
             let info = {
                 intensity: intensityInput.value,
                 duration: durationInput.value,
             };
 
-            // Here you would implement the actual sharing logic
-            console.log('Sharing snapshot:', snapshot);
-            console.log('Sharing info:', info);
+            // Here you would imsplement the actual sharing logic
+            // console.log('Sharing snapshot1:', snapshot1);
+            // console.log('Sharing snapshot2:', snapshot2);
+            // console.log('Sharing snapshot3:', snapshot3);
+            // console.log('Sharing info:', info);
 
             ShowMessageDialog(Loc('Success'), Loc('Your snapshot and information have been shared.'));
         });
