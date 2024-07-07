@@ -5,260 +5,153 @@ import { ButtonDialog } from './dialog.js';
 import { HandleEvent } from './eventhandler.js';
 import { Loc } from '../engine/core/localization.js';
 
+
+const CONFIG = {
+    SNAPSHOT_SIZES: {
+        LARGE: { width: 2000, height: 1080 },
+        SMALL: { width: 1080, height: 540 }
+    },
+    INITIAL_ZOOM: 0.5,
+    MAX_ZOOM: 3,
+    MIN_ZOOM: 0.1,
+    ZOOM_SPEED: 0.001,
+    ORBIT_RATIO: 0.1,
+    PAN_RATIO: 0.075
+};
+
 export function ShowSharingDialog(settings, viewer) {
     const SnapshotManager = createSnapshotManager(viewer, settings);
     const DialogManager = createDialogManager(SnapshotManager);
     DialogManager.showDialog();
 }
 
-function createSnapshotManager(viewer, settings, snapshotWidth1 = 2000, snapshotHeight1 = 1080, snapshotWidth2 = 1080, snapshotHeight2 = 540) {
-    const initialZoomLevel = settings.snapshotZoomLevel || 0.5;
+function createSnapshotManager(viewer, settings) {
+    const cameras = Array(3).fill().map(() => ({ ...viewer.navigation.GetCamera() }));
+    const states = Array(3).fill().map(() => ({
+        isPanning: false,
+        isOrbiting: false,
+        startMousePosition: { x: 0, y: 0 },
+        panOffset: { x: 0, y: 0 },
+        orbitOffset: { x: 0, y: 0 },
+        currentZoomLevel: CONFIG.INITIAL_ZOOM
+    }));
+    let previewImages = [];
 
-    let isPanning1 = false, isPanning2 = false, isPanning3 = false;
-    let isOrbiting1 = false, isOrbiting2 = false, isOrbiting3 = false;
-    let startMousePosition1 = { x: 0, y: 0 }, startMousePosition2 = { x: 0, y: 0 }, startMousePosition3 = { x: 0, y: 0 };
-    let previewImage1, previewImage2, previewImage3;
-    let panOffset1 = { x: 0, y: 0 }, panOffset2 = { x: 0, y: 0 }, panOffset3 = { x: 0, y: 0 };
-    let orbitOffset1 = { x: 0, y: 0 }, orbitOffset2 = { x: 0, y: 0 }, orbitOffset3 = { x: 0, y: 0 };
-    let currentZoomLevel1 = initialZoomLevel, currentZoomLevel2 = initialZoomLevel, currentZoomLevel3 = initialZoomLevel;
+    function captureSnapshot(index) {
+        if (index < 0 || index >= cameras.length) {
+            console.error(`Invalid index: ${index}`);
+            return null;
+        }
 
-    const camera1 = viewer.navigation.GetCamera();
-    const camera2 = Object.assign({}, camera1);  // Clone the initial camera for the second preview
-    const camera3 = Object.assign({}, camera1);  // Clone the initial camera for the third preview
+        const { width, height } = index === 0 ? CONFIG.SNAPSHOT_SIZES.LARGE : CONFIG.SNAPSHOT_SIZES.SMALL;
+        const { currentZoomLevel, panOffset, orbitOffset } = states[index];
+        const camera = cameras[index];
 
-    const originalRotate1 = camera1.eye.Rotate;
-    const originalRotate2 = camera2.eye.Rotate;
-    const originalRotate3 = camera3.eye.Rotate;
-
-    function captureSnapshot(isTransparent, camera, zoomLevel, panOffset, orbitOffset, width, height) {
-        // Adjust camera for better framing
-        camera.zoom = zoomLevel;
+        camera.zoom = currentZoomLevel;
         camera.panOffset = panOffset;
         camera.orbitOffset = orbitOffset;
-
-        // Set the aspect ratio
         camera.aspectRatio = width / height;
 
-        return CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOffset, orbitOffset, camera);
+        return CaptureSnapshot(viewer, width, height, false, currentZoomLevel, panOffset, orbitOffset, camera);
     }
 
-    function updatePreview1() {
-        let imageUrl = captureSnapshot(false, camera1, currentZoomLevel1, panOffset1, orbitOffset1, snapshotWidth1, snapshotHeight1); // Default size for preview 1
-        previewImage1.src = imageUrl;
-    }
-
-    function updatePreview2() {
-        let imageUrl = captureSnapshot(false, camera2, currentZoomLevel2, panOffset2, orbitOffset2, snapshotWidth2, snapshotHeight2); // Half size for preview 2
-        previewImage2.src = imageUrl;
-    }
-
-    function updatePreview3() {
-        let imageUrl = captureSnapshot(false, camera3, currentZoomLevel3, panOffset3, orbitOffset3, snapshotWidth2, snapshotHeight2); // Half size for preview 3
-        previewImage3.src = imageUrl;
-    }
-
-    function handlePreviewMouseMove1(event) {
-        if (!isPanning1 && !isOrbiting1) return;
-
-        const currentMousePosition = { x: event.clientX, y: event.clientY };
-        const deltaX = currentMousePosition.x - startMousePosition1.x;
-        const deltaY = currentMousePosition.y - startMousePosition1.y;
-
-        if (isOrbiting1) {
-            const orbitRatio = 0.1;
-            orbitOffset1.x += deltaX * orbitRatio;
-            orbitOffset1.y += deltaY * orbitRatio;
-        } else if (isPanning1) {
-            const panRatio = 0.075;
-            panOffset1.x -= deltaX * panRatio;
-            panOffset1.y -= deltaY * panRatio;
+    function updatePreview(index) {
+        if (index < 0 || index >= previewImages.length) {
+            console.error(`Invalid preview index: ${index}`);
+            return;
         }
 
-        updatePreview1();
-
-        startMousePosition1 = currentMousePosition;
-        event.preventDefault();
-    }
-
-    function handlePreviewMouseMove2(event) {
-        if (!isPanning2 && !isOrbiting2) return;
-
-        const currentMousePosition = { x: event.clientX, y: event.clientY };
-        const deltaX = currentMousePosition.x - startMousePosition2.x;
-        const deltaY = currentMousePosition.y - startMousePosition2.y;
-
-        if (isOrbiting2) {
-            const orbitRatio = 0.1;
-            orbitOffset2.x += deltaX * orbitRatio;
-            orbitOffset2.y += deltaY * orbitRatio;
-        } else if (isPanning2) {
-            const panRatio = 0.075;
-            panOffset2.x -= deltaX * panRatio;
-            panOffset2.y -= deltaY * panRatio;
+        const snapshotData = captureSnapshot(index);
+        if (snapshotData) {
+            previewImages[index].src = snapshotData;
+        } else {
+            console.error(`Failed to capture snapshot for index: ${index}`);
         }
-
-        updatePreview2();
-
-        startMousePosition2 = currentMousePosition;
-        event.preventDefault();
     }
 
-    function handlePreviewMouseMove3(event) {
-        if (!isPanning3 && !isOrbiting3) return;
+    function initializePreviewImages(containers) {
+        previewImages = containers.map((container, index) => {
+            const img = CreateDomElement('img', 'ov_snapshot_preview_image');
+            container.appendChild(img);
+            ['wheel', 'mousedown'].forEach(eventType => 
+                img.addEventListener(eventType, (e) => handleMouseEvent(index, eventType, e), true)
+            );
+            return img;
+        });
 
-        const currentMousePosition = { x: event.clientX, y: event.clientY };
-        const deltaX = currentMousePosition.x - startMousePosition3.x;
-        const deltaY = currentMousePosition.y - startMousePosition3.y;
-
-        if (isOrbiting3) {
-            const orbitRatio = 0.1;
-            orbitOffset3.x += deltaX * orbitRatio;
-            orbitOffset3.y += deltaY * orbitRatio;
-        } else if (isPanning3) {
-            const panRatio = 0.075;
-            panOffset3.x -= deltaX * panRatio;
-            panOffset3.y -= deltaY * panRatio;
-        }
-
-        updatePreview3();
-
-        startMousePosition3 = currentMousePosition;
-        event.preventDefault();
+        // Update previews after initialization
+        previewImages.forEach((_, index) => updatePreview(index));
     }
-
-    function handlePreviewMouseUp1(event) {
-        isPanning1 = false;
-        isOrbiting1 = false;
-        document.removeEventListener('mousemove', handlePreviewMouseMove1, true);
-        document.removeEventListener('mouseup', handlePreviewMouseUp1, true);
-        event.preventDefault();
-    }
-
-    function handlePreviewMouseUp2(event) {
-        isPanning2 = false;
-        isOrbiting2 = false;
-        document.removeEventListener('mousemove', handlePreviewMouseMove2, true);
-        document.removeEventListener('mouseup', handlePreviewMouseUp2, true);
-        event.preventDefault();
-    }
-
-    function handlePreviewMouseUp3(event) {
-        isPanning3 = false;
-        isOrbiting3 = false;
-        document.removeEventListener('mousemove', handlePreviewMouseMove3, true);
-        document.removeEventListener('mouseup', handlePreviewMouseUp3, true);
-        event.preventDefault();
-    }
-
-    function handlePreviewMouseDown1(event) {
-        startMousePosition1 = { x: event.clientX, y: event.clientY };
-        if (event.button === 0) {
-            isOrbiting1 = true;
-        } else if (event.button === 1 || event.button === 2) {
-            isPanning1 = true;
-        }
-        document.addEventListener('mousemove', handlePreviewMouseMove1, true);
-        document.addEventListener('mouseup', handlePreviewMouseUp1, true);
-        event.preventDefault();
-    }
-
-    function handlePreviewMouseDown2(event) {
-        startMousePosition2 = { x: event.clientX, y: event.clientY };
-        if (event.button === 0) {
-            isOrbiting2 = true;
-        } else if (event.button === 1 || event.button === 2) {
-            isPanning2 = true;
-        }
-        document.addEventListener('mousemove', handlePreviewMouseMove2, true);
-        document.addEventListener('mouseup', handlePreviewMouseUp2, true);
-        event.preventDefault();
-    }
-
-    function handlePreviewMouseDown3(event) {
-        startMousePosition3 = { x: event.clientX, y: event.clientY };
-        if (event.button === 0) {
-            isOrbiting3 = true;
-        } else if (event.button === 1 || event.button === 2) {
-            isPanning3 = true;
-        }
-        document.addEventListener('mousemove', handlePreviewMouseMove3, true);
-        document.addEventListener('mouseup', handlePreviewMouseUp3, true);
-        event.preventDefault();
-    }
-
-    function handleMouseWheel1(event) {
-        const zoomSpeed = 0.001;
-        currentZoomLevel1 += event.deltaY * zoomSpeed;
-        currentZoomLevel1 = Math.min(Math.max(currentZoomLevel1, 0.1), 3);
-        updatePreview1();
-        event.preventDefault();
-    }
-
-    function handleMouseWheel2(event) {
-        const zoomSpeed = 0.001;
-        currentZoomLevel2 += event.deltaY * zoomSpeed;
-        currentZoomLevel2 = Math.min(Math.max(currentZoomLevel2, 0.1), 3);
-        updatePreview2();
-        event.preventDefault();
-    }
-
-    function handleMouseWheel3(event) {
-        const zoomSpeed = 0.001;
-        currentZoomLevel3 += event.deltaY * zoomSpeed;
-        currentZoomLevel3 = Math.min(Math.max(currentZoomLevel3, 0.1), 3);
-        updatePreview3();
-        event.preventDefault();
-    }
-
-    function initializePreviewImages(preview1Container, preview2Container, preview3Container) {
-        previewImage1 = CreateDomElement('img', 'ov_snapshot_preview_image');
-        previewImage2 = CreateDomElement('img', 'ov_snapshot_preview_image');
-        previewImage3 = CreateDomElement('img', 'ov_snapshot_preview_image');
     
-        preview1Container.appendChild(previewImage1);
-        preview2Container.appendChild(previewImage2);
-        preview3Container.appendChild(previewImage3);
-    
-        previewImage1.addEventListener('wheel', handleMouseWheel1, true);
-        previewImage1.addEventListener('mousedown', handlePreviewMouseDown1, true);
-    
-        previewImage2.addEventListener('wheel', handleMouseWheel2, true);
-        previewImage2.addEventListener('mousedown', handlePreviewMouseDown2, true);
-    
-        previewImage3.addEventListener('wheel', handleMouseWheel3, true);
-        previewImage3.addEventListener('mousedown', handlePreviewMouseDown3, true);
-    
-        updatePreview1();
-        updatePreview2();
-        updatePreview3();
+    function handleMouseEvent(index, eventType, event) {
+        const state = states[index];
+        switch (eventType) {
+            case 'mousemove':
+                if (!state.isPanning && !state.isOrbiting) return;
+                const currentMousePosition = { x: event.clientX, y: event.clientY };
+                const deltaX = currentMousePosition.x - state.startMousePosition.x;
+                const deltaY = currentMousePosition.y - state.startMousePosition.y;
+
+                if (state.isOrbiting) {
+                    state.orbitOffset.x += deltaX * CONFIG.ORBIT_RATIO;
+                    state.orbitOffset.y += deltaY * CONFIG.ORBIT_RATIO;
+                } else if (state.isPanning) {
+                    state.panOffset.x -= deltaX * CONFIG.PAN_RATIO;
+                    state.panOffset.y -= deltaY * CONFIG.PAN_RATIO;
+                }
+
+                updatePreview(index);
+                state.startMousePosition = currentMousePosition;
+                break;
+            case 'mousedown':
+                state.startMousePosition = { x: event.clientX, y: event.clientY };
+                if (event.button === 0) {
+                    state.isOrbiting = true;
+                } else if (event.button === 1 || event.button === 2) {
+                    state.isPanning = true;
+                }
+                document.addEventListener('mousemove', (e) => handleMouseEvent(index, 'mousemove', e), true);
+                document.addEventListener('mouseup', (e) => handleMouseEvent(index, 'mouseup', e), true);
+                break;
+            case 'mouseup':
+                state.isPanning = false;
+                state.isOrbiting = false;
+                document.removeEventListener('mousemove', (e) => handleMouseEvent(index, 'mousemove', e), true);
+                document.removeEventListener('mouseup', (e) => handleMouseEvent(index, 'mouseup', e), true);
+                break;
+            case 'wheel':
+                state.currentZoomLevel += event.deltaY * CONFIG.ZOOM_SPEED;
+                state.currentZoomLevel = Math.min(Math.max(state.currentZoomLevel, CONFIG.MIN_ZOOM), CONFIG.MAX_ZOOM);
+                updatePreview(index);
+                break;
+        }
+        event.preventDefault();
+    }
+
+    function initializePreviewImages(containers) {
+        previewImages = containers.map((container, index) => {
+            const img = CreateDomElement('img', 'ov_snapshot_preview_image');
+            container.appendChild(img);
+            img.addEventListener('wheel', (e) => handleMouseEvent(index, 'wheel', e), { passive: false });
+            img.addEventListener('mousedown', (e) => handleMouseEvent(index, 'mousedown', e));
+            img.addEventListener('contextmenu', (e) => e.preventDefault());
+            return img;
+        });
+
+        // Update previews after initialization
+        previewImages.forEach((_, index) => updatePreview(index));
     }
 
     function cleanup() {
-        previewImage1.removeEventListener('mousedown', handlePreviewMouseDown1, true);
-        document.removeEventListener('mousemove', handlePreviewMouseMove1, true);
-        document.removeEventListener('mouseup', handlePreviewMouseUp1, true);
-        previewImage1.removeEventListener('wheel', handleMouseWheel1, true);
-
-        previewImage2.removeEventListener('mousedown', handlePreviewMouseDown2, true);
-        document.removeEventListener('mousemove', handlePreviewMouseMove2, true);
-        document.removeEventListener('mouseup', handlePreviewMouseUp2, true);
-        previewImage2.removeEventListener('wheel', handleMouseWheel2, true);
-
-        previewImage3.removeEventListener('mousedown', handlePreviewMouseDown3, true);
-        document.removeEventListener('mousemove', handlePreviewMouseMove3, true);
-        document.removeEventListener('mouseup', handlePreviewMouseUp3, true);
-        previewImage3.removeEventListener('wheel', handleMouseWheel3, true);
-
-        camera1.eye.Rotate = originalRotate1;
-        camera2.eye.Rotate = originalRotate2;
-        camera3.eye.Rotate = originalRotate3;
+        previewImages.forEach((img, index) => {
+            img.removeEventListener('wheel', (e) => handleMouseEvent(index, 'wheel', e));
+            img.removeEventListener('mousedown', (e) => handleMouseEvent(index, 'mousedown', e));
+        });
+        document.removeEventListener('mousemove', handleMouseEvent);
+        document.removeEventListener('mouseup', handleMouseEvent);
     }
 
-    return {
-        initializePreviewImages,
-        cleanup,
-        captureSnapshot
-    };
+    return { initializePreviewImages, cleanup, captureSnapshot, updatePreview };
 }
 
 function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOffset, orbitOffset, camera) {
@@ -346,118 +239,112 @@ function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOff
     return imageDataUrl;
 }
 
-function createDialogManager(SnapshotManager) {
+function createDialogManager(snapshotManager) {
     function createMultiStepForm(parentDiv) {
-        let formContainer = AddDiv(parentDiv, 'ov_dialog_form_container');
-        let step1 = createStep1(formContainer);
-        let step2 = createStep2(formContainer);
-
+        const formContainer = AddDiv(parentDiv, 'ov_dialog_form_container');
+        const step1 = createStep(formContainer, 1);
+        const step2 = createStep(formContainer, 2);
         return { step1, step2 };
     }
 
-    function createStep1(container) {
-        let step1 = AddDiv(container, 'ov_dialog_step ov_step1');
-        
-        let leftContainer = AddDiv(step1, 'ov_left_container');
-        AddDiv(leftContainer, 'ov_dialog_title', Loc('Share Snapshot'));
-        AddDiv(leftContainer, 'ov_dialog_description', Loc('Quickly share a snapshot and details of your pain location with family, friends, or therapists.'));
-        
-        let emailFieldsContainer = AddDiv(leftContainer, 'ov_email_fields_container');
-        for (let i = 0; i < 3; i++) {
-            let emailLabel = AddDiv(emailFieldsContainer, 'ov_dialog_label', Loc(`Email ${i + 1}`));
-            let emailInput = AddDomElement(emailFieldsContainer, 'input', `email${i}`);
-            emailInput.setAttribute('type', 'email');
-            emailInput.setAttribute('class', 'ov_dialog_input');
-            emailInput.setAttribute('placeholder', Loc('Enter email address'));
-        }
-        
-        let rightContainer = AddDiv(step1, 'ov_right_container');
-        let previewContainer = AddDiv(rightContainer, 'ov_preview_container');
-        let preview1Container = AddDiv(previewContainer, 'ov_preview1_container');
-        let previewRow = AddDiv(previewContainer, 'ov_preview_row'); // New row container for side-by-side previews
-        let preview2Container = AddDiv(previewRow, 'ov_preview2_container');
-        let preview3Container = AddDiv(previewRow, 'ov_preview3_container');
-        
-        SnapshotManager.initializePreviewImages(preview1Container, preview2Container, preview3Container);
-        
-        let nextButton = AddDiv(leftContainer, 'ov_button ov_next_button', Loc('Next'));
-        nextButton.addEventListener('click', () => {
-            step1.style.display = 'none';
-            step2.style.display = 'block';
-        });
-        
-        return step1;
+    function createStep(container, stepNumber) {
+        const step = AddDiv(container, `ov_dialog_step ov_step${stepNumber}`);
+        if (stepNumber === 2) step.style.display = 'none';
+
+        const content = stepNumber === 1 ? createStep1Content(step) : createStep2Content(step);
+
+        return step;
     }
 
-    function createStep2(container) {
-        let step2 = AddDiv(container, 'ov_dialog_step ov_step2');
-        step2.style.display = 'none';
+    function createStep1Content(step) {
+        const leftContainer = AddDiv(step, 'ov_left_container');
+        AddDiv(leftContainer, 'ov_dialog_title', Loc('Share Snapshot'));
+        AddDiv(leftContainer, 'ov_dialog_description', Loc('Quickly share a snapshot and details of your pain location with family, friends, or therapists.'));
 
-        AddDiv(step2, 'ov_dialog_title', Loc('Additional Options'));
+        const emailFieldsContainer = AddDiv(leftContainer, 'ov_email_fields_container');
+        for (let i = 0; i < 3; i++) {
+            AddDiv(emailFieldsContainer, 'ov_dialog_label', Loc(`Email ${i + 1}`));
+            const emailInput = AddDomElement(emailFieldsContainer, 'input', `email${i}`);
+            emailInput.type = 'email';
+            emailInput.className = 'ov_dialog_input';
+            emailInput.placeholder = Loc('Enter email address');
+        }
 
-        let sendToSelfCheckbox = AddCheckbox(step2, 'send_to_self', Loc('Send to myself'), false, () => {});
-        let downloadCheckbox = AddCheckbox(step2, 'download_snapshot', Loc('Download snapshot and info'), false, () => {});
+        const rightContainer = AddDiv(step, 'ov_right_container');
+        const previewContainer = AddDiv(rightContainer, 'ov_preview_container');
+        
+        const preview1Container = AddDiv(previewContainer, 'ov_preview1_container');
+        const previewRow = AddDiv(previewContainer, 'ov_preview_row');
+        const preview2Container = AddDiv(previewRow, 'ov_preview2_container');
+        const preview3Container = AddDiv(previewRow, 'ov_preview3_container');
+    
+        const previewContainers = [preview1Container, preview2Container, preview3Container];
+    
+        snapshotManager.initializePreviewImages(previewContainers);
 
-        let intensityLabel = AddDiv(step2, 'ov_dialog_label', Loc('Pain Intensity'));
-        let intensityInput = AddDomElement(step2, 'input', null);
-        intensityInput.setAttribute('type', 'number');
-        intensityInput.setAttribute('min', '1');
-        intensityInput.setAttribute('max', '10');
-        intensityInput.setAttribute('class', 'ov_dialog_input');
-        intensityInput.setAttribute('placeholder', Loc('Enter pain intensity (1-10)'));
-
-        let durationLabel = AddDiv(step2, 'ov_dialog_label', Loc('Pain Duration'));
-        let durationInput = AddDomElement(step2, 'input', null);
-        durationInput.setAttribute('type', 'text');
-        durationInput.setAttribute('class', 'ov_dialog_input');
-        durationInput.setAttribute('placeholder', Loc('Enter pain duration (e.g., 2 hours, 3 days)'));
-
-        let submitButton = AddDiv(step2, 'ov_button ov_submit_button', Loc('Submit'));
-        submitButton.addEventListener('click', () => {
-            let snapshot1 = SnapshotManager.captureSnapshot(false, camera1, currentZoomLevel1, panOffset1, orbitOffset1);
-            let snapshot2 = SnapshotManager.captureSnapshot(false, camera2, currentZoomLevel2, panOffset2, orbitOffset2);
-            let snapshot3 = SnapshotManager.captureSnapshot(false, camera3, currentZoomLevel3, panOffset3, orbitOffset3);
-
-            let info = {
-                intensity: intensityInput.value,
-                duration: durationInput.value,
-            };
-
-            // Here you would imsplement the actual sharing logic
-            // console.log('Sharing snapshot1:', snapshot1);
-            // console.log('Sharing snapshot2:', snapshot2);
-            // console.log('Sharing snapshot3:', snapshot3);
-            // console.log('Sharing info:', info);
-
-            ShowMessageDialog(Loc('Success'), Loc('Your snapshot and information have been shared.'));
+        const nextButton = AddDiv(leftContainer, 'ov_button ov_next_button', Loc('Next'));
+        nextButton.addEventListener('click', () => {
+            step.style.display = 'none';
+            step.nextElementSibling.style.display = 'block';
         });
+    }
 
-        return step2;
+    function createStep2Content(step) {
+        AddDiv(step, 'ov_dialog_title', Loc('Additional Options'));
+
+        AddCheckbox(step, 'send_to_self', Loc('Send to myself'), false, () => {});
+        AddCheckbox(step, 'download_snapshot', Loc('Download snapshot and info'), false, () => {});
+
+        const intensityInput = createInputField(step, 'number', Loc('Pain Intensity'), 'Enter pain intensity (1-10)', { min: 1, max: 10 });
+        const durationInput = createInputField(step, 'text', Loc('Pain Duration'), 'Enter pain duration (e.g., 2 hours, 3 days)');
+
+        const submitButton = AddDiv(step, 'ov_button ov_submit_button', Loc('Submit'));
+        submitButton.addEventListener('click', () => handleSubmit(intensityInput, durationInput));
+    }
+
+    function createInputField(container, type, labelText, placeholder, attributes = {}) {
+        AddDiv(container, 'ov_dialog_label', labelText);
+        const input = AddDomElement(container, 'input', null);
+        input.type = type;
+        input.className = 'ov_dialog_input';
+        input.placeholder = Loc(placeholder);
+        Object.entries(attributes).forEach(([key, value]) => input.setAttribute(key, value));
+        return input;
+    }
+
+    function handleSubmit(intensityInput, durationInput) {
+        const snapshots = [1, 2, 3].map(i => snapshotManager.captureSnapshot(i - 1));
+        const info = {
+            intensity: intensityInput.value,
+            duration: durationInput.value,
+        };
+
+        // Here you would implement the actual sharing logic
+        console.log('Sharing snapshots:', snapshots);
+        console.log('Sharing info:', info);
+
+        ShowMessageDialog(Loc('Success'), Loc('Your snapshot and information have been shared.'));
     }
 
     function showDialog() {
-        let dialog = new ButtonDialog();
-        let contentDiv = dialog.Init(Loc('Share'), [
+        const dialog = new ButtonDialog();
+        const contentDiv = dialog.Init(Loc('Share'), [
             {
                 name: Loc('Close'),
-                onClick() {
-                    dialog.Close();
-                }
+                onClick: () => dialog.Close()
             }
         ]);
 
         createMultiStepForm(contentDiv);
 
         const originalClose = dialog.Close.bind(dialog);
-        dialog.Close = function() {
-            SnapshotManager.cleanup();
+        dialog.Close = () => {
+            snapshotManager.cleanup();
             originalClose();
         };
 
         dialog.Open();
     }
 
-    return {
-        showDialog
-    };
+    return { showDialog };
 }
