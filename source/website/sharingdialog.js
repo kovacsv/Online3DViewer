@@ -73,16 +73,19 @@ function createSnapshotManager(viewer, settings) {
         previewImages = containers.map((container, index) => {
             const img = CreateDomElement('img', 'ov_snapshot_preview_image');
             container.appendChild(img);
-            ['wheel', 'mousedown'].forEach(eventType => 
-                img.addEventListener(eventType, (e) => handleMouseEvent(index, eventType, e), true)
-            );
+            ['wheel', 'mousedown', 'mousemove', 'mouseup', 'contextmenu'].forEach(eventType => {
+                img.addEventListener(eventType, (e) => {
+                    e.stopPropagation();
+                    handleMouseEvent(index, eventType, e);
+                }, { passive: false });
+            });
             return img;
         });
 
         // Update previews after initialization
         previewImages.forEach((_, index) => updatePreview(index));
     }
-    
+
     function handleMouseEvent(index, eventType, event) {
         const state = states[index];
         switch (eventType) {
@@ -272,14 +275,14 @@ function createDialogManager(snapshotManager) {
 
         const rightContainer = AddDiv(step, 'ov_right_container');
         const previewContainer = AddDiv(rightContainer, 'ov_preview_container');
-        
+
         const preview1Container = AddDiv(previewContainer, 'ov_preview1_container');
         const previewRow = AddDiv(previewContainer, 'ov_preview_row');
         const preview2Container = AddDiv(previewRow, 'ov_preview2_container');
         const preview3Container = AddDiv(previewRow, 'ov_preview3_container');
-    
+
         const previewContainers = [preview1Container, preview2Container, preview3Container];
-    
+
         snapshotManager.initializePreviewImages(previewContainers);
 
         const nextButton = AddDiv(leftContainer, 'ov_button ov_next_button', Loc('Next'));
@@ -327,23 +330,92 @@ function createDialogManager(snapshotManager) {
     }
 
     function showDialog() {
+        const overlay = createModalOverlay();
+        document.body.appendChild(overlay);
+
         const dialog = new ButtonDialog();
         const contentDiv = dialog.Init(Loc('Share'), [
             {
                 name: Loc('Close'),
-                onClick: () => dialog.Close()
+                onClick() {
+                    dialog.Close();
+                    removeOverlayIfExists(overlay);
+                }
             }
         ]);
 
         createMultiStepForm(contentDiv);
 
         const originalClose = dialog.Close.bind(dialog);
-        dialog.Close = () => {
+        dialog.Close = function() {
             snapshotManager.cleanup();
+            removeOverlayIfExists(overlay);
             originalClose();
         };
 
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                dialog.Close();
+            }
+        });
+
         dialog.Open();
+
+        setTimeout(() => {
+            styleDialogForSharing(dialog);
+        }, 0);
+    }
+
+    function createModalOverlay() {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9998; // Ensure this is below the dialog but above everything else
+        `;
+        return overlay;
+    }
+
+    function styleDialogForSharing(dialog) {
+        if (!dialog) {
+            console.error('Invalid dialog object');
+            return;
+        }
+
+        // Try to find the dialog element
+        let dialogElement = null;
+        if (dialog.GetContentDiv) {
+            dialogElement = dialog.GetContentDiv().closest('.ov_dialog');
+        }
+        if (!dialogElement && dialog.dialogDiv) {
+            dialogElement = dialog.dialogDiv;
+        }
+        if (!dialogElement) {
+            console.error('Cannot find dialog element');
+            return;
+        }
+
+        console.log('Styling dialog element:', dialogElement);
+
+        dialogElement.style.position = 'fixed';
+        dialogElement.style.top = '50%';
+        dialogElement.style.left = '50%';
+        dialogElement.style.transform = 'translate(-50%, -50%)';
+        dialogElement.style.zIndex = '9999';
+        dialogElement.style.maxWidth = '90%';
+        dialogElement.style.maxHeight = '90%';
+        dialogElement.style.overflow = 'auto';
+    }
+
+    function removeOverlayIfExists(overlay) {
+        if (overlay && overlay.parentNode === document.body) {
+            document.body.removeChild(overlay);
+        }
     }
 
     return { showDialog };
