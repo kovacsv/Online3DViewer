@@ -3,16 +3,16 @@
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    max-height: 80vh; /* Ensure the form doesn't extend beyond 80% of the viewport height */
-    overflow-y: auto; /* Enable scrolling if content overflows */
-    width: 90vw; /* Make the form wider */
-    max-width: 1200px; /* Limit the max width */
-    margin: auto; /* Center the form horizontally */
+    max-height: 80vh;
+    overflow-y: auto;
+    width: 90vw;
+    max-width: 1200px;
+    margin: auto;
 }
 
 .ov_dialog_step {
     display: flex;
-    flex-direction: row; /* Change direction to row to place elements side by side */
+    flex-direction: row;
     gap: 15px;
 }
 
@@ -30,8 +30,9 @@
 
 .ov_dialog_label {
     font-size: 1em;
-    margin-bottom: 5px;
+    margin-right: 10px;
     color: #333;
+    flex: 0 0 150px; /* Adjust the width as needed */
 }
 
 .ov_dialog_input {
@@ -52,8 +53,8 @@
     border: 1px solid #ccc;
     max-width: 100%;
     height: auto;
-    border-radius: 4px; /* Match the border radius of other elements */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for better visual separation */
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .ov_button {
@@ -83,7 +84,7 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Add space between preview containers */
+    gap: 20px;
 }
 
 .ov_step1, .ov_step2 {
@@ -96,30 +97,30 @@
 
 .ov_preview_container {
     display: flex;
-    flex-direction: column; /* Ensure images are stacked correctly */
-    gap: 10px; /* Add space between preview containers */
+    flex-direction: column;
+    gap: 10px;
 }
 
 .ov_preview1_container {
     width: 100%;
     display: flex;
-    justify-content: center; /* Center the image horizontally */
-    align-items: center; /* Center the image vertically */
+    justify-content: center;
+    align-items: center;
 }
 
 .ov_preview_row {
     display: flex;
     width: 100%;
-    gap: 10px; /* Add space between side-by-side previews */
+    gap: 10px;
 }
 
 .ov_preview2_container, .ov_preview3_container {
-    flex: 1; /* Each takes up equal space in the row */
-    height: 150px; /* Adjust height for better layout */
+    flex: 1;
+    height: 150px;
     display: flex;
-    justify-content: center; /* Center the image horizontally */
-    align-items: center; /* Center the image vertically */
-    overflow: hidden; /* Ensure no overflow */
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
 .ov_preview2_container,
@@ -131,9 +132,9 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    border: 1px solid #ddd; /* Add border to preview images */
-    border-radius: 4px; /* Match the border radius of other elements */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for better visual separation */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .ov_next_button, .ov_submit_button {
@@ -149,4 +150,24 @@
 
 .ov_next_button:hover, .ov_submit_button:hover {
     background-color: #0056b3;
+}
+
+.ov_info_fields_container {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ov_email_fields_container {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ov_input_wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
 }

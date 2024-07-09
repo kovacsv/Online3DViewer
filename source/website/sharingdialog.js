@@ -260,35 +260,63 @@ function createDialogManager(snapshotManager) {
         return step;
     }
 
+    function createLabeledInput(container, type, labelText, placeholder, attributes = {}) {
+        const wrapper = AddDiv(container, 'ov_input_wrapper');
+        const label = AddDomElement(wrapper, 'label', 'ov_dialog_label');
+        label.textContent = labelText;
+        let input;
+        if (type === 'textarea') {
+            input = AddDomElement(wrapper, 'textarea', 'ov_dialog_input');
+        } else {
+            input = AddDomElement(wrapper, 'input', 'ov_dialog_input');
+            input.type = type;
+        }
+        input.placeholder = placeholder;
+        Object.entries(attributes).forEach(([key, value]) => input.setAttribute(key, value));
+        return input;
+    }
+    
     function createStep1Content(step) {
         const leftContainer = AddDiv(step, 'ov_left_container');
         AddDiv(leftContainer, 'ov_dialog_title', Loc('Share Snapshot'));
         AddDiv(leftContainer, 'ov_dialog_description', Loc('Quickly share a snapshot and details of your pain location with family, friends, or therapists.'));
-
-        const generatePdfButton = AddDiv(step, 'ov_button ov_generate_pdf_button', Loc('Generate PDF'));
-        generatePdfButton.addEventListener('click', () => handleGeneratePdf(intensityInput, durationInput));
     
+        // Info fields container
+        const infoFieldsContainer = AddDiv(leftContainer, 'ov_info_fields_container');
+        
+        // Name input field
+        const nameInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Name'), 'John Doe');
+        
+        const intensityInput = createLabeledInput(infoFieldsContainer, 'number', Loc('Pain Intensity'), 'Enter pain intensity (1-10)', { min: 1, max: 10 });
+        const durationInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Pain Duration'), 'Enter pain duration (e.g., 2 hours, 3 days)');
+    
+        // Description and Tags input fields (optional)
+        const descriptionInput = createLabeledInput(infoFieldsContainer, 'textarea', Loc('Description'), 'Description (optional)');
+        const tagsInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Tags'), 'Tags (optional)');
+    
+        // Email fields container
         const emailFieldsContainer = AddDiv(leftContainer, 'ov_email_fields_container');
         for (let i = 0; i < 3; i++) {
-            AddDiv(emailFieldsContainer, 'ov_dialog_label', Loc(`Email ${i + 1}`));
             const emailInput = AddDomElement(emailFieldsContainer, 'input', `email${i}`);
             emailInput.type = 'email';
             emailInput.className = 'ov_dialog_input';
-            emailInput.placeholder = Loc('Enter email address');
+            emailInput.placeholder = Loc(`Enter email ${i + 1}`);
         }
-
+    
         const rightContainer = AddDiv(step, 'ov_right_container');
         const previewContainer = AddDiv(rightContainer, 'ov_preview_container');
-
+    
         const preview1Container = AddDiv(previewContainer, 'ov_preview1_container');
         const previewRow = AddDiv(previewContainer, 'ov_preview_row');
         const preview2Container = AddDiv(previewRow, 'ov_preview2_container');
         const preview3Container = AddDiv(previewRow, 'ov_preview3_container');
-
+    
         const previewContainers = [preview1Container, preview2Container, preview3Container];
-
         snapshotManager.initializePreviewImages(previewContainers);
-
+    
+        const generatePdfButton = AddDiv(leftContainer, 'ov_button ov_generate_pdf_button', Loc('Generate PDF'));
+        generatePdfButton.addEventListener('click', () => handleGeneratePdf(intensityInput, durationInput, nameInput));
+    
         const nextButton = AddDiv(leftContainer, 'ov_button ov_next_button', Loc('Next'));
         nextButton.addEventListener('click', () => {
             step.style.display = 'none';
@@ -302,27 +330,34 @@ function createDialogManager(snapshotManager) {
         AddCheckbox(step, 'send_to_self', Loc('Send to myself'), false, () => {});
         AddCheckbox(step, 'download_snapshot', Loc('Download snapshot and info'), false, () => {});
     
-        const intensityInput = createInputField(step, 'number', Loc('Pain Intensity'), 'Enter pain intensity (1-10)', { min: 1, max: 10 });
-        const durationInput = createInputField(step, 'text', Loc('Pain Duration'), 'Enter pain duration (e.g., 2 hours, 3 days)');
-    
-        // Add PDF generation button
 
         const submitButton = AddDiv(step, 'ov_button ov_submit_button', Loc('Submit'));
         submitButton.addEventListener('click', () => handleSubmit(intensityInput, durationInput));
     }
 
-    function handleGeneratePdf(intensityInput, durationInput) {
+    function handleGeneratePdf(intensityInput, durationInput, nameInput) {
+        console.log('Generating PDF...');
         const snapshots = [1, 2, 3].map(i => snapshotManager.captureSnapshot(i - 1));
+        const descriptionInput = document.querySelector('textarea[placeholder="Description (optional)"]');
+        const description = descriptionInput ? descriptionInput.value : '';
+    
         const data = {
-            name: document.querySelector('input[placeholder="Name (required)"]').value,
-            email: document.querySelector('input[placeholder="Email (optional)"]').value,
-            description: document.querySelector('textarea[placeholder="Description (optional)"]').value,
+            name: nameInput.value || 'John Doe', // Use 'John Doe' if the field is empty
+            email: document.querySelector('input[placeholder*="Enter email"]').value,
+            description: description,
             tags: document.querySelector('input[placeholder="Tags (optional)"]').value,
-            intensity: intensityInput.value,
-            duration: durationInput.value,
             images: snapshots,
             siteUrl: window.location.origin
         };
+    
+        // Add intensity and duration only if the inputs exist and have values
+        if (intensityInput && intensityInput.value) {
+            data.intensity = intensityInput.value;
+        }
+        if (durationInput && durationInput.value) {
+            data.duration = durationInput.value;
+        }
+    
         generatePdf(data);
     }
 
