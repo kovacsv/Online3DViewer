@@ -4,6 +4,7 @@ import { ShowMessageDialog } from './dialogs.js';
 import { ButtonDialog } from './dialog.js';
 import { HandleEvent } from './eventhandler.js';
 import { Loc } from '../engine/core/localization.js';
+import { generatePdf, addPdfGenerationSection } from './pdfGenerator.js';
 
 
 const CONFIG = {
@@ -240,7 +241,7 @@ function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOff
     viewer.navigation.MoveCamera(camera, 0);
 
     return imageDataUrl;
-}
+        }
 
 function createDialogManager(snapshotManager) {
     function createMultiStepForm(parentDiv) {
@@ -264,6 +265,9 @@ function createDialogManager(snapshotManager) {
         AddDiv(leftContainer, 'ov_dialog_title', Loc('Share Snapshot'));
         AddDiv(leftContainer, 'ov_dialog_description', Loc('Quickly share a snapshot and details of your pain location with family, friends, or therapists.'));
 
+        const generatePdfButton = AddDiv(step, 'ov_button ov_generate_pdf_button', Loc('Generate PDF'));
+        generatePdfButton.addEventListener('click', () => handleGeneratePdf(intensityInput, durationInput));
+    
         const emailFieldsContainer = AddDiv(leftContainer, 'ov_email_fields_container');
         for (let i = 0; i < 3; i++) {
             AddDiv(emailFieldsContainer, 'ov_dialog_label', Loc(`Email ${i + 1}`));
@@ -294,15 +298,32 @@ function createDialogManager(snapshotManager) {
 
     function createStep2Content(step) {
         AddDiv(step, 'ov_dialog_title', Loc('Additional Options'));
-
+    
         AddCheckbox(step, 'send_to_self', Loc('Send to myself'), false, () => {});
         AddCheckbox(step, 'download_snapshot', Loc('Download snapshot and info'), false, () => {});
-
+    
         const intensityInput = createInputField(step, 'number', Loc('Pain Intensity'), 'Enter pain intensity (1-10)', { min: 1, max: 10 });
         const durationInput = createInputField(step, 'text', Loc('Pain Duration'), 'Enter pain duration (e.g., 2 hours, 3 days)');
+    
+        // Add PDF generation button
 
         const submitButton = AddDiv(step, 'ov_button ov_submit_button', Loc('Submit'));
         submitButton.addEventListener('click', () => handleSubmit(intensityInput, durationInput));
+    }
+
+    function handleGeneratePdf(intensityInput, durationInput) {
+        const snapshots = [1, 2, 3].map(i => snapshotManager.captureSnapshot(i - 1));
+        const data = {
+            name: document.querySelector('input[placeholder="Name (required)"]').value,
+            email: document.querySelector('input[placeholder="Email (optional)"]').value,
+            description: document.querySelector('textarea[placeholder="Description (optional)"]').value,
+            tags: document.querySelector('input[placeholder="Tags (optional)"]').value,
+            intensity: intensityInput.value,
+            duration: durationInput.value,
+            images: snapshots,
+            siteUrl: window.location.origin
+        };
+        generatePdf(data);
     }
 
     function createInputField(container, type, labelText, placeholder, attributes = {}) {
