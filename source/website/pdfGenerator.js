@@ -104,6 +104,9 @@ async function generatePdf(data) {
     page.drawRectangle({ x: 50, y: imageStartY, width: mainImageWidth, height: mainImageHeight, borderColor: darkBlue, borderWidth: 2 });
     page.drawRectangle({ x: 385, y: imageStartY + smallImageHeight + 10, width: smallImageWidth, height: smallImageHeight, borderColor: darkBlue, borderWidth: 2 });
     page.drawRectangle({ x: 385, y: imageStartY, width: smallImageWidth, height: smallImageHeight, borderColor: darkBlue, borderWidth: 2 });
+    
+    // Paste images
+    await pasteImages(page, images, pdfDoc, imageStartY);
 
     // Footer with centered "hyperlink-like" text
     const url = 'www.tellmewhereithurtsnow.com';
@@ -119,6 +122,44 @@ async function generatePdf(data) {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+}
+
+async function pasteImages(page, images, pdfDoc, yStart) {
+    const imageStartY = yStart;
+    const mainImageWidth = 320;
+    const mainImageHeight = 380;
+    const smallImageWidth = 160;
+    const smallImageHeight = 185;
+
+    if (images.length > 0) {
+        const mainImage = await pdfDoc.embedPng(base64ToUint8Array(images[0]));
+        page.drawImage(mainImage, {
+            x: 50,
+            y: imageStartY,
+            width: mainImageWidth,
+            height: mainImageHeight
+        });
+    }
+
+    if (images.length > 1) {
+        const smallImage1 = await pdfDoc.embedPng(base64ToUint8Array(images[1]));
+        page.drawImage(smallImage1, {
+            x: 385,
+            y: imageStartY + smallImageHeight + 10,
+            width: smallImageWidth,
+            height: smallImageHeight
+        });
+    }
+
+    if (images.length > 2) {
+        const smallImage2 = await pdfDoc.embedPng(base64ToUint8Array(images[2]));
+        page.drawImage(smallImage2, {
+            x: 385,
+            y: imageStartY,
+            width: smallImageWidth,
+            height: smallImageHeight
+        });
+    }
 }
 
 // Helper function to wrap text
