@@ -376,8 +376,8 @@ export class Navigation
 		this.clickDetector.Start (this.mouse.GetPosition ());
 
 		if (!this.enableCameraMovement) {
-            		this.isMouseDown = true;
-        	}
+            this.isMouseDown = true;
+        }
 	}
 
 	OnMouseMove (ev)

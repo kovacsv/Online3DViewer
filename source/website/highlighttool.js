@@ -16,7 +16,7 @@ export class HighlightTool {
         this.button = null;
         this.eventsInitialized = null;
         this.activeTouches = 0;
-
+        this.overlappingMeshes = new Map();
     }
 
     InitEvents() {
@@ -188,13 +188,44 @@ export class HighlightTool {
         }
     }
     
-
     ApplyHighlight(intersection) {
         let highlightMesh = this.GenerateHighlightMesh(intersection);
+        
+        // Check for overlapping meshes
+        let overlappingMeshes = this.GetOverlappingMeshes(highlightMesh);
+        
+        if (overlappingMeshes.length >= this.maxOverlappingMeshes) {
+            // Remove the oldest overlapping mesh
+            let oldestMesh = overlappingMeshes[0];
+            this.RemoveHighlight({ point: oldestMesh.position });
+            overlappingMeshes.shift();
+        }
+        
+        // Add the new mesh
         this.highlightMeshes.push(highlightMesh);
         this.viewer.AddExtraObject(highlightMesh);
+        
+        // Update overlapping meshes
+        overlappingMeshes.push(highlightMesh);
+        this.overlappingMeshes.set(highlightMesh.uuid, overlappingMeshes);
+        
+        this.viewer.Render();
     }
 
+    GetOverlappingMeshes(newMesh) {
+        let overlapping = [];
+        let newBoundingBox = new THREE.Box3().setFromObject(newMesh);
+        
+        for (let mesh of this.highlightMeshes) {
+            let meshBoundingBox = new THREE.Box3().setFromObject(mesh);
+            if (newBoundingBox.intersectsBox(meshBoundingBox)) {
+                overlapping.push(mesh);
+            }
+        }
+        
+        return overlapping;
+    }
+    
     RemoveHighlight(intersection) {
         let meshesToRemove = this.highlightMeshes.filter((mesh) => {
             return this.IsIntersectionWithinBoundingBox(intersection, mesh);
@@ -204,10 +235,25 @@ export class HighlightTool {
             this.viewer.RemoveExtraObject(mesh);
             this.highlightMeshes = this.highlightMeshes.filter((m) => m !== mesh);
             this.DisposeHighlightMesh(mesh);
+            
+            // Update overlapping meshes
+            this.overlappingMeshes.delete(mesh.uuid);
+            for (let [key, value] of this.overlappingMeshes) {
+                this.overlappingMeshes.set(key, value.filter(m => m !== mesh));
+            }
         });
     
         if (meshesToRemove.length > 0) {
             this.viewer.Render();
+        }
+    }
+
+    SetMaxOverlappingMeshes(limit) {
+        if (typeof limit === 'number' && limit > 0) {
+            this.maxOverlappingMeshes = Math.floor(limit);
+            console.log(`Max overlapping meshes set to ${this.maxOverlappingMeshes}`);
+        } else {
+            console.error('Invalid overlap limit. Please provide a positive number.');
         }
     }
 

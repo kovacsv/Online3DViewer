@@ -7,6 +7,7 @@ import { SetEventHandler, HandleEvent } from './eventhandler.js';
 import { PluginType, RegisterPlugin } from './pluginregistry.js';
 import { ButtonDialog, ProgressDialog } from './dialog.js';
 import { ShowMessageDialog } from './dialogs.js';
+import { ImportSettings } from '../engine/import/importer.js';
 
 import * as Engine from '../engine/main.js';
 export { Engine };
@@ -22,6 +23,7 @@ import './css/navigator.css';
 import './css/sidebar.css';
 import './css/website.css';
 import './css/embed.css';
+import './css/sharingdialog.css';
 
 export const UI = {
     ButtonDialog,
@@ -47,7 +49,7 @@ export function RegisterToolbarPlugin (plugin)
 }
 
 export function StartWebsite (externalLibLocation)
-{
+{   
     window.addEventListener ('load', () => {
         if (window.self !== window.top) {
             let noEmbeddingDiv = AddDiv (document.body, 'noembed');
@@ -81,6 +83,16 @@ export function StartWebsite (externalLibLocation)
             fileInput : document.getElementById ('open_file')
         });
         website.Load ();
+
+        if (!website.hashHandler.HasHash()) {
+            // Load the default FBX model
+            let defaultModelUrl = 'assets/models/Y_Bot.fbx';
+            let importSettings = new ImportSettings();
+            importSettings.defaultLineColor = website.settings.defaultLineColor;
+            importSettings.defaultColor = website.settings.defaultColor;
+            HandleEvent('model_load_started', 'default');
+            website.LoadModelFromUrlList([defaultModelUrl], importSettings);
+        }
     });
 }
 

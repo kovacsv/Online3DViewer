@@ -1,0 +1,173 @@
+.ov_dialog_form_container {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-height: 80vh;
+    overflow-y: auto;
+    width: 90vw;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.ov_dialog_step {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+.ov_dialog_title {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.ov_dialog_description {
+    font-size: 1em;
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.ov_dialog_label {
+    font-size: 1em;
+    margin-right: 10px;
+    color: #333;
+    flex: 0 0 150px; /* Adjust the width as needed */
+}
+
+.ov_dialog_input {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ov_snapshot_preview_container {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.ov_snapshot_preview_image {
+    border: 1px solid #ccc;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.ov_button {
+    padding: 10px 15px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ov_button:hover {
+    background-color: #0056b3;
+}
+
+.ov_left_container {
+    width: 40%;
+    padding: 20px;
+}
+
+.ov_right_container {
+    width: 60%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ov_step1, .ov_step2 {
+    padding: 20px;
+}
+
+.ov_email_fields_container {
+    margin-bottom: 20px;
+}
+
+.ov_preview_container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ov_preview1_container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ov_preview_row {
+    display: flex;
+    width: 100%;
+    gap: 10px;
+}
+
+.ov_preview2_container, .ov_preview3_container {
+    flex: 1;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.ov_preview2_container,
+.ov_preview3_container {
+    width: calc(50% - 5px);
+}
+
+.ov_preview_container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.ov_next_button, .ov_submit_button {
+    text-align: center;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.ov_next_button:hover, .ov_submit_button:hover {
+    background-color: #0056b3;
+}
+
+.ov_info_fields_container {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ov_email_fields_container {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ov_input_wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}

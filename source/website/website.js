@@ -134,12 +134,10 @@ class WebsiteLayouter
         let windowHeight = window.innerHeight;
         let headerHeight = this.parameters.headerDiv.offsetHeight;
 
-        let leftWidth = 0;
-        let rightWidth = 0;
+        let leftWidth = this.parameters.leftContainerDiv.style.display === 'none' ? 0 : GetDomElementOuterWidth(this.parameters.leftContainerDiv);
+        let rightWidth = this.parameters.rightContainerDiv.style.display === 'none' ? 0 : GetDomElementOuterWidth(this.parameters.rightContainerDiv);
         let safetyMargin = 0;
-        if (!IsSmallWidth ()) {
-            leftWidth = GetDomElementOuterWidth (this.parameters.leftContainerDiv);
-            rightWidth = GetDomElementOuterWidth (this.parameters.rightContainerDiv);
+        if (!IsSmallWidth()) {
             safetyMargin = 1;
         }
 
@@ -680,16 +678,6 @@ export class Website
         let navigationModeIndex = (this.cameraSettings.navigationMode === NavigationMode.FixedUpVector ? 0 : 1);
         let projectionModeIndex = (this.cameraSettings.projectionMode === ProjectionMode.Perspective ? 0 : 1);
 
-        AddButton (this.toolbar, 'open', Loc ('Open from your device'), [], () => {
-            this.OpenFileBrowserDialog ();
-        });
-        AddButton (this.toolbar, 'open_url', Loc ('Open from url'), [], () => {
-            ShowOpenUrlDialog ((urls) => {
-                if (urls.length > 0) {
-                    this.hashHandler.SetModelFilesToHash (urls);
-                }
-            });
-        });
         AddSeparator (this.toolbar, ['only_on_model']);
         AddButton (this.toolbar, 'fit', Loc ('Fit model to window'), ['only_on_model'], () => {
             this.FitModelToWindow (false);
@@ -697,41 +685,6 @@ export class Website
         AddButton (this.toolbar, 'up_y', Loc ('Set Y axis as up vector'), ['only_on_model'], () => {
             this.viewer.SetUpVector (Direction.Y, true);
         });
-        AddButton (this.toolbar, 'up_z', Loc ('Set Z axis as up vector'), ['only_on_model'], () => {
-            this.viewer.SetUpVector (Direction.Z, true);
-        });
-        AddButton (this.toolbar, 'flip', Loc ('Flip up vector'), ['only_on_model'], () => {
-            this.viewer.FlipUpVector ();
-        });
-        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], [Loc ('Fixed up vector'), Loc ('Free orbit')], navigationModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
-            if (buttonIndex === 0) {
-                this.cameraSettings.navigationMode = NavigationMode.FixedUpVector;
-            } else if (buttonIndex === 1) {
-                this.cameraSettings.navigationMode = NavigationMode.FreeOrbit;
-            }
-            this.cameraSettings.SaveToCookies ();
-            this.viewer.SetNavigationMode (this.cameraSettings.navigationMode);
-        });
-        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddRadioButton (this.toolbar, ['camera_perspective', 'camera_orthographic'], [Loc ('Perspective camera'), Loc ('Orthographic camera')], projectionModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
-            if (buttonIndex === 0) {
-                this.cameraSettings.projectionMode = ProjectionMode.Perspective;
-            } else if (buttonIndex === 1) {
-                this.cameraSettings.projectionMode = ProjectionMode.Orthographic;
-            }
-            this.cameraSettings.SaveToCookies ();
-            this.viewer.SetProjectionMode (this.cameraSettings.projectionMode);
-            this.sidebar.UpdateControlsVisibility ();
-        });
-        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        let measureToolButton = AddPushButton (this.toolbar, 'measure', Loc ('Measure'), ['only_full_width', 'only_on_model'], (isSelected) => {
-            HandleEvent ('measure_tool_activated', isSelected ? 'on' : 'off');
-            this.navigator.SetSelection (null);
-            this.measureTool.SetActive (isSelected);
-        });
-        this.measureTool.SetButton (measureToolButton);
-
         let highlightToolButton = AddPushButton(this.toolbar, 'highlight', Loc('Highlight'), ['only_full_width', 'only_on_model'], (isSelected) => {
             HandleEvent('highlight_tool_activated', isSelected ? 'on' : 'off');
             this.navigator.SetSelection(null);
@@ -739,21 +692,8 @@ export class Website
         });
         this.highlightTool.SetButton(highlightToolButton);
 
-        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddButton (this.toolbar, 'download', Loc ('Download'), ['only_full_width', 'only_on_model'], () => {
-            HandleEvent ('model_downloaded', '');
-            let importer = this.modelLoaderUI.GetImporter ();
-            DownloadModel (importer);
-        });
-        AddButton (this.toolbar, 'export', Loc ('Export'), ['only_full_width', 'only_on_model'], () => {
-            ShowExportDialog (this.model, this.viewer, {
-                isMeshVisible : (meshInstanceId) => {
-                    return this.navigator.IsMeshVisible (meshInstanceId);
-                }
-            });
-        });
         AddButton (this.toolbar, 'share', Loc ('Share'), ['only_full_width', 'only_on_model'], () => {
-            ShowSharingDialog (importer.GetFileList (), this.settings, this.viewer);
+            ShowSharingDialog (this.settings, this.viewer);
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         AddButton (this.toolbar, 'snapshot', Loc ('Create snapshot'), ['only_full_width', 'only_on_model'], () => {
