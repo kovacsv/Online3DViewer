@@ -4,13 +4,12 @@ import { ShowMessageDialog } from './dialogs.js';
 import { ButtonDialog } from './dialog.js';
 import { HandleEvent } from './eventhandler.js';
 import { Loc } from '../engine/core/localization.js';
-import { generatePdf, addPdfGenerationSection } from './pdfGenerator.js';
-
+import { generatePdf } from './pdfGenerator.js';
 
 const CONFIG = {
     SNAPSHOT_SIZES: {
-        LARGE: { width: 2000, height: 1080 },
-        SMALL: { width: 1080, height: 540 }
+        LARGE: { width: 2000, height: 2160 },
+        SMALL: { width: 1080, height: 1080 }
     },
     INITIAL_ZOOM: 0.5,
     MAX_ZOOM: 3,
@@ -21,6 +20,7 @@ const CONFIG = {
 };
 
 export function ShowSharingDialog(settings, viewer) {
+    console.log("ShowSharingDialog called with settings:", settings);
     const SnapshotManager = createSnapshotManager(viewer, settings);
     const DialogManager = createDialogManager(SnapshotManager);
     DialogManager.showDialog();
@@ -39,6 +39,7 @@ function createSnapshotManager(viewer, settings) {
     let previewImages = [];
 
     function captureSnapshot(index) {
+        console.log(`Capturing snapshot for index: ${index}`);
         if (index < 0 || index >= cameras.length) {
             console.error(`Invalid index: ${index}`);
             return null;
@@ -130,20 +131,6 @@ function createSnapshotManager(viewer, settings) {
                 break;
         }
         event.preventDefault();
-    }
-
-    function initializePreviewImages(containers) {
-        previewImages = containers.map((container, index) => {
-            const img = CreateDomElement('img', 'ov_snapshot_preview_image');
-            container.appendChild(img);
-            img.addEventListener('wheel', (e) => handleMouseEvent(index, 'wheel', e), { passive: false });
-            img.addEventListener('mousedown', (e) => handleMouseEvent(index, 'mousedown', e));
-            img.addEventListener('contextmenu', (e) => e.preventDefault());
-            return img;
-        });
-
-        // Update previews after initialization
-        previewImages.forEach((_, index) => updatePreview(index));
     }
 
     function cleanup() {
@@ -241,7 +228,7 @@ function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOff
     viewer.navigation.MoveCamera(camera, 0);
 
     return imageDataUrl;
-        }
+}
 
 function createDialogManager(snapshotManager) {
     function createMultiStepForm(parentDiv) {
@@ -275,25 +262,25 @@ function createDialogManager(snapshotManager) {
         Object.entries(attributes).forEach(([key, value]) => input.setAttribute(key, value));
         return input;
     }
-    
+
     function createStep1Content(step) {
         const leftContainer = AddDiv(step, 'ov_left_container');
         AddDiv(leftContainer, 'ov_dialog_title', Loc('Share Snapshot'));
         AddDiv(leftContainer, 'ov_dialog_description', Loc('Quickly share a snapshot and details of your pain location with family, friends, or therapists.'));
-    
+
         // Info fields container
         const infoFieldsContainer = AddDiv(leftContainer, 'ov_info_fields_container');
-        
+
         // Name input field
         const nameInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Name'), 'John Doe');
-        
+
         const intensityInput = createLabeledInput(infoFieldsContainer, 'number', Loc('Pain Intensity'), 'Enter pain intensity (1-10)', { min: 1, max: 10 });
         const durationInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Pain Duration'), 'Enter pain duration (e.g., 2 hours, 3 days)');
-    
+
         // Description and Tags input fields (optional)
         const descriptionInput = createLabeledInput(infoFieldsContainer, 'textarea', Loc('Description'), 'Description (optional)');
         const tagsInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Tags'), 'Tags (optional)');
-    
+
         // Email fields container
         const emailFieldsContainer = AddDiv(leftContainer, 'ov_email_fields_container');
         for (let i = 0; i < 3; i++) {
@@ -302,86 +289,72 @@ function createDialogManager(snapshotManager) {
             emailInput.className = 'ov_dialog_input';
             emailInput.placeholder = Loc(`Enter email ${i + 1}`);
         }
-    
+
         const rightContainer = AddDiv(step, 'ov_right_container');
         const previewContainer = AddDiv(rightContainer, 'ov_preview_container');
-    
+
         const preview1Container = AddDiv(previewContainer, 'ov_preview1_container');
         const previewRow = AddDiv(previewContainer, 'ov_preview_row');
         const preview2Container = AddDiv(previewRow, 'ov_preview2_container');
         const preview3Container = AddDiv(previewRow, 'ov_preview3_container');
-    
+
         const previewContainers = [preview1Container, preview2Container, preview3Container];
         snapshotManager.initializePreviewImages(previewContainers);
-    
-        const generatePdfButton = AddDiv(leftContainer, 'ov_button ov_generate_pdf_button', Loc('Generate PDF'));
-        generatePdfButton.addEventListener('click', () => handleGeneratePdf(intensityInput, durationInput, nameInput));
-    
-        const nextButton = AddDiv(leftContainer, 'ov_button ov_next_button', Loc('Next'));
+
+        const generatePdfButton = AddDomElement(leftContainer, 'button', 'ov_button ov_generate_pdf_button');
+        generatePdfButton.textContent = Loc('Generate PDF');
+        generatePdfButton.addEventListener('click', () => handleGeneratePdf(nameInput, intensityInput, durationInput, descriptionInput, tagsInput, emailFieldsContainer));
+
+        const nextButton = AddDomElement(leftContainer, 'button', 'ov_button ov_next_button');
+        nextButton.textContent = Loc('Next');
         nextButton.addEventListener('click', () => {
             step.style.display = 'none';
             step.nextElementSibling.style.display = 'block';
         });
+
+        return { nameInput, intensityInput, durationInput, descriptionInput, tagsInput, emailFieldsContainer };
     }
 
     function createStep2Content(step) {
         AddDiv(step, 'ov_dialog_title', Loc('Additional Options'));
-    
+
         AddCheckbox(step, 'send_to_self', Loc('Send to myself'), false, () => {});
         AddCheckbox(step, 'download_snapshot', Loc('Download snapshot and info'), false, () => {});
-    
 
         const submitButton = AddDiv(step, 'ov_button ov_submit_button', Loc('Submit'));
-        submitButton.addEventListener('click', () => handleSubmit(intensityInput, durationInput));
+        submitButton.addEventListener('click', () => handleSubmit());
     }
 
-    function handleGeneratePdf(intensityInput, durationInput, nameInput) {
+    function handleGeneratePdf(nameInput, intensityInput, durationInput, descriptionInput, tagsInput, emailFieldsContainer) {
         console.log('Generating PDF...');
         const snapshots = [1, 2, 3].map(i => snapshotManager.captureSnapshot(i - 1));
-        const descriptionInput = document.querySelector('textarea[placeholder="Description (optional)"]');
         const description = descriptionInput ? descriptionInput.value : '';
-    
+
+        const emails = [];
+        for (let i = 0; i < emailFieldsContainer.children.length; i++) {
+            const emailInput = emailFieldsContainer.children[i];
+            if (emailInput.value) {
+                emails.push(emailInput.value);
+            }
+        }
+
         const data = {
             name: nameInput.value || 'John Doe', // Use 'John Doe' if the field is empty
-            email: document.querySelector('input[placeholder*="Enter email"]').value,
+            email: emails.join(', ') || 'john_doe@gmail.com',
             description: description,
-            tags: document.querySelector('input[placeholder="Tags (optional)"]').value,
+            tags: tagsInput.value,
+            intensity: intensityInput.value,
+            duration: durationInput.value,
             images: snapshots,
             siteUrl: window.location.origin
         };
-    
-        // Add intensity and duration only if the inputs exist and have values
-        if (intensityInput && intensityInput.value) {
-            data.intensity = intensityInput.value;
-        }
-        if (durationInput && durationInput.value) {
-            data.duration = durationInput.value;
-        }
-    
+
         generatePdf(data);
     }
 
-    function createInputField(container, type, labelText, placeholder, attributes = {}) {
-        AddDiv(container, 'ov_dialog_label', labelText);
-        const input = AddDomElement(container, 'input', null);
-        input.type = type;
-        input.className = 'ov_dialog_input';
-        input.placeholder = Loc(placeholder);
-        Object.entries(attributes).forEach(([key, value]) => input.setAttribute(key, value));
-        return input;
-    }
-
-    function handleSubmit(intensityInput, durationInput) {
-        const snapshots = [1, 2, 3].map(i => snapshotManager.captureSnapshot(i - 1));
-        const info = {
-            intensity: intensityInput.value,
-            duration: durationInput.value,
-        };
-
-        // Here you would implement the actual sharing logic
-        console.log('Sharing snapshots:', snapshots);
-        console.log('Sharing info:', info);
-
+    function handleSubmit() {
+        console.log('Submitting...');
+        // Implement submission logic
         ShowMessageDialog(Loc('Success'), Loc('Your snapshot and information have been shared.'));
     }
 
@@ -400,7 +373,7 @@ function createDialogManager(snapshotManager) {
             }
         ]);
 
-        createMultiStepForm(contentDiv);
+        const { step1, step2 } = createMultiStepForm(contentDiv);
 
         const originalClose = dialog.Close.bind(dialog);
         dialog.Close = function() {
