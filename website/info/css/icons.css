@@ -1,6 +1,6 @@
 @font-face {
     font-family: "O3DVIcons";
-    src: url("./O3DVIcons.woff?d27bdb5af135068ed4a9350e285e132e") format("woff");
+    src: url("./O3DVIcons.woff?9664ae6a7b02cbc6ea8c8cf060211860") format("woff");
 }
 
 i[class^="icon-"]:before, i[class*=" icon-"]:before {
@@ -89,75 +89,78 @@ i[class^="icon-"]:before, i[class*=" icon-"]:before {
 .icon-hidden:before {
     content: "\f119";
 }
-.icon-info:before {
+.icon-highlight:before {
     content: "\f11a";
 }
-.icon-isolate:before {
+.icon-info:before {
     content: "\f11b";
 }
-.icon-light_mode:before {
+.icon-isolate:before {
     content: "\f11c";
 }
-.icon-materials:before {
+.icon-light_mode:before {
     content: "\f11d";
 }
-.icon-measure_angle:before {
+.icon-materials:before {
     content: "\f11e";
 }
-.icon-measure_distance_parallel:before {
+.icon-measure_angle:before {
     content: "\f11f";
 }
-.icon-measure_distance:before {
+.icon-measure_distance_parallel:before {
     content: "\f120";
 }
-.icon-measure:before {
+.icon-measure_distance:before {
     content: "\f121";
 }
-.icon-meshes:before {
+.icon-measure:before {
     content: "\f122";
 }
-.icon-missing_files:before {
+.icon-meshes:before {
     content: "\f123";
 }
-.icon-model:before {
+.icon-missing_files:before {
     content: "\f124";
 }
-.icon-open_url:before {
+.icon-model:before {
     content: "\f125";
 }
-.icon-open:before {
+.icon-open_url:before {
     content: "\f126";
 }
-.icon-print3d:before {
+.icon-open:before {
     content: "\f127";
 }
-.icon-settings:before {
+.icon-print3d:before {
     content: "\f128";
 }
-.icon-share:before {
+.icon-settings:before {
     content: "\f129";
 }
-.icon-snapshot:before {
+.icon-share:before {
     content: "\f12a";
 }
-.icon-tree_mesh:before {
+.icon-snapshot:before {
     content: "\f12b";
 }
-.icon-tree_view:before {
+.icon-tree_mesh:before {
     content: "\f12c";
 }
-.icon-twitter:before {
+.icon-tree_view:before {
     content: "\f12d";
 }
-.icon-up_y:before {
+.icon-twitter:before {
     content: "\f12e";
 }
-.icon-up_z:before {
+.icon-up_y:before {
     content: "\f12f";
 }
-.icon-visible:before {
+.icon-up_z:before {
     content: "\f130";
 }
-.icon-warning:before {
+.icon-visible:before {
     content: "\f131";
+}
+.icon-warning:before {
+    content: "\f132";
 }
