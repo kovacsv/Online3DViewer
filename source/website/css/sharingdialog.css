@@ -28,6 +28,18 @@
     color: #666;
 }
 
+.ov_get_patient_email_intro {
+    font-size: 1em;
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.ov_get_send_emails_intro {
+    font-size: 1em;
+    margin-bottom: 20px;
+    color: #666;
+}
+
 .ov_dialog_label {
     font-size: 1em;
     margin-right: 10px;
