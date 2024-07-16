@@ -304,7 +304,7 @@ function createDialogManager(snapshotManager) {
 
         // Description and Tags input fields (optional)
         const descriptionInput = createLabeledInput(infoFieldsContainer, 'textarea', Loc('Description'), 'Description (optional)');
-    
+
         // Email fields container
         AddDiv(leftContainer, 'ov_get_send_emails_intro', Loc('You can send this snapshot to up to 3 email addresses.'));
         const emailFieldsContainer = AddDiv(leftContainer, 'ov_email_fields_container');
@@ -317,14 +317,14 @@ function createDialogManager(snapshotManager) {
             emailInput.id = `email${i}`; // Add an id for easy reference
             emailInputs.push(emailInput);
         }
-        
+
         AddDiv(leftContainer, 'ov_get_patient_email_intro', Loc('Share your email with us so we can CC you in the report.'));
         const patientEmailInput = AddDomElement(leftContainer, 'input', 'exclusive_email');
         patientEmailInput.type = 'email';
         patientEmailInput.className = 'ov_dialog_input';
         patientEmailInput.placeholder = Loc('Enter your email');
         patientEmailInput.required = true;
-        
+
 
         const rightContainer = AddDiv(step, 'ov_right_container');
         const previewContainer = AddDiv(rightContainer, 'ov_preview_container');
@@ -337,9 +337,12 @@ function createDialogManager(snapshotManager) {
         const previewContainers = [preview1Container, preview2Container, preview3Container];
         snapshotManager.initializePreviewImages(previewContainers);
 
-        const generatePdfButton = AddDomElement(leftContainer, 'button', 'ov_button ov_generate_pdf_button');
-        generatePdfButton.textContent = Loc('Generate PDF');
-        generatePdfButton.addEventListener('click', () => handleGeneratePdf(nameInput, intensityInput, durationInput, descriptionInput, emailFieldsContainer));
+        // Add the download icon
+        const downloadIcon = document.createElement('div');
+        downloadIcon.classList.add('download-icon');
+        downloadIcon.innerHTML = `<i class="icon icon-download"></i>`; // Use icon font class here
+        leftContainer.appendChild(downloadIcon);
+        downloadIcon.addEventListener('click', () => handleGeneratePdf(nameInput, intensityInput, durationInput, descriptionInput, emailFieldsContainer));
 
         const nextButton = AddDomElement(leftContainer, 'button', 'ov_button ov_next_button');
         nextButton.textContent = Loc('Next');
