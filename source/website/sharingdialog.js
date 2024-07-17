@@ -291,7 +291,7 @@ function createDialogManager(snapshotManager) {
     function createStep1Content(step) {
         const leftContainer = AddDiv(step, 'ov_left_container');
         AddDiv(leftContainer, 'ov_dialog_title', Loc('Share Snapshot'));
-        AddDiv(leftContainer, 'ov_dialog_description', Loc('Quickly share a snapshot and details of where it hurts with family, friends, or therapists. \n Help '));
+        AddDiv(leftContainer, 'ov_dialog_description', Loc('Quickly share a snapshot and details of where it hurts with family, friends, or therapists.'));
 
         // Info fields container
         const infoFieldsContainer = AddDiv(leftContainer, 'ov_info_fields_container');
