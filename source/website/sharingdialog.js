@@ -314,7 +314,7 @@ function createDialogManager(snapshotManager) {
             emailInput.type = 'email';
             emailInput.className = 'ov_dialog_input';
             emailInput.placeholder = Loc(`Enter email ${i + 1}`);
-            emailInput.id = `email${i}`; // Add an id for easy reference
+            emailInput.id = `email${i}`;
             emailInputs.push(emailInput);
         }
 
@@ -340,7 +340,7 @@ function createDialogManager(snapshotManager) {
         // Add the download icon
         const downloadIcon = document.createElement('div');
         downloadIcon.classList.add('download-icon');
-        downloadIcon.innerHTML = `<i class="icon icon-download"></i>`; // Use icon font class here
+        downloadIcon.innerHTML = `<i class="icon icon-download"></i>`;
         leftContainer.appendChild(downloadIcon);
         downloadIcon.addEventListener('click', () => handleGeneratePdf(nameInput, intensityInput, durationInput, descriptionInput, emailFieldsContainer));
 
