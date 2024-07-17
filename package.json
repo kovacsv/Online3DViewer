@@ -48,14 +48,18 @@
 		"create_dist_test": "npm run create_package_test && npm run lint && npm run test",
 		"create_package": "npm run generate_docs && npm run build_engine && npm run build_engine_module && npm run build_website && run-python3 tools/create_package.py",
 		"create_package_test": "npm run generate_docs && npm run build_engine && npm run build_engine_module && npm run build_website && run-python3 tools/create_package.py test",
-		"copy-pdfmake": "node -e \"const fs = require('fs'); const path = require('path'); console.log('Current directory:', process.cwd()); const sources = ['node_modules/pdfmake/build/pdfmake.min.js', 'node_modules/pdfmake/build/vfs_fonts.js']; const dest = 'build/website_dev/'; if (!fs.existsSync(dest)) { fs.mkdirSync(dest, { recursive: true }); } sources.forEach(source => { const sourcePath = path.resolve(__dirname, source); const destPath = path.join(dest, path.basename(source)); if (fs.existsSync(sourcePath)) { fs.copyFileSync(sourcePath, destPath); console.log(`Copied ${sourcePath} to ${destPath}`); } else { console.error('Source file not found:', sourcePath); } });\"",		"generate_docs": "run-python3 tools/generate_docs.py",
+		"generate_docs": "run-python3 tools/generate_docs.py",
 		"build_dev": "npm run build_engine_dev && npm run build_website_dev",
 		"build_engine_dev": "npm run update_engine_exports && esbuild source/engine/main.js --bundle --minify --global-name=OV --sourcemap --outfile=build/engine_dev/o3dv.min.js",
 		"build_engine": "npm run update_engine_exports && esbuild source/engine/main.js --bundle --minify --global-name=OV --outfile=build/engine/o3dv.min.js",
 		"build_engine_module": "npm run update_engine_exports && rollup --config tools/rollup.js && tsc --project tools/tsconfig.json",
-		"build_website_dev": "npm run copy-pdfmake && esbuild source/website/index.js --bundle --minify --global-name=OV --sourcemap --loader:.ttf=file --loader:.woff=file --loader:.svg=file --outfile=build/website_dev/o3dv.website.min.js",
+		"build_website_dev": "esbuild source/website/index.js --bundle --minify --global-name=OV --sourcemap --loader:.ttf=file --loader:.woff=file --loader:.svg=file --outfile=build/website_dev/o3dv.website.min.js",
 		"build_website": "esbuild source/website/index.js --bundle --minify --global-name=OV --loader:.ttf=file --loader:.woff=file --loader:.svg=file --outfile=build/website/o3dv.website.min.js",
-		"update_engine_exports": "run-python3 tools/update_engine_exports.py"
+		"build_for_github": "npm run build_engine && npm run build_website && npm run copy_assets",
+		"copy_assets": "cpy 'website/**/*' '!website/**/*.js' build/website && cpy 'build/**/o3dv.min.js' 'build/website/'",
+		"update_engine_exports": "run-python3 tools/update_engine_exports.py",
+		"predeploy": "npm run build_for_github",
+		"deploy": "gh-pages -d build/website"
 	},
 	"devDependencies": {
 		"@types/node": "^20.1.0",
@@ -64,6 +68,7 @@
 		"eslint": "^8.29.0",
 		"eslint-plugin-unused-imports": "^3.0.0",
 		"fantasticon": "^1.2.2",
+		"gh-pages": "^6.1.1",
 		"http-server": "^14.0.0",
 		"jsdoc": "^4.0.0",
 		"mocha": "^10.2.0",
@@ -77,6 +82,7 @@
 	"dependencies": {
 		"@simonwep/pickr": "1.9.0",
 		"fflate": "0.8.2",
+		"pdf-lib": "^1.17.1",
 		"pdfmake": "^0.2.10",
 		"three": "0.163.0"
 	},
