@@ -25,6 +25,9 @@ jobs:
         npm run build_website
         npm run copy_assets
         cp website/index.html build/website/
+
+    - name: List build contents
+      run: ls -R build/website
         
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
