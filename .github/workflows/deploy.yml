@@ -26,6 +26,7 @@ jobs:
         npm run copy_assets
         mkdir -p build/website
         cp -R website/* build/website/
+        cp CNAME build/website/
         cp build/engine/o3dv.min.js build/website/
 
     - name: List build contents
