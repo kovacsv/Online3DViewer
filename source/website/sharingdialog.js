@@ -263,10 +263,35 @@ function createDialogManager(snapshotManager) {
         return input;
     }
 
+    function validateEmails() {
+        const emails = [patientEmailInput.value.trim(), ...emailInputs.map(input => input.value.trim())];
+        const uniqueEmails = new Set(emails.filter(email => email !== ''));
+
+        if (uniqueEmails.size !== emails.filter(email => email !== '').length) {
+            alert(Loc('Please ensure all email addresses are unique.'));
+            return false;
+        }
+
+        let oneEmailFilled = false;
+        for (const email of emails) {
+            if (email !== '') {
+                oneEmailFilled = true;
+                break;
+            }
+        }
+
+        if (!oneEmailFilled) {
+            alert(Loc('Please enter at least one email address.'));
+            return false;
+        }
+
+        return true;
+    }
+
     function createStep1Content(step) {
         const leftContainer = AddDiv(step, 'ov_left_container');
         AddDiv(leftContainer, 'ov_dialog_title', Loc('Share Snapshot'));
-        AddDiv(leftContainer, 'ov_dialog_description', Loc('Quickly share a snapshot and details of your pain location with family, friends, or therapists.'));
+        AddDiv(leftContainer, 'ov_dialog_description', Loc('Quickly share a snapshot and details of where it hurts with family, friends, or therapists.'));
 
         // Info fields container
         const infoFieldsContainer = AddDiv(leftContainer, 'ov_info_fields_container');
@@ -279,16 +304,27 @@ function createDialogManager(snapshotManager) {
 
         // Description and Tags input fields (optional)
         const descriptionInput = createLabeledInput(infoFieldsContainer, 'textarea', Loc('Description'), 'Description (optional)');
-        const tagsInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Tags'), 'Tags (optional)');
 
         // Email fields container
+        AddDiv(leftContainer, 'ov_get_send_emails_intro', Loc('You can send this snapshot to up to 3 email addresses.'));
         const emailFieldsContainer = AddDiv(leftContainer, 'ov_email_fields_container');
+        const emailInputs = [];
         for (let i = 0; i < 3; i++) {
             const emailInput = AddDomElement(emailFieldsContainer, 'input', `email${i}`);
             emailInput.type = 'email';
             emailInput.className = 'ov_dialog_input';
             emailInput.placeholder = Loc(`Enter email ${i + 1}`);
+            emailInput.id = `email${i}`;
+            emailInputs.push(emailInput);
         }
+
+        AddDiv(leftContainer, 'ov_get_patient_email_intro', Loc('Share your email with us so we can CC you in the report.'));
+        const patientEmailInput = AddDomElement(leftContainer, 'input', 'exclusive_email');
+        patientEmailInput.type = 'email';
+        patientEmailInput.className = 'ov_dialog_input';
+        patientEmailInput.placeholder = Loc('Enter your email');
+        patientEmailInput.required = true;
+
 
         const rightContainer = AddDiv(step, 'ov_right_container');
         const previewContainer = AddDiv(rightContainer, 'ov_preview_container');
@@ -301,9 +337,12 @@ function createDialogManager(snapshotManager) {
         const previewContainers = [preview1Container, preview2Container, preview3Container];
         snapshotManager.initializePreviewImages(previewContainers);
 
-        const generatePdfButton = AddDomElement(leftContainer, 'button', 'ov_button ov_generate_pdf_button');
-        generatePdfButton.textContent = Loc('Generate PDF');
-        generatePdfButton.addEventListener('click', () => handleGeneratePdf(nameInput, intensityInput, durationInput, descriptionInput, tagsInput, emailFieldsContainer));
+        // Add the download icon
+        const downloadIcon = document.createElement('div');
+        downloadIcon.classList.add('download-icon');
+        downloadIcon.innerHTML = `<i class="icon icon-download"></i>`;
+        leftContainer.appendChild(downloadIcon);
+        downloadIcon.addEventListener('click', () => handleGeneratePdf(nameInput, intensityInput, durationInput, descriptionInput, emailFieldsContainer));
 
         const nextButton = AddDomElement(leftContainer, 'button', 'ov_button ov_next_button');
         nextButton.textContent = Loc('Next');
@@ -312,7 +351,7 @@ function createDialogManager(snapshotManager) {
             step.nextElementSibling.style.display = 'block';
         });
 
-        return { nameInput, intensityInput, durationInput, descriptionInput, tagsInput, emailFieldsContainer };
+        return { nameInput, intensityInput, durationInput, descriptionInput, emailFieldsContainer };
     }
 
     function createStep2Content(step) {
@@ -325,7 +364,7 @@ function createDialogManager(snapshotManager) {
         submitButton.addEventListener('click', () => handleSubmit());
     }
 
-    function handleGeneratePdf(nameInput, intensityInput, durationInput, descriptionInput, tagsInput, emailFieldsContainer) {
+    function handleGeneratePdf(nameInput, intensityInput, durationInput, descriptionInput, emailFieldsContainer) {
         console.log('Generating PDF...');
         const snapshots = [1, 2, 3].map(i => snapshotManager.captureSnapshot(i - 1));
         const description = descriptionInput ? descriptionInput.value : '';
@@ -342,7 +381,6 @@ function createDialogManager(snapshotManager) {
             name: nameInput.value || 'John Doe', // Use 'John Doe' if the field is empty
             email: emails.join(', ') || 'john_doe@gmail.com',
             description: description,
-            tags: tagsInput.value,
             intensity: intensityInput.value,
             duration: durationInput.value,
             images: snapshots,
