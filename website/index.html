@@ -5,40 +5,29 @@
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no">
     <link rel="icon" type="image/png" href="assets/images/3dviewer_net_favicon.ico">
-    <link rel="canonical" href="https://3dviewer.net">
+    <link rel="canonical" href="https://tellmehwereithurtsnow.com">
 
-    <title>Online 3D Viewer</title>
+    <title>Tell Me Where It Hurts Now</title>
 
-    <!-- meta start -->
-    <!-- meta end -->
+    <script>
+        // Detecting the environment
+        const host = window.location.hostname;
+        let baseUrl;
+        if (host === "localhost") {
+            baseUrl = '../build/website_dev/'; // Path for local development
+        } else {
+            baseUrl = './'; // Path for production
+        }
 
-    <!-- website start -->
-    <link rel="stylesheet" type="text/css" href="./o3dv.website.min.css">
-    <!-- <link rel="stylesheet" type="text/css" href="../build/website_dev/sharingdialog.css"> -->
-
-    <script type="text/javascript" src="./o3dv.website.min.js"></script>
-
-    <!-- website end -->
-    <!-- plugins start -->
-    <!-- plugins end -->
-
-    <!-- website analytics start -->
-    <script type="text/javascript">
-        OV.SetWebsiteEventHandler ((eventName, eventLabel, eventParams) => {
-            console.log ({
-                eventName : eventName,
-                eventLabel : eventLabel,
-                eventParams : eventParams
-            });
-        });
+        // Function to append the base URL to a path
+        function resolvePath(path) {
+            return baseUrl + path;
+        }
+        
+        // Set the base URL dynamically
+        document.write('<link rel="stylesheet" type="text/css" href="' + resolvePath('o3dv.website.min.css') + '">');
+        document.write('<script src="' + resolvePath('o3dv.website.min.js') + '" defer><\/script>');
     </script>
-    <!-- website analytics end -->
-
-    <!-- website init start -->
-    <script type="text/javascript">
-        OV.StartWebsite ('../libs');
-    </script>
-    <!-- website init end -->
 
 </head>
 
@@ -100,6 +89,24 @@
             <!-- intro footer end -->
         </div>
     </div>
+
+    <script type="text/javascript" defer>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof OV !== 'undefined') {
+                OV.SetWebsiteEventHandler((eventName, eventLabel, eventParams) => {
+                    console.log({
+                        eventName: eventName,
+                        eventLabel: eventLabel,
+                        eventParams: eventParams
+                    });
+                });
+
+                OV.StartWebsite(resolvePath('../libs'));
+            } else {
+                console.error('OV object is not defined.');
+            }
+        });
+    </script>
 </body>
 
 </html>
