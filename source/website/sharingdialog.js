@@ -5,6 +5,7 @@ import { ButtonDialog } from './dialog.js';
 import { HandleEvent } from './eventhandler.js';
 import { Loc } from '../engine/core/localization.js';
 import { generatePdf } from './pdfGenerator.js';
+import { TouchInteraction } from '../engine/viewer/navigation.js';
 
 const CONFIG = {
     SNAPSHOT_SIZES: {
@@ -37,6 +38,7 @@ function createSnapshotManager(viewer, settings) {
         currentZoomLevel: CONFIG.INITIAL_ZOOM
     }));
     let previewImages = [];
+    let touchInteractions = [];
 
     function captureSnapshot(index) {
         console.log(`Capturing snapshot for index: ${index}`);
@@ -75,49 +77,97 @@ function createSnapshotManager(viewer, settings) {
         previewImages = containers.map((container, index) => {
             const img = CreateDomElement('img', 'ov_snapshot_preview_image');
             container.appendChild(img);
+            
+            // Mouse events
             ['wheel', 'mousedown', 'mousemove', 'mouseup', 'contextmenu'].forEach(eventType => {
-                img.addEventListener(eventType, (e) => {
-                    e.stopPropagation();
-                    handleMouseEvent(index, eventType, e);
-                }, { passive: false });
+                img.addEventListener(eventType, (e) => handleMouseEvent(index, eventType, e), { passive: false });
             });
-
+    
+            // Touch events
+            const touchInteraction = new TouchInteraction();
+            touchInteractions[index] = touchInteraction;
+    
             img.addEventListener('touchstart', (e) => handleTouchStart(index, e), { passive: false });
-            img.addEventListener('touchmove', (e) => handleTouchMove(index, e), { passive: false });
+            img.addEventListener('touchmove', throttle((e) => handleTouchMove(index, e), 100), { passive: false });
             img.addEventListener('touchend', (e) => handleTouchEnd(index, e), { passive: false });
-
+    
             return img;
         });
-
+    
         // Update previews after initialization
         previewImages.forEach((_, index) => updatePreview(index));
     }
 
+
     function handleTouchStart(index, event) {
-        const touch = event.touches[0];
+        event.preventDefault();
+        touchInteractions[index].Start(previewImages[index], event);
         const state = states[index];
-        state.startMousePosition = { x: touch.clientX, y: touch.clientY };
+        state.startMousePosition = touchInteractions[index].GetPosition();
         state.isOrbiting = true;
     }
-    
-    function handleTouchMove(index, event) {
-        const touch = event.touches[0];
-        handleMouseEvent(index, 'mousemove', { clientX: touch.clientX, clientY: touch.clientY });
-    }
-    
-    function handleTouchEnd(index, event) {
-        handleMouseEvent(index, 'mouseup', event);
+
+    function throttle(callback, limit) {
+        let waiting = false; // Initially, we're not waiting
+        return function (...args) { // We return a throttled function
+            if (!waiting) { // If we're not waiting
+                callback.apply(this, args); // Execute users callback
+                waiting = true; // Prevent future invocations
+                setTimeout(function () { // After a period of time
+                    waiting = false; // And allow future invocations
+                }, limit);
+            }
+        };
     }
 
-    function handleMouseEvent(index, eventType, event) {
+    function handleTouchMove(index, event) {
+        event.preventDefault();
+        touchInteractions[index].Move(previewImages[index], event);
+
         const state = states[index];
+        const currentPosition = touchInteractions[index].GetPosition();
+        const moveDiff = touchInteractions[index].GetMoveDiff();
+
+        if (touchInteractions[index].GetFingerCount() === 1) {
+            // Handle orbiting
+            state.orbitOffset.x += moveDiff.x * CONFIG.ORBIT_RATIO;
+            state.orbitOffset.y += moveDiff.y * CONFIG.ORBIT_RATIO;
+        } else if (touchInteractions[index].GetFingerCount() === 2) {
+            // Handle zooming
+            const distanceDiff = touchInteractions[index].GetDistanceDiff();
+            state.currentZoomLevel *= (1 + distanceDiff * 0.01);
+            state.currentZoomLevel = Math.min(Math.max(state.currentZoomLevel, CONFIG.MIN_ZOOM), CONFIG.MAX_ZOOM);
+
+            // Handle panning
+            state.panOffset.x -= moveDiff.x * CONFIG.PAN_RATIO;
+            state.panOffset.y -= moveDiff.y * CONFIG.PAN_RATIO;
+        }
+
+        updatePreview(index);
+    }
+
+    function handleTouchEnd(index, event) {
+        event.preventDefault();
+        touchInteractions[index].End(previewImages[index], event);
+        const state = states[index];
+        state.isOrbiting = false;
+    }
+    
+    function handleMouseEvent(index, eventType, event) {
+        event.preventDefault();
+        console.log(`Handling mouse event: ${eventType} for index: ${index}`);
+        const state = states[index];
+    
+        const clientX = event.clientX || 0;
+        const clientY = event.clientY || 0;
+    
         switch (eventType) {
             case 'mousemove':
                 if (!state.isPanning && !state.isOrbiting) return;
-                const currentMousePosition = { x: event.clientX, y: event.clientY };
+                const currentMousePosition = { x: clientX, y: clientY };
                 const deltaX = currentMousePosition.x - state.startMousePosition.x;
                 const deltaY = currentMousePosition.y - state.startMousePosition.y;
-
+    
                 if (state.isOrbiting) {
                     state.orbitOffset.x += deltaX * CONFIG.ORBIT_RATIO;
                     state.orbitOffset.y += deltaY * CONFIG.ORBIT_RATIO;
@@ -125,25 +175,21 @@ function createSnapshotManager(viewer, settings) {
                     state.panOffset.x -= deltaX * CONFIG.PAN_RATIO;
                     state.panOffset.y -= deltaY * CONFIG.PAN_RATIO;
                 }
-
+    
                 updatePreview(index);
                 state.startMousePosition = currentMousePosition;
                 break;
             case 'mousedown':
-                state.startMousePosition = { x: event.clientX, y: event.clientY };
+                state.startMousePosition = { x: clientX, y: clientY };
                 if (event.button === 0) {
                     state.isOrbiting = true;
                 } else if (event.button === 1 || event.button === 2) {
                     state.isPanning = true;
                 }
-                document.addEventListener('mousemove', (e) => handleMouseEvent(index, 'mousemove', e), true);
-                document.addEventListener('mouseup', (e) => handleMouseEvent(index, 'mouseup', e), true);
                 break;
             case 'mouseup':
                 state.isPanning = false;
                 state.isOrbiting = false;
-                document.removeEventListener('mousemove', (e) => handleMouseEvent(index, 'mousemove', e), true);
-                document.removeEventListener('mouseup', (e) => handleMouseEvent(index, 'mouseup', e), true);
                 break;
             case 'wheel':
                 state.currentZoomLevel += event.deltaY * CONFIG.ZOOM_SPEED;
@@ -151,8 +197,8 @@ function createSnapshotManager(viewer, settings) {
                 updatePreview(index);
                 break;
         }
-        event.preventDefault();
     }
+
 
     function cleanup() {
         previewImages.forEach((img, index) => {
@@ -311,44 +357,44 @@ function createDialogManager(snapshotManager) {
 
     function createStep1Content(step) {
         const container = AddDiv(step, 'ov_content_container');
-        
+
         const headerSection = createHeaderSection(container);
         const contentWrapper = AddDiv(container, 'ov_content_wrapper');
         const formSection = createFormSection(contentWrapper);
         const previewSection = createPreviewSection(contentWrapper);
-        
+
         return { ...headerSection, ...formSection, ...previewSection };
     }
-    
+
     function createHeaderSection(container) {
         const header = AddDiv(container, 'ov_header_section');
         // AddDiv(header, 'ov_dialog_title', Loc('Share Snapshot'));
         AddDiv(header, 'ov_dialog_description', Loc('Quickly share a snapshot and details of where it hurts with family, friends, or therapists.'));
         return {};
     }
-    
+
     function createPreviewSection(container) {
         const previewContainer = AddDiv(container, 'ov_preview_container');
         const preview1Container = AddDiv(previewContainer, 'ov_preview1_container');
         const previewRow = AddDiv(previewContainer, 'ov_preview_row');
         const preview2Container = AddDiv(previewRow, 'ov_preview2_container');
         const preview3Container = AddDiv(previewRow, 'ov_preview3_container');
-    
+
         const previewContainers = [preview1Container, preview2Container, preview3Container];
         snapshotManager.initializePreviewImages(previewContainers);
-    
+
         return { previewContainers };
     }
-    
+
     function createFormSection(container) {
         const formContainer = AddDiv(container, 'ov_form_section');
-        
+
         const infoFieldsContainer = AddDiv(formContainer, 'ov_info_fields_container');
         const nameInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Name'), 'John Doe');
         const intensityInput = createLabeledInput(infoFieldsContainer, 'number', Loc('Pain Intensity'), 'Enter pain intensity (1-10)', { min: 1, max: 10 });
         const durationInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Pain Duration'), 'Enter pain duration (e.g., 2 hours, 3 days)');
         const descriptionInput = createLabeledInput(infoFieldsContainer, 'textarea', Loc('Description'), 'Description (optional)');
-    
+
         AddDiv(formContainer, 'ov_get_send_emails_intro', Loc('You can send this snapshot to up to 3 email addresses.'));
         const emailFieldsContainer = AddDiv(formContainer, 'ov_email_fields_container');
         const emailInputs = [];
@@ -356,17 +402,17 @@ function createDialogManager(snapshotManager) {
             const emailInput = createLabeledInput(emailFieldsContainer, 'email', `Email ${i + 1}`, `Enter email ${i + 1}`);
             emailInputs.push(emailInput);
         }
-    
+
         AddDiv(formContainer, 'ov_get_patient_email_intro', Loc('Share your email with us so we can CC you in the report.'));
         const patientEmailInput = createLabeledInput(formContainer, 'email', 'Your Email', 'Enter your email', { required: true });
-    
+
         const nextButton = AddDomElement(formContainer, 'button', 'ov_button ov_next_button');
         nextButton.textContent = Loc('Next');
         nextButton.addEventListener('click', () => {
             step.style.display = 'none';
             step.nextElementSibling.style.display = 'block';
         });
-    
+
         return { nameInput, intensityInput, durationInput, descriptionInput, emailInputs, patientEmailInput };
     }
     function createStep2Content(step) {
@@ -414,7 +460,7 @@ function createDialogManager(snapshotManager) {
     function showDialog() {
         const overlay = createModalOverlay();
         document.body.appendChild(overlay);
-    
+
         const dialog = new ButtonDialog();
         const contentDiv = dialog.Init(Loc('Share Snapshot'), [
             {
@@ -425,7 +471,7 @@ function createDialogManager(snapshotManager) {
                 }
             }
         ]);
-        
+
         const { step1, step2 } = createMultiStepForm(contentDiv);
         const originalClose = dialog.Close.bind(dialog);
         dialog.Close = function() {
@@ -433,13 +479,13 @@ function createDialogManager(snapshotManager) {
             removeOverlayIfExists(overlay);
             originalClose();
         };
-    
+
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) {
                 dialog.Close();
             }
         });
-    
+
         dialog.Open();
 
         setTimeout(() => {
@@ -472,7 +518,7 @@ function createDialogManager(snapshotManager) {
             console.error('Invalid dialog object');
             return;
         }
-    
+
         // Try to find the dialog element
         let dialogElement = null;
         if (dialog.GetContentDiv) {
@@ -485,7 +531,7 @@ function createDialogManager(snapshotManager) {
             console.error('Cannot find dialog element');
             return;
         }
-    
+
         console.log('Styling dialog element:', dialogElement);
 
         dialogElement.style.zIndex = '9999';
