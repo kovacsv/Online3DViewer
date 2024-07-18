@@ -123,36 +123,34 @@ function createSnapshotManager(viewer, settings) {
     function handleTouchMove(index, event) {
         event.preventDefault();
         touchInteractions[index].Move(previewImages[index], event);
-
+    
         const state = states[index];
-        const currentPosition = touchInteractions[index].GetPosition();
         const moveDiff = touchInteractions[index].GetMoveDiff();
-
+        const distanceDiff = touchInteractions[index].GetDistanceDiff();
+    
         if (touchInteractions[index].GetFingerCount() === 1) {
-            // Handle orbiting
-            state.orbitOffset.x += moveDiff.x * CONFIG.ORBIT_RATIO;
-            state.orbitOffset.y += moveDiff.y * CONFIG.ORBIT_RATIO;
+            // Continue using the Orbit functionality
+            viewer.navigation.Orbit(moveDiff.x * CONFIG.ORBIT_RATIO, moveDiff.y * CONFIG.ORBIT_RATIO);
         } else if (touchInteractions[index].GetFingerCount() === 2) {
-            // Handle zooming
-            const distanceDiff = touchInteractions[index].GetDistanceDiff();
+            // Use the EmbeddedViewer's navigation pan and zoom
+            viewer.navigation.Pan(moveDiff.x * CONFIG.PAN_RATIO, moveDiff.y * CONFIG.PAN_RATIO);
+            viewer.navigation.Zoom(distanceDiff * CONFIG.ZOOM_SPEED);
+            
+            // Adjust current zoom level in the state for consistency
             state.currentZoomLevel *= (1 + distanceDiff * 0.01);
             state.currentZoomLevel = Math.min(Math.max(state.currentZoomLevel, CONFIG.MIN_ZOOM), CONFIG.MAX_ZOOM);
-
-            // Handle panning
-            state.panOffset.x -= moveDiff.x * CONFIG.PAN_RATIO;
-            state.panOffset.y -= moveDiff.y * CONFIG.PAN_RATIO;
         }
-
+    
         updatePreview(index);
     }
-
+    
     function handleTouchEnd(index, event) {
         event.preventDefault();
         touchInteractions[index].End(previewImages[index], event);
         const state = states[index];
         state.isOrbiting = false;
     }
-    
+
     function handleMouseEvent(index, eventType, event) {
         event.preventDefault();
         console.log(`Handling mouse event: ${eventType} for index: ${index}`);
