@@ -1,75 +1,24 @@
+/* General Styles */
 .ov_dialog_form_container {
+    display: flex;
+    flex-direction: column;
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    max-height: 80vh;
-    overflow-y: auto;
-    width: 90vw;
     max-width: 1200px;
     margin: auto;
+    overflow-y: auto;
 }
 
-.ov_dialog_step {
-    display: flex;
-    flex-direction: row;
-    gap: 15px;
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+    .ov_dialog_title {
+        color: #fff; /* Light text for dark backgrounds */
+    }
 }
 
-.ov_dialog_title {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-    color: #333;
-}
-
-.ov_dialog_description {
-    font-size: 1em;
-    margin-bottom: 20px;
-    color: #666;
-}
-
-.ov_get_patient_email_intro {
-    font-size: 1em;
-    margin-bottom: 20px;
-    color: #666;
-}
-
-.ov_get_send_emails_intro {
-    font-size: 1em;
-    margin-bottom: 20px;
-    color: #666;
-}
-
-.ov_dialog_label {
-    font-size: 1em;
-    margin-right: 10px;
-    color: #333;
-    flex: 0 0 150px; /* Adjust the width as needed */
-}
-
-.ov_dialog_input {
-    padding: 10px;
-    font-size: 1em;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.ov_snapshot_preview_container {
-    margin: 20px 0;
-    text-align: center;
-}
-
-.ov_snapshot_preview_image {
-    border: 1px solid #ccc;
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.ov_button {
+.ov_button, .ov_next_button, .ov_submit_button {
     padding: 10px 15px;
     font-size: 1em;
     color: #fff;
@@ -82,106 +31,124 @@
     box-sizing: border-box;
 }
 
-.ov_button:hover {
+.ov_button:hover, .ov_next_button:hover, .ov_submit_button:hover {
     background-color: #0056b3;
 }
 
-.ov_left_container {
-    width: 40%;
-    padding: 20px;
-}
-
-.ov_right_container {
-    width: 60%;
-    padding: 20px;
+/* Layout Containers */
+.ov_content_container,
+.ov_content_wrapper,
+.ov_form_section {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-}
-
-.ov_step1, .ov_step2 {
-    padding: 20px;
-}
-
-.ov_email_fields_container {
-    margin-bottom: 20px;
 }
 
 .ov_preview_container {
     display: flex;
     flex-direction: column;
     gap: 10px;
-}
-
-.ov_preview1_container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin-bottom: 20px;
 }
 
 .ov_preview_row {
     display: flex;
-    width: 100%;
     gap: 10px;
 }
 
-.ov_preview2_container, .ov_preview3_container {
-    flex: 1;
-    height: 150px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+.ov_preview1_container {
+    width: 100%;
+    aspect-ratio: 16 / 9;
 }
 
 .ov_preview2_container,
 .ov_preview3_container {
-    width: calc(50% - 5px);
+    flex: 1;
+    height: 150px;
 }
 
-.ov_preview_container img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+/* Responsive Styles */
+@media (min-width: 769px) {
+    .ov_content_wrapper {
+        flex-direction: row;
+    }
+
+    .ov_preview_container {
+        width: 60%;
+        padding-left: 20px;
+    }
+
+    .ov_form_section {
+        width: 40%;
+    }
 }
 
-.ov_next_button, .ov_submit_button {
-    text-align: center;
-    padding: 10px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
+@media (max-width: 768px) {
+    .ov_dialog_form_container {
+        flex-direction: column;
+        width: 100%;
+        max-width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .ov_preview_container {
+        order: 1; /* Moves the preview above the form */
+    }
+
+    .ov_form_section {
+        order: 2; /* Keeps the form below the preview */
+    }
+
+    .ov_preview2_container,
+    .ov_preview3_container {
+        width: 50%;
+        aspect-ratio: 1 / 1;
+    }
 }
 
-.ov_next_button:hover, .ov_submit_button:hover {
-    background-color: #0056b3;
-}
-
-.ov_info_fields_container {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.ov_email_fields_container {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
+/* Additional Styles */
 .ov_input_wrapper {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
+}
+
+.ov_dialog_input {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ov_dialog_label {
+    font-size: 1em;
+    margin-right: 10px;
+    color: #333;
+    flex: 0 0 150px; /* Adjust the width as needed */
+}
+
+.ov_dialog_title {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.ov_dialog_description, .ov_get_patient_email_intro, .ov_get_send_emails_intro {
+    font-size: 1em;
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.ov_snapshot_preview_image {
+    border: 1px solid #ccc;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .download-icon {
@@ -197,3 +164,5 @@
     width: 100%;
     height: 100%;
 }
+
+/* You can add or modify additional styles here as needed */

@@ -81,11 +81,32 @@ function createSnapshotManager(viewer, settings) {
                     handleMouseEvent(index, eventType, e);
                 }, { passive: false });
             });
+
+            img.addEventListener('touchstart', (e) => handleTouchStart(index, e), { passive: false });
+            img.addEventListener('touchmove', (e) => handleTouchMove(index, e), { passive: false });
+            img.addEventListener('touchend', (e) => handleTouchEnd(index, e), { passive: false });
+
             return img;
         });
 
         // Update previews after initialization
         previewImages.forEach((_, index) => updatePreview(index));
+    }
+
+    function handleTouchStart(index, event) {
+        const touch = event.touches[0];
+        const state = states[index];
+        state.startMousePosition = { x: touch.clientX, y: touch.clientY };
+        state.isOrbiting = true;
+    }
+    
+    function handleTouchMove(index, event) {
+        const touch = event.touches[0];
+        handleMouseEvent(index, 'mousemove', { clientX: touch.clientX, clientY: touch.clientY });
+    }
+    
+    function handleTouchEnd(index, event) {
+        handleMouseEvent(index, 'mouseup', event);
     }
 
     function handleMouseEvent(index, eventType, event) {
@@ -289,71 +310,65 @@ function createDialogManager(snapshotManager) {
     }
 
     function createStep1Content(step) {
-        const leftContainer = AddDiv(step, 'ov_left_container');
-        AddDiv(leftContainer, 'ov_dialog_title', Loc('Share Snapshot'));
-        AddDiv(leftContainer, 'ov_dialog_description', Loc('Quickly share a snapshot and details of where it hurts with family, friends, or therapists.'));
-
-        // Info fields container
-        const infoFieldsContainer = AddDiv(leftContainer, 'ov_info_fields_container');
-
-        // Name input field
-        const nameInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Name'), 'John Doe');
-
-        const intensityInput = createLabeledInput(infoFieldsContainer, 'number', Loc('Pain Intensity'), 'Enter pain intensity (1-10)', { min: 1, max: 10 });
-        const durationInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Pain Duration'), 'Enter pain duration (e.g., 2 hours, 3 days)');
-
-        // Description and Tags input fields (optional)
-        const descriptionInput = createLabeledInput(infoFieldsContainer, 'textarea', Loc('Description'), 'Description (optional)');
-
-        // Email fields container
-        AddDiv(leftContainer, 'ov_get_send_emails_intro', Loc('You can send this snapshot to up to 3 email addresses.'));
-        const emailFieldsContainer = AddDiv(leftContainer, 'ov_email_fields_container');
-        const emailInputs = [];
-        for (let i = 0; i < 3; i++) {
-            const emailInput = AddDomElement(emailFieldsContainer, 'input', `email${i}`);
-            emailInput.type = 'email';
-            emailInput.className = 'ov_dialog_input';
-            emailInput.placeholder = Loc(`Enter email ${i + 1}`);
-            emailInput.id = `email${i}`;
-            emailInputs.push(emailInput);
-        }
-
-        AddDiv(leftContainer, 'ov_get_patient_email_intro', Loc('Share your email with us so we can CC you in the report.'));
-        const patientEmailInput = AddDomElement(leftContainer, 'input', 'exclusive_email');
-        patientEmailInput.type = 'email';
-        patientEmailInput.className = 'ov_dialog_input';
-        patientEmailInput.placeholder = Loc('Enter your email');
-        patientEmailInput.required = true;
-
-
-        const rightContainer = AddDiv(step, 'ov_right_container');
-        const previewContainer = AddDiv(rightContainer, 'ov_preview_container');
-
+        const container = AddDiv(step, 'ov_content_container');
+        
+        const headerSection = createHeaderSection(container);
+        const contentWrapper = AddDiv(container, 'ov_content_wrapper');
+        const formSection = createFormSection(contentWrapper);
+        const previewSection = createPreviewSection(contentWrapper);
+        
+        return { ...headerSection, ...formSection, ...previewSection };
+    }
+    
+    function createHeaderSection(container) {
+        const header = AddDiv(container, 'ov_header_section');
+        // AddDiv(header, 'ov_dialog_title', Loc('Share Snapshot'));
+        AddDiv(header, 'ov_dialog_description', Loc('Quickly share a snapshot and details of where it hurts with family, friends, or therapists.'));
+        return {};
+    }
+    
+    function createPreviewSection(container) {
+        const previewContainer = AddDiv(container, 'ov_preview_container');
         const preview1Container = AddDiv(previewContainer, 'ov_preview1_container');
         const previewRow = AddDiv(previewContainer, 'ov_preview_row');
         const preview2Container = AddDiv(previewRow, 'ov_preview2_container');
         const preview3Container = AddDiv(previewRow, 'ov_preview3_container');
-
+    
         const previewContainers = [preview1Container, preview2Container, preview3Container];
         snapshotManager.initializePreviewImages(previewContainers);
-
-        // Add the download icon
-        const downloadIcon = document.createElement('div');
-        downloadIcon.classList.add('download-icon');
-        downloadIcon.innerHTML = `<i class="icon icon-download"></i>`;
-        leftContainer.appendChild(downloadIcon);
-        downloadIcon.addEventListener('click', () => handleGeneratePdf(nameInput, intensityInput, durationInput, descriptionInput, emailFieldsContainer));
-
-        const nextButton = AddDomElement(leftContainer, 'button', 'ov_button ov_next_button');
+    
+        return { previewContainers };
+    }
+    
+    function createFormSection(container) {
+        const formContainer = AddDiv(container, 'ov_form_section');
+        
+        const infoFieldsContainer = AddDiv(formContainer, 'ov_info_fields_container');
+        const nameInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Name'), 'John Doe');
+        const intensityInput = createLabeledInput(infoFieldsContainer, 'number', Loc('Pain Intensity'), 'Enter pain intensity (1-10)', { min: 1, max: 10 });
+        const durationInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Pain Duration'), 'Enter pain duration (e.g., 2 hours, 3 days)');
+        const descriptionInput = createLabeledInput(infoFieldsContainer, 'textarea', Loc('Description'), 'Description (optional)');
+    
+        AddDiv(formContainer, 'ov_get_send_emails_intro', Loc('You can send this snapshot to up to 3 email addresses.'));
+        const emailFieldsContainer = AddDiv(formContainer, 'ov_email_fields_container');
+        const emailInputs = [];
+        for (let i = 0; i < 3; i++) {
+            const emailInput = createLabeledInput(emailFieldsContainer, 'email', `Email ${i + 1}`, `Enter email ${i + 1}`);
+            emailInputs.push(emailInput);
+        }
+    
+        AddDiv(formContainer, 'ov_get_patient_email_intro', Loc('Share your email with us so we can CC you in the report.'));
+        const patientEmailInput = createLabeledInput(formContainer, 'email', 'Your Email', 'Enter your email', { required: true });
+    
+        const nextButton = AddDomElement(formContainer, 'button', 'ov_button ov_next_button');
         nextButton.textContent = Loc('Next');
         nextButton.addEventListener('click', () => {
             step.style.display = 'none';
             step.nextElementSibling.style.display = 'block';
         });
-
-        return { nameInput, intensityInput, durationInput, descriptionInput, emailFieldsContainer };
+    
+        return { nameInput, intensityInput, durationInput, descriptionInput, emailInputs, patientEmailInput };
     }
-
     function createStep2Content(step) {
         AddDiv(step, 'ov_dialog_title', Loc('Additional Options'));
 
@@ -399,9 +414,9 @@ function createDialogManager(snapshotManager) {
     function showDialog() {
         const overlay = createModalOverlay();
         document.body.appendChild(overlay);
-
+    
         const dialog = new ButtonDialog();
-        const contentDiv = dialog.Init(Loc('Share'), [
+        const contentDiv = dialog.Init(Loc('Share Snapshot'), [
             {
                 name: Loc('Close'),
                 onClick() {
@@ -410,27 +425,31 @@ function createDialogManager(snapshotManager) {
                 }
             }
         ]);
-
+        
         const { step1, step2 } = createMultiStepForm(contentDiv);
-
         const originalClose = dialog.Close.bind(dialog);
         dialog.Close = function() {
             snapshotManager.cleanup();
             removeOverlayIfExists(overlay);
             originalClose();
         };
-
+    
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) {
                 dialog.Close();
             }
         });
-
+    
         dialog.Open();
 
         setTimeout(() => {
             styleDialogForSharing(dialog);
         }, 0);
+
+        // Add resize event listener
+        window.addEventListener('resize', () => {
+            styleDialogForSharing(dialog);
+        });
     }
 
     function createModalOverlay() {
@@ -453,7 +472,7 @@ function createDialogManager(snapshotManager) {
             console.error('Invalid dialog object');
             return;
         }
-
+    
         // Try to find the dialog element
         let dialogElement = null;
         if (dialog.GetContentDiv) {
@@ -466,16 +485,29 @@ function createDialogManager(snapshotManager) {
             console.error('Cannot find dialog element');
             return;
         }
-
+    
         console.log('Styling dialog element:', dialogElement);
 
-        dialogElement.style.position = 'fixed';
-        dialogElement.style.top = '50%';
-        dialogElement.style.left = '50%';
-        dialogElement.style.transform = 'translate(-50%, -50%)';
         dialogElement.style.zIndex = '9999';
-        dialogElement.style.maxWidth = '90%';
-        dialogElement.style.maxHeight = '90%';
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            dialogElement.style.width = '100%';
+            dialogElement.style.height = '100%';
+            dialogElement.style.maxWidth = '100%';
+            dialogElement.style.maxHeight = '100%';
+            dialogElement.style.top = '0';
+            dialogElement.style.left = '0';
+            dialogElement.style.transform = 'none';
+            dialogElement.style.borderRadius = '0';
+        } else {
+            dialogElement.style.width = '90%';
+            dialogElement.style.maxWidth = '1200px';
+            dialogElement.style.maxHeight = '90vh';
+            dialogElement.style.top = '50%';
+            dialogElement.style.left = '50%';
+            dialogElement.style.transform = 'translate(-50%, -50%)';
+            dialogElement.style.borderRadius = '8px';
+        }
         dialogElement.style.overflow = 'auto';
     }
 
