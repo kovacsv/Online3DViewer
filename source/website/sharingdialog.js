@@ -4,15 +4,18 @@ import { ShowMessageDialog } from './dialogs.js';
 import { ButtonDialog } from './dialog.js';
 import { HandleEvent } from './eventhandler.js';
 import { Loc } from '../engine/core/localization.js';
+import { Navigation } from '../engine/viewer/navigation.js';
+import { GetDefaultCamera } from '../engine/viewer/viewer.js';
 import { generatePdf } from './pdfGenerator.js';
 import { TouchInteraction } from '../engine/viewer/navigation.js';
+import * as THREE from 'three';
 
 const CONFIG = {
     SNAPSHOT_SIZES: {
         LARGE: { width: 2000, height: 2160 },
         SMALL: { width: 1080, height: 1080 }
     },
-    INITIAL_ZOOM: 0.5,
+    INITIAL_ZOOM: 0.2,
     MAX_ZOOM: 3,
     MIN_ZOOM: 0.1,
     ZOOM_SPEED: 0.001,
@@ -39,7 +42,30 @@ function createSnapshotManager(viewer, settings) {
     }));
     let previewImages = [];
     let touchInteractions = [];
+    let renderers = [];
 
+    function updateCanvas(index) {
+        const { width, height } = index === 0 ? CONFIG.SNAPSHOT_SIZES.LARGE : CONFIG.SNAPSHOT_SIZES.SMALL;
+        const camera = cameras[index];
+        const renderer = renderers[index];
+        const { panOffset, orbitOffset, currentZoomLevel } = states[index];
+
+        console.log('onUpdateCanvas State:', states[index]);
+
+        viewer.navigation.MoveCamera(camera, 0);
+        // Apply orbit
+        viewer.navigation.Orbit(orbitOffset.x, orbitOffset.y);
+            // Set aspect ratio and resize renderer
+        viewer.renderer.setSize(width, height);
+        viewer.camera.aspect = width / height;
+        viewer.camera.updateProjectionMatrix();
+        renderer.setSize(width, height);
+        renderer.render(viewer.scene, viewer.camera);
+    }
+    
+
+
+    
     function captureSnapshot(index) {
         if (index < 0 || index >= cameras.length) {
             console.error(`Invalid index: ${index}`);
@@ -59,22 +85,24 @@ function createSnapshotManager(viewer, settings) {
     }
 
     function updatePreview(index) {
-        if (index < 0 || index >= previewImages.length) {
-            console.error(`Invalid preview index: ${index}`);
-            return;
-        }
-
-        const snapshotData = captureSnapshot(index);
-        if (snapshotData) {
-            previewImages[index].src = snapshotData;
-        } else {
-            console.error(`Failed to capture snapshot for index: ${index}`);
-        }
+        requestAnimationFrame(() => {
+            if (index < 0 || index >= previewImages.length) {
+                console.error(`Invalid preview index: ${index}`);
+                return;
+            }
+    
+            const snapshotData = captureSnapshot(index);
+            if (snapshotData) {
+                previewImages[index].src = snapshotData;
+            } else {
+                console.error(`Failed to capture snapshot for index: ${index}`);
+            }
+        });
     }
 
     function initializePreviewImages(containers) {
         previewImages = containers.map((container, index) => {
-            const img = CreateDomElement('img', 'ov_snapshot_preview_image');
+            const img = CreateDomElement('canvas', 'ov_snapshot_preview_image');
             container.appendChild(img);
             
             // Mouse events
@@ -85,7 +113,10 @@ function createSnapshotManager(viewer, settings) {
             // Touch events
             const touchInteraction = new TouchInteraction();
             touchInteractions[index] = touchInteraction;
-    
+
+            const renderer = new THREE.WebGLRenderer({ canvas: img, alpha: true });
+            renderers.push(renderer);
+
             img.addEventListener('touchstart', (e) => handleTouchStart(index, e), { passive: false });
             img.addEventListener('touchmove', throttle((e) => handleTouchMove(index, e), 100), { passive: false });
             img.addEventListener('touchend', (e) => handleTouchEnd(index, e), { passive: false });
@@ -94,7 +125,7 @@ function createSnapshotManager(viewer, settings) {
         });
     
         // Update previews after initialization
-        previewImages.forEach((_, index) => updatePreview(index));
+        previewImages.forEach((_, index) => updateCanvas(index));
     }
 
 
@@ -140,7 +171,7 @@ function createSnapshotManager(viewer, settings) {
             state.currentZoomLevel = Math.min(Math.max(state.currentZoomLevel, CONFIG.MIN_ZOOM), CONFIG.MAX_ZOOM);
         }
     
-        updatePreview(index);
+        updateCanvas(index);
     }
     
     function handleTouchEnd(index, event) {
@@ -172,8 +203,7 @@ function createSnapshotManager(viewer, settings) {
                     state.panOffset.x -= deltaX * CONFIG.PAN_RATIO;
                     state.panOffset.y -= deltaY * CONFIG.PAN_RATIO;
                 }
-    
-                updatePreview(index);
+                updateCanvas(index);
                 state.startMousePosition = currentMousePosition;
                 break;
             case 'mousedown':
@@ -191,11 +221,10 @@ function createSnapshotManager(viewer, settings) {
             case 'wheel':
                 state.currentZoomLevel += event.deltaY * CONFIG.ZOOM_SPEED;
                 state.currentZoomLevel = Math.min(Math.max(state.currentZoomLevel, CONFIG.MIN_ZOOM), CONFIG.MAX_ZOOM);
-                updatePreview(index);
+                updateCanvas(index);
                 break;
         }
     }
-
 
     function cleanup() {
         previewImages.forEach((img, index) => {
@@ -206,7 +235,7 @@ function createSnapshotManager(viewer, settings) {
         document.removeEventListener('mouseup', handleMouseEvent);
     }
 
-    return { initializePreviewImages, cleanup, captureSnapshot, updatePreview };
+    return { cleanup, captureSnapshot, initializePreviewImages, updateCanvas };
 }
 
 function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOffset, orbitOffset, camera) {
