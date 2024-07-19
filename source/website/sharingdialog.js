@@ -41,7 +41,6 @@ function createSnapshotManager(viewer, settings) {
     let touchInteractions = [];
 
     function captureSnapshot(index) {
-        console.log(`Capturing snapshot for index: ${index}`);
         if (index < 0 || index >= cameras.length) {
             console.error(`Invalid index: ${index}`);
             return null;
@@ -137,7 +136,7 @@ function createSnapshotManager(viewer, settings) {
             viewer.navigation.Zoom(distanceDiff * CONFIG.ZOOM_SPEED);
             
             // Adjust current zoom level in the state for consistency
-            state.currentZoomLevel *= (1 + distanceDiff * 0.01);
+            state.currentZoomLevel *= (1 - distanceDiff * 0.01);
             state.currentZoomLevel = Math.min(Math.max(state.currentZoomLevel, CONFIG.MIN_ZOOM), CONFIG.MAX_ZOOM);
         }
     

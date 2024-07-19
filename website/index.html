@@ -13,7 +13,7 @@
         // Detecting the environment
         const host = window.location.hostname;
         let baseUrl;
-        if (host === "localhost") {
+        if (host === "localhost" || host.endsWith("ngrok-free.app")) {
             baseUrl = '../build/website_dev/'; // Path for local development
         } else {
             baseUrl = './'; // Path for production

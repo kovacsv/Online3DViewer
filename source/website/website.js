@@ -206,6 +206,10 @@ export class Website
         this.model = null;
     }
 
+    IsMobileScreen() {
+        return window.innerWidth <= 768; // You can adjust this threshold as needed
+    }
+
     Load ()
     {
         this.settings.LoadFromCookies ();
@@ -239,9 +243,18 @@ export class Website
         this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
         this.OnHashChange ();
 
-        window.addEventListener ('resize', () => {
-			this.layouter.Resize ();
-		});
+        window.addEventListener('resize', () => {
+            this.layouter.Resize();
+            if (this.uiState === WebsiteUIState.Model) {
+                if (this.IsMobileScreen()) {
+                    this.navigator.ShowPanels(false);
+                    this.sidebar.ShowPanels(false);
+                } else {
+                    this.UpdatePanelsVisibility();
+                }
+            }
+        });
+        
     }
 
     HasLoadedModel ()
@@ -272,7 +285,17 @@ export class Website
             ShowDomElement (this.parameters.headerDiv, true);
             ShowDomElement (this.parameters.mainDiv, true);
             ShowOnlyOnModelElements (true);
-            this.UpdatePanelsVisibility ();
+            
+            if (this.IsMobileScreen()) {
+                // For mobile screens, minimize panels by default
+                this.navigator.ShowPanels(false);
+                this.sidebar.ShowPanels(false);
+                CookieSetBoolVal('ov_show_navigator', false);
+                CookieSetBoolVal('ov_show_sidebar', false);
+            } else {
+                this.UpdatePanelsVisibility();
+            }
+
         } else if (this.uiState === WebsiteUIState.Loading) {
             ShowDomElement (this.parameters.introDiv, false);
             ShowDomElement (this.parameters.headerDiv, true);
