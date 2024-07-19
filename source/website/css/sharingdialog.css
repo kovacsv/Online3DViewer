@@ -151,6 +151,13 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+.ov_snapshot_preview_canvas {
+    border: 1px solid #ccc;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 .download-icon {
     position: absolute;
     top: 10px;
