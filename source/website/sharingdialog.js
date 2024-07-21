@@ -7,7 +7,7 @@ import { Loc } from '../engine/core/localization.js';
 import { Navigation } from '../engine/viewer/navigation.js';
 import { GetDefaultCamera } from '../engine/viewer/viewer.js';
 import { generatePdf } from './pdfGenerator.js';
-import { TouchInteraction } from '../engine/viewer/navigation.js';
+import { MouseInteraction, TouchInteraction } from '../engine/viewer/navigation.js';
 import * as THREE from 'three';
 
 const CONFIG = {
@@ -15,7 +15,7 @@ const CONFIG = {
         LARGE: { width: 463, height: 500 },
         SMALL: { width: 231, height: 220 }
     },
-    INITIAL_ZOOM: 0.2,
+    INITIAL_ZOOM: 0.1,
     MAX_ZOOM: 3,
     MIN_ZOOM: 0.1,
     ZOOM_SPEED: 0.001,
@@ -42,6 +42,7 @@ function createSnapshotManager(viewer, settings) {
     }));
     let previewImages = [];
     let touchInteractions = [];
+    let mouseInteractions = [];
     let renderers = [];
 
     function updateCanvas(index) {
@@ -97,10 +98,9 @@ function createSnapshotManager(viewer, settings) {
             img.width = width;
             img.height = height;
             
-            // Mouse events
-            ['wheel', 'mousedown', 'mousemove', 'mouseup', 'contextmenu'].forEach(eventType => {
-                img.addEventListener(eventType, (e) => handleMouseEvent(index, eventType, e), { passive: false });
-            });
+            const mouseInteraction = new MouseInteraction();
+            mouseInteractions[index] = mouseInteraction;
+    
     
             // Touch events
             const touchInteraction = new TouchInteraction();
@@ -108,6 +108,11 @@ function createSnapshotManager(viewer, settings) {
 
             const renderer = new THREE.WebGLRenderer({ canvas: img, alpha: true });
             renderers.push(renderer);
+
+            img.addEventListener('mousedown', (e) => handleMouseDown(index, e), { passive: false });
+            img.addEventListener('mousemove', (e) => handleMouseMove(index, e), { passive: false });
+            img.addEventListener('mouseup', (e) => handleMouseUp(index, e), { passive: false });            
+            img.addEventListener('wheel', (e) => handleWheelEvent(index, e), { passive: false });
 
             img.addEventListener('touchstart', (e) => handleTouchStart(index, e), { passive: false });
             img.addEventListener('touchmove', throttle((e) => handleTouchMove(index, e), 100), { passive: false });
@@ -173,60 +178,93 @@ function createSnapshotManager(viewer, settings) {
         state.isOrbiting = false;
     }
 
-    function handleMouseEvent(index, eventType, event) {
+    function handleMouseEvent(index, event) {
         event.preventDefault();
-        console.log(`Handling mouse event: ${eventType} for index: ${index}`);
-        const state = states[index];
-    
-        const clientX = event.clientX || 0;
-        const clientY = event.clientY || 0;
-    
-        switch (eventType) {
-            case 'mousemove':
-                if (!state.isPanning && !state.isOrbiting) return;
-                const currentMousePosition = { x: clientX, y: clientY };
-                const deltaX = currentMousePosition.x - state.startMousePosition.x;
-                const deltaY = currentMousePosition.y - state.startMousePosition.y;
-    
-                if (state.isOrbiting) {
-                    state.orbitOffset.x += deltaX * CONFIG.ORBIT_RATIO;
-                    state.orbitOffset.y += deltaY * CONFIG.ORBIT_RATIO;
-                } else if (state.isPanning) {
-                    state.panOffset.x -= deltaX * CONFIG.PAN_RATIO;
-                    state.panOffset.y -= deltaY * CONFIG.PAN_RATIO;
-                }
-                updateCanvas(index);
-                state.startMousePosition = currentMousePosition;
-                break;
+        console.log('Handling mouse event:', event.type);
+        const interaction = mouseInteractions[index];
+        switch (event.type) {
             case 'mousedown':
-                state.startMousePosition = { x: clientX, y: clientY };
-                if (event.button === 0) {
-                    state.isOrbiting = true;
-                } else if (event.button === 1 || event.button === 2) {
-                    state.isPanning = true;
-                }
+                console.log('Mouse down event:', event);
+                interaction.Down(previewImages[index], event);
+                break;
+            case 'mousemove':
+                console.log('Mouse move event:', event);
+                interaction.Move(previewImages[index], event);
+                updateCanvas(index); // This updates the view according to the new camera position
                 break;
             case 'mouseup':
-                state.isPanning = false;
-                state.isOrbiting = false;
-                break;
-            case 'wheel':
-                state.currentZoomLevel += event.deltaY * CONFIG.ZOOM_SPEED;
-                state.currentZoomLevel = Math.min(Math.max(state.currentZoomLevel, CONFIG.MIN_ZOOM), CONFIG.MAX_ZOOM);
-                updateCanvas(index);
+                interaction.Up(previewImages[index], event);
                 break;
         }
     }
 
-    function cleanup() {
-        previewImages.forEach((img, index) => {
-            img.removeEventListener('wheel', (e) => handleMouseEvent(index, 'wheel', e));
-            img.removeEventListener('mousedown', (e) => handleMouseEvent(index, 'mousedown', e));
-        });
-        document.removeEventListener('mousemove', handleMouseEvent);
-        document.removeEventListener('mouseup', handleMouseEvent);
+    function handleWheelEvent(index, event) {
+        event.preventDefault();
+        const zoomDelta = event.deltaY * CONFIG.ZOOM_SPEED;
+        viewer.navigation.Zoom(zoomDelta);
+        updateCanvas(index);
     }
 
+    function handleMouseDown(index, event) {
+        event.preventDefault();
+        const state = states[index];
+        state.startMousePosition = { x: event.clientX, y: event.clientY };
+        
+        // Determine whether it's an orbit or pan based on the mouse button
+        if (event.button === 0) { // Left mouse button for orbit
+            state.isOrbiting = true;
+        } else if (event.button === 2) { // Right mouse button for pan
+            state.isPanning = true;
+        }
+    }
+
+    function handleMouseMove(index, event) {
+        event.preventDefault();
+        const state = states[index];
+        if (!state.isOrbiting && !state.isPanning) return; // Do nothing if no action has been started
+    
+        const currentMousePosition = { x: event.clientX, y: event.clientY };
+        const deltaX = currentMousePosition.x - state.startMousePosition.x;
+        const deltaY = currentMousePosition.y - state.startMousePosition.y;
+    
+        if (state.isOrbiting) {
+            viewer.navigation.Orbit(deltaX * CONFIG.ORBIT_RATIO, deltaY * CONFIG.ORBIT_RATIO);
+        } else if (state.isPanning) {
+            viewer.navigation.Pan(deltaX * CONFIG.PAN_RATIO, deltaY * CONFIG.PAN_RATIO);
+        }
+    
+        // Update the canvas to reflect changes
+        updateCanvas(index);
+        state.startMousePosition = currentMousePosition; // Update the starting mouse position for the next move
+    }
+
+    function handleMouseUp(index, event) {
+        event.preventDefault();
+        const state = states[index];
+        state.isOrbiting = false;
+        state.isPanning = false;
+    }
+
+    function cleanup() {
+        previewImages.forEach((img, index) => {
+            // Remove mouse interaction event listeners
+            img.removeEventListener('mousedown', (e) => handleMouseDown(index, e));
+            img.removeEventListener('mousemove', (e) => handleMouseMove(index, e));
+            img.removeEventListener('mouseup', (e) => handleMouseUp(index, e));
+            img.removeEventListener('wheel', (e) => handleWheelEvent(index, e));
+    
+            // Remove touch interaction event listeners
+            img.removeEventListener('touchstart', (e) => handleTouchStart(index, e));
+            img.removeEventListener('touchmove', (e) => handleTouchMove(index, e));
+            img.removeEventListener('touchend', (e) => handleTouchEnd(index, e));
+        });
+    
+        // If there's a global event listener attached to the document for mouse moves or mouse up,
+        // consider their removal here if they were added elsewhere
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+    }
+    
     return { cleanup, captureSnapshot, initializePreviewImages, updateCanvas };
 }
 
