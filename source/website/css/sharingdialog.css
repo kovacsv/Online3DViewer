@@ -165,6 +165,29 @@
     margin-bottom: 10px;
 }
 
+.ov_form_sub_header {
+    padding-top: 10px;
+    font-weight: bold;
+    font-size: 18px;
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.ov_download_link {
+    display: block;
+    margin-top: 15px;
+    color: #666;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.ov_download_link:hover {
+    color: #555;  
+}
+
 .ov_dialog_input {
     padding: 10px;
     font-size: 1em;

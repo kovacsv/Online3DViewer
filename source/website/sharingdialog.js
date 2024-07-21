@@ -316,6 +316,13 @@ function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOff
 }
 
 function createDialogManager(snapshotManager) {
+
+    function createPatientInfoSubHeader(container) {
+        const subHeader = AddDomElement(container, 'h3', 'ov_form_sub_header');  
+        subHeader.textContent = 'Enter patient details below: ';
+        return subHeader;
+    }
+
     function createMultiStepForm(parentDiv) {
         const formContainer = AddDiv(parentDiv, 'ov_dialog_form_container');
         const step1 = createStep(formContainer, 1);
@@ -406,7 +413,7 @@ function createDialogManager(snapshotManager) {
 
     function createFormSection(container) {
         const formContainer = AddDiv(container, 'ov_form_section');
-
+        createPatientInfoSubHeader(formContainer);
         const infoFieldsContainer = AddDiv(formContainer, 'ov_info_fields_container');
         const nameInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Name'), 'John Doe');
         const intensityInput = createLabeledInput(infoFieldsContainer, 'number', Loc('Pain Intensity'), 'Enter pain intensity (1-10)', { min: 1, max: 10 });
@@ -425,10 +432,16 @@ function createDialogManager(snapshotManager) {
         const patientEmailInput = createLabeledInput(formContainer, 'email', 'Your Email', 'Enter your email', { required: true });
 
         const nextButton = AddDomElement(formContainer, 'button', 'ov_button ov_next_button');
-        nextButton.textContent = Loc('Next');
+        nextButton.textContent = Loc('Submit');
         nextButton.addEventListener('click', () => {
             step.style.display = 'none';
             step.nextElementSibling.style.display = 'block';
+        });
+
+        const downloadLink = AddDomElement(formContainer, 'div', 'ov_download_link');
+        downloadLink.textContent = Loc('Download Report');
+        downloadLink.addEventListener('click', () => {
+            handleGeneratePdf(nameInput, intensityInput, durationInput, descriptionInput, emailFieldsContainer);
         });
 
         return { nameInput, intensityInput, durationInput, descriptionInput, emailInputs, patientEmailInput };
