@@ -48,8 +48,6 @@
     flex: 1; /* Gives the container a flexible size */
     max-width: 500px; /* Ensures that the container does not exceed the canvas width */
     overflow: hidden; /* Hides any overflowing content */
-    box-shadow: 0 2px 5px rgba(112, 37, 216, 0.792);
-
     padding-right: 30px;
     padding-left: 30px;
     margin-left: 50px;
@@ -59,7 +57,6 @@
 .ov_preview1_container {
     flex: 2; /* Allocates twice as much space compared to the other two */
     height: auto; /* Adjust based on content */
-    box-shadow: 0 2px 5px rgba(216, 37, 37, 0.792);
 }
 
 .ov_preview2_container {
@@ -96,6 +93,22 @@
     align-items: center;    /* Vertically centers the items in the container */
     width: 100%;            /* Ensures the container takes full width available */
     height: auto;           /* Adjust height automatically based on content */
+}
+
+.ov_preview_container, .ov_preview1_container, .ov_preview2_container, .ov_preview3_container {
+    border: 2px solid #ccc; /* Light grey border */
+    border-radius: 8px; /* Softly rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.ov_snapshot_preview_image, .ov_snapshot_preview_canvas {
+    border-radius: 8px; /* Consistent rounded corners */
+}
+
+/* Ensure all preview images within containers have the same styling */
+.ov_preview_container img, .ov_preview1_container img, .ov_preview2_container img, .ov_preview3_container img {
+    border-radius: 6px; /* Slightly less rounded than container for a layered effect */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Very light shadow for the images themselves */
 }
 
 /* Responsive Styles */
@@ -181,9 +194,6 @@
 .ov_snapshot_preview_image {
     width: 100%; /* Makes the canvas width responsive to the container size */
     height: auto; /* Maintains the aspect ratio */
-    border-radius: 2px;
-    border: 3px solid #ad218c;
-
 }
 
 .ov_snapshot_preview_canvas {
