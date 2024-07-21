@@ -12,8 +12,8 @@ import * as THREE from 'three';
 
 const CONFIG = {
     SNAPSHOT_SIZES: {
-        LARGE: { width: 2000, height: 2160 },
-        SMALL: { width: 1080, height: 1080 }
+        LARGE: { width: 463, height: 500 },
+        SMALL: { width: 231, height: 220 }
     },
     INITIAL_ZOOM: 0.2,
     MAX_ZOOM: 3,
@@ -50,22 +50,25 @@ function createSnapshotManager(viewer, settings) {
         const renderer = renderers[index];
         const { panOffset, orbitOffset, currentZoomLevel } = states[index];
 
-        console.log('onUpdateCanvas State:', states[index]);
-
         viewer.navigation.MoveCamera(camera, 0);
         // Apply orbit
         viewer.navigation.Orbit(orbitOffset.x, orbitOffset.y);
-            // Set aspect ratio and resize renderer
+        // Set aspect ratio and resize renderer
         viewer.renderer.setSize(width, height);
         viewer.camera.aspect = width / height;
         viewer.camera.updateProjectionMatrix();
         renderer.setSize(width, height);
+        
+        // Explicitly set the size of the canvas element
+        renderer.domElement.style.width = width + 'px';
+        renderer.domElement.style.height = height + 'px';
+
+        // Then set the renderer's internal size
+        renderer.setSize(width, height, false); // 'false' ensures it doesn't change the canvas style
         renderer.render(viewer.scene, viewer.camera);
     }
     
 
-
-    
     function captureSnapshot(index) {
         if (index < 0 || index >= cameras.length) {
             console.error(`Invalid index: ${index}`);
@@ -84,26 +87,15 @@ function createSnapshotManager(viewer, settings) {
         return CaptureSnapshot(viewer, width, height, false, currentZoomLevel, panOffset, orbitOffset, camera);
     }
 
-    function updatePreview(index) {
-        requestAnimationFrame(() => {
-            if (index < 0 || index >= previewImages.length) {
-                console.error(`Invalid preview index: ${index}`);
-                return;
-            }
-    
-            const snapshotData = captureSnapshot(index);
-            if (snapshotData) {
-                previewImages[index].src = snapshotData;
-            } else {
-                console.error(`Failed to capture snapshot for index: ${index}`);
-            }
-        });
-    }
-
     function initializePreviewImages(containers) {
         previewImages = containers.map((container, index) => {
             const img = CreateDomElement('canvas', 'ov_snapshot_preview_image');
             container.appendChild(img);
+
+            // Set initial size
+            const { width, height } = index === 0 ? CONFIG.SNAPSHOT_SIZES.LARGE : CONFIG.SNAPSHOT_SIZES.SMALL;
+            img.width = width;
+            img.height = height;
             
             // Mouse events
             ['wheel', 'mousedown', 'mousemove', 'mouseup', 'contextmenu'].forEach(eventType => {

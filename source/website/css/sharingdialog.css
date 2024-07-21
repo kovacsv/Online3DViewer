@@ -43,27 +43,59 @@
     flex-direction: column;
 }
 
-.ov_preview_container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-}
 
-.ov_preview_row {
-    display: flex;
-    gap: 10px;
+.ov_preview_container {
+    flex: 1; /* Gives the container a flexible size */
+    max-width: 500px; /* Ensures that the container does not exceed the canvas width */
+    overflow: hidden; /* Hides any overflowing content */
+    box-shadow: 0 2px 5px rgba(112, 37, 216, 0.792);
+
+    padding-right: 30px;
+    padding-left: 30px;
+    margin-left: 50px;
+    padding-top: 15px;
 }
 
 .ov_preview1_container {
-    width: 100%;
-    aspect-ratio: 16 / 9;
+    flex: 2; /* Allocates twice as much space compared to the other two */
+    height: auto; /* Adjust based on content */
+    box-shadow: 0 2px 5px rgba(216, 37, 37, 0.792);
 }
 
-.ov_preview2_container,
+.ov_preview2_container {
+    width: 231px; /* Set the width explicitly if not already set */
+    height: 254px; /* Set the height explicitly if not already set */
+    display: flex; /* Ensures contents are flex-aligned */
+    justify-content: center; /* Centers the canvas horizontally */
+    align-items: center; /* Centers the canvas vertically */
+    overflow: hidden; /* Hides any overflow, ensuring nothing spills out */
+}
+
 .ov_preview3_container {
-    flex: 1;
-    height: 150px;
+    width: 231px; /* Set the width explicitly if not already set */
+    height: 254px; /* Set the height explicitly if not already set */
+    display: flex; /* Ensures contents are flex-aligned */
+    justify-content: center; /* Centers the canvas horizontally */
+    align-items: center; /* Centers the canvas vertically */
+    overflow: hidden; /* Hides any overflow, ensuring nothing spills out */
+}
+
+/* Ensure the container does not grow or shrink unexpectedly */
+.ov_preview2_container, .ov_preview3_container {
+    flex: none; /* Does not allow flex-grow or flex-shrink */
+    margin: 5px; /* Optional: adds some space around the containers */
+    box-sizing: border-box; /* Ensures padding and border are included in width/height */
+}
+
+
+.ov_preview_row {
+    display: flex;          /* Enables flexbox */
+    flex-direction: row;    /* Align children horizontally */
+    flex-wrap: nowrap;      /* Prevents wrapping of items */
+    justify-content: center;/* Horizontally centers the content within the container */
+    align-items: center;    /* Vertically centers the items in the container */
+    width: 100%;            /* Ensures the container takes full width available */
+    height: auto;           /* Adjust height automatically based on content */
 }
 
 /* Responsive Styles */
@@ -73,8 +105,7 @@
     }
 
     .ov_preview_container {
-        width: 60%;
-        padding-left: 20px;
+        width: 33%;
     }
 
     .ov_form_section {
@@ -91,6 +122,10 @@
         max-height: 100vh;
         padding: 10px;
         box-sizing: border-box;
+    }
+
+    .ov_content_wrapper {
+        flex-direction: column;
     }
 
     .ov_preview_container {
@@ -144,11 +179,11 @@
 }
 
 .ov_snapshot_preview_image {
-    border: 1px solid #ccc;
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Makes the canvas width responsive to the container size */
+    height: auto; /* Maintains the aspect ratio */
+    border-radius: 2px;
+    border: 3px solid #ad218c;
+
 }
 
 .ov_snapshot_preview_canvas {
@@ -156,8 +191,9 @@
     max-width: 100%;
     height: auto;
     border-radius: 4px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
 }
+
 .download-icon {
     position: absolute;
     top: 10px;
