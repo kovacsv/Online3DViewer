@@ -131,8 +131,7 @@
         flex-direction: column;
         width: 100%;
         max-width: 100%;
-        height: 100vh;
-        max-height: 100vh;
+        height: auto; /* Adjusted from 100vh to auto for better flexibility */
         padding: 10px;
         box-sizing: border-box;
     }
@@ -142,11 +141,14 @@
     }
 
     .ov_preview_container {
-        order: 1; /* Moves the preview above the form */
+        order: 1;
+        width: 100%; /* Ensures the preview container takes full width */
+        margin: 0 0 15px 0; /* Adds margin for better spacing */
     }
 
     .ov_form_section {
         order: 2; /* Keeps the form below the preview */
+        width: 100%; /* Ensures the form section takes full width */
     }
 
     .ov_preview2_container,
@@ -216,6 +218,46 @@
 .download-icon svg {
     width: 100%;
     height: 100%;
+}
+
+@media (max-width: 375px) {
+    .ov_dialog_form_container {
+        padding: 5px;  /* Reduced padding for smaller screen */
+    }
+
+    .ov_preview_container,
+    .ov_preview1_container,
+    .ov_preview2_container,
+    .ov_preview3_container {
+        width: 90%;  /* Ensures containers use the full width available */
+        align-items: center;  /* Center-aligns the contents */
+        justify-content: center;  /* Horizontally centers the contents */
+    }
+
+    .ov_preview_container {
+        height: auto;  /* Adjusts height based on content */
+        padding: 0;  /* Removes padding within the preview container */
+        margin-bottom: 10px;  /* Adds space below the main preview container */
+    }
+
+    .ov_preview1_container {
+        margin-right: auto;  /* Removes margin around the main preview container */
+        margin-left: auto;  /* Removes margin around the main preview container */
+    }
+
+
+    .ov_preview2_container,
+    .ov_preview3_container {
+        aspect-ratio: 1;  /* Maintains square aspect ratio */
+        height: 180px;  /* Sets a fixed height for better control */
+        width: 45%;  /* Allocates half the width for each preview */    
+    }
+    
+    .ov_snapshot_preview_image, .ov_snapshot_preview_canvas {
+        max-width: 100%;  /* Ensures images do not overflow their containers */
+        max-height: 100%;  /* Ensures images fit within the container height */
+        object-fit: contain;  /* Ensures the image is scaled properly within its container */
+    }
 }
 
 /* You can add or modify additional styles here as needed */
