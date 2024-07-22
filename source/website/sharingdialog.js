@@ -272,32 +272,27 @@ function createSnapshotManager(viewer, settings) {
 }
 
 function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOffset, orbitOffset, camera) {
-    // Store original camera state
-    const originalCamera = {
-        eye: { x: camera.eye.x, y: camera.eye.y, z: camera.eye.z },
-        center: { x: camera.center.x, y: camera.center.y, z: camera.center.z },
-        up: { x: camera.up.x, y: camera.up.y, z: camera.up.z }
-    };
-
-    // Apply zoom
+    // Calculate new camera position based on zoom level
     const direction = {
         x: camera.eye.x - camera.center.x,
         y: camera.eye.y - camera.center.y,
         z: camera.eye.z - camera.center.z
     };
+    const distance = Math.sqrt(direction.x ** 2 + direction.y ** 2 + direction.z ** 2);
+    const newDistance = distance / zoomLevel / 10 ;
 
-    const distance = Math.sqrt(direction.x * direction.x + direction.y * direction.y + direction.z * direction.z);
-    const zoomedDistance = distance * zoomLevel;
-    const zoomFactor = zoomedDistance / distance;
-
-    const zoomedEye = {
-        x: camera.center.x + direction.x * zoomFactor,
-        y: camera.center.y + direction.y * zoomFactor,
-        z: camera.center.z + direction.z * zoomFactor
+    const normalizedDirection = {
+        x: direction.x / distance,
+        y: direction.y / distance,
+        z: direction.z / distance
     };
 
-    // Apply pan
-    const panScale = distance * 0.005; // Adjust this value as needed
+    // Apply the zoomed position
+    camera.eye.x = camera.center.x + normalizedDirection.x * newDistance;
+    camera.eye.y = camera.center.y + normalizedDirection.y * newDistance;
+    camera.eye.z = camera.center.z + normalizedDirection.z * newDistance;
+
+    // Apply pan based on the original calculations
     const right = {
         x: direction.y * camera.up.z - direction.z * camera.up.y,
         y: direction.z * camera.up.x - direction.x * camera.up.z,
@@ -310,48 +305,23 @@ function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOff
         z: right.z / rightLength
     };
 
-    const pannedCenter = {
-        x: camera.center.x + normalizedRight.x * panOffset.x * panScale + camera.up.x * panOffset.y * panScale,
-        y: camera.center.y + normalizedRight.y * panOffset.x * panScale + camera.up.y * panOffset.y * panScale,
-        z: camera.center.z + normalizedRight.z * panOffset.x * panScale + camera.up.z * panScale
-    };
-    const pannedEye = {
-        x: zoomedEye.x + normalizedRight.x * panOffset.x * panScale + camera.up.x * panOffset.y * panScale,
-        y: zoomedEye.y + normalizedRight.y * panOffset.x * panScale + camera.up.y * panScale,
-        z: zoomedEye.z + normalizedRight.z * panOffset.x * panScale + camera.up.z * panScale
-    };
+    camera.center.x += normalizedRight.x * panOffset.x + camera.up.x * panOffset.y;
+    camera.center.y += normalizedRight.y * panOffset.x + camera.up.y * panOffset.y;
+    camera.center.z += normalizedRight.z * panOffset.x + camera.up.z * panOffset.y;
 
-    // Set temporary camera for snapshot
-    camera.eye.x = pannedEye.x;
-    camera.eye.y = pannedEye.y;
-    camera.eye.z = pannedEye.z;
-    camera.center.x = pannedCenter.x;
-    camera.center.y = pannedCenter.y;
-    camera.center.z = pannedCenter.z;
+    // Move and update the camera
     viewer.navigation.MoveCamera(camera, 0);
 
-    // Apply orbit
+    // Apply orbit adjustments
     viewer.navigation.Orbit(orbitOffset.x, orbitOffset.y);
 
-    // Set aspect ratio and resize renderer
+    // Update renderer aspect ratio and dimensions
     viewer.renderer.setSize(width, height);
     viewer.camera.aspect = width / height;
     viewer.camera.updateProjectionMatrix();
 
     // Capture the image
     const imageDataUrl = viewer.GetImageAsDataUrl(width, height, isTransparent);
-
-    // Restore original camera state
-    camera.eye.x = originalCamera.eye.x;
-    camera.eye.y = originalCamera.eye.y;
-    camera.eye.z = originalCamera.eye.z;
-    camera.center.x = originalCamera.center.x;
-    camera.center.y = originalCamera.center.y;
-    camera.center.z = originalCamera.center.z;
-    camera.up.x = originalCamera.up.x;
-    camera.up.y = originalCamera.up.y;
-    camera.up.z = originalCamera.up.z;
-    viewer.navigation.MoveCamera(camera, 0);
 
     return imageDataUrl;
 }
