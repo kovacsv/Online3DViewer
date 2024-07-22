@@ -186,29 +186,9 @@ function createSnapshotManager(viewer, settings) {
         state.isOrbiting = false;
     }
 
-    function handleMouseEvent(index, event) {
-        event.preventDefault();
-        console.log('Handling mouse event:', event.type);
-        const interaction = mouseInteractions[index];
-        switch (event.type) {
-            case 'mousedown':
-                console.log('Mouse down event:', event);
-                interaction.Down(previewImages[index], event);
-                break;
-            case 'mousemove':
-                console.log('Mouse move event:', event);
-                interaction.Move(previewImages[index], event);
-                updateCanvas(index); // This updates the view according to the new camera position
-                break;
-            case 'mouseup':
-                interaction.Up(previewImages[index], event);
-                break;
-        }
-    }
-
     function handleWheelEvent(index, event) {
         event.preventDefault();
-        const zoomDelta = event.deltaY * CONFIG.ZOOM_SPEED;
+        const zoomDelta = -1 * event.deltaY * CONFIG.ZOOM_SPEED;
         viewer.navigation.Zoom(zoomDelta);
         updateCanvas(index);
     }
