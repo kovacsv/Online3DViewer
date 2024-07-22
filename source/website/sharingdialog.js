@@ -97,6 +97,14 @@ function createSnapshotManager(viewer, settings) {
     }
 
     function initializePreviewImages(containers) {
+
+        function rotateCamera(camera, degrees) {
+            const radians = degrees * (Math.PI / 180);
+            const distance = Math.sqrt(camera.eye.x ** 2 + camera.eye.z ** 2);
+            camera.eye.x = distance * Math.cos(radians);
+            camera.eye.z = distance * Math.sin(radians);
+        }
+
         previewImages = containers.map((container, index) => {
             const img = CreateDomElement('canvas', 'ov_snapshot_preview_image');
             container.appendChild(img);
@@ -116,6 +124,13 @@ function createSnapshotManager(viewer, settings) {
 
             const renderer = new THREE.WebGLRenderer({ canvas: img, alpha: true });
             renderers.push(renderer);
+
+            // Rotate cameras 2 and 3 specifically ( Don't know why this works better? instead of 120, 240)
+            if (index === 1) {
+                rotateCamera(cameras[index], 240);
+            } else if (index === 2) {
+                rotateCamera(cameras[index], 380);
+            }
 
             img.addEventListener('mousedown', (e) => handleMouseDown(index, e), { passive: false });
             img.addEventListener('mousemove', (e) => handleMouseMove(index, e), { passive: false });
