@@ -2,10 +2,10 @@ import { AddDiv, AddDomElement, CreateDomElement } from '../engine/viewer/domuti
 import { AddCheckbox } from '../website/utils.js';
 import { ShowMessageDialog } from './dialogs.js';
 import { ButtonDialog } from './dialog.js';
-import { HandleEvent } from './eventhandler.js';
 import { Loc } from '../engine/core/localization.js';
-import { Navigation } from '../engine/viewer/navigation.js';
+import { Camera } from '../engine/viewer/camera.js';
 import { GetDefaultCamera } from '../engine/viewer/viewer.js';
+import { Direction } from '../engine/geometry/geometry.js';
 import { generatePdf } from './pdfGenerator.js';
 import { MouseInteraction, TouchInteraction } from '../engine/viewer/navigation.js';
 import * as THREE from 'three';
@@ -31,7 +31,17 @@ export function ShowSharingDialog(settings, viewer) {
 }
 
 function createSnapshotManager(viewer, settings) {
-    const cameras = Array(3).fill().map(() => ({ ...viewer.navigation.GetCamera() }));
+    const currentCamera = viewer.navigation.GetCamera();
+    const cameras = Array(3).fill().map(() => {
+        let defaultCamera = GetDefaultCamera(Direction.Y);
+        let newCamera = new Camera(
+            currentCamera.eye.Clone(),
+            currentCamera.center.Clone(),
+            defaultCamera.up.Clone(),
+            currentCamera.fov
+        );
+        return newCamera;
+    });
     const states = Array(3).fill().map(() => ({
         isPanning: false,
         isOrbiting: false,
@@ -52,8 +62,6 @@ function createSnapshotManager(viewer, settings) {
         const { panOffset, orbitOffset, currentZoomLevel } = states[index];
 
         viewer.navigation.MoveCamera(camera, 0);
-        // Apply orbit
-        viewer.navigation.Orbit(orbitOffset.x, orbitOffset.y);
         // Set aspect ratio and resize renderer
         viewer.renderer.setSize(width, height);
         viewer.camera.aspect = width / height;
@@ -226,7 +234,7 @@ function createSnapshotManager(viewer, settings) {
         const currentMousePosition = { x: event.clientX, y: event.clientY };
         const deltaX = currentMousePosition.x - state.startMousePosition.x;
         const deltaY = currentMousePosition.y - state.startMousePosition.y;
-    
+
         if (state.isOrbiting) {
             viewer.navigation.Orbit(deltaX * CONFIG.ORBIT_RATIO, deltaY * CONFIG.ORBIT_RATIO);
         } else if (state.isPanning) {
