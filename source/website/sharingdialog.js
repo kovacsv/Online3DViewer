@@ -24,7 +24,6 @@ const CONFIG = {
 };
 
 export function ShowSharingDialog(settings, viewer) {
-    console.log("ShowSharingDialog called with settings:", settings);
     const SnapshotManager = createSnapshotManager(viewer, settings);
     const DialogManager = createDialogManager(SnapshotManager);
     DialogManager.showDialog();
@@ -404,7 +403,6 @@ function createDialogManager(snapshotManager) {
 
     function createHeaderSection(container) {
         const header = AddDiv(container, 'ov_header_section');
-        // AddDiv(header, 'ov_dialog_title', Loc('Share Snapshot'));
         AddDiv(header, 'ov_dialog_description', Loc('Quickly share a snapshot and details of where it hurts with family, friends, or therapists.'));
         return {};
     }
@@ -520,6 +518,9 @@ function createDialogManager(snapshotManager) {
             snapshotManager.cleanup();
             removeOverlayIfExists(overlay);
             originalClose();
+            let event = new Event('resize');
+            window.dispatchEvent(event);
+            
         };
 
         overlay.addEventListener('click', (e) => {
@@ -573,8 +574,6 @@ function createDialogManager(snapshotManager) {
             console.error('Cannot find dialog element');
             return;
         }
-
-        console.log('Styling dialog element:', dialogElement);
 
         dialogElement.style.zIndex = '9999';
         const isMobile = window.innerWidth <= 768;
