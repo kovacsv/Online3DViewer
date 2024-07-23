@@ -252,7 +252,7 @@
     .ov_preview1_container,
     .ov_preview2_container,
     .ov_preview3_container {
-        width: 90%;  /* Ensures containers use the full width available */
+        width: 92%;  /* Ensures containers use the full width available */
         align-items: center;  /* Center-aligns the contents */
         justify-content: center;  /* Horizontally centers the contents */
     }
