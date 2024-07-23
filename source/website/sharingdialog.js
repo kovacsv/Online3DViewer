@@ -131,7 +131,7 @@ function createSnapshotManager(viewer, settings) {
             } else if (index === 2) {
                 rotateCamera(cameras[index], 380);
             }
-
+            img.addEventListener('contextmenu', function(event) { event.preventDefault(); }, { passive: false }); 
             img.addEventListener('mousedown', (e) => handleMouseDown(index, e), { passive: false });
             img.addEventListener('mousemove', (e) => handleMouseMove(index, e), { passive: false });
             img.addEventListener('mouseup', (e) => handleMouseUp(index, e), { passive: false });            

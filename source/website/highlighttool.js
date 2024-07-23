@@ -126,18 +126,15 @@ export class HighlightTool {
 
         this.UpdatePanel();
     }
-
     MouseMove(mouseCoordinates) {
         if (!this.isActive) {
             return;
         }
-    
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
         if (intersection === null) {
             // No intersection, don't do anything
             return;
         }
-    
         // Existing highlight logic here
         if (this.isMouseDown) {
             if (this.mouseButton === 0 ) {
@@ -146,7 +143,6 @@ export class HighlightTool {
                 this.RemoveHighlight(intersection);
             }
         }
-    
         this.viewer.Render();
     }
 
