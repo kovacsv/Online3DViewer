@@ -50,7 +50,13 @@
             <div class="main_navigator ov_panel_set_container" id="main_navigator"></div>
             <div class="main_splitter" id="main_navigator_splitter"></div>
         </div>
-        <div class="main_viewer" id="main_viewer"></div>
+
+        <div class="main_viewer" id="main_viewer">            
+            <div id="highlight-button" class="highlight-button">
+                <img src="assets/images/highlight.png" alt="Highlight Tool">
+            </div>
+        </div>
+
         <div class="main_right_container only_full_width" id="main_right_container">
             <div class="main_splitter" id="main_sidebar_splitter"></div>
             <div class="main_sidebar ov_panel_set_right_container" id="main_sidebar"></div>
@@ -92,6 +98,18 @@
             }
         });
     </script>
+
+    <script type = "text/javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            const highlightButton = document.getElementById('highlight-button');
+        
+            highlightButton.addEventListener('click', () => {
+                // Toggle 'active' class on the highlight button
+                highlightButton.classList.toggle('active');
+            });
+        });
+    </script>
+
 </body>
 
 </html>

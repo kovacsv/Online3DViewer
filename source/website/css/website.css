@@ -182,6 +182,7 @@ div.main_splitter
 div.main_viewer
 {
 	float: left;
+	position: relative;
 }
 
 div.main_right_container
@@ -357,60 +358,97 @@ div.ov_measure_panel div.ov_measure_value
 @media (hover)
 {
 
-div.title_right div.header_button:hover
-{
-	color: var(--ov_button_color);
+	div.title_right div.header_button:hover
+	{
+		color: var(--ov_button_color);
+	}
+
+	div.ov_toolbar div.ov_toolbar_button:hover
+	{
+		background: var(--ov_hover_color);
+	}
+
+	}
+
+	@media (max-width: 350px), (max-height: 620px)
+	{
+
+	div.intro_content
+	{
+		margin: 0px auto;
+	}
+
+	div.intro div.intro_logo
+	{
+		display: none;
+	}
+
+	}
+
+	@media (max-width: 800px)
+	{
+
+	div.intro_content
+	{
+		width: auto;
+	}
+
+	div.main_viewer canvas
+	{
+		border: 0px;
+		margin: 0px;
+	}
+
+	div.ov_dialog
+	{
+		max-width: 80%;
+	}
+
+	div.ov_progress
+	{
+		max-width: 80%;
+	}
+
+	div.ov_bottom_floating_panel
+	{
+		padding: 10px;
+	}
 }
 
-div.ov_toolbar div.ov_toolbar_button:hover
-{
-	background: var(--ov_hover_color);
+div.close-button {
+    align-self: flex-end;
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
 }
 
+div.tool-content {
+    margin-top: 10px;
+    text-align: left;
+    width: 100%;
 }
 
-@media (max-width: 350px), (max-height: 620px)
-{
-
-div.intro_content
-{
-	margin: 0px auto;
+div.highlight-button {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 80px;
+    height: 80px;
+    background-color: #007bff2e;
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
-div.intro div.intro_logo
-{
-	display: none;
+div.highlight-button.active {
+    background-color: #0056b3; /* Darker shade for active state */
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.5); /* Stronger shadow for emphasis */
 }
-
-}
-
-@media (max-width: 800px)
-{
-
-div.intro_content
-{
-	width: auto;
-}
-
-div.main_viewer canvas
-{
-	border: 0px;
-	margin: 0px;
-}
-
-div.ov_dialog
-{
-	max-width: 80%;
-}
-
-div.ov_progress
-{
-	max-width: 80%;
-}
-
-div.ov_bottom_floating_panel
-{
-	padding: 10px;
-}
-
+div.highlight-button img {
+    width: 50%;
+    height: 50%;
 }
