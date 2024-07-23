@@ -232,7 +232,7 @@ export class Website
         this.InitCookieConsent ();
 
         this.viewer.SetMouseClickHandler (this.OnModelClicked.bind (this));
-        this.viewer.SetMouseMoveHandler(this.OnModelMouseMove.bind(this));
+        this.viewer.SetMouseMoveHandler (this.OnModelMouseMoved.bind (this));
         this.viewer.SetContextMenuHandler (this.OnModelContextMenu.bind (this));
 
         this.layouter.Init ();
@@ -331,48 +331,38 @@ export class Website
         this.FitModelToWindow (true);
     }
 
-    OnModelClicked (button, mouseCoordinates) {
+    OnModelClicked (button, mouseCoordinates)
+    {
         if (button !== 1 && button !== 2) {
             return;
         }
-    
-        if (this.measureTool.IsActive()) {
-            this.measureTool.Click(mouseCoordinates);
-            return;
-        }
-    
-        if (this.highlightTool.IsActive()) {
-            let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
-            if (meshUserData === null) {
-                // No intersection with model, allow navigation
-                this.viewer.navigation.EnableCameraMovement(true);
-            } else {
-                // Intersection with model, use highlight tool
-                this.highlightTool.Click(mouseCoordinates);
-                this.viewer.navigation.EnableCameraMovement(false);
-            }
+
+        if (this.measureTool.IsActive ()) {
+            this.measureTool.Click (mouseCoordinates);
             return;
         }
 
-        let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
+        if (this.highlightTool.IsActive()) {
+            this.highlightTool.Click(mouseCoordinates);
+            return;
+        }
+
+        let meshUserData = this.viewer.GetMeshUserDataUnderMouse (IntersectionMode.MeshAndLine, mouseCoordinates);
         if (meshUserData === null) {
-            this.navigator.SetSelection(null);
+            this.navigator.SetSelection (null);
         } else {
-            this.navigator.SetSelection(new Selection(SelectionType.Mesh, meshUserData.originalMeshInstance.id));
+            this.navigator.SetSelection (new Selection (SelectionType.Mesh, meshUserData.originalMeshInstance.id));
         }
     }
 
-    OnModelMouseMove(mouseCoordinates) {
+    OnModelMouseMoved (mouseCoordinates)
+    {
+        if (this.measureTool.IsActive ()) {
+            this.measureTool.MouseMove (mouseCoordinates);
+        }
+
         if (this.highlightTool.IsActive()) {
-            let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
-            if (meshUserData === null) {
-                // No intersection with model, allow navigation
-                this.viewer.navigation.EnableCameraMovement(true);
-            } else {
-                // Intersection with model, use highlight tool
-                this.highlightTool.MouseMove(mouseCoordinates);
-                this.viewer.navigation.EnableCameraMovement(false);
-            }
+            this.highlightTool.MouseMove(mouseCoordinates);
         }
     }
 
@@ -1001,10 +991,6 @@ export class Website
         this.toolbarHighlightButton.SetSelected(isActive);
         HandleEvent('highlight_tool_activated', isActive ? 'on' : 'off');
         this.navigator.SetSelection(null);
-        
-        if (!isActive) {
-            this.viewer.navigation.EnableCameraMovement(true);
-        }
     }
     
 }

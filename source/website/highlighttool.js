@@ -128,25 +128,21 @@ export class HighlightTool {
     }
 
     MouseMove(mouseCoordinates) {
-        if (!this.isActive) {
+        if (!this.isMouseDown) {
             return;
         }
-    
+
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
         if (intersection === null) {
-            // No intersection, don't do anything
             return;
         }
-    
-        // Existing highlight logic here
-        if (this.isMouseDown) {
-            if (this.mouseButton === 0) {
-                this.ApplyHighlight(intersection);
-            } else if (this.mouseButton === 2) {
-                this.RemoveHighlight(intersection);
-            }
+
+        if (this.mouseButton === 0) {
+            this.ApplyHighlight(intersection);
+        } else if (this.mouseButton === 2) {
+            this.RemoveHighlight(intersection);
         }
-    
+
         this.viewer.Render();
     }
 
