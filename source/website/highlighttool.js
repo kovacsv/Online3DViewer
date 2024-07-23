@@ -83,11 +83,19 @@ export class HighlightTool {
     
         this.isActive = isActive;
         this.button.SetSelected(isActive);
+        
+        // Update the viewer button
+        let viewerButton = document.getElementById('highlight-button');
+        if (viewerButton) {
+            viewerButton.classList.toggle('active', isActive);
+        }
+    
         this.viewer.navigation.EnableCameraMovement(!isActive);
     
+        // Add this back
         if (!this.eventsInitialized) {
             this.InitEvents();
-            this.eventsInitialized = true; // Track if events are already initialized
+            this.eventsInitialized = true;
         }
     
         if (this.isActive) {

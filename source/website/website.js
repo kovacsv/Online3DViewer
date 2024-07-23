@@ -638,6 +638,11 @@ export class Website
         this.viewer.SetNavigationMode (this.cameraSettings.navigationMode);
         this.viewer.SetProjectionMode (this.cameraSettings.projectionMode);
         this.UpdateEnvironmentMap ();
+
+        let highlightButton = document.getElementById('highlight-button');
+        highlightButton.addEventListener('click', () => {
+            this.ToggleHighlightTool();
+        });
     }
 
     InitToolbar ()
@@ -706,12 +711,18 @@ export class Website
         AddButton (this.toolbar, 'up_y', Loc ('Set Y axis as up vector'), ['only_on_model'], () => {
             this.viewer.SetUpVector (Direction.Y, true);
         });
-        let highlightToolButton = AddPushButton(this.toolbar, 'highlight', Loc('Highlight'), ['only_full_width', 'only_on_model'], (isSelected) => {
-            HandleEvent('highlight_tool_activated', isSelected ? 'on' : 'off');
-            this.navigator.SetSelection(null);
-            this.highlightTool.SetActive(isSelected);
+        
+        // let highlightToolButton = AddPushButton(this.toolbar, 'highlight', Loc('Highlight'), ['only_full_width', 'only_on_model'], (isSelected) => {
+        //     HandleEvent('highlight_tool_activated', isSelected ? 'on' : 'off');
+        //     this.navigator.SetSelection(null);
+        //     this.highlightTool.SetActive(isSelected);
+        // });
+        // this.highlightTool.SetButton(highlightToolButton);
+
+        this.toolbarHighlightButton = AddPushButton(this.toolbar, 'highlight', Loc('Highlight'), ['only_full_width', 'only_on_model'], (isSelected) => {
+            this.ToggleHighlightTool();
         });
-        this.highlightTool.SetButton(highlightToolButton);
+        this.highlightTool.SetButton(this.toolbarHighlightButton);
 
         AddButton (this.toolbar, 'share', Loc ('Share'), ['only_full_width', 'only_on_model'], () => {
             ShowSharingDialog (this.settings, this.viewer);
@@ -973,4 +984,13 @@ export class Website
             popupDiv.remove ();
         });
     }
+
+    ToggleHighlightTool() {
+        let isActive = !this.highlightTool.IsActive();
+        this.highlightTool.SetActive(isActive);
+        this.toolbarHighlightButton.SetSelected(isActive);
+        HandleEvent('highlight_tool_activated', isActive ? 'on' : 'off');
+        this.navigator.SetSelection(null);
+    }
+    
 }

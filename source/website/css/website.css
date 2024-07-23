@@ -445,9 +445,10 @@ div.highlight-button {
 }
 
 div.highlight-button.active {
-    background-color: #0056b3; /* Darker shade for active state */
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.5); /* Stronger shadow for emphasis */
+    background-color: #ffcc00;
+    border: 2px solid #ff9900;
 }
+
 div.highlight-button img {
     width: 50%;
     height: 50%;
