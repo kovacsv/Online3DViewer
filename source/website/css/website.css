@@ -442,6 +442,7 @@ div.highlight-button {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+	border: 2px solid #001eff2e;
 }
 
 div.highlight-button.active {

@@ -86,7 +86,7 @@ export function StartWebsite (externalLibLocation)
 
         if (!website.hashHandler.HasHash()) {
             // Load the default FBX model
-            let defaultModelUrl = 'assets/models/Y_Bot.fbx';
+            let defaultModelUrl = 'assets/models/male_model.stl';
             let importSettings = new ImportSettings();
             importSettings.defaultLineColor = website.settings.defaultLineColor;
             importSettings.defaultColor = website.settings.defaultColor;
