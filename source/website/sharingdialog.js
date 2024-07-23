@@ -327,6 +327,14 @@ function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOff
 
 function createDialogManager(snapshotManager) {
 
+    function addCloseButton(dialog, dialogElement) {
+        const closeButton = document.createElement('button');
+        closeButton.innerHTML = '&times;'; // This creates an "×" symbol
+        closeButton.className = 'ov_dialog_close_button';
+        closeButton.addEventListener('click', () => dialog.Close());
+        dialogElement.appendChild(closeButton);
+    }
+
     function createPatientInfoSubHeader(container) {
         const subHeader = AddDomElement(container, 'h3', 'ov_form_sub_header');  
         subHeader.textContent = 'Enter patient details below: ';
@@ -532,13 +540,10 @@ function createDialogManager(snapshotManager) {
         dialog.Open();
 
         setTimeout(() => {
-            styleDialogForSharing(dialog);
+            styleDialogForSharing(dialog);            
+            const dialogElement = dialog.GetContentDiv().closest('.ov_dialog');
+            addCloseButton(dialog, dialogElement);
         }, 0);
-
-        // Add resize event listener
-        window.addEventListener('resize', () => {
-            styleDialogForSharing(dialog);
-        });
     }
 
     function createModalOverlay() {
@@ -586,6 +591,7 @@ function createDialogManager(snapshotManager) {
             dialogElement.style.left = '0';
             dialogElement.style.transform = 'none';
             dialogElement.style.borderRadius = '0';
+            dialogElement.style.position = 'fixed';
         } else {
             dialogElement.style.width = '90%';
             dialogElement.style.maxWidth = '1200px';
@@ -594,6 +600,7 @@ function createDialogManager(snapshotManager) {
             dialogElement.style.left = '50%';
             dialogElement.style.transform = 'translate(-50%, -50%)';
             dialogElement.style.borderRadius = '8px';
+            dialogElement.style.position = 'fixed';
         }
         dialogElement.style.overflow = 'auto';
     }

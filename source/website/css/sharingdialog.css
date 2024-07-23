@@ -11,13 +11,6 @@
     overflow-y: auto;
 }
 
-/* Dark mode styles */
-@media (prefers-color-scheme: dark) {
-    .ov_dialog_title {
-        color: #fff; /* Light text for dark backgrounds */
-    }
-}
-
 .ov_button, .ov_next_button, .ov_submit_button {
     padding: 10px 15px;
     font-size: 1em;
@@ -243,6 +236,19 @@
     height: 100%;
 }
 
+.ov_dialog_close_button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333; /* default color for light mode */
+    z-index: 10000;
+}
+
+
 @media (max-width: 375px) {
     .ov_dialog_form_container {
         padding: 5px;  /* Reduced padding for smaller screen */
@@ -283,4 +289,16 @@
     }
 }
 
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+    .ov_dialog_title {
+        color: #fff; /* Light text for dark backgrounds */
+    }
+    .ov_dialog_close_button {
+        color: #ccc; /* lighter color for better visibility in dark mode */
+    }
+}
+
 /* You can add or modify additional styles here as needed */
+
+
