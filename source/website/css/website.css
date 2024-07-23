@@ -429,20 +429,16 @@ div.tool-content {
     width: 100%;
 }
 
-div.highlight-button {
-    position: absolute;
-    bottom: 30px;
-    right: 30px;
-    width: 80px;
-    height: 80px;
-    background-color: #007bff2e;
+.highlight-button {
+    width: 60px;
+    height: 60px;
+    background-color: #ffffff;
     border-radius: 50%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     cursor: pointer;
-	border: 2px solid #001eff2e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 div.highlight-button.active {
@@ -454,3 +450,40 @@ div.highlight-button img {
     width: 50%;
     height: 50%;
 }
+
+div.highlight-container {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+}
+
+div.share-button {
+    position: absolute;
+    top: -30px;
+    right: -20px;
+    width: 25px;
+    height: 25px;
+	background-color: #26a69a; /* Light semi-transparent background */
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	padding: 8px; /* Padding around the icon */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+div.share-button img {
+    width: 20px;
+    height: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+	div.share-button {
+	  background-color: #26a69a; /* Darker background for dark mode */
+	  color: #fff; /* White color icon for dark mode */
+	}
+}
+

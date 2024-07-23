@@ -653,6 +653,11 @@ export class Website
         highlightButton.addEventListener('click', () => {
             this.ToggleHighlightTool();
         });
+
+        let shareButton = document.getElementById('share-button');
+        shareButton.addEventListener('click', () => {
+            ShowSharingDialog(this.settings, this.viewer);
+        });
     }
 
     InitToolbar ()
