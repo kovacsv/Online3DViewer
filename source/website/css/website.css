@@ -521,6 +521,8 @@ div.toolbar-button .toggle-container {
     height: 30px; /* Match toolbar button height */
     padding: 0;
     margin: 0;
+	border: 2px solid #cccccc;
+	border-radius: 15px;
     background-color: #f3f3f3; /* Example to make it visually distinct, if needed */
 }
 
