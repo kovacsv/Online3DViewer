@@ -68,7 +68,6 @@ export function StartWebsite (externalLibLocation)
             mainDiv : document.getElementById ('main'),
             introDiv : document.getElementById ('intro'),
             introContentDiv : document.getElementById ('intro_content'),
-            fileNameDiv : document.getElementById ('main_file_name'),
             leftContainerDiv : document.getElementById ('main_left_container'),
             navigatorDiv : document.getElementById ('main_navigator'),
             navigatorSplitterDiv : document.getElementById ('main_navigator_splitter'),

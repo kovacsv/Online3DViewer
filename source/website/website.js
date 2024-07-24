@@ -4,7 +4,7 @@ import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
 import { NavigationMode, ProjectionMode } from '../engine/viewer/camera.js';
 import { RGBColor } from '../engine/model/color.js';
 import { Viewer } from '../engine/viewer/viewer.js';
-import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth, GetDomElementOuterHeight } from '../engine/viewer/domutils.js';
+import { AddDiv, CreateDiv , AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth, GetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToScreen, ShowListPopup } from './dialogs.js';
 import { HandleEvent } from './eventhandler.js';
 import { HashHandler } from './hashhandler.js';
@@ -13,8 +13,7 @@ import { CameraSettings, Settings, Theme } from './settings.js';
 import { Sidebar } from './sidebar.js';
 import { ThemeHandler } from './themehandler.js';
 import { ThreeModelLoaderUI } from './threemodelloaderui.js';
-import { Toolbar } from './toolbar.js';
-import { ShowSnapshotDialog } from './snapshotdialog.js';
+import { Toolbar, ToolbarButton } from './toolbar.js';
 import { AddSvgIconElement, GetFilesFromDataTransfer, InstallTooltip, IsSmallWidth } from './utils.js';
 import { ShowSharingDialog } from './sharingdialog.js';
 import { GetDefaultMaterials, ReplaceDefaultMaterialsColor } from '../engine/model/modelutils.js';
@@ -311,7 +310,7 @@ export class Website
         this.model = null;
         this.viewer.Clear ();
 
-        this.parameters.fileNameDiv.innerHTML = '';
+        // this.parameters.fileNameDiv.innerHTML = '';
 
         this.navigator.Clear ();
         this.sidebar.Clear ();
@@ -323,7 +322,7 @@ export class Website
     OnModelLoaded (importResult, threeObject)
     {
         this.model = importResult.model;
-        this.parameters.fileNameDiv.innerHTML = importResult.mainFile;
+        // this.parameters.fileNameDiv.innerHTML = importResult.mainFile;
         this.viewer.SetMainObject (threeObject);
         this.viewer.SetUpVector (Direction.Y, false);
         this.navigator.FillTree (importResult);
@@ -521,10 +520,12 @@ export class Website
         });
     }
 
-    LoadModelFromUrlList (urls, settings)
-    {
+    LoadModelFromUrlList (urls) {
+        let importSettings = new ImportSettings ();
+        importSettings.defaultLineColor = this.settings.defaultLineColor;
+        importSettings.defaultColor = this.settings.defaultColor;
         let inputFiles = InputFilesFromUrls (urls);
-        this.LoadModelFromInputFiles (inputFiles, settings);
+        this.LoadModelFromInputFiles (inputFiles, importSettings);
         this.ClearHashIfNotOnlyUrlList ();
     }
 
@@ -658,6 +659,7 @@ export class Website
         shareButton.addEventListener('click', () => {
             ShowSharingDialog(this.settings, this.viewer);
         });
+
     }
 
     InitToolbar ()
@@ -715,9 +717,53 @@ export class Website
             }
         }
 
-        let importer = this.modelLoaderUI.GetImporter ();
-        let navigationModeIndex = (this.cameraSettings.navigationMode === NavigationMode.FixedUpVector ? 0 : 1);
-        let projectionModeIndex = (this.cameraSettings.projectionMode === ProjectionMode.Perspective ? 0 : 1);
+        function AddToggle(toolbar, toggleId, options, loadModelCallback) {
+            // Create the toggle container element
+            let toggleContainer = CreateDiv('toggle-container');
+            toggleContainer.setAttribute('id', toggleId);
+            toggleContainer.setAttribute('data-state', options.initialState || 'male');
+        
+            // Create toggle options and append them
+            options.labels.forEach((label, index) => {
+                let option = CreateDiv('toggle-option');
+                option.textContent = label;
+                toggleContainer.appendChild(option);
+            });
+        
+            // Create and append the slider
+            let slider = CreateDiv('toggle-slider');
+            toggleContainer.appendChild(slider);
+        
+            // Create a toolbar button to hold our custom toggle
+            let toggleButton = new ToolbarButton(null, 'Gender Toggle', null);
+            toggleButton.buttonDiv.className += ' toolbar-button';
+            toggleButton.buttonDiv.style.width = 'auto'; // Allow the button to expand
+            toggleButton.buttonDiv.style.marginLeft = '0px'; // Add some space
+
+            let svgIcon = toggleButton.buttonDiv.querySelector('.ov_svg_icon');
+            if (svgIcon) {
+                svgIcon.remove();
+}
+            toggleButton.buttonDiv.appendChild(toggleContainer);
+            toggleButton.AddDomElements(toolbar.mainDiv);
+        
+            // Enhanced event listener for toggling state and loading models
+            toggleContainer.addEventListener('click', function() {
+                const currentState = this.getAttribute('data-state');
+                const newState = currentState === 'male' ? 'female' : 'male';
+                this.setAttribute('data-state', newState);
+        
+                if (newState === 'male') {
+                    console.log("Loading male model...");
+                    loadModelCallback(['assets/models/male_model.stl']);
+                } else {
+                    console.log("Loading female model...");
+                    loadModelCallback(['assets/models/female_model.stl']);
+                }
+            });
+        
+            return toggleButton;
+        }
 
         AddSeparator (this.toolbar, ['only_on_model']);
         AddButton (this.toolbar, 'fit', Loc ('Fit model to window'), ['only_on_model'], () => {
@@ -727,12 +773,6 @@ export class Website
             this.viewer.SetUpVector (Direction.Y, true);
         });
         
-        // let highlightToolButton = AddPushButton(this.toolbar, 'highlight', Loc('Highlight'), ['only_full_width', 'only_on_model'], (isSelected) => {
-        //     HandleEvent('highlight_tool_activated', isSelected ? 'on' : 'off');
-        //     this.navigator.SetSelection(null);
-        //     this.highlightTool.SetActive(isSelected);
-        // });
-        // this.highlightTool.SetButton(highlightToolButton);
 
         this.toolbarHighlightButton = AddPushButton(this.toolbar, 'highlight', Loc('Highlight'), ['only_full_width', 'only_on_model'], (isSelected) => {
             this.ToggleHighlightTool();
@@ -743,9 +783,13 @@ export class Website
             ShowSharingDialog (this.settings, this.viewer);
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddButton (this.toolbar, 'snapshot', Loc ('Create snapshot'), ['only_full_width', 'only_on_model'], () => {
-            ShowSnapshotDialog (this.viewer);
-        });
+
+        AddToggle(this.toolbar, 'genderToggle', 
+            {labels: ['Male', 'Female'], initialState: 'male'}, 
+            (modelUrl) => {
+                this.LoadModelFromUrlList(modelUrl);
+            }
+        );
 
         EnumeratePlugins (PluginType.Toolbar, (plugin) => {
             plugin.registerButtons ({
@@ -1010,6 +1054,29 @@ export class Website
         // Always enable navigation when highlight tool is deactivated
         if (!isActive) {
             this.viewer.navigation.EnableCameraMovement(true);
+        }
+    }
+
+    InitToggleSwitch() {
+        const toggleContainer = document.querySelector('.toggle-container');
+        
+        if (toggleContainer) {
+            toggleContainer.addEventListener('click', () => {
+                const currentState = toggleContainer.getAttribute('data-state');
+                const newState = currentState === 'male' ? 'female' : 'male';
+                
+                toggleContainer.setAttribute('data-state', newState);
+                
+                if (newState === 'male') {
+                    // Load male model
+                    this.LoadModelFromUrlList(['assets/models/male_model.stl']);
+                } else {
+                    // Load female model
+                    this.LoadModelFromUrlList(['assets/models/female_model.stl']);
+                }
+            });
+        } else {
+            console.warn('Toggle switch element not found');
         }
     }
 
