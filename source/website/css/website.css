@@ -583,6 +583,11 @@ div.toolbar-button .toggle-container {
 
 
 @media (prefers-color-scheme: dark) {
+
+	.logo_image {
+		filter: drop-shadow(0 0 2px #FFF)
+	}
+
 	div.share-button {
 		background-color: #26a69a;
 		color: #fff;
