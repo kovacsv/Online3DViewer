@@ -203,6 +203,24 @@ export class Website
         this.model = null;
     }
 
+    
+    UpdateHighlightButtonPosition() {
+        const cookieConsent = document.querySelector('.ov_bottom_floating_panel');
+        const highlightContainer = document.querySelector('.highlight-container');
+        const mainViewer = document.querySelector('.main_viewer');
+        
+        if (highlightContainer && mainViewer) {
+            const mainViewerRect = mainViewer.getBoundingClientRect();
+            highlightContainer.style.right = `${window.innerWidth - mainViewerRect.right + 20}px`;
+            
+            if (cookieConsent && cookieConsent.offsetHeight > 0) {
+                highlightContainer.style.bottom = `${cookieConsent.offsetHeight + 20}px`;
+            } else {
+                highlightContainer.style.bottom = '20px';
+            }
+        }
+    }
+
     IsMobileScreen() {
         return window.innerWidth <= 768; // You can adjust this threshold as needed
     }
@@ -239,9 +257,11 @@ export class Website
 
         this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
         this.OnHashChange ();
+        //this.UpdateHighlightButtonPosition()
 
         window.addEventListener('resize', () => {
             this.layouter.Resize();
+            this.UpdateHighlightButtonPosition()
             if (this.uiState === WebsiteUIState.Model) {
                 if (this.IsMobileScreen()) {
                     this.navigator.ShowPanels(false);
@@ -251,6 +271,7 @@ export class Website
                 }
             }
         });
+        window.addEventListener('load', () => this.UpdateHighlightButtonPosition());
         
     }
 
@@ -739,11 +760,11 @@ export class Website
             toggleButton.buttonDiv.className += ' toolbar-button';
             toggleButton.buttonDiv.style.width = 'auto'; // Allow the button to expand
             toggleButton.buttonDiv.style.marginLeft = '0px'; // Add some space
-
+            
             let svgIcon = toggleButton.buttonDiv.querySelector('.ov_svg_icon');
             if (svgIcon) {
                 svgIcon.remove();
-}
+            }
             toggleButton.buttonDiv.appendChild(toggleContainer);
             toggleButton.AddDomElements(toolbar.mainDiv);
         
@@ -1038,9 +1059,9 @@ export class Website
         let popupDiv = AddDiv (document.body, 'ov_bottom_floating_panel');
         AddDiv (popupDiv, 'ov_floating_panel_text', text);
         let acceptButton = AddDiv (popupDiv, 'ov_button ov_floating_panel_button', Loc ('Accept'));
-        acceptButton.addEventListener ('click', () => {
-            CookieSetBoolVal ('ov_cookie_consent', true);
-            popupDiv.remove ();
+        acceptButton.addEventListener('click', () => {
+            CookieSetBoolVal('ov_cookie_consent', true);
+            popupDiv.remove();
         });
     }
 
