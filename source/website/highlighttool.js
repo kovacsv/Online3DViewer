@@ -92,9 +92,11 @@ export class HighlightTool {
             viewerButton.classList.toggle('active', isActive);
         }
     
-        this.viewer.navigation.EnableCameraMovement(!isActive);
-    
-        // Add this back
+        if (!isActive) {
+            this.viewer.navigation.EnableCameraMovement(true);
+            this.isNavigating = false;
+        }
+
         if (!this.eventsInitialized) {
             this.InitEvents();
             this.eventsInitialized = true;
@@ -158,16 +160,23 @@ export class HighlightTool {
         let mouseCoordinates = this.viewer.navigation.touch.GetPosition();
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
 
-        if (intersection !== null) {
+        if (intersection === null) {
+            // No intersection with model, allow navigation
+            this.viewer.navigation.EnableCameraMovement(true);
+            this.isNavigating = true;
+        } else {
+            // Intersection with model, use highlight tool
+            this.viewer.navigation.EnableCameraMovement(false);
+            this.isNavigating = false;
             if (this.activeTouches === 1) {
                 this.ApplyHighlight(intersection);
             } else if (this.activeTouches === 2) {
                 this.RemoveHighlight(intersection);
             }
-            this.viewer.Render();
         }
+        this.viewer.Render();
     }
-    
+
     TouchMove(event) {
         event.preventDefault();
         if (!this.isTouching) {
@@ -177,11 +186,16 @@ export class HighlightTool {
         this.activeTouches = event.touches.length;
         let mouseCoordinates = this.viewer.navigation.touch.GetPosition();
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
-    
+
+        if (this.isNavigating) {
+            // If we started navigating, don't switch to highlighting
+            return;
+        }
+
         if (intersection === null) {
             return;
         }
-    
+        
         if (this.activeTouches === 1) {
             this.ApplyHighlight(intersection);
         } else if (this.activeTouches === 2) {
@@ -189,12 +203,14 @@ export class HighlightTool {
         }
         this.viewer.Render();
     }
-    
+
     TouchEnd(event) {
         event.preventDefault();
         this.activeTouches = event.touches.length;
         if (this.activeTouches === 0) {
             this.isTouching = false;
+            this.isNavigating = false;
+            this.viewer.navigation.EnableCameraMovement(true);
         }
     }
     

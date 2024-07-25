@@ -6,7 +6,7 @@ import { IntersectionMode } from '../engine/viewer/viewermodel.js';
 export class EraserTool extends HighlightTool {
     constructor(viewer, settings) {
         super(viewer, settings);
-        this.highlightColor = new THREE.Color(0, 0, 0); // Default color for erasing could be black or transparent
+        this.highlightColor = new THREE.Color('rgba(0, 0, 0, 0)');
         this.highlightMeshes = HighlightTool.sharedHighlightMeshes;
     }
 
@@ -23,7 +23,10 @@ export class EraserTool extends HighlightTool {
             viewerButton.classList.toggle('active', isActive);
         }
 
-        this.viewer.navigation.EnableCameraMovement(!isActive);
+        if (!isActive) {
+            this.viewer.navigation.EnableCameraMovement(true);
+            this.isNavigating = false;
+        }
 
         if (!this.eventsInitialized) {
             this.InitEvents();
@@ -77,6 +80,11 @@ export class EraserTool extends HighlightTool {
         this.activeTouches = event.touches.length;
         let mouseCoordinates = this.viewer.navigation.touch.GetPosition();
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
+
+        if (this.isNavigating) {
+            // If we started navigating, don't switch to highlighting
+            return;
+        }
 
         if (intersection === null) {
             return;
