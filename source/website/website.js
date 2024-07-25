@@ -21,6 +21,7 @@ import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { MeasureTool } from './measuretool.js';
 import { HighlightTool } from './highlighttool.js';
+import { EraserTool } from './erase.js';
 import { CloseAllDialogs } from './dialog.js';
 import { CreateVerticalSplitter } from './splitter.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
@@ -38,7 +39,7 @@ const WebsiteUIState =
 
 class WebsiteLayouter
 {
-    constructor (parameters, navigator, sidebar, viewer, measureTool, highlightTool)
+    constructor (parameters, navigator, sidebar, viewer, measureTool, highlightTool, eraserTool)
     {
         this.parameters = parameters;
         this.navigator = navigator;
@@ -46,6 +47,7 @@ class WebsiteLayouter
         this.viewer = viewer;
         this.measureTool = measureTool;
         this.highlightTool = highlightTool;
+        this.eraserTool = eraserTool;
         this.limits = {
             minPanelWidth : 290,
             minCanvasWidth : 100
@@ -194,25 +196,26 @@ export class Website
         this.toolbar = new Toolbar (this.parameters.toolbarDiv);
         this.navigator = new Navigator (this.parameters.navigatorDiv);
         this.highlightTool = new HighlightTool(this.viewer, this.settings);
+        this.eraserTool = new EraserTool(this.viewer, this.settings);
         this.sidebar = new Sidebar (this.parameters.sidebarDiv, this.settings);
         this.modelLoaderUI = new ThreeModelLoaderUI ();
         this.themeHandler = new ThemeHandler ();
         this.highlightColor = new RGBColor (142, 201, 240);
         this.uiState = WebsiteUIState.Undefined;
-        this.layouter = new WebsiteLayouter (this.parameters, this.navigator, this.sidebar, this.viewer, this.measureTool, this.highlightTool);
+        this.layouter = new WebsiteLayouter (this.parameters, this.navigator, this.sidebar, this.viewer, this.measureTool, this.highlightTool, this.eraserTool);
         this.model = null;
     }
 
-    
+
     UpdateHighlightButtonPosition() {
         const cookieConsent = document.querySelector('.ov_bottom_floating_panel');
         const highlightContainer = document.querySelector('.highlight-container');
         const mainViewer = document.querySelector('.main_viewer');
-        
+
         if (highlightContainer && mainViewer) {
             const mainViewerRect = mainViewer.getBoundingClientRect();
             highlightContainer.style.right = `${window.innerWidth - mainViewerRect.right + 20}px`;
-            
+
             if (cookieConsent && cookieConsent.offsetHeight > 0) {
                 highlightContainer.style.bottom = `${cookieConsent.offsetHeight + 20}px`;
             } else {
@@ -257,7 +260,6 @@ export class Website
 
         this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
         this.OnHashChange ();
-        //this.UpdateHighlightButtonPosition()
 
         window.addEventListener('resize', () => {
             this.layouter.Resize();
@@ -272,7 +274,7 @@ export class Website
             }
         });
         window.addEventListener('load', () => this.UpdateHighlightButtonPosition());
-        
+
     }
 
     HasLoadedModel ()
@@ -303,7 +305,7 @@ export class Website
             ShowDomElement (this.parameters.headerDiv, true);
             ShowDomElement (this.parameters.mainDiv, true);
             ShowOnlyOnModelElements (true);
-            
+
             if (this.IsMobileScreen()) {
                 // For mobile screens, minimize panels by default
                 this.navigator.ShowPanels(false);
@@ -355,12 +357,12 @@ export class Website
         if (button !== 1 && button !== 2) {
             return;
         }
-    
+
         if (this.measureTool.IsActive()) {
             this.measureTool.Click(mouseCoordinates);
             return;
         }
-    
+
         if (this.highlightTool.IsActive()) {
             let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
             if (meshUserData === null) {
@@ -373,7 +375,7 @@ export class Website
             }
             return;
         }
-    
+
         let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
         if (meshUserData === null) {
             this.navigator.SetSelection(null);
@@ -672,33 +674,42 @@ export class Website
         this.viewer.SetMouseUpHandler(this.OnModelMouseUp.bind(this));
 
     }
+
     OnModelMouseDown(mouseCoordinates) {
-        if (this.highlightTool.IsActive()) {
+        if (this.highlightTool.IsActive() || this.eraserTool.IsActive()) {
             let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
             if (meshUserData === null) {
                 // No intersection with model, allow navigation
                 this.viewer.navigation.EnableCameraMovement(true);
                 this.isNavigating = true;
             } else {
-                // Intersection with model, use highlight tool
+                // Intersection with model, use highlight or eraser tool
                 this.viewer.navigation.EnableCameraMovement(false);
             }
         }
     }
-    
+
     OnModelMouseMove(mouseCoordinates) {
-        if (this.highlightTool.IsActive() && !this.isNavigating) {
+        if ((this.highlightTool.IsActive() || this.eraserTool.IsActive()) && !this.isNavigating) {
             let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
             if (meshUserData !== null) {
-                this.highlightTool.MouseMove(mouseCoordinates);
+                if (this.highlightTool.IsActive()) {
+                    this.highlightTool.MouseMove(mouseCoordinates);
+                } else if (this.eraserTool.IsActive()) {
+                    this.eraserTool.MouseMove(mouseCoordinates);
+                }
             }
         }
     }
-    
+
     OnModelMouseUp(mouseCoordinates) {
-        if (this.highlightTool.IsActive()) {
+        if (this.highlightTool.IsActive() || this.eraserTool.IsActive()) {
             if (!this.isNavigating) {
-                this.highlightTool.Click(mouseCoordinates);
+                if (this.highlightTool.IsActive()) {
+                    this.highlightTool.Click(mouseCoordinates);
+                } else if (this.eraserTool.IsActive()) {
+                    this.eraserTool.Click(mouseCoordinates);
+                }
             }
             this.isNavigating = false;
         }
@@ -764,70 +775,70 @@ export class Website
             let toggleContainer = CreateDiv('toggle-container');
             toggleContainer.setAttribute('id', toggleId);
             toggleContainer.setAttribute('data-state', options.initialState || 'male');
-        
+
             // Create toggle options and append them
             options.labels.forEach((label, index) => {
                 let option = CreateDiv('toggle-option');
                 option.textContent = label;
                 toggleContainer.appendChild(option);
             });
-        
+
             // Create and append the slider
             let slider = CreateDiv('toggle-slider');
             toggleContainer.appendChild(slider);
-        
+
             // Create a toolbar button to hold our custom toggle
             let toggleButton = new ToolbarButton(null, 'Gender Toggle', null);
             toggleButton.buttonDiv.className += ' toolbar-button';
             toggleButton.buttonDiv.style.width = 'auto'; // Allow the button to expand
             toggleButton.buttonDiv.style.marginLeft = '0px'; // Add some space
-            
+
             let svgIcon = toggleButton.buttonDiv.querySelector('.ov_svg_icon');
             if (svgIcon) {
                 svgIcon.remove();
             }
             toggleButton.buttonDiv.appendChild(toggleContainer);
             toggleButton.AddDomElements(toolbar.mainDiv);
-        
+
             // Enhanced event listener for toggling state and loading models
             toggleContainer.addEventListener('click', function() {
                 const currentState = this.getAttribute('data-state');
                 const newState = currentState === 'male' ? 'female' : 'male';
                 this.setAttribute('data-state', newState);
-        
+
                 if (newState === 'male') {
-                    console.log("Loading male model...");
                     loadModelCallback(['assets/models/male_model.stl']);
                 } else {
-                    console.log("Loading female model...");
                     loadModelCallback(['assets/models/female_model.stl']);
                 }
             });
-        
+
             return toggleButton;
         }
 
         AddSeparator (this.toolbar, ['only_on_model']);
-        AddButton (this.toolbar, 'fit', Loc ('Fit model to window'), ['only_on_model'], () => {
-            this.FitModelToWindow (false);
-        });
-        AddButton (this.toolbar, 'up_y', Loc ('Set Y axis as up vector'), ['only_on_model'], () => {
+        AddButton (this.toolbar, 'up_y', Loc ('Reset View'), ['only_on_model'], () => {
             this.viewer.SetUpVector (Direction.Y, true);
         });
-        
+
 
         this.toolbarHighlightButton = AddPushButton(this.toolbar, 'highlight', Loc('Highlight'), ['only_full_width', 'only_on_model'], (isSelected) => {
             this.ToggleHighlightTool();
         });
         this.highlightTool.SetButton(this.toolbarHighlightButton);
 
+        this.toolbarEraserButton = AddPushButton(this.toolbar, 'eraser', Loc('Erase'), ['only_full_width', 'only_on_model'], (isSelected) => {
+            this.ToggleEraserTool();
+        });
+        this.eraserTool.SetButton(this.toolbarEraserButton);
+
         AddButton (this.toolbar, 'share', Loc ('Share'), ['only_full_width', 'only_on_model'], () => {
             ShowSharingDialog (this.settings, this.viewer);
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
 
-        AddToggle(this.toolbar, 'genderToggle', 
-            {labels: ['Male', 'Female'], initialState: 'male'}, 
+        AddToggle(this.toolbar, 'genderToggle',
+            {labels: ['Male', 'Female'], initialState: 'male'},
             (modelUrl) => {
                 this.LoadModelFromUrlList(modelUrl);
             }
@@ -1092,8 +1103,32 @@ export class Website
         this.toolbarHighlightButton.SetSelected(isActive);
         HandleEvent('highlight_tool_activated', isActive ? 'on' : 'off');
         this.navigator.SetSelection(null);
-        
+
         // Always enable navigation when highlight tool is deactivated
+        if (!isActive) {
+            this.viewer.navigation.EnableCameraMovement(true);
+        }
+
+        if (this.eraserTool.IsActive()) {
+            this.eraserTool.SetActive(false);
+            this.toolbarEraserButton.SetSelected(false);
+        }
+    }
+
+    ToggleEraserTool() {
+        let isActive = !this.eraserTool.IsActive();
+        this.eraserTool.SetActive(isActive);
+        this.toolbarEraserButton.SetSelected(isActive);
+        HandleEvent('eraser_tool_activated', isActive ? 'on' : 'off');
+        this.navigator.SetSelection(null);
+
+        // Disable highlight tool when eraser is activated
+        if (isActive) {
+            this.highlightTool.SetActive(false);
+            this.toolbarHighlightButton.SetSelected(false);
+        }
+
+        // Always enable navigation when eraser tool is deactivated
         if (!isActive) {
             this.viewer.navigation.EnableCameraMovement(true);
         }
@@ -1101,14 +1136,14 @@ export class Website
 
     InitToggleSwitch() {
         const toggleContainer = document.querySelector('.toggle-container');
-        
+
         if (toggleContainer) {
             toggleContainer.addEventListener('click', () => {
                 const currentState = toggleContainer.getAttribute('data-state');
                 const newState = currentState === 'male' ? 'female' : 'male';
-                
+
                 toggleContainer.setAttribute('data-state', newState);
-                
+
                 if (newState === 'male') {
                     // Load male model
                     this.LoadModelFromUrlList(['assets/models/male_model.stl']);

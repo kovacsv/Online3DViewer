@@ -4,6 +4,8 @@ import { IntersectionMode } from '../engine/viewer/viewermodel.js';
 import { DisposeThreeObjects } from '../engine/threejs/threeutils.js';
 
 export class HighlightTool {
+    static sharedHighlightMeshes = [];
+
     constructor(viewer, settings) {
         this.viewer = viewer;
         this.settings = settings;
@@ -11,7 +13,7 @@ export class HighlightTool {
         this.isMouseDown = false;
         this.mouseButton = null;
         this.highlightColor = new THREE.Color(1, 0, 0); // Default red color
-        this.highlightMeshes = [];
+        this.highlightMeshes = HighlightTool.sharedHighlightMeshes;
         this.panel = null;
         this.button = null;
         this.eventsInitialized = null;
@@ -126,6 +128,7 @@ export class HighlightTool {
 
         this.UpdatePanel();
     }
+
     MouseMove(mouseCoordinates) {
         if (!this.isActive) {
             return;
@@ -176,7 +179,6 @@ export class HighlightTool {
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
     
         if (intersection === null) {
-            console.log('Intersection is null');
             return;
         }
     
@@ -210,7 +212,7 @@ export class HighlightTool {
         }
         
         // Add the new mesh
-        this.highlightMeshes.push(highlightMesh);
+        HighlightTool.sharedHighlightMeshes.push(highlightMesh);
         this.viewer.AddExtraObject(highlightMesh);
         
         // Update overlapping meshes
@@ -234,32 +236,45 @@ export class HighlightTool {
         return overlapping;
     }
     
-    RemoveHighlight(intersection) {
-        let meshesToRemove = this.highlightMeshes.filter((mesh) => {
-            return this.IsIntersectionWithinBoundingBox(intersection, mesh);
+    RemoveHighlight(intersection) {        
+        if (!intersection || !intersection.point) {
+            return;
+        }
+    
+        let meshesToRemove = HighlightTool.sharedHighlightMeshes.filter((mesh) => {
+            let boundingBox = new THREE.Box3().setFromObject(mesh);
+            boundingBox.expandByScalar(0.01); // Expand the bounding box slightly
+            let isWithinBoundingBox = boundingBox.containsPoint(intersection.point);
+            return isWithinBoundingBox;
         });
+    
+        if (meshesToRemove.length === 0) {
+            return;
+        }
     
         meshesToRemove.forEach((mesh) => {
             this.viewer.RemoveExtraObject(mesh);
-            this.highlightMeshes = this.highlightMeshes.filter((m) => m !== mesh);
-            this.DisposeHighlightMesh(mesh);
             
-            // Update overlapping meshes
+            // Update highlightMeshes array
+            HighlightTool.sharedHighlightMeshes = HighlightTool.sharedHighlightMeshes.filter((m) => m !== mesh);
+            
+            // Dispose of the highlight mesh
+            this.DisposeHighlightMesh(mesh);
+    
+            // Update overlappingMeshes
             this.overlappingMeshes.delete(mesh.uuid);
             for (let [key, value] of this.overlappingMeshes) {
-                this.overlappingMeshes.set(key, value.filter(m => m !== mesh));
+                let filteredValue = value.filter(m => m !== mesh);
+                this.overlappingMeshes.set(key, filteredValue);
             }
         });
     
-        if (meshesToRemove.length > 0) {
-            this.viewer.Render();
-        }
+        this.viewer.Render();
     }
 
     SetMaxOverlappingMeshes(limit) {
         if (typeof limit === 'number' && limit > 0) {
             this.maxOverlappingMeshes = Math.floor(limit);
-            console.log(`Max overlapping meshes set to ${this.maxOverlappingMeshes}`);
         } else {
             console.error('Invalid overlap limit. Please provide a positive number.');
         }
@@ -375,10 +390,10 @@ export class HighlightTool {
     }
 
     ClearHighlight() {
-        this.highlightMeshes.forEach((mesh) => {
+        HighlightTool.sharedHighlightMeshes.forEach((mesh) => {
             this.viewer.RemoveExtraObject(mesh);
         });
-        this.highlightMeshes = [];
+        HighlightTool.sharedHighlightMeshes = [];
         this.viewer.Render();
     }
 
