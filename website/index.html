@@ -30,7 +30,7 @@
         function resolvePath(path) {
             return baseUrl + path;
         }
-        
+
         // Set the base URL dynamically
         document.write('<link rel="stylesheet" type="text/css" href="' + resolvePath('o3dv.website.min.css') + '">');
         document.write('<script src="' + resolvePath('o3dv.website.min.js') + '" defer><\/script>');
@@ -89,17 +89,6 @@
             } else {
                 console.error('OV object is not defined.');
             }
-        });
-    </script>
-
-    <script type = "text/javascript">
-        document.addEventListener('DOMContentLoaded', () => {
-            const highlightButton = document.getElementById('highlight-button');
-        
-            highlightButton.addEventListener('click', () => {
-                // Toggle 'active' class on the highlight button
-                highlightButton.classList.toggle('active');
-            });
         });
     </script>
 
