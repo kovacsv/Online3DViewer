@@ -8,8 +8,8 @@ export function startTour() {
         steps: [
             {
                 popover: {
-                    title: 'Welcome to the 3D Viewer!',
-                    description: 'This quick tour will guide you through the main features of tellmewhereithurts.com',
+                    title: 'Welcome to the TellMeWhereItHurtsNow.com!',
+                    description: 'This quick tour will guide you through the main features of our pain pointing tool',
                     position: 'mid-center'
                 }
             },
