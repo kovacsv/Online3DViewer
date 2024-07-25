@@ -92,8 +92,10 @@ export class HighlightTool {
             viewerButton.classList.toggle('active', isActive);
         }
     
-        this.viewer.navigation.EnableCameraMovement(!isActive);
-    
+        if (!isActive) {
+            this.viewer.navigation.EnableCameraMovement(true);
+        }
+        
         // Add this back
         if (!this.eventsInitialized) {
             this.InitEvents();
@@ -154,34 +156,43 @@ export class HighlightTool {
         event.preventDefault();
         this.activeTouches = event.touches.length;
         this.isTouching = true;
-
+    
         let mouseCoordinates = this.viewer.navigation.touch.GetPosition();
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
-
+    
         if (intersection !== null) {
+            // Disable camera movement when interacting with the model
+            this.viewer.navigation.EnableCameraMovement(false);
             if (this.activeTouches === 1) {
                 this.ApplyHighlight(intersection);
             } else if (this.activeTouches === 2) {
                 this.RemoveHighlight(intersection);
             }
             this.viewer.Render();
+        } else {
+            // Enable camera movement when not interacting with the model
+            this.viewer.navigation.EnableCameraMovement(true);
         }
     }
-    
+
     TouchMove(event) {
         event.preventDefault();
         if (!this.isTouching) {
             return;
         }
-
+    
         this.activeTouches = event.touches.length;
         let mouseCoordinates = this.viewer.navigation.touch.GetPosition();
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
     
         if (intersection === null) {
+            // Enable camera movement when not interacting with the model
+            this.viewer.navigation.EnableCameraMovement(true);
             return;
         }
     
+        // Disable camera movement when interacting with the model
+        this.viewer.navigation.EnableCameraMovement(false);
         if (this.activeTouches === 1) {
             this.ApplyHighlight(intersection);
         } else if (this.activeTouches === 2) {
@@ -189,12 +200,14 @@ export class HighlightTool {
         }
         this.viewer.Render();
     }
-    
+
     TouchEnd(event) {
         event.preventDefault();
         this.activeTouches = event.touches.length;
         if (this.activeTouches === 0) {
             this.isTouching = false;
+            // Re-enable camera movement when touch ends
+            this.viewer.navigation.EnableCameraMovement(true);
         }
     }
     
