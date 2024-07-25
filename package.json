@@ -38,7 +38,7 @@
 		"website/assets/envmaps/*"
 	],
 	"scripts": {
-		"start": "npm run build_dev && http-server",
+		"start": "npm run build_website_dev && http-server",
 		"test": "mocha test",
 		"lint": "eslint source",
 		"lint_fix": "eslint source --fix",
