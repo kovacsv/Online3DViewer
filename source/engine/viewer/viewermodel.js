@@ -145,6 +145,22 @@ export class ViewerMainModel
         this.edgeSettings = new EdgeSettings (false, new RGBColor (0, 0, 0), 1);
         this.hasLines = false;
         this.hasPolygonOffset = false;
+
+        this.mouseDownHandler = null;
+        this.mouseMoveHandler = null;
+        this.mouseUpHandler = null;
+    }
+
+    SetMouseDownHandler(handler) {
+        this.mouseDownHandler = handler;
+    }
+    
+    SetMouseMoveHandler(handler) {
+        this.mouseMoveHandler = handler;
+    }
+    
+    SetMouseUpHandler(handler) {
+        this.mouseUpHandler = handler;
     }
 
     SetMainObject (mainObject)

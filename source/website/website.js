@@ -382,20 +382,6 @@ export class Website
         }
     }
 
-    OnModelMouseMove(mouseCoordinates) {
-        if (this.highlightTool.IsActive()) {
-            let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
-            if (meshUserData === null) {
-                // No intersection with model, allow navigation
-                this.viewer.navigation.EnableCameraMovement(true);
-            } else {
-                // Intersection with model, use highlight tool
-                this.highlightTool.MouseMove(mouseCoordinates);
-                this.viewer.navigation.EnableCameraMovement(false);
-            }
-        }
-    }
-
     OnModelContextMenu (globalMouseCoordinates, mouseCoordinates)
     {
         if (this.highlightTool.IsActive()) {
@@ -681,6 +667,41 @@ export class Website
             ShowSharingDialog(this.settings, this.viewer);
         });
 
+        this.viewer.SetMouseDownHandler(this.OnModelMouseDown.bind(this));
+        this.viewer.SetMouseMoveHandler(this.OnModelMouseMove.bind(this));
+        this.viewer.SetMouseUpHandler(this.OnModelMouseUp.bind(this));
+
+    }
+    OnModelMouseDown(mouseCoordinates) {
+        if (this.highlightTool.IsActive()) {
+            let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
+            if (meshUserData === null) {
+                // No intersection with model, allow navigation
+                this.viewer.navigation.EnableCameraMovement(true);
+                this.isNavigating = true;
+            } else {
+                // Intersection with model, use highlight tool
+                this.viewer.navigation.EnableCameraMovement(false);
+            }
+        }
+    }
+    
+    OnModelMouseMove(mouseCoordinates) {
+        if (this.highlightTool.IsActive() && !this.isNavigating) {
+            let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
+            if (meshUserData !== null) {
+                this.highlightTool.MouseMove(mouseCoordinates);
+            }
+        }
+    }
+    
+    OnModelMouseUp(mouseCoordinates) {
+        if (this.highlightTool.IsActive()) {
+            if (!this.isNavigating) {
+                this.highlightTool.Click(mouseCoordinates);
+            }
+            this.isNavigating = false;
+        }
     }
 
     InitToolbar ()
