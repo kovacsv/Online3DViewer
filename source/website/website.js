@@ -20,14 +20,15 @@ import { GetDefaultMaterials, ReplaceDefaultMaterialsColor } from '../engine/mod
 import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { MeasureTool } from './measuretool.js';
-import { HighlightTool } from './highlighttool.js';
 import { EraserTool } from './erase.js';
+import { HighlightTool } from './highlighttool.js';
 import { CloseAllDialogs } from './dialog.js';
 import { CreateVerticalSplitter } from './splitter.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
 import { EnvironmentSettings } from '../engine/viewer/shadingmodel.js';
 import { IntersectionMode } from '../engine/viewer/viewermodel.js';
 import { Loc } from '../engine/core/localization.js';
+import { startTour } from './tour.js';
 
 const WebsiteUIState =
 {
@@ -207,22 +208,7 @@ export class Website
     }
 
 
-    UpdateHighlightButtonPosition() {
-        const cookieConsent = document.querySelector('.ov_bottom_floating_panel');
-        const highlightContainer = document.querySelector('.highlight-container');
-        const mainViewer = document.querySelector('.main_viewer');
 
-        if (highlightContainer && mainViewer) {
-            const mainViewerRect = mainViewer.getBoundingClientRect();
-            highlightContainer.style.right = `${window.innerWidth - mainViewerRect.right + 20}px`;
-
-            if (cookieConsent && cookieConsent.offsetHeight > 0) {
-                highlightContainer.style.bottom = `${cookieConsent.offsetHeight + 20}px`;
-            } else {
-                highlightContainer.style.bottom = '20px';
-            }
-        }
-    }
 
     IsMobileScreen() {
         return window.innerWidth <= 768; // You can adjust this threshold as needed
@@ -263,7 +249,6 @@ export class Website
 
         window.addEventListener('resize', () => {
             this.layouter.Resize();
-            this.UpdateHighlightButtonPosition()
             if (this.uiState === WebsiteUIState.Model) {
                 if (this.IsMobileScreen()) {
                     this.navigator.ShowPanels(false);
@@ -273,8 +258,7 @@ export class Website
                 }
             }
         });
-        window.addEventListener('load', () => this.UpdateHighlightButtonPosition());
-
+        startTour();
     }
 
     HasLoadedModel ()
@@ -659,16 +643,6 @@ export class Website
         this.viewer.SetProjectionMode (this.cameraSettings.projectionMode);
         this.UpdateEnvironmentMap ();
 
-        let highlightButton = document.getElementById('highlight-button');
-        highlightButton.addEventListener('click', () => {
-            this.ToggleHighlightTool();
-        });
-
-        let shareButton = document.getElementById('share-button');
-        shareButton.addEventListener('click', () => {
-            ShowSharingDialog(this.settings, this.viewer);
-        });
-
         this.viewer.SetMouseDownHandler(this.OnModelMouseDown.bind(this));
         this.viewer.SetMouseMoveHandler(this.OnModelMouseMove.bind(this));
         this.viewer.SetMouseUpHandler(this.OnModelMouseUp.bind(this));
@@ -817,11 +791,6 @@ export class Website
         }
 
         AddSeparator (this.toolbar, ['only_on_model']);
-        AddButton (this.toolbar, 'up_y', Loc ('Reset View'), ['only_on_model'], () => {
-            this.viewer.SetUpVector (Direction.Y, true);
-        });
-
-
         this.toolbarHighlightButton = AddPushButton(this.toolbar, 'highlight', Loc('Highlight'), ['only_full_width', 'only_on_model'], (isSelected) => {
             this.ToggleHighlightTool();
         });
@@ -836,6 +805,10 @@ export class Website
             ShowSharingDialog (this.settings, this.viewer);
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
+
+        AddButton (this.toolbar, 'up_y', Loc ('Reset View'), ['only_on_model'], () => {
+            this.viewer.SetUpVector (Direction.Y, true);
+        });
 
         AddToggle(this.toolbar, 'genderToggle',
             {labels: ['Male', 'Female'], initialState: 'male'},

@@ -38,7 +38,7 @@
 		"website/assets/envmaps/*"
 	],
 	"scripts": {
-		"start": "npm run build_website_dev && http-server",
+		"start": "npm run build_dev && http-server",
 		"test": "mocha test",
 		"lint": "eslint source",
 		"lint_fix": "eslint source --fix",
@@ -81,6 +81,7 @@
 	},
 	"dependencies": {
 		"@simonwep/pickr": "1.9.0",
+		"driver.js": "^1.3.1",
 		"fflate": "0.8.2",
 		"pdf-lib": "^1.17.1",
 		"pdfmake": "^0.2.10",

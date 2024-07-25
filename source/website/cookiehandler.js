@@ -81,3 +81,14 @@ export function CookieClearVal (key)
 {
     CookieSetStringVal (key, '');
 }
+
+
+export function CookieSetTourCompleted (completed)
+{
+    CookieSetBoolVal ('ov_tour_completed', completed);
+}
+
+export function CookieIsTourCompleted ()
+{
+    return CookieGetBoolVal ('ov_tour_completed', false);
+}
