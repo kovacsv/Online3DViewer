@@ -804,11 +804,12 @@ export class Website
         AddButton (this.toolbar, 'share', Loc ('Share'), ['only_full_width', 'only_on_model'], () => {
             ShowSharingDialog (this.settings, this.viewer);
         });
-        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-
         AddButton (this.toolbar, 'up_y', Loc ('Reset View'), ['only_on_model'], () => {
             this.viewer.SetUpVector (Direction.Y, true);
         });
+        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
+
+
 
         AddToggle(this.toolbar, 'genderToggle',
             {labels: ['Male', 'Female'], initialState: 'male'},
