@@ -25,12 +25,12 @@ const CONFIG = {
 };
 
 export function ShowSharingDialog(settings, viewer) {
-    const SnapshotManager = createSnapshotManager(viewer, settings);
+    const SnapshotManager = createPreviewManager(viewer, settings);
     const DialogManager = createDialogManager(SnapshotManager);
     DialogManager.showDialog();
 }
 
-function createSnapshotManager(viewer, settings) {
+function createPreviewManager(viewer, settings) {
     const currentCamera = viewer.navigation.GetCamera();
     const cameras = Array(3).fill().map(() => {
         let defaultCamera = GetDefaultCamera(Direction.Y);
@@ -55,6 +55,61 @@ function createSnapshotManager(viewer, settings) {
     let mouseInteractions = [];
     let renderers = [];
 
+    function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOffset, orbitOffset, camera) {
+        // Calculate new camera position based on zoom level
+        const direction = {
+            x: camera.eye.x - camera.center.x,
+            y: camera.eye.y - camera.center.y,
+            z: camera.eye.z - camera.center.z
+        };
+        const distance = Math.sqrt(direction.x ** 2 + direction.y ** 2 + direction.z ** 2);
+        const newDistance = distance / zoomLevel / 10 ;
+
+        const normalizedDirection = {
+            x: direction.x / distance,
+            y: direction.y / distance,
+            z: direction.z / distance
+        };
+
+        // Apply the zoomed position
+        camera.eye.x = camera.center.x + normalizedDirection.x * newDistance;
+        camera.eye.y = camera.center.y + normalizedDirection.y * newDistance;
+        camera.eye.z = camera.center.z + normalizedDirection.z * newDistance;
+
+        // Apply pan based on the original calculations
+        const right = {
+            x: direction.y * camera.up.z - direction.z * camera.up.y,
+            y: direction.z * camera.up.x - direction.x * camera.up.z,
+            z: direction.x * camera.up.y - direction.y * camera.up.x
+        };
+        const rightLength = Math.sqrt(right.x * right.x + right.y * right.y + right.z * right.z);
+        const normalizedRight = {
+            x: right.x / rightLength,
+            y: right.y / rightLength,
+            z: right.z / rightLength
+        };
+
+        camera.center.x += normalizedRight.x * panOffset.x + camera.up.x * panOffset.y;
+        camera.center.y += normalizedRight.y * panOffset.x + camera.up.y * panOffset.y;
+        camera.center.z += normalizedRight.z * panOffset.x + camera.up.z * panOffset.y;
+
+        // Move and update the camera
+        viewer.navigation.MoveCamera(camera, 0);
+
+        // Apply orbit adjustments
+        viewer.navigation.Orbit(orbitOffset.x, orbitOffset.y);
+
+        // Update renderer aspect ratio and dimensions
+        viewer.renderer.setSize(width, height);
+        viewer.camera.aspect = width / height;
+        viewer.camera.updateProjectionMatrix();
+
+        // Capture the image
+        const imageDataUrl = viewer.GetImageAsDataUrl(width, height, isTransparent);
+
+        return imageDataUrl;
+    }
+
     function updateCanvas(index) {
         const { width, height } = index === 0 ? CONFIG.SNAPSHOT_SIZES.LARGE : CONFIG.SNAPSHOT_SIZES.SMALL;
         const camera = cameras[index];
@@ -67,7 +122,7 @@ function createSnapshotManager(viewer, settings) {
         viewer.camera.aspect = width / height;
         viewer.camera.updateProjectionMatrix();
         renderer.setSize(width, height);
-        
+
         // Explicitly set the size of the canvas element
         renderer.domElement.style.width = width + 'px';
         renderer.domElement.style.height = height + 'px';
@@ -76,7 +131,7 @@ function createSnapshotManager(viewer, settings) {
         renderer.setSize(width, height, false); // 'false' ensures it doesn't change the canvas style
         renderer.render(viewer.scene, viewer.camera);
     }
-    
+
 
     function captureSnapshot(index) {
         if (index < 0 || index >= cameras.length) {
@@ -113,11 +168,11 @@ function createSnapshotManager(viewer, settings) {
             const { width, height } = index === 0 ? CONFIG.SNAPSHOT_SIZES.LARGE : CONFIG.SNAPSHOT_SIZES.SMALL;
             img.width = width;
             img.height = height;
-            
+
             const mouseInteraction = new MouseInteraction();
             mouseInteractions[index] = mouseInteraction;
-    
-    
+
+
             // Touch events
             const touchInteraction = new TouchInteraction();
             touchInteractions[index] = touchInteraction;
@@ -131,19 +186,19 @@ function createSnapshotManager(viewer, settings) {
             } else if (index === 2) {
                 rotateCamera(cameras[index], 380);
             }
-            img.addEventListener('contextmenu', function(event) { event.preventDefault(); }, { passive: false }); 
+            img.addEventListener('contextmenu', function(event) { event.preventDefault(); }, { passive: false });
             img.addEventListener('mousedown', (e) => handleMouseDown(index, e), { passive: false });
             img.addEventListener('mousemove', (e) => handleMouseMove(index, e), { passive: false });
-            img.addEventListener('mouseup', (e) => handleMouseUp(index, e), { passive: false });            
+            img.addEventListener('mouseup', (e) => handleMouseUp(index, e), { passive: false });
             img.addEventListener('wheel', (e) => handleWheelEvent(index, e), { passive: false });
 
             img.addEventListener('touchstart', (e) => handleTouchStart(index, e), { passive: false });
             img.addEventListener('touchmove', throttle((e) => handleTouchMove(index, e), 100), { passive: false });
             img.addEventListener('touchend', (e) => handleTouchEnd(index, e), { passive: false });
-    
+
             return img;
         });
-    
+
         // Update previews after initialization
         previewImages.forEach((_, index) => updateCanvas(index));
     }
@@ -173,7 +228,7 @@ function createSnapshotManager(viewer, settings) {
     function handleTouchMove(index, event) {
         event.preventDefault();
         touchInteractions[index].Move(previewImages[index], event);
-    
+
         const state = states[index];
         const moveDiff = touchInteractions[index].GetMoveDiff();
         const distanceDiff = touchInteractions[index].GetDistanceDiff();
@@ -181,7 +236,7 @@ function createSnapshotManager(viewer, settings) {
         let camera = cameras[index];
         let eyeCenterDistance = CoordDistance3D (camera.eye, camera.center);
         let panRatio = 0.001 * eyeCenterDistance;
-    
+
         if (touchInteractions[index].GetFingerCount() === 1) {
             // Continue using the Orbit functionality
             viewer.navigation.Orbit(moveDiff.x * CONFIG.ORBIT_RATIO, moveDiff.y * CONFIG.ORBIT_RATIO);
@@ -189,15 +244,15 @@ function createSnapshotManager(viewer, settings) {
             // Use the EmbeddedViewer's navigation pan and zoom
             viewer.navigation.Pan(moveDiff.x * panRatio, moveDiff.y * panRatio);
             viewer.navigation.Zoom(distanceDiff * CONFIG.ZOOM_SPEED);
-            
+
             // Adjust current zoom level in the state for consistency
             state.currentZoomLevel *= (1 - distanceDiff * 0.01);
             state.currentZoomLevel = Math.min(Math.max(state.currentZoomLevel, CONFIG.MIN_ZOOM), CONFIG.MAX_ZOOM);
         }
-    
+
         updateCanvas(index);
     }
-    
+
     function handleTouchEnd(index, event) {
         event.preventDefault();
         touchInteractions[index].End(previewImages[index], event);
@@ -216,7 +271,7 @@ function createSnapshotManager(viewer, settings) {
         event.preventDefault();
         const state = states[index];
         state.startMousePosition = { x: event.clientX, y: event.clientY };
-        
+
         // Determine whether it's an orbit or pan based on the mouse button
         if (event.button === 0) { // Left mouse button for orbit
             state.isOrbiting = true;
@@ -229,7 +284,7 @@ function createSnapshotManager(viewer, settings) {
         event.preventDefault();
         const state = states[index];
         if (!state.isOrbiting && !state.isPanning) return; // Do nothing if no action has been started
-    
+
         const currentMousePosition = { x: event.clientX, y: event.clientY };
         const deltaX = currentMousePosition.x - state.startMousePosition.x;
         const deltaY = currentMousePosition.y - state.startMousePosition.y;
@@ -243,7 +298,7 @@ function createSnapshotManager(viewer, settings) {
         } else if (state.isPanning) {
             viewer.navigation.Pan(deltaX * panRatio, deltaY * panRatio);
         }
-    
+
         // Update the canvas to reflect changes
         updateCanvas(index);
         state.startMousePosition = currentMousePosition; // Update the starting mouse position for the next move
@@ -263,75 +318,20 @@ function createSnapshotManager(viewer, settings) {
             img.removeEventListener('mousemove', (e) => handleMouseMove(index, e));
             img.removeEventListener('mouseup', (e) => handleMouseUp(index, e));
             img.removeEventListener('wheel', (e) => handleWheelEvent(index, e));
-    
+
             // Remove touch interaction event listeners
             img.removeEventListener('touchstart', (e) => handleTouchStart(index, e));
             img.removeEventListener('touchmove', (e) => handleTouchMove(index, e));
             img.removeEventListener('touchend', (e) => handleTouchEnd(index, e));
         });
-    
+
         // If there's a global event listener attached to the document for mouse moves or mouse up,
         // consider their removal here if they were added elsewhere
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
     }
-    
+
     return { cleanup, captureSnapshot, initializePreviewImages, updateCanvas };
-}
-
-function CaptureSnapshot(viewer, width, height, isTransparent, zoomLevel, panOffset, orbitOffset, camera) {
-    // Calculate new camera position based on zoom level
-    const direction = {
-        x: camera.eye.x - camera.center.x,
-        y: camera.eye.y - camera.center.y,
-        z: camera.eye.z - camera.center.z
-    };
-    const distance = Math.sqrt(direction.x ** 2 + direction.y ** 2 + direction.z ** 2);
-    const newDistance = distance / zoomLevel / 10 ;
-
-    const normalizedDirection = {
-        x: direction.x / distance,
-        y: direction.y / distance,
-        z: direction.z / distance
-    };
-
-    // Apply the zoomed position
-    camera.eye.x = camera.center.x + normalizedDirection.x * newDistance;
-    camera.eye.y = camera.center.y + normalizedDirection.y * newDistance;
-    camera.eye.z = camera.center.z + normalizedDirection.z * newDistance;
-
-    // Apply pan based on the original calculations
-    const right = {
-        x: direction.y * camera.up.z - direction.z * camera.up.y,
-        y: direction.z * camera.up.x - direction.x * camera.up.z,
-        z: direction.x * camera.up.y - direction.y * camera.up.x
-    };
-    const rightLength = Math.sqrt(right.x * right.x + right.y * right.y + right.z * right.z);
-    const normalizedRight = {
-        x: right.x / rightLength,
-        y: right.y / rightLength,
-        z: right.z / rightLength
-    };
-
-    camera.center.x += normalizedRight.x * panOffset.x + camera.up.x * panOffset.y;
-    camera.center.y += normalizedRight.y * panOffset.x + camera.up.y * panOffset.y;
-    camera.center.z += normalizedRight.z * panOffset.x + camera.up.z * panOffset.y;
-
-    // Move and update the camera
-    viewer.navigation.MoveCamera(camera, 0);
-
-    // Apply orbit adjustments
-    viewer.navigation.Orbit(orbitOffset.x, orbitOffset.y);
-
-    // Update renderer aspect ratio and dimensions
-    viewer.renderer.setSize(width, height);
-    viewer.camera.aspect = width / height;
-    viewer.camera.updateProjectionMatrix();
-
-    // Capture the image
-    const imageDataUrl = viewer.GetImageAsDataUrl(width, height, isTransparent);
-
-    return imageDataUrl;
 }
 
 function createDialogManager(snapshotManager) {
@@ -345,7 +345,7 @@ function createDialogManager(snapshotManager) {
     }
 
     function createPatientInfoSubHeader(container) {
-        const subHeader = AddDomElement(container, 'h3', 'ov_form_sub_header');  
+        const subHeader = AddDomElement(container, 'h3', 'ov_form_sub_header');
         subHeader.textContent = 'Enter patient details below: ';
         return subHeader;
     }
@@ -440,13 +440,32 @@ function createDialogManager(snapshotManager) {
     function createFormSection(container) {
         const formContainer = AddDiv(container, 'ov_form_section');
         createPatientInfoSubHeader(formContainer);
+
         const infoFieldsContainer = AddDiv(formContainer, 'ov_info_fields_container');
-        const nameInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Name'), 'John Doe');
+        const patientNameInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Name'), 'John Doe');
         const intensityInput = createLabeledInput(infoFieldsContainer, 'number', Loc('Pain Intensity'), 'Enter pain intensity (1-10)', { min: 1, max: 10 });
         const durationInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Pain Duration'), 'Enter pain duration (e.g., 2 hours, 3 days)');
         const descriptionInput = createLabeledInput(infoFieldsContainer, 'textarea', Loc('Description'), 'Description (optional)');
+        const ageInput = createLabeledInput(infoFieldsContainer, 'number', Loc('Age'), 'Enter age (optional)', { min: 0, max: 120 });
 
-        AddDiv(formContainer, 'ov_get_send_emails_intro', Loc('You can send this snapshot to up to 3 email addresses.'));
+        // Create Download Report button (main action)
+        const downloadButton = AddDomElement(formContainer, 'button', 'ov_button ov_download_button');
+        downloadButton.textContent = Loc('Download Report');
+        downloadButton.addEventListener('click', () => {
+            handleGenerateSelfReportPdf(patientNameInput, intensityInput, durationInput, descriptionInput, patientEmailInput, ageInput);
+        });
+
+        // Create Submit button (sub action)
+        const submitButton = AddDomElement(formContainer, 'button', 'ov_button ov_submit_button');
+        submitButton.textContent = Loc('Submit');
+        submitButton.addEventListener('click', () => {
+            // Handle submit action
+        });
+
+        AddDiv(formContainer, 'ov_get_patient_email_intro', Loc('We can send the report to your email'));
+        const patientEmailInput = createLabeledInput(formContainer, 'email', 'Your Email', 'Enter your email', { required: true });
+
+        AddDiv(formContainer, 'ov_get_send_emails_intro', Loc('You can also share this report with up to 3 other emails.'));
         const emailFieldsContainer = AddDiv(formContainer, 'ov_email_fields_container');
         const emailInputs = [];
         for (let i = 0; i < 3; i++) {
@@ -454,36 +473,22 @@ function createDialogManager(snapshotManager) {
             emailInputs.push(emailInput);
         }
 
-        AddDiv(formContainer, 'ov_get_patient_email_intro', Loc('Share your email with us so we can CC you in the report.'));
-        const patientEmailInput = createLabeledInput(formContainer, 'email', 'Your Email', 'Enter your email', { required: true });
-
-        const nextButton = AddDomElement(formContainer, 'button', 'ov_button ov_next_button');
-        nextButton.textContent = Loc('Submit');
-        nextButton.addEventListener('click', () => {
-            step.style.display = 'none';
-            step.nextElementSibling.style.display = 'block';
-        });
-
-        const downloadLink = AddDomElement(formContainer, 'div', 'ov_download_link');
-        downloadLink.textContent = Loc('Download Report');
-        downloadLink.addEventListener('click', () => {
-            handleGeneratePdf(nameInput, intensityInput, durationInput, descriptionInput, emailFieldsContainer);
-        });
-
-        return { nameInput, intensityInput, durationInput, descriptionInput, emailInputs, patientEmailInput };
+        return { nameInput: patientNameInput, intensityInput, durationInput, descriptionInput, emailInputs, patientEmailInput };
     }
+
     function createStep2Content(step) {
         AddDiv(step, 'ov_dialog_title', Loc('Additional Options'));
 
         AddCheckbox(step, 'send_to_self', Loc('Send to myself'), false, () => {});
         AddCheckbox(step, 'download_snapshot', Loc('Download snapshot and info'), false, () => {});
 
-        const submitButton = AddDiv(step, 'ov_button ov_submit_button', Loc('Submit'));
+        const submitButton = AddDiv(step, 'ov_button ov_submit_button', Loc('Send Report'));
         submitButton.addEventListener('click', () => handleSubmit());
     }
 
-    function handleGeneratePdf(nameInput, intensityInput, durationInput, descriptionInput, emailFieldsContainer) {
+    function handleGenerateSelfReportPdf (nameInput, intensityInput, durationInput, descriptionInput, emailFieldsContainer, ageInput) {
         console.log('Generating PDF...');
+        console.log('Params:', nameInput, intensityInput.value, durationInput.value, descriptionInput.value);
         const snapshots = [1, 2, 3].map(i => snapshotManager.captureSnapshot(i - 1));
         const description = descriptionInput ? descriptionInput.value : '';
 
@@ -496,16 +501,18 @@ function createDialogManager(snapshotManager) {
         }
 
         const data = {
-            name: nameInput.value || 'John Doe', // Use 'John Doe' if the field is empty
+            patientName: nameInput.value || 'John Doe', // Use 'John Doe' if the field is empty
             email: emails.join(', ') || 'john_doe@gmail.com',
-            description: description,
-            intensity: intensityInput.value,
-            duration: durationInput.value,
+            age: ageInput.value || 'private', // Example static age, you might want to collect this from user
+            gender: 'Other', // Example static gender, you might want to collect this from user
+            typeOfPain: description, // Using description as 'typeOfPain'
+            painDuration: durationInput.value || 'private', // Example static pain duration, you might want to collect this from user
+            date: new Date().toISOString().slice(0, 10), // Current date in YYYY-MM-DD format
             images: snapshots,
             siteUrl: window.location.origin
         };
 
-        generatePdf(data);
+        generatePdf(data, isForSelf=true);
     }
 
     function handleSubmit() {
@@ -537,7 +544,7 @@ function createDialogManager(snapshotManager) {
             originalClose();
             let event = new Event('resize');
             window.dispatchEvent(event);
-            
+
         };
 
         overlay.addEventListener('click', (e) => {
@@ -549,7 +556,7 @@ function createDialogManager(snapshotManager) {
         dialog.Open();
 
         setTimeout(() => {
-            styleDialogForSharing(dialog);            
+            styleDialogForSharing(dialog);
             const dialogElement = dialog.GetContentDiv().closest('.ov_dialog');
             addCloseButton(dialog, dialogElement);
         }, 0);

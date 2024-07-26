@@ -1,14 +1,13 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
-async function generatePdf(data) {
-    const { name, email, age, gender, typeOfPain, date, images } = data;
+async function generatePdf(data, isForPatient = false) {
+    const { patientName, sendToEmail, age, gender, typeOfPain, painDuration, date, images } = data;
 
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([595.28, 841.89]); // A4 size
 
     const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const helveticaBoldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-
     const darkBlue = rgb(0.1, 0.2, 0.4);
     const lightBlue = rgb(0.8, 0.9, 1);
 
@@ -51,7 +50,14 @@ async function generatePdf(data) {
     const introWidth = 495;
     const lineHeight = 20;
     const indent = 20;
-    const introText = `Hi ${email || ''},`;
+
+    const introText = isForPatient 
+    ? `Hi ${patientName || ''},`
+    : `Hi ${sendToEmail || ''},`;
+
+    const introBody = isForPatient
+        ? `Thank you for using TellMeWhereItHurtsNow.com to monitor and manage your pain. Pain can significantly impact one's quality of life. Understanding its location and intensity helps in diagnosing and managing the underlying causes effectively.`
+        : `Your acquaintance, ${patientName || ''}, has shared with you a snapshot describing their pain and where they are feeling it. Pain can significantly impact one's quality of life. Understanding its location and intensity helps in diagnosing and managing the underlying causes effectively.`;
     
     const wrappedText = wrapText(introText, helveticaBoldFont, 12, introWidth);
     wrappedText.forEach((line, index) => {
@@ -61,8 +67,7 @@ async function generatePdf(data) {
     });
     
     // Adjust introBody width for narrower justification
-    const introBodyWidth = 450; // Adjust this value as needed
-    const introBody = `     Your acquaintance, ${name || ''}, has shared with you a snapshot describing their pain and where they are feeling it. Pain can significantly impact one's quality of life. Understanding its location and intensity helps in diagnosing and managing the underlying causes effectively.`;
+    const introBodyWidth = 450; // Adjust this value as needed   
     const wrappedBody = wrapText(introBody, helveticaFont, 12, introBodyWidth);
     wrappedBody.forEach((line, index) => {
         const y = introStartY - (wrappedText.length + index) * lineHeight - 10;
@@ -80,22 +85,56 @@ async function generatePdf(data) {
     });
 
     // Patient information
-    const infoStartY = separatorY - 20;
+    let infoStartY = separatorY - 20;
     const infoGap = 15;
-    const patientInfo = [
-        `Date of record: ${date || ''}`,
-        `Patient Name: ${name || ''}`,
-        `Age: ${age || ''}`,
-        `Gender: ${gender || ''}`,
-        `Type of Pain: ${typeOfPain || ''}`
-    ];
+    const columnWidth = 250; // Adjust this value as needed
+    
+const patientInfo = [
+    { label: 'Date of record', value: date || '' },
+    { label: 'Patient Name', value: patientName || '' },
+    { label: 'Age', value: age || 'private' },
+    { label: 'Gender', value: gender || 'private' },
+    { label: 'Type of Pain', value: typeOfPain || 'private' },
+    { label: 'Duration of Pain', value: painDuration || 'private' }
+];
 
-    patientInfo.forEach((text, index) => {
-        page.drawText(text, { x: 50, y: infoStartY - index * infoGap, size: 10, font: helveticaFont, color: darkBlue });
+    patientInfo.forEach((info, index) => {
+        const isRightColumn = index >= 3;
+        const x = isRightColumn ? 50 + columnWidth : 50;
+        const y = infoStartY - (index % 3) * infoGap;
+
+        // Draw label in bold
+        page.drawText(`${info.label}:`, {
+            x: x,
+            y: y,
+            size: 10,
+            font: helveticaBoldFont,
+            color: rgb(0, 0, 0),
+        });
+
+        // Draw value with underline
+        const value = info.value;
+        const valueX = x + 120; // Adjust this value to position the value
+        page.drawText(value, {
+            x: valueX,
+            y: y,
+            size: 10,
+            font: helveticaFont,
+            color: rgb(0, 0, 0),
+        });
+
+        // Draw underline
+        const valueWidth = helveticaFont.widthOfTextAtSize(value, 10);
+        page.drawLine({
+            start: { x: valueX, y: y - 2 },
+            end: { x: valueX + valueWidth, y: y - 2 },
+            thickness: 0.5,
+            color: rgb(0, 0, 0),
+        });
     });
 
     // Images (lowered position)
-    const imageStartY = infoStartY - patientInfo.length * infoGap - 390;
+    const imageStartY = infoStartY - patientInfo.length * infoGap - 350;
     const mainImageWidth = 320;
     const mainImageHeight = 380;
     const smallImageWidth = 160;
@@ -109,7 +148,7 @@ async function generatePdf(data) {
     await pasteImages(page, images, pdfDoc, imageStartY);
 
     // Footer with centered "hyperlink-like" text
-    const url = 'www.tellmewhereithurtsnow.com';
+    const url = 'https://TellMeWhereItHurtsNow.com/';
     drawCenteredText(page, url, 30, helveticaBoldFont, 14, rgb(0, 0, 1)); // Using blue color for link-like appearance
 
     // Save and download PDF
@@ -200,25 +239,5 @@ function drawCenteredText(page, text, y, font, size, color) {
     const x = (pageWidth - textWidth) / 2;
     page.drawText(text, { x, y, size, font, color });
 }
-
-
-
-// Sample data for testing
-const sampleData = {
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    age: '30',
-    gender: 'Male',
-    typeOfPain: 'Chronic',
-    date: new Date().toLocaleDateString(),
-    images: [
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...', // Add your base64 image data
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...', // Add your base64 image data
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA...'  // Add your base64 image data
-    ]
-};
-
-// Generate the PDF with the sample data
-// generatePdf(sampleData);
 
 export { generatePdf };

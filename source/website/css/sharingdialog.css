@@ -11,7 +11,7 @@
     overflow-y: auto;
 }
 
-.ov_button, .ov_next_button, .ov_submit_button {
+.ov_button, .ov_next_button {
     padding: 10px 15px;
     font-size: 1em;
     color: #fff;
@@ -24,8 +24,38 @@
     box-sizing: border-box;
 }
 
-.ov_button:hover, .ov_next_button:hover, .ov_submit_button:hover {
+.ov_submit_button {
+    background-color: #8d8b8b; /* Blue background */
+    color: white;
+    padding: 10px 15px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+.ov_submit_button:hover {
+    background-color: #007B9A;
+}
+
+
+.ov_button:hover, .ov_next_button:hover :hover {
     background-color: #0056b3;
+}
+
+.ov_download_button {
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    font-size: 18px;
+    font-weight: bold;
+}
+.ov_download_button:hover {
+    background-color: #053250;
 }
 
 /* Layout Containers */
