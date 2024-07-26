@@ -9,6 +9,7 @@ import { Direction } from '../engine/geometry/geometry.js';
 import { generatePdf } from './pdfGenerator.js';
 import { MouseInteraction, TouchInteraction } from '../engine/viewer/navigation.js';
 import * as THREE from 'three';
+import { CoordDistance3D } from '../engine/geometry/coord3d.js';
 
 const CONFIG = {
     SNAPSHOT_SIZES: {
@@ -19,7 +20,7 @@ const CONFIG = {
     MAX_ZOOM: 3,
     MIN_ZOOM: 0.1,
     ZOOM_SPEED: 0.001,
-    ORBIT_RATIO: 0.1,
+    ORBIT_RATIO: 0.3,
     PAN_RATIO: 0.075
 };
 
@@ -176,13 +177,17 @@ function createSnapshotManager(viewer, settings) {
         const state = states[index];
         const moveDiff = touchInteractions[index].GetMoveDiff();
         const distanceDiff = touchInteractions[index].GetDistanceDiff();
+
+        let camera = cameras[index];
+        let eyeCenterDistance = CoordDistance3D (camera.eye, camera.center);
+        let panRatio = 0.001 * eyeCenterDistance;
     
         if (touchInteractions[index].GetFingerCount() === 1) {
             // Continue using the Orbit functionality
             viewer.navigation.Orbit(moveDiff.x * CONFIG.ORBIT_RATIO, moveDiff.y * CONFIG.ORBIT_RATIO);
         } else if (touchInteractions[index].GetFingerCount() === 2) {
             // Use the EmbeddedViewer's navigation pan and zoom
-            viewer.navigation.Pan(moveDiff.x * CONFIG.PAN_RATIO, moveDiff.y * CONFIG.PAN_RATIO);
+            viewer.navigation.Pan(moveDiff.x * panRatio, moveDiff.y * panRatio);
             viewer.navigation.Zoom(distanceDiff * CONFIG.ZOOM_SPEED);
             
             // Adjust current zoom level in the state for consistency
@@ -229,10 +234,14 @@ function createSnapshotManager(viewer, settings) {
         const deltaX = currentMousePosition.x - state.startMousePosition.x;
         const deltaY = currentMousePosition.y - state.startMousePosition.y;
 
+        let camera = cameras[index];
+        let eyeCenterDistance = CoordDistance3D (camera.eye, camera.center);
+        let panRatio = 0.001 * eyeCenterDistance;
+
         if (state.isOrbiting) {
             viewer.navigation.Orbit(deltaX * CONFIG.ORBIT_RATIO, deltaY * CONFIG.ORBIT_RATIO);
         } else if (state.isPanning) {
-            viewer.navigation.Pan(deltaX * CONFIG.PAN_RATIO, deltaY * CONFIG.PAN_RATIO);
+            viewer.navigation.Pan(deltaX * panRatio, deltaY * panRatio);
         }
     
         // Update the canvas to reflect changes
