@@ -21,6 +21,7 @@ import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { MeasureTool } from './measuretool.js';
 import { EraserTool } from './erase.js';
+import { ClearAllTool } from './cleartool.js';
 import { HighlightTool } from './highlighttool.js';
 import { CloseAllDialogs } from './dialog.js';
 import { CreateVerticalSplitter } from './splitter.js';
@@ -40,7 +41,7 @@ const WebsiteUIState =
 
 class WebsiteLayouter
 {
-    constructor (parameters, navigator, sidebar, viewer, measureTool, highlightTool, eraserTool)
+    constructor (parameters, navigator, sidebar, viewer, measureTool, highlightTool, eraserTool, clearTool)
     {
         this.parameters = parameters;
         this.navigator = navigator;
@@ -49,6 +50,7 @@ class WebsiteLayouter
         this.measureTool = measureTool;
         this.highlightTool = highlightTool;
         this.eraserTool = eraserTool;
+        this.clearTool = clearTool;
         this.limits = {
             minPanelWidth : 290,
             minCanvasWidth : 100
@@ -198,17 +200,15 @@ export class Website
         this.navigator = new Navigator (this.parameters.navigatorDiv);
         this.highlightTool = new HighlightTool(this.viewer, this.settings);
         this.eraserTool = new EraserTool(this.viewer, this.settings);
+        this.clearTool = new ClearAllTool(this.viewer, this.settings);
         this.sidebar = new Sidebar (this.parameters.sidebarDiv, this.settings);
         this.modelLoaderUI = new ThreeModelLoaderUI ();
         this.themeHandler = new ThemeHandler ();
         this.highlightColor = new RGBColor (142, 201, 240);
         this.uiState = WebsiteUIState.Undefined;
-        this.layouter = new WebsiteLayouter (this.parameters, this.navigator, this.sidebar, this.viewer, this.measureTool, this.highlightTool, this.eraserTool);
+        this.layouter = new WebsiteLayouter (this.parameters, this.navigator, this.sidebar, this.viewer, this.measureTool, this.highlightTool, this.eraserTool, this.clearTool);
         this.model = null;
     }
-
-
-
 
     IsMobileScreen() {
         return window.innerWidth <= 768; // You can adjust this threshold as needed
@@ -801,6 +801,10 @@ export class Website
         });
         this.eraserTool.SetButton(this.toolbarEraserButton);
 
+        AddButton (this.toolbar, 'clear', Loc ('Erase All'), ['only_full_width', 'only_on_model'], () => {
+            this.clearTool.ClearAllHighlights();
+        });
+
         AddButton (this.toolbar, 'share', Loc ('Share'), ['only_full_width', 'only_on_model'], () => {
             ShowSharingDialog (this.settings, this.viewer);
         });
@@ -1108,6 +1112,10 @@ export class Website
         }
     }
 
+    ToggleClearTool() {
+        this.eraserTool.ClearAll();
+    }
+
     InitToggleSwitch() {
         const toggleContainer = document.querySelector('.toggle-container');
 
@@ -1130,5 +1138,7 @@ export class Website
             console.warn('Toggle switch element not found');
         }
     }
+
+    
 
 }

@@ -6,7 +6,7 @@
    version="1.1"
    id="svg5"
    inkscape:version="1.1 (c68e22c387, 2021-05-23)"
-   sodipodi:docname="eraser.svg"
+   sodipodi:docname="clear.svg"
    width="19.962767"
    height="17"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -46,28 +46,21 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(427.59731,-331.11036)">
+     transform="translate(427.5973,-331.11036)">
     <g
        style="fill:#233035;fill-opacity:1"
        id="g46"
-       transform="matrix(0.025,0,0,0.025,-449.76576,353.07839)">
-      <path
-         d="m 1495.2492,-278.7212 h 190 v 80 h -270 z m -500,80 -85,-85 q -23,-23 -23.5,-57 -0.5,-34 22.5,-58 l 440,-456 q 23,-24 56.5,-24 33.5,0 56.5,23 l 199,199 q 23,23 23,57 0,34 -23,57 l -336,344 z m 296,-80 314,-322 -198,-198 -442,456 64,64 z m -6,-240 z"
-         id="path37"
-         style="fill:#233035;fill-opacity:1" />
-    </g>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:10.7283px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.34105"
-       x="-404.33319"
-       y="-83.018997"
+       transform="matrix(0.025,0,0,0.025,-449.76576,353.07839)" />
+    <g
+       aria-label="ALL"
+       transform="matrix(0.92953844,-0.96662413,0.53749005,0.51686851,0,0)"
        id="text1949"
-       transform="matrix(0.92953844,-0.96662413,0.53749005,0.51686851,0,0)"><tspan
-         sodipodi:role="line"
-         id="tspan1947"
-         x="-404.33319"
-         y="-83.018997"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.7283px;font-family:'Gill Sans MT Condensed';-inkscape-font-specification:'Gill Sans MT Condensed, ';fill:#233035;fill-opacity:1;stroke-width:1.34105">ALL</tspan></text>
+       style="font-size:10.7283px;line-height:1.25;stroke-width:1.34105">
+      <path
+         id="path17"
+         style="font-family:'Gill Sans MT Condensed';-inkscape-font-specification:'Gill Sans MT Condensed, ';fill:#233035"
+         d="m -396.54365,-83.018997 v -7.166169 h 0.92196 v 6.307067 h 1.77059 v 0.859102 z m -3.35783,0 v -7.166169 h 0.92196 v 6.307067 h 1.77059 v 0.859102 z m -4.35837,0 1.35151,-7.208077 h 0.95863 l 1.34104,7.208077 h -0.89053 l -0.25668,-1.587244 h -1.33057 l -0.28287,1.587244 z m 1.3096,-2.446346 h 1.03197 l -0.50288,-3.001619 h -0.0262 z m 3.7708,8.56739 2.45512,4.591464 -1.07498,1.859077 -3.48886,-6.524713 z m -7.53584,-10.223725 0.0438,-4.029346 q 0.0119,-1.090293 0.46227,-1.892484 0.4504,-0.80219 1.07009,-0.804104 l 11.81294,0.03613 q 0.6197,-0.0019 1.05258,0.807634 0.43287,0.809547 0.42102,1.899841 l -0.1026,9.433408 q -0.0118,1.090294 -0.46872,1.880402 -0.45687,0.790107 -1.06312,0.768783 l -8.96411,-0.125612 z m 4.89981,5.293942 8.38421,0.105215 0.10208,-9.386005 -11.83879,-0.08446 -0.033,3.03386 z m 3.14741,-5.722225 z" />
+    </g>
   </g>
   <style
      id="style2">.st1{fill:#fff}</style>
