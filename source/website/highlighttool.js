@@ -19,6 +19,7 @@ export class HighlightTool {
         this.eventsInitialized = null;
         this.activeTouches = 0;
         this.overlappingMeshes = new Map();
+        this.brushSize = 0.05;
     }
 
     InitEvents() {
@@ -326,8 +327,12 @@ export class HighlightTool {
         return false;
     }
 
-    ArePointsClose(point1, point2, threshold) {
-        return point1.distanceTo(point2) < threshold;
+    SetBrushSize(size) {
+        if (typeof size === 'number' && size > 0) {
+            this.brushSize = size;
+        } else {
+            console.error('Invalid brush size. Please provide a positive number.');
+        }
     }
 
     GenerateHighlightMesh(intersection) {
@@ -343,35 +348,98 @@ export class HighlightTool {
             polygonOffsetFactor: -1,
             polygonOffsetUnits: -1
         });
-
+    
         let highlightGeometry = new THREE.BufferGeometry();
         let positions = mesh.geometry.attributes.position;
+        let normals = mesh.geometry.attributes.normal;
+        let highlightPositions = [];
+        let highlightNormals = [];
+    
+        // Convert brush size to local space of the mesh
+        let localBrushSize = this.brushSize / mesh.scale.x;
+        let localIntersectionPoint = intersection.point.clone().applyMatrix4(mesh.matrixWorld.invert());
+    
+        // First pass: collect faces within brush radius
+        let facesWithinRadius = new Set();
+        for (let i = 0; i < positions.count; i += 3) {
+            let a = new THREE.Vector3().fromBufferAttribute(positions, i);
+            let b = new THREE.Vector3().fromBufferAttribute(positions, i + 1);
+            let c = new THREE.Vector3().fromBufferAttribute(positions, i + 2);
+    
+            // Calculate face center
+            let faceCenter = new THREE.Vector3().add(a).add(b).add(c).divideScalar(3);
+    
+            // Check if face center is within brush radius
+            if (faceCenter.distanceTo(localIntersectionPoint) <= localBrushSize) {
+                facesWithinRadius.add(i / 3);
+            }
+        }
+        console.log("Faces within radius count: " + facesWithinRadius.size);
 
-        let a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
-        a.fromBufferAttribute(positions, intersection.face.a);
-        b.fromBufferAttribute(positions, intersection.face.b);
-        c.fromBufferAttribute(positions, intersection.face.c);
+        // Second pass: include adjacent faces
+        let facesToHighlight = new Set(facesWithinRadius);
+        facesWithinRadius.forEach(faceIndex => {
+            let a = new THREE.Vector3().fromBufferAttribute(positions, faceIndex * 3);
+            let b = new THREE.Vector3().fromBufferAttribute(positions, faceIndex * 3 + 1);
+            let c = new THREE.Vector3().fromBufferAttribute(positions, faceIndex * 3 + 2);
+    
+            // Check adjacent faces
+            for (let i = 0; i < positions.count; i += 3) {
+                if (facesToHighlight.has(i / 3)) continue;
+    
+                let d = new THREE.Vector3().fromBufferAttribute(positions, i);
+                let e = new THREE.Vector3().fromBufferAttribute(positions, i + 1);
+                let f = new THREE.Vector3().fromBufferAttribute(positions, i + 2);
+    
+                // If any vertex of this face is close to any vertex of the current face
+                if (this.ArePointsClose(a, d, localBrushSize) || this.ArePointsClose(a, e, localBrushSize) || this.ArePointsClose(a, f, localBrushSize) ||
+                    this.ArePointsClose(b, d, localBrushSize) || this.ArePointsClose(b, e, localBrushSize) || this.ArePointsClose(b, f, localBrushSize) ||
+                    this.ArePointsClose(c, d, localBrushSize) || this.ArePointsClose(c, e, localBrushSize) || this.ArePointsClose(c, f, localBrushSize)) {
+                    facesToHighlight.add(i / 3);
+                }
+            }
+        });
 
-        highlightGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-            a.x, a.y, a.z,
-            b.x, b.y, b.z,
-            c.x, c.y, c.z
-        ], 3));
+        console.log("Faces to highlight count: " + facesToHighlight.size);
+        
+        // Add faces to highlight
+        facesToHighlight.forEach(faceIndex => {
+            let i = faceIndex * 3;
+            let a = new THREE.Vector3().fromBufferAttribute(positions, i);
+            let b = new THREE.Vector3().fromBufferAttribute(positions, i + 1);
+            let c = new THREE.Vector3().fromBufferAttribute(positions, i + 2);
 
-        let normal = new THREE.Vector3();
-        normal.crossVectors(b.clone().sub(a), c.clone().sub(a)).normalize();
-        highlightGeometry.setAttribute('normal', new THREE.Float32BufferAttribute([
-            normal.x, normal.y, normal.z,
-            normal.x, normal.y, normal.z,
-            normal.x, normal.y, normal.z
-        ], 3));
+            highlightPositions.push(
+                a.x, a.y, a.z,
+                b.x, b.y, b.z,
+                c.x, c.y, c.z
+            );
 
+            // Add corresponding normals (in local space)
+            let na = new THREE.Vector3().fromBufferAttribute(normals, i);
+            let nb = new THREE.Vector3().fromBufferAttribute(normals, i + 1);
+            let nc = new THREE.Vector3().fromBufferAttribute(normals, i + 2);
+            highlightNormals.push(
+                na.x, na.y, na.z,
+                nb.x, nb.y, nb.z,
+                nc.x, nc.y, nc.z
+            );
+        });
+
+        highlightGeometry.setAttribute('position', new THREE.Float32BufferAttribute(highlightPositions, 3));
+        highlightGeometry.setAttribute('normal', new THREE.Float32BufferAttribute(highlightNormals, 3));
+        highlightGeometry.applyMatrix4(mesh.matrixWorld.invert());
         let highlightMesh = new THREE.Mesh(highlightGeometry, highlightMaterial);
-        highlightMesh.applyMatrix4(mesh.matrixWorld);
-        let offset = normal.multiplyScalar(0.001);
-        highlightMesh.position.add(offset);
+
+        // Ensure the highlight mesh updates its matrix
+        highlightMesh.updateMatrix();
+        highlightMesh.updateMatrixWorld();
 
         return highlightMesh;
+    }
+
+    ArePointsClose(point1, point2, threshold) {
+        return point1.distanceTo(point2) <= threshold;
     }
 
     UpdatePanel() {
@@ -381,6 +449,12 @@ export class HighlightTool {
         colorPicker.innerHTML = '<input type="color" id="highlight-color" value="#ff0000">';
         colorPicker.addEventListener('change', (event) => {
             this.SetHighlightColor(event.target.value);
+        });
+
+        let brushSizeSlider = AddDiv(this.panel, 'ov_highlight_brush_size');
+        brushSizeSlider.innerHTML = '<input type="range" id="brush-size" min="0.01" max="0.5" step="0.01" value="' + this.brushSize + '">';
+        brushSizeSlider.addEventListener('input', (event) => {
+            this.SetBrushSize(parseFloat(event.target.value));
         });
 
         let clearButton = AddDiv(this.panel, 'ov_highlight_clear_button');
