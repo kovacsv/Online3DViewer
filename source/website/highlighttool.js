@@ -19,7 +19,13 @@ export class HighlightTool {
         this.eventsInitialized = null;
         this.activeTouches = 0;
         this.overlappingMeshes = new Map();
-        this.brushSize = 0.05;
+        this.brushSize = 5;
+        this.brushSizeSlider = null;
+        this.touchStartTime = 0;
+        this.longPressThreshold = 500; // ms
+        this.isBrushSizeAdjusting = false;
+        this.initialTouchDistance = 0;
+        this.initialBrushSize = 0;
     }
 
     InitEvents() {
@@ -41,6 +47,18 @@ export class HighlightTool {
 
         this.addTouchListeners (canvas)
 
+    }
+
+    ShowBrushSizeSlider() {
+        if (this.brushSizeSlider) {
+            this.brushSizeSlider.style.display = 'block';
+        }
+    }
+
+    HideBrushSizeSlider() {
+        if (this.brushSizeSlider) {
+            this.brushSizeSlider.style.display = 'none';
+        }
     }
 
     addTouchListeners (canvas) {
@@ -69,8 +87,6 @@ export class HighlightTool {
         });
     }
 
-    remove
-
     SetButton (button) {
         this.button = button;
     }
@@ -83,16 +99,16 @@ export class HighlightTool {
         if (this.isActive === isActive) {
             return;
         }
-    
+
         this.isActive = isActive;
         this.button.SetSelected(isActive);
-        
+
         // Update the viewer button
         let viewerButton = document.getElementById('highlight-button');
         if (viewerButton) {
             viewerButton.classList.toggle('active', isActive);
         }
-    
+        
         if (!isActive) {
             this.viewer.navigation.EnableCameraMovement(true);
             this.isNavigating = false;
@@ -102,7 +118,7 @@ export class HighlightTool {
             this.InitEvents();
             this.eventsInitialized = true;
         }
-    
+
         if (this.isActive) {
             this.panel = AddDiv(document.body, 'ov_highlight_panel');
             this.UpdatePanel();
@@ -117,15 +133,17 @@ export class HighlightTool {
 
 
     // Mouse Events
-    Click (mouseCoordinates, button) {
+    Click(mouseCoordinates, button) {
+        if (!this.isActive) return;
+
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
         if (intersection === null) {
             return;
         }
 
-        if (this.mouseButton === 0) {
+        if (button === 0) {
             this.ApplyHighlight(intersection);
-        } else if (this.mouseButton === 2) {
+        } else if (button === 2) {
             this.RemoveHighlight(intersection);
         }
 
@@ -133,22 +151,21 @@ export class HighlightTool {
     }
 
     MouseMove(mouseCoordinates) {
-        if (!this.isActive) {
-            return;
-        }
+        if (!this.isActive) return;
+
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
         if (intersection === null) {
-            // No intersection, don't do anything
             return;
         }
-        // Existing highlight logic here
+
         if (this.isMouseDown) {
-            if (this.mouseButton === 0 ) {
+            if (this.mouseButton === 0) {
                 this.ApplyHighlight(intersection);
             } else if (this.mouseButton === 2) {
                 this.RemoveHighlight(intersection);
             }
         }
+
         this.viewer.Render();
     }
 
@@ -159,13 +176,15 @@ export class HighlightTool {
         this.isTouching = true;
 
         let mouseCoordinates = this.viewer.navigation.touch.GetPosition();
-        let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
-
+        let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
+        console.log("Touch start");
         if (intersection === null) {
+            console.log("No intersection");
             // No intersection with model, allow navigation
             this.viewer.navigation.EnableCameraMovement(true);
             this.isNavigating = true;
         } else {
+            console.log("Intersection");
             // Intersection with model, use highlight tool
             this.viewer.navigation.EnableCameraMovement(false);
             this.isNavigating = false;
@@ -207,77 +226,99 @@ export class HighlightTool {
 
     TouchEnd(event) {
         event.preventDefault();
+        if (!this.isActive) return;
+    
         this.activeTouches = event.touches.length;
+    
         if (this.activeTouches === 0) {
-            this.isTouching = false;
-            this.isNavigating = false;
-            this.viewer.navigation.EnableCameraMovement(true);
+            // All fingers lifted
+            if (Date.now() - this.touchStartTime < this.longPressThreshold && !this.isBrushSizeAdjusting) {
+                // Short touch: toggle highlight at last touch position
+                let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, this.lastTouchPosition);
+                if (intersection) {
+                    this.ToggleHighlight(intersection);
+                    this.viewer.Render();
+                }
+            }
+            this.isBrushSizeAdjusting = false;
+            this.HideBrushSizeSlider();
         }
     }
-    
+
+    ToggleHighlight(intersection) {
+        // Check if there's already a highlight at this position
+        // let existingHighlight = this.GetExistingHighlightAtPosition(intersection.point);
+        let existingHighlight = this.GenerateHighlightMesh(intersection);
+        if (existingHighlight) {
+            this.RemoveHighlight(intersection);
+        } else {
+            this.ApplyHighlight(intersection);
+        }
+    }
+
     ApplyHighlight(intersection) {
         let highlightMesh = this.GenerateHighlightMesh(intersection);
-        
+
         // Check for overlapping meshes
         let overlappingMeshes = this.GetOverlappingMeshes(highlightMesh);
-        
+
         if (overlappingMeshes.length >= this.maxOverlappingMeshes) {
             // Remove the oldest overlapping mesh
             let oldestMesh = overlappingMeshes[0];
             this.RemoveHighlight({ point: oldestMesh.position });
             overlappingMeshes.shift();
         }
-        
+
         // Add the new mesh
         HighlightTool.sharedHighlightMeshes.push(highlightMesh);
         this.viewer.AddExtraObject(highlightMesh);
-        
+
         // Update overlapping meshes
         overlappingMeshes.push(highlightMesh);
         this.overlappingMeshes.set(highlightMesh.uuid, overlappingMeshes);
-        
+
         this.viewer.Render();
     }
 
     GetOverlappingMeshes(newMesh) {
         let overlapping = [];
         let newBoundingBox = new THREE.Box3().setFromObject(newMesh);
-        
+
         for (let mesh of this.highlightMeshes) {
             let meshBoundingBox = new THREE.Box3().setFromObject(mesh);
             if (newBoundingBox.intersectsBox(meshBoundingBox)) {
                 overlapping.push(mesh);
             }
         }
-        
+
         return overlapping;
     }
-    
-    RemoveHighlight(intersection) {        
+
+    RemoveHighlight(intersection) {
         if (!intersection || !intersection.point) {
             return;
         }
-    
+
         let meshesToRemove = HighlightTool.sharedHighlightMeshes.filter((mesh) => {
             let boundingBox = new THREE.Box3().setFromObject(mesh);
             boundingBox.expandByScalar(0.01); // Expand the bounding box slightly
             let isWithinBoundingBox = boundingBox.containsPoint(intersection.point);
             return isWithinBoundingBox;
         });
-    
+
         if (meshesToRemove.length === 0) {
             return;
         }
-    
+
         meshesToRemove.forEach((mesh) => {
             this.viewer.RemoveExtraObject(mesh);
-            
+
             // Update highlightMeshes array
             HighlightTool.sharedHighlightMeshes = HighlightTool.sharedHighlightMeshes.filter((m) => m !== mesh);
-            
+
             // Dispose of the highlight mesh
             this.DisposeHighlightMesh(mesh);
-    
+
             // Update overlappingMeshes
             this.overlappingMeshes.delete(mesh.uuid);
             for (let [key, value] of this.overlappingMeshes) {
@@ -285,7 +326,7 @@ export class HighlightTool {
                 this.overlappingMeshes.set(key, filteredValue);
             }
         });
-    
+
         this.viewer.Render();
     }
 
@@ -300,7 +341,7 @@ export class HighlightTool {
     DisposeHighlightMesh(mesh) {
         DisposeThreeObjects(mesh);
         this.viewer.scene.remove (mesh);
-        this.viewer.Render();  
+        this.viewer.Render();
     }
 
     IsIntersectionWithinBoundingBox(intersection, mesh) {
@@ -328,10 +369,44 @@ export class HighlightTool {
     }
 
     SetBrushSize(size) {
-        if (typeof size === 'number' && size > 0) {
-            this.brushSize = size;
-        } else {
-            console.error('Invalid brush size. Please provide a positive number.');
+        this.brushSize = size;
+        // Convert brush size from 1-10 range to actual size (e.g., 0.01 to 0.1)
+        this.actualBrushSize = size / 10;
+    }
+
+    CreateBrushSizeSlider() {
+        const sliderContainer = document.createElement('div');
+        sliderContainer.className = 'brush-size-slider';
+        sliderContainer.style.display = 'none';
+    
+        const slider = document.createElement('input');
+        slider.type = 'range';
+        slider.min = '1';
+        slider.max = '10';
+        slider.value = this.brushSize.toString();
+        slider.addEventListener('input', (event) => {
+            this.SetBrushSize(parseInt(event.target.value));
+        });
+    
+        const brushSizeDisplay = document.createElement('span');
+        brushSizeDisplay.className = 'brush-size-display';
+        brushSizeDisplay.textContent = this.brushSize + ' px';
+    
+        sliderContainer.appendChild(slider);
+        sliderContainer.appendChild(brushSizeDisplay);
+        this.brushSizeSlider = sliderContainer;
+        return sliderContainer;
+    }
+    
+    ShowBrushSizeSlider() {
+        if (this.brushSizeSlider) {
+            this.brushSizeSlider.style.display = 'block';
+        }
+    }
+
+    HideBrushSizeSlider() {
+        if (this.brushSizeSlider) {
+            this.brushSizeSlider.style.display = 'none';
         }
     }
 
@@ -348,27 +423,28 @@ export class HighlightTool {
             polygonOffsetFactor: -1,
             polygonOffsetUnits: -1
         });
-    
+
         let highlightGeometry = new THREE.BufferGeometry();
         let positions = mesh.geometry.attributes.position;
         let normals = mesh.geometry.attributes.normal;
         let highlightPositions = [];
         let highlightNormals = [];
-    
+
         // Convert brush size to local space of the mesh
-        let localBrushSize = this.brushSize / mesh.scale.x;
+        // let localBrushSize = this.actualBrushSize / mesh.scale.x;
+        let localBrushSize = 0.05 / mesh.scale.x;
         let localIntersectionPoint = intersection.point.clone().applyMatrix4(mesh.matrixWorld.invert());
-    
+
         // First pass: collect faces within brush radius
         let facesWithinRadius = new Set();
         for (let i = 0; i < positions.count; i += 3) {
             let a = new THREE.Vector3().fromBufferAttribute(positions, i);
             let b = new THREE.Vector3().fromBufferAttribute(positions, i + 1);
             let c = new THREE.Vector3().fromBufferAttribute(positions, i + 2);
-    
+
             // Calculate face center
             let faceCenter = new THREE.Vector3().add(a).add(b).add(c).divideScalar(3);
-    
+
             // Check if face center is within brush radius
             if (faceCenter.distanceTo(localIntersectionPoint) <= localBrushSize) {
                 facesWithinRadius.add(i / 3);
@@ -382,15 +458,15 @@ export class HighlightTool {
             let a = new THREE.Vector3().fromBufferAttribute(positions, faceIndex * 3);
             let b = new THREE.Vector3().fromBufferAttribute(positions, faceIndex * 3 + 1);
             let c = new THREE.Vector3().fromBufferAttribute(positions, faceIndex * 3 + 2);
-    
+
             // Check adjacent faces
             for (let i = 0; i < positions.count; i += 3) {
                 if (facesToHighlight.has(i / 3)) continue;
-    
+
                 let d = new THREE.Vector3().fromBufferAttribute(positions, i);
                 let e = new THREE.Vector3().fromBufferAttribute(positions, i + 1);
                 let f = new THREE.Vector3().fromBufferAttribute(positions, i + 2);
-    
+
                 // If any vertex of this face is close to any vertex of the current face
                 if (this.ArePointsClose(a, d, localBrushSize) || this.ArePointsClose(a, e, localBrushSize) || this.ArePointsClose(a, f, localBrushSize) ||
                     this.ArePointsClose(b, d, localBrushSize) || this.ArePointsClose(b, e, localBrushSize) || this.ArePointsClose(b, f, localBrushSize) ||
@@ -401,7 +477,7 @@ export class HighlightTool {
         });
 
         console.log("Faces to highlight count: " + facesToHighlight.size);
-        
+
         // Add faces to highlight
         facesToHighlight.forEach(faceIndex => {
             let i = faceIndex * 3;

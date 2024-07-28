@@ -647,6 +647,8 @@ export class Website
         this.viewer.SetMouseMoveHandler(this.OnModelMouseMove.bind(this));
         this.viewer.SetMouseUpHandler(this.OnModelMouseUp.bind(this));
 
+        this.viewer.GetCanvas().addEventListener('mouseenter', this.OnCanvasMouseEnter.bind(this));
+        this.viewer.GetCanvas().addEventListener('mouseleave', this.OnCanvasMouseLeave.bind(this));
     }
 
     OnModelMouseDown(mouseCoordinates) {
@@ -686,6 +688,18 @@ export class Website
                 }
             }
             this.isNavigating = false;
+        }
+    }
+
+    OnCanvasMouseEnter() {
+        if (this.highlightTool.IsActive()) {
+            this.highlightTool.ShowBrushSizeSlider();
+        }
+    }
+    
+    OnCanvasMouseLeave() {
+        if (this.highlightTool.IsActive()) {
+            this.highlightTool.HideBrushSizeSlider();
         }
     }
 
@@ -795,6 +809,17 @@ export class Website
             this.ToggleHighlightTool();
         });
         this.highlightTool.SetButton(this.toolbarHighlightButton);
+        
+        
+        const highlightContainer = CreateDiv('highlight-container');
+        highlightContainer.appendChild(this.toolbarHighlightButton.buttonDiv);
+
+        const brushSizeSlider = this.highlightTool.CreateBrushSizeSlider();
+        highlightContainer.appendChild(brushSizeSlider);
+
+        // Add the slider to the container
+        this.toolbar.mainDiv.appendChild(highlightContainer);
+        this.toolbarHighlightButton.buttonDiv.style.margin = '0';
 
         this.toolbarEraserButton = AddPushButton(this.toolbar, 'eraser', Loc('Erase'), ['only_full_width', 'only_on_model'], (isSelected) => {
             this.ToggleEraserTool();
@@ -1074,7 +1099,7 @@ export class Website
             popupDiv.remove();
         });
     }
-
+    
     ToggleHighlightTool() {
         let isActive = !this.highlightTool.IsActive();
         this.highlightTool.SetActive(isActive);
