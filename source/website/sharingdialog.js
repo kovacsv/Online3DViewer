@@ -11,11 +11,25 @@ import { MouseInteraction, TouchInteraction } from '../engine/viewer/navigation.
 import * as THREE from 'three';
 import { CoordDistance3D } from '../engine/geometry/coord3d.js';
 
+export function ShowSharingDialog(settings, viewer) {
+    const SnapshotManager = createPreviewManager(viewer, settings);
+    const DialogManager = createDialogManager(SnapshotManager);
+    DialogManager.showDialog();
+}
+
+function isMobileScreen() {
+    return window.matchMedia("(max-width: 768px)").matches;
+}
+
 const CONFIG = {
-    SNAPSHOT_SIZES: {
+    SNAPSHOT_SIZES: isMobileScreen() ? {
+        LARGE: { width: 463, height: 300 },
+        SMALL: { width: 231, height: 220 }
+    } : {
         LARGE: { width: 463, height: 500 },
         SMALL: { width: 231, height: 220 }
     },
+
     INITIAL_ZOOM: 0.1,
     MAX_ZOOM: 3,
     MIN_ZOOM: 0.1,
@@ -23,12 +37,6 @@ const CONFIG = {
     ORBIT_RATIO: 0.3,
     PAN_RATIO: 0.075
 };
-
-export function ShowSharingDialog(settings, viewer) {
-    const SnapshotManager = createPreviewManager(viewer, settings);
-    const DialogManager = createDialogManager(SnapshotManager);
-    DialogManager.showDialog();
-}
 
 function createPreviewManager(viewer, settings) {
     const currentCamera = viewer.navigation.GetCamera();
@@ -455,12 +463,11 @@ function createDialogManager(snapshotManager) {
             handleGenerateSelfReportPdf(patientNameInput, intensityInput, durationInput, descriptionInput, patientEmailInput, ageInput);
         });
 
-        // Create Submit button (sub action)
-        const submitButton = AddDomElement(formContainer, 'button', 'ov_button ov_submit_button');
-        submitButton.textContent = Loc('Submit');
-        submitButton.addEventListener('click', () => {
-            // Handle submit action
-        });
+
+        // Add label between Download Report button and email portion
+        const labelBetweenSections = AddDiv(formContainer, 'ov_label_between_sections');
+        labelBetweenSections.textContent = Loc('----- or -----');
+        labelBetweenSections.style.textAlign = 'center';
 
         AddDiv(formContainer, 'ov_get_patient_email_intro', Loc('We can send the report to your email'));
         const patientEmailInput = createLabeledInput(formContainer, 'email', 'Your Email', 'Enter your email', { required: true });
@@ -472,6 +479,13 @@ function createDialogManager(snapshotManager) {
             const emailInput = createLabeledInput(emailFieldsContainer, 'email', `Email ${i + 1}`, `Enter email ${i + 1}`);
             emailInputs.push(emailInput);
         }
+
+        // Create Submit button (sub action)
+        const submitButton = AddDomElement(formContainer, 'button', 'ov_button ov_submit_button');
+        submitButton.textContent = Loc('Submit');
+        submitButton.addEventListener('click', () => {
+            // Handle submit action
+        });
 
         return { nameInput: patientNameInput, intensityInput, durationInput, descriptionInput, emailInputs, patientEmailInput };
     }
@@ -521,6 +535,8 @@ function createDialogManager(snapshotManager) {
         ShowMessageDialog(Loc('Success'), Loc('Your snapshot and information have been shared.'));
     }
 
+
+
     function showDialog() {
         const overlay = createModalOverlay();
         document.body.appendChild(overlay);
@@ -535,6 +551,10 @@ function createDialogManager(snapshotManager) {
                 }
             }
         ]);
+        if (isMobileScreen()) {
+            contentDiv.style.marginRight = '35px';
+            contentDiv.style.alignItems = 'center';
+        }
 
         const { step1, step2 } = createMultiStepForm(contentDiv);
         const originalClose = dialog.Close.bind(dialog);

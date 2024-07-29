@@ -467,7 +467,7 @@ div.highlight-container {
     right: 20px;
     display: flex;
     align-items: center;
-    z-index: 1001; /* Higher than the cookie consent */
+    z-index: 3; 
 	transition: bottom 0.3s ease-out;
 }
 

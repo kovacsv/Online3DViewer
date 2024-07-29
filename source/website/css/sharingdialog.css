@@ -54,6 +54,7 @@
     font-size: 18px;
     font-weight: bold;
 }
+
 .ov_download_button:hover {
     background-color: #053250;
 }
@@ -66,6 +67,9 @@
     flex-direction: column;
 }
 
+.ov_content_wrapper {
+    align-items: center;
+}
 
 .ov_preview_container {
     flex: 1; /* Gives the container a flexible size */
@@ -118,7 +122,7 @@
     height: auto;           /* Adjust height automatically based on content */
 }
 
-.ov_preview_container, .ov_preview1_container, .ov_preview2_container, .ov_preview3_container {
+.ov_preview1_container, .ov_preview2_container, .ov_preview3_container {
     border: 2px solid #ccc; /* Light grey border */
     border-radius: 8px; /* Softly rounded corners */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
@@ -133,6 +137,8 @@
     border-radius: 6px; /* Slightly less rounded than container for a layered effect */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Very light shadow for the images themselves */
 }
+
+
 
 /* Responsive Styles */
 @media (min-width: 769px) {
@@ -218,6 +224,8 @@
     border-radius: 4px;
     width: 100%;
     box-sizing: border-box;
+    background: #fafafa;
+    color: #666;
 }
 
 .ov_dialog_label {
@@ -278,17 +286,29 @@
     z-index: 10000;
 }
 
+.ov_label_between_sections {
+    color: #595252;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
 
 @media (max-width: 375px) {
     .ov_dialog_form_container {
         padding: 5px;  /* Reduced padding for smaller screen */
     }
 
+    .ov_info_fields_container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+
     .ov_preview_container,
     .ov_preview1_container,
     .ov_preview2_container,
     .ov_preview3_container {
-        width: 92%;  /* Ensures containers use the full width available */
+        width: 95%;  /* Ensures containers use the full width available */
         align-items: center;  /* Center-aligns the contents */
         justify-content: center;  /* Horizontally centers the contents */
     }
@@ -309,7 +329,7 @@
     .ov_preview3_container {
         aspect-ratio: 1;  /* Maintains square aspect ratio */
         height: 180px;  /* Sets a fixed height for better control */
-        width: 45%;  /* Allocates half the width for each preview */    
+        width: 46%;  /* Allocates half the width for each preview */    
     }
     
     .ov_snapshot_preview_image, .ov_snapshot_preview_canvas {
@@ -317,6 +337,19 @@
         max-height: 100%;  /* Ensures images fit within the container height */
         object-fit: contain;  /* Ensures the image is scaled properly within its container */
     }
+
+    .ov_snapshot_preview_image {
+        height: 300px;
+    }
+
+    .ov_dialog_label {
+        flex: 0 0 110px; /* Adjust the width as needed */
+    }
+    .ov_dialog_description {
+        margin-top: 5px;
+        margin-left: 10px;
+    }
+    
 }
 
 /* Dark mode styles */
