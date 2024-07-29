@@ -51,7 +51,7 @@ export class HighlightTool {
 
     ShowBrushSizeSlider() {
         if (this.brushSizeSlider) {
-            this.brushSizeSlider.style.display = 'block';
+            this.brushSizeSlider.style.display = 'flex';
         }
     }
 
@@ -108,10 +108,13 @@ export class HighlightTool {
         if (viewerButton) {
             viewerButton.classList.toggle('active', isActive);
         }
-        
+
         if (!isActive) {
             this.viewer.navigation.EnableCameraMovement(true);
             this.isNavigating = false;
+            this.HideBrushSizeSlider();
+        } else {
+            this.ShowBrushSizeSliderForTouch();
         }
 
         if (!this.eventsInitialized) {
@@ -131,6 +134,24 @@ export class HighlightTool {
         }
     }
 
+    ShowBrushSizeSliderForTouch() {
+        if (this.isTouchDevice()) {
+            this.ShowBrushSizeSlider();
+            // Position the slider for touch devices
+            if (this.brushSizeSlider) {
+                const canvas = this.viewer.GetCanvas();
+                const rect = canvas.getBoundingClientRect();
+                this.brushSizeSlider.style.position = 'fixed';
+                this.brushSizeSlider.style.margin_top = '40px';
+                this.brushSizeSlider.style.left = '3%';
+                this.brushSizeSlider.style.zIndex = '1005';
+            }
+        }
+    }
+
+    isTouchDevice() {
+        return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+    }
 
     // Mouse Events
     Click(mouseCoordinates, button) {
@@ -213,6 +234,7 @@ export class HighlightTool {
         }
 
         if (intersection === null) {
+            // console.log("TouchMove: No intersection");
             return;
         }
         
@@ -246,8 +268,6 @@ export class HighlightTool {
     }
 
     ToggleHighlight(intersection) {
-        // Check if there's already a highlight at this position
-        // let existingHighlight = this.GetExistingHighlightAtPosition(intersection.point);
         let existingHighlight = this.GenerateHighlightMesh(intersection);
         if (existingHighlight) {
             this.RemoveHighlight(intersection);
@@ -387,6 +407,12 @@ export class HighlightTool {
         slider.addEventListener('input', (event) => {
             this.SetBrushSize(parseInt(event.target.value));
         });
+        slider.addEventListener('mousedown', () => {
+            this.isInteractingWithSlider = true;
+        });
+        slider.addEventListener('mouseup', () => {
+            this.isInteractingWithSlider = false;
+        });
     
         const brushSizeDisplay = document.createElement('span');
         brushSizeDisplay.className = 'brush-size-display';
@@ -396,18 +422,6 @@ export class HighlightTool {
         sliderContainer.appendChild(brushSizeDisplay);
         this.brushSizeSlider = sliderContainer;
         return sliderContainer;
-    }
-    
-    ShowBrushSizeSlider() {
-        if (this.brushSizeSlider) {
-            this.brushSizeSlider.style.display = 'block';
-        }
-    }
-
-    HideBrushSizeSlider() {
-        if (this.brushSizeSlider) {
-            this.brushSizeSlider.style.display = 'none';
-        }
     }
 
     GenerateHighlightMesh(intersection) {

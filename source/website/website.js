@@ -647,8 +647,7 @@ export class Website
         this.viewer.SetMouseMoveHandler(this.OnModelMouseMove.bind(this));
         this.viewer.SetMouseUpHandler(this.OnModelMouseUp.bind(this));
 
-        this.viewer.GetCanvas().addEventListener('mouseenter', this.OnCanvasMouseEnter.bind(this));
-        this.viewer.GetCanvas().addEventListener('mouseleave', this.OnCanvasMouseLeave.bind(this));
+        this.viewer.GetCanvas().addEventListener('mouseenter', this.OnCanvasMouseLeave.bind(this));
     }
 
     OnModelMouseDown(mouseCoordinates) {
@@ -688,12 +687,6 @@ export class Website
                 }
             }
             this.isNavigating = false;
-        }
-    }
-
-    OnCanvasMouseEnter() {
-        if (this.highlightTool.IsActive()) {
-            this.highlightTool.ShowBrushSizeSlider();
         }
     }
     
@@ -804,18 +797,20 @@ export class Website
             return toggleButton;
         }
 
-        AddSeparator (this.toolbar, ['only_on_model']);
+        // AddSeparator (this.toolbar, ['only_on_model']);
         this.toolbarHighlightButton = AddPushButton(this.toolbar, 'highlight', Loc('Highlight'), ['only_full_width', 'only_on_model'], (isSelected) => {
             this.ToggleHighlightTool();
         });
         this.highlightTool.SetButton(this.toolbarHighlightButton);
         
-        
+        // Creating container for highlight button and brush size slider
         const highlightContainer = CreateDiv('highlight-container');
-        highlightContainer.appendChild(this.toolbarHighlightButton.buttonDiv);
 
         const brushSizeSlider = this.highlightTool.CreateBrushSizeSlider();
-        highlightContainer.appendChild(brushSizeSlider);
+        this.toolbar.mainDiv.appendChild(brushSizeSlider);
+        // highlightContainer.appendChild(brushSizeSlider);
+        highlightContainer.appendChild(this.toolbarHighlightButton.buttonDiv);
+
 
         // Add the slider to the container
         this.toolbar.mainDiv.appendChild(highlightContainer);
@@ -825,6 +820,11 @@ export class Website
             this.ToggleEraserTool();
         });
         this.eraserTool.SetButton(this.toolbarEraserButton);
+
+        // add event listener for highlightcontainer mouseover
+        highlightContainer.addEventListener('mouseover', () => {
+            this.highlightTool.ShowBrushSizeSlider();
+        });3
 
         AddButton (this.toolbar, 'clear', Loc ('Erase All'), ['only_full_width', 'only_on_model'], () => {
             this.clearTool.ClearAllHighlights();
