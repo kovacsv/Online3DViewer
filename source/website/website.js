@@ -4,7 +4,7 @@ import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
 import { NavigationMode, ProjectionMode } from '../engine/viewer/camera.js';
 import { RGBColor } from '../engine/model/color.js';
 import { Viewer } from '../engine/viewer/viewer.js';
-import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth, GetDomElementOuterHeight } from '../engine/viewer/domutils.js';
+import { AddDiv, CreateDiv , AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth, GetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToScreen, ShowListPopup } from './dialogs.js';
 import { HandleEvent } from './eventhandler.js';
 import { HashHandler } from './hashhandler.js';
@@ -13,22 +13,23 @@ import { CameraSettings, Settings, Theme } from './settings.js';
 import { Sidebar } from './sidebar.js';
 import { ThemeHandler } from './themehandler.js';
 import { ThreeModelLoaderUI } from './threemodelloaderui.js';
-import { Toolbar } from './toolbar.js';
-import { DownloadModel, ShowExportDialog } from './exportdialog.js';
-import { ShowSnapshotDialog } from './snapshotdialog.js';
+import { Toolbar, ToolbarButton } from './toolbar.js';
 import { AddSvgIconElement, GetFilesFromDataTransfer, InstallTooltip, IsSmallWidth } from './utils.js';
-import { ShowOpenUrlDialog } from './openurldialog.js';
 import { ShowSharingDialog } from './sharingdialog.js';
 import { GetDefaultMaterials, ReplaceDefaultMaterialsColor } from '../engine/model/modelutils.js';
 import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { MeasureTool } from './measuretool.js';
+import { EraserTool } from './erase.js';
+import { ClearAllTool } from './cleartool.js';
+import { HighlightTool } from './highlighttool.js';
 import { CloseAllDialogs } from './dialog.js';
 import { CreateVerticalSplitter } from './splitter.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
 import { EnvironmentSettings } from '../engine/viewer/shadingmodel.js';
 import { IntersectionMode } from '../engine/viewer/viewermodel.js';
 import { Loc } from '../engine/core/localization.js';
+import { startTour } from './tour.js';
 
 const WebsiteUIState =
 {
@@ -40,13 +41,16 @@ const WebsiteUIState =
 
 class WebsiteLayouter
 {
-    constructor (parameters, navigator, sidebar, viewer, measureTool)
+    constructor (parameters, navigator, sidebar, viewer, measureTool, highlightTool, eraserTool, clearTool)
     {
         this.parameters = parameters;
         this.navigator = navigator;
         this.sidebar = sidebar;
         this.viewer = viewer;
         this.measureTool = measureTool;
+        this.highlightTool = highlightTool;
+        this.eraserTool = eraserTool;
+        this.clearTool = clearTool;
         this.limits = {
             minPanelWidth : 290,
             minCanvasWidth : 100
@@ -132,12 +136,10 @@ class WebsiteLayouter
         let windowHeight = window.innerHeight;
         let headerHeight = this.parameters.headerDiv.offsetHeight;
 
-        let leftWidth = 0;
-        let rightWidth = 0;
+        let leftWidth = this.parameters.leftContainerDiv.style.display === 'none' ? 0 : GetDomElementOuterWidth(this.parameters.leftContainerDiv);
+        let rightWidth = this.parameters.rightContainerDiv.style.display === 'none' ? 0 : GetDomElementOuterWidth(this.parameters.rightContainerDiv);
         let safetyMargin = 0;
-        if (!IsSmallWidth ()) {
-            leftWidth = GetDomElementOuterWidth (this.parameters.leftContainerDiv);
-            rightWidth = GetDomElementOuterWidth (this.parameters.rightContainerDiv);
+        if (!IsSmallWidth()) {
             safetyMargin = 1;
         }
 
@@ -180,6 +182,7 @@ class WebsiteLayouter
         this.parameters.introContentDiv.style.top = introContentTop.toString () + 'px';
 
         this.measureTool.Resize ();
+        this.highlightTool.Resize();
     }
 }
 
@@ -195,13 +198,20 @@ export class Website
         this.hashHandler = new HashHandler ();
         this.toolbar = new Toolbar (this.parameters.toolbarDiv);
         this.navigator = new Navigator (this.parameters.navigatorDiv);
+        this.highlightTool = new HighlightTool(this.viewer, this.settings);
+        this.eraserTool = new EraserTool(this.viewer, this.settings);
+        this.clearTool = new ClearAllTool(this.viewer, this.settings);
         this.sidebar = new Sidebar (this.parameters.sidebarDiv, this.settings);
         this.modelLoaderUI = new ThreeModelLoaderUI ();
         this.themeHandler = new ThemeHandler ();
         this.highlightColor = new RGBColor (142, 201, 240);
         this.uiState = WebsiteUIState.Undefined;
-        this.layouter = new WebsiteLayouter (this.parameters, this.navigator, this.sidebar, this.viewer, this.measureTool);
+        this.layouter = new WebsiteLayouter (this.parameters, this.navigator, this.sidebar, this.viewer, this.measureTool, this.highlightTool, this.eraserTool, this.clearTool);
         this.model = null;
+    }
+
+    IsMobileScreen() {
+        return window.innerWidth <= 768; // You can adjust this threshold as needed
     }
 
     Load ()
@@ -228,7 +238,7 @@ export class Website
         this.InitCookieConsent ();
 
         this.viewer.SetMouseClickHandler (this.OnModelClicked.bind (this));
-        this.viewer.SetMouseMoveHandler (this.OnModelMouseMoved.bind (this));
+        this.viewer.SetMouseMoveHandler (this.OnModelMouseMove.bind(this));
         this.viewer.SetContextMenuHandler (this.OnModelContextMenu.bind (this));
 
         this.layouter.Init ();
@@ -237,9 +247,18 @@ export class Website
         this.hashHandler.SetEventListener (this.OnHashChange.bind (this));
         this.OnHashChange ();
 
-        window.addEventListener ('resize', () => {
-			this.layouter.Resize ();
-		});
+        window.addEventListener('resize', () => {
+            this.layouter.Resize();
+            if (this.uiState === WebsiteUIState.Model) {
+                if (this.IsMobileScreen()) {
+                    this.navigator.ShowPanels(false);
+                    this.sidebar.ShowPanels(false);
+                } else {
+                    this.UpdatePanelsVisibility();
+                }
+            }
+        });
+        startTour();
     }
 
     HasLoadedModel ()
@@ -270,7 +289,17 @@ export class Website
             ShowDomElement (this.parameters.headerDiv, true);
             ShowDomElement (this.parameters.mainDiv, true);
             ShowOnlyOnModelElements (true);
-            this.UpdatePanelsVisibility ();
+
+            if (this.IsMobileScreen()) {
+                // For mobile screens, minimize panels by default
+                this.navigator.ShowPanels(false);
+                this.sidebar.ShowPanels(false);
+                CookieSetBoolVal('ov_show_navigator', false);
+                CookieSetBoolVal('ov_show_sidebar', false);
+            } else {
+                this.UpdatePanelsVisibility();
+            }
+
         } else if (this.uiState === WebsiteUIState.Loading) {
             ShowDomElement (this.parameters.introDiv, false);
             ShowDomElement (this.parameters.headerDiv, true);
@@ -288,18 +317,19 @@ export class Website
         this.model = null;
         this.viewer.Clear ();
 
-        this.parameters.fileNameDiv.innerHTML = '';
+        // this.parameters.fileNameDiv.innerHTML = '';
 
         this.navigator.Clear ();
         this.sidebar.Clear ();
 
         this.measureTool.SetActive (false);
+        this.highlightTool.SetActive(false);
     }
 
     OnModelLoaded (importResult, threeObject)
     {
         this.model = importResult.model;
-        this.parameters.fileNameDiv.innerHTML = importResult.mainFile;
+        // this.parameters.fileNameDiv.innerHTML = importResult.mainFile;
         this.viewer.SetMainObject (threeObject);
         this.viewer.SetUpVector (Direction.Y, false);
         this.navigator.FillTree (importResult);
@@ -307,34 +337,44 @@ export class Website
         this.FitModelToWindow (true);
     }
 
-    OnModelClicked (button, mouseCoordinates)
-    {
-        if (button !== 1) {
+    OnModelClicked (button, mouseCoordinates) {
+        if (button !== 1 && button !== 2) {
             return;
         }
 
-        if (this.measureTool.IsActive ()) {
-            this.measureTool.Click (mouseCoordinates);
+        if (this.measureTool.IsActive()) {
+            this.measureTool.Click(mouseCoordinates);
             return;
         }
 
-        let meshUserData = this.viewer.GetMeshUserDataUnderMouse (IntersectionMode.MeshAndLine, mouseCoordinates);
+        if (this.highlightTool.IsActive()) {
+            let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
+            if (meshUserData === null) {
+                // No intersection with model, allow navigation
+                this.viewer.navigation.EnableCameraMovement(true);
+            } else {
+                // Intersection with model, use highlight tool
+                this.highlightTool.Click(mouseCoordinates);
+                this.viewer.navigation.EnableCameraMovement(false);
+            }
+            return;
+        }
+
+        let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
         if (meshUserData === null) {
-            this.navigator.SetSelection (null);
+            this.navigator.SetSelection(null);
         } else {
-            this.navigator.SetSelection (new Selection (SelectionType.Mesh, meshUserData.originalMeshInstance.id));
-        }
-    }
-
-    OnModelMouseMoved (mouseCoordinates)
-    {
-        if (this.measureTool.IsActive ()) {
-            this.measureTool.MouseMove (mouseCoordinates);
+            this.navigator.SetSelection(new Selection(SelectionType.Mesh, meshUserData.originalMeshInstance.id));
         }
     }
 
     OnModelContextMenu (globalMouseCoordinates, mouseCoordinates)
     {
+        if (this.highlightTool.IsActive()) {
+            this.highlightTool.Click(mouseCoordinates, 2); // Handle right-click for removing highlight
+            return;
+        }
+
         let meshUserData = this.viewer.GetMeshUserDataUnderMouse (IntersectionMode.MeshAndLine, mouseCoordinates);
         let items = [];
         if (meshUserData === null) {
@@ -473,10 +513,12 @@ export class Website
         });
     }
 
-    LoadModelFromUrlList (urls, settings)
-    {
+    LoadModelFromUrlList (urls) {
+        let importSettings = new ImportSettings ();
+        importSettings.defaultLineColor = this.settings.defaultLineColor;
+        importSettings.defaultColor = this.settings.defaultColor;
         let inputFiles = InputFilesFromUrls (urls);
-        this.LoadModelFromInputFiles (inputFiles, settings);
+        this.LoadModelFromInputFiles (inputFiles, importSettings);
         this.ClearHashIfNotOnlyUrlList ();
     }
 
@@ -600,6 +642,58 @@ export class Website
         this.viewer.SetNavigationMode (this.cameraSettings.navigationMode);
         this.viewer.SetProjectionMode (this.cameraSettings.projectionMode);
         this.UpdateEnvironmentMap ();
+
+        this.viewer.SetMouseDownHandler(this.OnModelMouseDown.bind(this));
+        this.viewer.SetMouseMoveHandler(this.OnModelMouseMove.bind(this));
+        this.viewer.SetMouseUpHandler(this.OnModelMouseUp.bind(this));
+
+        this.viewer.GetCanvas().addEventListener('mouseenter', this.OnCanvasMouseLeave.bind(this));
+    }
+
+    OnModelMouseDown(mouseCoordinates) {
+        if (this.highlightTool.IsActive() || this.eraserTool.IsActive()) {
+            let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
+            if (meshUserData === null) {
+                // No intersection with model, allow navigation
+                this.viewer.navigation.EnableCameraMovement(true);
+                this.isNavigating = true;
+            } else {
+                // Intersection with model, use highlight or eraser tool
+                this.viewer.navigation.EnableCameraMovement(false);
+            }
+        }
+    }
+
+    OnModelMouseMove(mouseCoordinates) {
+        if ((this.highlightTool.IsActive() || this.eraserTool.IsActive()) && !this.isNavigating) {
+            let meshUserData = this.viewer.GetMeshUserDataUnderMouse(IntersectionMode.MeshAndLine, mouseCoordinates);
+            if (meshUserData !== null) {
+                if (this.highlightTool.IsActive()) {
+                    this.highlightTool.MouseMove(mouseCoordinates);
+                } else if (this.eraserTool.IsActive()) {
+                    this.eraserTool.MouseMove(mouseCoordinates);
+                }
+            }
+        }
+    }
+
+    OnModelMouseUp(mouseCoordinates) {
+        if (this.highlightTool.IsActive() || this.eraserTool.IsActive()) {
+            if (!this.isNavigating) {
+                if (this.highlightTool.IsActive()) {
+                    this.highlightTool.Click(mouseCoordinates);
+                } else if (this.eraserTool.IsActive()) {
+                    this.eraserTool.Click(mouseCoordinates);
+                }
+            }
+            this.isNavigating = false;
+        }
+    }
+    
+    OnCanvasMouseLeave() {
+        if (this.highlightTool.IsActive()) {
+            this.highlightTool.HideBrushSizeSlider();
+        }
     }
 
     InitToolbar ()
@@ -657,81 +751,101 @@ export class Website
             }
         }
 
-        let importer = this.modelLoaderUI.GetImporter ();
-        let navigationModeIndex = (this.cameraSettings.navigationMode === NavigationMode.FixedUpVector ? 0 : 1);
-        let projectionModeIndex = (this.cameraSettings.projectionMode === ProjectionMode.Perspective ? 0 : 1);
+        function AddToggle(toolbar, toggleId, options, loadModelCallback) {
+            // Create the toggle container element
+            let toggleContainer = CreateDiv('toggle-container');
+            toggleContainer.setAttribute('id', toggleId);
+            toggleContainer.setAttribute('data-state', options.initialState || 'male');
 
-        AddButton (this.toolbar, 'open', Loc ('Open from your device'), [], () => {
-            this.OpenFileBrowserDialog ();
-        });
-        AddButton (this.toolbar, 'open_url', Loc ('Open from url'), [], () => {
-            ShowOpenUrlDialog ((urls) => {
-                if (urls.length > 0) {
-                    this.hashHandler.SetModelFilesToHash (urls);
+            // Create toggle options and append them
+            options.labels.forEach((label, index) => {
+                let option = CreateDiv('toggle-option');
+                option.textContent = label;
+                toggleContainer.appendChild(option);
+            });
+
+            // Create and append the slider
+            let slider = CreateDiv('toggle-slider');
+            toggleContainer.appendChild(slider);
+
+            // Create a toolbar button to hold our custom toggle
+            let toggleButton = new ToolbarButton(null, 'Gender Toggle', null);
+            toggleButton.buttonDiv.className += ' toolbar-button';
+            toggleButton.buttonDiv.style.width = 'auto'; // Allow the button to expand
+            toggleButton.buttonDiv.style.marginLeft = '0px'; // Add some space
+
+            let svgIcon = toggleButton.buttonDiv.querySelector('.ov_svg_icon');
+            if (svgIcon) {
+                svgIcon.remove();
+            }
+            toggleButton.buttonDiv.appendChild(toggleContainer);
+            toggleButton.AddDomElements(toolbar.mainDiv);
+
+            // Enhanced event listener for toggling state and loading models
+            toggleContainer.addEventListener('click', function() {
+                const currentState = this.getAttribute('data-state');
+                const newState = currentState === 'male' ? 'female' : 'male';
+                this.setAttribute('data-state', newState);
+
+                if (newState === 'male') {
+                    loadModelCallback(['assets/models/male_model.stl']);
+                } else {
+                    loadModelCallback(['assets/models/female_model.stl']);
                 }
             });
+
+            return toggleButton;
+        }
+
+        // AddSeparator (this.toolbar, ['only_on_model']);
+        this.toolbarHighlightButton = AddPushButton(this.toolbar, 'highlight', Loc('Highlight'), ['only_full_width', 'only_on_model'], (isSelected) => {
+            this.ToggleHighlightTool();
         });
-        AddSeparator (this.toolbar, ['only_on_model']);
-        AddButton (this.toolbar, 'fit', Loc ('Fit model to window'), ['only_on_model'], () => {
-            this.FitModelToWindow (false);
+        this.highlightTool.SetButton(this.toolbarHighlightButton);
+        
+        // Creating container for highlight button and brush size slider
+        const highlightContainer = CreateDiv('highlight-container');
+
+        const brushSizeSlider = this.highlightTool.CreateBrushSizeSlider();
+        this.toolbar.mainDiv.appendChild(brushSizeSlider);
+        // highlightContainer.appendChild(brushSizeSlider);
+        highlightContainer.appendChild(this.toolbarHighlightButton.buttonDiv);
+
+
+        // Add the slider to the container
+        this.toolbar.mainDiv.appendChild(highlightContainer);
+        this.toolbarHighlightButton.buttonDiv.style.margin = '0';
+
+        this.toolbarEraserButton = AddPushButton(this.toolbar, 'eraser', Loc('Erase'), ['only_full_width', 'only_on_model'], (isSelected) => {
+            this.ToggleEraserTool();
         });
-        AddButton (this.toolbar, 'up_y', Loc ('Set Y axis as up vector'), ['only_on_model'], () => {
+        this.eraserTool.SetButton(this.toolbarEraserButton);
+
+        // add event listener for highlightcontainer mouseover
+        highlightContainer.addEventListener('mouseover', () => {
+            this.highlightTool.ShowBrushSizeSlider();
+        });3
+
+        AddButton (this.toolbar, 'clear', Loc ('Erase All'), ['only_full_width', 'only_on_model'], () => {
+            this.clearTool.ClearAllHighlights();
+        });
+
+        AddButton (this.toolbar, 'share', Loc ('Share'), ['only_full_width', 'only_on_model'], () => {
+            ShowSharingDialog (this.settings, this.viewer);
+        });
+        AddButton (this.toolbar, 'up_y', Loc ('Reset View'), ['only_on_model'], () => {
             this.viewer.SetUpVector (Direction.Y, true);
         });
-        AddButton (this.toolbar, 'up_z', Loc ('Set Z axis as up vector'), ['only_on_model'], () => {
-            this.viewer.SetUpVector (Direction.Z, true);
-        });
-        AddButton (this.toolbar, 'flip', Loc ('Flip up vector'), ['only_on_model'], () => {
-            this.viewer.FlipUpVector ();
-        });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddRadioButton (this.toolbar, ['fix_up_on', 'fix_up_off'], [Loc ('Fixed up vector'), Loc ('Free orbit')], navigationModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
-            if (buttonIndex === 0) {
-                this.cameraSettings.navigationMode = NavigationMode.FixedUpVector;
-            } else if (buttonIndex === 1) {
-                this.cameraSettings.navigationMode = NavigationMode.FreeOrbit;
+
+
+
+        AddToggle(this.toolbar, 'genderToggle',
+            {labels: ['Male', 'Female'], initialState: 'male'},
+            (modelUrl) => {
+                this.LoadModelFromUrlList(modelUrl);
             }
-            this.cameraSettings.SaveToCookies ();
-            this.viewer.SetNavigationMode (this.cameraSettings.navigationMode);
-        });
-        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddRadioButton (this.toolbar, ['camera_perspective', 'camera_orthographic'], [Loc ('Perspective camera'), Loc ('Orthographic camera')], projectionModeIndex, ['only_full_width', 'only_on_model'], (buttonIndex) => {
-            if (buttonIndex === 0) {
-                this.cameraSettings.projectionMode = ProjectionMode.Perspective;
-            } else if (buttonIndex === 1) {
-                this.cameraSettings.projectionMode = ProjectionMode.Orthographic;
-            }
-            this.cameraSettings.SaveToCookies ();
-            this.viewer.SetProjectionMode (this.cameraSettings.projectionMode);
-            this.sidebar.UpdateControlsVisibility ();
-        });
-        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        let measureToolButton = AddPushButton (this.toolbar, 'measure', Loc ('Measure'), ['only_full_width', 'only_on_model'], (isSelected) => {
-            HandleEvent ('measure_tool_activated', isSelected ? 'on' : 'off');
-            this.navigator.SetSelection (null);
-            this.measureTool.SetActive (isSelected);
-        });
-        this.measureTool.SetButton (measureToolButton);
-        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddButton (this.toolbar, 'download', Loc ('Download'), ['only_full_width', 'only_on_model'], () => {
-            HandleEvent ('model_downloaded', '');
-            let importer = this.modelLoaderUI.GetImporter ();
-            DownloadModel (importer);
-        });
-        AddButton (this.toolbar, 'export', Loc ('Export'), ['only_full_width', 'only_on_model'], () => {
-            ShowExportDialog (this.model, this.viewer, {
-                isMeshVisible : (meshInstanceId) => {
-                    return this.navigator.IsMeshVisible (meshInstanceId);
-                }
-            });
-        });
-        AddButton (this.toolbar, 'share', Loc ('Share'), ['only_full_width', 'only_on_model'], () => {
-            ShowSharingDialog (importer.GetFileList (), this.settings, this.viewer);
-        });
-        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
-        AddButton (this.toolbar, 'snapshot', Loc ('Create snapshot'), ['only_full_width', 'only_on_model'], () => {
-            ShowSnapshotDialog (this.viewer);
-        });
+        );
 
         EnumeratePlugins (PluginType.Toolbar, (plugin) => {
             plugin.registerButtons ({
@@ -808,12 +922,20 @@ export class Website
                 if (this.measureTool.IsActive ()) {
                     this.measureTool.UpdatePanel ();
                 }
+
+                if (this.highlightTool.IsActive()) {
+                    this.highlightTool.UpdatePanel();
+                }
             },
             onBackgroundColorChanged : () => {
                 this.settings.SaveToCookies ();
                 this.viewer.SetBackgroundColor (this.settings.backgroundColor);
                 if (this.measureTool.IsActive ()) {
                     this.measureTool.UpdatePanel ();
+                }
+
+                if (this.highlightTool.IsActive()) {
+                    this.highlightTool.UpdatePanel();
                 }
             },
             onDefaultColorChanged : () => {
@@ -972,9 +1094,76 @@ export class Website
         let popupDiv = AddDiv (document.body, 'ov_bottom_floating_panel');
         AddDiv (popupDiv, 'ov_floating_panel_text', text);
         let acceptButton = AddDiv (popupDiv, 'ov_button ov_floating_panel_button', Loc ('Accept'));
-        acceptButton.addEventListener ('click', () => {
-            CookieSetBoolVal ('ov_cookie_consent', true);
-            popupDiv.remove ();
+        acceptButton.addEventListener('click', () => {
+            CookieSetBoolVal('ov_cookie_consent', true);
+            popupDiv.remove();
         });
     }
+    
+    ToggleHighlightTool() {
+        let isActive = !this.highlightTool.IsActive();
+        this.highlightTool.SetActive(isActive);
+        this.toolbarHighlightButton.SetSelected(isActive);
+        HandleEvent('highlight_tool_activated', isActive ? 'on' : 'off');
+        this.navigator.SetSelection(null);
+
+        // Always enable navigation when highlight tool is deactivated
+        if (!isActive) {
+            this.viewer.navigation.EnableCameraMovement(true);
+        }
+
+        if (this.eraserTool.IsActive()) {
+            this.eraserTool.SetActive(false);
+            this.toolbarEraserButton.SetSelected(false);
+        }
+    }
+
+    ToggleEraserTool() {
+        let isActive = !this.eraserTool.IsActive();
+        this.eraserTool.SetActive(isActive);
+        this.toolbarEraserButton.SetSelected(isActive);
+        HandleEvent('eraser_tool_activated', isActive ? 'on' : 'off');
+        this.navigator.SetSelection(null);
+
+        // Disable highlight tool when eraser is activated
+        if (isActive) {
+            this.highlightTool.SetActive(false);
+            this.toolbarHighlightButton.SetSelected(false);
+        }
+
+        // Always enable navigation when eraser tool is deactivated
+        if (!isActive) {
+            this.viewer.navigation.EnableCameraMovement(true);
+        }
+    }
+
+    ToggleClearTool() {
+        this.eraserTool.ClearAll();
+    }
+
+    InitToggleSwitch() {
+        const toggleContainer = document.querySelector('.toggle-container');
+
+        if (toggleContainer) {
+            toggleContainer.addEventListener('click', () => {
+                const currentState = toggleContainer.getAttribute('data-state');
+                const newState = currentState === 'male' ? 'female' : 'male';
+
+                toggleContainer.setAttribute('data-state', newState);
+
+                if (newState === 'male') {
+                    // Load male model
+                    this.LoadModelFromUrlList(['assets/models/male_model.stl']);
+                } else {
+                    // Load female model
+                    this.LoadModelFromUrlList(['assets/models/female_model.stl']);
+                }
+            });
+        } else {
+            console.warn('Toggle switch element not found');
+        }
+    }
+
+    
+
 }

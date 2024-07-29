@@ -69,10 +69,10 @@ a:hover
 
 @media (max-width: 800px)
 {
-
-.only_full_width
-{
-	display: none;
-}
-
+    /* Remove or comment out the following block to ensure elements are not hidden on small screens */
+    /*
+    .only_full_width {
+        display: none;
+    }
+    */
 }

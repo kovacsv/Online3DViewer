@@ -176,7 +176,9 @@ export class ButtonDialog extends Dialog
         let contentDiv = this.GetContentDiv ();
         contentDiv.classList.add ('ov_dialog');
 
-        AddDiv (contentDiv, 'ov_dialog_title', title);
+        const ov_dialog_title = AddDiv (contentDiv, 'ov_dialog_title', title);
+        // Set color of the title
+        ov_dialog_title.style.color = '#CCCCCC';
         let dialogContentDiv = AddDiv (contentDiv, 'ov_dialog_content');
         let buttonsDiv = AddDiv (contentDiv, 'ov_dialog_buttons');
         let buttonsInnerDiv = AddDiv (buttonsDiv, 'ov_dialog_buttons_inner');

@@ -242,14 +242,18 @@ export class Navigation
 		this.camera = camera;
 		this.callbacks = callbacks;
 		this.navigationMode = NavigationMode.FixedUpVector;
+		this.enableCameraMovement = true;
 
 		this.mouse = new MouseInteraction ();
 		this.touch = new TouchInteraction ();
 		this.clickDetector = new ClickDetector ();
 
 		this.onMouseClick = null;
-		this.onMouseMove = null;
+		this.onMouseMove = callbacks.onMouseMove || null;
 		this.onContext = null;
+
+		this.onMouseDown = callbacks.onMouseDown || null;
+		this.onMouseUp = callbacks.onMouseUp || null;
 
 		if (this.canvas.addEventListener) {
 			this.canvas.addEventListener ('mousedown', this.OnMouseDown.bind (this));
@@ -265,6 +269,7 @@ export class Navigation
 			document.addEventListener ('mouseup', this.OnMouseUp.bind (this));
 			document.addEventListener ('mouseleave', this.OnMouseLeave.bind (this));
 		}
+	
 	}
 
 	SetMouseClickHandler (onMouseClick)
@@ -281,6 +286,10 @@ export class Navigation
 	{
 		this.onContext = onContext;
 	}
+
+	EnableCameraMovement (enable) {
+        this.enableCameraMovement = enable;
+    }
 
 	GetNavigationMode ()
 	{
@@ -369,6 +378,15 @@ export class Navigation
 
 		this.mouse.Down (this.canvas, ev);
 		this.clickDetector.Start (this.mouse.GetPosition ());
+
+		if (!this.enableCameraMovement) {
+            this.isMouseDown = true;
+        }
+
+		if (this.onMouseDown) {
+			let mouseCoords = this.mouse.GetPosition();
+			this.onMouseDown(mouseCoords);
+		}
 	}
 
 	OnMouseMove (ev)
@@ -384,9 +402,17 @@ export class Navigation
 			return;
 		}
 
+		if (!this.enableCameraMovement) {
+            return;
+        }
+
+		if (this.onMouseMove) {
+			let mouseCoords = this.mouse.GetPosition();
+			this.onMouseMove(mouseCoords);
+		}
+
 		let moveDiff = this.mouse.GetMoveDiff ();
 		let mouseButton = this.mouse.GetButton ();
-
 		let navigationType = NavigationType.None;
 		if (mouseButton === 1) {
 			if (ev.ctrlKey) {
@@ -424,6 +450,15 @@ export class Navigation
 			let mouseCoords = this.mouse.GetPosition ();
 			this.Click (ev.which, mouseCoords);
 		}
+
+		if (!this.enableCameraMovement) {
+            this.isMouseDown = false;
+        }
+
+		if (this.onMouseUp) {
+			let mouseCoords = this.mouse.GetPosition();
+			this.onMouseUp(mouseCoords);
+		}
 	}
 
 	OnMouseLeave (ev)
@@ -448,8 +483,11 @@ export class Navigation
 		this.clickDetector.Move (this.touch.GetPosition ());
 		if (!this.touch.IsFingerDown ()) {
 			return;
+		} 
+		else if (!this.enableCameraMovement) {
+			return;
 		}
-
+		
 		let moveDiff = this.touch.GetMoveDiff ();
 		let distanceDiff = this.touch.GetDistanceDiff ();
 		let fingerCount = this.touch.GetFingerCount ();

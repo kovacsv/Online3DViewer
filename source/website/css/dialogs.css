@@ -12,14 +12,13 @@ div.ov_modal_overlay
 	position: absolute;
 }
 
-div.ov_dialog
-{
-	color: var(--ov_dialog_foreground_color);
-	background: var(--ov_dialog_background_color);
-	width: 400px;
-	padding: 20px;
-	box-shadow: var(--ov_shadow);
-	border-radius: 5px;
+div.ov_dialog {
+    color: var(--ov_dialog_foreground_color);
+    background: var(--ov_dialog_background_color);
+    width: 80vw; /* Adjust width */
+    padding: 20px;
+    box-shadow: var(--ov_shadow);
+    border-radius: 5px;
 }
 
 div.ov_dialog div.ov_dialog_title
