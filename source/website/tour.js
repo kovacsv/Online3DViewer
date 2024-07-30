@@ -17,7 +17,13 @@ export function startTour() {
                 element: '#main_viewer',
                 popover: {
                     title: 'Pan and Orbit',
-                    description: 'Click and drag in the viewer to pan and orbit the model. Use the scroll wheel or pinch gesture to zoom.',
+                    description: `
+                        <div class='gif-popover' style='display: flex; justify-content: space-around;'>
+                            <img style='max-width: 50%;' src='assets/images/orbit.gif' />
+                            <img style='max-width: 50%;' src='assets/images/pan_zoom.gif' />
+                        </div>
+                        <p>Click and drag in the viewer to pan and orbit the model. Use the scroll wheel or pinch gesture to zoom.</p>
+                    `,
                     side: 'bottom',
                     align: 'end'
                 }
@@ -26,7 +32,12 @@ export function startTour() {
                 element: 'i.icon.icon-highlight',
                 popover: {
                     title: 'Highlight Tool',
-                    description: 'Click here to activate the highlight tool. You can then click on the model to highlight specific areas.',
+                    description: `
+                    <div class='gif-popover' style='display: flex; justify-content: space-around;'>
+                        <img style='max-width: 75%;' src='assets/images/highlight.gif' />
+                    </div>
+                    <p>Click here to activate the highlight tool. You can then click on the model to highlight specific areas.</p>,
+                    `,
                     side: 'bottom',
                     align: 'start'
                 }
@@ -35,7 +46,12 @@ export function startTour() {
                 element: 'i.icon.icon-eraser',
                 popover: {
                     title: 'Eraser Tool',
-                    description: 'This is the eraser tool. Use it to remove highlights from the model.',
+                    description: `
+                    <div class='gif-popover' style='display: flex; justify-content: space-around;'>
+                        <img style='max-width: 75%;' src='assets/images/eraser.gif' />
+                    </div>
+                    <p> This is the eraser tool. Use it to remove highlights from the model.</p>,
+                    `,
                     side: 'bottom',
                     align: 'start'
                 }
