@@ -69,7 +69,12 @@ export function startTour() {
                 element: 'div.ov_svg_icon:has(i.icon.icon-share)',                
                 popover: {
                     title: 'Share Button',
-                    description: 'Once you\'re ready, click here to download a snapshot of the model or share it with others.',
+                    description:  `
+                    <div class='gif-popover' style='display: flex; justify-content: space-around;'>
+                        <img style='max-width: 75%;' src='assets/images/report_sample.png' />
+                    </div>
+                    <p> Once you\'re ready, click here to download a report of your pain or share it with others. </p>
+                    `,
                     side: 'left',
                     align: 'start'
                 }
