@@ -525,8 +525,8 @@ function createDialogManager(snapshotManager) {
             images: snapshots,
             siteUrl: window.location.origin
         };
-
-        generatePdf(data, isForPatient=true);
+        let isForPatient = true;
+        generatePdf(data, isForPatient);
     }
 
     function handleSubmit() {
