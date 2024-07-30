@@ -15,7 +15,7 @@ export class EraserTool extends HighlightTool {
         if (this.isActive === isActive) {
             return;
         }
-        TrackUmamiEvent('Eraser Tool Activation', { active: isActive });
+        TrackUmamiEvent('Eraser Tool Activation');
         this.isActive = isActive;
         this.button.SetSelected(isActive);
 

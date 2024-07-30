@@ -84,7 +84,7 @@ export class HighlightTool {
             return;
         }
 
-        TrackUmamiEvent('Highlight Tool Activation', { selected: isSelected });
+        TrackUmamiEvent('Highlight Tool Activation');
 
     
         this.isActive = isActive;
