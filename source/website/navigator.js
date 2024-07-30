@@ -1,6 +1,5 @@
 import { GetDomElementOuterWidth, SetDomElementOuterHeight, SetDomElementOuterWidth } from '../engine/viewer/domutils.js';
 import { NavigatorFilesPanel } from './navigatorfilespanel.js';
-import { NavigatorMaterialsPanel } from './navigatormaterialspanel.js';
 import { NavigatorMeshesPanel } from './navigatormeshespanel.js';
 import { PanelSet } from './panelset.js';
 

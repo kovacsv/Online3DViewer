@@ -52,12 +52,12 @@ async function generatePdf(data, isForPatient = false) {
     const indent = 20;
 
     const introText = isForPatient 
-    ? `Hi ${patientName || ''},`
-    : `Hi ${sendToEmail || ''},`;
+    ? "Hi ${patientName || ''},"
+    : "Hi ${sendToEmail || ''},";
 
     const introBody = isForPatient
-        ? `Thank you for using TellMeWhereItHurtsNow.com to monitor and manage your pain. Pain can significantly impact one's quality of life. Understanding its location and intensity helps in diagnosing and managing the underlying causes effectively.`
-        : `Your acquaintance, ${patientName || ''}, has shared with you a snapshot describing their pain and where they are feeling it. Pain can significantly impact one's quality of life. Understanding its location and intensity helps in diagnosing and managing the underlying causes effectively.`;
+        ? "Thank you for using TellMeWhereItHurtsNow.com to monitor and manage your pain. Pain can significantly impact one's quality of life. Understanding its location and intensity helps in diagnosing and managing the underlying causes effectively."
+        : "Your acquaintance, ${patientName || ''}, has shared with you a snapshot describing their pain and where they are feeling it. Pain can significantly impact one's quality of life. Understanding its location and intensity helps in diagnosing and managing the underlying causes effectively.";
     
     const wrappedText = wrapText(introText, helveticaBoldFont, 12, introWidth);
     wrappedText.forEach((line, index) => {
@@ -209,9 +209,9 @@ function wrapText(text, font, fontSize, maxWidth) {
 
     for (let i = 1; i < words.length; i++) {
         const word = words[i];
-        const width = font.widthOfTextAtSize(currentLine + " " + word, fontSize);
+        const width = font.widthOfTextAtSize(currentLine + ' ' + word, fontSize);
         if (width < maxWidth) {
-            currentLine += " " + word;
+            currentLine += ' ' + word;
         } else {
             lines.push(currentLine);
             currentLine = word;

@@ -1,10 +1,9 @@
 import { GetFileExtension, TransformFileHostUrls } from '../engine/io/fileutils.js';
 import { InputFilesFromFileObjects, InputFilesFromUrls } from '../engine/import/importerfiles.js';
 import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
-import { NavigationMode, ProjectionMode } from '../engine/viewer/camera.js';
 import { RGBColor } from '../engine/model/color.js';
 import { Viewer } from '../engine/viewer/viewer.js';
-import { AddDiv, CreateDiv , AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth, GetDomElementOuterHeight } from '../engine/viewer/domutils.js';
+import { AddDiv, CreateDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth, GetDomElementOuterHeight } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToScreen, ShowListPopup } from './dialogs.js';
 import { HandleEvent } from './eventhandler.js';
 import { HashHandler } from './hashhandler.js';
@@ -813,8 +812,6 @@ export class Website
         });
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
 
-
-
         AddToggle(this.toolbar, 'genderToggle',
             {labels: ['Male', 'Female'], initialState: 'male'},
             (modelUrl) => {
@@ -1138,7 +1135,4 @@ export class Website
             console.warn('Toggle switch element not found');
         }
     }
-
-    
-
 }

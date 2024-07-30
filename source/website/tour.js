@@ -1,5 +1,5 @@
-import { driver } from "driver.js";
-import "driver.js/dist/driver.css";
+import { driver } from 'driver.js';
+import 'driver.js/dist/driver.css';
 import { CookieSetTourCompleted, CookieIsTourCompleted } from './cookiehandler.js';
 
 export function startTour() {
@@ -18,8 +18,8 @@ export function startTour() {
                 popover: {
                     title: 'Pan and Orbit',
                     description: 'Click and drag in the viewer to pan and orbit the model. Use the scroll wheel or pinch gesture to zoom.',
-                    side: "bottom",
-                    align: "end"
+                    side: 'bottom',
+                    align: 'end'
                 }
             },
             {
@@ -27,7 +27,7 @@ export function startTour() {
                 popover: {
                     title: 'Highlight Tool',
                     description: 'Click here to activate the highlight tool. You can then click on the model to highlight specific areas.',
-                    side: "bottom",
+                    side: 'bottom',
                     align: 'start'
                 }
             },
@@ -36,7 +36,7 @@ export function startTour() {
                 popover: {
                     title: 'Eraser Tool',
                     description: 'This is the eraser tool. Use it to remove highlights from the model.',
-                    side: "bottom",
+                    side: 'bottom',
                     align: 'start'
                 }
             },
@@ -45,15 +45,16 @@ export function startTour() {
                 popover: {
                     title: 'Reset View',
                     description: 'Use this button to reset the view if you get lost',
-                    side: "bottom",
+                    side: 'bottom',
                     align: 'start'
                 }
             },
             {
-                    element: 'div.ov_svg_icon:has(i.icon.icon-share)',                popover: {
+                element: 'div.ov_svg_icon:has(i.icon.icon-share)',                
+                popover: {
                     title: 'Share Button',
                     description: 'Once you\'re ready, click here to download a snapshot of the model or share it with others.',
-                    side: "left",
+                    side: 'left',
                     align: 'start'
                 }
             },
@@ -69,5 +70,5 @@ export function startTour() {
     if (!CookieIsTourCompleted()) {
         driverObj.drive();
         CookieSetTourCompleted(true);
-    };
+    }
 }

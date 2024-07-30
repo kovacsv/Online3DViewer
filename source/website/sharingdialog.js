@@ -18,7 +18,7 @@ export function ShowSharingDialog(settings, viewer) {
 }
 
 function isMobileScreen() {
-    return window.matchMedia("(max-width: 768px)").matches;
+    return window.matchMedia('(max-width: 768px)').matches;
 }
 
 const CONFIG = {
@@ -194,7 +194,7 @@ function createPreviewManager(viewer, settings) {
             } else if (index === 2) {
                 rotateCamera(cameras[index], 380);
             }
-            img.addEventListener('contextmenu', function(event) { event.preventDefault(); }, { passive: false });
+            img.addEventListener('contextmenu', (e) => { e.preventDefault(); }, { passive: false });
             img.addEventListener('mousedown', (e) => handleMouseDown(index, e), { passive: false });
             img.addEventListener('mousemove', (e) => handleMouseMove(index, e), { passive: false });
             img.addEventListener('mouseup', (e) => handleMouseUp(index, e), { passive: false });
@@ -226,7 +226,7 @@ function createPreviewManager(viewer, settings) {
             if (!waiting) { // If we're not waiting
                 callback.apply(this, args); // Execute users callback
                 waiting = true; // Prevent future invocations
-                setTimeout(function () { // After a period of time
+                setTimeout(() => { // After a period of time
                     waiting = false; // And allow future invocations
                 }, limit);
             }
@@ -390,30 +390,30 @@ function createDialogManager(snapshotManager) {
         return input;
     }
 
-    function validateEmails() {
-        const emails = [patientEmailInput.value.trim(), ...emailInputs.map(input => input.value.trim())];
-        const uniqueEmails = new Set(emails.filter(email => email !== ''));
+    // function validateEmails() {
+    //     const emails = [patientEmailInput.value.trim(), ...emailInputs.map(input => input.value.trim())];
+    //     const uniqueEmails = new Set(emails.filter(email => email !== ''));
 
-        if (uniqueEmails.size !== emails.filter(email => email !== '').length) {
-            alert(Loc('Please ensure all email addresses are unique.'));
-            return false;
-        }
+    //     if (uniqueEmails.size !== emails.filter(email => email !== '').length) {
+    //         alert(Loc('Please ensure all email addresses are unique.'));
+    //         return false;
+    //     }
 
-        let oneEmailFilled = false;
-        for (const email of emails) {
-            if (email !== '') {
-                oneEmailFilled = true;
-                break;
-            }
-        }
+    //     let oneEmailFilled = false;
+    //     for (const email of emails) {
+    //         if (email !== '') {
+    //             oneEmailFilled = true;
+    //             break;
+    //         }
+    //     }
 
-        if (!oneEmailFilled) {
-            alert(Loc('Please enter at least one email address.'));
-            return false;
-        }
+    //     if (!oneEmailFilled) {
+    //         alert(Loc('Please enter at least one email address.'));
+    //         return false;
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     function createStep1Content(step) {
         const container = AddDiv(step, 'ov_content_container');
@@ -526,7 +526,7 @@ function createDialogManager(snapshotManager) {
             siteUrl: window.location.origin
         };
 
-        generatePdf(data, isForSelf=true);
+        generatePdf(data, isForPatient=true);
     }
 
     function handleSubmit() {
@@ -534,8 +534,6 @@ function createDialogManager(snapshotManager) {
         // Implement submission logic
         ShowMessageDialog(Loc('Success'), Loc('Your snapshot and information have been shared.'));
     }
-
-
 
     function showDialog() {
         const overlay = createModalOverlay();

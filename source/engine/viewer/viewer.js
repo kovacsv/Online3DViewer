@@ -455,7 +455,7 @@ export class Viewer
                 this.extraModel.RemoveObject (object);
                 this.Render ();
             } else {
-                console.log('Object not found in the list')
+                console.log('Object not found in the list');
             }
         } else {
             console.error('this.extraModel or GetObjects is not available');
