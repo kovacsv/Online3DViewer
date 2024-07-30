@@ -1,8 +1,9 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { TrackUmamiEvent } from './umami.js';
 
 async function generatePdf(data, isForPatient = false) {
     const { patientName, sendToEmail, age, gender, typeOfPain, painDuration, date, images } = data;
-
+    TrackUmamiEvent('Generate PDF');
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([595.28, 841.89]); // A4 size
 

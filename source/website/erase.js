@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { AddDiv, ClearDomElement } from '../engine/viewer/domutils.js';
 import { HighlightTool } from './highlighttool.js';
 import { IntersectionMode } from '../engine/viewer/viewermodel.js';
+import { TrackUmamiEvent } from './umami.js';
 
 export class EraserTool extends HighlightTool {
     constructor(viewer, settings) {
@@ -14,7 +15,7 @@ export class EraserTool extends HighlightTool {
         if (this.isActive === isActive) {
             return;
         }
-
+        TrackUmamiEvent('Eraser Tool Activation', { active: isActive });
         this.isActive = isActive;
         this.button.SetSelected(isActive);
 

@@ -10,8 +10,10 @@ import { generatePdf } from './pdfGenerator.js';
 import { MouseInteraction, TouchInteraction } from '../engine/viewer/navigation.js';
 import * as THREE from 'three';
 import { CoordDistance3D } from '../engine/geometry/coord3d.js';
+import { TrackUmamiEvent } from './umami.js';
 
 export function ShowSharingDialog(settings, viewer) {
+    TrackUmamiEvent('Sharing Dialog Opened');
     const SnapshotManager = createPreviewManager(viewer, settings);
     const DialogManager = createDialogManager(SnapshotManager);
     DialogManager.showDialog();
@@ -468,7 +470,8 @@ function createDialogManager(snapshotManager) {
         const labelBetweenSections = AddDiv(formContainer, 'ov_label_between_sections');
         labelBetweenSections.textContent = Loc('----- or -----');
         labelBetweenSections.style.textAlign = 'center';
-
+        
+        AddDiv(formContainer, 'ov_get_patient_email_intro', Loc('COMING SOON'));
         AddDiv(formContainer, 'ov_get_patient_email_intro', Loc('We can send the report to your email'));
         const patientEmailInput = createLabeledInput(formContainer, 'email', 'Your Email', 'Enter your email', { required: true });
 
@@ -485,6 +488,8 @@ function createDialogManager(snapshotManager) {
         submitButton.textContent = Loc('Submit');
         submitButton.addEventListener('click', () => {
             // Handle submit action
+            console.log('Email Sending not implemented yet')
+            TrackUmamiEvent('Sending Email Report');
         });
 
         return { nameInput: patientNameInput, intensityInput, durationInput, descriptionInput, emailInputs, patientEmailInput };

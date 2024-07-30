@@ -29,6 +29,7 @@ import { EnvironmentSettings } from '../engine/viewer/shadingmodel.js';
 import { IntersectionMode } from '../engine/viewer/viewermodel.js';
 import { Loc } from '../engine/core/localization.js';
 import { startTour } from './tour.js';
+import { TrackUmamiEvent } from './umami.js';
 
 const WebsiteUIState =
 {
@@ -778,7 +779,7 @@ export class Website
                 const currentState = this.getAttribute('data-state');
                 const newState = currentState === 'male' ? 'female' : 'male';
                 this.setAttribute('data-state', newState);
-
+                TrackUmamiEvent('Toggling Male <> Female')
                 if (newState === 'male') {
                     loadModelCallback(['assets/models/male_model.stl']);
                 } else {

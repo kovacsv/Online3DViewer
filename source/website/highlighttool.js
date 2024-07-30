@@ -2,9 +2,10 @@ import * as THREE from 'three';
 import { AddDiv, ClearDomElement } from '../engine/viewer/domutils.js';
 import { IntersectionMode } from '../engine/viewer/viewermodel.js';
 import { DisposeThreeObjects } from '../engine/threejs/threeutils.js';
+import { TrackUmamiEvent } from './umami.js';
 
 export class HighlightTool {
-    static sharedHighlightMeshes = [];
+
 
     constructor(viewer, settings) {
         this.viewer = viewer;
@@ -82,6 +83,9 @@ export class HighlightTool {
         if (this.isActive === isActive) {
             return;
         }
+
+        TrackUmamiEvent('Highlight Tool Activation', { selected: isSelected });
+
     
         this.isActive = isActive;
         this.button.SetSelected(isActive);
@@ -417,3 +421,5 @@ export class HighlightTool {
         this.highlightColor.set(color);
     }
 }
+
+HighlightTool.sharedHighlightMeshes = [];
