@@ -73,7 +73,7 @@
 .ov_content_wrapper {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: start;
 }
 
 .ov_preview_container {
@@ -89,6 +89,9 @@
 .ov_preview1_container {
     flex: 2; /* Allocates twice as much space compared to the other two */
     height: auto; /* Adjust based on content */
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .ov_preview2_container {
@@ -341,8 +344,11 @@
     }
 
     .ov_preview1_container {
-        width: 100%;
+        /* width: 71%; */
         margin-bottom: 10px;
+        display: flex;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .ov_preview_row {
@@ -360,6 +366,8 @@
         max-width: 100%;  /* Ensures images do not overflow their containers */
         max-height: 100%;  /* Ensures images fit within the container height */
         object-fit: contain;  /* Ensures the image is scaled properly within its container */
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .ov_dialog_description {

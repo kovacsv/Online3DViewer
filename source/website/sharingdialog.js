@@ -29,7 +29,7 @@ const CONFIG = {
         SMALL: { width: 164, height: 250 }
     } : { // desktop view
         LARGE: { width: 463, height: 500 },
-        SMALL: { width: 231, height: 220 }
+        SMALL: { width: 300, height: 286 }
     },
 
     INITIAL_ZOOM: isMobileScreen() ? 2 : 1,
@@ -52,14 +52,14 @@ function createPreviewManager(viewer, settings) {
         );
 
         viewer.navigation.MoveCamera(newCamera, 0);
-        viewer.navigation.Zoom(Math.log(CONFIG.INITIAL_ZOOM)); 
+        viewer.navigation.Zoom(Math.log(CONFIG.INITIAL_ZOOM));
         return newCamera;
     });
     const states = Array(3).fill().map(() => ({
         isPanning: false,
         isOrbiting: false,
         startMousePosition: { x: 0, y: 0 },
-        panOffset: isMobileScreen() ? { x: 0, y: 0 } : { x: 0, y: 0 }, 
+        panOffset: isMobileScreen() ? { x: 0, y: 0 } : { x: 0, y: 0 },
         orbitOffset: { x: 0, y: 0 },
         currentZoomLevel: CONFIG.INITIAL_ZOOM,
     }));
@@ -76,7 +76,7 @@ function createPreviewManager(viewer, settings) {
             z: camera.eye.z - camera.center.z
         };
         const distance = Math.sqrt(direction.x ** 2 + direction.y ** 2 + direction.z ** 2);
-        const newDistance = distance / zoomLevel / 10 ;
+        const newDistance = distance / zoomLevel / 1.2 ;
 
         const normalizedDirection = {
             x: direction.x / distance,
@@ -362,7 +362,7 @@ function createDialogManager(snapshotManager) {
         });
         dialogElement.appendChild(closeButton);
     }
-    
+
     function createPatientInfoSubHeader(container) {
         const subHeader = AddDomElement(container, 'h3', 'ov_form_sub_header');
         subHeader.textContent = 'Enter patient details below: ';
@@ -387,7 +387,7 @@ function createDialogManager(snapshotManager) {
 
         return step;
     }
-    
+
     function createLabeledInput(container, type, labelText, placeholder, attributes = {}) {
         const wrapper = AddDiv(container, 'ov_input_wrapper');
         const label = AddDomElement(wrapper, 'label', 'ov_dialog_label');
@@ -436,7 +436,7 @@ function createDialogManager(snapshotManager) {
         const contentWrapper = AddDiv(container, 'ov_content_wrapper');
         const previewSection = createPreviewSection(contentWrapper);
         const formSection = createFormSection(contentWrapper);
-    
+
         return { ...headerSection, ...formSection, ...previewSection };
     }
 
@@ -481,7 +481,7 @@ function createDialogManager(snapshotManager) {
         const labelBetweenSections = AddDiv(formContainer, 'ov_label_between_sections');
         labelBetweenSections.textContent = Loc('----- or -----');
         labelBetweenSections.style.textAlign = 'center';
-        
+
         AddDiv(formContainer, 'ov_get_patient_email_intro', Loc('COMING SOON'));
         AddDiv(formContainer, 'ov_get_patient_email_intro', Loc('We can send the report to your email'));
         const patientEmailInput = createLabeledInput(formContainer, 'email', 'Your Email', 'Enter your email', { required: true });
