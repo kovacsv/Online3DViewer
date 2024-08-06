@@ -659,7 +659,7 @@ function createDialogManager(snapshotManager) {
             dialogElement.style.position = 'fixed';
         } else {
             dialogElement.style.width = '90%';
-            dialogElement.style.maxWidth = '1200px';
+            dialogElement.style.maxWidth = '900px';
             dialogElement.style.maxHeight = '90vh';
             dialogElement.style.top = '50%';
             dialogElement.style.left = '50%';
