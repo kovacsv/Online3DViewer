@@ -1,8 +1,7 @@
 /* General Styles */
 .ov_dialog_form_container {
     display: flex;
-    flex-direction: column;
-    padding: 20px;
+    flex-direction: column; 
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -67,18 +66,24 @@
     flex-direction: column;
 }
 
+.ov_form_section {
+    order: 1;
+}
+
 .ov_content_wrapper {
+    display: flex;
+    flex-direction: column;
     align-items: center;
 }
 
 .ov_preview_container {
     flex: 1; /* Gives the container a flexible size */
-    max-width: 500px; /* Ensures that the container does not exceed the canvas width */
+    /* max-width: 500px; Ensures that the container does not exceed the canvas width */
     overflow: hidden; /* Hides any overflowing content */
     padding-right: 30px;
     padding-left: 30px;
-    margin-left: 50px;
     padding-top: 15px;
+    order: 2;
 }
 
 .ov_preview1_container {
@@ -155,44 +160,13 @@
     }
 }
 
-@media (max-width: 768px) {
-    .ov_dialog_form_container {
-        flex-direction: column;
-        width: 100%;
-        max-width: 100%;
-        height: auto; /* Adjusted from 100vh to auto for better flexibility */
-        padding: 10px;
-        box-sizing: border-box;
-    }
-
-    .ov_content_wrapper {
-        flex-direction: column;
-    }
-
-    .ov_preview_container {
-        order: 1;
-        width: 100%; /* Ensures the preview container takes full width */
-        margin: 0 0 15px 0; /* Adds margin for better spacing */
-    }
-
-    .ov_form_section {
-        order: 2; /* Keeps the form below the preview */
-        width: 100%; /* Ensures the form section takes full width */
-    }
-
-    .ov_preview2_container,
-    .ov_preview3_container {
-        width: 50%;
-        aspect-ratio: 1 / 1;
-    }
-}
-
 /* Additional Styles */
 .ov_input_wrapper {
     display: flex;
-    align-items: center;
-    margin-bottom: 10px;
+    flex-direction: column;
+    margin-bottom: 15px;
 }
+
 
 .ov_form_sub_header {
     padding-top: 10px;
@@ -225,20 +199,17 @@
     width: 100%;
     box-sizing: border-box;
     background: #fafafa;
-    color: #666;
+    color: #333;
 }
 
 .ov_dialog_label {
-    font-size: 1em;
-    margin-right: 10px;
-    color: #333;
-    flex: 0 0 150px; /* Adjust the width as needed */
+    font-size: 0.9em;
+    margin-bottom: 5px;
+    color: #666;
 }
 
 .ov_dialog_title {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-    color: #333;
+    display:none;
 }
 
 .ov_dialog_description, .ov_get_patient_email_intro, .ov_get_send_emails_intro {
@@ -292,10 +263,37 @@
     padding-bottom: 15px;
 }
 
+.ov_share_header {
+    background-color: #26a69a;
+    color: #f2f2f2;
+    text-align: left;
+    padding: 15px 20px;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin: 0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-@media (max-width: 375px) {
+.ov_header_section {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+@media (max-width: 428px) {
     .ov_dialog_form_container {
-        padding: 5px;  /* Reduced padding for smaller screen */
+        padding-top: 0px;
+        padding-right: 0px;
+        padding-left: 0px;   
+    }
+
+    .ov_content_wrapper {
+        max-width: 95%;
     }
 
     .ov_info_fields_container {
@@ -303,6 +301,13 @@
         padding-right: 10px;
     }
 
+    .ov_share_header {
+        height: 22px;
+    }
+
+    .ov_content_container {
+        align-items: center;
+    }
 
     .ov_preview_container,
     .ov_preview1_container,
@@ -315,21 +320,25 @@
 
     .ov_preview_container {
         height: auto;  /* Adjusts height based on content */
-        padding: 0;  /* Removes padding within the preview container */
+        padding: 0 10px;  /* Removes padding within the preview container */
         margin-bottom: 10px;  /* Adds space below the main preview container */
+        order:1;
     }
 
     .ov_preview1_container {
-        margin-right: auto;  /* Removes margin around the main preview container */
-        margin-left: auto;  /* Removes margin around the main preview container */
+        width: 100%;
+        margin-bottom: 10px;
     }
 
+    .ov_preview_row {
+        justify-content: space-between;
+    }
 
     .ov_preview2_container,
     .ov_preview3_container {
         aspect-ratio: 1;  /* Maintains square aspect ratio */
-        height: 180px;  /* Sets a fixed height for better control */
-        width: 46%;  /* Allocates half the width for each preview */    
+        /* height: 180px;  Sets a fixed height for better control */
+        width: 48%;  /* Allocates half the width for each preview */    
     }
     
     .ov_snapshot_preview_image, .ov_snapshot_preview_canvas {
@@ -338,18 +347,31 @@
         object-fit: contain;  /* Ensures the image is scaled properly within its container */
     }
 
-    .ov_snapshot_preview_image {
-        height: 300px;
+    .ov_dialog_description {
+        padding: 15px 20px;
+        margin: 0;
+        border-width: 0px;
+        /* margin-top: 5px;
+        margin-left: 10px; */
+    }
+
+    .ov_input_wrapper {
+        margin-bottom: 12px;
     }
 
     .ov_dialog_label {
-        flex: 0 0 110px; /* Adjust the width as needed */
+        font-size: 0.85em;
     }
-    .ov_dialog_description {
-        margin-top: 5px;
-        margin-left: 10px;
+
+    .ov_dialog_input {
+        padding: 8px;
+        font-size: 0.95em;
     }
-    
+
+    .ov_form_section {
+        padding: 0 10px;
+        order:2
+    }
 }
 
 /* Dark mode styles */

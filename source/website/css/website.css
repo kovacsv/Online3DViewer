@@ -371,7 +371,7 @@ div.ov_measure_panel div.ov_measure_value
 
 	}
 
-	@media (max-width: 350px), (max-height: 620px)
+@media (max-width: 350px), (max-height: 620px)
 	{
 
 		div.intro_content
@@ -392,9 +392,10 @@ div.ov_measure_panel div.ov_measure_value
 			font-size: 12px;
 		}
 
+
 	}
 
-	@media (max-width: 800px)
+@media (max-width: 800px)
 	{
 
 	div.intro_content
@@ -467,7 +468,7 @@ div.highlight-container {
     right: 20px;
     display: flex;
     align-items: center;
-    z-index: 3; 
+    z-index: 3;
 	transition: bottom 0.3s ease-out;
 }
 

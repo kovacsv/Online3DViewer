@@ -20,19 +20,19 @@ export function ShowSharingDialog(settings, viewer) {
 }
 
 function isMobileScreen() {
-    return window.matchMedia('(max-width: 768px)').matches;
+    return window.matchMedia('(max-width: 428px)').matches;
 }
 
 const CONFIG = {
     SNAPSHOT_SIZES: isMobileScreen() ? {
-        LARGE: { width: 463, height: 300 },
-        SMALL: { width: 231, height: 220 }
-    } : {
+        LARGE: { width: 331, height: 304 },
+        SMALL: { width: 164, height: 250 }
+    } : { // desktop view
         LARGE: { width: 463, height: 500 },
         SMALL: { width: 231, height: 220 }
     },
 
-    INITIAL_ZOOM: 0.1,
+    INITIAL_ZOOM: isMobileScreen() ? 2 : 1,
     MAX_ZOOM: 3,
     MIN_ZOOM: 0.1,
     ZOOM_SPEED: 0.001,
@@ -50,15 +50,18 @@ function createPreviewManager(viewer, settings) {
             defaultCamera.up.Clone(),
             currentCamera.fov
         );
+
+        viewer.navigation.MoveCamera(newCamera, 0);
+        viewer.navigation.Zoom(Math.log(CONFIG.INITIAL_ZOOM)); 
         return newCamera;
     });
     const states = Array(3).fill().map(() => ({
         isPanning: false,
         isOrbiting: false,
         startMousePosition: { x: 0, y: 0 },
-        panOffset: { x: 0, y: 0 },
+        panOffset: isMobileScreen() ? { x: 0, y: 0 } : { x: 0, y: 0 }, 
         orbitOffset: { x: 0, y: 0 },
-        currentZoomLevel: CONFIG.INITIAL_ZOOM
+        currentZoomLevel: CONFIG.INITIAL_ZOOM,
     }));
     let previewImages = [];
     let touchInteractions = [];
@@ -125,6 +128,9 @@ function createPreviewManager(viewer, settings) {
         const camera = cameras[index];
         const renderer = renderers[index];
         const { panOffset, orbitOffset, currentZoomLevel } = states[index];
+
+        // log the states
+        console.log('Camera:', camera, 'Pan Offset:', panOffset, 'Orbit Offset:', orbitOffset, 'Current Zoom Level:', currentZoomLevel);
 
         viewer.navigation.MoveCamera(camera, 0);
         // Set aspect ratio and resize renderer
@@ -350,10 +356,13 @@ function createDialogManager(snapshotManager) {
         const closeButton = document.createElement('button');
         closeButton.innerHTML = '&times;'; // This creates an "×" symbol
         closeButton.className = 'ov_dialog_close_button';
-        closeButton.addEventListener('click', () => dialog.Close());
+        closeButton.addEventListener('click', () => {
+            dialog.Close();
+            removeOverlayIfExists(overlay);
+        });
         dialogElement.appendChild(closeButton);
     }
-
+    
     function createPatientInfoSubHeader(container) {
         const subHeader = AddDomElement(container, 'h3', 'ov_form_sub_header');
         subHeader.textContent = 'Enter patient details below: ';
@@ -362,6 +371,9 @@ function createDialogManager(snapshotManager) {
 
     function createMultiStepForm(parentDiv) {
         const formContainer = AddDiv(parentDiv, 'ov_dialog_form_container');
+        const shareHeader = AddDiv(formContainer, 'ov_share_header');
+        shareHeader.textContent = 'Share';
+
         const step1 = createStep(formContainer, 1);
         const step2 = createStep(formContainer, 2);
         return { step1, step2 };
@@ -375,7 +387,7 @@ function createDialogManager(snapshotManager) {
 
         return step;
     }
-
+    
     function createLabeledInput(container, type, labelText, placeholder, attributes = {}) {
         const wrapper = AddDiv(container, 'ov_input_wrapper');
         const label = AddDomElement(wrapper, 'label', 'ov_dialog_label');
@@ -422,9 +434,9 @@ function createDialogManager(snapshotManager) {
 
         const headerSection = createHeaderSection(container);
         const contentWrapper = AddDiv(container, 'ov_content_wrapper');
-        const formSection = createFormSection(contentWrapper);
         const previewSection = createPreviewSection(contentWrapper);
-
+        const formSection = createFormSection(contentWrapper);
+    
         return { ...headerSection, ...formSection, ...previewSection };
     }
 
@@ -434,7 +446,7 @@ function createDialogManager(snapshotManager) {
         return {};
     }
 
-    function createPreviewSection(container) {
+    function createPreviewSection (container) {
         const previewContainer = AddDiv(container, 'ov_preview_container');
         const preview1Container = AddDiv(previewContainer, 'ov_preview1_container');
         const previewRow = AddDiv(previewContainer, 'ov_preview_row');
@@ -464,7 +476,6 @@ function createDialogManager(snapshotManager) {
         downloadButton.addEventListener('click', () => {
             handleGenerateSelfReportPdf(patientNameInput, intensityInput, durationInput, descriptionInput, patientEmailInput, ageInput);
         });
-
 
         // Add label between Download Report button and email portion
         const labelBetweenSections = AddDiv(formContainer, 'ov_label_between_sections');
@@ -545,9 +556,9 @@ function createDialogManager(snapshotManager) {
         document.body.appendChild(overlay);
 
         const dialog = new ButtonDialog();
-        const contentDiv = dialog.Init(Loc('Share Snapshot'), [
+        const contentDiv = dialog.Init(Loc(''), [
             {
-                name: Loc('Close'),
+                name: Loc(''),
                 onClick() {
                     dialog.Close();
                     removeOverlayIfExists(overlay);
@@ -557,6 +568,22 @@ function createDialogManager(snapshotManager) {
         if (isMobileScreen()) {
             contentDiv.style.marginRight = '35px';
             contentDiv.style.alignItems = 'center';
+            contentDiv.style.left = '50%';
+            contentDiv.style.top = '50%';
+            contentDiv.style.transform = 'translate(-50%, -50%)';
+            contentDiv.style.zIndex = '9999';
+            contentDiv.style.width = '90%';
+            contentDiv.style.height = '90%';
+            contentDiv.style.maxWidth = '800px';
+            contentDiv.style.maxHeight = '90%';
+            contentDiv.style.borderRadius = '8px';
+            contentDiv.style.position = 'fixed';
+            contentDiv.style.backgroundColor = '#fff';
+            contentDiv.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+            contentDiv.style.padding = '0px';
+            contentDiv.style.overflow = 'auto';
+            contentDiv.style.border = '1px solid #ccc';
+            contentDiv.style.boxSizing = 'border-box';
         }
 
         const { step1, step2 } = createMultiStepForm(contentDiv);
@@ -580,8 +607,7 @@ function createDialogManager(snapshotManager) {
 
         setTimeout(() => {
             styleDialogForSharing(dialog);
-            const dialogElement = dialog.GetContentDiv().closest('.ov_dialog');
-            addCloseButton(dialog, dialogElement);
+            addCloseButton(dialog, contentDiv);
         }, 0);
     }
 
