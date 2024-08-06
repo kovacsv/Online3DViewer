@@ -465,9 +465,9 @@ function createDialogManager(snapshotManager) {
 
         const infoFieldsContainer = AddDiv(formContainer, 'ov_info_fields_container');
         const patientNameInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Name'), 'John Doe');
-        const intensityInput = createLabeledInput(infoFieldsContainer, 'number', Loc('Pain Intensity'), 'Enter pain intensity (1-10)', { min: 1, max: 10 });
+        const intensityInput = createLabeledInput(infoFieldsContainer, 'number', Loc('Pain Intensity'), 'Enter pain intensity (1 lowest ~ 10 highest)', { min: 1, max: 10 });
         const durationInput = createLabeledInput(infoFieldsContainer, 'text', Loc('Pain Duration'), 'Enter pain duration (e.g., 2 hours, 3 days)');
-        const descriptionInput = createLabeledInput(infoFieldsContainer, 'textarea', Loc('Description'), 'Description (optional)');
+        const descriptionInput = createLabeledInput(infoFieldsContainer, 'textarea', Loc('Description'), 'Dull, Aching, Pressure, Heavy, Throbbing, etc...');
         const ageInput = createLabeledInput(infoFieldsContainer, 'number', Loc('Age'), 'Enter age (optional)', { min: 0, max: 120 });
 
         // Create Download Report button (main action)

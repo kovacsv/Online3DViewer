@@ -33,13 +33,12 @@ export function startTour() {
                 popover: {
                     title: 'Highlight Tool',
                     description: `
-                    <div class='gif-popover' style='display: flex; justify-content: space-around;'>
-                        <img style='max-width: 75%;' src='assets/images/highlight.gif' />
-                    </div>
                     <p>Click here to activate the highlight tool. You can then click on the model to highlight specific areas.</p>,
-                    `,
-                    side: 'bottom',
-                    align: 'start'
+                    <div class='gif-popover' style='display: flex; justify-content: space-around;'>
+                    <img style='max-width: 75%;' src='assets/images/highlight.gif' />
+                    </div>`,
+                    side: 'top',
+                    align: 'end'
                 }
             },
             {
@@ -47,13 +46,12 @@ export function startTour() {
                 popover: {
                     title: 'Eraser Tool',
                     description: `
+                    <p> This is the eraser tool. Use it to remove highlights from the model.</p>
                     <div class='gif-popover' style='display: flex; justify-content: space-around;'>
                         <img style='max-width: 75%;' src='assets/images/eraser.gif' />
-                    </div>
-                    <p> This is the eraser tool. Use it to remove highlights from the model.</p>,
-                    `,
-                    side: 'bottom',
-                    align: 'start'
+                    </div>`,
+                    side: 'top',
+                    align: 'end'
                 }
             },
             {
@@ -70,13 +68,12 @@ export function startTour() {
                 popover: {
                     title: 'Share Button',
                     description:  `
+                    <p> Once you\'re ready, click here to download a report of your pain or share it with others. </p>
                     <div class='gif-popover' style='display: flex; justify-content: space-around;'>
                         <img style='max-width: 75%;' src='assets/images/report_sample.png' />
-                    </div>
-                    <p> Once you\'re ready, click here to download a report of your pain or share it with others. </p>
-                    `,
-                    side: 'left',
-                    align: 'start'
+                    </div>`,
+                    side: 'top',
+                    align: 'end'
                 }
             },
             {
