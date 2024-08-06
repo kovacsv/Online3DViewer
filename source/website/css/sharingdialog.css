@@ -212,6 +212,12 @@
     display:none;
 }
 
+.ov_dialog .ov_modal {
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+}
+
 .ov_dialog_description, .ov_get_patient_email_intro, .ov_get_send_emails_intro {
     font-size: 1em;
     margin-bottom: 20px;
@@ -247,8 +253,8 @@
 
 .ov_dialog_close_button {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 30px;
+    right: 30px;
     background: none;
     border: none;
     font-size: 24px;
@@ -283,6 +289,7 @@
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    padding: 20px;
 }
 
 @media (max-width: 428px) {
@@ -290,6 +297,14 @@
         padding-top: 0px;
         padding-right: 0px;
         padding-left: 0px;   
+    }
+    
+    .ov_dialog_close_button {
+        top: 10px;
+        right: 10px;
+    }
+    .ov_header_section {
+        padding: 0px;
     }
 
     .ov_content_wrapper {
