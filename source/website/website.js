@@ -779,7 +779,7 @@ export class Website
                 const currentState = this.getAttribute('data-state');
                 const newState = currentState === 'male' ? 'female' : 'male';
                 this.setAttribute('data-state', newState);
-                TrackUmamiEvent('Toggling Male <> Female')
+                TrackUmamiEvent('Toggling Male <> Female');
                 if (newState === 'male') {
                     loadModelCallback(['assets/models/male_model.stl']);
                 } else {

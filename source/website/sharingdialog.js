@@ -358,7 +358,6 @@ function createDialogManager(snapshotManager) {
         closeButton.className = 'ov_dialog_close_button';
         closeButton.addEventListener('click', () => {
             dialog.Close();
-            removeOverlayIfExists(overlay);
         });
         dialogElement.appendChild(closeButton);
     }
@@ -499,7 +498,7 @@ function createDialogManager(snapshotManager) {
         submitButton.textContent = Loc('Submit');
         submitButton.addEventListener('click', () => {
             // Handle submit action
-            console.log('Email Sending not implemented yet')
+            console.log('Email Sending not implemented yet');
             TrackUmamiEvent('Sending Email Report');
         });
 

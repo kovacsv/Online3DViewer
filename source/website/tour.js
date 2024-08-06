@@ -48,7 +48,7 @@ export function startTour() {
                     description: `
                     <p> This is the eraser tool. Use it to remove highlights from the model.</p>
                     <div class='gif-popover' style='display: flex; justify-content: space-around;'>
-                        <img style='max-width: 75%;' src='assets/images/eraser.gif' />
+                    <img style='max-width: 75%;' src='assets/images/eraser.gif' />
                     </div>`,
                     side: 'top',
                     align: 'end'
@@ -68,7 +68,7 @@ export function startTour() {
                 popover: {
                     title: 'Share Button',
                     description:  `
-                    <p> Once you\'re ready, click here to download a report of your pain or share it with others. </p>
+                    <p> Once you're ready, click here to download a report of your pain or share it with others. </p>
                     <div class='gif-popover' style='display: flex; justify-content: space-around;'>
                         <img style='max-width: 75%;' src='assets/images/report_sample.png' />
                     </div>`,
