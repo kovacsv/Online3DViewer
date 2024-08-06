@@ -69,8 +69,6 @@ export class HighlightTool {
         });
     }
 
-    remove
-
     SetButton (button) {
         this.button = button;
     }
