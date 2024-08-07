@@ -20,6 +20,10 @@ export class HighlightTool {
         this.eventsInitialized = null;
         this.activeTouches = 0;
         this.overlappingMeshes = new Map();
+        this.intensityMap = new Map(); // To store intensity values for each mesh
+        this.maxIntensity = 100; // Maximum intensity value
+        this.intensityIncreaseRate = 10; // How fast the intensity increases
+        this.lastInteractionTime = null; // To track the duration of interaction
     }
 
     InitEvents() {
@@ -36,6 +40,7 @@ export class HighlightTool {
             if (this.isActive) {
                 this.isMouseDown = false;
                 this.mouseButton = null;
+                this.ResetIntensity();
             }
         });
 
@@ -84,16 +89,16 @@ export class HighlightTool {
 
         TrackUmamiEvent('Highlight Tool Activation');
 
-    
+
         this.isActive = isActive;
         this.button.SetSelected(isActive);
-        
+
         // Update the viewer button
         let viewerButton = document.getElementById('highlight-button');
         if (viewerButton) {
             viewerButton.classList.toggle('active', isActive);
         }
-    
+
         if (!isActive) {
             this.viewer.navigation.EnableCameraMovement(true);
             this.isNavigating = false;
@@ -103,7 +108,7 @@ export class HighlightTool {
             this.InitEvents();
             this.eventsInitialized = true;
         }
-    
+
         if (this.isActive) {
             this.panel = AddDiv(document.body, 'ov_highlight_panel');
             this.UpdatePanel();
@@ -197,7 +202,7 @@ export class HighlightTool {
         if (intersection === null) {
             return;
         }
-        
+
         if (this.activeTouches === 1) {
             this.ApplyHighlight(intersection);
         } else if (this.activeTouches === 2) {
@@ -214,80 +219,113 @@ export class HighlightTool {
             this.isNavigating = false;
             this.viewer.navigation.EnableCameraMovement(true);
         }
+        this.ResetIntensity();
     }
-    
+
     ApplyHighlight(intersection) {
-        let highlightMesh = this.GenerateHighlightMesh(intersection);
-        
-        // Check for overlapping meshes
-        let overlappingMeshes = this.GetOverlappingMeshes(highlightMesh);
-        
-        if (overlappingMeshes.length >= this.maxOverlappingMeshes) {
-            // Remove the oldest overlapping mesh
-            let oldestMesh = overlappingMeshes[0];
-            this.RemoveHighlight({ point: oldestMesh.position });
-            overlappingMeshes.shift();
+        let { mesh: highlightMesh, id: uniqueId } = this.GenerateHighlightMesh(intersection);
+
+        // Check if this mesh already exists
+        let existingMesh = this.FindExistingMeshById(uniqueId);
+        console.log('Existing mesh:', existingMesh);
+        if (existingMesh) {
+            // Increase intensity for existing mesh
+            this.IncreaseIntensity(existingMesh);
+            this.UpdateMeshColor(existingMesh);
+        } else {
+            // Add new mesh with initial intensity
+            console.log('ApplyHighlight: Adding new mesh');
+            this.intensityMap.set(uniqueId, 0);
+            HighlightTool.sharedHighlightMeshes.push({ mesh: highlightMesh, id: uniqueId });
+            this.viewer.AddExtraObject(highlightMesh);
+            this.UpdateMeshColor(highlightMesh);
         }
-        
-        // Add the new mesh
-        HighlightTool.sharedHighlightMeshes.push(highlightMesh);
-        this.viewer.AddExtraObject(highlightMesh);
-        
-        // Update overlapping meshes
-        overlappingMeshes.push(highlightMesh);
-        this.overlappingMeshes.set(highlightMesh.uuid, overlappingMeshes);
-        
+
         this.viewer.Render();
+    }
+
+    FindExistingMeshById(id) {
+        return HighlightTool.sharedHighlightMeshes.find(item => item.id === id)?.mesh;
+    }
+
+    ResetIntensity() {
+        this.lastInteractionTime = null;
+    }
+
+    IncreaseIntensity(mesh) {
+        console.log('Increasing intensity');
+        let uniqueId = HighlightTool.sharedHighlightMeshes.find(item => item.mesh === mesh)?.id;
+        if (!uniqueId) return;
+
+        let currentIntensity = this.intensityMap.get(uniqueId) || 0;
+        let newIntensity = Math.min(currentIntensity + this.intensityIncreaseRate, this.maxIntensity);
+        this.intensityMap.set(uniqueId, newIntensity);
+        console.log(`Intensity increased to ${newIntensity} for mesh ${uniqueId}`); // Debug log
+    }
+
+    UpdateMeshColor(mesh) {
+        let uniqueId = HighlightTool.sharedHighlightMeshes.find(item => item.mesh === mesh)?.id;
+        if (!uniqueId) return;
+
+        let intensity = this.intensityMap.get(uniqueId) || 0;
+        let color = this.GetColorForIntensity(intensity);
+        mesh.material.color.setStyle(color);
+        console.log(`Updated color to ${color} for mesh ${uniqueId}`); // Debug log
+    }
+
+    GetColorForIntensity(intensity) {
+        let normalizedIntensity = intensity / this.maxIntensity;
+        if (normalizedIntensity < 0.5) {
+            // Yellow to Orange
+            return `rgb(255, ${Math.round(255 - normalizedIntensity * 255)}, 0)`;
+        } else {
+            // Orange to Red
+            return `rgb(255, ${Math.round(255 - (normalizedIntensity - 0.5) * 510)}, 0)`;
+        }
     }
 
     GetOverlappingMeshes(newMesh) {
         let overlapping = [];
         let newBoundingBox = new THREE.Box3().setFromObject(newMesh);
-        
+
         for (let mesh of this.highlightMeshes) {
             let meshBoundingBox = new THREE.Box3().setFromObject(mesh);
             if (newBoundingBox.intersectsBox(meshBoundingBox)) {
                 overlapping.push(mesh);
             }
         }
-        
+
         return overlapping;
     }
-    
-    RemoveHighlight(intersection) {        
+
+    RemoveHighlight(intersection) {
         if (!intersection || !intersection.point) {
             return;
         }
-    
-        let meshesToRemove = HighlightTool.sharedHighlightMeshes.filter((mesh) => {
-            let boundingBox = new THREE.Box3().setFromObject(mesh);
-            boundingBox.expandByScalar(0.01); // Expand the bounding box slightly
-            let isWithinBoundingBox = boundingBox.containsPoint(intersection.point);
-            return isWithinBoundingBox;
-        });
-    
-        if (meshesToRemove.length === 0) {
-            return;
-        }
-    
-        meshesToRemove.forEach((mesh) => {
-            this.viewer.RemoveExtraObject(mesh);
-            
+
+        let { id: uniqueId } = this.GenerateHighlightMesh(intersection);
+
+        let meshToRemove = HighlightTool.sharedHighlightMeshes.find(item => item.id === uniqueId);
+
+        if (meshToRemove) {
+            console.log('RemoveHighlight: Removing mesh');
+            this.viewer.RemoveExtraObject(meshToRemove.mesh);
+
             // Update highlightMeshes array
-            HighlightTool.sharedHighlightMeshes = HighlightTool.sharedHighlightMeshes.filter((m) => m !== mesh);
-            
+            HighlightTool.sharedHighlightMeshes = HighlightTool.sharedHighlightMeshes.filter((item) => item.id !== uniqueId);
+
             // Dispose of the highlight mesh
-            this.DisposeHighlightMesh(mesh);
-    
+            this.DisposeHighlightMesh(meshToRemove.mesh);
+
             // Update overlappingMeshes
-            this.overlappingMeshes.delete(mesh.uuid);
+            this.overlappingMeshes.delete(uniqueId);
             for (let [key, value] of this.overlappingMeshes) {
-                let filteredValue = value.filter(m => m !== mesh);
+                let filteredValue = value.filter(item => item.id !== uniqueId);
                 this.overlappingMeshes.set(key, filteredValue);
             }
-        });
-    
-        this.viewer.Render();
+
+            this.viewer.Render();
+        }
     }
 
     SetMaxOverlappingMeshes(limit) {
@@ -301,7 +339,7 @@ export class HighlightTool {
     DisposeHighlightMesh(mesh) {
         DisposeThreeObjects(mesh);
         this.viewer.scene.remove (mesh);
-        this.viewer.Render();  
+        this.viewer.Render();
     }
 
     IsIntersectionWithinBoundingBox(intersection, mesh) {
@@ -335,7 +373,7 @@ export class HighlightTool {
     GenerateHighlightMesh(intersection) {
         let mesh = intersection.object;
         let highlightMaterial = new THREE.MeshPhongMaterial({
-            color: this.highlightColor,
+            color: new THREE.Color(1, 1, 0),
             transparent: true,
             opacity: 0.5,
             side: THREE.DoubleSide,
@@ -373,7 +411,10 @@ export class HighlightTool {
         let offset = normal.multiplyScalar(0.001);
         highlightMesh.position.add(offset);
 
-        return highlightMesh;
+        // Generate a unique identifier
+        let uniqueId = `${intersection.object.id}_${intersection.faceIndex}`;
+
+        return { mesh: highlightMesh, id: uniqueId };
     }
 
     UpdatePanel() {
