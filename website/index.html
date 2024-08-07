@@ -20,17 +20,13 @@
             // Show the button after 45 seconds
             setTimeout(function() {
                 document.querySelector('.buymeacoffee-button').style.display = 'block';
-            }, 1000);
+            }, 15000);
     
             // Hide the button when the close button is clicked
             document.querySelector('.close-button').addEventListener('click', function(event) {
                 event.preventDefault(); // Prevent the default action
                 document.querySelector('.buymeacoffee-button').style.display = 'none';
             });
-
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.getElementById('bmc-script').setAttribute('data-font-color', '#ffffff');
-            }
         });
     </script>
     <script>
