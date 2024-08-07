@@ -72,6 +72,29 @@ export class EraserTool extends HighlightTool {
         this.viewer.Render();
     }
 
+    TouchStart(event) {
+        event.preventDefault();
+        this.isTouching = true;
+        this.activeTouches = event.touches.length;
+
+        let mouseCoordinates = this.viewer.navigation.touch.GetPosition();
+        let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
+
+        if (intersection === null) {
+            // No intersection with model, allow navigation
+            this.viewer.navigation.EnableCameraMovement(true);
+            this.isNavigating = true;
+        } else {
+            // Intersection with model, use highlight tool
+            this.viewer.navigation.EnableCameraMovement(false);
+            this.isNavigating = false;
+            if (this.activeTouches === 1) {
+                this.RemoveHighlight(intersection);
+            }
+        }
+        this.viewer.Render();
+    }
+
     TouchMove(event) {
         event.preventDefault();
         if (!this.isTouching) {

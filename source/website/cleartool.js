@@ -46,12 +46,20 @@ export class ClearAllTool extends HighlightTool {
     }
 
     ClearAllHighlights() {
-        HighlightTool.sharedHighlightMeshes.forEach((mesh) => {
-            this.viewer.RemoveExtraObject(mesh);
+        console.log('Clearing all highlights');
+        HighlightTool.sharedHighlightMeshes.forEach((meshItem) => {
+            this.viewer.RemoveExtraObject(meshItem.mesh);
+            this.DisposeHighlightMesh(meshItem.mesh);
         });
+    
         HighlightTool.sharedHighlightMeshes = [];
+    
+        // Clear the overlappingMeshes map
+        this.overlappingMeshes.clear();
+    
         this.viewer.Render();
     }
+    
 
     Click() {
         // Immediately clear all highlights when the tool is clicked
