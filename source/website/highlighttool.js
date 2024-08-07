@@ -227,16 +227,16 @@ export class HighlightTool {
 
         // Check if this mesh already exists
         let existingMesh = this.FindExistingMeshById(uniqueId);
-        console.log('Existing mesh:', existingMesh);
         if (existingMesh) {
             // Increase intensity for existing mesh
             this.IncreaseIntensity(existingMesh);
             this.UpdateMeshColor(existingMesh);
         } else {
             // Add new mesh with initial intensity
-            console.log('ApplyHighlight: Adding new mesh');
             this.intensityMap.set(uniqueId, 0);
             HighlightTool.sharedHighlightMeshes.push({ mesh: highlightMesh, id: uniqueId });
+
+            // Log the size in bytes of the sharedHighlightMeshes array
             this.viewer.AddExtraObject(highlightMesh);
             this.UpdateMeshColor(highlightMesh);
         }
@@ -253,14 +253,12 @@ export class HighlightTool {
     }
 
     IncreaseIntensity(mesh) {
-        console.log('Increasing intensity');
         let uniqueId = HighlightTool.sharedHighlightMeshes.find(item => item.mesh === mesh)?.id;
         if (!uniqueId) return;
 
         let currentIntensity = this.intensityMap.get(uniqueId) || 0;
         let newIntensity = Math.min(currentIntensity + this.intensityIncreaseRate, this.maxIntensity);
         this.intensityMap.set(uniqueId, newIntensity);
-        console.log(`Intensity increased to ${newIntensity} for mesh ${uniqueId}`); // Debug log
     }
 
     UpdateMeshColor(mesh) {
@@ -270,7 +268,6 @@ export class HighlightTool {
         let intensity = this.intensityMap.get(uniqueId) || 0;
         let color = this.GetColorForIntensity(intensity);
         mesh.material.color.setStyle(color);
-        console.log(`Updated color to ${color} for mesh ${uniqueId}`); // Debug log
     }
 
     GetColorForIntensity(intensity) {

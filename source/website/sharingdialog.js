@@ -129,9 +129,6 @@ function createPreviewManager(viewer, settings) {
         const renderer = renderers[index];
         const { panOffset, orbitOffset, currentZoomLevel } = states[index];
 
-        // log the states
-        console.log('Camera:', camera, 'Pan Offset:', panOffset, 'Orbit Offset:', orbitOffset, 'Current Zoom Level:', currentZoomLevel);
-
         viewer.navigation.MoveCamera(camera, 0);
         // Set aspect ratio and resize renderer
         viewer.renderer.setSize(width, height);

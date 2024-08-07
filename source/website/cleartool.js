@@ -46,7 +46,6 @@ export class ClearAllTool extends HighlightTool {
     }
 
     ClearAllHighlights() {
-        console.log('Clearing all highlights');
         HighlightTool.sharedHighlightMeshes.forEach((meshItem) => {
             this.viewer.RemoveExtraObject(meshItem.mesh);
             this.DisposeHighlightMesh(meshItem.mesh);
