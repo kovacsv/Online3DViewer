@@ -44,7 +44,7 @@ export class HighlightTool {
             }
         });
 
-        this.addTouchListeners (canvas)
+        this.addTouchListeners (canvas);
 
     }
 
@@ -305,7 +305,6 @@ export class HighlightTool {
         let meshToRemove = HighlightTool.sharedHighlightMeshes.find(item => item.id === uniqueId);
 
         if (meshToRemove) {
-            console.log('RemoveHighlight: Removing mesh');
             this.viewer.RemoveExtraObject(meshToRemove.mesh);
 
             // Update highlightMeshes array
