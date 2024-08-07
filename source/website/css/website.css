@@ -582,6 +582,23 @@ div.toolbar-button .toggle-container {
     color: #1c1c1b; /* Beige text color when active */
 }
 
+.buymeacoffee-button {
+	position: absolute;
+	z-index: 500;
+	display: none; /* Initially hidden */
+}
+
+.close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: none;
+	border: none;
+	font-size: 20px;
+	cursor: pointer;
+	color: rgb(85, 84, 84);
+}
+
 
 @media (prefers-color-scheme: dark) {
 
@@ -610,4 +627,20 @@ div.toolbar-button .toggle-container {
     .toggle-container[data-state="female"] .toggle-option:last-child {
         color: #1c1c1b; /* Beige text when active in dark mode */
     }
+}
+
+
+@media (min-width: 1024px) {
+	.buymeacoffee-button {
+		right: 20%;
+		top: 1.1%;
+	}
+}
+
+@media (max-width: 767px) {
+	.buymeacoffee-button {
+		bottom: 10px;
+		left: 20%;
+		transform: translateX(-50%);
+	}
 }

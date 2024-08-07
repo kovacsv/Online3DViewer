@@ -12,9 +12,27 @@
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
             font-family: 'Material Symbols Outlined';
-        }
+        }   
     </style>
     <title>Tell Me Where It Hurts Now</title>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show the button after 45 seconds
+            setTimeout(function() {
+                document.querySelector('.buymeacoffee-button').style.display = 'block';
+            }, 1000);
+    
+            // Hide the button when the close button is clicked
+            document.querySelector('.close-button').addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent the default action
+                document.querySelector('.buymeacoffee-button').style.display = 'none';
+            });
+
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.getElementById('bmc-script').setAttribute('data-font-color', '#ffffff');
+            }
+        });
+    </script>
     <script>
         // Detecting the environment
         const host = window.location.hostname;
@@ -82,6 +100,10 @@
         </div>
     </div>
 
+    <a href="https://www.buymeacoffee.com/tellmewhereithurtsnow" class="buymeacoffee-button">
+        <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=tellmewhereithurtsnow&button_colour=F5F5DC&font_colour=000000&font_family=Bree&outline_colour=000000&coffee_colour=ffffff" />
+        <button class="close-button">&times;</button>
+    </a>
     <script type="text/javascript" defer>
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof OV !== 'undefined') {
