@@ -295,6 +295,10 @@
     padding: 20px;
 }
 
+.ov_dialog_buttons_inner { 
+    display: none;
+}
+
 @media (max-width: 428px) {
     .ov_dialog_form_container {
         padding-top: 0px;
