@@ -8,7 +8,6 @@ export class EraserTool extends HighlightTool {
     constructor(viewer, settings) {
         super(viewer, settings);
         this.highlightColor = new THREE.Color('rgba(0, 0, 0, 0)');
-        this.highlightMeshes = HighlightTool.sharedHighlightMeshes;
     }
 
     SetActive(isActive) {
@@ -57,7 +56,7 @@ export class EraserTool extends HighlightTool {
         
         // Only remove highlights if the mouse button is down
         if (this.isMouseDown) {
-            this.RemoveHighlight(intersection);
+            this.RemoveHighlight (intersection);
             this.viewer.Render();
         }
     }
@@ -66,9 +65,8 @@ export class EraserTool extends HighlightTool {
         let intersection = this.viewer.GetMeshIntersectionUnderMouse(IntersectionMode.MeshOnly, mouseCoordinates);
         if (intersection === null) {
             return;
-        }
-    
-        this.RemoveHighlight(intersection);
+        }    
+        this.RemoveHighlight (intersection);
         this.viewer.Render();
     }
 
@@ -132,11 +130,5 @@ export class EraserTool extends HighlightTool {
         this.Resize();
     }
 
-    ClearHighlight() {
-        HighlightTool.sharedHighlightMeshes.forEach((mesh) => {
-            this.viewer.RemoveExtraObject(mesh);
-        });
-        HighlightTool.sharedHighlightMeshes = [];
-        this.viewer.Render();
-    }
+    
 }

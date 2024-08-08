@@ -291,7 +291,6 @@ export class HighlightTool {
                 overlapping.push(mesh);
             }
         }
-
         return overlapping;
     }
 
@@ -301,25 +300,29 @@ export class HighlightTool {
         }
 
         let { id: uniqueId } = this.GenerateHighlightMesh(intersection);
-
         let meshToRemove = HighlightTool.sharedHighlightMeshes.find(item => item.id === uniqueId);
+        let existingMesh = this.FindExistingMeshById(uniqueId);
+        let currentIntensity = this.intensityMap.get(uniqueId) || 0;
 
         if (meshToRemove) {
-            this.viewer.RemoveExtraObject(meshToRemove.mesh);
+            if (currentIntensity >= 3) {
+                // Decrease intensity for existing mesh
+                let newIntensity = Math.max(currentIntensity - (this.intensityIncreaseRate * 0.7), 0);
+                this.intensityMap.set(uniqueId, newIntensity);
+                this.UpdateMeshColor(existingMesh);
+            
+            } else {
+                this.viewer.RemoveExtraObject(meshToRemove.mesh);
+                HighlightTool.sharedHighlightMeshes = HighlightTool.sharedHighlightMeshes.filter((item) => item.id !== uniqueId);
+                this.DisposeHighlightMesh(meshToRemove.mesh);
 
-            // Update highlightMeshes array
-            HighlightTool.sharedHighlightMeshes = HighlightTool.sharedHighlightMeshes.filter((item) => item.id !== uniqueId);
-
-            // Dispose of the highlight mesh
-            this.DisposeHighlightMesh(meshToRemove.mesh);
-
-            // Update overlappingMeshes
-            this.overlappingMeshes.delete(uniqueId);
-            for (let [key, value] of this.overlappingMeshes) {
-                let filteredValue = value.filter(item => item.id !== uniqueId);
-                this.overlappingMeshes.set(key, filteredValue);
+                // Update overlappingMeshes
+                this.overlappingMeshes.delete(uniqueId);
+                for (let [key, value] of this.overlappingMeshes) {
+                    let filteredValue = value.filter(item => item.id !== uniqueId);
+                    this.overlappingMeshes.set(key, filteredValue);
+                }
             }
-
             this.viewer.Render();
         }
     }
