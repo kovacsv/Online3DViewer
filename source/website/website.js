@@ -790,7 +790,6 @@ export class Website
             return toggleButton;
         }
 
-        AddSeparator (this.toolbar, ['only_on_model']);
         this.toolbarHighlightButton = AddPushButton(this.toolbar, 'highlight', Loc('Highlight'), ['only_full_width', 'only_on_model'], (isSelected) => {
             this.ToggleHighlightTool();
         });
@@ -811,7 +810,6 @@ export class Website
         AddButton (this.toolbar, 'up_y', Loc ('Reset View'), ['only_on_model'], () => {
             this.viewer.SetUpVector (Direction.Y, true);
         });
-        AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
 
         AddToggle(this.toolbar, 'genderToggle',
             {labels: ['Male', 'Female'], initialState: 'male'},
