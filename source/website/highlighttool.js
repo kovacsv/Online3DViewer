@@ -242,9 +242,7 @@ export class HighlightTool {
 
     ApplyHighlight(intersection) {
         let highlightedMeshes = this.GenerateHighlightMesh(intersection);
-        let count = 0
         highlightedMeshes.forEach(({ mesh: highlightMesh, id: uniqueId }) => {
-            count++;
             let existingMesh = this.FindExistingMeshById(uniqueId);
             if (existingMesh) {
                 this.IncreaseIntensity(existingMesh);
@@ -313,31 +311,34 @@ export class HighlightTool {
         if (!intersection || !intersection.point) {
             return;
         }
-
-        let { id: uniqueId } = this.GenerateHighlightMesh(intersection)[0];
-        let meshToRemove = HighlightTool.sharedHighlightMeshes.find(item => item.id === uniqueId);
-        let existingMesh = this.FindExistingMeshById(uniqueId);
-        let currentIntensity = this.intensityMap.get(uniqueId) || 0;
-
-        if (meshToRemove) {
-            if (currentIntensity >= 3) {
-                let newIntensity = Math.max(currentIntensity - (this.intensityIncreaseRate * 0.7), 0);
-                this.intensityMap.set(uniqueId, newIntensity);
-                this.UpdateMeshColor(existingMesh);
-            } else {
-                this.viewer.RemoveExtraObject(meshToRemove.mesh);
-                HighlightTool.sharedHighlightMeshes = HighlightTool.sharedHighlightMeshes.filter((item) => item.id !== uniqueId);
-                this.DisposeHighlightMesh(meshToRemove.mesh);
-
-                this.overlappingMeshes.delete(uniqueId);
-                for (let [key, value] of this.overlappingMeshes) {
-                    let filteredValue = value.filter(item => item.id !== uniqueId);
-                    this.overlappingMeshes.set(key, filteredValue);
+        let highlightedMeshes = this.GenerateHighlightMesh(intersection);
+        
+        highlightedMeshes.forEach(({ id: uniqueId }) => {
+            let meshToRemove = HighlightTool.sharedHighlightMeshes.find(item => item.id === uniqueId);
+            let existingMesh = this.FindExistingMeshById(uniqueId);
+            let currentIntensity = this.intensityMap.get(uniqueId) || 0;
+    
+            if (meshToRemove) {
+                if (currentIntensity >= 3) {
+                    let newIntensity = Math.max(currentIntensity - (this.intensityIncreaseRate * 0.7), 0);
+                    this.intensityMap.set(uniqueId, newIntensity);
+                    this.UpdateMeshColor(existingMesh);
+                } else {
+                    this.viewer.RemoveExtraObject(meshToRemove.mesh);
+                    HighlightTool.sharedHighlightMeshes = HighlightTool.sharedHighlightMeshes.filter((item) => item.id !== uniqueId);
+                    this.DisposeHighlightMesh(meshToRemove.mesh);
+    
+                    this.overlappingMeshes.delete(uniqueId);
+                    for (let [key, value] of this.overlappingMeshes) {
+                        let filteredValue = value.filter(item => item.id !== uniqueId);
+                        this.overlappingMeshes.set(key, filteredValue);
+                    }
                 }
+                this.viewer.Render();
             }
-            this.viewer.Render();
-        }
+        });
     }
+    
 
     SetMaxOverlappingMeshes(limit) {
         if (typeof limit === 'number' && limit > 0) {
