@@ -24,6 +24,7 @@ export class HighlightTool {
         this.maxIntensity = 100; // Maximum intensity value
         this.intensityIncreaseRate = 7; // How fast the intensity increases
         this.lastInteractionTime = null; // To track the duration of interaction
+        this.brushSize = 0.01; // Default brush size
     }
 
     InitEvents() {
@@ -46,6 +47,20 @@ export class HighlightTool {
 
         this.addTouchListeners (canvas);
 
+    }
+
+    ShowBrushSizeSlider() {
+        console.log('ShowBrushSizeSlider');
+        if (this.brushSizeSlider) {
+            this.brushSizeSlider.style.display = 'flex';
+        }
+    }
+
+    HideBrushSizeSlider() {
+        console.log('HideBrushSizeSlider');
+        if (this.brushSizeSlider) {
+            this.brushSizeSlider.style.display = 'none';
+        }
     }
 
     addTouchListeners (canvas) {
@@ -102,6 +117,9 @@ export class HighlightTool {
         if (!isActive) {
             this.viewer.navigation.EnableCameraMovement(true);
             this.isNavigating = false;
+            this.HideBrushSizeSlider();
+        } else {
+            this.ShowBrushSizeSlider();
         }
 
         if (!this.eventsInitialized) {
@@ -223,24 +241,21 @@ export class HighlightTool {
     }
 
     ApplyHighlight(intersection) {
-        let { mesh: highlightMesh, id: uniqueId } = this.GenerateHighlightMesh(intersection);
-
-        // Check if this mesh already exists
-        let existingMesh = this.FindExistingMeshById(uniqueId);
-        if (existingMesh) {
-            // Increase intensity for existing mesh
-            this.IncreaseIntensity(existingMesh);
-            this.UpdateMeshColor(existingMesh);
-        } else {
-            // Add new mesh with initial intensity
-            this.intensityMap.set(uniqueId, 0);
-            HighlightTool.sharedHighlightMeshes.push({ mesh: highlightMesh, id: uniqueId });
-
-            // Log the size in bytes of the sharedHighlightMeshes array
-            this.viewer.AddExtraObject(highlightMesh);
-            this.UpdateMeshColor(highlightMesh);
-        }
-
+        let highlightedMeshes = this.GenerateHighlightMesh(intersection);
+        let count = 0
+        highlightedMeshes.forEach(({ mesh: highlightMesh, id: uniqueId }) => {
+            count++;
+            let existingMesh = this.FindExistingMeshById(uniqueId);
+            if (existingMesh) {
+                this.IncreaseIntensity(existingMesh);
+                this.UpdateMeshColor(existingMesh);
+            } else {
+                this.intensityMap.set(uniqueId, 0);
+                HighlightTool.sharedHighlightMeshes.push({ mesh: highlightMesh, id: uniqueId });
+                this.viewer.AddExtraObject(highlightMesh);
+                this.UpdateMeshColor(highlightMesh);
+            }
+        });
         this.viewer.Render();
     }
 
@@ -299,24 +314,21 @@ export class HighlightTool {
             return;
         }
 
-        let { id: uniqueId } = this.GenerateHighlightMesh(intersection);
+        let { id: uniqueId } = this.GenerateHighlightMesh(intersection)[0];
         let meshToRemove = HighlightTool.sharedHighlightMeshes.find(item => item.id === uniqueId);
         let existingMesh = this.FindExistingMeshById(uniqueId);
         let currentIntensity = this.intensityMap.get(uniqueId) || 0;
 
         if (meshToRemove) {
             if (currentIntensity >= 3) {
-                // Decrease intensity for existing mesh
                 let newIntensity = Math.max(currentIntensity - (this.intensityIncreaseRate * 0.7), 0);
                 this.intensityMap.set(uniqueId, newIntensity);
                 this.UpdateMeshColor(existingMesh);
-            
             } else {
                 this.viewer.RemoveExtraObject(meshToRemove.mesh);
                 HighlightTool.sharedHighlightMeshes = HighlightTool.sharedHighlightMeshes.filter((item) => item.id !== uniqueId);
                 this.DisposeHighlightMesh(meshToRemove.mesh);
 
-                // Update overlappingMeshes
                 this.overlappingMeshes.delete(uniqueId);
                 for (let [key, value] of this.overlappingMeshes) {
                     let filteredValue = value.filter(item => item.id !== uniqueId);
@@ -365,12 +377,108 @@ export class HighlightTool {
         return false;
     }
 
-    ArePointsClose(point1, point2, threshold) {
+    ArePointsClose (point1, point2, threshold) {
         return point1.distanceTo(point2) < threshold;
     }
 
     GenerateHighlightMesh(intersection) {
         let mesh = intersection.object;
+        let highlightedMeshes = [];
+        let highlightMaterial = new THREE.MeshPhongMaterial({
+            color: this.highlightColor,
+            transparent: true,
+            opacity: 0.5,
+            side: THREE.DoubleSide,
+            depthTest: true,
+            depthWrite: false,
+            polygonOffset: true,
+            polygonOffsetFactor: -1,
+            polygonOffsetUnits: -1
+        });
+    
+        let positions = mesh.geometry.attributes.position;
+        let normals = mesh.geometry.attributes.normal;
+    
+        let localBrushSize = this.brushSize / mesh.scale.x;
+        let localIntersectionPoint = intersection.point.clone().applyMatrix4(mesh.matrixWorld.invert());
+    
+        // First pass: collect faces within brush radius
+        let facesWithinRadius = new Set();
+        for (let i = 0; i < positions.count; i += 3) {
+            let a = new THREE.Vector3().fromBufferAttribute(positions, i);
+            let b = new THREE.Vector3().fromBufferAttribute(positions, i + 1);
+            let c = new THREE.Vector3().fromBufferAttribute(positions, i + 2);
+    
+            let faceCenter = new THREE.Vector3().add(a).add(b).add(c).divideScalar(3);
+    
+            if (faceCenter.distanceTo(localIntersectionPoint) <= localBrushSize) {
+                facesWithinRadius.add(i / 3);
+            }
+        }
+    
+        // Second pass: include adjacent faces
+        let facesToHighlight = new Set(facesWithinRadius);
+        facesWithinRadius.forEach(faceIndex => {
+            let a = new THREE.Vector3().fromBufferAttribute(positions, faceIndex * 3);
+            let b = new THREE.Vector3().fromBufferAttribute(positions, faceIndex * 3 + 1);
+            let c = new THREE.Vector3().fromBufferAttribute(positions, faceIndex * 3 + 2);
+    
+            for (let i = 0; i < positions.count; i += 3) {
+                if (facesToHighlight.has(i / 3)) continue;
+    
+                let d = new THREE.Vector3().fromBufferAttribute(positions, i);
+                let e = new THREE.Vector3().fromBufferAttribute(positions, i + 1);
+                let f = new THREE.Vector3().fromBufferAttribute(positions, i + 2);
+    
+                if (this.ArePointsClose(a, d, localBrushSize) || this.ArePointsClose(a, e, localBrushSize) || this.ArePointsClose(a, f, localBrushSize) ||
+                    this.ArePointsClose(b, d, localBrushSize) || this.ArePointsClose(b, e, localBrushSize) || this.ArePointsClose(b, f, localBrushSize) ||
+                    this.ArePointsClose(c, d, localBrushSize) || this.ArePointsClose(c, e, localBrushSize) || this.ArePointsClose(c, f, localBrushSize)) {
+                    facesToHighlight.add(i / 3);
+                }
+            }
+        });
+
+        facesToHighlight.forEach(faceIndex => {
+            let idx = faceIndex * 3;
+            let positionsArray = [];
+            let normalsArray = [];
+        
+            let normalMatrix = new THREE.Matrix3().getNormalMatrix(mesh.matrixWorld);
+
+            for (let j = 0; j < 3; j++) {
+                let position = new THREE.Vector3(
+                    positions.getX(idx + j),
+                    positions.getY(idx + j),
+                    positions.getZ(idx + j)
+                );
+                let rotationMatrix = new THREE.Matrix4().makeRotationX(-Math.PI / 2);  // Rotate by 90 degrees around Y axis
+                position.applyMatrix4(rotationMatrix);
+                positionsArray.push(position.x, position.y, position.z);
+                
+                let normal = new THREE.Vector3(
+                    normals.getX(idx + j),
+                    normals.getY(idx + j),
+                    normals.getZ(idx + j)
+                )
+                normal.applyMatrix3(normalMatrix).normalize().negate();
+                normalsArray.push(normal.x, normal.y, normal.z);
+            }
+        
+            let highlightGeometry = new THREE.BufferGeometry();
+            highlightGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positionsArray, 3));
+            highlightGeometry.setAttribute('normal', new THREE.Float32BufferAttribute(normalsArray, 3));
+            
+            let highlightMesh = new THREE.Mesh(highlightGeometry, highlightMaterial.clone());
+            highlightMesh.updateMatrix();
+            highlightMesh.updateMatrixWorld();
+            let uniqueId = `highlight_${mesh.id}_${faceIndex}`;
+            highlightedMeshes.push({ mesh: highlightMesh, id: uniqueId });
+        });
+        
+        return highlightedMeshes;
+    }
+
+    CreateHighlightMesh(originalMesh, faceIndex, indices, positions) {
         let highlightMaterial = new THREE.MeshPhongMaterial({
             color: new THREE.Color(1, 1, 0),
             transparent: true,
@@ -384,12 +492,18 @@ export class HighlightTool {
         });
 
         let highlightGeometry = new THREE.BufferGeometry();
-        let positions = mesh.geometry.attributes.position;
-
+        
         let a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3();
-        a.fromBufferAttribute(positions, intersection.face.a);
-        b.fromBufferAttribute(positions, intersection.face.b);
-        c.fromBufferAttribute(positions, intersection.face.c);
+        let i = faceIndex * 3;
+        if (indices) {
+            a.fromBufferAttribute(positions, indices[i]);
+            b.fromBufferAttribute(positions, indices[i + 1]);
+            c.fromBufferAttribute(positions, indices[i + 2]);
+        } else {
+            a.fromBufferAttribute(positions, i);
+            b.fromBufferAttribute(positions, i + 1);
+            c.fromBufferAttribute(positions, i + 2);
+        }
 
         highlightGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
             a.x, a.y, a.z,
@@ -406,14 +520,11 @@ export class HighlightTool {
         ], 3));
 
         let highlightMesh = new THREE.Mesh(highlightGeometry, highlightMaterial);
-        highlightMesh.applyMatrix4(mesh.matrixWorld);
-        let offset = normal.multiplyScalar(0.001);
+        highlightMesh.applyMatrix4(originalMesh.matrixWorld);
+        let offset = normal.multiplyScalar(0.01);
         highlightMesh.position.add(offset);
 
-        // Generate a unique identifier
-        let uniqueId = `${intersection.object.id}_${intersection.faceIndex}`;
-
-        return { mesh: highlightMesh, id: uniqueId };
+        return highlightMesh;
     }
 
     UpdatePanel() {
@@ -429,6 +540,20 @@ export class HighlightTool {
         clearButton.innerHTML = '<button>Clear Highlight</button>';
         clearButton.addEventListener('click', () => {
             this.ClearHighlight();
+        });
+
+        // Add brush size slider
+        this.brushSizeSlider = AddDiv(this.panel, 'ov_highlight_brush_size_slider');
+        this.brushSizeSlider.innerHTML = `
+            <label for="brush-size">Brush Size: </label>
+            <input type="range" id="brush-size" min="1" max="20" value="${this.brushSize}">
+            <span id="brush-size-value">${this.brushSize}</span>
+        `;
+        let brushSizeInput = this.brushSizeSlider.querySelector('#brush-size');
+        let brushSizeValue = this.brushSizeSlider.querySelector('#brush-size-value');
+        brushSizeInput.addEventListener('input', (event) => {
+            this.brushSize = parseInt(event.target.value);
+            brushSizeValue.textContent = this.brushSize;
         });
 
         this.Resize();
