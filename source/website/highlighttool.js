@@ -309,6 +309,7 @@ export class HighlightTool {
         return overlapping;
     }
 
+
     RemoveHighlight(intersection) {
         if (!intersection || !intersection.point) {
             return;
@@ -442,7 +443,7 @@ export class HighlightTool {
                     normals.getX(idx + j),
                     normals.getY(idx + j),
                     normals.getZ(idx + j)
-                )
+                );
                 normal.applyMatrix3(normalMatrix).normalize().negate();
                 normalsArray.push(normal.x, normal.y, normal.z);
             }
