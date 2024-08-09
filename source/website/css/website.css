@@ -599,11 +599,56 @@ div.toolbar-button .toggle-container {
 	color: rgb(85, 84, 84);
 }
 
+.ov_highlight_brush_size_slider {
+	position: absolute;
+	top: 12%;
+	width: 150px;
+	background: black;
+	color: white;
+	border-radius: 8px;
+	padding: 7px;
+}
+
+#brush-size {
+	width: 100%;
+	height: 10px;
+	border-radius: 5px;
+	background: #333333;
+	outline: none;
+	font-size: 7px;
+}
+
+#brush-size::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: #a0a0a0;
+	cursor: pointer;
+	box-shadow: 0 0 5px rgba(160, 160, 160, 0.3);
+	}
+
+#brush-size:hover::-webkit-slider-thumb {
+background: #b8b8b8;
+	}
+
+#brush-size-value {
+	font-family: monospace;
+	color: #a0a0a0;
+	margin-left: 10px;
+	}
+
 
 @media (prefers-color-scheme: dark) {
 
 	.logo_image {
 		filter: drop-shadow(0 0 2px #FFF)
+	}
+
+	.ov_highlight_brush_size_slider {
+		background: white;
+		color: black;
 	}
 
 	div.share-button {

@@ -24,7 +24,7 @@ export class HighlightTool {
         this.maxIntensity = 100; // Maximum intensity value
         this.intensityIncreaseRate = 7; // How fast the intensity increases
         this.lastInteractionTime = null; // To track the duration of interaction
-        this.brushSize = 0.01; // Default brush size
+        this.brushSize = 3; // Default brush size
     }
 
     InitEvents() {
@@ -34,6 +34,7 @@ export class HighlightTool {
             if (this.isActive) {
                 this.isMouseDown = true;
                 this.mouseButton = event.button;
+                this.HideBrushSizeSlider();
             }
         });
 
@@ -44,15 +45,15 @@ export class HighlightTool {
                 this.ResetIntensity();
             }
         });
-
         this.addTouchListeners (canvas);
-
     }
 
     ShowBrushSizeSlider() {
         console.log('ShowBrushSizeSlider');
         if (this.brushSizeSlider) {
-            this.brushSizeSlider.style.display = 'flex';
+            this.brushSizeSlider.style.display = 'block';
+            this.brushSizeSlider.style.position = 'absolute';
+            this.brushSizeSlider.style.top = '10%';
         }
     }
 
@@ -179,6 +180,7 @@ export class HighlightTool {
     // Touch Events
     TouchStart(event) {
         event.preventDefault();
+        this.HideBrushSizeSlider();
         this.activeTouches = event.touches.length;
         this.isTouching = true;
 
@@ -400,7 +402,8 @@ export class HighlightTool {
         let positions = mesh.geometry.attributes.position;
         let normals = mesh.geometry.attributes.normal;
     
-        let localBrushSize = this.brushSize / mesh.scale.x;
+        let localBrushSize = this.brushSize / mesh.scale.x / 100;
+        console.log('GenerateHighlightMesh: localBrushSize :', localBrushSize);
         let localIntersectionPoint = intersection.point.clone().applyMatrix4(mesh.matrixWorld.invert());
     
         // First pass: collect faces within brush radius
@@ -417,35 +420,14 @@ export class HighlightTool {
             }
         }
     
-        // Second pass: include adjacent faces
-        let facesToHighlight = new Set(facesWithinRadius);
-        facesWithinRadius.forEach(faceIndex => {
-            let a = new THREE.Vector3().fromBufferAttribute(positions, faceIndex * 3);
-            let b = new THREE.Vector3().fromBufferAttribute(positions, faceIndex * 3 + 1);
-            let c = new THREE.Vector3().fromBufferAttribute(positions, faceIndex * 3 + 2);
-    
-            for (let i = 0; i < positions.count; i += 3) {
-                if (facesToHighlight.has(i / 3)) continue;
-    
-                let d = new THREE.Vector3().fromBufferAttribute(positions, i);
-                let e = new THREE.Vector3().fromBufferAttribute(positions, i + 1);
-                let f = new THREE.Vector3().fromBufferAttribute(positions, i + 2);
-    
-                if (this.ArePointsClose(a, d, localBrushSize) || this.ArePointsClose(a, e, localBrushSize) || this.ArePointsClose(a, f, localBrushSize) ||
-                    this.ArePointsClose(b, d, localBrushSize) || this.ArePointsClose(b, e, localBrushSize) || this.ArePointsClose(b, f, localBrushSize) ||
-                    this.ArePointsClose(c, d, localBrushSize) || this.ArePointsClose(c, e, localBrushSize) || this.ArePointsClose(c, f, localBrushSize)) {
-                    facesToHighlight.add(i / 3);
-                }
-            }
-        });
-
+        let facesToHighlight = new Set(facesWithinRadius);        
         facesToHighlight.forEach(faceIndex => {
             let idx = faceIndex * 3;
             let positionsArray = [];
             let normalsArray = [];
         
             let normalMatrix = new THREE.Matrix3().getNormalMatrix(mesh.matrixWorld);
-
+    
             for (let j = 0; j < 3; j++) {
                 let position = new THREE.Vector3(
                     positions.getX(idx + j),
@@ -531,30 +513,17 @@ export class HighlightTool {
     UpdatePanel() {
         ClearDomElement(this.panel);
 
-        let colorPicker = AddDiv(this.panel, 'ov_highlight_color_picker');
-        colorPicker.innerHTML = '<input type="color" id="highlight-color" value="#ff0000">';
-        colorPicker.addEventListener('change', (event) => {
-            this.SetHighlightColor(event.target.value);
-        });
-
-        let clearButton = AddDiv(this.panel, 'ov_highlight_clear_button');
-        clearButton.innerHTML = '<button>Clear Highlight</button>';
-        clearButton.addEventListener('click', () => {
-            this.ClearHighlight();
-        });
-
         // Add brush size slider
         this.brushSizeSlider = AddDiv(this.panel, 'ov_highlight_brush_size_slider');
         this.brushSizeSlider.innerHTML = `
             <label for="brush-size">Brush Size: </label>
-            <input type="range" id="brush-size" min="1" max="20" value="${this.brushSize}">
-            <span id="brush-size-value">${this.brushSize}</span>
+            <input type="range" id="brush-size" min="1" max="7" value="${this.brushSize}">
         `;
         let brushSizeInput = this.brushSizeSlider.querySelector('#brush-size');
         let brushSizeValue = this.brushSizeSlider.querySelector('#brush-size-value');
         brushSizeInput.addEventListener('input', (event) => {
             this.brushSize = parseInt(event.target.value);
-            brushSizeValue.textContent = this.brushSize;
+            console.log('UpdatePanel: Brush size:', this.brushSize);
         });
 
         this.Resize();
