@@ -19,6 +19,7 @@ def CreateWebsite (rootDir, websiteDir, version, testBuild):
 	shutil.copy2 (os.path.join (rootDir, 'website', 'index.html'), websiteDir)
 	shutil.copy2 (os.path.join (rootDir, 'website', 'embed.html'), websiteDir)
 	shutil.copy2 (os.path.join (rootDir, 'website', 'robots.txt'), websiteDir)
+	shutil.copy2 (os.path.join (rootDir, 'website', 'tellmewhereithurtsnow.html'), websiteDir)
 	shutil.copytree (os.path.join (rootDir, 'libs'), os.path.join (websiteDir, 'libs'))
 	shutil.copytree (os.path.join (rootDir, 'build', 'website'), os.path.join (websiteDir, 'o3dv'))
 	shutil.copytree (os.path.join (rootDir, 'website', 'assets'), os.path.join (websiteDir, 'assets'))

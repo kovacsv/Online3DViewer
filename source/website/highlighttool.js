@@ -272,7 +272,11 @@ export class HighlightTool {
         if (!uniqueId) return;
 
         let currentIntensity = this.intensityMap.get(uniqueId) || 0;
-        let newIntensity = Math.min(currentIntensity + this.intensityIncreaseRate, this.maxIntensity);
+        let multFactor = 1;
+        if (this.brushSize  <=2) {
+            multFactor = 1.5;
+        }
+        let newIntensity = Math.min(currentIntensity + this.intensityIncreaseRate * multFactor, this.maxIntensity);
         this.intensityMap.set(uniqueId, newIntensity);
     }
 
