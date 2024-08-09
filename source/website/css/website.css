@@ -688,4 +688,11 @@ background: #b8b8b8;
 		left: 20%;
 		transform: translateX(-50%);
 	}
+
+@media (max-width: 428px) {
+	.buymeacoffee-button {
+		left: 50%;
+		transform: translateX(-50%);
+	}
+}
 }
