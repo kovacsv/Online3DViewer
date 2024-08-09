@@ -22,7 +22,7 @@ export class HighlightTool {
         this.overlappingMeshes = new Map();
         this.intensityMap = new Map(); // To store intensity values for each mesh
         this.maxIntensity = 100; // Maximum intensity value
-        this.intensityIncreaseRate = 7; // How fast the intensity increases
+        this.intensityIncreaseRate = 5; // How fast the intensity increases
         this.lastInteractionTime = null; // To track the duration of interaction
         this.brushSize = 3; // Default brush size
     }
