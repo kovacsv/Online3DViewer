@@ -32,7 +32,7 @@ const CONFIG = {
         SMALL: { width: 300, height: 286 }
     },
 
-    INITIAL_ZOOM: isMobileScreen() ? 2 : 1,
+    INITIAL_ZOOM: isMobileScreen() ? 1 : 1,
     MAX_ZOOM: 3,
     MIN_ZOOM: 0.1,
     ZOOM_SPEED: 0.001,
@@ -152,7 +152,7 @@ function createPreviewManager(viewer, settings) {
             return null;
         }
 
-        const { width, height } = index === 0 ? CONFIG.SNAPSHOT_SIZES.LARGE : CONFIG.SNAPSHOT_SIZES.SMALL;
+        const { width, height } = index === 0 ? { width: 463, height: 500 } : { width: 300, height: 286 };
         const { currentZoomLevel, panOffset, orbitOffset } = states[index];
         const camera = cameras[index];
 
