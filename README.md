@@ -29,8 +29,6 @@ TellMeWhereItHurtsNow.com is an innovative web application that allows users to 
 
 - Frontend: HTML5, CSS3, JavaScript
 - 3D Rendering: WebGL
-- Backend: [Your chosen backend technology]
-- Database: [Your chosen database technology]
 
 ## Contributing
 
