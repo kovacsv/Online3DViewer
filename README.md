@@ -1,5 +1,3 @@
-Here's the modified README.md with attribution to the original repo and a non-commercial license:
-
 # TellMeWhereItHurtsNow.com
 
 ## Interactive 3D Pain Mapping Tool
