@@ -49,7 +49,20 @@ export class HighlightTool {
     }
 
     ShowBrushSizeSlider() {
-        console.log('ShowBrushSizeSlider');
+        this.panel = AddDiv(document.body, 'ov_highlight_panel');
+
+        // Add brush size slider
+        this.brushSizeSlider = AddDiv(this.panel, 'ov_highlight_brush_size_slider');
+        this.brushSizeSlider.innerHTML = `
+            <label for="brush-size">Brush Size: </label>
+            <input type="range" id="brush-size" min="1" max="7" value="${this.brushSize}">
+        `;
+        let brushSizeInput = this.brushSizeSlider.querySelector('#brush-size');
+        let brushSizeValue = this.brushSizeSlider.querySelector('#brush-size-value');
+        brushSizeInput.addEventListener('input', (event) => {
+            this.brushSize = parseInt(event.target.value);
+            console.log('UpdatePanel: Brush size:', this.brushSize);
+        });
         if (this.brushSizeSlider) {
             this.brushSizeSlider.style.display = 'block';
             this.brushSizeSlider.style.position = 'absolute';
@@ -129,8 +142,6 @@ export class HighlightTool {
         }
 
         if (this.isActive) {
-            this.panel = AddDiv(document.body, 'ov_highlight_panel');
-            this.UpdatePanel();
             this.Resize();
         } else {
             if (this.panel) {
@@ -154,7 +165,6 @@ export class HighlightTool {
             this.RemoveHighlight(intersection);
         }
 
-        this.UpdatePanel();
     }
 
     MouseMove(mouseCoordinates) {
@@ -515,24 +525,6 @@ export class HighlightTool {
         return highlightMesh;
     }
 
-    UpdatePanel() {
-        ClearDomElement(this.panel);
-
-        // Add brush size slider
-        this.brushSizeSlider = AddDiv(this.panel, 'ov_highlight_brush_size_slider');
-        this.brushSizeSlider.innerHTML = `
-            <label for="brush-size">Brush Size: </label>
-            <input type="range" id="brush-size" min="1" max="7" value="${this.brushSize}">
-        `;
-        let brushSizeInput = this.brushSizeSlider.querySelector('#brush-size');
-        let brushSizeValue = this.brushSizeSlider.querySelector('#brush-size-value');
-        brushSizeInput.addEventListener('input', (event) => {
-            this.brushSize = parseInt(event.target.value);
-            console.log('UpdatePanel: Brush size:', this.brushSize);
-        });
-
-        this.Resize();
-    }
 
     Resize() {
         if (!this.isActive) {
