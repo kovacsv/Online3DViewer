@@ -1,0 +1,416 @@
+/* General Styles */
+.ov_dialog_form_container {
+    display: flex;
+    flex-direction: column; 
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    margin: auto;
+    overflow-y: auto;
+}
+
+.ov_button, .ov_next_button {
+    padding: 10px 15px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ov_submit_button {
+    background-color: #8d8b8b; /* Blue background */
+    color: white;
+    padding: 10px 15px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+.ov_submit_button:hover {
+    background-color: #007B9A;
+}
+
+
+.ov_button:hover, .ov_next_button:hover :hover {
+    background-color: #0056b3;
+}
+
+.ov_download_button {
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.ov_download_button:hover {
+    background-color: #053250;
+}
+
+/* Layout Containers */
+.ov_content_container,
+.ov_content_wrapper,
+.ov_form_section {
+    display: flex;
+    flex-direction: column;
+}
+
+.ov_form_section {
+    order: 1;
+}
+
+.ov_content_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.ov_preview_container {
+    flex: 1; /* Gives the container a flexible size */
+    /* max-width: 500px; Ensures that the container does not exceed the canvas width */
+    overflow: hidden; /* Hides any overflowing content */
+    padding-right: 30px;
+    padding-left: 30px;
+    padding-top: 15px;
+    order: 2;
+}
+
+.ov_preview1_container {
+    flex: 2; /* Allocates twice as much space compared to the other two */
+    height: auto; /* Adjust based on content */
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ov_preview2_container {
+    width: 231px; /* Set the width explicitly if not already set */
+    height: 254px; /* Set the height explicitly if not already set */
+    display: flex; /* Ensures contents are flex-aligned */
+    justify-content: center; /* Centers the canvas horizontally */
+    align-items: center; /* Centers the canvas vertically */
+    overflow: hidden; /* Hides any overflow, ensuring nothing spills out */
+}
+
+.ov_preview3_container {
+    width: 231px; /* Set the width explicitly if not already set */
+    height: 254px; /* Set the height explicitly if not already set */
+    display: flex; /* Ensures contents are flex-aligned */
+    justify-content: center; /* Centers the canvas horizontally */
+    align-items: center; /* Centers the canvas vertically */
+    overflow: hidden; /* Hides any overflow, ensuring nothing spills out */
+}
+
+/* Ensure the container does not grow or shrink unexpectedly */
+.ov_preview2_container, .ov_preview3_container {
+    flex: none; /* Does not allow flex-grow or flex-shrink */
+    margin: 5px; /* Optional: adds some space around the containers */
+    box-sizing: border-box; /* Ensures padding and border are included in width/height */
+}
+
+
+.ov_preview_row {
+    display: flex;          /* Enables flexbox */
+    flex-direction: row;    /* Align children horizontally */
+    flex-wrap: nowrap;      /* Prevents wrapping of items */
+    justify-content: center;/* Horizontally centers the content within the container */
+    align-items: center;    /* Vertically centers the items in the container */
+    width: 100%;            /* Ensures the container takes full width available */
+    height: auto;           /* Adjust height automatically based on content */
+}
+
+.ov_preview1_container, .ov_preview2_container, .ov_preview3_container {
+    border: 2px solid #ccc; /* Light grey border */
+    border-radius: 8px; /* Softly rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.ov_snapshot_preview_image, .ov_snapshot_preview_canvas {
+    border-radius: 8px; /* Consistent rounded corners */
+}
+
+/* Ensure all preview images within containers have the same styling */
+.ov_preview_container img, .ov_preview1_container img, .ov_preview2_container img, .ov_preview3_container img {
+    border-radius: 6px; /* Slightly less rounded than container for a layered effect */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Very light shadow for the images themselves */
+}
+
+
+
+/* Responsive Styles */
+@media (min-width: 769px) {
+    .ov_content_wrapper {
+        flex-direction: row;
+    }
+
+    .ov_preview_container {
+        width: 33%;
+    }
+
+    .ov_form_section {
+        width: 40%;
+    }
+}
+
+/* Additional Styles */
+.ov_input_wrapper {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+
+.ov_form_sub_header {
+    padding-top: 10px;
+    font-weight: bold;
+    font-size: 18px;
+    color: #333;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.ov_download_link {
+    display: block;
+    margin-top: 15px;
+    color: #666;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.ov_download_link:hover {
+    color: #555;  
+}
+
+.ov_dialog_input {
+    padding: 10px;
+    font-size: 1em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    background: #fafafa;
+    color: #333;
+}
+
+.ov_dialog_label {
+    font-size: 0.9em;
+    margin-bottom: 5px;
+    color: #666;
+}
+
+.ov_dialog_title {
+    display:none;
+}
+
+.ov_dialog .ov_modal {
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+}
+
+.ov_dialog_description, .ov_get_patient_email_intro, .ov_get_send_emails_intro {
+    font-size: 1em;
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.ov_snapshot_preview_image {
+    width: 100%; /* Makes the canvas width responsive to the container size */
+    height: auto; /* Maintains the aspect ratio */
+}
+
+.ov_snapshot_preview_canvas {
+    border: 1px solid #ccc;
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+
+}
+
+.download-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.download-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.ov_dialog_close_button {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333; /* default color for light mode */
+    z-index: 10000;
+}
+
+.ov_label_between_sections {
+    color: #595252;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.ov_share_header {
+    background-color: #26a69a;
+    color: #f2f2f2;
+    text-align: left;
+    padding: 15px 20px;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin: 0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ov_header_section {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 20px;
+}
+
+.ov_dialog_buttons_inner { 
+    display: none;
+}
+
+@media (max-width: 428px) {
+    .ov_dialog_form_container {
+        padding-top: 0px;
+        padding-right: 0px;
+        padding-left: 0px;   
+    }
+    
+    .ov_dialog_close_button {
+        top: 10px;
+        right: 10px;
+    }
+    .ov_header_section {
+        padding: 0px;
+    }
+
+    .ov_content_wrapper {
+        max-width: 95%;
+    }
+
+    .ov_info_fields_container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .ov_share_header {
+        height: 22px;
+    }
+
+    .ov_content_container {
+        align-items: center;
+    }
+
+    .ov_preview_container,
+    .ov_preview1_container,
+    .ov_preview2_container,
+    .ov_preview3_container {
+        width: 95%;  /* Ensures containers use the full width available */
+        align-items: center;  /* Center-aligns the contents */
+        justify-content: center;  /* Horizontally centers the contents */
+    }
+
+    .ov_preview_container {
+        height: auto;  /* Adjusts height based on content */
+        padding: 0 10px;  /* Removes padding within the preview container */
+        margin-bottom: 10px;  /* Adds space below the main preview container */
+        order:1;
+    }
+
+    .ov_preview1_container {
+        /* width: 71%; */
+        margin-bottom: 10px;
+        display: flex;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .ov_preview_row {
+        justify-content: space-between;
+    }
+
+    .ov_preview2_container,
+    .ov_preview3_container {
+        aspect-ratio: 1;  /* Maintains square aspect ratio */
+        /* height: 180px;  Sets a fixed height for better control */
+        width: 48%;  /* Allocates half the width for each preview */    
+    }
+    
+    .ov_snapshot_preview_image, .ov_snapshot_preview_canvas {
+        max-width: 100%;  /* Ensures images do not overflow their containers */
+        max-height: 100%;  /* Ensures images fit within the container height */
+        object-fit: contain;  /* Ensures the image is scaled properly within its container */
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .ov_dialog_description {
+        padding: 15px 20px;
+        margin: 0;
+        border-width: 0px;
+        /* margin-top: 5px;
+        margin-left: 10px; */
+    }
+
+    .ov_input_wrapper {
+        margin-bottom: 12px;
+    }
+
+    .ov_dialog_label {
+        font-size: 0.85em;
+    }
+
+    .ov_dialog_input {
+        padding: 8px;
+        font-size: 0.95em;
+    }
+
+    .ov_form_section {
+        padding: 0 10px;
+        order:2
+    }
+}
+
+/* Dark mode styles */
+@media (prefers-color-scheme: dark) {
+    .ov_dialog_title {
+        color: #fff; /* Light text for dark backgrounds */
+    }
+    .ov_dialog_close_button {
+        color: #ccc; /* lighter color for better visibility in dark mode */
+    }
+}
+
+/* You can add or modify additional styles here as needed */
+
+

@@ -4,38 +4,59 @@
 <head>
     <meta http-equiv="content-type" content="text/html;charset=utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no">
-    <link rel="icon" type="image/png" href="assets/images/3dviewer_net_favicon.ico">
-    <link rel="canonical" href="https://3dviewer.net">
-
-    <title>Online 3D Viewer</title>
-
-    <!-- meta start -->
-    <!-- meta end -->
-
-    <!-- website start -->
-    <link rel="stylesheet" type="text/css" href="../build/website_dev/o3dv.website.min.css">
-    <script type="text/javascript" src="../build/website_dev/o3dv.website.min.js"></script>
-    <!-- website end -->
-    <!-- plugins start -->
-    <!-- plugins end -->
-
-    <!-- website analytics start -->
+    <link rel="icon" type="image/png" href="assets/favicons/favicon.ico">
+    <link rel="canonical" href="https://tellmehwereithurtsnow.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="node_modules/driver.js/dist/driver.min.css">
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-family: 'Material Symbols Outlined';
+        }   
+    </style>
+    <title>Tell Me Where It Hurts Now</title>
     <script type="text/javascript">
-        OV.SetWebsiteEventHandler ((eventName, eventLabel, eventParams) => {
-            console.log ({
-                eventName : eventName,
-                eventLabel : eventLabel,
-                eventParams : eventParams
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show the button after 45 seconds
+            setTimeout(function() {
+                document.querySelector('.buymeacoffee-button').style.display = 'block';
+            }, 15000);
+    
+            // Hide the button when the close button is clicked
+            document.querySelector('.close-button').addEventListener('click', function(event) {
+                event.preventDefault(); // Prevent the default action
+                document.querySelector('.buymeacoffee-button').style.display = 'none';
             });
         });
     </script>
-    <!-- website analytics end -->
-
-    <!-- website init start -->
-    <script type="text/javascript">
-        OV.StartWebsite ('../libs');
+    <script>
+        // Detecting the environment
+        const host = window.location.hostname;
+        let baseUrl;
+        let isProduction = false;
+    
+        if (host === "localhost" || host.endsWith("ngrok-free.app")) {
+            baseUrl = '../build/website_dev/'; // Path for local development
+            isProduction = false;
+        } else {
+            baseUrl = './'; // Path for production
+            isProduction = true;
+        }
+    
+        // Function to append the base URL to a path
+        function resolvePath(path) {
+            return baseUrl + path;
+        }
+    
+        // Set the base URL dynamically
+        document.write('<link rel="stylesheet" type="text/css" href="' + resolvePath('o3dv.website.min.css') + '">');
+        document.write('<script src="' + resolvePath('o3dv.website.min.js') + '" defer><\/script>');
+    
+        // Add Umami script only in production
+        if (isProduction) {
+            document.write('<script defer src="https://cloud.umami.is/script.js" data-website-id="b63b03ce-4051-4baf-bc23-c07d7067b959"><\/script>');
+        }
     </script>
-    <!-- website init end -->
 
 </head>
 
@@ -45,20 +66,22 @@
         <div class="title">
             <div class="title_left">
                 <a href="index.html">
-                    <svg class="logo_image"><use href="assets/images/3dviewer_net_logo_text.svg#logo"></use></svg>
+                    <img src="assets/images/tmwihn_text.png" alt="Logo" class="logo_image"  height="50" float="left" />
                 </a>
             </div>
             <div class="title_right" id="header_buttons"></div>
-            <div class="main_file_name only_full_width" id="main_file_name"></div>
+            </div>
+            <div class="toolbar" id="toolbar">
         </div>
-        <div class="toolbar" id="toolbar"></div>
     </div>
     <div class="main" id="main">
         <div class="main_left_container only_full_width" id="main_left_container">
             <div class="main_navigator ov_panel_set_container" id="main_navigator"></div>
             <div class="main_splitter" id="main_navigator_splitter"></div>
         </div>
+
         <div class="main_viewer" id="main_viewer"></div>
+
         <div class="main_right_container only_full_width" id="main_right_container">
             <div class="main_splitter" id="main_sidebar_splitter"></div>
             <div class="main_sidebar ov_panel_set_right_container" id="main_sidebar"></div>
@@ -67,36 +90,34 @@
     <div class="intro ov_thin_scrollbar" id="intro">
         <div class="intro_content" id="intro_content">
             <div class="intro_logo">
-                <svg class="intro_logo"><use href="assets/images/3dviewer_net_logo_text.svg#logo"></use></svg>
+                <svg class="intro_logo"><use href="assets/images/tmwihn.svg#logo"></use></svg>
                 <div class="intro_dragdrop_text" id="intro_dragdrop_text"></div>
             </div>
-            <div class="intro_formats">
-                <div class="intro_formats_title" id="intro_formats_title"></div>
-                <div class="intro_file_formats">
-                    <a href="#model=assets/models/RhinoLogo.3dm">3dm</a>
-                    <a href="#model=assets/models/cubes.3ds,assets/models/texture.png">3ds</a>
-                    <a href="#model=assets/models/rhombicuboctahedron.3mf">3mf</a>
-                    <a href="#model=assets/models/rook.amf">amf</a>
-                    <a href="#model=assets/models/MultipleMeshes.bim">bim</a>
-                    <a href="#model=assets/models/as1_pe_203.brep">brep</a>
-                    <a href="#model=assets/models/X_Bot.dae">dae</a>
-                    <a href="#model=assets/models/Y_Bot.fbx">fbx</a>
-                    <a href="#model=assets/models/ArchDetail.FCStd">fcstd</a>
-                    <a href="#model=assets/models/DamagedHelmet.glb">gltf</a>
-                    <a href="#model=assets/models/haus.ifc">ifc</a>
-                    <a href="#model=assets/models/as1_pe_203.igs">iges</a>
-                    <a href="#model=assets/models/as1_pe_203.stp">step</a>
-                    <a href="#model=assets/models/utah_teapot.stl">stl</a>
-                    <a href="#model=assets/models/solids.obj,assets/models/solids.mtl">obj</a>
-                    <a href="#model=assets/models/cube.off">off</a>
-                    <a href="#model=assets/models/cow.ply">ply</a>
-                    <a href="#model=assets/models/extrusion3.wrl">wrl</a>
-                </div>
-            </div>
-            <!-- intro footer start -->
-            <!-- intro footer end -->
         </div>
     </div>
+
+    <a href="https://www.buymeacoffee.com/tellmewhereithurtsnow" class="buymeacoffee-button">
+        <img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=tellmewhereithurtsnow&button_colour=F5F5DC&font_colour=000000&font_family=Bree&outline_colour=000000&coffee_colour=ffffff" />
+        <button class="close-button">&times;</button>
+    </a>
+    <script type="text/javascript" defer>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof OV !== 'undefined') {
+                OV.SetWebsiteEventHandler((eventName, eventLabel, eventParams) => {
+                    console.log({
+                        eventName: eventName,
+                        eventLabel: eventLabel,
+                        eventParams: eventParams
+                    });
+                });
+
+                OV.StartWebsite(resolvePath('../libs'));
+            } else {
+                console.error('OV object is not defined.');
+            }
+        });
+    </script>
+
 </body>
 
 </html>

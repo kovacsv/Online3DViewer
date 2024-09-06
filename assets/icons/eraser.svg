@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   viewBox="0 0 19.962767 17"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1 (c68e22c387, 2021-05-23)"
+   sodipodi:docname="eraser.svg"
+   width="19.962767"
+   height="17"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:zoom="20.916667"
+     inkscape:cx="16.03984"
+     inkscape:cy="5.9521911"
+     inkscape:window-width="1784"
+     inkscape:window-height="1003"
+     inkscape:window-x="1217"
+     inkscape:window-y="230"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1"
+     units="px"
+     showborder="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid267"
+       originx="529.96278"
+       originy="-174.05" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(427.59731,-331.11036)">
+    <g
+       style="fill:#233035;fill-opacity:1"
+       id="g46"
+       transform="matrix(0.025,0,0,0.025,-449.76576,353.07839)">
+      <path
+         d="m 1495.2492,-278.7212 h 190 v 80 h -270 z m -500,80 -85,-85 q -23,-23 -23.5,-57 -0.5,-34 22.5,-58 l 440,-456 q 23,-24 56.5,-24 33.5,0 56.5,23 l 199,199 q 23,23 23,57 0,34 -23,57 l -336,344 z m 296,-80 314,-322 -198,-198 -442,456 64,64 z m -6,-240 z"
+         id="path37"
+         style="fill:#233035;fill-opacity:1" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.7283px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.34105"
+       x="-404.33319"
+       y="-83.018997"
+       id="text1949"
+       transform="matrix(0.92953844,-0.96662413,0.53749005,0.51686851,0,0)"><tspan
+         sodipodi:role="line"
+         id="tspan1947"
+         x="-404.33319"
+         y="-83.018997"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.7283px;font-family:'Gill Sans MT Condensed';-inkscape-font-specification:'Gill Sans MT Condensed, ';fill:#233035;fill-opacity:1;stroke-width:1.34105">ALL</tspan></text>
+  </g>
+  <style
+     id="style2">.st1{fill:#fff}</style>
+  <style
+     type="text/css"
+     id="style2-8">
+	.st0{fill:none;stroke:#263238;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+</style>
+</svg>

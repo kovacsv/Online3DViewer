@@ -1,6 +1,5 @@
 import { GetDomElementOuterWidth, SetDomElementOuterHeight, SetDomElementOuterWidth } from '../engine/viewer/domutils.js';
 import { NavigatorFilesPanel } from './navigatorfilespanel.js';
-import { NavigatorMaterialsPanel } from './navigatormaterialspanel.js';
 import { NavigatorMeshesPanel } from './navigatormeshespanel.js';
 import { PanelSet } from './panelset.js';
 
@@ -49,11 +48,9 @@ export class Navigator
         this.tempSelectedMeshId = null;
 
         this.filesPanel = new NavigatorFilesPanel (this.panelSet.GetContentDiv ());
-        this.materialsPanel = new NavigatorMaterialsPanel (this.panelSet.GetContentDiv ());
         this.meshesPanel = new NavigatorMeshesPanel (this.panelSet.GetContentDiv ());
 
         this.panelSet.AddPanel (this.filesPanel);
-        this.panelSet.AddPanel (this.materialsPanel);
         this.panelSet.AddPanel (this.meshesPanel);
         this.panelSet.ShowPanel (this.meshesPanel);
     }
@@ -84,19 +81,6 @@ export class Navigator
         this.filesPanel.Init ({
             onFileBrowseButtonClicked : () => {
                 this.callbacks.openFileBrowserDialog ();
-            }
-        });
-
-        this.materialsPanel.Init ({
-            onMaterialSelected : (materialIndex) => {
-                this.SetSelection (new Selection (SelectionType.Material, materialIndex));
-            },
-            onMeshTemporarySelected : (meshInstanceId) => {
-                this.tempSelectedMeshId = meshInstanceId;
-                this.callbacks.onMeshSelectionChanged ();
-            },
-            onMeshSelected : (meshInstanceId) => {
-                this.SetSelection (new Selection (SelectionType.Mesh, meshInstanceId));
             }
         });
 
@@ -149,7 +133,6 @@ export class Navigator
         } else {
             this.panelSet.SetPanelIcon (this.filesPanel, 'missing_files');
         }
-        this.materialsPanel.Fill (importResult);
         this.meshesPanel.Fill (importResult);
         this.OnSelectionChanged ();
     }
@@ -277,10 +260,6 @@ export class Navigator
                 meshInstanceId = this.selection.meshInstanceId;
             }
         }
-
-        let usedByMeshes = this.callbacks.getMeshesForMaterial (materialIndex);
-        this.materialsPanel.UpdateMeshList (usedByMeshes);
-
         let usedByMaterials = this.callbacks.getMaterialsForMesh (meshInstanceId);
         this.meshesPanel.UpdateMaterialList (usedByMaterials);
     }

@@ -55,14 +55,20 @@
 		"build_engine_module": "npm run update_engine_exports && rollup --config tools/rollup.js && tsc --project tools/tsconfig.json",
 		"build_website_dev": "esbuild source/website/index.js --bundle --minify --global-name=OV --sourcemap --loader:.ttf=file --loader:.woff=file --loader:.svg=file --outfile=build/website_dev/o3dv.website.min.js",
 		"build_website": "esbuild source/website/index.js --bundle --minify --global-name=OV --loader:.ttf=file --loader:.woff=file --loader:.svg=file --outfile=build/website/o3dv.website.min.js",
-		"update_engine_exports": "run-python3 tools/update_engine_exports.py"
+		"build_for_github": "npm run build_engine && npm run build_website && npm run copy_assets",
+		"copy_assets": "cpy 'website/**/*' '!website/**/*.js' build/website && cpy 'build/**/o3dv.min.js' 'build/website/'",
+		"update_engine_exports": "run-python3 tools/update_engine_exports.py",
+		"predeploy": "npm run build_for_github",
+		"deploy": "gh-pages -d build/website"
 	},
 	"devDependencies": {
 		"@types/node": "^20.1.0",
+		"cpy-cli": "^5.0.0",
 		"esbuild": "^0.20.0",
 		"eslint": "^8.29.0",
 		"eslint-plugin-unused-imports": "^3.0.0",
 		"fantasticon": "^1.2.2",
+		"gh-pages": "^6.1.1",
 		"http-server": "^14.0.0",
 		"jsdoc": "^4.0.0",
 		"mocha": "^10.2.0",
@@ -75,7 +81,10 @@
 	},
 	"dependencies": {
 		"@simonwep/pickr": "1.9.0",
+		"driver.js": "^1.3.1",
 		"fflate": "0.8.2",
+		"pdf-lib": "^1.17.1",
+		"pdfmake": "^0.2.10",
 		"three": "0.163.0"
 	},
 	"eslintConfig": {

@@ -1,0 +1,45 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master  # Set this to your default branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'  # Set this to the node version you're using
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Build
+      run: |
+        npm run build_engine
+        npm run build_website
+        npm run copy_assets
+        mkdir -p build/website
+        cp -R website/* build/website/
+        cp CNAME build/website/
+        cp build/engine/o3dv.min.js build/website/
+
+    - name: List build contents
+      run: ls -R build/website
+
+    - name: Debug
+      run: |
+        echo "Contents of build/website:"
+        ls -R build/website
+        
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./build/website
+        force_orphan: true

@@ -29,7 +29,7 @@ div.title div.title_left
 
 div.title svg.logo_image
 {
-	width: 190px;
+	width: 60px;
 	height: 40px;
 	float: left;
 }
@@ -182,6 +182,7 @@ div.main_splitter
 div.main_viewer
 {
 	float: left;
+	position: relative;
 }
 
 div.main_right_container
@@ -309,15 +310,16 @@ div.ov_property_table div.ov_property_table_button
 	cursor: pointer;
 }
 
-div.ov_bottom_floating_panel
-{
-	background: var(--ov_background_color);
-	border-top: 1px solid var(--ov_border_color);
-	width: 100%;
-	padding: 30px;
-	box-sizing: border-box;
-	position: absolute;
-	bottom: 0px;
+div.ov_bottom_floating_panel {
+    background: var(--ov_background_color);
+    border-top: 1px solid var(--ov_border_color);
+    width: 100%;
+    padding: 30px;
+    box-sizing: border-box;
+    position: fixed; /* Change from absolute to fixed */
+    bottom: 0px;
+    left: 0px;
+    z-index: 1000; /* Add a high z-index */
 }
 
 div.ov_bottom_floating_panel div.ov_floating_panel_text
@@ -357,60 +359,340 @@ div.ov_measure_panel div.ov_measure_value
 @media (hover)
 {
 
-div.title_right div.header_button:hover
-{
-	color: var(--ov_button_color);
-}
+	div.title_right div.header_button:hover
+	{
+		color: var(--ov_button_color);
+	}
 
-div.ov_toolbar div.ov_toolbar_button:hover
-{
-	background: var(--ov_hover_color);
-}
+	div.ov_toolbar div.ov_toolbar_button:hover
+	{
+		background: var(--ov_hover_color);
+	}
 
-}
+	}
 
 @media (max-width: 350px), (max-height: 620px)
-{
+	{
 
-div.intro_content
-{
-	margin: 0px auto;
-}
+		div.intro_content
+		{
+			margin: 0px auto;
+		}
 
-div.intro div.intro_logo
-{
-	display: none;
-}
+		div.intro div.intro_logo
+		{
+			display: none;
+		}
 
-}
+		.toggle-container {
+			width: 150px;
+
+		}
+		.toggle-option {
+			font-size: 12px;
+		}
+
+
+	}
 
 @media (max-width: 800px)
-{
+	{
 
-div.intro_content
-{
-	width: auto;
+	div.intro_content
+	{
+		width: auto;
+	}
+
+	div.main_viewer canvas
+	{
+		border: 0px;
+		margin: 0px;
+	}
+
+	div.ov_dialog
+	{
+		max-width: 80%;
+	}
+
+	div.ov_progress
+	{
+		max-width: 80%;
+	}
+
+	div.ov_bottom_floating_panel
+	{
+		padding: 10px;
+	}
 }
 
-div.main_viewer canvas
-{
-	border: 0px;
-	margin: 0px;
+div.close-button {
+    align-self: flex-end;
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
 }
 
-div.ov_dialog
-{
-	max-width: 80%;
+div.tool-content {
+    margin-top: 10px;
+    text-align: left;
+    width: 100%;
 }
 
-div.ov_progress
-{
-	max-width: 80%;
+.highlight-button {
+    width: 60px;
+    height: 60px;
+    background-color: #fff1e1;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+	border: 2px solid #f2b46c
 }
 
-div.ov_bottom_floating_panel
-{
-	padding: 10px;
+div.highlight-button.active {
+    background-color: #ffcc00;
+    border: 2px solid #ff9900;
 }
 
+div.highlight-button img {
+    width: 50%;
+    height: 50%;
+}
+
+div.highlight-container {
+    position: absolute; /* Change from absolute to fixed */
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    z-index: 3;
+	transition: bottom 0.3s ease-out;
+}
+
+.icon-share {
+    font-size: 60px;
+}
+
+div.share-button {
+    position: absolute;
+    top: -30px;
+    right: -20px;
+    width: 25px;
+    height: 25px;
+	background-color: #26a69a; /* Light semi-transparent background */
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	padding: 8px; /* Padding around the icon */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+div.share-button img {
+    width: 20px;
+    height: 20px;
+}
+
+.toggle-container {
+    display: inline-flex; /* Change to inline-flex */
+    align-items: center;
+    justify-content: space-between;
+    /* width: 80px; Reduced width */
+    height: 24px; /* Reduced height to match icons */
+    background-color: #e0e0e0;
+    border-radius: 12px; /* Adjusted for new height */
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    transition: background-color 0.3s;
+    margin-left: 3px; /* Add some space from other icons */
+    vertical-align: middle; /* Align vertically */
+	margin: 0;
+}
+
+div.toolbar-button .toggle-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px; /* Match toolbar button width */
+    height: 30px; /* Match toolbar button height */
+    padding: 0;
+    margin: 0;
+	border: 2px solid #cccccc;
+	border-radius: 15px;
+    background-color: #f3f3f3; /* Example to make it visually distinct, if needed */
+}
+
+.toggle-option {
+    flex: 1;
+    text-align: center;
+    z-index: 1;
+    color: #868685d6;
+    transition: color 0.3s;
+    font-size: 10px; /* Smaller font size */
+    line-height: 24px; /* Match new height */
+}
+
+.toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background-color: #8fd9e8;
+    border-radius: 12px; /* Match container */
+    transition: transform 0.3s;
+}
+
+.toolbar-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; /* Match icon size */
+    height: 24px;
+    margin: 0 4px; /* Add some spacing between buttons */
+}
+
+/* Toggle Active States */
+.toggle-container.active {
+    background-color: #f5f5dc; /* Beige background when active */
+}
+
+.toggle-container.active .toggle-slider {
+    transform: translateX(60px); /* Slide to the right */
+    background-color: #26a69a; /* Teal color when active */
+}
+
+/* Slider Position Based on Data Attribute */
+.toggle-container[data-state="male"] .toggle-slider {
+    transform: translateX(0); /* Stay on the left for 'Male' */
+}
+
+.toggle-container[data-state="female"] .toggle-slider {
+    transform: translateX(40px);  /* Adjusted for right shift for 'Female' */
+}
+
+/* Text Color Change on Active State */
+.toggle-container[data-state="male"] .toggle-option:first-child,
+.toggle-container[data-state="female"] .toggle-option:last-child {
+    color: #1c1c1b; /* Beige text color when active */
+}
+
+.buymeacoffee-button {
+	position: absolute;
+	z-index: 500;
+	display: none; /* Initially hidden */
+}
+
+.close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background: none;
+	border: none;
+	font-size: 20px;
+	cursor: pointer;
+	color: rgb(85, 84, 84);
+}
+
+.ov_highlight_brush_size_slider {
+	position: absolute;
+	top: 12%;
+	width: 150px;
+	background: black;
+	color: white;
+	border-radius: 8px;
+	padding: 7px;
+}
+
+#brush-size {
+	width: 100%;
+	height: 10px;
+	border-radius: 5px;
+	background: #333333;
+	outline: none;
+	font-size: 7px;
+}
+
+#brush-size::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: #a0a0a0;
+	cursor: pointer;
+	box-shadow: 0 0 5px rgba(160, 160, 160, 0.3);
+	}
+
+#brush-size:hover::-webkit-slider-thumb {
+background: #b8b8b8;
+	}
+
+#brush-size-value {
+	font-family: monospace;
+	color: #a0a0a0;
+	margin-left: 10px;
+	}
+
+
+@media (prefers-color-scheme: dark) {
+
+	.logo_image {
+		filter: drop-shadow(0 0 2px #FFF)
+	}
+
+	.ov_highlight_brush_size_slider {
+		background: white;
+		color: black;
+	}
+
+	div.share-button {
+		background-color: #26a69a;
+		color: #fff;
+	}
+
+    .toggle-container {
+        background-color: #4F4F4F; /* Dark background for container */
+    }
+    .toggle-option {
+        color: #1c1c1b; /* Light grey text in dark mode */
+    }
+    .toggle-slider {
+        background-color: #26a69a; /* Teal slider in dark mode */
+    }
+    .toggle-container.active .toggle-slider {
+        background-color: #8fd9e8; /* Light blue when active in dark mode */
+    }
+    .toggle-container[data-state="male"] .toggle-option:first-child,
+    .toggle-container[data-state="female"] .toggle-option:last-child {
+        color: #1c1c1b; /* Beige text when active in dark mode */
+    }
+}
+
+
+@media (min-width: 1024px) {
+	.buymeacoffee-button {
+		right: 20%;
+		top: 1.1%;
+	}
+}
+
+@media (max-width: 767px) {
+	.buymeacoffee-button {
+		bottom: 10px;
+		left: 20%;
+		transform: translateX(-50%);
+	}
+
+@media (max-width: 428px) {
+	.buymeacoffee-button {
+		left: 50%;
+		transform: translateX(-50%);
+	}
+}
 }

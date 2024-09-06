@@ -175,6 +175,8 @@ export class Viewer
         this.settings = {
             animationSteps : 40
         };
+        this.isNavigating = false;
+
     }
 
     Init (canvas)
@@ -209,6 +211,18 @@ export class Viewer
     SetMouseClickHandler (onMouseClick)
     {
         this.navigation.SetMouseClickHandler (onMouseClick);
+    }
+
+    SetMouseDownHandler(handler) {
+        if (this.navigation) {
+            this.navigation.onMouseDown = handler;
+        }
+    }
+
+    SetMouseUpHandler(handler) {
+        if (this.navigation) {
+            this.navigation.onMouseUp = handler;
+        }
     }
 
     SetMouseMoveHandler (onMouseMove)
@@ -433,6 +447,21 @@ export class Viewer
         this.Render ();
     }
 
+    RemoveExtraObject (object)
+    {
+        if (this.extraModel && typeof this.extraModel.GetObjects === 'function') {
+            const index = this.extraModel.GetObjects ().indexOf (object);
+            if (index !== -1) {
+                this.extraModel.RemoveObject (object);
+                this.Render ();
+            } else {
+                console.log('Object not found in the list');
+            }
+        } else {
+            console.error('this.extraModel or GetObjects is not available');
+        }
+    }
+
     Clear ()
     {
         this.mainModel.Clear ();
@@ -529,9 +558,24 @@ export class Viewer
         this.scene.add (this.camera);
 
         let canvasElem = this.renderer.domElement;
-        this.navigation = new Navigation (canvasElem, camera, {
-            onUpdate : () => {
-                this.Render ();
+        this.navigation = new Navigation(canvasElem, camera, {
+            onUpdate: () => {
+                this.Render();
+            },
+            onMouseDown: (mouseCoordinates) => {
+                if (this.mouseDownHandler) {
+                    this.mouseDownHandler(mouseCoordinates);
+                }
+            },
+            onMouseMove: (mouseCoordinates) => {
+                if (this.mouseMoveHandler) {
+                    this.mouseMoveHandler(mouseCoordinates);
+                }
+            },
+            onMouseUp: (mouseCoordinates) => {
+                if (this.mouseUpHandler) {
+                    this.mouseUpHandler(mouseCoordinates);
+                }
             }
         });
 
