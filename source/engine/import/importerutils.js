@@ -104,6 +104,10 @@ export class ColorToMaterialConverter
 
 let occtWorkerUrl = null;
 
+export function SetCustomOcctWorkerUrl(url) {
+	occtWorkerUrl = url;
+}
+
 export function CreateOcctWorker (worker)
 {
 	return new Promise ((resolve, reject) => {
