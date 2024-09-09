@@ -184,9 +184,10 @@ function LoadDraco () {
 
 // TODO : Always loaded from Libs, until we find a jsdelivr for that.
 function LoadIfcApi() {
-	if (shouldLoadExternalLibsFromCdn) {
-		return LoadExternalLibraryFromLibs ('web-ifc-api-browser.js');
-	} else {
-		return LoadExternalLibraryFromLibs ('web-ifc-api-browser.js');
-	}
+	return LoadExternalLibraryFromLibs ('web-ifc-api-browser.js');
+	// if (shouldLoadExternalLibsFromCdn) {
+	// 	return LoadExternalLibraryFromLibs ('web-ifc-api-browser.js');
+	// } else {
+	// 	return LoadExternalLibraryFromLibs ('web-ifc-api-browser.js');
+	// }
 }
