@@ -1,7 +1,7 @@
 import { IsLower } from '../geometry/geometry.js';
 import { PhongMaterial } from '../model/material.js';
 import { RGBColor, IntegerToHexString } from '../model/color.js';
-import { LoadExternalLibraryFromLibs, LoadExternalLibraryFromUrl } from '../io/externallibs.js';
+import {GetExternalLibPath, LoadExternalLibraryFromLibs, LoadExternalLibraryFromUrl} from '../io/externallibs.js';
 
 export function NameFromLine (line, startIndex, commentChar)
 {
@@ -102,21 +102,27 @@ export class ColorToMaterialConverter
 	}
 }
 
-let occtWorkerUrl = null;
+
+let shouldLoadExternalLibsFromCdn = false;
 
 /**
- * Sets the location of the external worker used by the engine for occt. This is the content of the dist
- * folder in the [occt-import-js repo](https://github.com/kovacsv/occt-import-js). The location must be relative to the main file.
- * Using Cdn by default if no url provided.
- * @param {string} newCustomOcctWorkerLocation Relative path to the libs folder.
+ * Sets the location of the external libraries used by the engine for rhino3dm & draco. This is the content of the libs
+ * folder. Can be used to rely on jsdelivr to deliver theses libs to the client.
+ * @param {boolean} newValue.
  */
-export function SetCustomOcctWorkerUrl (newCustomOcctWorkerLocation) {
-	occtWorkerUrl = newCustomOcctWorkerLocation;
+export function SetShouldLoadExternalLibsFromCdn (newValue) {
+	shouldLoadExternalLibsFromCdn = newValue;
 }
 
+let occtWorkerUrl = null;
 export function CreateOcctWorker (worker)
 {
 	return new Promise ((resolve, reject) => {
+		if(!shouldLoadExternalLibsFromCdn && occtWorkerUrl === null) {
+			resolve (new Worker (GetExternalLibPath('occt/occt-import-js-worker.js')));
+			return;
+		}
+
 		if (occtWorkerUrl !== null) {
 			resolve (new Worker (occtWorkerUrl));
 			return;
@@ -139,17 +145,6 @@ export function CreateOcctWorker (worker)
 			})
 			.catch (reject);
 	});
-}
-
-let shouldLoadExternalLibsFromCdn = false;
-
-/**
- * Sets the location of the external libraries used by the engine for rhino3dm & draco. This is the content of the libs
- * folder. Can be used to rely on jsdelivr to deliver theses libs to the client. Using Cdn by default.
- * @param {boolean} newValue.
- */
-export function SetShouldLoadExternalLibsFromCdn (newValue) {
-	shouldLoadExternalLibsFromCdn = newValue;
 }
 
 export function LoadExternalLibrary (libraryName)
