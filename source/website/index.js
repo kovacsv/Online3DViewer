@@ -22,6 +22,7 @@ import './css/navigator.css';
 import './css/sidebar.css';
 import './css/website.css';
 import './css/embed.css';
+import {SetCustomOcctWorkerUrl, SetShouldLoadExternalLibsFromCdn} from "../engine/import/importerutils.js";
 
 export const UI = {
     ButtonDialog,
@@ -59,6 +60,8 @@ export function StartWebsite (externalLibLocation)
         }
 
         SetExternalLibLocation (externalLibLocation);
+        SetShouldLoadExternalLibsFromCdn(true);
+
 
         document.getElementById ('intro_dragdrop_text').innerHTML = Loc ('Drag and drop 3D models here.');
         document.getElementById ('intro_formats_title').innerHTML = Loc ('Check an example file:');
@@ -87,6 +90,7 @@ export function StartWebsite (externalLibLocation)
 export function StartEmbed (externalLibLocation)
 {
     SetExternalLibLocation (externalLibLocation);
+    SetShouldLoadExternalLibsFromCdn(true);
     window.addEventListener ('load', () => {
         let embed = new Embed ({
             viewerDiv : document.getElementById ('embed_viewer'),
