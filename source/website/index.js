@@ -7,6 +7,7 @@ import { SetEventHandler, HandleEvent } from './eventhandler.js';
 import { PluginType, RegisterPlugin } from './pluginregistry.js';
 import { ButtonDialog, ProgressDialog } from './dialog.js';
 import { ShowMessageDialog } from './dialogs.js';
+import {SetShouldLoadExternalLibsFromCdn} from '../engine/import/importerutils.js';
 
 import * as Engine from '../engine/main.js';
 export { Engine };
@@ -22,7 +23,6 @@ import './css/navigator.css';
 import './css/sidebar.css';
 import './css/website.css';
 import './css/embed.css';
-import {SetCustomOcctWorkerUrl, SetShouldLoadExternalLibsFromCdn} from "../engine/import/importerutils.js";
 
 export const UI = {
     ButtonDialog,
