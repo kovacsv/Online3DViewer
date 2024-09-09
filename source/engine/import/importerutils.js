@@ -1,7 +1,7 @@
 import { IsLower } from '../geometry/geometry.js';
 import { PhongMaterial } from '../model/material.js';
 import { RGBColor, IntegerToHexString } from '../model/color.js';
-import { LoadExternalLibraryFromUrl } from '../io/externallibs.js';
+import {LoadExternalLibraryFromLibs, LoadExternalLibraryFromUrl} from '../io/externallibs.js';
 
 export function NameFromLine (line, startIndex, commentChar)
 {
@@ -104,8 +104,14 @@ export class ColorToMaterialConverter
 
 let occtWorkerUrl = null;
 
-export function SetCustomOcctWorkerUrl(url) {
-	occtWorkerUrl = url;
+/**
+ * Sets the location of the external worker used by the engine for occt. This is the content of the dist
+ * folder in the [occt-import-js repo](https://github.com/kovacsv/occt-import-js). The location must be relative to the main file.
+ * Using Cdn by default if no url provided.
+ * @param {string} newCustomOcctWorkerLocation Relative path to the libs folder.
+ */
+export function SetCustomOcctWorkerUrl(newCustomOcctWorkerLocation) {
+	occtWorkerUrl = newCustomOcctWorkerLocation;
 }
 
 export function CreateOcctWorker (worker)
@@ -135,13 +141,40 @@ export function CreateOcctWorker (worker)
 	});
 }
 
+let shouldLoadExternalLibsFromCdn = false;
+
+/**
+ * Sets the location of the external libraries used by the engine for rhino3dm & draco. This is the content of the libs
+ * folder. Can be used to rely on jsdelivr to deliver theses libs to the client. Using Cdn by default.
+ * @param {boolean} newValue.
+ */
+export function SetShouldLoadExternalLibsFromCdn (newValue) {
+	shouldLoadExternalLibsFromCdn = newValue;
+}
+
 export function LoadExternalLibrary (libraryName)
 {
 	if (libraryName === 'rhino3dm') {
-		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/rhino3dm@8.4.0/rhino3dm.min.js');
+		return LoadRhino3dm();
 	} else if (libraryName === 'draco3d') {
-		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/draco3d@1.5.7/draco_decoder_nodejs.min.js');
+		return LoadDraco();
 	} else {
 		return null;
+	}
+}
+
+function LoadRhino3dm () {
+	if (shouldLoadExternalLibsFromCdn) {
+		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/rhino3dm@8.4.0/rhino3dm.min.js');
+	} else {
+		return LoadExternalLibraryFromLibs('rhino3dm.min.js');
+	}
+}
+
+function LoadDraco () {
+	if (shouldLoadExternalLibsFromCdn) {
+		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/draco3d@1.5.7/draco_decoder_nodejs.min.js');
+	} else {
+		return LoadExternalLibraryFromLibs('draco_decoder_nodejs.min.js');
 	}
 }
