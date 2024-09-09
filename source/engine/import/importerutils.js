@@ -1,7 +1,7 @@
 import { IsLower } from '../geometry/geometry.js';
 import { PhongMaterial } from '../model/material.js';
 import { RGBColor, IntegerToHexString } from '../model/color.js';
-import {LoadExternalLibraryFromLibs, LoadExternalLibraryFromUrl} from '../io/externallibs.js';
+import { LoadExternalLibraryFromLibs, LoadExternalLibraryFromUrl } from '../io/externallibs.js';
 
 export function NameFromLine (line, startIndex, commentChar)
 {
@@ -110,7 +110,7 @@ let occtWorkerUrl = null;
  * Using Cdn by default if no url provided.
  * @param {string} newCustomOcctWorkerLocation Relative path to the libs folder.
  */
-export function SetCustomOcctWorkerUrl(newCustomOcctWorkerLocation) {
+export function SetCustomOcctWorkerUrl (newCustomOcctWorkerLocation) {
 	occtWorkerUrl = newCustomOcctWorkerLocation;
 }
 
@@ -155,11 +155,11 @@ export function SetShouldLoadExternalLibsFromCdn (newValue) {
 export function LoadExternalLibrary (libraryName)
 {
 	if (libraryName === 'rhino3dm') {
-		return LoadRhino3dm();
+		return LoadRhino3dm ();
 	} else if (libraryName === 'draco3d') {
-		return LoadDraco();
+		return LoadDraco ();
 	} else if (libraryName === 'web-ifc-api') {
-		return LoadIfcApi();
+		return LoadIfcApi ();
 	}
 	else {
 		return null;
@@ -170,7 +170,7 @@ function LoadRhino3dm () {
 	if (shouldLoadExternalLibsFromCdn) {
 		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/rhino3dm@8.4.0/rhino3dm.min.js');
 	} else {
-		return LoadExternalLibraryFromLibs('rhino3dm.min.js');
+		return LoadExternalLibraryFromLibs ('rhino3dm.min.js');
 	}
 }
 
@@ -178,10 +178,10 @@ function LoadDraco () {
 	if (shouldLoadExternalLibsFromCdn) {
 		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/draco3d@1.5.7/draco_decoder_nodejs.min.js');
 	} else {
-		return LoadExternalLibraryFromLibs('draco_decoder_nodejs.min.js');
+		return LoadExternalLibraryFromLibs ('draco_decoder_nodejs.min.js');
 	}
 }
 
-function LoadIfcApi() {
+function LoadIfcApi () {
 	return LoadExternalLibraryFromLibs ('web-ifc-api-browser.js');
 }

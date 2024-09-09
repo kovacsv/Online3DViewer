@@ -7,7 +7,7 @@ import { SetEventHandler, HandleEvent } from './eventhandler.js';
 import { PluginType, RegisterPlugin } from './pluginregistry.js';
 import { ButtonDialog, ProgressDialog } from './dialog.js';
 import { ShowMessageDialog } from './dialogs.js';
-import {SetShouldLoadExternalLibsFromCdn} from '../engine/import/importerutils.js';
+import { SetShouldLoadExternalLibsFromCdn } from '../engine/import/importerutils.js';
 
 import * as Engine from '../engine/main.js';
 export { Engine };
@@ -60,7 +60,7 @@ export function StartWebsite (externalLibLocation)
         }
 
         SetExternalLibLocation (externalLibLocation);
-        SetShouldLoadExternalLibsFromCdn(true);
+        SetShouldLoadExternalLibsFromCdn (true);
 
 
         document.getElementById ('intro_dragdrop_text').innerHTML = Loc ('Drag and drop 3D models here.');
@@ -90,7 +90,7 @@ export function StartWebsite (externalLibLocation)
 export function StartEmbed (externalLibLocation)
 {
     SetExternalLibLocation (externalLibLocation);
-    SetShouldLoadExternalLibsFromCdn(true);
+    SetShouldLoadExternalLibsFromCdn (true);
     window.addEventListener ('load', () => {
         let embed = new Embed ({
             viewerDiv : document.getElementById ('embed_viewer'),
