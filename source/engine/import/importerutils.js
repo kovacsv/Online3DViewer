@@ -158,7 +158,10 @@ export function LoadExternalLibrary (libraryName)
 		return LoadRhino3dm();
 	} else if (libraryName === 'draco3d') {
 		return LoadDraco();
-	} else {
+	} else if (libraryName === 'web-ifc-api') {
+		return LoadIfcApi();
+	}
+	else {
 		return null;
 	}
 }
@@ -176,5 +179,14 @@ function LoadDraco () {
 		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/draco3d@1.5.7/draco_decoder_nodejs.min.js');
 	} else {
 		return LoadExternalLibraryFromLibs('draco_decoder_nodejs.min.js');
+	}
+}
+
+// TODO : Always loaded from Libs, until we find a jsdelivr for that.
+function LoadIfcApi() {
+	if (shouldLoadExternalLibsFromCdn) {
+		return LoadExternalLibraryFromLibs ('web-ifc-api-browser.js');
+	} else {
+		return LoadExternalLibraryFromLibs ('web-ifc-api-browser.js');
 	}
 }

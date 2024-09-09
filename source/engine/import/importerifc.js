@@ -8,7 +8,7 @@ import { Mesh } from '../model/mesh.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
-import { ColorToMaterialConverter } from './importerutils.js';
+import {ColorToMaterialConverter, LoadExternalLibrary} from './importerutils.js';
 import { Loc, FLoc } from '../core/localization.js';
 
 export class ImporterIfc extends ImporterBase
@@ -44,7 +44,7 @@ export class ImporterIfc extends ImporterBase
     ImportContent (fileContent, onFinish)
     {
         if (this.ifc === null) {
-            LoadExternalLibraryFromLibs ('web-ifc-api-browser.js').then (() => {
+            LoadExternalLibrary('web-ifc-api').then (() => {
                 this.ifc = new WebIFC.IfcAPI ();
                 this.ifc.Init ().then (() => {
                     this.ImportIfcContent (fileContent);
