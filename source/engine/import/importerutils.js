@@ -165,7 +165,7 @@ function LoadRhino3dm () {
 	if (shouldLoadExternalLibsFromCdn) {
 		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/rhino3dm@8.4.0/rhino3dm.min.js');
 	} else {
-		return LoadExternalLibraryFromLibs ('rhino3dm.min.js');
+		return LoadExternalLibraryFromLibs ('loaders/rhino3dm.min.js');
 	}
 }
 
@@ -173,10 +173,10 @@ function LoadDraco () {
 	if (shouldLoadExternalLibsFromCdn) {
 		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/draco3d@1.5.7/draco_decoder_nodejs.min.js');
 	} else {
-		return LoadExternalLibraryFromLibs ('draco_decoder_nodejs.min.js');
+		return LoadExternalLibraryFromLibs ('loaders/draco_decoder_nodejs.min.js');
 	}
 }
 
 function LoadIfcApi () {
-	return LoadExternalLibraryFromLibs ('web-ifc-api-browser.js');
+	return LoadExternalLibraryFromLibs ('loaders/web-ifc-api-browser.js');
 }
