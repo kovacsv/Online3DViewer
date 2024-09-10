@@ -19,7 +19,6 @@ def CreateWebsite (rootDir, websiteDir, version, testBuild):
 	shutil.copy2 (os.path.join (rootDir, 'website', 'index.html'), websiteDir)
 	shutil.copy2 (os.path.join (rootDir, 'website', 'embed.html'), websiteDir)
 	shutil.copy2 (os.path.join (rootDir, 'website', 'robots.txt'), websiteDir)
-	shutil.copytree (os.path.join (rootDir, 'libs'), os.path.join (websiteDir, 'libs'))
 	shutil.copytree (os.path.join (rootDir, 'build', 'website'), os.path.join (websiteDir, 'o3dv'))
 	shutil.copytree (os.path.join (rootDir, 'website', 'assets'), os.path.join (websiteDir, 'assets'))
 	shutil.copytree (os.path.join (rootDir, 'website', 'info'), os.path.join (websiteDir, 'info'))
@@ -53,16 +52,6 @@ def CreateWebsite (rootDir, websiteDir, version, testBuild):
 		replacer = Utils.TokenReplacer (htmlFilePath, False)
 		replacer.ReplaceTokenFileLinks ('<!-- website start -->', '<!-- website end -->', websiteFiles, version)
 		replacer.ReplaceTokenFileLinks ('<!-- plugins start -->', '<!-- plugins end -->', pluginFiles, version)
-		initScriptContent = ''
-		initScriptContent += '<script type="text/javascript">' + replacer.eolChar
-		initScriptContent += '     OV.StartWebsite (\'libs\');' + replacer.eolChar
-		initScriptContent += '</script>'
-		embedInitScriptContent = ''
-		embedInitScriptContent += '<script type="text/javascript">' + replacer.eolChar
-		embedInitScriptContent += '     OV.StartEmbed (\'libs\');' + replacer.eolChar
-		embedInitScriptContent += '</script>'
-		replacer.ReplaceTokenContent ('<!-- website init start -->', '<!-- website init end -->', initScriptContent)
-		replacer.ReplaceTokenContent ('<!-- embed init start -->', '<!-- embed init end -->', embedInitScriptContent)
 		metaFile = os.path.join (rootDir, 'plugins', 'website_meta_data.txt')
 		if os.path.exists (metaFile):
 			metaContent = Utils.GetFileContent (metaFile)
@@ -87,8 +76,6 @@ def CreateEnginePackage (rootDir, engineDir, websiteDir):
 
 	zipPath = os.path.join (engineDir, 'o3dv.zip')
 	zip = zipfile.ZipFile (zipPath, mode = 'w', compression = zipfile.ZIP_DEFLATED)
-	for file in os.listdir (os.path.join (websiteDir, 'libs')):
-		zip.write (os.path.join (websiteDir, 'libs', file), 'libs/' + file)
 	for file in os.listdir (os.path.join (websiteDir, 'assets', 'envmaps')):
 		filePath = os.path.join (websiteDir, 'assets', 'envmaps', file)
 		if os.path.isdir (filePath):

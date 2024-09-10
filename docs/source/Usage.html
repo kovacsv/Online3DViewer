@@ -6,10 +6,6 @@ There are two ways to use the library:
     <li>Initialization from code: Needs a bit more typing, but it's more flexible than the previous one.</li>
 </ul>
 
-<h2>External library handling</h2>
-
-<p>Some of the importers are implemented using external libraries. These are found in the libs folder of the package. To make these libraries available, you have to tell the engine where to find them. The location of the external libraries can be set with the {@link SetExternalLibLocation} function. Make sure to call it before any other engine calls.</p>
-
 <h2>Automatic initialization</h2>
 
 <p>Create some elements anywhere on your page with the class name <code class="inline">online-3d-viewer</code>. You can create multiple elements with different parameters.</p>
@@ -33,8 +29,6 @@ There are two ways to use the library:
 <p>After placing the elements, call the {@link Init3DViewerElements} function to initalize all the viewers. It must be called after the document is loaded.</p>
 
 <pre><code class="language-js">window.addEventListener ('load', () => {
-    // tell the engine where to find the libs folder
-    OV.SetExternalLibLocation ('libs');
     // init all viewers on the page
     OV.Init3DViewerElements ();
 });</code></pre>
@@ -44,9 +38,6 @@ There are two ways to use the library:
 <p>You can also initalize the engine from code. In this case you can provide all the parameters as a JavaScript object. See the {@link EmbeddedViewer} documentation for more details.</p>
 
 <pre><code class="language-js">window.addEventListener ('load', () => {
-    // set the location of the external libraries
-    OV.SetExternalLibLocation ('../libs');
-
     // get the parent element of the viewer
     let parentDiv = document.getElementById ('viewer');
 

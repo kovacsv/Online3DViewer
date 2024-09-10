@@ -178,5 +178,9 @@ function LoadDraco () {
 }
 
 function LoadIfcApi () {
-	return LoadExternalLibraryFromLibs ('loaders/web-ifc-api-browser.js');
+    if(shouldLoadExternalLibsFromCdn) {
+        return LoadExternalLibraryFromUrl('https://cdn.jsdelivr.net/npm/web-ifc@0.0.55/web-ifc-api-iife.js');
+    } else {
+        return LoadExternalLibraryFromLibs ('loaders/web-ifc-api-browser.js');
+    }
 }

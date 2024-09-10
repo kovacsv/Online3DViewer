@@ -31,7 +31,6 @@ import parameterlist_test from './tests/parameterlist_test.js';
 
 process.chdir (path.resolve ());
 SetGlobals ();
-OV.SetExternalLibLocation ('libs');
 
 core_test ();
 taskrunner_test ();

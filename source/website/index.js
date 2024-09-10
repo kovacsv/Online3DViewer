@@ -62,7 +62,6 @@ export function StartWebsite (externalLibLocation)
         SetExternalLibLocation (externalLibLocation);
         SetShouldLoadExternalLibsFromCdn (true);
 
-
         document.getElementById ('intro_dragdrop_text').innerHTML = Loc ('Drag and drop 3D models here.');
         document.getElementById ('intro_formats_title').innerHTML = Loc ('Check an example file:');
 
