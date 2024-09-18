@@ -529,7 +529,8 @@ export class Viewer
         this.scene.add (this.camera);
 
         let canvasElem = this.renderer.domElement;
-        this.navigation = new Navigation (canvasElem, camera, {
+
+        this.navigation = new Navigation (canvasElem, camera,  {
             onUpdate : () => {
                 this.Render ();
             }

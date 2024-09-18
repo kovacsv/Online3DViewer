@@ -431,7 +431,12 @@ export class Website
         });
         if (onLoad) {
             this.viewer.AdjustClippingPlanesToSphere (boundingSphere);
+            this.viewer.navigation.SetBoundingSphereRadius(+boundingSphere.radius);
+            this.viewer.navigation.SetMaxZoomCameraEnabled(true);
+            this.viewer.navigation.SetMaxZoomCameraRatio(30);
         }
+
+
         this.viewer.FitSphereToWindow (boundingSphere, animation);
     }
 
