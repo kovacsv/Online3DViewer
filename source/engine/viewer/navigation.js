@@ -254,7 +254,8 @@ export class Navigation
 		this.settings = {
 			boundingSphereRadius: null,
 			maxZoomEnabled: false,
-			maxZoomRatio: 10
+			maxZoomRatio: 10,
+			isPanEnabled: true,
 		};
 
 		if (this.canvas.addEventListener) {
@@ -545,6 +546,10 @@ export class Navigation
 
 	Pan (moveX, moveY)
 	{
+		if (!this.settings.isPanEnabled) {
+			return;
+		}
+
 		let viewDirection = SubCoord3D (this.camera.center, this.camera.eye).Normalize ();
 		let horizontalDirection = CrossVector3D (viewDirection, this.camera.up).Normalize ();
 		let verticalDirection = CrossVector3D (horizontalDirection, viewDirection).Normalize ();
@@ -617,7 +622,15 @@ export class Navigation
 	 * Set the model radius to be able to compute zoom ratio
 	 * @param {number} radius
 	 */
-	SetBoundingSphereRadius(radius) {
+	SetBoundingSphereRadius (radius) {
 		this.settings.boundingSphereRadius = radius;
+	}
+
+	/**
+	 * Enable or disable the Pan navigation
+	 * @param {boolean} isEnabled
+	 */
+	SetIsPanEnabled (isEnabled) {
+		this.settings.isPanEnabled = isEnabled;
 	}
 }
