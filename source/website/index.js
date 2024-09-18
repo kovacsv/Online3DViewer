@@ -1,3 +1,4 @@
+import { SetExternalLibLocation } from '../engine/io/externallibs.js';
 import { Loc } from '../engine/core/localization.js';
 import { AddDiv, AddDomElement } from '../engine/viewer/domutils.js';
 import { Embed } from './embed.js';
@@ -6,6 +7,7 @@ import { SetEventHandler, HandleEvent } from './eventhandler.js';
 import { PluginType, RegisterPlugin } from './pluginregistry.js';
 import { ButtonDialog, ProgressDialog } from './dialog.js';
 import { ShowMessageDialog } from './dialogs.js';
+import { SetShouldLoadExternalLibsFromCdn } from '../engine/import/importerutils.js';
 
 import * as Engine from '../engine/main.js';
 export { Engine };
@@ -45,7 +47,7 @@ export function RegisterToolbarPlugin (plugin)
     RegisterPlugin (PluginType.Toolbar, plugin);
 }
 
-export function StartWebsite ()
+export function StartWebsite (externalLibLocation)
 {
     window.addEventListener ('load', () => {
         if (window.self !== window.top) {
@@ -56,6 +58,9 @@ export function StartWebsite ()
             link.href = window.self.location;
             return;
         }
+
+        SetExternalLibLocation (externalLibLocation);
+        SetShouldLoadExternalLibsFromCdn (true);
 
         document.getElementById ('intro_dragdrop_text').innerHTML = Loc ('Drag and drop 3D models here.');
         document.getElementById ('intro_formats_title').innerHTML = Loc ('Check an example file:');
@@ -81,8 +86,10 @@ export function StartWebsite ()
     });
 }
 
-export function StartEmbed ()
+export function StartEmbed (externalLibLocation)
 {
+    SetExternalLibLocation (externalLibLocation);
+    SetShouldLoadExternalLibsFromCdn (true);
     window.addEventListener ('load', () => {
         let embed = new Embed ({
             viewerDiv : document.getElementById ('embed_viewer'),

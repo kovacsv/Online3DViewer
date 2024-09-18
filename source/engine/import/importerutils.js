@@ -1,7 +1,7 @@
 import { IsLower } from '../geometry/geometry.js';
 import { PhongMaterial } from '../model/material.js';
 import { RGBColor, IntegerToHexString } from '../model/color.js';
-import { LoadExternalLibraryFromUrl } from '../io/externallibs.js';
+import {GetExternalLibPath, LoadExternalLibraryFromLibs, LoadExternalLibraryFromUrl} from '../io/externallibs.js';
 
 export function NameFromLine (line, startIndex, commentChar)
 {
@@ -102,11 +102,27 @@ export class ColorToMaterialConverter
 	}
 }
 
-let occtWorkerUrl = null;
 
+let shouldLoadExternalLibsFromCdn = false;
+
+/**
+ * Sets the location of the external libraries used by the engine for rhino3dm & draco. This is the content of the libs
+ * folder. Can be used to rely on jsdelivr to deliver theses libs to the client.
+ * @param {boolean} newValue.
+ */
+export function SetShouldLoadExternalLibsFromCdn (newValue) {
+	shouldLoadExternalLibsFromCdn = newValue;
+}
+
+let occtWorkerUrl = null;
 export function CreateOcctWorker (worker)
 {
 	return new Promise ((resolve, reject) => {
+		if(!shouldLoadExternalLibsFromCdn && occtWorkerUrl === null) {
+			resolve (new Worker (GetExternalLibPath('occt/occt-import-js-worker.js')));
+			return;
+		}
+
 		if (occtWorkerUrl !== null) {
 			resolve (new Worker (occtWorkerUrl));
 			return;
@@ -134,12 +150,37 @@ export function CreateOcctWorker (worker)
 export function LoadExternalLibrary (libraryName)
 {
 	if (libraryName === 'rhino3dm') {
-		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/rhino3dm@8.4.0/rhino3dm.min.js');
-	} else if (libraryName === 'webifc') {
-		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/web-ifc@0.0.55/web-ifc-api-iife.js');
+		return LoadRhino3dm ();
 	} else if (libraryName === 'draco3d') {
-		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/draco3d@1.5.7/draco_decoder_nodejs.min.js');
-	} else {
+		return LoadDraco ();
+	} else if (libraryName === 'web-ifc-api') {
+		return LoadIfcApi ();
+	}
+	else {
 		return null;
 	}
+}
+
+function LoadRhino3dm () {
+	if (shouldLoadExternalLibsFromCdn) {
+		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/rhino3dm@8.4.0/rhino3dm.min.js');
+	} else {
+		return LoadExternalLibraryFromLibs ('loaders/rhino3dm.min.js');
+	}
+}
+
+function LoadDraco () {
+	if (shouldLoadExternalLibsFromCdn) {
+		return LoadExternalLibraryFromUrl ('https://cdn.jsdelivr.net/npm/draco3d@1.5.7/draco_decoder_nodejs.min.js');
+	} else {
+		return LoadExternalLibraryFromLibs ('loaders/draco_decoder_nodejs.min.js');
+	}
+}
+
+function LoadIfcApi () {
+    if(shouldLoadExternalLibsFromCdn) {
+        return LoadExternalLibraryFromUrl('https://cdn.jsdelivr.net/npm/web-ifc@0.0.55/web-ifc-api-iife.js');
+    } else {
+        return LoadExternalLibraryFromLibs ('loaders/web-ifc-api-browser.js');
+    }
 }

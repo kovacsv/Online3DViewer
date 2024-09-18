@@ -39,11 +39,11 @@ import { ImporterPly } from './import/importerply.js';
 import { ImporterStl } from './import/importerstl.js';
 import { ImporterThreeSvg } from './import/importersvg.js';
 import { ImporterThreeBase, ImporterThreeFbx, ImporterThreeDae, ImporterThreeWrl, ImporterThree3mf, ImporterThreeAmf } from './import/importerthree.js';
-import { ColorToMaterialConverter, NameFromLine, ParametersFromLine, ReadLines, IsPowerOfTwo, NextPowerOfTwo, UpdateMaterialTransparency, CreateOcctWorker, LoadExternalLibrary } from './import/importerutils.js';
+import { ColorToMaterialConverter, NameFromLine, ParametersFromLine, ReadLines, IsPowerOfTwo, NextPowerOfTwo, UpdateMaterialTransparency, SetShouldLoadExternalLibsFromCdn, CreateOcctWorker, LoadExternalLibrary } from './import/importerutils.js';
 import { BinaryReader } from './io/binaryreader.js';
 import { BinaryWriter } from './io/binarywriter.js';
 import { ArrayBufferToUtf8String, ArrayBufferToAsciiString, AsciiStringToArrayBuffer, Utf8StringToArrayBuffer, Base64DataURIToArrayBuffer, GetFileExtensionFromMimeType, CreateObjectUrl, CreateObjectUrlWithMimeType, RevokeObjectUrl } from './io/bufferutils.js';
-import { LoadExternalLibraryFromUrl } from './io/externallibs.js';
+import { SetExternalLibLocation, GetExternalLibPath, LoadExternalLibraryFromLibs, LoadExternalLibraryFromUrl } from './io/externallibs.js';
 import { GetFileName, GetFileExtension, RequestUrl, ReadFile, TransformFileHostUrls, IsUrl, FileSource, FileFormat } from './io/fileutils.js';
 import { TextWriter } from './io/textwriter.js';
 import { RGBColor, RGBAColor, ColorComponentFromFloat, ColorComponentToFloat, RGBColorFromFloatComponents, SRGBToLinear, LinearToSRGB, IntegerToHexString, RGBColorToHexString, RGBAColorToHexString, HexStringToRGBColor, HexStringToRGBAColor, ArrayToRGBColor, RGBColorIsEqual } from './model/color.js';
@@ -193,6 +193,7 @@ export {
     IsPowerOfTwo,
     NextPowerOfTwo,
     UpdateMaterialTransparency,
+    SetShouldLoadExternalLibsFromCdn,
     CreateOcctWorker,
     LoadExternalLibrary,
     BinaryReader,
@@ -206,6 +207,9 @@ export {
     CreateObjectUrl,
     CreateObjectUrlWithMimeType,
     RevokeObjectUrl,
+    SetExternalLibLocation,
+    GetExternalLibPath,
+    LoadExternalLibraryFromLibs,
     LoadExternalLibraryFromUrl,
     GetFileName,
     GetFileExtension,

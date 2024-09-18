@@ -43,7 +43,7 @@ export class ImporterIfc extends ImporterBase
     ImportContent (fileContent, onFinish)
     {
         if (this.ifc === null) {
-            LoadExternalLibrary ('webifc').then (() => {
+            LoadExternalLibrary ('web-ifc-api').then (() => {
                 this.ifc = new WebIFC.IfcAPI ();
                 this.ifc.Init ().then (() => {
                     this.ImportIfcContent (fileContent);
