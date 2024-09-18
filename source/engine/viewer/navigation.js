@@ -255,7 +255,8 @@ export class Navigation
 			boundingSphereRadius: null,
 			maxZoomEnabled: false,
 			maxZoomRatio: 10,
-			isPanEnabled: true,
+			panFromRightClick: true,
+			panFromShiftLeftClick: true,
 		};
 
 		if (this.canvas.addEventListener) {
@@ -399,11 +400,17 @@ export class Navigation
 			if (ev.ctrlKey) {
 				navigationType = NavigationType.Zoom;
 			} else if (ev.shiftKey) {
+				if(!this.settings.panFromShiftLeftClick) {
+					return;
+				}
 				navigationType = NavigationType.Pan;
 			} else {
 				navigationType = NavigationType.Orbit;
 			}
 		} else if (mouseButton === 2 || mouseButton === 3) {
+			if(!this.settings.panFromRightClick) {
+				return;
+			}
 			navigationType = NavigationType.Pan;
 		}
 
@@ -465,6 +472,9 @@ export class Navigation
 		if (fingerCount === 1) {
 			navigationType = NavigationType.Orbit;
 		} else if (fingerCount === 2) {
+			if(!this.settings.panFromRightClick) {
+				return;
+			}
 			navigationType = NavigationType.Pan;
 		}
 
@@ -546,10 +556,6 @@ export class Navigation
 
 	Pan (moveX, moveY)
 	{
-		if (!this.settings.isPanEnabled) {
-			return;
-		}
-
 		let viewDirection = SubCoord3D (this.camera.center, this.camera.eye).Normalize ();
 		let horizontalDirection = CrossVector3D (viewDirection, this.camera.up).Normalize ();
 		let verticalDirection = CrossVector3D (horizontalDirection, viewDirection).Normalize ();
@@ -627,10 +633,18 @@ export class Navigation
 	}
 
 	/**
-	 * Enable or disable the Pan navigation
-	 * @param {boolean} isEnabled
+	 * Enable or disable the Pan navigation when right-clicking and dragging.
+	 * @param {boolean} enabled
 	 */
-	SetIsPanEnabled (isEnabled) {
-		this.settings.isPanEnabled = isEnabled;
+	SetPanFromRightClickEnabled (enabled) {
+		this.settings.panFromRightClick = enabled;
+	}
+
+	/**
+	 * Enable or disable the Pan navigation when left-clicking dragging while holding shift.
+	 * @param {boolean} enabled
+	 */
+	SetPanFromShiftLeftClickEnabled (enabled) {
+		this.settings.panFromShiftLeftClick = enabled;
 	}
 }
