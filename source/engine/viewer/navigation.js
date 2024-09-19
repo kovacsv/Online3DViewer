@@ -251,6 +251,14 @@ export class Navigation
 		this.onMouseMove = null;
 		this.onContext = null;
 
+		this.settings = {
+			boundingSphereRadius: null,
+			maxZoomEnabled: false,
+			maxZoomRatio: 10,
+			panFromRightClick: true,
+			panFromShiftLeftClick: true,
+		};
+
 		if (this.canvas.addEventListener) {
 			this.canvas.addEventListener ('mousedown', this.OnMouseDown.bind (this));
 			this.canvas.addEventListener ('wheel', this.OnMouseWheel.bind (this));
@@ -392,11 +400,17 @@ export class Navigation
 			if (ev.ctrlKey) {
 				navigationType = NavigationType.Zoom;
 			} else if (ev.shiftKey) {
+				if(!this.settings.panFromShiftLeftClick) {
+					return;
+				}
 				navigationType = NavigationType.Pan;
 			} else {
 				navigationType = NavigationType.Orbit;
 			}
 		} else if (mouseButton === 2 || mouseButton === 3) {
+			if(!this.settings.panFromRightClick) {
+				return;
+			}
 			navigationType = NavigationType.Pan;
 		}
 
@@ -458,6 +472,9 @@ export class Navigation
 		if (fingerCount === 1) {
 			navigationType = NavigationType.Orbit;
 		} else if (fingerCount === 2) {
+			if(!this.settings.panFromRightClick) {
+				return;
+			}
 			navigationType = NavigationType.Pan;
 		}
 
@@ -554,6 +571,15 @@ export class Navigation
 	{
 		let direction = SubCoord3D (this.camera.center, this.camera.eye);
 		let distance = direction.Length ();
+
+		if (this.settings.maxZoomEnabled && this.settings.boundingSphereRadius !== null && distance > this.settings.boundingSphereRadius * this.settings.maxZoomRatio && ratio < 0) {
+			return;
+		}
+
+		if(distance < 0.01 && ratio > 0) {
+			return;
+		}
+
 		let move = distance * ratio;
 		this.camera.eye.Offset (direction, move);
 	}
@@ -580,5 +606,45 @@ export class Navigation
 			let localCoords = GetDomElementClientCoordinates (this.canvas, clientX, clientY);
 			this.onContext (globalCoords, localCoords);
 		}
+	}
+
+	/**
+	 * Enable or disable the max zoom distance for the camera.
+	 * @param {boolean} isEnabled
+	 */
+	SetMaxZoomCameraEnabled (isEnabled) {
+		this.settings.maxZoomEnabled = isEnabled;
+	}
+
+	/**
+	 * Set the max zoom distance ratio compared to the size of the model.
+	 * @param {number} ratio
+	 */
+	SetMaxZoomCameraRatio (ratio) {
+		this.settings.maxZoomRatio = ratio;
+	}
+
+	/**
+	 * Set the model radius to be able to compute zoom ratio
+	 * @param {number} radius
+	 */
+	SetBoundingSphereRadius (radius) {
+		this.settings.boundingSphereRadius = radius;
+	}
+
+	/**
+	 * Enable or disable the Pan navigation when right-clicking and dragging.
+	 * @param {boolean} enabled
+	 */
+	SetPanFromRightClickEnabled (enabled) {
+		this.settings.panFromRightClick = enabled;
+	}
+
+	/**
+	 * Enable or disable the Pan navigation when left-clicking dragging while holding shift.
+	 * @param {boolean} enabled
+	 */
+	SetPanFromShiftLeftClickEnabled (enabled) {
+		this.settings.panFromShiftLeftClick = enabled;
 	}
 }
