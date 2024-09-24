@@ -55,26 +55,30 @@
 		"build_website": "esbuild source/website/index.js --bundle --minify --global-name=OV --loader:.ttf=file --loader:.woff=file --loader:.svg=file --outfile=build/website/o3dv.website.min.js",
 		"update_engine_exports": "run-python3 tools/update_engine_exports.py"
 	},
+	"engines": {
+		"node": ">=18.0.0",
+		"npm": ">=6.0.0"
+	},
 	"devDependencies": {
-		"@types/node": "^20.1.0",
-		"esbuild": "^0.20.0",
-		"eslint": "^8.29.0",
-		"eslint-plugin-unused-imports": "^3.0.0",
-		"fantasticon": "^1.2.2",
+		"@types/node": "^20.16.5",
+		"esbuild": "^0.23.1",
+		"eslint": "^8.57.0",
+		"eslint-plugin-unused-imports": "^3.2.0",
+		"fantasticon": "^3.0.0",
 		"http-server": "^14.0.0",
-		"jsdoc": "^4.0.0",
-		"mocha": "^10.2.0",
-		"oslllo-svg-fixer": "^3.0.0",
-		"rollup": "^4.0.2",
+		"jsdoc": "^4.0.3",
+		"mocha": "^10.7.3",
+		"oslllo-svg-fixer": "^5.0.0",
+		"rollup": "^4.21.2",
 		"run-python3": "^0.0.5",
-		"svgo": "^3.0.2",
-		"typescript": "^5.0.4",
-		"web-ifc": "0.0.44"
+		"svgo": "^3.3.2",
+		"typescript": "^5.6.2",
+		"web-ifc": "0.0.57"
 	},
 	"dependencies": {
-		"@simonwep/pickr": "1.9.0",
+		"@simonwep/pickr": "1.9.1",
 		"fflate": "0.8.2",
-		"three": "0.163.0"
+		"three": "0.168.0"
 	},
 	"eslintConfig": {
 		"env": {
