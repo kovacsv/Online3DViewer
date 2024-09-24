@@ -2,13 +2,12 @@ import { Coord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
 import { Matrix } from '../geometry/matrix.js';
 import { Transformation } from '../geometry/transformation.js';
-import { LoadExternalLibraryFromLibs } from '../io/externallibs.js';
 import { RGBColorFromFloatComponents } from '../model/color.js';
 import { Mesh } from '../model/mesh.js';
 import { Property, PropertyGroup, PropertyType } from '../model/property.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
-import { ColorToMaterialConverter } from './importerutils.js';
+import { ColorToMaterialConverter, LoadExternalLibrary } from './importerutils.js';
 import { Loc, FLoc } from '../core/localization.js';
 
 export class ImporterIfc extends ImporterBase
@@ -44,7 +43,7 @@ export class ImporterIfc extends ImporterBase
     ImportContent (fileContent, onFinish)
     {
         if (this.ifc === null) {
-            LoadExternalLibraryFromLibs ('web-ifc-api-browser.js').then (() => {
+            LoadExternalLibrary ('webifc').then (() => {
                 this.ifc = new WebIFC.IfcAPI ();
                 this.ifc.Init ().then (() => {
                     this.ImportIfcContent (fileContent);
