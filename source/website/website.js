@@ -222,7 +222,7 @@ export class Website
 
         this.InitViewer ();
         this.InitToolbar (params);
-        if (this.parameters.enableDragDrop) {
+        if (this.parameters.dragDropEnabled) {
             this.InitDragAndDrop ();
         }
         this.InitSidebar ();

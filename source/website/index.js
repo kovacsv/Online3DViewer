@@ -93,7 +93,7 @@ export function StartWebsiteCustom (params)
             return;
         }
 
-        if (params.enableDragDrop) {
+        if (params.dragDropEnabled) {
             document.getElementById ('intro_dragdrop_text').innerHTML = Loc ('Drag and drop 3D models here.');
             document.getElementById ('intro_formats_title').innerHTML = Loc ('Check an example file:');
         }
@@ -114,7 +114,7 @@ export function StartWebsiteCustom (params)
             sidebarSplitterDiv : document.getElementById (params.sidebarSplitterDiv ?? 'main_sidebar_splitter'),
             viewerDiv : document.getElementById (params.viewerDiv ?? 'main_viewer'),
             fileInput : document.getElementById (params.fileInput ?? 'open_file'),
-            enableDragDrop: params.enableDragDrop
+            dragDropEnabled: params.dragDropEnabled
         });
         website.Load ({
             openFileBrowserDialogDisabled: params.openFileBrowserDialogDisabled,
