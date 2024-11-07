@@ -81,6 +81,49 @@ export function StartWebsite ()
     });
 }
 
+export function StartWebsiteCustom (params)
+{
+    window.addEventListener ('load', () => {
+        if (window.self !== window.top) {
+            let noEmbeddingDiv = AddDiv (document.body, 'noembed');
+            AddDiv (noEmbeddingDiv, null, Loc ('Embedding Online 3D Viewer in an iframe is not supported.'));
+            let link = AddDomElement (noEmbeddingDiv, 'a', null, Loc ('Open Online 3D Viewer'));
+            link.target = '_blank';
+            link.href = window.self.location;
+            return;
+        }
+
+        if (params.enableDragDrop) {
+            document.getElementById ('intro_dragdrop_text').innerHTML = Loc ('Drag and drop 3D models here.');
+            document.getElementById ('intro_formats_title').innerHTML = Loc ('Check an example file:');
+        }
+
+        let website = new Website ({
+            headerDiv : document.getElementById (params.headerDiv ?? 'header'),
+            headerButtonsDiv : document.getElementById (params.headerButtonsDiv ?? 'header_buttons'),
+            toolbarDiv : document.getElementById (params.toolbarDiv ?? 'toolbar'),
+            mainDiv : document.getElementById (params.mainDiv ?? 'main'),
+            introDiv : document.getElementById (params.introDiv ?? 'intro'),
+            introContentDiv : document.getElementById (params.introContentDiv ?? 'intro_content'),
+            fileNameDiv : document.getElementById (params.fileNameDiv ?? 'main_file_name'),
+            leftContainerDiv : document.getElementById (params.leftContainerDiv ?? 'main_left_container'),
+            navigatorDiv : document.getElementById (params.navigatorDiv ?? 'main_navigator'),
+            navigatorSplitterDiv : document.getElementById (params.navigatorSplitterDiv ?? 'main_navigator_splitter'),
+            rightContainerDiv : document.getElementById (params.rightContainerDiv ?? 'main_right_container'),
+            sidebarDiv : document.getElementById (params.sidebarDiv ?? 'main_sidebar'),
+            sidebarSplitterDiv : document.getElementById (params.sidebarSplitterDiv ?? 'main_sidebar_splitter'),
+            viewerDiv : document.getElementById (params.viewerDiv ?? 'main_viewer'),
+            fileInput : document.getElementById (params.fileInput ?? 'open_file'),
+            enableDragDrop: params.enableDragDrop
+        });
+        website.Load ({
+            openFileBrowserDialogDisabled: params.openFileBrowserDialogDisabled,
+            showOpenUrlDialogDisabled: params.showOpenUrlDialogDisabled
+        });
+        params.websiteLoaded(website);
+    });
+}
+
 export function StartEmbed ()
 {
     window.addEventListener ('load', () => {

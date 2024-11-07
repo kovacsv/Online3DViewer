@@ -204,7 +204,7 @@ export class Website
         this.model = null;
     }
 
-    Load ()
+    Load (params)
     {
         this.settings.LoadFromCookies ();
         this.cameraSettings.LoadFromCookies ();
@@ -221,8 +221,10 @@ export class Website
         });
 
         this.InitViewer ();
-        this.InitToolbar ();
-        this.InitDragAndDrop ();
+        this.InitToolbar (params);
+        if (this.parameters.enableDragDrop) {
+            this.InitDragAndDrop ();
+        }
         this.InitSidebar ();
         this.InitNavigator ();
         this.InitCookieConsent ();
@@ -602,8 +604,9 @@ export class Website
         this.UpdateEnvironmentMap ();
     }
 
-    InitToolbar ()
+    InitToolbar (params)
     {
+        params = params ?? {};
         function AddButton (toolbar, imageName, imageTitle, classNames, onClick)
         {
             let button = toolbar.AddImageButton (imageName, imageTitle, () => {
@@ -661,16 +664,20 @@ export class Website
         let navigationModeIndex = (this.cameraSettings.navigationMode === NavigationMode.FixedUpVector ? 0 : 1);
         let projectionModeIndex = (this.cameraSettings.projectionMode === ProjectionMode.Perspective ? 0 : 1);
 
-        AddButton (this.toolbar, 'open', Loc ('Open from your device'), [], () => {
-            this.OpenFileBrowserDialog ();
-        });
-        AddButton (this.toolbar, 'open_url', Loc ('Open from url'), [], () => {
-            ShowOpenUrlDialog ((urls) => {
-                if (urls.length > 0) {
-                    this.hashHandler.SetModelFilesToHash (urls);
-                }
+        if (!params.openFileBrowserDialogDisabled) {
+            AddButton (this.toolbar, 'open', Loc ('Open from your device'), [], () => {
+                this.OpenFileBrowserDialog ();
             });
-        });
+        }
+        if (!params.showOpenUrlDialogDisabled) {
+            AddButton (this.toolbar, 'open_url', Loc ('Open from url'), [], () => {
+                ShowOpenUrlDialog ((urls) => {
+                    if (urls.length > 0) {
+                        this.hashHandler.SetModelFilesToHash (urls);
+                    }
+                });
+            });
+        }
         AddSeparator (this.toolbar, ['only_on_model']);
         AddButton (this.toolbar, 'fit', Loc ('Fit model to window'), ['only_on_model'], () => {
             this.FitModelToWindow (false);
