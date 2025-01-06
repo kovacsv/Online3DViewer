@@ -105,7 +105,7 @@ export class ImporterOff extends ImporterBase
             }
             return;
         }
-        console.log("Test");
+
         let hasVertexColors = (this.mesh.VertexCount () ===this.mesh.VertexColorCount ());
         if (this.status.foundFace < this.status.faceCount) {
             if (parameters.length >= 4) {
