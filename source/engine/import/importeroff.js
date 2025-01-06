@@ -96,15 +96,7 @@ export class ImporterOff extends ImporterBase
                 ));
                 this.status.foundVertex += 1;
             }
-            if (parameters.length >= 7) {
-                this.mesh.AddVertexColor (new RGBAColor (
-                    CreateColorComponent (parameters[3]),
-                    CreateColorComponent (parameters[4]),
-                    CreateColorComponent (parameters[5]),
-                    CreateColorComponent (parameters[6])
-                ));
-            }
-            else if (parameters.length >= 6) {
+            if (parameters.length >= 6) {
                 this.mesh.AddVertexColor (new RGBColor (
                     CreateColorComponent (parameters[3]),
                     CreateColorComponent (parameters[4]),
