@@ -38,7 +38,7 @@ export class ExporterOff extends ExporterBase
 				if (color)
 				{
 					// ignore alpha with max value
-					if (color.a == 255)
+					if (color.a === 255)
 						color.a = undefined;
 
 					offWriter.WriteArrayLine ([3, v0, v1, v2, color.r, color.g, color.b, color.a]);
