@@ -1,7 +1,7 @@
 OFF
-# cube_with_alpha.off
+# cube_vertex.off
 # A cube
- 
+
 8 6 12
  1.0  0.0 1.4142  255 0 0 #red
  0.0  1.0 1.4142  255 0 0 #red
