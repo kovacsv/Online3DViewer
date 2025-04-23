@@ -48,14 +48,14 @@ export function RegisterToolbarPlugin (plugin)
 export function StartWebsite ()
 {
     window.addEventListener ('load', () => {
-        if (window.self !== window.top) {
-            let noEmbeddingDiv = AddDiv (document.body, 'noembed');
-            AddDiv (noEmbeddingDiv, null, Loc ('Embedding Online 3D Viewer in an iframe is not supported.'));
-            let link = AddDomElement (noEmbeddingDiv, 'a', null, Loc ('Open Online 3D Viewer'));
-            link.target = '_blank';
-            link.href = window.self.location;
-            return;
-        }
+        // if (window.self !== window.top) {
+        //     let noEmbeddingDiv = AddDiv (document.body, 'noembed');
+        //     AddDiv (noEmbeddingDiv, null, Loc ('Embedding Online 3D Viewer in an iframe is not supported.'));
+        //     let link = AddDomElement (noEmbeddingDiv, 'a', null, Loc ('Open Online 3D Viewer'));
+        //     link.target = '_blank';
+        //     link.href = window.self.location;
+        //     return;
+        // }
 
         document.getElementById ('intro_dragdrop_text').innerHTML = Loc ('Drag and drop 3D models here.');
         document.getElementById ('intro_formats_title').innerHTML = Loc ('Check an example file:');

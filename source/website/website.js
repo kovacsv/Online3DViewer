@@ -225,7 +225,7 @@ export class Website
         this.InitDragAndDrop ();
         this.InitSidebar ();
         this.InitNavigator ();
-        this.InitCookieConsent ();
+        // this.InitCookieConsent ();
 
         this.viewer.SetMouseClickHandler (this.OnModelClicked.bind (this));
         this.viewer.SetMouseMoveHandler (this.OnModelMouseMoved.bind (this));
