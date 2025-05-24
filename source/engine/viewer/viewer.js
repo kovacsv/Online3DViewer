@@ -433,6 +433,21 @@ export class Viewer
         this.Render ();
     }
 
+    RemoveExtraObject (object)
+    {
+        if (this.extraModel && typeof this.extraModel.GetObjects === 'function') {
+            const index = this.extraModel.GetObjects ().indexOf (object);
+            if (index !== -1) {
+                this.extraModel.RemoveObject (object);
+                this.Render ();
+            } else {
+                console.log('Object not found in the list')
+            }
+        } else {
+            console.error('this.extraModel or GetObjects is not available');
+        }
+    }
+
     Clear ()
     {
         this.mainModel.Clear ();
