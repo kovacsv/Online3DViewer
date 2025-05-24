@@ -56,25 +56,24 @@
 		"update_engine_exports": "run-python3 tools/update_engine_exports.py"
 	},
 	"devDependencies": {
-		"@types/node": "^20.1.0",
-		"esbuild": "^0.20.0",
-		"eslint": "^8.29.0",
-		"eslint-plugin-unused-imports": "^3.0.0",
+		"@types/node": "^22.15.0",
+		"esbuild": "^0.25.4",
+		"eslint": "^8.57.0",
+		"eslint-plugin-unused-imports": "^4.1.0",
 		"fantasticon": "^1.2.2",
 		"http-server": "^14.0.0",
-		"jsdoc": "^4.0.0",
-		"mocha": "^10.2.0",
+		"jsdoc": "^4.0.4",
+		"mocha": "^11.5.0",
 		"oslllo-svg-fixer": "^3.0.0",
-		"rollup": "^4.0.2",
+		"rollup": "^4.41.0",
 		"run-python3": "^0.0.5",
-		"svgo": "^3.0.2",
-		"typescript": "^5.0.4",
-		"web-ifc": "0.0.44"
+		"svgo": "^3.3.2",
+		"typescript": "^5.0.4"
 	},
 	"dependencies": {
 		"@simonwep/pickr": "1.9.0",
 		"fflate": "0.8.2",
-		"three": "0.163.0"
+		"three": "0.176.0"
 	},
 	"eslintConfig": {
 		"env": {
