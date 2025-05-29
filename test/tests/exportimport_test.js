@@ -267,7 +267,11 @@ describe ('Export-Import Test', function () {
     it ('Export-Import Off', function (done) {
         let model = CreateTestModel ();
         ExportImport (model, OV.FileFormat.Text, 'off', (model2) => {
-            CheckSingleMeshModel (model, model2);
+            // Single Mesh Model with 2 materials
+            assert.strictEqual (model2.MaterialCount (), 2);
+            assert.strictEqual (model2.MeshInstanceCount (), 1);
+            assert.strictEqual (model.TriangleCount (), model2.TriangleCount ());
+            CheckModelBounds (model, model2);
             done ();
         });
     });

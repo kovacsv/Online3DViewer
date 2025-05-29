@@ -1,7 +1,7 @@
 import { Coord3D } from '../geometry/coord3d.js';
 import { Direction } from '../geometry/geometry.js';
 import { ArrayBufferToUtf8String } from '../io/bufferutils.js';
-import { RGBColor, ColorComponentFromFloat } from '../model/color.js';
+import { RGBColor, RGBAColor, ColorComponentFromFloat } from '../model/color.js';
 import { Mesh } from '../model/mesh.js';
 import { Triangle } from '../model/triangle.js';
 import { ImporterBase } from './importerbase.js';
@@ -114,13 +114,25 @@ export class ImporterOff extends ImporterBase
                     return;
                 }
                 let materialIndex = null;
-                if (!hasVertexColors && parameters.length >= vertexCount + 4) {
-                    let color = new RGBColor (
-                        CreateColorComponent (parameters[vertexCount + 1]),
-                        CreateColorComponent (parameters[vertexCount + 2]),
-                        CreateColorComponent (parameters[vertexCount + 3])
-                    );
-                    materialIndex = this.colorToMaterial.GetMaterialIndex (color.r, color.g, color.b);
+                if (!hasVertexColors)
+                {
+                    if (parameters.length >= vertexCount + 5) {
+                        let color = new RGBAColor (
+                            CreateColorComponent (parameters[vertexCount + 1]),
+                            CreateColorComponent (parameters[vertexCount + 2]),
+                            CreateColorComponent (parameters[vertexCount + 3]),
+                            CreateColorComponent (parameters[vertexCount + 4])
+                        );
+                        materialIndex = this.colorToMaterial.GetMaterialIndex (color.r, color.g, color.b, color.a);
+                    }
+                    else if (parameters.length >= vertexCount + 4) {
+                        let color = new RGBColor (
+                            CreateColorComponent (parameters[vertexCount + 1]),
+                            CreateColorComponent (parameters[vertexCount + 2]),
+                            CreateColorComponent (parameters[vertexCount + 3])
+                        );
+                        materialIndex = this.colorToMaterial.GetMaterialIndex (color.r, color.g, color.b);
+                    }
                 }
                 for (let i = 0; i < vertexCount - 2; i++) {
                     let v0 = parseInt (parameters[1]);

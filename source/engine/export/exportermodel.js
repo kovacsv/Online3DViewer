@@ -1,6 +1,7 @@
 import { CopyObjectAttributes } from '../core/core.js';
 import { Transformation } from '../geometry/transformation.js';
 import { CalculateTriangleNormal, TransformMesh } from '../model/meshutils.js';
+import { ColorComponentFromFloat } from '../model/color.js';
 
 export class ExporterSettings
 {
@@ -143,6 +144,46 @@ export class ExporterModel
             mesh.EnumerateTriangleVertexIndices ((v0, v1, v2) => {
                 callbacks.onTriangle (v0 + vertexOffset, v1 + vertexOffset, v2 + vertexOffset);
             });
+            vertexOffset += mesh.VertexCount ();
+        }
+    }
+
+    EnumerateVerticesAndTrianglesColor (callbacks)
+    {
+        let transformedMeshes = [];
+        this.EnumerateTransformedMeshInstances ((mesh) => {
+            transformedMeshes.push (mesh);
+        });
+
+        for (let mesh of transformedMeshes) {
+            let hasVertexColors = (mesh.VertexCount () === mesh.VertexColorCount ());
+            let vertexColor = undefined;
+            for (let vertexIndex = 0; vertexIndex < mesh.VertexCount (); vertexIndex++) {
+                if (hasVertexColors)
+                    vertexColor = mesh.GetVertexColor (vertexIndex);
+
+                let vertex = mesh.GetVertex (vertexIndex);
+                callbacks.onVertexColor (vertex.x, vertex.y, vertex.z, vertexColor);
+            }
+        }
+
+        let vertexOffset = 0;
+        for (let mesh of transformedMeshes) {
+            let hasVertexColors = (mesh.VertexCount () === mesh.VertexColorCount ());
+            for (const triangle of mesh.triangles) {
+                let material = this.GetMaterial (triangle.mat);
+                let triangleColor = {
+                    r : Math.round (material.color.r),
+                    g : Math.round (material.color.g),
+                    b : Math.round (material.color.b),
+                    a : ColorComponentFromFloat (material.opacity),
+                };
+
+                if (hasVertexColors)
+                    triangleColor = undefined;
+
+                callbacks.onTriangleColor (triangle.v0 + vertexOffset, triangle.v1 + vertexOffset, triangle.v2 + vertexOffset, triangleColor);
+            }
             vertexOffset += mesh.VertexCount ();
         }
     }
