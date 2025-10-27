@@ -30,64 +30,59 @@ export const UI = {
     Loc
 };
 
-export function SetWebsiteEventHandler (eventHandler)
-{
-    SetEventHandler (eventHandler);
+export function SetWebsiteEventHandler(eventHandler) {
+    SetEventHandler(eventHandler);
 }
 
-export function RegisterHeaderPlugin (plugin)
-{
-    RegisterPlugin (PluginType.Header, plugin);
+export function RegisterHeaderPlugin(plugin) {
+    RegisterPlugin(PluginType.Header, plugin);
 }
 
-export function RegisterToolbarPlugin (plugin)
-{
-    RegisterPlugin (PluginType.Toolbar, plugin);
+export function RegisterToolbarPlugin(plugin) {
+    RegisterPlugin(PluginType.Toolbar, plugin);
 }
 
-export function StartWebsite ()
-{
-    window.addEventListener ('load', () => {
+export function StartWebsite() {
+    window.addEventListener('load', () => {
         if (window.self !== window.top) {
-            let noEmbeddingDiv = AddDiv (document.body, 'noembed');
-            AddDiv (noEmbeddingDiv, null, Loc ('Embedding Online 3D Viewer in an iframe is not supported.'));
-            let link = AddDomElement (noEmbeddingDiv, 'a', null, Loc ('Open Online 3D Viewer'));
+            let noEmbeddingDiv = AddDiv(document.body, 'noembed');
+            AddDiv(noEmbeddingDiv, null, Loc('Embedding Online 3D Viewer in an iframe is not supported.'));
+            let link = AddDomElement(noEmbeddingDiv, 'a', null, Loc('Open Online 3D Viewer'));
             link.target = '_blank';
             link.href = window.self.location;
             return;
         }
 
-        document.getElementById ('intro_dragdrop_text').innerHTML = Loc ('Drag and drop 3D models here.');
-        document.getElementById ('intro_formats_title').innerHTML = Loc ('Check an example file:');
+        document.getElementById('intro_dragdrop_text').innerHTML = Loc('Drag and drop 3D models here.');
+        document.getElementById('intro_formats_title').innerHTML = Loc('Check an example file:');
 
-        let website = new Website ({
-            headerDiv : document.getElementById ('header'),
-            headerButtonsDiv : document.getElementById ('header_buttons'),
-            toolbarDiv : document.getElementById ('toolbar'),
-            mainDiv : document.getElementById ('main'),
-            introDiv : document.getElementById ('intro'),
-            introContentDiv : document.getElementById ('intro_content'),
-            fileNameDiv : document.getElementById ('main_file_name'),
-            leftContainerDiv : document.getElementById ('main_left_container'),
-            navigatorDiv : document.getElementById ('main_navigator'),
-            navigatorSplitterDiv : document.getElementById ('main_navigator_splitter'),
-            rightContainerDiv : document.getElementById ('main_right_container'),
-            sidebarDiv : document.getElementById ('main_sidebar'),
-            sidebarSplitterDiv : document.getElementById ('main_sidebar_splitter'),
-            viewerDiv : document.getElementById ('main_viewer'),
-            fileInput : document.getElementById ('open_file')
+        let website = new Website({
+            headerDiv: document.getElementById('header'),
+            headerButtonsDiv: document.getElementById('header_buttons'),
+            toolbarDiv: document.getElementById('toolbar'),
+            mainDiv: document.getElementById('main'),
+            introDiv: document.getElementById('intro'),
+            introContentDiv: document.getElementById('intro_content'),
+            fileNameDiv: document.getElementById('main_file_name'),
+            leftContainerDiv: document.getElementById('main_left_container'),
+            navigatorDiv: document.getElementById('main_navigator'),
+            navigatorSplitterDiv: document.getElementById('main_navigator_splitter'),
+            rightContainerDiv: document.getElementById('main_right_container'),
+            sidebarDiv: document.getElementById('main_sidebar'),
+            sidebarSplitterDiv: document.getElementById('main_sidebar_splitter'),
+            viewerDiv: document.getElementById('main_viewer'),
+            fileInput: document.getElementById('open_file')
         });
-        website.Load ();
+        website.Load();
     });
 }
 
-export function StartEmbed ()
-{
-    window.addEventListener ('load', () => {
-        let embed = new Embed ({
-            viewerDiv : document.getElementById ('embed_viewer'),
-            websiteLinkDiv : document.getElementById ('website_link')
+export function StartEmbed() {
+    window.addEventListener('load', () => {
+        let embed = new Embed({
+            viewerDiv: document.getElementById('embed_viewer'),
+            websiteLinkDiv: document.getElementById('website_link')
         });
-        embed.Load ();
+        embed.Load();
     });
 }

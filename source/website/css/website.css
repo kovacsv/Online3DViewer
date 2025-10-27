@@ -1,5 +1,4 @@
-div.ov_color_circle
-{
+div.ov_color_circle {
 	background: #ffffff;
 	border: 1px solid #000000;
 	width: 14px;
@@ -10,32 +9,27 @@ div.ov_color_circle
 	border-radius: 10px;
 }
 
-div.header
-{
+div.header {
 	overflow: auto;
 	display: none;
 }
 
-div.title
-{
+div.title {
 	padding: 6px 10px;
 	overflow: auto;
 }
 
-div.title div.title_left
-{
+div.title div.title_left {
 	float: left;
 }
 
-div.title svg.logo_image
-{
+div.title svg.logo_image {
 	width: 190px;
 	height: 40px;
 	float: left;
 }
 
-div.title div.logo_text
-{
+div.title div.logo_text {
 	color: var(--ov_foreground_color);
 	font-size: 18px;
 	font-weight: bold;
@@ -43,13 +37,11 @@ div.title div.logo_text
 	float: left;
 }
 
-div.title div.title_right
-{
+div.title div.title_right {
 	float: right;
 }
 
-div.title_right a
-{
+div.title_right a {
 	color: var(--ov_foreground_color);
 	padding: 11px 5px;
 	display: block;
@@ -57,13 +49,11 @@ div.title_right a
 	text-decoration: none;
 }
 
-div.toolbar
-{
+div.toolbar {
 	background: var(--ov_toolbar_background_color);
 }
 
-div.intro
-{
+div.intro {
 	margin: 10px;
 	padding: 10px;
 	text-align: center;
@@ -72,47 +62,40 @@ div.intro
 	display: none;
 }
 
-div.intro_content
-{
+div.intro_content {
 	width: 500px;
 	max-width: 90%;
 	margin: 0px auto;
 	position: relative;
 }
 
-div.intro div.intro_logo
-{
+div.intro div.intro_logo {
 	border-bottom: 1px solid var(--ov_border_color);
 	padding-bottom: 30px;
 	margin-bottom: 30px;
 }
 
-div.intro svg.intro_logo
-{
+div.intro svg.intro_logo {
 	width: 381px;
 	height: 80px;
 	max-width: 90%;
 	margin-bottom: 20px;
 }
 
-div.intro div.intro_dragdrop_text
-{
+div.intro div.intro_dragdrop_text {
 	font-size: 30px;
 }
 
-div.intro div.intro_formats_title
-{
+div.intro div.intro_formats_title {
 	font-size: 25px;
 	margin-bottom: 15px;
 }
 
-div.intro div.intro_file_formats
-{
+div.intro div.intro_file_formats {
 	margin: 0px auto;
 }
 
-div.intro div.intro_file_formats a
-{
+div.intro div.intro_file_formats a {
 	color: var(--ov_outline_button_text_color);
 	text-decoration: none;
 	font-size: 17px;
@@ -125,31 +108,26 @@ div.intro div.intro_file_formats a
 	cursor: pointer;
 }
 
-div.intro div.intro_file_formats a:hover
-{
+div.intro div.intro_file_formats a:hover {
 	background: var(--ov_outline_button_hover_color);
 }
 
-div.noembed
-{
+div.noembed {
 	text-align: center;
 	padding: 10px;
 }
 
-div.noembed a
-{
+div.noembed a {
 	padding: 10px 0px;
 	display: block;
 }
 
-div.main
-{
+div.main {
 	overflow: hidden;
 	display: none;
 }
 
-div.main_file_name
-{
+div.main_file_name {
 	margin: 10px auto;
 	white-space: nowrap;
 	text-align: center;
@@ -157,80 +135,68 @@ div.main_file_name
 	overflow: hidden;
 }
 
-div.main_left_container
-{
+div.main_left_container {
 	float: left;
 	overflow: auto;
 }
 
-div.main_navigator
-{
+div.main_navigator {
 	width: 280px;
 	margin: 10px 0px 10px 0px;
 	overflow: none;
 	float: left;
 }
 
-div.main_splitter
-{
+div.main_splitter {
 	width: 10px;
 	overflow: none;
 	float: left;
 	cursor: w-resize;
 }
 
-div.main_viewer
-{
+div.main_viewer {
 	float: left;
 }
 
-div.main_right_container
-{
+div.main_right_container {
 	float: left;
 	overflow: auto;
 }
 
-div.main_sidebar
-{
+div.main_sidebar {
 	width: 280px;
 	margin: 10px 0px 10px 0px;
 	overflow: none;
 	float: left;
 }
 
-div.main_viewer canvas
-{
+div.main_viewer canvas {
 	margin: 10px 0px 10px 0px;
 	border: 1px solid var(--ov_border_color);
 	outline: none;
 	display: block;
 }
 
-div.ov_toolbar
-{
+div.ov_toolbar {
 	overflow: auto;
 	user-select: none;
 }
 
-div.ov_toolbar div.ov_toolbar_button
-{
+div.ov_toolbar div.ov_toolbar_button {
 	float: left;
 	cursor: pointer;
 	padding: 10px;
 }
 
-div.ov_toolbar div.ov_toolbar_button.align_right
-{
+div.ov_toolbar div.ov_toolbar_button.align_right {
 	float: right;
 }
 
-div.ov_toolbar div.ov_toolbar_button.selected
-{
+div.ov_toolbar div.ov_toolbar_button.selected {
 	background: var(--ov_toolbar_selected_color);
 }
 
-div.ov_toolbar div.ov_toolbar_separator
-{
+div.ov_toolbar div.ov_toolbar_separator {
 	background: var(--ov_toolbar_separator_color);
 	width: 1px;
 	height: 28px;
@@ -238,50 +204,42 @@ div.ov_toolbar div.ov_toolbar_separator
 	float: left;
 }
 
-div.pcr-app
-{
+div.pcr-app {
 	color: var(--ov_dialog_foreground_color);
 	background: var(--ov_dialog_background_color);
 }
 
-div.pcr-app input.pcr-result
-{
+div.pcr-app input.pcr-result {
 	color: var(--ov_foreground_color) !important;
 	background: var(--ov_background_color) !important;
 }
 
-div.ov_property_table
-{
+div.ov_property_table {
 	overflow: auto;
 }
 
-div.ov_property_table_custom
-{
+div.ov_property_table_custom {
 	margin-top: 8px;
 	padding-top: 8px;
 	border-top: 1px solid var(--ov_border_color);
 }
 
-div.ov_property_table div.ov_property_table_row
-{
+div.ov_property_table div.ov_property_table_row {
 	overflow: auto;
 }
 
-div.ov_property_table div.ov_property_table_row.group
-{
+div.ov_property_table div.ov_property_table_row.group {
 	padding: 4px 0px;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
 
-div.ov_property_table div.ov_property_table_row.ingroup
-{
+div.ov_property_table div.ov_property_table_row.ingroup {
 	margin-left: 15px;
 }
 
-div.ov_property_table div.ov_property_table_cell
-{
+div.ov_property_table div.ov_property_table_cell {
 	padding: 4px 0px;
 	white-space: nowrap;
 	text-overflow: ellipsis;
@@ -289,28 +247,24 @@ div.ov_property_table div.ov_property_table_cell
 	box-sizing: border-box;
 }
 
-div.ov_property_table div.ov_property_table_name
-{
+div.ov_property_table div.ov_property_table_name {
 	width: 49%;
 	padding-right: 2%;
 	float: left;
 }
 
-div.ov_property_table div.ov_property_table_value
-{
+div.ov_property_table div.ov_property_table_value {
 	width: 49%;
 	text-align: left;
 	float: left;
 }
 
-div.ov_property_table div.ov_property_table_button
-{
+div.ov_property_table div.ov_property_table_button {
 	color: var(--ov_button_color);
 	cursor: pointer;
 }
 
-div.ov_bottom_floating_panel
-{
+div.ov_bottom_floating_panel {
 	background: var(--ov_background_color);
 	border-top: 1px solid var(--ov_border_color);
 	width: 100%;
@@ -320,97 +274,103 @@ div.ov_bottom_floating_panel
 	bottom: 0px;
 }
 
-div.ov_bottom_floating_panel div.ov_floating_panel_text
-{
+div.ov_bottom_floating_panel div.ov_floating_panel_text {
 	padding: 3px;
 	margin-bottom: 10px;
 	float: left;
 }
 
-div.ov_bottom_floating_panel div.ov_floating_panel_button
-{
+div.ov_bottom_floating_panel div.ov_floating_panel_button {
 	width: 120px;
 	float: right;
 }
 
-div.ov_measure_panel
-{
+div.ov_measure_panel {
 	padding: 6px 15px;
 	position: absolute;
 	border-radius: 30px;
-	left : 0px;
-	top : 0px;
+	left: 0px;
+	top: 0px;
 }
 
-div.ov_measure_panel div.ov_svg_icon
-{
+div.ov_measure_panel div.ov_svg_icon {
 	color: inherit;
 	margin-bottom: 2px;
 }
 
-div.ov_measure_panel div.ov_measure_value
-{
+div.ov_measure_panel div.ov_measure_value {
 	float: left;
 	margin-right: 10px;
 }
 
-@media (hover)
-{
-
-div.title_right div.header_button:hover
-{
-	color: var(--ov_button_color);
+div.ov_explode_panel {
+	padding: 15px 20px;
+	position: absolute;
+	border-radius: 10px;
+	background: var(--ov_background_color);
+	border: 1px solid var(--ov_border_color);
+	left: 0px;
+	bottom: 0px;
+	min-width: 300px;
+	z-index: 100;
 }
 
-div.ov_toolbar div.ov_toolbar_button:hover
-{
-	background: var(--ov_hover_color);
+div.ov_explode_slider {
+	width: 250px;
+	margin: 0px 10px;
 }
 
-}
-
-@media (max-width: 350px), (max-height: 620px)
-{
-
-div.intro_content
-{
-	margin: 0px auto;
-}
-
-div.intro div.intro_logo
-{
+div.ov_toolbar_button.ov_hidden,
+div.ov_toolbar_separator.ov_hidden {
 	display: none;
 }
 
+@media (hover) {
+
+	div.title_right div.header_button:hover {
+		color: var(--ov_button_color);
+	}
+
+	div.ov_toolbar div.ov_toolbar_button:hover {
+		background: var(--ov_hover_color);
+	}
+
 }
 
-@media (max-width: 800px)
-{
+@media (max-width: 350px),
+(max-height: 620px) {
 
-div.intro_content
-{
-	width: auto;
+	div.intro_content {
+		margin: 0px auto;
+	}
+
+	div.intro div.intro_logo {
+		display: none;
+	}
+
 }
 
-div.main_viewer canvas
-{
-	border: 0px;
-	margin: 0px;
-}
+@media (max-width: 800px) {
 
-div.ov_dialog
-{
-	max-width: 80%;
-}
+	div.intro_content {
+		width: auto;
+	}
 
-div.ov_progress
-{
-	max-width: 80%;
-}
+	div.main_viewer canvas {
+		border: 0px;
+		margin: 0px;
+	}
 
-div.ov_bottom_floating_panel
-{
-	padding: 10px;
-}
+	div.ov_dialog {
+		max-width: 80%;
+	}
+
+	div.ov_progress {
+		max-width: 80%;
+	}
+
+	div.ov_bottom_floating_panel {
+		padding: 10px;
+	}
 
 }
