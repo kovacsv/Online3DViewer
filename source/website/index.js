@@ -9,6 +9,7 @@ import { ShowMessageDialog } from './dialogs.js';
 
 import * as Engine from '../engine/main.js';
 export { Engine };
+export { Website };
 
 import './css/icons.css';
 import './css/themes.css';

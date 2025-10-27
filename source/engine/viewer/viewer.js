@@ -520,6 +520,20 @@ export class Viewer
         });
     }
 
+    EnumerateMeshesAndLines (enumerator)
+    {
+        this.mainModel.EnumerateMeshesAndLines ((mesh) => {
+            enumerator (mesh);
+        });
+    }
+
+    EnumerateEdges (enumerator)
+    {
+        this.mainModel.EnumerateEdges ((edge) => {
+            enumerator (edge);
+        });
+    }
+
     InitNavigation ()
     {
         let camera = GetDefaultCamera (Direction.Y);

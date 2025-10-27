@@ -23,6 +23,7 @@ import { GetDefaultMaterials, ReplaceDefaultMaterialsColor } from '../engine/mod
 import { Direction } from '../engine/geometry/geometry.js';
 import { CookieGetBoolVal, CookieSetBoolVal } from './cookiehandler.js';
 import { MeasureTool } from './measuretool.js';
+import { ExplodeTool } from './explodetool.js';
 import { CloseAllDialogs } from './dialog.js';
 import { CreateVerticalSplitter } from './splitter.js';
 import { EnumeratePlugins, PluginType } from './pluginregistry.js';
@@ -40,13 +41,14 @@ const WebsiteUIState =
 
 class WebsiteLayouter
 {
-    constructor (parameters, navigator, sidebar, viewer, measureTool)
+    constructor (parameters, navigator, sidebar, viewer, measureTool, explodeTool)
     {
         this.parameters = parameters;
         this.navigator = navigator;
         this.sidebar = sidebar;
         this.viewer = viewer;
         this.measureTool = measureTool;
+        this.explodeTool = explodeTool;
         this.limits = {
             minPanelWidth : 290,
             minCanvasWidth : 100
@@ -188,6 +190,7 @@ export class Website
         this.cameraSettings = new CameraSettings ();
         this.viewer = new Viewer ();
         this.measureTool = new MeasureTool (this.viewer, this.settings);
+        this.explodeTool = new ExplodeTool (this.viewer, this.settings);
         this.hashHandler = new HashHandler ();
         this.toolbar = new Toolbar (this.parameters.toolbarDiv);
         this.navigator = new Navigator (this.parameters.navigatorDiv);
@@ -196,7 +199,7 @@ export class Website
         this.themeHandler = new ThemeHandler ();
         this.highlightColor = new RGBColor (142, 201, 240);
         this.uiState = WebsiteUIState.Undefined;
-        this.layouter = new WebsiteLayouter (this.parameters, this.navigator, this.sidebar, this.viewer, this.measureTool);
+        this.layouter = new WebsiteLayouter (this.parameters, this.navigator, this.sidebar, this.viewer, this.measureTool, this.explodeTool);
         this.model = null;
     }
 
@@ -289,6 +292,7 @@ export class Website
         this.sidebar.Clear ();
 
         this.measureTool.SetActive (false);
+        this.explodeTool.SetActive (false);
     }
 
     OnModelLoaded (importResult, threeObject)
@@ -299,6 +303,7 @@ export class Website
         this.viewer.SetUpVector (Direction.Y, false);
         this.navigator.FillTree (importResult);
         this.sidebar.UpdateControlsVisibility ();
+        this.explodeTool.UpdateButtonVisibility ();
         this.FitModelToWindow (true);
     }
 
@@ -547,6 +552,7 @@ export class Website
     {
         this.settings.SaveToCookies ();
         this.viewer.SetEdgeSettings (this.settings.edgeSettings);
+        this.explodeTool.RefreshEdges ();
     }
 
     UpdateEnvironmentMap ()
@@ -650,6 +656,7 @@ export class Website
                     separator.classList.add (className);
                 }
             }
+            return separator;
         }
 
         let importer = this.modelLoaderUI.GetImporter ();
@@ -707,6 +714,16 @@ export class Website
             this.measureTool.SetActive (isSelected);
         });
         this.measureTool.SetButton (measureToolButton);
+        let explodeSeparator = AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
+        let explodeToolButton = AddPushButton (this.toolbar, 'explode', Loc ('Explode View'), ['only_full_width', 'only_on_model'], (isSelected) => {
+            this.navigator.SetSelection (null);
+            this.explodeTool.SetActive (isSelected);
+        });
+        this.explodeTool.SetButton (explodeToolButton);
+        this.explodeTool.SetSeparator (explodeSeparator);
+        // Initially hide if there's no model or only one mesh
+        explodeToolButton.AddClass ('ov_hidden');
+        explodeSeparator.classList.add ('ov_hidden');
         AddSeparator (this.toolbar, ['only_full_width', 'only_on_model']);
         AddButton (this.toolbar, 'download', Loc ('Download'), ['only_full_width', 'only_on_model'], () => {
             HandleEvent ('model_downloaded', '');
