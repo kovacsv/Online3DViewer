@@ -271,6 +271,7 @@ class GltfExtensions
             'KHR_draco_mesh_compression',
             'KHR_materials_pbrSpecularGlossiness',
             'KHR_texture_transform',
+            'EXT_texture_webp',
         ];
         this.draco = null;
     }
@@ -752,6 +753,11 @@ export class ImporterGltf extends ImporterBase
         let texture = new TextureMap ();
         let gltfTexture = gltf.textures[gltfTextureRef.index];
         let gltfImageIndex = gltfTexture.source;
+
+        // Handle EXT_texture_webp extension
+        if (gltfTexture.extensions && gltfTexture.extensions.EXT_texture_webp) {
+            gltfImageIndex = gltfTexture.extensions.EXT_texture_webp.source;
+        }
         let gltfImage = gltf.images[gltfImageIndex];
 
         let textureParams = null;
