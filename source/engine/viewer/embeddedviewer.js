@@ -31,6 +31,7 @@ export class EmbeddedViewer
      * @param {EnvironmentSettings} [parameters.environmentSettings] Environment settings.
      * @param {function} [parameters.onModelLoaded] Callback that is called when the model with all
      * of the textures is fully loaded.
+     * @param {function} [parameters.onModelLoadFailed] Callback that is called when the model load failed.
     */
     constructor (parentElement, parameters)
     {
@@ -69,6 +70,7 @@ export class EmbeddedViewer
         this.model = null;
         this.modelLoader = new ThreeModelLoader ();
 
+        this.progressDiv = null;
         window.addEventListener ('resize', () => {
             this.Resize ();
         });
@@ -120,26 +122,30 @@ export class EmbeddedViewer
         }
 
         this.model = null;
-        let progressDiv = null;
+        if (this.progressDiv !== null) {
+            this.parentElement.removeChild (this.progressDiv);
+            this.progressDiv = null;
+        }
         this.modelLoader.LoadModel (inputFiles, settings, {
             onLoadStart : () => {
                 this.canvas.style.display = 'none';
-                progressDiv = document.createElement ('div');
-                progressDiv.innerHTML = Loc ('Loading model...');
-                this.parentElement.appendChild (progressDiv);
+                this.progressDiv = document.createElement ('div');
+                this.progressDiv.innerHTML = Loc ('Loading model...');
+                this.parentElement.appendChild (this.progressDiv);
             },
             onFileListProgress : (current, total) => {
             },
             onFileLoadProgress : (current, total) => {
             },
             onImportStart : () => {
-                progressDiv.innerHTML = Loc ('Importing model...');
+                this.progressDiv.innerHTML = Loc ('Importing model...');
             },
             onVisualizationStart : () => {
-                progressDiv.innerHTML = Loc ('Visualizing model...');
+                this.progressDiv.innerHTML = Loc ('Visualizing model...');
             },
             onModelFinished : (importResult, threeObject) => {
-                this.parentElement.removeChild (progressDiv);
+                this.parentElement.removeChild (this.progressDiv);
+                this.progressDiv = null;
                 this.canvas.style.display = 'inherit';
                 this.viewer.SetMainObject (threeObject);
                 let boundingSphere = this.viewer.GetBoundingSphere ((meshUserData) => {
@@ -173,7 +179,10 @@ export class EmbeddedViewer
                 if (importError.message !== null) {
                     message += ' (' + importError.message + ')';
                 }
-                progressDiv.innerHTML = message;
+                this.progressDiv.innerHTML = message;
+                if (this.parameters.onModelLoadFailed) {
+                    this.parameters.onModelLoadFailed ();
+                }
             }
         });
     }
