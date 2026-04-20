@@ -1,9 +1,8 @@
 name: NPM Publish
 
 on:
-  push:
-    tags:
-      - '*'
+  # disable it
+  workflow_dispatch: {}
 
 jobs:
   build:
@@ -12,8 +11,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "18.x"
+          registry-url: "https://registry.npmjs.org"
       - run: npm install
       - run: npm run create_dist
       - run: npm publish

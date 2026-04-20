@@ -39,7 +39,7 @@ import { ImporterPly } from './import/importerply.js';
 import { ImporterStl } from './import/importerstl.js';
 import { ImporterThreeSvg } from './import/importersvg.js';
 import { ImporterThreeBase, ImporterThreeFbx, ImporterThreeDae, ImporterThreeWrl, ImporterThree3mf, ImporterThreeAmf } from './import/importerthree.js';
-import { ColorToMaterialConverter, NameFromLine, ParametersFromLine, ReadLines, IsPowerOfTwo, NextPowerOfTwo, UpdateMaterialTransparency, CreateOcctWorker, LoadExternalLibrary } from './import/importerutils.js';
+import { ColorToMaterialConverter, NameFromLine, ParametersFromLine, ReadLines, IsPowerOfTwo, NextPowerOfTwo, UpdateMaterialTransparency, SetExternalLibLocation, CreateOcctWorker, LoadExternalLibrary } from './import/importerutils.js';
 import { BinaryReader } from './io/binaryreader.js';
 import { BinaryWriter } from './io/binarywriter.js';
 import { ArrayBufferToUtf8String, ArrayBufferToAsciiString, AsciiStringToArrayBuffer, Utf8StringToArrayBuffer, Base64DataURIToArrayBuffer, GetFileExtensionFromMimeType, CreateObjectUrl, CreateObjectUrlWithMimeType, RevokeObjectUrl } from './io/bufferutils.js';
@@ -63,7 +63,7 @@ import { Property, PropertyGroup, PropertyToString, PropertyType } from './model
 import { GetTriangleArea, GetTetrahedronSignedVolume, CalculateVolume, CalculateSurfaceArea } from './model/quantities.js';
 import { TopologyVertex, TopologyEdge, TopologyTriangleEdge, TopologyTriangle, Topology } from './model/topology.js';
 import { Triangle } from './model/triangle.js';
-import { Unit } from './model/unit.js';
+import { convertUnit, Unit } from './model/unit.js';
 import { ParameterListBuilder, ParameterListParser, CreateUrlBuilder, CreateUrlParser, CreateModelUrlParameters, ParameterConverter } from './parameters/parameterlist.js';
 import { ModelToThreeConversionParams, ModelToThreeConversionOutput, ThreeConversionStateHandler, ThreeNodeTree, ThreeMaterialHandler, ThreeMeshMaterialHandler, ConvertModelToThreeObject, MaterialGeometryType } from './threejs/threeconverter.js';
 import { ThreeModelLoader } from './threejs/threemodelloader.js';
@@ -193,6 +193,7 @@ export {
     IsPowerOfTwo,
     NextPowerOfTwo,
     UpdateMaterialTransparency,
+    SetExternalLibLocation,
     CreateOcctWorker,
     LoadExternalLibrary,
     BinaryReader,
@@ -284,6 +285,7 @@ export {
     TopologyTriangle,
     Topology,
     Triangle,
+    convertUnit,
     Unit,
     ParameterListBuilder,
     ParameterListParser,

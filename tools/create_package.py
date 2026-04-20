@@ -83,6 +83,11 @@ def CreateEnginePackage (rootDir, engineDir, websiteDir):
 				zip.write (os.path.join (filePath, fileInDir), 'envmaps/' + file + '/' + fileInDir)
 		else:
 			zip.write (filePath, 'envmaps/' + file)
+	occtSrcDir = os.path.join (rootDir, 'build', 'engine', 'assets', 'libs', 'occt-import-js')
+	for file in os.listdir (occtSrcDir):
+		filePath = os.path.join (occtSrcDir, file)
+		if os.path.isfile (filePath):
+			zip.write (filePath, 'assets/libs/occt-import-js/' + file)
 	zip.write (os.path.join (rootDir, 'build', 'engine', 'o3dv.min.js'), 'o3dv.min.js')
 	zip.write (os.path.join (rootDir, 'LICENSE.md'), 'o3dv.license.md')
 	zip.close ()

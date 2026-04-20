@@ -1,0 +1,4 @@
+FROM node:24 AS online3dviewer-builder
+WORKDIR /Online3DViewer
+COPY . .
+RUN npm install && npm run build_engine && npm run build_engine_module && npm run build_website && npm pack

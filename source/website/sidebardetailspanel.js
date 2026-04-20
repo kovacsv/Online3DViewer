@@ -9,22 +9,22 @@ import { CreateInlineColorCircle } from './utils.js';
 import { GetFileName, IsUrl } from '../engine/io/fileutils.js';
 import { MaterialSource, MaterialType } from '../engine/model/material.js';
 import { RGBColorToHexString } from '../engine/model/color.js';
-import { Unit } from '../engine/model/unit.js';
+import { Unit, convertUnit } from '../engine/model/unit.js';
 import { Loc } from '../engine/core/localization.js';
 
 function UnitToString (unit)
 {
     switch (unit) {
         case Unit.Millimeter:
-            return Loc ('Millimeter');
+            return Loc ('mm');
         case Unit.Centimeter:
-            return Loc ('Centimeter');
+            return Loc ('cm');
         case Unit.Meter:
-            return Loc ('Meter');
+            return Loc ('m');
         case Unit.Inch:
-            return Loc ('Inch');
+            return Loc ('in');
         case Unit.Foot:
-            return Loc ('Foot');
+            return Loc ('ft');
     }
     return Loc ('Unknown');
 }
@@ -62,22 +62,21 @@ export class SidebarDetailsPanel extends SidebarPanel
         if (triangleCount > 0) {
             this.AddProperty (table, new Property (PropertyType.Integer, Loc ('Triangles'), triangleCount));
         }
-        if (unit !== Unit.Unknown) {
-            this.AddProperty (table, new Property (PropertyType.Text, Loc ('Unit'), UnitToString (unit)));
-        }
-        this.AddProperty (table, new Property (PropertyType.Number, Loc ('Size X'), size.x));
-        this.AddProperty (table, new Property (PropertyType.Number, Loc ('Size Y'), size.y));
-        this.AddProperty (table, new Property (PropertyType.Number, Loc ('Size Z'), size.z));
+
+        this.AddProperty (table, new Property (PropertyType.Text, Loc ('Dimensions'), `${UnitToString (unit)} / in`));
+        this.AddProperty (table, new Property (PropertyType.Number, Loc ('X'), `${size.x.toFixed(2)} / ${convertUnit({ value: size.x, fromUnit: unit, toUnit: Unit.Inch }).toFixed(2)}`));
+        this.AddProperty (table, new Property (PropertyType.Number, Loc ('Y'), `${size.y.toFixed(2)} / ${convertUnit({ value: size.y, fromUnit: unit, toUnit: Unit.Inch }).toFixed(2)}`));
+        this.AddProperty (table, new Property (PropertyType.Number, Loc ('Z'), `${size.z.toFixed(2)} / ${convertUnit({ value: size.z, fromUnit: unit, toUnit: Unit.Inch }).toFixed(2)}`));
         this.AddCalculatedProperty (table, Loc ('Volume'), () => {
             if (!IsTwoManifold (object3D)) {
                 return null;
             }
             const volume = CalculateVolume (object3D);
-            return new Property (PropertyType.Number, null, volume);
+            return new Property (PropertyType.Number, null, `${volume.toFixed(2)} ${UnitToString (unit)}³ / ${convertUnit({ value: volume, fromUnit: unit, toUnit: Unit.Inch, isVolume: true }).toFixed(2)} in³`);
         });
         this.AddCalculatedProperty (table, Loc ('Surface'), () => {
             const surfaceArea = CalculateSurfaceArea (object3D);
-            return new Property (PropertyType.Number, null, surfaceArea);
+            return new Property (PropertyType.Number, null, `${surfaceArea.toFixed(2)} ${UnitToString (unit)}² / ${convertUnit({ value: surfaceArea, fromUnit: unit, toUnit: Unit.Inch, isArea: true }).toFixed(2)} in²`);
         });
         if (object3D.PropertyGroupCount () > 0) {
             let customTable = AddDiv (this.contentDiv, 'ov_property_table ov_property_table_custom');

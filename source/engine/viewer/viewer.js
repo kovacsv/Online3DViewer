@@ -15,21 +15,21 @@ export function GetDefaultCamera (direction)
     let fieldOfView = 45.0;
     if (direction === Direction.X) {
         return new Camera (
-            new Coord3D (2.0, -3.0, 1.5),
+            new Coord3D (3.0, 3.0, 3.0),
             new Coord3D (0.0, 0.0, 0.0),
             new Coord3D (1.0, 0.0, 0.0),
             fieldOfView
         );
     } else if (direction === Direction.Y) {
         return new Camera (
-            new Coord3D (-1.5, 2.0, 3.0),
+            new Coord3D (3.0, 3.0, 3.0),
             new Coord3D (0.0, 0.0, 0.0),
             new Coord3D (0.0, 1.0, 0.0),
             fieldOfView
         );
     } else if (direction === Direction.Z) {
         return new Camera (
-            new Coord3D (-1.5, -3.0, 2.0),
+            new Coord3D (3.0, 3.0, 3.0),
             new Coord3D (0.0, 0.0, 0.0),
             new Coord3D (0.0, 0.0, 1.0),
             fieldOfView
