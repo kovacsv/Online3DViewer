@@ -34,6 +34,7 @@ export class SidebarDetailsPanel extends SidebarPanel
     constructor (parentDiv)
     {
         super (parentDiv);
+        this.sizeFormatMode = 'default';
     }
 
     GetName ()
@@ -65,9 +66,59 @@ export class SidebarDetailsPanel extends SidebarPanel
         if (unit !== Unit.Unknown) {
             this.AddProperty (table, new Property (PropertyType.Text, Loc ('Unit'), UnitToString (unit)));
         }
-        this.AddProperty (table, new Property (PropertyType.Number, Loc ('Size X'), size.x));
-        this.AddProperty (table, new Property (PropertyType.Number, Loc ('Size Y'), size.y));
-        this.AddProperty (table, new Property (PropertyType.Number, Loc ('Size Z'), size.z));
+        
+        let formatRow = AddDiv (table, 'ov_property_table_row');
+        let formatNameColumn = AddDiv (formatRow, 'ov_property_table_cell ov_property_table_name', Loc ('Size Format') + ':');
+        let formatValueColumn = AddDiv (formatRow, 'ov_property_table_cell ov_property_table_value');
+        let selectElement = document.createElement ('select');
+        selectElement.style.width = '100%';
+        let defaultOption = document.createElement ('option'); defaultOption.value = 'default'; defaultOption.innerHTML = Loc ('Default'); selectElement.appendChild (defaultOption);
+        let feetInchOption = document.createElement ('option'); feetInchOption.value = 'feet_inches'; feetInchOption.innerHTML = Loc ('Feet & Inches'); selectElement.appendChild (feetInchOption);
+        let decFeetOption = document.createElement ('option'); decFeetOption.value = 'decimal_feet'; decFeetOption.innerHTML = Loc ('Decimal Feet'); selectElement.appendChild (decFeetOption);
+        selectElement.value = this.sizeFormatMode;
+        formatValueColumn.appendChild (selectElement);
+
+        let sizeXRow = this.AddProperty (table, new Property (PropertyType.Number, Loc ('Size X'), size.x));
+        let sizeYRow = this.AddProperty (table, new Property (PropertyType.Number, Loc ('Size Y'), size.y));
+        let sizeZRow = this.AddProperty (table, new Property (PropertyType.Number, Loc ('Size Z'), size.z));
+
+        let updateSizes = () => {
+            let format = selectElement.value;
+            this.sizeFormatMode = format;
+            let formatSize = (val) => {
+                if (format === 'default') {
+                    return val.toLocaleString (undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+                
+                let inches = val;
+                if (unit === Unit.Millimeter) inches = val / 25.4;
+                else if (unit === Unit.Centimeter) inches = val / 2.54;
+                else if (unit === Unit.Meter) inches = val * 39.3700787;
+                else if (unit === Unit.Foot) inches = val * 12.0;
+                else if (unit === Unit.Inch) inches = val;
+                else inches = val * 39.3700787; // User requested default is meters
+                
+                if (format === 'feet_inches') {
+                    if (inches < 12.0) {
+                        return inches.toLocaleString (undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' in';
+                    } else {
+                        let feet = Math.floor (inches / 12.0);
+                        let remInches = inches - (feet * 12.0);
+                        return feet + ' ft ' + remInches.toLocaleString (undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' in';
+                    }
+                } else if (format === 'decimal_feet') {
+                    return (inches / 12.0).toLocaleString (undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ft';
+                }
+            };
+            
+            sizeXRow.lastChild.innerHTML = formatSize (size.x);
+            sizeYRow.lastChild.innerHTML = formatSize (size.y);
+            sizeZRow.lastChild.innerHTML = formatSize (size.z);
+        };
+        selectElement.addEventListener ('change', updateSizes);
+        if (this.sizeFormatMode !== 'default') {
+            updateSizes ();
+        }
         this.AddCalculatedProperty (table, Loc ('Volume'), () => {
             if (!IsTwoManifold (object3D)) {
                 return null;
