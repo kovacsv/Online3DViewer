@@ -66,9 +66,9 @@ export class SidebarDetailsPanel extends SidebarPanel
         if (unit !== Unit.Unknown) {
             this.AddProperty (table, new Property (PropertyType.Text, Loc ('Unit'), UnitToString (unit)));
         }
-        
+
         let formatRow = AddDiv (table, 'ov_property_table_row');
-        let formatNameColumn = AddDiv (formatRow, 'ov_property_table_cell ov_property_table_name', Loc ('Size Format') + ':');
+        AddDiv (formatRow, 'ov_property_table_cell ov_property_table_name', Loc ('Size Format') + ':');
         let formatValueColumn = AddDiv (formatRow, 'ov_property_table_cell ov_property_table_value');
         let selectElement = document.createElement ('select');
         selectElement.style.width = '100%';
@@ -89,15 +89,15 @@ export class SidebarDetailsPanel extends SidebarPanel
                 if (format === 'default') {
                     return val.toLocaleString (undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 }
-                
-                let inches = val;
+
+                let inches
                 if (unit === Unit.Millimeter) inches = val / 25.4;
                 else if (unit === Unit.Centimeter) inches = val / 2.54;
                 else if (unit === Unit.Meter) inches = val * 39.3700787;
                 else if (unit === Unit.Foot) inches = val * 12.0;
                 else if (unit === Unit.Inch) inches = val;
                 else inches = val * 39.3700787; // User requested default is meters
-                
+
                 if (format === 'feet_inches') {
                     if (inches < 12.0) {
                         return inches.toLocaleString (undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' in';
@@ -110,7 +110,7 @@ export class SidebarDetailsPanel extends SidebarPanel
                     return (inches / 12.0).toLocaleString (undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ft';
                 }
             };
-            
+
             sizeXRow.lastChild.innerHTML = formatSize (size.x);
             sizeYRow.lastChild.innerHTML = formatSize (size.y);
             sizeZRow.lastChild.innerHTML = formatSize (size.z);
