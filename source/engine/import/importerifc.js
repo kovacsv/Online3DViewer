@@ -92,6 +92,12 @@ export class ImporterIfc extends ImporterBase
             const matrix = new Matrix (ifcGeometry.flatTransformation);
             const transformation = new Transformation (matrix);
 
+            let normalTransformation = null;
+            let normalMatrix = transformation.GetMatrix ().InvertTranspose ();
+            if (normalMatrix !== null) {
+                normalTransformation = new Transformation (normalMatrix);
+            }
+
             for (let i = 0; i < ifcVertices.length; i += 6) {
                 const x = ifcVertices[i];
                 const y = ifcVertices[i + 1];
@@ -99,13 +105,27 @@ export class ImporterIfc extends ImporterBase
                 const coord = new Coord3D (x, y, z);
                 const transformed = transformation.TransformCoord3D (coord);
                 mesh.AddVertex (transformed);
+
+                const nx = ifcVertices[i + 3];
+                const ny = ifcVertices[i + 4];
+                const nz = ifcVertices[i + 5];
+                let normal = new Coord3D (nx, ny, nz);
+                if (normalTransformation !== null) {
+                    normal = normalTransformation.TransformCoord3D (normal);
+                    normal.Normalize ();
+                }
+                mesh.AddNormal (normal);
             }
-            // TODO: normals
             for (let i = 0; i < ifcIndices.length; i += 3) {
                 const v0 = ifcIndices[i];
                 const v1 = ifcIndices[i + 1];
                 const v2 = ifcIndices[i + 2];
                 const triangle = new Triangle (
+                    vertexOffset + v0,
+                    vertexOffset + v1,
+                    vertexOffset + v2
+                );
+                triangle.SetNormals (
                     vertexOffset + v0,
                     vertexOffset + v1,
                     vertexOffset + v2
