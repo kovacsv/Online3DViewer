@@ -102,7 +102,45 @@ export class ColorToMaterialConverter
 	}
 }
 
+const DefaultOcctImportJsBaseUrl = 'https://cdn.jsdelivr.net/npm/occt-import-js@0.0.22/dist/';
+
 let occtWorkerUrl = null;
+let occtImportJsBaseUrl = DefaultOcctImportJsBaseUrl;
+
+function ClearOcctWorkerUrl ()
+{
+	if (occtWorkerUrl !== null && URL.revokeObjectURL !== undefined) {
+		URL.revokeObjectURL (occtWorkerUrl);
+	}
+	occtWorkerUrl = null;
+}
+
+function GetOcctImportJsFileUrl (fileName)
+{
+	let baseUrl = occtImportJsBaseUrl;
+	if (!baseUrl.endsWith ('/')) {
+		baseUrl += '/';
+	}
+
+	let documentBaseUrl = document.baseURI;
+	let resolvedBaseUrl = new URL (baseUrl, documentBaseUrl).href;
+	return new URL (fileName, resolvedBaseUrl).href;
+}
+
+export function SetOcctImportJsBaseUrl (baseUrl)
+{
+	if (baseUrl === null || baseUrl.length === 0) {
+		occtImportJsBaseUrl = DefaultOcctImportJsBaseUrl;
+	} else {
+		occtImportJsBaseUrl = baseUrl;
+	}
+	ClearOcctWorkerUrl ();
+}
+
+export function GetOcctImportJsBaseUrl ()
+{
+	return occtImportJsBaseUrl;
+}
 
 export function CreateOcctWorker (worker)
 {
@@ -112,8 +150,10 @@ export function CreateOcctWorker (worker)
 			return;
 		}
 
-		let baseUrl = 'https://cdn.jsdelivr.net/npm/occt-import-js@0.0.22/dist/';
-		fetch (baseUrl + 'occt-import-js-worker.js')
+		let workerScriptUrl = GetOcctImportJsFileUrl ('occt-import-js-worker.js');
+		let importScriptUrl = GetOcctImportJsFileUrl ('occt-import-js.js');
+		let wasmUrl = GetOcctImportJsFileUrl ('occt-import-js.wasm');
+		fetch (workerScriptUrl)
 			.then ((response) => {
 				if (!response.ok) {
 					return reject ();
@@ -121,8 +161,8 @@ export function CreateOcctWorker (worker)
 				return response.text ();
 			})
 			.then ((workerScript) => {
-				workerScript = workerScript.replace ('occt-import-js.js', baseUrl + 'occt-import-js.js');
-				workerScript = workerScript.replace ('return path', 'return \'' + baseUrl + 'occt-import-js.wasm\'');
+				workerScript = workerScript.replace ('occt-import-js.js', () => importScriptUrl);
+				workerScript = workerScript.replace ('return path', () => 'return ' + JSON.stringify (wasmUrl));
 				let blob = new Blob ([workerScript], { type : 'text/javascript' });
 				occtWorkerUrl = URL.createObjectURL (blob);
 				return resolve (new Worker (occtWorkerUrl));

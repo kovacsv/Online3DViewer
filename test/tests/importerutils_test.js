@@ -20,4 +20,16 @@ describe ('Power of Two', function () {
     });
 });
 
+describe ('OCCT Import Js', function () {
+    it ('Set base url', function () {
+        let defaultBaseUrl = OV.GetOcctImportJsBaseUrl ();
+
+        OV.SetOcctImportJsBaseUrl ('./assets/occt');
+        assert.strictEqual (OV.GetOcctImportJsBaseUrl (), './assets/occt');
+
+        OV.SetOcctImportJsBaseUrl (null);
+        assert.strictEqual (OV.GetOcctImportJsBaseUrl (), defaultBaseUrl);
+    });
+});
+
 }
