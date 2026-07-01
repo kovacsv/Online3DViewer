@@ -611,8 +611,6 @@ class FreeCadDocument
         if (!this.HasFile (fileName)) {
             return;
         }
-        let versionStr = materialListElement.getAttribute ('version');
-        let version = versionStr !== null ? parseInt (versionStr, 10) : 0;
         let materials = ParseMaterialListBinary (this.files[fileName]);
         if (materials.length === 0) {
             return;
