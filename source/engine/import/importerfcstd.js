@@ -52,7 +52,7 @@ function GetDataViewForBuffer (buffer)
 
 // Parses a PropertyMaterialList binary blob (FreeCAD 1.0+ ShapeAppearance).
 // Returns an array of { diffuseColor: RGBAColor, transparency: number }.
-function ParseMaterialListBinary (buffer, version)
+function ParseMaterialListBinary (buffer)
 {
     let view = GetDataViewForBuffer (buffer);
     let offset = 0;
@@ -613,7 +613,7 @@ class FreeCadDocument
         }
         let versionStr = materialListElement.getAttribute ('version');
         let version = versionStr !== null ? parseInt (versionStr, 10) : 0;
-        let materials = ParseMaterialListBinary (this.files[fileName], version);
+        let materials = ParseMaterialListBinary (this.files[fileName]);
         if (materials.length === 0) {
             return;
         }
