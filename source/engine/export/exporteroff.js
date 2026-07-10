@@ -23,12 +23,30 @@ export class ExporterOff extends ExporterBase
 		offWriter.WriteLine ('OFF');
 		offWriter.WriteArrayLine ([exporterModel.VertexCount (), exporterModel.TriangleCount (), 0]);
 
-		exporterModel.EnumerateVerticesAndTriangles ({
-			onVertex : function (x, y, z) {
-				offWriter.WriteArrayLine ([x, y, z]);
+		exporterModel.EnumerateVerticesAndTrianglesColor ({
+			onVertexColor : function (x, y, z, color) {
+				if (color)
+				{
+					offWriter.WriteArrayLine ([x, y, z, color.r, color.g, color.b]);
+				}
+				else
+				{
+					offWriter.WriteArrayLine ([x, y, z]);
+				}
 			},
-			onTriangle : function (v0, v1, v2) {
-				offWriter.WriteArrayLine ([3, v0, v1, v2]);
+			onTriangleColor : function (v0, v1, v2, color) {
+				if (color)
+				{
+					// ignore alpha with max value
+					if (color.a === 255)
+						offWriter.WriteArrayLine ([3, v0, v1, v2, color.r, color.g, color.b]);
+					else
+						offWriter.WriteArrayLine ([3, v0, v1, v2, color.r, color.g, color.b, color.a]);
+				}
+				else
+				{
+					offWriter.WriteArrayLine ([3, v0, v1, v2]);
+				}
 			}
 		});
 
