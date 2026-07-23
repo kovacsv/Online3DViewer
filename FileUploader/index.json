@@ -7,6 +7,10 @@
                    {
                        "name":  "senior-design",
                        "file":  "ModifiedWheelchairCDRVersion.glb"
+                   },
+                   {
+                       "name":  "CDRReport",
+                       "file":  "Critical Design Review.pdf"
                    }
                ]
 }

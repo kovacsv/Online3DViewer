@@ -3,6 +3,10 @@
                    {
                        "name":  "sd-outdated",
                        "file":  "ModifiedWheelchair4-28-26.glb"
+                   },
+                   {
+                       "name":  "senior-design",
+                       "file":  "ModifiedWheelchairCDRVersion.glb"
                    }
                ]
 }
