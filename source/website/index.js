@@ -59,6 +59,7 @@ export function StartWebsite ()
 
         document.getElementById ('intro_dragdrop_text').innerHTML = Loc ('Drag and drop 3D models here.');
         document.getElementById ('intro_formats_title').innerHTML = Loc ('Check an example file:');
+        document.getElementById ('model_library_title').innerHTML = Loc ('Model Library');
 
         let website = new Website ({
             headerDiv : document.getElementById ('header'),
@@ -66,6 +67,8 @@ export function StartWebsite ()
             toolbarDiv : document.getElementById ('toolbar'),
             mainDiv : document.getElementById ('main'),
             introDiv : document.getElementById ('intro'),
+            modelLibraryDiv : document.getElementById ('model_library'),
+            modelLibraryListDiv : document.getElementById ('model_library_list'),
             fileNameDiv : document.getElementById ('main_file_name'),
             leftContainerDiv : document.getElementById ('main_left_container'),
             navigatorDiv : document.getElementById ('main_navigator'),

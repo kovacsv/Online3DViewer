@@ -70,6 +70,66 @@ div.intro
 	border: 2px dashed var(--ov_border_color);
 	overflow: auto;
 	display: none;
+	position: relative;
+}
+
+div.intro.has_model_library
+{
+	padding-left: 270px;
+}
+
+div.model_library
+{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	bottom: 0px;
+	width: 250px;
+	box-sizing: border-box;
+	padding: 15px;
+	text-align: left;
+	border-right: 1px solid var(--ov_border_color);
+	overflow-y: auto;
+	display: none;
+}
+
+div.model_library div.model_library_title
+{
+	font-size: 20px;
+	font-weight: bold;
+	margin-bottom: 15px;
+	color: var(--ov_foreground_color);
+}
+
+div.model_library div.model_library_item
+{
+	color: var(--ov_outline_button_text_color);
+	border: 1px solid var(--ov_outline_button_color);
+	border-radius: 5px;
+	padding: 8px 10px;
+	margin-bottom: 8px;
+	cursor: pointer;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+div.model_library div.model_library_item:hover
+{
+	background: var(--ov_outline_button_hover_color);
+}
+
+@media (max-width: 800px)
+{
+	div.intro.has_model_library
+	{
+		padding-left: 10px;
+	}
+
+	div.model_library
+	{
+		display: none !important;
+	}
 }
 
 div.intro_content

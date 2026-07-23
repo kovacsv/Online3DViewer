@@ -4,7 +4,7 @@ import { ImportErrorCode, ImportSettings } from '../engine/import/importer.js';
 import { NavigationMode, ProjectionMode } from '../engine/viewer/camera.js';
 import { RGBColor } from '../engine/model/color.js';
 import { Viewer } from '../engine/viewer/viewer.js';
-import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth } from '../engine/viewer/domutils.js';
+import { AddDiv, AddDomElement, ShowDomElement, SetDomElementOuterHeight, CreateDomElement, GetDomElementOuterWidth, ClearDomElement } from '../engine/viewer/domutils.js';
 import { CalculatePopupPositionToScreen, ShowListPopup } from './dialogs.js';
 import { HandleEvent } from './eventhandler.js';
 import { HashHandler } from './hashhandler.js';
@@ -314,6 +314,7 @@ export class Website
         this.InitSidebar ();
         this.InitNavigator ();
         this.InitCookieConsent ();
+        this.InitModelLibrary ();
 
         this.viewer.SetMouseClickHandler (this.OnModelClicked.bind (this));
         this.viewer.SetMouseMoveHandler (this.OnModelMouseMoved.bind (this));
@@ -567,9 +568,14 @@ export class Website
         return true;
     }
 
+    GetBucketBaseUrl ()
+    {
+        return (typeof BUCKET_BASE_URL !== 'undefined') ? BUCKET_BASE_URL : '';
+    }
+
     LoadModelFromShortName (shortName)
     {
-        const bucketBaseUrl = BUCKET_BASE_URL;
+        const bucketBaseUrl = this.GetBucketBaseUrl ();
         if (!bucketBaseUrl) {
             return;
         }
@@ -579,20 +585,90 @@ export class Website
             }
             return response.json ();
         }).then ((index) => {
-            if (!index) {
+            if (!index || !index.models) {
                 return;
             }
             let entry = index.models.find ((m) => m.name === shortName);
             if (!entry) {
                 return;
             }
-            let urls = [bucketBaseUrl + '/' + entry.file];
-            let importSettings = new ImportSettings ();
-            importSettings.defaultLineColor = this.settings.defaultLineColor;
-            importSettings.defaultColor = this.settings.defaultColor;
-            HandleEvent ('model_load_started', 'query');
-            this.LoadModelFromUrlList (urls, importSettings);
+            this.LoadModelFromBucketEntry (bucketBaseUrl, entry, 'query');
         }).catch (() => {});
+    }
+
+    LoadModelFromBucketEntry (bucketBaseUrl, entry, source)
+    {
+        if (!entry || !entry.file) {
+            return;
+        }
+        let urls = [bucketBaseUrl + '/' + entry.file];
+        let importSettings = new ImportSettings ();
+        importSettings.defaultLineColor = this.settings.defaultLineColor;
+        importSettings.defaultColor = this.settings.defaultColor;
+        HandleEvent ('model_load_started', source || 'library');
+        this.LoadModelFromUrlList (urls, importSettings);
+    }
+
+    InitModelLibrary ()
+    {
+        const bucketBaseUrl = this.GetBucketBaseUrl ();
+        if (!bucketBaseUrl) {
+            this.HideModelLibrary ();
+            return;
+        }
+        fetch (bucketBaseUrl + '/index.json').then ((response) => {
+            if (!response.ok) {
+                return null;
+            }
+            return response.json ();
+        }).then ((index) => {
+            if (!index || !index.models) {
+                this.HideModelLibrary ();
+                return;
+            }
+            this.FillModelLibrary (bucketBaseUrl, index.models);
+        }).catch (() => {
+            this.HideModelLibrary ();
+        });
+    }
+
+    HideModelLibrary ()
+    {
+        ShowDomElement (this.parameters.modelLibraryDiv, false);
+        this.parameters.introDiv.classList.remove ('has_model_library');
+    }
+
+    FillModelLibrary (bucketBaseUrl, models)
+    {
+        const supportedExtensions = new Set ([
+            '3dm', '3ds', '3mf', 'amf', 'bim', 'brep', 'dae', 'fbx', 'fcstd',
+            'gltf', 'glb', 'ifc', 'igs', 'iges', 'stp', 'step', 'stl', 'obj',
+            'off', 'ply', 'wrl'
+        ]);
+        let loadableModels = models.filter ((model) => {
+            if (!model || !model.file) {
+                return false;
+            }
+            return supportedExtensions.has (GetFileExtension (model.file));
+        });
+
+        let listDiv = this.parameters.modelLibraryListDiv;
+        ClearDomElement (listDiv);
+        if (loadableModels.length === 0) {
+            this.HideModelLibrary ();
+            return;
+        }
+
+        for (let model of loadableModels) {
+            let displayName = model.displayName || model.name || model.file;
+            let itemDiv = AddDiv (listDiv, 'model_library_item', displayName);
+            itemDiv.setAttribute ('title', displayName);
+            itemDiv.addEventListener ('click', () => {
+                this.LoadModelFromBucketEntry (bucketBaseUrl, model, 'library');
+            });
+        }
+        ShowDomElement (this.parameters.modelLibraryDiv, true);
+        this.parameters.introDiv.classList.add ('has_model_library');
     }
 
     GetModelUrlFromQueryParameter (modelUrl)
