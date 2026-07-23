@@ -128,7 +128,16 @@ div.model_library div.model_library_item:hover
 
 	div.model_library
 	{
-		display: none !important;
+		position: static;
+		left: auto;
+		top: auto;
+		bottom: auto;
+		width: auto;
+		max-height: 220px;
+		padding: 0px 0px 15px 0px;
+		margin-bottom: 15px;
+		border-right: none;
+		border-bottom: 1px solid var(--ov_border_color);
 	}
 }
 
