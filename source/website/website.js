@@ -613,27 +613,31 @@ export class Website
     {
         const bucketBaseUrl = this.GetBucketBaseUrl ();
         if (!bucketBaseUrl) {
-            this.HideModelLibrary ();
+            this.HideModelLibrary ('BUCKET_BASE_URL is not defined (build without R2_BUCKET_BASE_URL).');
             return;
         }
-        fetch (bucketBaseUrl + '/index.json').then ((response) => {
+        let indexUrl = bucketBaseUrl + '/index.json';
+        fetch (indexUrl).then ((response) => {
             if (!response.ok) {
-                return null;
+                return Promise.reject (new Error ('index.json responded with HTTP ' + response.status));
             }
             return response.json ();
         }).then ((index) => {
             if (!index || !index.models) {
-                this.HideModelLibrary ();
+                this.HideModelLibrary ('index.json has no "models" array.');
                 return;
             }
             this.FillModelLibrary (bucketBaseUrl, index.models);
-        }).catch (() => {
-            this.HideModelLibrary ();
+        }).catch ((error) => {
+            this.HideModelLibrary ('could not fetch ' + indexUrl + ' (likely CORS or network): ' + error.message);
         });
     }
 
-    HideModelLibrary ()
+    HideModelLibrary (reason)
     {
+        if (reason) {
+            console.warn ('[ModelLibrary] panel hidden — ' + reason);
+        }
         ShowDomElement (this.parameters.modelLibraryDiv, false);
         this.parameters.introDiv.classList.remove ('has_model_library');
     }
@@ -655,9 +659,10 @@ export class Website
         let listDiv = this.parameters.modelLibraryListDiv;
         ClearDomElement (listDiv);
         if (loadableModels.length === 0) {
-            this.HideModelLibrary ();
+            this.HideModelLibrary ('index.json has ' + models.length + ' entries but none have a supported 3D extension.');
             return;
         }
+        console.log ('[ModelLibrary] showing ' + loadableModels.length + ' of ' + models.length + ' entries.');
 
         for (let model of loadableModels) {
             let displayName = model.displayName || model.name || model.file;
