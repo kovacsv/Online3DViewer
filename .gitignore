@@ -2,3 +2,4 @@ build/*
 plugins/*
 node_modules
 __pycache__
+.DS_Store
