@@ -101,15 +101,26 @@ export function ReadFile (file, onProgress)
 
 export function TransformFileHostUrls (urls)
 {
+    // Match on the parsed hostname rather than a substring of the whole URL. A substring test
+    // also matches an attacker-controlled host that merely embeds the name elsewhere — e.g.
+    // https://evil.example/?x=www.dropbox.com or https://github.com.evil.example/ — and would
+    // rewrite it into a URL the caller then fetches.
     for (let i = 0; i < urls.length; i++) {
-        let url = urls[i];
-        if (url.indexOf ('www.dropbox.com') !== -1) {
-            url = url.replace ('www.dropbox.com', 'dl.dropbox.com');
-            urls[i] = url;
-        } else if (url.indexOf ('github.com') !== -1) {
-            url = url.replace ('github.com', 'raw.githubusercontent.com');
-            url = url.replace ('/blob', '');
-            urls[i] = url;
+        let url = null;
+        try {
+            url = new URL (urls[i]);
+        } catch {
+            continue;
+        }
+        if (url.hostname === 'www.dropbox.com') {
+            url.hostname = 'dl.dropbox.com';
+            urls[i] = url.href;
+        } else if (url.hostname === 'github.com') {
+            // https://github.com/<user>/<repo>/blob/<ref>/<path> is served raw at
+            // https://raw.githubusercontent.com/<user>/<repo>/<ref>/<path>.
+            url.hostname = 'raw.githubusercontent.com';
+            url.pathname = url.pathname.replace ('/blob', '');
+            urls[i] = url.href;
         }
     }
 }

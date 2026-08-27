@@ -45,6 +45,30 @@ describe ('File Utils', function () {
         assert.deepStrictEqual (GetLines ('\r\napple\r\n'), ['apple']);
     });
 
+    it ('Transform file host urls', function () {
+        let urls = [
+            'https://www.dropbox.com/s/abc/model.obj',
+            'https://github.com/user/repo/blob/main/model.obj'
+        ];
+        OV.TransformFileHostUrls (urls);
+        assert.strictEqual (urls[0], 'https://dl.dropbox.com/s/abc/model.obj');
+        assert.strictEqual (urls[1], 'https://raw.githubusercontent.com/user/repo/main/model.obj');
+    });
+
+    it ('Transform file host urls only matches the host', function () {
+        // A host that merely embeds the name must not be rewritten.
+        let urls = [
+            'https://evil.example/?x=www.dropbox.com',
+            'https://github.com.evil.example/user/repo/blob/main/model.obj',
+            'https://notgithub.com/user/repo/blob/main/model.obj',
+            'https://dropbox.com/s/abc/model.obj',
+            'not a url'
+        ];
+        let expected = urls.slice ();
+        OV.TransformFileHostUrls (urls);
+        assert.deepStrictEqual (urls, expected);
+    });
+
     it ('Is URL', function () {
         assert.ok (!OV.IsUrl (''));
         assert.ok (!OV.IsUrl ('google'));
