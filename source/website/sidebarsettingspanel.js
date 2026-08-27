@@ -289,14 +289,14 @@ class SettingsModelDisplaySection extends SettingsSection
         this.thresholdSlider.setAttribute ('title', Loc ('Edge Angle Threshold'));
         this.thresholdSliderValue = AddDomElement (thresholdRow, 'span', 'ov_slider_label');
         this.thresholdSlider.addEventListener ('input', () => {
-            this.thresholdSliderValue.innerHTML = this.thresholdSlider.value;
+            this.thresholdSliderValue.textContent = this.thresholdSlider.value;
         });
         this. thresholdSlider.addEventListener ('change', () => {
             this.settings.edgeSettings.edgeThreshold = this.thresholdSlider.value;
             this.callbacks.onEdgeThresholdChange ();
         });
         this.thresholdSlider.value = this.settings.edgeSettings.edgeThreshold;
-        this.thresholdSliderValue.innerHTML = this.settings.edgeSettings.edgeThreshold;
+        this.thresholdSliderValue.textContent = this.settings.edgeSettings.edgeThreshold;
 
         this.edgeDisplayToggle.SetStatus (this.settings.edgeSettings.showEdges);
         ShowDomElement (this.edgeSettingsDiv, this.settings.edgeSettings.showEdges);
