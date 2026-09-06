@@ -76,7 +76,7 @@
 	},
 	"dependencies": {
 		"@simonwep/pickr": "1.9.0",
-		"fflate": "0.8.2",
+		"fflate": "0.8.3",
 		"occt-import-js": "^0.0.22",
 		"three": "0.176.0"
 	},
