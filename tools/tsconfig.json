@@ -3,6 +3,7 @@
     "compilerOptions": {
         "allowJs": true,
         "declaration": true,
-        "emitDeclarationOnly": true
+        "emitDeclarationOnly": true,
+        "skipLibCheck": true
     }
 }

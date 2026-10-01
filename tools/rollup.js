@@ -8,6 +8,7 @@ export default [
         external: [
             'fflate',
             'three',
+            'three-mesh-bvh',
             'three/examples/jsm/loaders/SVGLoader.js',
             'three/examples/jsm/loaders/TGALoader.js',
             'three/examples/jsm/loaders/FBXLoader.js',

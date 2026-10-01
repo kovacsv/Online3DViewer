@@ -7,6 +7,7 @@ import { Mesh } from '../model/mesh.js';
 import { Triangle } from '../model/triangle.js';
 
 import * as THREE from 'three';
+import { MeshBVH, acceleratedRaycast } from 'three-mesh-bvh';
 
 // Some mobile devices say that they support mediump, but in reality they don't. At the end
 // all materials rendered as black. This hack renders a single plane with red material and
@@ -253,6 +254,32 @@ export function CreateHighlightMaterials (originalMaterials, highlightColor, wit
     return highlightMaterials;
 }
 
+export function BuildThreeMeshBoundsTree (mesh)
+{
+    // Skinned, instanced and morphed meshes move vertices away from the geometry, so a static
+    // tree would give wrong hits. They keep the default raycast.
+    if (!mesh.isMesh || mesh.isSkinnedMesh || mesh.isInstancedMesh || mesh.isBatchedMesh) {
+        return;
+    }
+    let geometry = mesh.geometry;
+    let position = geometry.getAttribute ('position');
+    if (position === undefined || position.count === 0 || Object.keys (geometry.morphAttributes).length > 0) {
+        return;
+    }
+    if (!geometry.boundsTree) {
+        // Indirect mode keeps the geometry index untouched, so faceIndex stays the same.
+        geometry.boundsTree = new MeshBVH (geometry, { indirect : true });
+    }
+    mesh.raycast = acceleratedRaycast;
+}
+
+export function DisposeThreeMeshBoundsTree (mesh)
+{
+    if (mesh.geometry && mesh.geometry.boundsTree) {
+        mesh.geometry.boundsTree = null;
+    }
+}
+
 export function DisposeThreeObjects (mainObject)
 {
     if (mainObject === null) {
@@ -269,6 +296,7 @@ export function DisposeThreeObjects (mainObject)
                 obj.material.dispose ();
             }
             obj.userData = null;
+            DisposeThreeMeshBoundsTree (obj);
             obj.geometry.dispose ();
         }
     });
