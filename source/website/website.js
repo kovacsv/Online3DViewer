@@ -11,6 +11,7 @@ import { HashHandler } from './hashhandler.js';
 import { Navigator, Selection, SelectionType } from './navigator.js';
 import { CameraSettings, Settings, Theme } from './settings.js';
 import { Sidebar } from './sidebar.js';
+import { MeshIssuesHighlight } from './meshissueshighlight.js';
 import { ThemeHandler } from './themehandler.js';
 import { ThreeModelLoaderUI } from './threemodelloaderui.js';
 import { Toolbar } from './toolbar.js';
@@ -188,6 +189,7 @@ export class Website
         this.cameraSettings = new CameraSettings ();
         this.viewer = new Viewer ();
         this.measureTool = new MeasureTool (this.viewer, this.settings);
+        this.meshIssuesHighlight = new MeshIssuesHighlight (this.viewer);
         this.hashHandler = new HashHandler ();
         this.toolbar = new Toolbar (this.parameters.toolbarDiv);
         this.navigator = new Navigator (this.parameters.navigatorDiv);
@@ -823,6 +825,12 @@ export class Website
             onEdgeDisplayChanged : () => {
                 HandleEvent ('edge_display_changed', this.settings.showEdges ? 'on' : 'off');
                 this.UpdateEdgeDisplay ();
+            },
+            onHighlightMeshIssues : (meshCheckResult) => {
+                this.meshIssuesHighlight.Show (meshCheckResult);
+            },
+            onClearMeshIssuesHighlight : () => {
+                this.meshIssuesHighlight.Clear ();
             },
             onResizeRequested : () => {
                 this.layouter.Resize ();

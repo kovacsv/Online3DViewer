@@ -296,6 +296,17 @@ div.ov_property_table div.ov_property_table_name
 	float: left;
 }
 
+div.ov_property_table div.ov_property_table_row.wrap div.ov_property_table_name
+{
+	width: 51%;
+	white-space: normal;
+}
+
+div.ov_property_table div.ov_property_table_row.wrap div.ov_property_table_value
+{
+	width: 47%;
+}
+
 div.ov_property_table div.ov_property_table_value
 {
 	width: 49%;

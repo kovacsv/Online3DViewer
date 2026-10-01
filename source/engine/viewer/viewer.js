@@ -433,6 +433,12 @@ export class Viewer
         this.Render ();
     }
 
+    RemoveExtraObject (object)
+    {
+        this.extraModel.RemoveObject (object);
+        this.Render ();
+    }
+
     Clear ()
     {
         this.mainModel.Clear ();

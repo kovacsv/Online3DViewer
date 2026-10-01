@@ -103,6 +103,7 @@ export class MeasureTool
         this.isActive = false;
         this.markers = [];
         this.tempMarker = null;
+        this.line = null;
 
         this.panel = null;
         this.button = null;
@@ -178,7 +179,8 @@ export class MeasureTool
             let material = CreateMaterial ();
             let aPoint = this.markers[0].GetIntersection ().point;
             let bPoint = this.markers[1].GetIntersection ().point;
-            this.viewer.AddExtraObject (CreateLineFromPoints ([aPoint, bPoint], material));
+            this.line = CreateLineFromPoints ([aPoint, bPoint], material);
+            this.viewer.AddExtraObject (this.line);
         }
     }
 
@@ -268,8 +270,19 @@ export class MeasureTool
 
     ClearMarkers ()
     {
-        this.viewer.ClearExtra ();
+        // Remove only own objects, other extra objects like the mesh issues highlight stay.
+        let objects = this.markers.map ((marker) => marker.GetObject ());
+        if (this.tempMarker !== null) {
+            objects.push (this.tempMarker.GetObject ());
+        }
+        if (this.line !== null) {
+            objects.push (this.line);
+        }
+        for (const object of objects) {
+            this.viewer.RemoveExtraObject (object);
+        }
         this.markers = [];
         this.tempMarker = null;
+        this.line = null;
     }
 }

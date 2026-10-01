@@ -64,6 +64,16 @@ export class ViewerModel
         this.rootObject.add (object);
     }
 
+    RemoveObject (object)
+    {
+        // The object may already be gone if the whole model was cleared.
+        if (this.rootObject === null || object.parent !== this.rootObject) {
+            return;
+        }
+        this.rootObject.remove (object);
+        DisposeThreeObjects (object);
+    }
+
     Traverse (enumerator)
     {
         if (this.rootObject === null) {

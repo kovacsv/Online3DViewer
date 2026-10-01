@@ -41,6 +41,15 @@ export class Sidebar
             }
         });
 
+        this.detailsPanel.Init ({
+            onHighlightMeshIssues : (meshCheckResult) => {
+                this.callbacks.onHighlightMeshIssues (meshCheckResult);
+            },
+            onClearMeshIssuesHighlight : () => {
+                this.callbacks.onClearMeshIssuesHighlight ();
+            }
+        });
+
         this.settingsPanel.Init ({
             getShadingType : () => {
                 return this.callbacks.getShadingType ();

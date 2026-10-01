@@ -52,6 +52,7 @@ import { Line } from './model/line.js';
 import { TextureMap, MaterialBase, FaceMaterial, PhongMaterial, PhysicalMaterial, TextureMapIsEqual, TextureIsEqual, MaterialType, MaterialSource } from './model/material.js';
 import { Mesh } from './model/mesh.js';
 import { MeshPrimitiveBuffer, MeshBuffer, ConvertMeshToMeshBuffer } from './model/meshbuffer.js';
+import { MeshCheckResult, CheckMesh } from './model/meshcheck.js';
 import { MeshInstanceId, MeshInstance } from './model/meshinstance.js';
 import { IsEmptyMesh, CalculateTriangleNormal, TransformMesh, FlipMeshTrianglesOrientation } from './model/meshutils.js';
 import { Model } from './model/model.js';
@@ -252,6 +253,8 @@ export {
     MeshPrimitiveBuffer,
     MeshBuffer,
     ConvertMeshToMeshBuffer,
+    MeshCheckResult,
+    CheckMesh,
     MeshInstanceId,
     MeshInstance,
     IsEmptyMesh,

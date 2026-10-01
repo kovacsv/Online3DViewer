@@ -1,11 +1,12 @@
 import { RunTaskAsync } from '../engine/core/taskrunner.js';
 import { SubCoord3D } from '../engine/geometry/coord3d.js';
 import { GetBoundingBox, IsTwoManifold } from '../engine/model/modelutils.js';
+import { CheckMesh } from '../engine/model/meshcheck.js';
 import { CalculateVolume, CalculateSurfaceArea } from '../engine/model/quantities.js';
 import { Property, PropertyToString, PropertyType } from '../engine/model/property.js';
 import { AddDiv, AddDomElement, ClearDomElement } from '../engine/viewer/domutils.js';
 import { SidebarPanel } from './sidebarpanel.js';
-import { CreateInlineColorCircle } from './utils.js';
+import { AddCheckbox, CreateInlineColorCircle } from './utils.js';
 import { GetFileName, IsUrl } from '../engine/io/fileutils.js';
 import { MaterialSource, MaterialType } from '../engine/model/material.js';
 import { RGBColorToHexString } from '../engine/model/color.js';
@@ -29,11 +30,27 @@ function UnitToString (unit)
     return Loc ('Unknown');
 }
 
+function GetVolumeUnavailableReason (meshCheckResult)
+{
+    // Reuses the row names of the mesh check, so there are no new strings to translate.
+    if (meshCheckResult.holeCount > 0) {
+        return Loc ('Holes') + ': ' + meshCheckResult.holeCount;
+    }
+    if (meshCheckResult.nonManifoldEdgeCount > 0) {
+        return Loc ('Non-manifold edges') + ': ' + meshCheckResult.nonManifoldEdgeCount;
+    }
+    if (meshCheckResult.inconsistentEdgeCount > 0) {
+        return Loc ('Inconsistent edges') + ': ' + meshCheckResult.inconsistentEdgeCount;
+    }
+    return null;
+}
+
 export class SidebarDetailsPanel extends SidebarPanel
 {
     constructor (parentDiv)
     {
         super (parentDiv);
+        this.highlightIssuesCheckbox = null;
     }
 
     GetName ()
@@ -44,6 +61,32 @@ export class SidebarDetailsPanel extends SidebarPanel
     GetIcon ()
     {
         return 'details';
+    }
+
+    Show (show)
+    {
+        if (!show) {
+            this.ClearMeshIssuesHighlight ();
+        }
+        super.Show (show);
+    }
+
+    Clear ()
+    {
+        this.ClearMeshIssuesHighlight ();
+        this.highlightIssuesCheckbox = null;
+        super.Clear ();
+    }
+
+    ClearMeshIssuesHighlight ()
+    {
+        if (this.highlightIssuesCheckbox !== null) {
+            this.highlightIssuesCheckbox.checked = false;
+        }
+        // Show (false) is called by the panel set before Init.
+        if (this.callbacks !== null) {
+            this.callbacks.onClearMeshIssuesHighlight ();
+        }
     }
 
     AddObject3DProperties (model, object3D)
@@ -70,7 +113,9 @@ export class SidebarDetailsPanel extends SidebarPanel
         this.AddProperty (table, new Property (PropertyType.Number, Loc ('Size Z'), size.z));
         this.AddCalculatedProperty (table, Loc ('Volume'), () => {
             if (!IsTwoManifold (object3D)) {
-                return null;
+                const result = CheckMesh (object3D);
+                const reason = GetVolumeUnavailableReason (result);
+                return reason === null ? null : new Property (PropertyType.Text, null, reason);
             }
             const volume = CalculateVolume (object3D);
             return new Property (PropertyType.Number, null, volume);
@@ -79,6 +124,36 @@ export class SidebarDetailsPanel extends SidebarPanel
             const surfaceArea = CalculateSurfaceArea (object3D);
             return new Property (PropertyType.Number, null, surfaceArea);
         });
+        if (triangleCount > 0) {
+            this.AddCalculatedPropertyList (table, Loc ('Mesh check'), (valueColumn) => {
+                const result = CheckMesh (object3D);
+                if (result.boundaryEdgeCount > 0 || result.nonManifoldEdgeCount > 0) {
+                    this.highlightIssuesCheckbox = AddCheckbox (valueColumn, 'ov_highlight_mesh_issues', Loc ('Highlight'), false, () => {
+                        if (this.highlightIssuesCheckbox.checked) {
+                            this.callbacks.onHighlightMeshIssues (result);
+                        } else {
+                            this.callbacks.onClearMeshIssuesHighlight ();
+                        }
+                    });
+                    this.highlightIssuesCheckbox.parentElement.setAttribute ('title', Loc ('Red: hole edges, purple: non-manifold edges'));
+                }
+                let properties = [
+                    new Property (PropertyType.Boolean, Loc ('Watertight'), result.isWatertight),
+                    new Property (PropertyType.Integer, Loc ('Bodies'), result.bodyCount),
+                    new Property (PropertyType.Integer, Loc ('Holes'), result.holeCount),
+                    new Property (PropertyType.Integer, Loc ('Boundary edges'), result.boundaryEdgeCount),
+                    new Property (PropertyType.Integer, Loc ('Non-manifold edges'), result.nonManifoldEdgeCount),
+                    new Property (PropertyType.Integer, Loc ('Non-manifold vertices'), result.nonManifoldVertexCount),
+                    new Property (PropertyType.Integer, Loc ('Inconsistent edges'), result.inconsistentEdgeCount),
+                    new Property (PropertyType.Integer, Loc ('Euler characteristic'), result.eulerCharacteristic)
+                ];
+                // Inside out is computed only for a closed, consistently oriented surface.
+                if (result.isWatertight && result.inconsistentEdgeCount === 0) {
+                    properties.push (new Property (PropertyType.Boolean, Loc ('Inside out'), result.isInsideOut));
+                }
+                return properties;
+            });
+        }
         if (object3D.PropertyGroupCount () > 0) {
             let customTable = AddDiv (this.contentDiv, 'ov_property_table ov_property_table_custom');
             for (let i = 0; i < object3D.PropertyGroupCount (); i++) {
@@ -165,6 +240,31 @@ export class SidebarDetailsPanel extends SidebarPanel
 
     AddCalculatedProperty (table, name, calculateValue)
     {
+        this.AddCalculateButton (table, name, (valueColumn) => {
+            let propertyValue = calculateValue ();
+            if (propertyValue === null) {
+                valueColumn.innerHTML = '-';
+            } else {
+                this.DisplayPropertyValue (propertyValue, valueColumn);
+            }
+        });
+    }
+
+    AddCalculatedPropertyList (table, name, calculateProperties)
+    {
+        // The calculated properties are appended to the end of the table, so this should be its last row.
+        this.AddCalculateButton (table, name, (valueColumn) => {
+            ClearDomElement (valueColumn);
+            for (const property of calculateProperties (valueColumn)) {
+                let row = this.AddProperty (table, property);
+                row.classList.add ('ingroup', 'wrap');
+            }
+            this.Resize ();
+        });
+    }
+
+    AddCalculateButton (table, name, onCalculate)
+    {
         let row = AddDiv (table, 'ov_property_table_row');
         let nameColumn = AddDiv (row, 'ov_property_table_cell ov_property_table_name', name + ':');
         let valueColumn = AddDiv (row, 'ov_property_table_cell ov_property_table_value');
@@ -175,12 +275,7 @@ export class SidebarDetailsPanel extends SidebarPanel
             ClearDomElement (valueColumn);
             valueColumn.innerHTML = Loc ('Please wait...');
             RunTaskAsync (() => {
-                let propertyValue = calculateValue ();
-                if (propertyValue === null) {
-                    valueColumn.innerHTML = '-';
-                } else {
-                    this.DisplayPropertyValue (propertyValue, valueColumn);
-                }
+                onCalculate (valueColumn);
             });
         });
     }
