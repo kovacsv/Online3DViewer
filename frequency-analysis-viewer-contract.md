@@ -20,7 +20,7 @@ Adding one (for example `#model=…$strain=<url>`) would be a separate change.
 ## Packaging
 
 - Rebuild the package tarball the same way as today, then update `online-3d-viewer.tgz` and its
-  integrity hash in `pnpm-lock.yaml`. Bump the package `version` (currently `0.0.12`) so the two
+  integrity hash in `pnpm-lock.yaml`. Bump the package `version` (currently `0.0.13`) so the two
   builds can be told apart.
 - `occt-import-js` stays at `0.0.22`. The `vite-plugin-static-copy` setup, the `/occt-import-js/`
   location and `OV.SetExternalLibLocation ("occt-import-js", "/occt-import-js/")` don't change.
@@ -311,6 +311,11 @@ if (!result.ok) {
 }
 ```
 
+## Model opacity
+
+`EmbeddedViewer.SetModelOpacity (opacity) → { ok, reason }` fades the part so the edge highlights
+behind it show through. Its contract is in [`model-opacity-contract.md`](model-opacity-contract.md).
+
 ## Website in an iframe (postMessage)
 
 The website (`build/package/website/index.html#model=<url>`) accepts the same overlays from the page
@@ -327,6 +332,7 @@ Messages are plain objects. Each command may carry a `requestId`, echoed in its 
 | `o3dv:surface-strain:show` | `buffer: ArrayBuffer` (send it as a transferable), `thresholds?` | `ShowSurfaceStrain` |
 | `o3dv:surface-strain:colors` | `thresholds` | `SetSurfaceStrainColors` |
 | `o3dv:surface-strain:clear` | | `ClearSurfaceStrain` |
+| `o3dv:model-opacity:set` | `opacity: number` in `(0, 1]` | `SetModelOpacity` |
 
 | Website → parent `type` | When |
 |---|---|
@@ -345,6 +351,8 @@ Messages are plain objects. Each command may carry a `requestId`, echoed in its 
   load. If a later show or clear of the same overlay arrives first, it is answered with `ok: false`.
   `colors` without any requested strain fails at once; with a pending strain it gets the strain's
   result, and the new colors are used.
+- **Model opacity.** `o3dv:model-opacity:set` is a setting, not an overlay. It is answered at
+  once and kept across model loads. See [`model-opacity-contract.md`](model-opacity-contract.md).
 - **Toolbar.** The overlays stay through camera moves, measure mode and settings (edge display,
   theme), none of which rebuild the scene.
 
@@ -357,5 +365,7 @@ Messages are plain objects. Each command may carry a `requestId`, echoed in its 
     typo had left unset. Models with edges or lines sit very slightly further back in depth.
   - While edge highlights are shown, the model's meshes use a polygon offset factor of up to
     `ceil(width / 2 · √2) + 1` instead of 1. The factor goes back to 1 when the highlights are cleared.
+- **Model opacity** (`0.0.13`) is non-breaking: the default is `1`, and nothing changes until
+  `SetModelOpacity` or `o3dv:model-opacity:set` is used.
 - **Versioning.** Only artifact version `1` is accepted. A newer artifact version resolves with
   `ok: false`, and it needs a package update. New header keys are ignored.

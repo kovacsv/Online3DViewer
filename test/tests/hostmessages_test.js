@@ -73,6 +73,13 @@ function CreateFakeOverlays ()
         },
         ClearSurfaceStrain () {
             this.calls.push (['ClearSurfaceStrain']);
+        },
+        SetModelOpacity (opacity) {
+            this.calls.push (['SetModelOpacity', opacity]);
+            if (typeof opacity !== 'number' || !(opacity > 0 && opacity <= 1)) {
+                return { ok : false, reason : 'opacity must be a number in (0, 1]' };
+            }
+            return { ok : true, reason : null };
         }
     };
 }
@@ -143,6 +150,8 @@ describe ('Host Messages', function () {
         LoadModel (env);
         env.frameWindow.Send ({ type : HostMessageType.EdgeHighlightsShow, edges : Edges }, env.frameWindow.parent, 'https://evil.example.com');
         env.frameWindow.Send ({ type : HostMessageType.EdgeHighlightsShow, edges : Edges }, {}, Origin);
+        env.frameWindow.Send ({ type : HostMessageType.ModelOpacitySet, opacity : 0.2 }, env.frameWindow.parent, 'https://evil.example.com');
+        env.frameWindow.Send ({ type : HostMessageType.ModelOpacitySet, opacity : 0.2 }, {}, Origin);
         env.frameWindow.Send (null);
         env.frameWindow.Send ('o3dv:edge-highlights:show');
         env.frameWindow.Send ({ type : 'something-else' });
@@ -256,6 +265,21 @@ describe ('Host Messages', function () {
         ]);
         // The handler doesn't clear anything itself, the parent decides.
         assert.ok (!env.overlays.calls.some ((call) => call[0].startsWith ('Clear')));
+    });
+
+    it ('Sets the model opacity at once, with or without a model', async function () {
+        let env = CreateHandler ();
+        env.frameWindow.Send ({ type : HostMessageType.ModelOpacitySet, opacity : 0.2, requestId : 1 });
+        env.frameWindow.Send ({ type : HostMessageType.ModelOpacitySet, opacity : 1.5, requestId : 2 });
+        assert.deepStrictEqual (Results (env), [
+            { type : HostMessageType.Result, requestId : 1, command : 'o3dv:model-opacity:set', ok : true, reason : null },
+            { type : HostMessageType.Result, requestId : 2, command : 'o3dv:model-opacity:set', ok : false, reason : 'opacity must be a number in (0, 1]' }
+        ]);
+        // The viewer keeps the setting, a model load doesn't apply or answer it again.
+        LoadModel (env);
+        await Flush ();
+        assert.deepStrictEqual (env.overlays.calls, [['SetModelOpacity', 0.2], ['SetModelOpacity', 1.5]]);
+        assert.strictEqual (Results (env).length, 2);
     });
 
     it ('Applies colors that arrive while the strain is mapped', async function () {

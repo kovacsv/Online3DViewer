@@ -1,6 +1,6 @@
 {
 	"name": "@uptoolapp/online-3d-viewer",
-	"version": "0.0.12",
+	"version": "0.0.13",
 	"publishConfig": {
 		"registry": "https://npm.pkg.github.com"
 	},

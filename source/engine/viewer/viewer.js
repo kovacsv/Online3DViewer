@@ -53,6 +53,17 @@ export function TraverseThreeObject (object, processor)
     return true;
 }
 
+function SetMaterialOpacity (material, transparent, opacity, depthWrite)
+{
+    if (material.transparent !== transparent) {
+        // It changes the compiled shader.
+        material.needsUpdate = true;
+    }
+    material.transparent = transparent;
+    material.opacity = opacity;
+    material.depthWrite = depthWrite;
+}
+
 export function GetShadingTypeOfObject (mainObject)
 {
     let shadingType = null;
@@ -178,6 +189,9 @@ export class Viewer
         this.shadingModel = null;
         this.navigation = null;
         this.upVector = null;
+        this.modelOpacity = 1.0;
+        // Original transparent, opacity and depthWrite of the materials faded by modelOpacity.
+        this.modelOpacityOriginals = new WeakMap ();
         this.settings = {
             animationSteps : 40
         };
@@ -434,6 +448,7 @@ export class Viewer
         const shadingType = GetShadingTypeOfObject (object);
         this.mainModel.SetMainObject (object);
         this.shadingModel.SetShadingType (shadingType);
+        this.UpdateModelOpacity ();
 
         this.Render ();
     }
@@ -468,6 +483,7 @@ export class Viewer
         this.surfaceStrainModel.SetRootObject (this.surfaceStrain.CreateThreeObject (this.shadingModel.type));
         this.UpdatePolygonOffsetFactor ();
         this.UpdateMeshesVisibility ();
+        this.UpdateModelOpacity ();
         this.Render ();
     }
 
@@ -514,6 +530,7 @@ export class Viewer
             this.edgeHighlightModel.SetRootObject (this.edgeHighlight.CreateThreeObject ());
         }
         this.UpdatePolygonOffsetFactor ();
+        this.UpdateModelOpacity ();
         this.Render ();
     }
 
@@ -547,6 +564,93 @@ export class Viewer
         this.surfaceStrainModel.Traverse ((obj) => {
             if (obj.isMesh) {
                 obj.material.polygonOffsetFactor = factor;
+            }
+        });
+    }
+
+    /**
+     * Fades the model, the surface strain overlay and highlighted meshes, and draws the edge
+     * highlights on top of them, so edges behind the model show through it. It is a setting like
+     * the edge settings: it stays through model loads and overlay changes.
+     * @param {number} opacity In (0, 1], 1 shows the model solid.
+     * @returns {boolean} False if opacity is out of range, and nothing changes.
+     */
+    SetModelOpacity (opacity)
+    {
+        if (typeof opacity !== 'number' || !Number.isFinite (opacity) || opacity <= 0.0 || opacity > 1.0) {
+            return false;
+        }
+        this.modelOpacity = opacity;
+        this.UpdateModelOpacity ();
+        this.Render ();
+        return true;
+    }
+
+    GetModelOpacity ()
+    {
+        return this.modelOpacity;
+    }
+
+    /**
+     * Applies modelOpacity to every material the viewer shows. The faded value is computed from the
+     * material's original values, so it can run again any time, and a material shared by many
+     * meshes, or a highlighted mesh's own materials, are never faded twice. Faded surfaces don't
+     * write depth, so the edge highlights behind them pass the depth test. The edge highlights
+     * draw after them, otherwise the faded surfaces would blend over the lines and dim them.
+     */
+    UpdateModelOpacity ()
+    {
+        let isFaded = (this.modelOpacity < 1.0);
+        let updateMaterial = (material) => {
+            if (material === null || material === undefined) {
+                return;
+            }
+            let original = this.modelOpacityOriginals.get (material);
+            if (isFaded) {
+                if (original === undefined) {
+                    original = {
+                        transparent : material.transparent,
+                        opacity : material.opacity,
+                        depthWrite : material.depthWrite
+                    };
+                    this.modelOpacityOriginals.set (material, original);
+                }
+                SetMaterialOpacity (material, true, original.opacity * this.modelOpacity, false);
+            } else if (original !== undefined) {
+                SetMaterialOpacity (material, original.transparent, original.opacity, original.depthWrite);
+                this.modelOpacityOriginals.delete (material);
+            }
+        };
+        let updateMaterials = (materials) => {
+            if (Array.isArray (materials)) {
+                for (let material of materials) {
+                    updateMaterial (material);
+                }
+            } else {
+                updateMaterial (materials);
+            }
+        };
+
+        this.mainModel.EnumerateMeshes ((mesh) => {
+            updateMaterials (mesh.material);
+            // The mesh's own materials while it is highlighted, they come back when it isn't.
+            if (mesh.userData.threeMaterials) {
+                updateMaterials (mesh.userData.threeMaterials);
+            }
+        });
+        this.surfaceStrainModel.Traverse ((obj) => {
+            if (obj.isMesh) {
+                updateMaterials (obj.material);
+            }
+        });
+        this.edgeHighlightModel.Traverse ((obj) => {
+            if (obj.material !== undefined) {
+                // three.js sorts the transparent objects by renderOrder first.
+                obj.renderOrder = (isFaded ? 1 : 0);
+                if (obj.material.transparent !== isFaded) {
+                    obj.material.transparent = isFaded;
+                    obj.material.needsUpdate = true;
+                }
             }
         });
     }
@@ -613,6 +717,7 @@ export class Viewer
             }
         });
 
+        this.UpdateModelOpacity ();
         this.Render ();
     }
 

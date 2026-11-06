@@ -271,6 +271,19 @@ export class EmbeddedViewer
     }
 
     /**
+     * Fades the model, the surface strain and the highlighted meshes, and draws the edge
+     * highlights on top of them, so the edges behind the model show through it. It is a setting,
+     * not an overlay: it may be called before a model loads, and it stays through model loads and
+     * surface strain recolors. See {@link Viewer#SetModelOpacity}.
+     * @param {number} opacity In (0, 1], 1 shows the model solid.
+     * @returns {{ok: boolean, reason: string|null}} On failure nothing changes.
+     */
+    SetModelOpacity (opacity)
+    {
+        return this.overlays.SetModelOpacity (opacity);
+    }
+
+    /**
      * This method must be called when the size of the parent element changes to make sure that the
      * context has the same dimensions as the parent element.
      */

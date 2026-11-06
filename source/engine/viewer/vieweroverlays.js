@@ -145,4 +145,17 @@ export class ViewerOverlays
     {
         this.viewer.ClearEdgeHighlights ();
     }
+
+    /**
+     * See {@link EmbeddedViewer#SetModelOpacity}.
+     * @param {number} opacity In (0, 1], 1 shows the model solid.
+     * @returns {{ok: boolean, reason: string|null}} On failure nothing changes.
+     */
+    SetModelOpacity (opacity)
+    {
+        if (!this.viewer.SetModelOpacity (opacity)) {
+            return { ok : false, reason : 'opacity must be a number in (0, 1]' };
+        }
+        return { ok : true, reason : null };
+    }
 }

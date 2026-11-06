@@ -172,6 +172,17 @@
                 statusDiv.textContent = 'Edges cleared';
             });
 
+            let opacityInput = document.getElementById ('opacity');
+            let opacityValue = document.getElementById ('opacityvalue');
+            opacityInput.addEventListener ('input', () => {
+                let opacity = parseFloat (opacityInput.value);
+                opacityValue.textContent = opacity.toFixed (2);
+                let result = viewer.SetModelOpacity (opacity);
+                if (!result.ok) {
+                    statusDiv.textContent = 'Opacity failed: ' + result.reason;
+                }
+            });
+
             document.getElementById ('model').addEventListener ('change', (ev) => {
                 modelLoaded = false;
                 // The edges in the input belong to the previous model, only ?edges= edges are
@@ -245,6 +256,11 @@
         <button id="demoedges">Demo edges</button>
         <button id="insideedges">Inside corners</button>
         <button id="clearedges">Clear edges</button>
+    </div>
+    <div class="row">
+        See through
+        <input type="range" id="opacity" min="0.05" max="1" step="0.05" value="1">
+        <span id="opacityvalue">1.00</span>
     </div>
     <div class="row" id="status"></div>
     <div id="viewer"></div>

@@ -8,6 +8,7 @@ export const HostMessageType =
     SurfaceStrainShow : 'o3dv:surface-strain:show',
     SurfaceStrainColors : 'o3dv:surface-strain:colors',
     SurfaceStrainClear : 'o3dv:surface-strain:clear',
+    ModelOpacitySet : 'o3dv:model-opacity:set',
     Ready : 'o3dv:ready',
     ModelLoaded : 'o3dv:model-loaded',
     ModelLoadFailed : 'o3dv:model-load-failed',
@@ -25,7 +26,9 @@ function CreateSurfaceStrainParams (thresholds)
  * Lets the page that embeds the website in an iframe draw the DFM overlays (edge highlights and
  * surface strain) over postMessage. It keeps the last requested overlays and draws them again
  * after every model load, so a command may arrive before the model and is applied when it is
- * shown. Only messages from the parent window on the website's own origin are accepted.
+ * shown. It also sets the model opacity, a viewer setting that is applied at once and that the
+ * viewer keeps through model loads. Only messages from the parent window on the website's own
+ * origin are accepted.
  */
 export class HostMessageHandler
 {
@@ -127,6 +130,8 @@ export class HostMessageHandler
             this.OnSurfaceStrainColors (command, message.thresholds);
         } else if (message.type === HostMessageType.SurfaceStrainClear) {
             this.OnSurfaceStrainClear (command);
+        } else if (message.type === HostMessageType.ModelOpacitySet) {
+            this.OnModelOpacitySet (command, message.opacity);
         }
     }
 
@@ -190,6 +195,13 @@ export class HostMessageHandler
         this.Supersede ('strain', 'the surface strain was cleared before the model loaded');
         this.overlays.ClearSurfaceStrain ();
         this.Answer (command, { ok : true, reason : null });
+    }
+
+    // A viewer setting, not an overlay: the viewer keeps it through model loads, so it is applied
+    // and answered at once, with or without a model.
+    OnModelOpacitySet (command, opacity)
+    {
+        this.Answer (command, this.overlays.SetModelOpacity (opacity));
     }
 
     ShowStrain ()
