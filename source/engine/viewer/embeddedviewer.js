@@ -247,6 +247,41 @@ export class EmbeddedViewer
     }
 
     /**
+     * Paints whole BREP faces of the model, for example the faces of a part that need too long a
+     * tool. A face is named by its index: the BREP faces of every mesh instance in model order, each
+     * mesh's faces in the order of the STEP's TopExp_Explorer, a face that didn't triangulate keeps
+     * its index. Only a model read from STEP, IGES or BREP has faces. Pass the number of faces the
+     * host knows of as params.expectedFaceCount, a model with another count is refused. Each call
+     * replaces the painted faces, but only on success, a failed call keeps them. The faces are
+     * painted over the surface strain, stay opaque when the model is faded, and are cleared when a
+     * new model starts loading.
+     * @param {FaceHighlight[]} highlights Lists of face indices with a color, a face may be in one
+     * highlight only. An empty list clears the faces.
+     * @param {FaceHighlightParams} [params] Parameters.
+     * @returns {FaceHighlightResult} On failure ok is false and reason says why.
+     */
+    ShowFaceHighlights (highlights, params)
+    {
+        return this.overlays.ShowFaceHighlights (highlights, params);
+    }
+
+    /**
+     * Removes the faces painted by ShowFaceHighlights.
+     */
+    ClearFaceHighlights ()
+    {
+        this.overlays.ClearFaceHighlights ();
+    }
+
+    /**
+     * @returns {boolean} True if ShowFaceHighlights painted faces that are still shown.
+     */
+    HasFaceHighlights ()
+    {
+        return this.overlays.HasFaceHighlights ();
+    }
+
+    /**
      * Draws coloured polylines on the model, for example the risky edges of a frequency analysis.
      * The coordinates are converted from params.unit (mm by default) to the model's unit and must
      * lie on the model. Each call replaces the shown edges, but only on success, a failed call
@@ -272,7 +307,8 @@ export class EmbeddedViewer
 
     /**
      * Fades the model, the surface strain and the highlighted meshes, and draws the edge
-     * highlights on top of them, so the edges behind the model show through it. It is a setting,
+     * highlights on top of them, so the edges behind the model show through it. Faces painted by
+     * ShowFaceHighlights stay opaque, so they show through the model too. It is a setting,
      * not an overlay: it may be called before a model loads, and it stays through model loads and
      * surface strain recolors. See {@link Viewer#SetModelOpacity}.
      * @param {number} opacity In (0, 1], 1 shows the model solid.

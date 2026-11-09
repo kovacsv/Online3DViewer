@@ -48,6 +48,7 @@ function CreateFakeOverlays ()
         model : null,
         calls : [],
         edgeResult : { ok : true, reason : null, edgeCount : 1 },
+        faceResult : { ok : true, reason : null, faceCount : 1 },
         strainResult : { ok : true, reason : null },
         colorsResult : { ok : true, reason : null, colorScale : {} },
         HasModel () {
@@ -59,6 +60,13 @@ function CreateFakeOverlays ()
         },
         ClearEdgeHighlights () {
             this.calls.push (['ClearEdgeHighlights']);
+        },
+        ShowFaceHighlights (highlights, params) {
+            this.calls.push (['ShowFaceHighlights', highlights, params.expectedFaceCount]);
+            return this.faceResult;
+        },
+        ClearFaceHighlights () {
+            this.calls.push (['ClearFaceHighlights']);
         },
         ShowSurfaceStrain (buffer, params) {
             this.calls.push (['ShowSurfaceStrain', buffer, params.thresholds]);
@@ -117,6 +125,7 @@ function Results (env)
 }
 
 const Edges = [{ polyline : [[0, 0, 0], [1, 0, 0]], color : '#ff0000' }];
+const Faces = [{ faces : [0, 3], color : '#7c3aed' }];
 const Thresholds = [{ color : '#ff0000', strain : 20.0 }, { color : '#ffff00', strain : 5.0 }];
 const OtherThresholds = [{ color : '#ff0000', strain : 30.0 }];
 
@@ -290,6 +299,71 @@ describe ('Host Messages', function () {
         await Flush ();
         assert.deepStrictEqual (env.overlays.calls.slice (1), [['SetSurfaceStrainColors', OtherThresholds]]);
         assert.deepStrictEqual (Results (env).map ((result) => [result.requestId, result.ok]), [[1, true], [2, true]]);
+    });
+});
+
+describe ('Host Messages Face Highlights', function () {
+    it ('Sends the face commands to the viewer', function () {
+        let env = CreateHandler ();
+        LoadModel (env);
+        env.frameWindow.Send ({ type : HostMessageType.FaceHighlightsShow, highlights : Faces, expectedFaceCount : 12, requestId : 1 });
+        env.frameWindow.Send ({ type : HostMessageType.FaceHighlightsShow, highlights : Faces, requestId : 2 });
+        env.frameWindow.Send ({ type : HostMessageType.FaceHighlightsClear, requestId : 3 });
+        assert.deepStrictEqual (env.overlays.calls, [
+            ['ShowFaceHighlights', Faces, 12],
+            ['ShowFaceHighlights', Faces, null],
+            ['ClearFaceHighlights']
+        ]);
+        assert.deepStrictEqual (Results (env), [
+            { type : HostMessageType.Result, requestId : 1, command : 'o3dv:face-highlights:show', ok : true, reason : null },
+            { type : HostMessageType.Result, requestId : 2, command : 'o3dv:face-highlights:show', ok : true, reason : null },
+            { type : HostMessageType.Result, requestId : 3, command : 'o3dv:face-highlights:clear', ok : true, reason : null }
+        ]);
+    });
+
+    it ('Shows faces sent before the model on load, and again on the next load', function () {
+        let env = CreateHandler ();
+        env.frameWindow.Send ({ type : HostMessageType.FaceHighlightsShow, highlights : [], requestId : 1 });
+        env.frameWindow.Send ({ type : HostMessageType.FaceHighlightsShow, highlights : Faces, expectedFaceCount : 12, requestId : 2 });
+        assert.deepStrictEqual (env.overlays.calls, []);
+        assert.deepStrictEqual (Results (env).map ((result) => [result.requestId, result.ok, result.reason]), [
+            [1, false, 'replaced by a later command before the model loaded']
+        ]);
+
+        LoadModel (env);
+        assert.deepStrictEqual (env.overlays.calls, [['ShowFaceHighlights', Faces, 12]]);
+        assert.deepStrictEqual (Results (env).slice (1).map ((result) => [result.requestId, result.ok]), [[2, true]]);
+
+        env.overlays.model = null;
+        LoadModel (env);
+        assert.deepStrictEqual (env.overlays.calls.slice (1), [['ShowFaceHighlights', Faces, 12]]);
+        assert.deepStrictEqual (Results (env).slice (2), [
+            { type : HostMessageType.Result, requestId : null, command : 'o3dv:face-highlights:show', ok : true, reason : null }
+        ]);
+    });
+
+    it ('Answers a pending show cleared before the model', function () {
+        let env = CreateHandler ();
+        env.frameWindow.Send ({ type : HostMessageType.FaceHighlightsShow, highlights : Faces, requestId : 1 });
+        env.frameWindow.Send ({ type : HostMessageType.FaceHighlightsClear, requestId : 2 });
+        assert.deepStrictEqual (Results (env).map ((result) => [result.requestId, result.ok, result.reason]), [
+            [1, false, 'the face highlights were cleared before the model loaded'],
+            [2, true, null]
+        ]);
+        LoadModel (env);
+        assert.deepStrictEqual (env.overlays.calls, [['ClearFaceHighlights']]);
+        assert.strictEqual (Results (env).length, 2);
+    });
+
+    it ('Posts the reason of a refused show', function () {
+        let env = CreateHandler ();
+        LoadModel (env);
+        env.overlays.faceResult = { ok : false, reason : 'the model has 6 faces, expected 7, the faces may belong to another part', faceCount : 0 };
+        env.frameWindow.Send ({ type : HostMessageType.FaceHighlightsShow, highlights : Faces, expectedFaceCount : 7, requestId : 1 });
+        assert.deepStrictEqual (Results (env).map ((result) => [result.requestId, result.ok, result.reason]), [
+            [1, false, 'the model has 6 faces, expected 7, the faces may belong to another part']
+        ]);
+        assert.ok (!env.overlays.calls.some ((call) => call[0].startsWith ('Clear')));
     });
 });
 

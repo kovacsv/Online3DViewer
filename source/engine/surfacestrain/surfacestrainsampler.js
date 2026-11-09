@@ -115,7 +115,7 @@ export class SurfaceStrainMappingParams
     }
 }
 
-function CollectFaceGeometry (mesh, transformation, firstTriangle, lastTriangle)
+export function CollectFaceGeometry (mesh, transformation, firstTriangle, lastTriangle)
 {
     let isIdentity = transformation.IsIdentity ();
     let vertexMap = new Map ();

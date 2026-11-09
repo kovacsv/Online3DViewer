@@ -13,6 +13,7 @@ import { ExporterObj } from './export/exporterobj.js';
 import { ExporterOff } from './export/exporteroff.js';
 import { ExporterPly } from './export/exporterply.js';
 import { ExporterStl } from './export/exporterstl.js';
+import { FaceHighlight, FaceHighlightParams, FaceHighlightResult, PreparedFaceHighlight, GetModelFaces, PrepareFaceHighlights } from './facehighlight/facehighlight.js';
 import { Box3D, BoundingBoxCalculator3D } from './geometry/box3d.js';
 import { Coord2D, CoordIsEqual2D, AddCoord2D, SubCoord2D, CoordDistance2D, DotVector2D } from './geometry/coord2d.js';
 import { Coord3D, CoordIsEqual3D, AddCoord3D, SubCoord3D, CoordDistance3D, DotVector3D, VectorAngle3D, CrossVector3D, VectorLength3D, ArrayToCoord3D } from './geometry/coord3d.js';
@@ -72,7 +73,7 @@ import { SurfaceStrainColorScale, SurfaceStrainThreshold, SurfaceStrainThreshold
 import { SurfaceStrainData, DecodeSurfaceStrain } from './surfacestrain/surfacestraindecoder.js';
 import { SurfaceStrainFrameResult, CheckSurfaceStrainFrameAtScale, MatchSurfaceStrainFrame, IsSurfaceStrainSourceFile } from './surfacestrain/surfacestrainframe.js';
 import { RefinementBudget, RefinedTriangles, RefineTriangles } from './surfacestrain/surfacestrainrefine.js';
-import { SurfaceStrainSample, SurfaceStrainIndex, SurfaceStrainMeshResult, SurfaceStrainMapping, SurfaceStrainMappingParams, MapSurfaceStrainToModel } from './surfacestrain/surfacestrainsampler.js';
+import { SurfaceStrainSample, SurfaceStrainIndex, SurfaceStrainMeshResult, SurfaceStrainMapping, SurfaceStrainMappingParams, CollectFaceGeometry, MapSurfaceStrainToModel } from './surfacestrain/surfacestrainsampler.js';
 import { SurfaceStrainGeometry, SurfaceStrainUnitToString, GetMetreToUnitScale, ConvertSurfaceStrainToUnit, SurfaceStrainUnitCandidates } from './surfacestrain/surfacestrainunits.js';
 import { ModelToThreeConversionParams, ModelToThreeConversionOutput, ThreeConversionStateHandler, ThreeNodeTree, ThreeMaterialHandler, ThreeMeshMaterialHandler, ConvertModelToThreeObject, MaterialGeometryType } from './threejs/threeconverter.js';
 import { ThreeModelLoader } from './threejs/threemodelloader.js';
@@ -84,6 +85,7 @@ import { MouseInteraction, TouchInteraction, ClickDetector, Navigation, Navigati
 import { EnvironmentSettings, ShadingModel } from './viewer/shadingmodel.js';
 import { CameraValidator, UpVector, Viewer, GetDefaultCamera, TraverseThreeObject, GetShadingTypeOfObject } from './viewer/viewer.js';
 import { ViewerEdgeHighlight } from './viewer/vieweredgehighlight.js';
+import { ViewerFaceHighlight } from './viewer/viewerfacehighlight.js';
 import { ViewerModel, EdgeSettings, ViewerMainModel, SetThreeMeshPolygonOffset, IntersectionMode } from './viewer/viewermodel.js';
 import { ViewerOverlays } from './viewer/vieweroverlays.js';
 import { ViewerSurfaceStrain } from './viewer/viewersurfacestrain.js';
@@ -122,6 +124,12 @@ export {
     ExporterOff,
     ExporterPly,
     ExporterStl,
+    FaceHighlight,
+    FaceHighlightParams,
+    FaceHighlightResult,
+    PreparedFaceHighlight,
+    GetModelFaces,
+    PrepareFaceHighlights,
     Box3D,
     BoundingBoxCalculator3D,
     Coord2D,
@@ -340,6 +348,7 @@ export {
     SurfaceStrainMeshResult,
     SurfaceStrainMapping,
     SurfaceStrainMappingParams,
+    CollectFaceGeometry,
     MapSurfaceStrainToModel,
     SurfaceStrainGeometry,
     SurfaceStrainUnitToString,
@@ -410,6 +419,7 @@ export {
     TraverseThreeObject,
     GetShadingTypeOfObject,
     ViewerEdgeHighlight,
+    ViewerFaceHighlight,
     ViewerModel,
     EdgeSettings,
     ViewerMainModel,

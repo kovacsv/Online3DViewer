@@ -20,7 +20,7 @@ Adding one (for example `#model=…$strain=<url>`) would be a separate change.
 ## Packaging
 
 - Rebuild the package tarball the same way as today, then update `online-3d-viewer.tgz` and its
-  integrity hash in `pnpm-lock.yaml`. Bump the package `version` (currently `0.0.13`) so the two
+  integrity hash in `pnpm-lock.yaml`. Bump the package `version` (currently `0.0.14`) so the two
   builds can be told apart.
 - `occt-import-js` stays at `0.0.22`. The `vite-plugin-static-copy` setup, the `/occt-import-js/`
   location and `OV.SetExternalLibLocation ("occt-import-js", "/occt-import-js/")` don't change.
@@ -311,6 +311,83 @@ if (!result.ok) {
 }
 ```
 
+## Face highlights
+
+The viewer can paint whole faces of the part in a colour, for example the faces that need too long a
+tool, or the faces of deep drilled holes. Like the edges, the API is generic: it takes face indices
+and colours. Which faces to paint, and why, stays in the host.
+
+### Face numbering
+
+A face is named by an integer index, the same one the backend uses for the node's STEP:
+
+- The viewer lists the BREP faces of every mesh instance in the order the model enumerates them,
+  and the faces of each mesh in the order occt-import-js reports them (`TopExp_Explorer` over the
+  solid's faces). The first face is `0`.
+- A face that didn't triangulate keeps its index. It just has nothing to paint.
+- Only a model read from STEP, IGES or BREP has faces. Any other model is refused with
+  `the model has no BREP faces`.
+- The backend numbers faces by `TopExp::MapShapes` over the node's STEP. For one solid both orders
+  are the same. A face shared twice in the BREP, several bodies, or a body that failed to
+  tessellate entirely can change the count; `tools/dump_step_faces.mjs <file.step>` prints the
+  viewer's numbering with each face's area and centroid, to compare with another reader.
+
+The host can't see how the viewer numbered the faces, so it **must** pass the number of faces it
+knows of (the backend's face count) as `params.expectedFaceCount`. A model with another count is
+refused, which catches a dropped body or a different STEP. A reordering with the same count is not
+caught.
+
+### `EmbeddedViewer.ShowFaceHighlights (highlights, params?) → FaceHighlightResult`
+
+- `highlights`: a list of `OV.FaceHighlight`, or plain objects with the same fields:
+
+  | Field   | Type       | Meaning                                         |
+  | ------- | ---------- | ----------------------------------------------- |
+  | `faces` | `number[]` | Face indices, see above.                        |
+  | `color` | `string`   | Hex colour, `"#rrggbb"` or `"rrggbb"`.          |
+
+- `params`: optional `OV.FaceHighlightParams`.
+
+  | Field               | Default | Meaning                                                                |
+  | ------------------- | ------- | ---------------------------------------------------------------------- |
+  | `expectedFaceCount` | `null`  | Number of faces the model must have. `null` skips the check; hosts should always pass it. |
+
+- `FaceHighlightResult` is `{ ok, reason, faceCount }`, `faceCount` being the number of faces painted.
+- The call is **synchronous** and **never throws**. Before `onModelLoaded` it returns `ok: false`
+  with `no model is loaded`.
+- It is **all or nothing**. An index that isn't an integer of the model's faces, a face in two
+  highlights, a colour that isn't hex and a wrong face count fail the whole call, and `reason` says
+  which, for example `highlight 1: face 2 is in more than one highlight` or
+  `the model has 41 faces, expected 42, …`. The texts aren't stable, so don't parse them.
+- Each successful call **replaces** every painted face, and `[]` clears them. A failed call keeps
+  the faces that are on screen. If you can't show the requested set, call `ClearFaceHighlights`.
+- The painted faces are drawn over the model and over the surface strain overlay, with a polygon
+  offset that pulls them just in front of the surface they cover. Edge highlights stay on top of them.
+- **Model opacity.** The painted faces are never faded: with `SetModelOpacity (< 1)` they stay
+  opaque, and the ones behind the faded part show through it.
+- Per-mesh `SetMeshesVisibility` hides the painted faces of a hidden mesh. Loading a new model,
+  `Destroy ()` and `GetViewer ().Clear ()` remove them. They can't be picked and don't affect the
+  camera fit.
+
+### `EmbeddedViewer.ClearFaceHighlights ()` and `HasFaceHighlights () → boolean`
+
+`ClearFaceHighlights` removes the painted faces and is safe to call at any time.
+`HasFaceHighlights` says whether any are shown.
+
+```ts
+const result = viewer.ShowFaceHighlights(
+  [
+    { faces: tooLongFaces, color: "#7c3aed" },
+    { faces: deepHoleFaces, color: "#2563eb" },
+  ],
+  { expectedFaceCount: longReach.faces.length },
+);
+if (!result.ok) {
+  console.warn("long reach faces not shown:", result.reason);
+  viewer.ClearFaceHighlights();
+}
+```
+
 ## Model opacity
 
 `EmbeddedViewer.SetModelOpacity (opacity) → { ok, reason }` fades the part so the edge highlights
@@ -329,6 +406,8 @@ Messages are plain objects. Each command may carry a `requestId`, echoed in its 
 |---|---|---|
 | `o3dv:edge-highlights:show` | `edges: { polyline: [x,y,z][], color, width? }[]` (mm) | `ShowEdgeHighlights` |
 | `o3dv:edge-highlights:clear` | | `ClearEdgeHighlights` |
+| `o3dv:face-highlights:show` | `highlights: { faces: number[], color }[]`, `expectedFaceCount?: number` | `ShowFaceHighlights` |
+| `o3dv:face-highlights:clear` | | `ClearFaceHighlights` |
 | `o3dv:surface-strain:show` | `buffer: ArrayBuffer` (send it as a transferable), `thresholds?` | `ShowSurfaceStrain` |
 | `o3dv:surface-strain:colors` | `thresholds` | `SetSurfaceStrainColors` |
 | `o3dv:surface-strain:clear` | | `ClearSurfaceStrain` |
@@ -343,7 +422,7 @@ Messages are plain objects. Each command may carry a `requestId`, echoed in its 
 
 - **Origin.** Only messages with `event.source === window.parent` and `event.origin` equal to the
   website's own origin are handled. Replies are posted to that origin. Anything else is ignored.
-- **Stored state.** The website keeps the last requested edges and strain (buffer and thresholds)
+- **Stored state.** The website keeps the last requested edges, faces and strain (buffer and thresholds)
   and reapplies them after every model load, including one started from the website's own UI. A
   reapply posts a result with `requestId: null`. A failed show keeps the previous drawing, as in
   the engine; the parent decides whether to clear.
@@ -365,6 +444,8 @@ Messages are plain objects. Each command may carry a `requestId`, echoed in its 
     typo had left unset. Models with edges or lines sit very slightly further back in depth.
   - While edge highlights are shown, the model's meshes use a polygon offset factor of up to
     `ceil(width / 2 · √2) + 1` instead of 1. The factor goes back to 1 when the highlights are cleared.
+- **Face highlights** (`0.0.14`) are non-breaking: nothing is painted until `ShowFaceHighlights`
+  or `o3dv:face-highlights:show` is used. `CollectFaceGeometry` is now exported.
 - **Model opacity** (`0.0.13`) is non-breaking: the default is `1`, and nothing changes until
   `SetModelOpacity` or `o3dv:model-opacity:set` is used.
 - **Versioning.** Only artifact version `1` is accepted. A newer artifact version resolves with

@@ -1,10 +1,13 @@
 import { IsDefined } from '../engine/core/core.js';
+import { FaceHighlightParams } from '../engine/facehighlight/facehighlight.js';
 import { SurfaceStrainParams } from '../engine/surfacestrain/surfacestrain.js';
 
 export const HostMessageType =
 {
     EdgeHighlightsShow : 'o3dv:edge-highlights:show',
     EdgeHighlightsClear : 'o3dv:edge-highlights:clear',
+    FaceHighlightsShow : 'o3dv:face-highlights:show',
+    FaceHighlightsClear : 'o3dv:face-highlights:clear',
     SurfaceStrainShow : 'o3dv:surface-strain:show',
     SurfaceStrainColors : 'o3dv:surface-strain:colors',
     SurfaceStrainClear : 'o3dv:surface-strain:clear',
@@ -22,9 +25,16 @@ function CreateSurfaceStrainParams (thresholds)
     return params;
 }
 
+function CreateFaceHighlightParams (expectedFaceCount)
+{
+    let params = new FaceHighlightParams ();
+    params.expectedFaceCount = (expectedFaceCount === undefined ? null : expectedFaceCount);
+    return params;
+}
+
 /**
- * Lets the page that embeds the website in an iframe draw the DFM overlays (edge highlights and
- * surface strain) over postMessage. It keeps the last requested overlays and draws them again
+ * Lets the page that embeds the website in an iframe draw the DFM overlays (edge highlights, face
+ * highlights and surface strain) over postMessage. It keeps the last requested overlays and draws them again
  * after every model load, so a command may arrive before the model and is applied when it is
  * shown. It also sets the model opacity, a viewer setting that is applied at once and that the
  * viewer keeps through model loads. Only messages from the parent window on the website's own
@@ -43,12 +53,15 @@ export class HostMessageHandler
         this.origin = null;
         // Last requested overlays, null if none.
         this.edges = null;
+        // { highlights, expectedFaceCount }
+        this.faces = null;
         this.strain = null;
         // Promise of the surface strain being shown, it resolves with the result.
         this.strainShowing = null;
         // Commands that arrived without a model, they are answered when it is shown.
         this.pending = {
             edges : [],
+            faces : [],
             strain : []
         };
     }
@@ -91,6 +104,12 @@ export class HostMessageHandler
             this.AnswerAll (edgesPending, HostMessageType.EdgeHighlightsShow, result);
         }
 
+        let facesPending = this.TakePending ('faces');
+        if (this.faces !== null) {
+            let result = this.ShowFaces ();
+            this.AnswerAll (facesPending, HostMessageType.FaceHighlightsShow, result);
+        }
+
         let strainPending = this.TakePending ('strain');
         if (this.strain !== null) {
             this.ShowStrain ().then ((result) => {
@@ -124,6 +143,10 @@ export class HostMessageHandler
             this.OnEdgeHighlightsShow (command, message.edges);
         } else if (message.type === HostMessageType.EdgeHighlightsClear) {
             this.OnEdgeHighlightsClear (command);
+        } else if (message.type === HostMessageType.FaceHighlightsShow) {
+            this.OnFaceHighlightsShow (command, message.highlights, message.expectedFaceCount);
+        } else if (message.type === HostMessageType.FaceHighlightsClear) {
+            this.OnFaceHighlightsClear (command);
         } else if (message.type === HostMessageType.SurfaceStrainShow) {
             this.OnSurfaceStrainShow (command, message.buffer, message.thresholds);
         } else if (message.type === HostMessageType.SurfaceStrainColors) {
@@ -151,6 +174,28 @@ export class HostMessageHandler
         this.edges = null;
         this.Supersede ('edges', 'the edge highlights were cleared before the model loaded');
         this.overlays.ClearEdgeHighlights ();
+        this.Answer (command, { ok : true, reason : null });
+    }
+
+    OnFaceHighlightsShow (command, highlights, expectedFaceCount)
+    {
+        this.faces = {
+            highlights : highlights,
+            expectedFaceCount : expectedFaceCount
+        };
+        if (!this.overlays.HasModel ()) {
+            this.Supersede ('faces', 'replaced by a later command before the model loaded');
+            this.pending.faces.push (command);
+            return;
+        }
+        this.Answer (command, this.ShowFaces ());
+    }
+
+    OnFaceHighlightsClear (command)
+    {
+        this.faces = null;
+        this.Supersede ('faces', 'the face highlights were cleared before the model loaded');
+        this.overlays.ClearFaceHighlights ();
         this.Answer (command, { ok : true, reason : null });
     }
 
@@ -202,6 +247,11 @@ export class HostMessageHandler
     OnModelOpacitySet (command, opacity)
     {
         this.Answer (command, this.overlays.SetModelOpacity (opacity));
+    }
+
+    ShowFaces ()
+    {
+        return this.overlays.ShowFaceHighlights (this.faces.highlights, CreateFaceHighlightParams (this.faces.expectedFaceCount));
     }
 
     ShowStrain ()

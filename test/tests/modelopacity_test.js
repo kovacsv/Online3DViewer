@@ -14,6 +14,7 @@ function CreateViewer ()
     viewer.mainModel = new OV.ViewerMainModel (viewer.scene);
     viewer.extraModel = new OV.ViewerModel (viewer.scene);
     viewer.surfaceStrainModel = new OV.ViewerModel (viewer.scene);
+    viewer.faceHighlightModel = new OV.ViewerModel (viewer.scene);
     viewer.edgeHighlightModel = new OV.ViewerModel (viewer.scene);
     viewer.shadingModel = new OV.ShadingModel (viewer.scene);
     viewer.Render = () => {};
@@ -67,6 +68,27 @@ function PrepareEdges ()
     let prepared = OV.PrepareEdgeHighlights (CreateBoxModel (), [{ polyline : [[0, 0, 0], [100, 0, 0]], color : '#ff0000' }]);
     assert.ok (prepared.result.ok, prepared.result.reason);
     return prepared.prepared;
+}
+
+function PrepareFaces ()
+{
+    let model = CreateBoxModel ();
+    let mesh = model.GetMesh (0);
+    mesh.SetBrepFaces ([{ first : 0, last : 5 }, { first : 6, last : 11 }]);
+    let prepared = OV.PrepareFaceHighlights (model, [{ faces : [1], color : '#7c3aed' }]);
+    assert.ok (prepared.result.ok, prepared.result.reason);
+    return prepared.prepared;
+}
+
+function FaceMeshes (viewer)
+{
+    let meshes = [];
+    viewer.faceHighlightModel.Traverse ((obj) => {
+        if (obj.isMesh) {
+            meshes.push (obj);
+        }
+    });
+    return meshes;
 }
 
 function MaterialState (material)
@@ -205,6 +227,60 @@ describe ('Model Opacity', function () {
             assert.strictEqual (line.renderOrder, 0);
             assert.strictEqual (line.material.transparent, false);
         }
+    });
+
+    it ('Keeps face highlights opaque over a faded model', function () {
+        let viewer = CreateViewer ();
+        viewer.SetMainObject (CreateMainObject ([[new THREE.MeshPhongMaterial ()]]));
+        assert.ok (viewer.SetModelOpacity (0.2));
+        viewer.SetFaceHighlights (PrepareFaces ());
+        assert.ok (viewer.HasFaceHighlights ());
+        let meshes = FaceMeshes (viewer);
+        assert.strictEqual (meshes.length, 1);
+        assert.deepStrictEqual (MaterialState (meshes[0].material), { transparent : false, opacity : 1, depthWrite : true });
+        assert.ok (viewer.SetModelOpacity (0.5));
+        assert.deepStrictEqual (MaterialState (meshes[0].material), { transparent : false, opacity : 1, depthWrite : true });
+        viewer.ClearFaceHighlights ();
+        assert.ok (!viewer.HasFaceHighlights ());
+        assert.strictEqual (FaceMeshes (viewer).length, 0);
+    });
+
+    it ('Pulls face highlights in front of the meshes and the surface strain', function () {
+        let viewer = CreateViewer ();
+        viewer.SetMainObject (CreateMainObject ([[new THREE.MeshPhongMaterial ()]]));
+        viewer.SetFaceHighlights (PrepareFaces ());
+        let material = FaceMeshes (viewer)[0].material;
+        // The meshes have no polygon offset, the faces still win against the strain overlay.
+        assert.strictEqual (material.polygonOffset, true);
+        assert.strictEqual (material.polygonOffsetFactor, 0);
+        assert.strictEqual (material.polygonOffsetUnits, -1);
+
+        // Thick edges push the meshes back, the faces follow so the edges stay on top of them.
+        viewer.SetEdgeHighlights (PrepareEdges ());
+        let factor = viewer.mainModel.polygonOffsetFactor;
+        assert.ok (factor > 1);
+        assert.strictEqual (material.polygonOffsetFactor, factor);
+        viewer.SetSurfaceStrain (CreateSurfaceStrainMapping (), new OV.SurfaceStrainColorScale (-8, -4));
+        assert.strictEqual (StrainMaterials (viewer)[0].polygonOffsetFactor, factor);
+        assert.strictEqual (StrainMaterials (viewer)[0].polygonOffsetUnits, 1);
+
+        viewer.ClearEdgeHighlights ();
+        assert.strictEqual (material.polygonOffsetFactor, 0);
+    });
+
+    it ('Hides the face highlights of a hidden mesh', function () {
+        let viewer = CreateViewer ();
+        // The prepared faces belong to mesh instance 0:0.
+        viewer.SetMainObject (CreateMainObject ([[new THREE.MeshPhongMaterial ()]]));
+        viewer.mainModel.EnumerateMeshes ((mesh) => {
+            mesh.userData = MeshUserData ('0:0');
+        });
+        viewer.SetFaceHighlights (PrepareFaces ());
+        assert.strictEqual (FaceMeshes (viewer)[0].visible, true);
+        viewer.SetMeshesVisibility (() => false);
+        assert.strictEqual (FaceMeshes (viewer)[0].visible, false);
+        viewer.SetMeshesVisibility (() => true);
+        assert.strictEqual (FaceMeshes (viewer)[0].visible, true);
     });
 
     it ('Fades highlighted meshes, and un-highlighting leaves them faded once', function () {

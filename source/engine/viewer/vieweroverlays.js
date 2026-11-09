@@ -1,9 +1,11 @@
 import { EdgeHighlightResult, PrepareEdgeHighlights } from '../edgehighlight/edgehighlight.js';
+import { FaceHighlightResult, PrepareFaceHighlights } from '../facehighlight/facehighlight.js';
 import { PrepareSurfaceStrain, SurfaceStrainParams, SurfaceStrainResult } from '../surfacestrain/surfacestrain.js';
 import { CreateSurfaceStrainColorScale } from '../surfacestrain/surfacestraincolor.js';
 
 /**
- * Draws the surface strain and the edge highlights of a model on a {@link Viewer}. It is shared by
+ * Draws the surface strain, the face highlights and the edge highlights of a model on a
+ * {@link Viewer}. It is shared by
  * {@link EmbeddedViewer} and the website, see their methods with the same names for details.
  */
 export class ViewerOverlays
@@ -144,6 +146,49 @@ export class ViewerOverlays
     ClearEdgeHighlights ()
     {
         this.viewer.ClearEdgeHighlights ();
+    }
+
+    /**
+     * See {@link EmbeddedViewer#ShowFaceHighlights}.
+     * @param {FaceHighlight[]} highlights Lists of face indices with a color.
+     * @param {FaceHighlightParams} [params] Parameters.
+     * @returns {FaceHighlightResult} On failure ok is false and reason says why.
+     */
+    ShowFaceHighlights (highlights, params)
+    {
+        if (this.model === null) {
+            let result = new FaceHighlightResult ();
+            result.reason = 'no model is loaded';
+            return result;
+        }
+        try {
+            let prepared = PrepareFaceHighlights (this.model, highlights, params);
+            if (prepared.result.ok) {
+                this.viewer.SetFaceHighlights (prepared.prepared);
+            }
+            return prepared.result;
+        } catch (error) {
+            let result = new FaceHighlightResult ();
+            result.reason = error.message;
+            return result;
+        }
+    }
+
+    /**
+     * See {@link EmbeddedViewer#ClearFaceHighlights}.
+     */
+    ClearFaceHighlights ()
+    {
+        this.viewer.ClearFaceHighlights ();
+    }
+
+    /**
+     * See {@link EmbeddedViewer#HasFaceHighlights}.
+     * @returns {boolean}
+     */
+    HasFaceHighlights ()
+    {
+        return this.viewer.HasFaceHighlights ();
     }
 
     /**

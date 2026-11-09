@@ -30,6 +30,7 @@ import property_test from './tests/property_test.js';
 import parameterlist_test from './tests/parameterlist_test.js';
 import surfacestrain_test from './tests/surfacestrain_test.js';
 import edgehighlight_test from './tests/edgehighlight_test.js';
+import facehighlight_test from './tests/facehighlight_test.js';
 import hostmessages_test from './tests/hostmessages_test.js';
 import modelopacity_test from './tests/modelopacity_test.js';
 
@@ -64,5 +65,6 @@ property_test ();
 parameterlist_test ();
 surfacestrain_test ();
 edgehighlight_test ();
+facehighlight_test ();
 hostmessages_test ();
 modelopacity_test ();

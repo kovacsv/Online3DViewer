@@ -51,6 +51,7 @@ The lower-level `Viewer.SetModelOpacity (opacity)` returns `true` or `false` wit
 | Surface strain overlay | Faded |
 | Selected (highlighted) meshes | Faded |
 | Edge highlights (`ShowEdgeHighlights`) | Full color, drawn on top of the faded surfaces |
+| Face highlights (`ShowFaceHighlights`, `0.0.14`) | Opaque, not faded. Painted faces behind the part show through it; edges behind a painted face are hidden by it |
 | The website's own edge display (black lines) | Solid, unchanged |
 | Line geometry in the model itself, the measure tool's markers | Unchanged |
 
